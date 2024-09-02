@@ -40,12 +40,13 @@ def read_queasybl(case_type:int, intkey:int, inpint1:int, inpchar1:str):
     elif case_type == 2:
 
         queasy = db_session.query(Queasy).filter(
-                (Queasy.key == intkey) &  (Queasy.char1 == inpchar1)).first()
+                (Queasy.key == intkey) &  
+                (Queasy.char1 == inpchar1)).first()
 
         if queasy:
             t_queasy = T_queasy()
             t_queasy_list.append(t_queasy)
-
+            local_storage.debugging = local_storage.debugging + "141 masuk"
             buffer_copy(queasy, t_queasy)
     elif case_type == 3:
 

@@ -1,4 +1,4 @@
-docker_version = "0.30"
+docker_version = "0.31"
 print("Start:", docker_version)
 # ---------------------------------------------------------------------------------
 # Main.py FASTAPI
@@ -338,20 +338,6 @@ async def handle_dynamic_data(request: Request, input_data: Dict[str, Any]):
     # ------------------------------------------------------
     # Log
     # ------------------------------------------------------
-    # DB_HOST = "localhost" 
-    # DB_NAME = "vhp"
-    # DB_USER = "postgres"
-    # DB_PASSWORD = "bali2000"
-    # ------------------------------------------------------
-    # DB_HOST = "52.220.146.33"
-    # DB_NAME = "vhp"
-    # DB_USER = "postgres"
-    # DB_PASSWORD = "VHPLite#2023"
-    # ------------------------------------------------------
-    # DB_HOST = "vhp-devtest.cjxtrsmbui3n.ap-southeast-1.rds.amazonaws.com"
-    # DB_NAME = "vhpdb"
-    # DB_USER = "vhpadmin"
-    # DB_PASSWORD = "bFdq8QsQoxH1vAvO"
     try:
         config = load_config("config.json")
         use_db = config["use_db"]
@@ -362,12 +348,6 @@ async def handle_dynamic_data(request: Request, input_data: Dict[str, Any]):
         DB_PASSWORD = db0_config["DB_PASSWORD"]
         DB_PORT = db0_config["DB_PORT"]
 
-        # ------------------------------------------------------
-        # DB_HOST = "db-vhplite.cjjyqihtbwnm.ap-southeast-1.rds.amazonaws.com"
-        # DB_NAME = "postgres"
-        # DB_USER = "adminvhplite23"
-        # DB_PASSWORD = "superlite#rds"
-        # ------------------------------------------------------
         DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
         print("UseDB:", use_db)
         log_engine = create_engine(DATABASE_URL)
