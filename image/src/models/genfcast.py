@@ -1,0 +1,48 @@
+from sqlalchemy.dialects.postgresql import ARRAY
+import sqlalchemy as sa
+from models.base import Base
+from functions.additional_functions import get_current_date
+
+class Genfcast(Base):
+	__tablename__ = 'genfcast'
+
+	abreise = sa.Column(sa.Date, default=None)
+	ankunft = sa.Column(sa.Date, default=None)
+	argt = sa.Column(sa.String, default="")
+	cancelled = sa.Column(sa.Date, default=None)
+	datum = sa.Column(sa.Date, default=None)
+	domestic = sa.Column(sa.Integer, default=0)
+	erwachs = sa.Column(sa.Integer, default=0)
+	gastnr = sa.Column(sa.Integer, default=None)
+	gastnrmember = sa.Column(sa.Integer, default=0)
+	gratis = sa.Column(sa.Integer, default=0)
+	groupname = sa.Column(sa.String, default="")
+	karteityp = sa.Column(sa.Integer, default=0)
+	kind1 = sa.Column(sa.Integer, default=0)
+	kind2 = sa.Column(sa.Integer, default=0)
+	kind3 = sa.Column(sa.Integer, default=0)
+	kontcode = sa.Column(sa.String, default="")
+	logis = sa.Column(sa.Numeric, default=0)
+	markno = sa.Column(sa.Integer, default=0)
+	nationnr = sa.Column(sa.Integer, default=0)
+	noshow = sa.Column(sa.Boolean, default=False)
+	ratecode = sa.Column(sa.String, default="")
+	ratelocal = sa.Column(sa.Numeric, default=0)
+	res_char = sa.Column(ARRAY(sa.String),default=["","","","",""])
+	res_date = sa.Column(ARRAY(sa.Date),default=[None,None,None,None,None])
+	res_deci = sa.Column(ARRAY(sa.Numeric),default=[0,0,0,0,0])
+	res_int = sa.Column(ARRAY(sa.Integer),default=[0,0,0,0,0])
+	res_logic = sa.Column(ARRAY(sa.Boolean),default=[False,False,False,False,False])
+	resident = sa.Column(sa.Integer, default=0)
+	reslinnr = sa.Column(sa.Integer, default=1)
+	resnr = sa.Column(sa.Integer, default=0)
+	resstatus = sa.Column(sa.Integer, default=0)
+	sales_init = sa.Column(sa.String, default="")
+	segmentcode = sa.Column(sa.Integer, default=0)
+	source = sa.Column(sa.Integer, default=0)
+	spaetabreise = sa.Column(sa.Boolean, default=False)
+	wahrungsnr = sa.Column(sa.Integer, default=0)
+	zikatnr = sa.Column(sa.Integer, default=0)
+	zimmeranz = sa.Column(sa.Integer, default=0)
+	zipreis = sa.Column(sa.Numeric, default=0)
+	_recid = sa.Column(sa.Integer, primary_key=True)

@@ -1,0 +1,80 @@
+from functions.additional_functions import *
+import decimal
+from models import H_artikel, Wgrpdep, Queasy
+
+def load_h_artikel1_1bl(case_type:int, dept:int, arttype:int):
+    t_h_artikel_list = []
+    t_wgrpdep_list = []
+    h_artikel = wgrpdep = queasy = None
+
+    t_h_artikel = t_wgrpdep = hart = None
+
+    t_h_artikel_list, T_h_artikel = create_model_like(H_artikel, {"barcode":str})
+    t_wgrpdep_list, T_wgrpdep = create_model_like(Wgrpdep)
+
+    Hart = H_artikel
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal t_h_artikel_list, t_wgrpdep_list, h_artikel, wgrpdep, queasy
+        nonlocal hart
+
+
+        nonlocal t_h_artikel, t_wgrpdep, hart
+        nonlocal t_h_artikel_list, t_wgrpdep_list
+        return {"t-h-artikel": t_h_artikel_list, "t-wgrpdep": t_wgrpdep_list}
+
+    pass
+
+    if case_type == 1:
+
+        for h_artikel in db_session.query(H_artikel).filter(
+                (H_artikel.departement == dept) &  (H_artikel.artart == arttype) &  (H_artikel.activeflag)).all():
+
+            if h_artikel.artnr == 0:
+
+                hart = db_session.query(Hart).filter(
+                        (Hart._recid == h_artikel._recid)).first()
+                db_session.delete(hart)
+
+            else:
+                t_h_artikel = T_h_artikel()
+                t_h_artikel_list.append(t_h_artikel)
+
+                buffer_copy(h_artikel, t_h_artikel)
+
+                wgrpdep = db_session.query(Wgrpdep).filter(
+                        (Wgrpdep.departement == dept) &  (Wgrpdep.zknr == h_artikel.zwkum)).first()
+
+                if wgrpdep:
+
+                    t_wgrpdep = query(t_wgrpdep_list, filters=(lambda t_wgrpdep :t_wgrpdep.zknr == wgrpdep.zknr), first=True)
+
+                    if not t_wgrpdep:
+                        t_wgrpdep = T_wgrpdep()
+                        t_wgrpdep_list.append(t_wgrpdep)
+
+                        buffer_copy(wgrpdep, t_wgrpdep)
+                else:
+
+                    t_wgrpdep = query(t_wgrpdep_list, filters=(lambda t_wgrpdep :t_wgrpdep.zknr == h_artikel.zwkum), first=True)
+
+                    if not t_wgrpdep:
+                        t_wgrpdep = T_wgrpdep()
+                        t_wgrpdep_list.append(t_wgrpdep)
+
+                        t_wgrpdep.zknr = h_artikel.zwkum
+                        t_wgrpdep.bezeich = to_string(h_artikel.zwkum) +\
+                                " - NOT DEFINED!!"
+
+                queasy = db_session.query(Queasy).filter(
+                        (Queasy.key == 200) &  
+                        (Queasy.number1 == h_artikel.departement) &  
+                        (Queasy.number2 == h_artikel.artnr)
+                        ).first()
+
+                if queasy:
+                    t_h_artikel.barcode = queasy.char1
+
+    return generate_output()

@@ -1,0 +1,31 @@
+from functions.additional_functions import *
+import decimal
+from models import Fa_lager
+
+def prepare_select_fastorebl():
+    q1_list_list = []
+    fa_lager = None
+
+    q1_list = None
+
+    q1_list_list, Q1_list = create_model("Q1_list", {"lager_nr":int, "bezeich":str})
+
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal q1_list_list, fa_lager
+
+
+        nonlocal q1_list
+        nonlocal q1_list_list
+        return {"q1-list": q1_list_list}
+
+    for fa_lager in db_session.query(Fa_lager).all():
+        q1_list = Q1_list()
+        q1_list_list.append(q1_list)
+
+        q1_list.lager_nr = fa_lager.lager_nr
+        q1_list.bezeich = fa_lager.bezeich
+
+    return generate_output()

@@ -1,0 +1,45 @@
+from sqlalchemy.dialects.postgresql import ARRAY
+import sqlalchemy as sa
+from models.base import Base
+from functions.additional_functions import get_current_date
+
+class Crm_event(Base):
+	__tablename__ = 'crm_event'
+
+	activeflag = sa.Column(sa.Boolean, default=True)
+	btn_back = sa.Column(sa.String, default="")
+	btn_close = sa.Column(sa.String, default="")
+	btn_finish = sa.Column(sa.String, default="")
+	btn_next = sa.Column(sa.String, default="")
+	char1 = sa.Column(sa.String, default="")
+	char2 = sa.Column(sa.String, default="")
+	char3 = sa.Column(sa.String, default="")
+	confirmflag = sa.Column(sa.Boolean, default=False)
+	date1 = sa.Column(sa.Date, default=None)
+	date2 = sa.Column(sa.Date, default=None)
+	date3 = sa.Column(sa.Date, default=None)
+	dept_nr = sa.Column(sa.Integer, default=0)
+	ename = sa.Column(sa.String, default="")
+	event_nr = sa.Column(sa.Integer, default=0)
+	finishlabel = sa.Column(sa.String, default="")
+	frdate = sa.Column(sa.Date, default=None)
+	greetingtemplate = sa.Column(sa.Integer, default=0)
+	hno = sa.Column(sa.Integer, default=0)
+	linktemplate = sa.Column(sa.Integer, default=0)
+	number1 = sa.Column(sa.Integer, default=0)
+	number2 = sa.Column(sa.Integer, default=0)
+	number3 = sa.Column(sa.Integer, default=0)
+	picturehotel = sa.Column(sa.String, default="")
+	remarks = sa.Column(sa.String, default="")
+	score = sa.Column(sa.String, default="")
+	sentdate = sa.Column(sa.Date, default=None)
+	sentflag = sa.Column(sa.Boolean, default=False)
+	senttime = sa.Column(sa.Integer, default=0)
+	statusflag = sa.Column(sa.Integer, default=0)
+	todate = sa.Column(sa.Date, default=None)
+	txt_finish = sa.Column(sa.String, default="")
+	txt_start = sa.Column(sa.String, default="")
+	webconfirmflag = sa.Column(sa.Boolean, default=False)
+	websentflag = sa.Column(sa.Boolean, default=False)
+	webstatusflag = sa.Column(sa.Integer, default=0)
+	_recid = sa.Column(sa.Integer, primary_key=True)

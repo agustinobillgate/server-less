@@ -1,0 +1,289 @@
+from functions.additional_functions import *
+import decimal
+from datetime import date
+from models import Res_line, Zimkateg, Zimmer, Reservation, Segment, Outorder, Kontline
+
+def avail_ddown_run_mainbl(case_type:int, incl_tentative:bool, mi_inactive:bool, datum:date, rmcat_list:[Rmcat_list]):
+    room_list_list = []
+    vhp_limited:bool = False
+    do_it:bool = False
+    tot_room:int = 0
+    res_line = zimkateg = zimmer = reservation = segment = outorder = kontline = None
+
+    rmcat_list = room_list = rline1 = None
+
+    rmcat_list_list, Rmcat_list = create_model("Rmcat_list", {"zikatnr":int, "anzahl":int, "sleeping":bool, "kurzbez":str, "bezeich":str, "zinr":str}, {"sleeping": True})
+    room_list_list, Room_list = create_model("Room_list", {"datum":date, "zikatnr":int, "sleeping":bool, "bezeich":str, "room":int, "t_avail":int, "t_room":int, "t_ooo":int, "t_occ":int, "t_alot":int, "t_lnight":int, "t_arrival":int, "t_depart":int, "resnr":str, "name":str, "groupname":str, "rmno":str, "depart":date, "arrival":date, "rmcat":str, "kurzbez":str, "pax":int, "qty":int, "adult":int, "ch1":int, "ch2":int, "compli":int, "nat":str, "argt":str, "company":str, "currency":str, "segment":str, "nights":int, "alot":int, "pocc":decimal, "rentable":int}, {"sleeping": True})
+
+    Rline1 = Res_line
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal room_list_list, vhp_limited, do_it, tot_room, res_line, zimkateg, zimmer, reservation, segment, outorder, kontline
+        nonlocal rline1
+
+
+        nonlocal rmcat_list, room_list, rline1
+        nonlocal rmcat_list_list, room_list_list
+        return {"room-list": room_list_list}
+
+    def run_main():
+
+        nonlocal room_list_list, vhp_limited, do_it, tot_room, res_line, zimkateg, zimmer, reservation, segment, outorder, kontline
+        nonlocal rline1
+
+
+        nonlocal rmcat_list, room_list, rline1
+        nonlocal rmcat_list_list, room_list_list
+
+        tot_actroom:int = 0
+        tot_occrm:int = 0
+        tot_ooo:int = 0
+        tot_alot:int = 0
+        tot_avail:int = 0
+        tot_avail2:int = 0
+        tot_rent:int = 0
+        count_rmcateg()
+
+        for zimkateg in db_session.query(Zimkateg).filter(
+                (Zimkateg.verfuegbarkeit)).all():
+
+            rmcat_list = query(rmcat_list_list, filters=(lambda rmcat_list :rmcat_list.zikatnr == zimkateg.zikatnr and rmcat_list.sleeping), first=True)
+
+            if rmcat_list:
+                room_list = Room_list()
+                room_list_list.append(room_list)
+
+                room_list.room = rmcat_list.anzahl
+                room_list.t_avail = rmcat_list.anzahl
+                room_list.t_room = rmcat_list.anzahl
+                room_list.zikatnr = zimkateg.zikatnr
+                room_list.bezeich = to_string(zimkateg.kurzbez, "x(6)")
+                room_list.datum = datum
+
+
+                room_list.rentable = room_list.t_room
+
+        for rmcat_list in query(rmcat_list_list, filters=(lambda rmcat_list :not rmcat_list.sleeping)):
+            zimkateg = db_session.query(Zimkateg).filter((Zimkateg.zikatnr == rmcat_list.zikatnr)).first()
+            if not zimkateg:
+                continue
+
+            room_list = Room_list()
+            room_list_list.append(room_list)
+
+            room_list.sleeping = False
+            room_list.room = rmcat_list.anzahl
+            room_list.t_avail = rmcat_list.anzahl
+            room_list.t_room = rmcat_list.anzahl
+            room_list.zikatnr = zimkateg.zikatnr
+            room_list.bezeich = to_string(zimkateg.kurzbez, "x(6)")
+            room_list.datum = datum
+
+
+            room_list.rentable = room_list.t_room
+
+        res_line_obj_list = []
+        for res_line, zimmer in db_session.query(Res_line, Zimmer).join(Zimmer,(Zimmer.zinr == Res_line.zinr) &  (not Zimmer.sleeping)).filter(
+                (Res_line.active_flag <= 1) &  (Res_line.resstatus <= 6) &  (Res_line.ankunft <= datum) &  (Res_line.abreise > datum) &  (Res_line.zikatnr == room_list.zikatnr) &  (Res_line.zinr != "") &  (Res_line.l_zuordnung[2] == 0)).all():
+            if res_line._recid in res_line_obj_list:
+                continue
+            else:
+                res_line_obj_list.append(res_line._recid)
+
+            if not vhp_limited:
+                do_it = True
+            else:
+
+                reservation = db_session.query(Reservation).filter(
+                        (Reservation.resnr == res_line.resnr)).first()
+
+                segment = db_session.query(Segment).filter(
+                        (Segment.segmentcode == reservation.segmentcode)).first()
+                do_it = None != segment and segment.vip_level == 0
+
+            if do_it:
+                room_list.room = room_list.room - 1
+                room_list.t_avail = room_list.t_avail - 1
+
+        if case_type == 1:
+
+            for room_list in query(room_list_list, filters=(lambda room_list :room_list.sleeping)):
+
+                for res_line in db_session.query(Res_line).filter(
+                        (Res_line.active_flag <= 1) &  (Res_line.resstatus <= 6) &  (Res_line.resstatus != 4) &  (Res_line.zikatnr == room_list.zikatnr) &  (Res_line.ankunft <= datum) &  (Res_line.abreise > datum) &  (Res_line.kontignr >= 0) &  (Res_line.l_zuordnung[2] == 0)).all():
+                    do_it = True
+
+                    if res_line.zinr != "":
+
+                        zimmer = db_session.query(Zimmer).filter(
+                                (Zimmer.zinr == res_line.zinr)).first()
+                        do_it = zimmer.sleeping
+
+                    if res_line.resstatus == 3 and not incl_tentative:
+                        do_it = False
+
+                    if do_it and vhp_limited:
+
+                        reservation = db_session.query(Reservation).filter(
+                                (Reservation.resnr == res_line.resnr)).first()
+
+                        segment = db_session.query(Segment).filter(
+                                (Segment.segmentcode == reservation.segmentcode)).first()
+                        do_it = None != segment and segment.vip_level == 0
+
+                    if do_it:
+                        room_list.t_occ = room_list.t_occ + res_line.zimmeranz
+                        room_list.room = room_list.room - res_line.zimmeranz
+                        room_list.t_avail = room_list.t_avail - res_line.zimmeranz
+
+        elif case_type == 9:
+
+            for room_list in query(room_list_list, filters=(lambda room_list :room_list.sleeping)):
+
+                for res_line in db_session.query(Res_line).filter(
+                        (Res_line.resstatus == 6) &  (Res_line.active_flag == 1) &  (Res_line.zikatnr == room_list.zikatnr) &  (Res_line.abreise > datum) &  (Res_line.active_flag == 1) &  (Res_line.l_zuordnung[2] == 0)).all():
+                    do_it = True
+
+                    if res_line.zinr != "":
+
+                        zimmer = db_session.query(Zimmer).filter(
+                                (Zimmer.zinr == res_line.zinr)).first()
+                        do_it = zimmer.sleeping
+
+                    if res_line.resstatus == 3 and not incl_tentative:
+                        do_it = False
+
+                    if do_it and vhp_limited:
+
+                        reservation = db_session.query(Reservation).filter(
+                                (Reservation.resnr == res_line.resnr)).first()
+
+                        segment = db_session.query(Segment).filter(
+                                (Segment.segmentcode == reservation.segmentcode)).first()
+                        do_it = None != segment and segment.vip_level == 0
+
+                    if do_it:
+                        room_list.t_occ = room_list.t_occ + res_line.zimmeranz
+                        room_list.room = room_list.room - res_line.zimmeranz
+                        room_list.t_avail = room_list.t_avail - res_line.zimmeranz
+                        room_list.rentable = room_list.t_room - room_list.t_occ
+
+        outorder_obj_list = []
+        for outorder, zimmer in db_session.query(Outorder, Zimmer).join(Zimmer,(Zimmer.zinr == Outorder.zinr) &  (Zimmer.sleeping)).filter(
+                (Outorder.betriebsnr <= 1)).all():
+            if outorder._recid in outorder_obj_list:
+                continue
+            else:
+                outorder_obj_list.append(outorder._recid)
+
+            zimkateg = db_session.query(Zimkateg).filter(
+                    (Zimkateg.zikatnr == zimmer.zikatnr)).first()
+
+            room_list = query(room_list_list, filters=(lambda room_list :room_list.zikatnr == zimmer.zikatnr and room_list.sleeping), first=True)
+
+            if datum >= outorder.gespstart and datum <= outorder.gespende:
+                room_list.t_ooo = room_list.t_ooo + 1
+                room_list.rentable = room_list.rentable - 1
+                room_list.room = room_list.room - 1
+                room_list.t_avail = room_list.t_avail - 1
+
+        for kontline in db_session.query(Kontline).filter(
+                (Kontline.betriebsnr == 1) &  (Kontline.ankunft <= datum) &  (Kontline.abreise >= datum) &  (Kontline.zikatnr == room_list.zikatnr) &  (Kontline.kontstat == 1)).all():
+            room_list.t_alot = room_list.t_alot + kontline.zimmeranz
+            room_list.t_avail = room_list.room
+            room_list.room = room_list.room - kontline.zimmeranz
+
+        for room_list in query(room_list_list, filters=(lambda room_list :room_list.sleeping)):
+
+            for res_line in db_session.query(Res_line).filter(
+                    (Res_line.active_flag <= 1) &  (Res_line.resstatus <= 13) &  (Res_line.resstatus != 4) &  (Res_line.resstatus != 12) &  (Res_line.gastnr > 0) &  (Res_line.l_zuordnung[2] == 0)).all():
+
+                if res_line.abreise == datum and res_line.resstatus != 3 and res_line.zikatnr == room_list.zikatnr:
+                    room_list.t_depart = room_list.t_depart + res_line.zimmeranz
+
+                if res_line.ankunft == datum and (res_line.resstatus != 3 or (res_line.resstatus == 3 and incl_tentative)):
+                    room_list.t_arrival = room_list.t_arrival + res_line.zimmeranz
+
+
+            tot_actroom = tot_actroom + room_list.t_room
+            tot_occrm = tot_occrm + room_list.t_occ
+            tot_ooo = tot_ooo + room_list.t_ooo
+            tot_alot = tot_alot + room_list.t_alot
+            tot_avail = tot_avail + room_list.t_avail
+            tot_avail2 = tot_avail2 + room_list.room
+            tot_rent = tot_rent + room_list.rentable
+
+        if tot_actroom != 0:
+            room_list = Room_list()
+            room_list_list.append(room_list)
+
+            room_list.bezeich = "TOTAL"
+            room_list.room = tot_avail2
+            room_list.t_avail = tot_avail
+            room_list.t_room = tot_actroom
+            room_list.t_ooo = tot_ooo
+            room_list.t_occ = tot_occrm
+            room_list.t_alot = tot_alot
+            room_list.rentable = tot_rent
+
+    def count_rmcateg():
+
+        nonlocal room_list_list, vhp_limited, do_it, tot_room, res_line, zimkateg, zimmer, reservation, segment, outorder, kontline
+        nonlocal rline1
+
+
+        nonlocal rmcat_list, room_list, rline1
+        nonlocal rmcat_list_list, room_list_list
+
+        zikatnr:int = 0
+        rmcat_list_list.clear()
+        tot_room = 0
+
+        for zimmer in db_session.query(Zimmer).filter(
+                (Zimmer.sleeping)).all():
+
+            zimkateg = db_session.query(Zimkateg).filter(
+                    (Zimkateg.zikatnr == zimmer.zikatnr)).first()
+
+            if zimkateg.verfuegbarkeit:
+                tot_room = tot_room + 1
+
+                if zikatnr != zimkateg.zikatnr:
+                    rmcat_list = Rmcat_list()
+                    rmcat_list_list.append(rmcat_list)
+
+                    rmcat_list.zikatnr = zimkateg.zikatnr
+                    rmcat_list.anzahl = 1
+                    zikatnr = zimkateg.zikatnr
+                else:
+                    rmcat_list.anzahl = rmcat_list.anzahl + 1
+
+        if not mi_inactive:
+
+            return
+        zikatnr = 0
+
+        for zimmer in db_session.query(Zimmer).filter(
+                (Zimmer.sleeping == False)).all():
+
+            zimkateg = db_session.query(Zimkateg).filter(
+                    (Zimkateg.zikatnr == zimmer.zikatnr)).first()
+
+            if zimkateg.verfuegbarkeit:
+
+                if zikatnr != zimkateg.zikatnr:
+                    rmcat_list = Rmcat_list()
+                    rmcat_list_list.append(rmcat_list)
+
+                    rmcat_list.zikatnr = zimkateg.zikatnr
+                    rmcat_list.anzahl = 1
+                    rmcat_list.sleeping = False
+                    zikatnr = zimkateg.zikatnr
+                else:
+                    rmcat_list.anzahl = rmcat_list.anzahl + 1
+
+    run_main()
+
+    return generate_output()

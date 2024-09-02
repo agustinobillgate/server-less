@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_selfCI" path="/findReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/mobileweb-self-cibl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobileweb-self-cibl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_resCI" path="/resCI" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/mobileweb-res-checkin.pidl::com.progress.openedge.pdt.bpmbindings" name="mobileweb-res-checkin" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_loadIDCard" path="/loadIDCard" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/mobileweb-load-idcardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobileweb-load-idcardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_saveIDCard" path="/saveIDCard" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/mobileweb-save-idcardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobileweb-save-idcardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_createInterface" path="/createInterface" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/mobileweb-create-interfacebl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobileweb-create-interfacebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkValidation" path="/checkValidation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/mobileweb-check-flagbl.pidl::com.progress.openedge.pdt.bpmbindings" name="mobileweb-check-flagbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_storeSignature" path="/storeSignature" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/selfcheckin-store-signaturebl.pidl::com.progress.openedge.pdt.bpmbindings" name="selfcheckin-store-signaturebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_pgCheckSession" path="/pgCheckSession" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/payment-gateway-sessionbl.pidl::com.progress.openedge.pdt.bpmbindings" name="payment-gateway-sessionbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+</prgs:model>

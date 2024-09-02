@@ -1,0 +1,307 @@
+from functions.additional_functions import *
+import decimal
+from datetime import date
+from sqlalchemy import func
+import re
+from functions.ratecode_seek import ratecode_seek
+from models import Reservation, Res_line, Htparam, Queasy, Guest, Arrangement, Guest_pr, Reslin_queasy, Ratecode
+
+def reservation_btn_delbl(pvilanguage:int, curr_select:str, resno:int, reslinno:int):
+    msg_str = ""
+    delete_str = ""
+    error_flag = False
+    pswd_str = ""
+    max_comp = 0
+    com_rm = 0
+    queasy_flag = False
+    deposit:bool = False
+    may_delete:bool = True
+    lvcarea:str = "reservation"
+    reservation = res_line = htparam = queasy = guest = arrangement = guest_pr = reslin_queasy = ratecode = None
+
+    reservation1 = resline1 = resline = None
+
+    Reservation1 = Reservation
+    Resline1 = Res_line
+    Resline = Res_line
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal msg_str, delete_str, error_flag, pswd_str, max_comp, com_rm, queasy_flag, deposit, may_delete, lvcarea, reservation, res_line, htparam, queasy, guest, arrangement, guest_pr, reslin_queasy, ratecode
+        nonlocal reservation1, resline1, resline
+
+
+        nonlocal reservation1, resline1, resline
+        return {"msg_str": msg_str, "delete_str": delete_str, "error_flag": error_flag, "pswd_str": pswd_str, "max_comp": max_comp, "com_rm": com_rm, "queasy_flag": queasy_flag}
+
+    def delete_resline():
+
+        nonlocal msg_str, delete_str, error_flag, pswd_str, max_comp, com_rm, queasy_flag, deposit, may_delete, lvcarea, reservation, res_line, htparam, queasy, guest, arrangement, guest_pr, reslin_queasy, ratecode
+        nonlocal reservation1, resline1, resline
+
+
+        nonlocal reservation1, resline1, resline
+
+        if (res_line.active_flag == 1 or res_line.resstatus == 6 or res_line.resstatus == 13) and res_line.l_zuordnung[2] == 0:
+            msg_str = translateExtended ("Deleting of Inhouse_Guests is not possible.", lvcarea, "")
+
+            return
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 437)).first()
+
+        if htparam.flogical == False and res_line.betrieb_gast > 0 and res_line.l_zuordnung[2] == 0:
+            msg_str = translateExtended ("KeyCard has been generated. Cancellation no longer possible.", lvcarea, "")
+
+            return
+        check_deposit()
+
+        if may_delete == False and res_line.l_zuordnung[2] == 0:
+            msg_str = translateExtended ("ATTENTION: deposit Payment exists for this reservartion.", lvcarea, "")
+
+            return
+
+        if res_line.resstatus != 11 and res_line.resstatus != 13:
+            error_flag = check_compliment(res_line.resnr, res_line.reslinnr, res_line.gastnr, res_line.ankunft, res_line.reserve_int, res_line.zikatnr, res_line.arrangement, 0, res_line.zipreis)
+
+            if error_flag:
+
+                return
+
+        queasy = db_session.query(Queasy).filter(
+                (Queasy.key == 32) &  (Queasy.char3 != "")).first()
+
+        if reservation:
+            delete_str = reservation.vesrdepot2
+        error_flag = False
+        queasy_flag = None != queasy
+        msg_str = "&Q" +\
+                translateExtended ("Do you really want to DELETE the reservation:", lvcarea, "") +\
+                chr(10) +\
+                res_line.name + " - " + res_line.zinr +\
+                chr(10) +\
+                translateExtended ("Arrival :", lvcarea, "") + " " +\
+                to_string(res_line.ankunft) + " " +\
+                translateExtended ("Departure:", lvcarea, "") + " " +\
+                to_string(res_line.abreise) + " ?"
+
+    def delete_mainres():
+
+        nonlocal msg_str, delete_str, error_flag, pswd_str, max_comp, com_rm, queasy_flag, deposit, may_delete, lvcarea, reservation, res_line, htparam, queasy, guest, arrangement, guest_pr, reslin_queasy, ratecode
+        nonlocal reservation1, resline1, resline
+
+
+        nonlocal reservation1, resline1, resline
+
+        if not reservation:
+
+            return
+
+        res_line = db_session.query(Res_line).filter(
+                (Res_line.resnr == reservation.resnr) &  ((Res_line.resstatus == 6) |  (Res_line.resstatus == 13))).first()
+
+        if res_line:
+            msg_str = translateExtended ("Deleting not possible, In_House guest exists.", lvcarea, "")
+
+            return
+
+        res_line = db_session.query(Res_line).filter(
+                (Res_line.resnr == reservation.resnr) &  (Res_line.active_flag == 0) &  (Res_line.betrieb_gast > 0)).first()
+
+        if res_line:
+            msg_str = translateExtended ("KeyCard has been generated for", lvcarea, "") + " " + res_line.name + " - " + translateExtended ("RmNo", lvcarea, "") + " " + res_line.zinr + chr(10) + translateExtended ("Deleting for all members no longer possible.", lvcarea, "")
+
+            return
+        check_deposit()
+
+        if deposit:
+            msg_str = translateExtended ("ATTENTION: deposit Payment exists for this reservartion.", lvcarea, "")
+
+            return
+
+        guest = db_session.query(Guest).filter(
+                (Guest.gastnr == reservation.gastnr)).first()
+
+        queasy = db_session.query(Queasy).filter(
+                (Queasy.key == 32) &  (Queasy.char3 != "")).first()
+        error_flag = False
+        queasy_flag = None != queasy
+        delete_str = reservation.vesrdepot2
+
+
+        msg_str = "&Q" + translateExtended ("Do you really want to DELETE the main reservation of", lvcarea, "") + chr(10) + guest.name + ", " + guest.vorname1 + guest.anredefirma + " " + guest.anrede1 + chr(10) + translateExtended ("including it's all reservation members ?", lvcarea, "")
+
+    def check_deposit():
+
+        nonlocal msg_str, delete_str, error_flag, pswd_str, max_comp, com_rm, queasy_flag, deposit, may_delete, lvcarea, reservation, res_line, htparam, queasy, guest, arrangement, guest_pr, reslin_queasy, ratecode
+        nonlocal reservation1, resline1, resline
+
+
+        nonlocal reservation1, resline1, resline
+
+        anzahl:int = 0
+        Reservation1 = Reservation
+        Resline1 = Res_line
+
+        reservation1 = db_session.query(Reservation1).filter(
+                (Reservation1.resnr == resno)).first()
+
+        if (reservation1.depositbez + reservation1.depositbez2) != 0:
+            deposit = True
+
+        if deposit and reservation1.bestat_dat == None:
+
+            resline1 = db_session.query(Resline1).filter(
+                    (Resline1.resnr == resno) &  (Resline1.active_flag == 1)).first()
+
+            if resline1:
+
+                return
+
+            resline1 = db_session.query(Resline1).filter(
+                    (Resline1.resnr == resno) &  (Resline1.active_flag == 2) &  (Resline1.resstatus == 8)).first()
+
+            if resline1:
+
+                return
+
+            for resline1 in db_session.query(Resline1).filter(
+                    (Resline1.resnr == resno) &  (Resline1.active_flag == 0)).all():
+                anzahl = anzahl + 1
+
+        if anzahl == 1:
+            may_delete = False
+
+    def check_compliment(resnr:int, reslinnr:int, gastnr:int, datum:date, marknr:int, zikatnr:int, argt:str, qty:int, rate:decimal):
+
+        nonlocal msg_str, delete_str, error_flag, pswd_str, max_comp, com_rm, queasy_flag, deposit, may_delete, lvcarea, reservation, res_line, htparam, queasy, guest, arrangement, guest_pr, reslin_queasy, ratecode
+        nonlocal reservation1, resline1, resline
+
+
+        nonlocal reservation1, resline1, resline
+
+        still_error = False
+        s_recid:int = 0
+        book_room:int = 0
+        comp_room:int = 0
+        max_room:int = 0
+        pay_rm:int = 0
+        curr_rm:int = 0
+        passwd_ok:bool = False
+        new_contrate:bool = False
+        ct:str = ""
+        contcode:str = ""
+
+        def generate_inner_output():
+            return still_error
+        Resline = Res_line
+
+        arrangement = db_session.query(Arrangement).filter(
+                (func.lower(Arrangement) == (argt).lower())).first()
+
+        if not arrangement:
+
+            return generate_inner_output()
+
+        guest_pr = db_session.query(Guest_pr).filter(
+                (Guest_pr.gastnr == gastnr)).first()
+
+        if not guest_pr:
+
+            return generate_inner_output()
+        contcode = guest_pr.CODE
+
+        res_line = db_session.query(Res_line).filter(
+                (Res_line.resnr == resnr) &  (Res_line.reslinnr == reslinnr)).first()
+        ct = res_line.zimmer_wunsch
+
+        if re.match(".*\$CODE\$.*",ct):
+            ct = substring(ct,0 + get_index(ct, "$CODE$") + 6)
+            contcode = substring(ct, 0,1 + get_index(ct, ";") - 1)
+
+        reslin_queasy = db_session.query(Reslin_queasy).filter(
+                (func.lower(Reslin_queasy.key) == "arrangement") &  (Reslin_queasy.resnr == resnr) &  (Reslin_queasy.reslinnr == reslinnr) &  (Reslin_queasy.datum >= Reslin_queasy.date1) &  (Reslin_queasy.datum <= Reslin_queasy.date2)).first()
+
+        if reslin_queasy:
+
+            return generate_inner_output()
+
+        if rate == 0:
+            com_rm = qty
+        else:
+            pay_rm = qty
+
+        for resline in db_session.query(Resline).filter(
+                (Resline.resnr == resnr) &  (Resline.active_flag <= 1) &  (Resline.resstatus <= 6) &  (Resline.reslinnr != reslinnr)).all():
+
+            if resline.zipreis == 0:
+                com_rm = com_rm + resline.zimmeranz
+            else:
+                pay_rm = pay_rm + resline.zimmeranz
+
+        if com_rm == 0:
+
+            return generate_inner_output()
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 550)).first()
+
+        if htparam.feldtyp == 4:
+            new_contrate = htparam.flogical
+        s_recid = get_output(ratecode_seek(resnr, reslinnr, contcode, datum))
+
+        if s_recid == 0:
+
+            return generate_inner_output()
+
+        ratecode = db_session.query(Ratecode).filter(
+                (Ratecode._recid == s_recid)).first()
+
+        if num_entries(ratecode.char1[3], ";") < 3:
+
+            return generate_inner_output()
+        book_room = to_int(entry(0, ratecode.char1[3], ";"))
+        comp_room = to_int(entry(1, ratecode.char1[3], ";"))
+        max_room = to_int(entry(2, ratecode.char1[3], ";"))
+
+
+        curr_rm = pay_rm
+
+        if curr_rm > max_room:
+            curr_rm = max_room
+        max_comp = round(curr_rm / book_room - 0.5, 0) * comp_room
+
+        if max_comp < 0:
+            max_comp = 0
+
+        if com_rm <= max_comp:
+
+            return generate_inner_output()
+        msg_str = translateExtended ("Wrong total number of compliment rooms:", lvcarea, "") + chr(10) + chr(10) + translateExtended ("Max allowed  == ", lvcarea, "") + " " + to_string(max_comp) + chr(10) + translateExtended ("Actual compliment rooms  == ", lvcarea, "") + " " + to_string(com_rm)
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 141)).first()
+
+        if htparam.fchar == "":
+            still_error = True
+        else:
+            still_error = False
+            pswd_str = htparam.fchar
+
+
+        return generate_inner_output()
+
+
+    reservation = db_session.query(Reservation).filter(
+            (Reservation.resnr == resno)).first()
+
+    res_line = db_session.query(Res_line).filter(
+            (Res_line.resnr == resno) &  (Res_line.reslinnr == reslinno)).first()
+
+    if curr_select.lower()  == "res_line":
+        delete_resline()
+    else:
+        delete_mainres()
+
+    return generate_output()

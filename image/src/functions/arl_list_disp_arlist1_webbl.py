@@ -1,0 +1,1607 @@
+from functions.additional_functions import *
+import decimal
+from datetime import date
+from functions.get_vipnrbl import get_vipnrbl
+from sqlalchemy import func
+import re
+from models import Guest, Paramtext, Htparam, Res_line, Waehrung, Reservation, Zimkateg, Bresline, Master, Messages, Kontline, Gentable, Mc_guest, Reslin_queasy, Zimmer, Queasy
+
+def arl_list_disp_arlist1_webbl(show_rate:bool, last_sort:int, lresnr:int, long_stay:int, ci_date:date, grpflag:bool, room:str, lname:str, sorttype:int, fdate1:date, fdate2:date, fdate:date):
+    rmlen = 0
+    arl_list_list = []
+    vipnr1:int = 999999999
+    vipnr2:int = 999999999
+    vipnr3:int = 999999999
+    vipnr4:int = 999999999
+    vipnr5:int = 999999999
+    vipnr6:int = 999999999
+    vipnr7:int = 999999999
+    vipnr8:int = 999999999
+    vipnr9:int = 999999999
+    done_flag:bool = False
+    curr_resnr:int = 0
+    curr_resline:int = 0
+    today_str:str = ""
+    reserve_str:str = ""
+    created_time:int = 0
+    do_it:bool = True
+    loop_i:int = 0
+    comment_str:str = ""
+    all_inclusive:str = ""
+    res_mode:str = ""
+    checkin_flag:bool = False
+    stay:int = 0
+    resbemerk:str = ""
+    rescomment:str = ""
+    guest = paramtext = htparam = res_line = waehrung = reservation = zimkateg = bresline = master = messages = kontline = gentable = mc_guest = reslin_queasy = zimmer = queasy = None
+
+    setup_list = gbuff = arl_list = b_arl_list = gmember = rline = arlbuff = bresline = None
+
+    setup_list_list, Setup_list = create_model("Setup_list", {"nr":int, "char":str})
+    arl_list_list, Arl_list = create_model("Arl_list", {"resnr":int, "reslinnr":int, "resline_wabkurz":str, "voucher_nr":str, "grpflag":bool, "verstat":int, "l_zuordnung2":int, "kontignr":int, "firmen_nr":int, "steuernr":str, "rsv_name":str, "zinr":str, "setup_list_char":str, "resline_name":str, "waehrung_wabkurz":str, "segmentcode":int, "ankunft":date, "abreise":date, "zimmeranz":int, "kurzbez":str, "arrangement":str, "zipreis":decimal, "anztage":int, "erwachs":int, "kind1":int, "kind2":int, "gratis":int, "l_zuordnung4":int, "resstatus":int, "l_zuordnung3":int, "flight_nr":str, "ankzeit":int, "abreisezeit":int, "betrieb_gast":int, "resdat":date, "useridanlage":str, "reserve_dec":decimal, "cancelled_id":str, "changed_id":str, "groupname":str, "active_flag":int, "gastnr":int, "gastnrmember":int, "karteityp":int, "reserve_int":int, "zikatnr":int, "betrieb_gastmem":int, "pseudofix":bool, "reserve_char":str, "bemerk":str, "depositbez":decimal, "depositbez2":decimal, "bestat_dat":date, "briefnr":int, "rsv_gastnr":int, "rsv_resnr":int, "rsv_bemerk":str, "rsv_grpflag":bool, "recid_resline":int, "address":str, "city":str, "comments":str, "resnr_fgcol":int, "mc_str_fgcol":int, "mc_str_bgcol":int, "rsv_name_fgcol":int, "rsv_name_bgcol":int, "zinr_fgcol":int, "reslin_name_fgcol":int, "ankunft_fgcol":int, "anztage_fgcol":int, "abreise_fgcol":int, "segmentcode_fgcol":int, "reslin_name_bgcol":int, "segmentcode_bgcol":int, "zinr_bgcol":int, "webci":str, "webci_flag":str, "voucher_flag":str, "kontignr_flag":str, "birthday_flag":bool, "sharer_no":int}, {"resnr_fgcol": -1, "mc_str_fgcol": -1, "mc_str_bgcol": -1, "rsv_name_fgcol": -1, "rsv_name_bgcol": -1, "zinr_fgcol": -1, "reslin_name_fgcol": -1, "ankunft_fgcol": -1, "anztage_fgcol": -1, "abreise_fgcol": -1, "segmentcode_fgcol": -1, "reslin_name_bgcol": -1, "segmentcode_bgcol": -1, "zinr_bgcol": -1})
+    b_arl_list_list, B_arl_list = create_model("B_arl_list", {"resnr":int, "reslinnr":int, "resline_wabkurz":str, "voucher_nr":str, "grpflag":bool, "verstat":int, "l_zuordnung2":int, "kontignr":int, "firmen_nr":int, "steuernr":str, "rsv_name":str, "zinr":str, "setup_list_char":str, "resline_name":str, "waehrung_wabkurz":str, "segmentcode":int, "ankunft":date, "abreise":date, "zimmeranz":int, "kurzbez":str, "arrangement":str, "zipreis":decimal, "anztage":int, "erwachs":int, "kind1":int, "kind2":int, "gratis":int, "l_zuordnung4":int, "resstatus":int, "l_zuordnung3":int, "flight_nr":str, "ankzeit":int, "abreisezeit":int, "betrieb_gast":int, "resdat":date, "useridanlage":str, "reserve_dec":decimal, "cancelled_id":str, "changed_id":str, "groupname":str, "active_flag":int, "gastnr":int, "gastnrmember":int, "karteityp":int, "reserve_int":int, "zikatnr":int, "betrieb_gastmem":int, "pseudofix":bool, "reserve_char":str, "bemerk":str, "depositbez":decimal, "depositbez2":decimal, "bestat_dat":date, "briefnr":int, "rsv_gastnr":int, "rsv_resnr":int, "rsv_bemerk":str, "rsv_grpflag":bool, "recid_resline":int, "address":str, "city":str, "comments":str, "resnr_fgcol":int, "mc_str_fgcol":int, "mc_str_bgcol":int, "rsv_name_fgcol":int, "rsv_name_bgcol":int, "zinr_fgcol":int, "reslin_name_fgcol":int, "ankunft_fgcol":int, "anztage_fgcol":int, "abreise_fgcol":int, "segmentcode_fgcol":int, "reslin_name_bgcol":int, "segmentcode_bgcol":int, "zinr_bgcol":int, "webci":str, "webci_flag":str, "voucher_flag":str, "kontignr_flag":str, "birthday_flag":bool, "sharer_no":int}, {"resnr_fgcol": -1, "mc_str_fgcol": -1, "mc_str_bgcol": -1, "rsv_name_fgcol": -1, "rsv_name_bgcol": -1, "zinr_fgcol": -1, "reslin_name_fgcol": -1, "ankunft_fgcol": -1, "anztage_fgcol": -1, "abreise_fgcol": -1, "segmentcode_fgcol": -1, "reslin_name_bgcol": -1, "segmentcode_bgcol": -1, "zinr_bgcol": -1})
+
+    Gbuff = Guest
+    Gmember = Guest
+    Rline = Res_line
+    Arlbuff = Arl_list
+    arlbuff_list = arl_list_list
+
+    Bresline = Res_line
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal rmlen, arl_list_list, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, stay, resbemerk, rescomment, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy
+        nonlocal gbuff, gmember, rline, arlbuff, bresline
+
+
+        nonlocal setup_list, gbuff, arl_list, b_arl_list, gmember, rline, arlbuff, bresline
+        nonlocal setup_list_list, arl_list_list, b_arl_list_list
+        return {"rmlen": rmlen, "arl-list": arl_list_list}
+
+    def get_toname(lname:str):
+
+        nonlocal rmlen, arl_list_list, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, stay, resbemerk, rescomment, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy
+        nonlocal gbuff, gmember, rline, arlbuff, bresline
+
+
+        nonlocal setup_list, gbuff, arl_list, b_arl_list, gmember, rline, arlbuff, bresline
+        nonlocal setup_list_list, arl_list_list, b_arl_list_list
+
+
+        return chr(ord(substring(lname, 0, 1)) + 1)
+
+    def fixing_blank_resname():
+
+        nonlocal rmlen, arl_list_list, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, stay, resbemerk, rescomment, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy
+        nonlocal gbuff, gmember, rline, arlbuff, bresline
+
+
+        nonlocal setup_list, gbuff, arl_list, b_arl_list, gmember, rline, arlbuff, bresline
+        nonlocal setup_list_list, arl_list_list, b_arl_list_list
+
+
+        Rline = Res_line
+
+        res_line = db_session.query(Res_line).filter(
+                (Res_line.active_flag <= 1) &  (Res_line.resstatus != 12) &  (Res_line.resname == "")).first()
+        while None != res_line:
+
+            guest = db_session.query(Guest).filter(
+                    (Guest.gastnr == res_line.gastnr)).first()
+
+            rline = db_session.query(Rline).filter(
+                        (Rline._recid == res_line._recid)).first()
+
+            if rline:
+                rline.resname = guest.name
+
+                rline = db_session.query(Rline).first()
+
+            res_line = db_session.query(Res_line).filter(
+                    (Res_line.active_flag <= 1) &  (Res_line.resstatus != 12) &  (Res_line.resname == "")).first()
+
+    def disp_arlist_group():
+
+        nonlocal rmlen, arl_list_list, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, stay, resbemerk, rescomment, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy
+        nonlocal gbuff, gmember, rline, arlbuff, bresline
+
+
+        nonlocal setup_list, gbuff, arl_list, b_arl_list, gmember, rline, arlbuff, bresline
+        nonlocal setup_list_list, arl_list_list, b_arl_list_list
+
+
+        Arlbuff = Arl_list
+
+        if lname != "":
+            lname = "*" + lname + "*"
+        else:
+
+            return
+
+        if sorttype == 1:
+
+            res_line_obj_list = []
+            for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (Reservation.groupname.op("~")(lname))).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                    (Res_line.active_flag == 0) &  (Res_line.ankunft >= fdate1) &  (Res_line.ankunft <= fdate2) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                if res_line._recid in res_line_obj_list:
+                    continue
+                else:
+                    res_line_obj_list.append(res_line._recid)
+
+                arlbuff = query(arlbuff_list, filters=(lambda arlbuff :arlbuff.resnr == res_line.resnr and arlbuff.reslinnr == res_line.reslinnr), first=True)
+
+                if not arlbuff:
+                    create_it()
+
+
+        elif sorttype == 2:
+
+            res_line_obj_list = []
+            for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (Reservation.groupname.op("~")(lname))).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                    (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.ankunft <= ci_date) &  (Res_line.abreise >= ci_date)).all():
+                if res_line._recid in res_line_obj_list:
+                    continue
+                else:
+                    res_line_obj_list.append(res_line._recid)
+
+                arlbuff = query(arlbuff_list, filters=(lambda arlbuff :arlbuff.resnr == res_line.resnr and arlbuff.reslinnr == res_line.reslinnr), first=True)
+
+                if not arlbuff:
+                    create_it()
+
+
+        elif sorttype == 3:
+
+            res_line_obj_list = []
+            for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (Reservation.groupname.op("~")(lname))).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                    (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                if res_line._recid in res_line_obj_list:
+                    continue
+                else:
+                    res_line_obj_list.append(res_line._recid)
+
+                arlbuff = query(arlbuff_list, filters=(lambda arlbuff :arlbuff.resnr == res_line.resnr and arlbuff.reslinnr == res_line.reslinnr), first=True)
+
+                if not arlbuff:
+                    create_it()
+
+
+        elif sorttype == 4:
+
+            res_line_obj_list = []
+            for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (Reservation.groupname.op("~")(lname))).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                    (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate)).all():
+                if res_line._recid in res_line_obj_list:
+                    continue
+                else:
+                    res_line_obj_list.append(res_line._recid)
+
+                arlbuff = query(arlbuff_list, filters=(lambda arlbuff :arlbuff.resnr == res_line.resnr and arlbuff.reslinnr == res_line.reslinnr), first=True)
+
+                if not arlbuff:
+                    create_it()
+
+
+    def disp_arlist1():
+
+        nonlocal rmlen, arl_list_list, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, stay, resbemerk, rescomment, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy
+        nonlocal gbuff, gmember, rline, arlbuff, bresline
+
+
+        nonlocal setup_list, gbuff, arl_list, b_arl_list, gmember, rline, arlbuff, bresline
+        nonlocal setup_list_list, arl_list_list, b_arl_list_list
+
+        to_name:str = ""
+        igrpname:int = 0
+        igrpname = to_int(grpflag)
+        rmlen = len(room)
+
+        if lname != "":
+
+            if substring(lname, 0, 1) == "*":
+
+                if substring(lname, len(lname) - 1, 1) != "*":
+                    lname = lname + "*"
+            else:
+                to_name = get_toname (lname)
+
+        if sorttype == 1:
+            disp_arrivea()
+
+        elif sorttype == 2:
+
+            if last_sort == 1:
+
+                if room != "":
+
+                    if lname == "":
+
+                        res_line_obj_list = []
+                        for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                                (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.ankunft <= ci_date) &  (Res_line.abreise >= ci_date)).all():
+                            if res_line._recid in res_line_obj_list:
+                                continue
+                            else:
+                                res_line_obj_list.append(res_line._recid)
+
+
+                            create_it()
+
+
+                    elif lname != "" and substring(lname, 0, 1) != "*":
+
+                        res_line_obj_list = []
+                        for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                                (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (func.lower(Res_line.name) >= (lname).lower()) &  (func.lower(Res_line.name) <= (to_name).lower()) &  (Res_line.ankunft <= ci_date) &  (Res_line.abreise >= ci_date)).all():
+                            if res_line._recid in res_line_obj_list:
+                                continue
+                            else:
+                                res_line_obj_list.append(res_line._recid)
+
+
+                            create_it()
+
+
+                    elif lname != "" and substring(lname, 0, 1) == "*":
+
+                        res_line_obj_list = []
+                        for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                                (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.name.op("~")(lname)) &  (Res_line.ankunft <= ci_date) &  (Res_line.abreise >= ci_date)).all():
+                            if res_line._recid in res_line_obj_list:
+                                continue
+                            else:
+                                res_line_obj_list.append(res_line._recid)
+
+
+                            create_it()
+
+
+                elif room == "":
+
+                    if lname == "":
+
+                        res_line_obj_list = []
+                        for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                                (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.ankunft <= ci_date) &  (Res_line.abreise >= ci_date)).all():
+                            if res_line._recid in res_line_obj_list:
+                                continue
+                            else:
+                                res_line_obj_list.append(res_line._recid)
+
+
+                            create_it()
+
+
+                    elif lname != "" and substring(lname, 0, 1) != "*":
+
+                        res_line_obj_list = []
+                        for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                                (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (func.lower(Res_line.name) >= (lname).lower()) &  (func.lower(Res_line.name) <= (to_name).lower()) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.ankunft <= ci_date) &  (Res_line.abreise >= ci_date)).all():
+                            if res_line._recid in res_line_obj_list:
+                                continue
+                            else:
+                                res_line_obj_list.append(res_line._recid)
+
+
+                            create_it()
+
+
+                    elif lname != "" and substring(lname, 0, 1) == "*":
+
+                        res_line_obj_list = []
+                        for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                                (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.name.op("~")(lname)) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.ankunft <= ci_date) &  (Res_line.abreise >= ci_date)).all():
+                            if res_line._recid in res_line_obj_list:
+                                continue
+                            else:
+                                res_line_obj_list.append(res_line._recid)
+
+
+                            create_it()
+
+
+            if last_sort == 2:
+                sqry2()
+
+            elif last_sort == 3:
+                sqry3()
+
+            elif last_sort == 4:
+                sqry4()
+
+            elif last_sort == 5:
+                sqry5()
+
+        elif sorttype == 3:
+
+            if last_sort == 1:
+
+                if lname == "":
+
+                    if room == "":
+
+                        res_line_obj_list = []
+                        for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                                (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                            if res_line._recid in res_line_obj_list:
+                                continue
+                            else:
+                                res_line_obj_list.append(res_line._recid)
+
+
+                            create_it()
+
+
+                    elif room != "":
+
+                        res_line_obj_list = []
+                        for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                                (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                            if res_line._recid in res_line_obj_list:
+                                continue
+                            else:
+                                res_line_obj_list.append(res_line._recid)
+
+
+                            create_it()
+
+
+                elif lname != "" and substring(lname, 0, 1) != "*":
+
+                    res_line_obj_list = []
+                    for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  (func.lower(Res_line.name) >= (lname).lower()) &  (func.lower(Res_line.name) <= (to_name).lower()) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                        if res_line._recid in res_line_obj_list:
+                            continue
+                        else:
+                            res_line_obj_list.append(res_line._recid)
+
+
+                        create_it()
+
+
+                elif substring(lname, 0, 1) == "*":
+
+                    res_line_obj_list = []
+                    for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.name.op("~")(lname)) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                        if res_line._recid in res_line_obj_list:
+                            continue
+                        else:
+                            res_line_obj_list.append(res_line._recid)
+
+
+                        create_it()
+
+
+            elif last_sort == 2:
+                sqry2()
+
+            elif last_sort == 3:
+                sqry3()
+
+            elif last_sort == 4:
+                sqry4()
+
+            elif last_sort == 5:
+                sqry5()
+
+        elif sorttype == 4:
+
+            if last_sort == 1:
+
+                if lname == "":
+
+                    if room == "":
+
+                        res_line_obj_list = []
+                        for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                                (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                            if res_line._recid in res_line_obj_list:
+                                continue
+                            else:
+                                res_line_obj_list.append(res_line._recid)
+
+
+                            create_it()
+
+
+                    elif room != "":
+
+                        res_line_obj_list = []
+                        for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                                (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                            if res_line._recid in res_line_obj_list:
+                                continue
+                            else:
+                                res_line_obj_list.append(res_line._recid)
+
+
+                            create_it()
+
+
+                elif lname != "" and substring(lname, 0, 1) != "*":
+
+                    res_line_obj_list = []
+                    for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  (func.lower(Res_line.name) >= (lname).lower()) &  (func.lower(Res_line.name) <= (to_name).lower()) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                        if res_line._recid in res_line_obj_list:
+                            continue
+                        else:
+                            res_line_obj_list.append(res_line._recid)
+
+
+                        create_it()
+
+
+                elif substring(lname, 0, 1) == "*":
+
+                    res_line_obj_list = []
+                    for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  (Res_line.name.op("~")(lname)) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                        if res_line._recid in res_line_obj_list:
+                            continue
+                        else:
+                            res_line_obj_list.append(res_line._recid)
+
+
+                        create_it()
+
+
+            elif last_sort == 2:
+                sqry2()
+
+            elif last_sort == 3:
+                sqry3()
+
+            elif last_sort == 4:
+                sqry4()
+
+            elif last_sort == 5:
+                sqry5()
+
+    def disp_arrivea():
+
+        nonlocal rmlen, arl_list_list, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, stay, resbemerk, rescomment, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy
+        nonlocal gbuff, gmember, rline, arlbuff, bresline
+
+
+        nonlocal setup_list, gbuff, arl_list, b_arl_list, gmember, rline, arlbuff, bresline
+        nonlocal setup_list_list, arl_list_list, b_arl_list_list
+
+        to_name:str = ""
+        igrpname:int = 0
+        igrpname = to_int(grpflag)
+
+        if lname != "" and substring(lname, 0, 1) != "*":
+            to_name = get_toname (lname)
+
+        if last_sort == 1:
+
+            if fdate1 == None or fdate2 == None:
+                fdate1 = ci_date
+                fdate2 = ci_date + 365
+
+            if lname == "":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  (Res_line.ankunft >= fdate1) &  (Res_line.ankunft <= fdate2) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+            elif substring(lname, 0, 1) != "*" and lname != "":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  (Res_line.ankunft >= fdate1) &  (Res_line.ankunft <= fdate2) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99) &  (func.lower(Res_line.name) >= (lname).lower()) &  (func.lower(Res_line.name) <= (to_name).lower())).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+            else:
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  (Res_line.name.op("~")(lname)) &  (Res_line.ankunft >= fdate1) &  (Res_line.ankunft <= fdate2) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+        elif last_sort == 2:
+
+            if fdate1 == None or fdate2 == None:
+                fdate1 = ci_date
+                fdate2 = ci_date + 365
+
+            if lname == "":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  (Res_line.ankunft >= fdate1) &  (Res_line.ankunft <= fdate2) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+            elif substring(lname, 0, 1) == "*":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  (Res_line.ankunft >= fdate1) &  (Res_line.ankunft <= fdate2) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99) &  (Res_line.resname.op("~")(lname))).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+            elif substring(lname, 0, 1) != "*":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  (Res_line.ankunft >= fdate1) &  (Res_line.ankunft <= fdate2) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99) &  (func.lower(Res_line.resname) >= (lname).lower()) &  (func.lower(Res_line.resname) <= (to_name).lower())).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+        elif last_sort == 3:
+
+            if lresnr == 0:
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  (Res_line.ankunft >= ci_date) &  (Res_line.ankunft <= (ci_date + 30)) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+            else:
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  ((Res_line.resnr == lresnr) |  (Res_line.l_zuordnung[4] == lresnr)) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+        elif last_sort == 4:
+
+            if (fdate1 == None) or (fdate2 == None):
+                fdate1 = ci_date
+                fdate2 = ci_date + 365
+
+            res_line_obj_list = []
+            for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 0) &  (Res_line.ankunft >= fdate1) &  (Res_line.ankunft <= fdate2) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                if res_line._recid in res_line_obj_list:
+                    continue
+                else:
+                    res_line_obj_list.append(res_line._recid)
+
+
+                create_it()
+
+        elif last_sort == 5:
+            sqry5()
+
+    def sqry2():
+
+        nonlocal rmlen, arl_list_list, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, stay, resbemerk, rescomment, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy
+        nonlocal gbuff, gmember, rline, arlbuff, bresline
+
+
+        nonlocal setup_list, gbuff, arl_list, b_arl_list, gmember, rline, arlbuff, bresline
+        nonlocal setup_list_list, arl_list_list, b_arl_list_list
+
+        to_name:str = ""
+        igrpname:int = 0
+        igrpname = to_int(grpflag)
+        rmlen = len(room)
+
+        if lname != "" and substring(lname, 0, 1) != "*":
+            to_name = get_toname (lname)
+
+        if sorttype == 2:
+
+            if lname == "":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (func.lower(Reservation.name) >= (lname).lower()) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.ankunft <= ci_date) &  (Res_line.abreise >= ci_date) &  (func.lower(Res_line.resname) >= (lname).lower())).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+            elif lname != "" and substring(lname, 0, 1) != "*":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (func.lower(Reservation.name) >= (lname).lower()) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.ankunft <= ci_date) &  (Res_line.abreise >= ci_date) &  (func.lower(Res_line.resname) >= (lname).lower()) &  (func.lower(Res_line.resname) <= (to_name).lower())).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+            elif lname != "" and substring(lname, 0, 1) == "*":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.ankunft <= ci_date) &  (Res_line.abreise >= ci_date) &  (Res_line.resname.op("~")(lname))).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+        elif sorttype == 3:
+
+            if lname == "":
+
+                if room == "":
+
+                    res_line_obj_list = []
+                    for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                        if res_line._recid in res_line_obj_list:
+                            continue
+                        else:
+                            res_line_obj_list.append(res_line._recid)
+
+
+                        create_it()
+
+
+                elif room != "":
+
+                    res_line_obj_list = []
+                    for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                        if res_line._recid in res_line_obj_list:
+                            continue
+                        else:
+                            res_line_obj_list.append(res_line._recid)
+
+
+                        create_it()
+
+
+            elif substring(lname, 0, 1) == "*":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99) &  (Res_line.resname.op("~")(lname)) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+            elif substring(lname, 0, 1) != "*":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99) &  (func.lower(Res_line.resname) >= (lname).lower()) &  (func.lower(Res_line.resname) <= (to_name).lower()) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+        elif sorttype == 4:
+
+            if lname == "":
+
+                if room == "":
+
+                    res_line_obj_list = []
+                    for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                        if res_line._recid in res_line_obj_list:
+                            continue
+                        else:
+                            res_line_obj_list.append(res_line._recid)
+
+
+                        create_it()
+
+
+                elif room != "":
+
+                    res_line_obj_list = []
+                    for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                        if res_line._recid in res_line_obj_list:
+                            continue
+                        else:
+                            res_line_obj_list.append(res_line._recid)
+
+
+                        create_it()
+
+
+            elif substring(lname, 0, 1) == "*":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  (Res_line.resname.op("~")(lname)) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+            elif substring(lname, 0, 1) != "*":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  (func.lower(Res_line.resname) >= (lname).lower()) &  (func.lower(Res_line.resname) <= (to_name).lower()) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+    def sqry3():
+
+        nonlocal rmlen, arl_list_list, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, stay, resbemerk, rescomment, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy
+        nonlocal gbuff, gmember, rline, arlbuff, bresline
+
+
+        nonlocal setup_list, gbuff, arl_list, b_arl_list, gmember, rline, arlbuff, bresline
+        nonlocal setup_list_list, arl_list_list, b_arl_list_list
+
+        igrpname:int = 0
+        igrpname = to_int(grpflag)
+
+        if sorttype == 2:
+
+            if lresnr == 0:
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.ankunft <= ci_date) &  (Res_line.abreise >= ci_date)).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+            else:
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  ((Res_line.resnr == lresnr) |  (Res_line.l_zuordnung[4] == lresnr))).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+        elif sorttype == 3:
+
+            if lresnr == 0:
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+            else:
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99) &  ((Res_line.resnr == lresnr) |  (Res_line.l_zuordnung[4] == lresnr))).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+        elif sorttype == 4:
+
+            if lresnr == 0:
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate)).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+            else:
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  ((Res_line.resnr == lresnr) |  (Res_line.l_zuordnung[4] == lresnr))).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+    def sqry4():
+
+        nonlocal rmlen, arl_list_list, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, stay, resbemerk, rescomment, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy
+        nonlocal gbuff, gmember, rline, arlbuff, bresline
+
+
+        nonlocal setup_list, gbuff, arl_list, b_arl_list, gmember, rline, arlbuff, bresline
+        nonlocal setup_list_list, arl_list_list, b_arl_list_list
+
+        to_name:str = ""
+        igrpname:int = 0
+        igrpname = to_int(grpflag)
+        rmlen = len(room)
+
+        if lname != "" and substring(lname, 0, 1) != "*":
+            to_name = get_toname (lname)
+
+        if sorttype == 2:
+
+            if fdate != None:
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.ankunft >= fdate) &  (Res_line.abreise >= ci_date)).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+            else:
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.ankunft <= ci_date) &  (Res_line.abreise >= ci_date)).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+        elif sorttype == 3:
+
+            if lname == "":
+
+                if room == "":
+
+                    res_line_obj_list = []
+                    for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 99) &  (Res_line.resstatus != 10) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                        if res_line._recid in res_line_obj_list:
+                            continue
+                        else:
+                            res_line_obj_list.append(res_line._recid)
+
+
+                        create_it()
+
+
+                elif room != "":
+
+                    res_line_obj_list = []
+                    for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                        if res_line._recid in res_line_obj_list:
+                            continue
+                        else:
+                            res_line_obj_list.append(res_line._recid)
+
+
+                        create_it()
+
+
+            elif lname != "" and substring(lname, 0, 1) != "*":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (func.lower(Res_line.name) >= (lname).lower()) &  (func.lower(Res_line.name) <= (to_name).lower())).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+            elif lname != "" and substring(lname, 0, 1) == "*":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.name.op("~")(lname))).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+        elif sorttype == 4:
+
+            if lname == "":
+
+                if room == "":
+
+                    res_line_obj_list = []
+                    for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                        if res_line._recid in res_line_obj_list:
+                            continue
+                        else:
+                            res_line_obj_list.append(res_line._recid)
+
+
+                        create_it()
+
+
+                elif room != "":
+
+                    res_line_obj_list = []
+                    for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                            (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room))).all():
+                        if res_line._recid in res_line_obj_list:
+                            continue
+                        else:
+                            res_line_obj_list.append(res_line._recid)
+
+
+                        create_it()
+
+
+            elif lname != "" and substring(lname, 0, 1) != "*":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (func.lower(Res_line.name) >= (lname).lower()) &  (func.lower(Res_line.name) <= (to_name).lower())).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+            elif lname != "" and substring(lname, 0, 1) == "*":
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room)) &  (Res_line.name.op("~")(lname))).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+    def sqry5():
+
+        nonlocal rmlen, arl_list_list, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, stay, resbemerk, rescomment, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy
+        nonlocal gbuff, gmember, rline, arlbuff, bresline
+
+
+        nonlocal setup_list, gbuff, arl_list, b_arl_list, gmember, rline, arlbuff, bresline
+        nonlocal setup_list_list, arl_list_list, b_arl_list_list
+
+        igrpname:int = 0
+        igrpname = to_int(grpflag)
+
+        if sorttype == 1:
+
+            if (fdate1 == None) or (fdate2 == None):
+                fdate1 = ci_date
+                fdate2 = ci_date + 365
+
+            res_line_obj_list = []
+            for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                    (Res_line.active_flag == 0) &  (func.lower(Res_line.zinr) == (room).lower()) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99)).all():
+                if res_line._recid in res_line_obj_list:
+                    continue
+                else:
+                    res_line_obj_list.append(res_line._recid)
+
+
+                create_it()
+
+        elif sorttype == 2:
+
+            if fdate != None:
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.ankunft >= fdate) &  (Res_line.abreise >= ci_date) &  (func.lower(Res_line.zinr) >= (room).lower())).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+            else:
+
+                res_line_obj_list = []
+                for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                        (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.ankunft <= ci_date) &  (Res_line.abreise >= ci_date) &  (func.lower(Res_line.zinr) >= (room).lower())).all():
+                    if res_line._recid in res_line_obj_list:
+                        continue
+                    else:
+                        res_line_obj_list.append(res_line._recid)
+
+
+                    create_it()
+
+
+        elif sorttype == 3:
+
+            res_line_obj_list = []
+            for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                    (Res_line.active_flag == 0) &  (Res_line.ankunft == ci_date) &  (Res_line.resstatus != 9) &  (Res_line.resstatus != 10) &  (Res_line.resstatus != 99) &  (func.lower(Res_line.resname) >= (lname).lower()) &  (func.lower(Res_line.zinr) >= (room).lower())).all():
+                if res_line._recid in res_line_obj_list:
+                    continue
+                else:
+                    res_line_obj_list.append(res_line._recid)
+
+
+                create_it()
+
+
+        elif sorttype == 4:
+
+            res_line_obj_list = []
+            for res_line, gbuff, waehrung, reservation, zimkateg, setup_list in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg, Setup_list).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) &  (len(Reservation.groupname) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Setup_list,(Setup_list.nr == Res_line.setup + 1)).filter(
+                    (Res_line.active_flag == 1) &  (Res_line.resstatus != 12) &  (Res_line.resstatus != 99) &  (Res_line.abreise == fdate) &  (func.lower(Res_line.resname) >= (lname).lower()) &  (func.lower(Res_line.zinr) >= (room).lower())).all():
+                if res_line._recid in res_line_obj_list:
+                    continue
+                else:
+                    res_line_obj_list.append(res_line._recid)
+
+
+                create_it()
+
+
+    def create_it():
+
+        nonlocal rmlen, arl_list_list, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, stay, resbemerk, rescomment, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy
+        nonlocal gbuff, gmember, rline, arlbuff, bresline
+
+
+        nonlocal setup_list, gbuff, arl_list, b_arl_list, gmember, rline, arlbuff, bresline
+        nonlocal setup_list_list, arl_list_list, b_arl_list_list
+
+        loopi:int = 0
+        loopj:int = 0
+        loopk:int = 0
+        loopl:int = 0
+        str1:str = ""
+        str2:str = ""
+        web_com:str = ""
+        bday:date = None
+        Bresline = Res_line
+
+        gmember = db_session.query(Gmember).filter(
+                (Gmember.gastnr == res_line.gastnrmember)).first()
+        arl_list = Arl_list()
+        arl_list_list.append(arl_list)
+
+        arl_list.resnr = res_line.resnr
+        arl_list.reslinnr = res_line.reslinnr
+        arl_list.voucher_nr = res_line.voucher_nr
+        arl_list.grpflag = reservation.grpflag
+        arl_list.l_zuordnung2 = res_line.l_zuordnung[1]
+        arl_list.kontignr = res_line.kontignr
+        arl_list.firmen_nr = gbuff.firmen_nr
+        arl_list.steuernr = gbuff.steuernr
+        arl_list.rsv_name = reservation.name
+        arl_list.zinr = res_line.zinr
+        arl_list.setup_list_char = setup_list.CHAR
+        arl_list.resline_name = res_line.name
+        arl_list.waehrung_wabkurz = waehrung.wabkurz
+        arl_list.segmentcode = reservation.segmentcode
+        arl_list.ankunft = res_line.ankunft
+        arl_list.abreise = res_line.abreise
+        arl_list.zimmeranz = res_line.zimmeranz
+        arl_list.kurzbez = zimkateg.kurzbez
+        arl_list.arrangement = res_line.arrangement
+        arl_list.zipreis = res_line.zipreis
+        arl_list.anztage = res_line.anztage
+        arl_list.erwachs = res_line.erwachs
+        arl_list.kind1 = res_line.kind1
+        arl_list.kind2 = res_line.kind2
+        arl_list.gratis = res_line.gratis
+        arl_list.l_zuordnung4 = res_line.l_zuordnung[3]
+        arl_list.resstatus = res_line.resstatus
+        arl_list.l_zuordnung3 = res_line.l_zuordnung[2]
+        arl_list.flight_nr = res_line.flight_nr
+        arl_list.ankzeit = res_line.ankzeit
+        arl_list.abreisezeit = res_line.abreisezeit
+        arl_list.betrieb_gast = res_line.betrieb_gast
+        arl_list.resdat = reservation.resdat
+        arl_list.useridanlage = reservation.useridanlage
+        arl_list.reserve_dec = res_line.reserve_dec
+        arl_list.cancelled_id = res_line.cancelled_id
+        arl_list.changed_id = res_line.changed_id
+        arl_list.groupname = reservation.groupname
+        arl_list.active_flag = res_line.active_flag
+        arl_list.gastnr = res_line.gastnr
+        arl_list.gastnrmember = res_line.gastnrmember
+        arl_list.karteityp = gmember.karteityp
+        arl_list.reserve_int = res_line.reserve_int
+        arl_list.zikatnr = res_line.zikatnr
+        arl_list.betrieb_gastmem = res_line.betrieb_gastmem
+        arl_list.pseudofix = res_line.pseudofix
+        arl_list.reserve_char = res_line.reserve_char
+        arl_list.bemerk = res_line.bemerk
+        arl_list.depositbez = reservation.depositbez
+        arl_list.depositbez2 = reservation.depositbez2
+        arl_list.bestat_dat = reservation.bestat_dat
+        arl_list.briefnr = reservation.briefnr
+        arl_list.rsv_gastnr = reservation.gastnr
+        arl_list.rsv_resnr = reservation.resnr
+        arl_list.rsv_bemerk = reservation.bemerk
+        arl_list.rsv_grpflag = reservation.grpflag
+        arl_list.recid_resline = res_line._recid
+
+        if res_line.resstatus != 11 and res_line.resstatus != 13:
+
+            bresline = db_session.query(Bresline).filter(
+                    (Bresline.resnr == res_line.resnr) &  (Bresline.reslinnr != res_line.reslinnr) &  (Bresline.kontakt_nr == res_line.reslinnr) &  ((Bresline.resstatus == 11) |  (Bresline.resstatus == 13))).first()
+
+            if bresline:
+                arl_list.sharer_no = bresline.kontakt_nr
+
+
+        else:
+            arl_list.sharer_no = res_line.kontakt_nr
+
+
+        bday = date_mdy(get_month(gmember.geburtdatum1) , get_day(gmember.geburtdatum1) , get_year(get_current_date()))
+
+        if bday == get_current_date():
+            arl_list.birthday_flag = True
+
+        master = db_session.query(Master).filter(
+                (Master.resnr == res_line.resnr)).first()
+
+        if master and master.active:
+            arl_list.verstat = 1
+        else:
+            arl_list.verstat = 0
+
+        messages = db_session.query(Messages).filter(
+                (Messages.resnr == res_line.resnr) &  (Messages.reslinnr == res_line.reslinnr)).first()
+
+        if messages:
+            arl_list.resline_wabkurz = "M"
+
+        if res_line:
+
+            guest = db_session.query(Guest).filter(
+                    (Guest.gastnr == reservation.gastnr)).first()
+            arl_list.address = guest.adresse1
+            arl_list.city = guest.wohnort + " " + guest.plz
+
+        if res_line.kontignr > 0:
+
+            kontline = db_session.query(Kontline).filter(
+                    (Kontline.kontignr == res_line.kontignr) &  (Kontline.betriebsnr == 0) &  (Kontline.kontstat == 1)).first()
+
+            if kontline:
+                arl_list.comments = "ALLOTMENT: " + kontline.kontcode + chr (10)
+            else:
+                arl_list.comments = "ALLOTMENT: "
+
+        elif res_line.kontignr < 0:
+
+            kontline = db_session.query(Kontline).filter(
+                    (Kontline.kontignr == res_line.kontignr) &  (Kontline.betriebsnr == 1) &  (Kontline.kontstat == 1)).first()
+
+            if kontline:
+                arl_list.comments = "GLOBAL RES: " + kontline.kontcode + chr (10)
+            else:
+                arl_list.comments = "GLOBAL RES: "
+
+        if reservation.bemerk != "":
+
+            if reservation.bemerk == None:
+                arl_list.comments = " "
+            else:
+                arl_list.comments = reservation.bemerk + chr (10)
+        else:
+            arl_list.comments = " "
+
+        if res_line.bemerk != "":
+
+            if res_line.bemerk == None:
+                arl_list.comments = arl_list.comments + " "
+            else:
+                arl_list.comments = arl_list.comments + res_line.bemerk
+        else:
+            arl_list.comments = arl_list.comments + " "
+        for loop_i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
+            comment_str = entry(loop_i - 1, res_line.zimmer_wunsch, ";")
+
+            if substring(comment_str, 0, 8) == "$OTACOM$":
+                arl_list.comments = arl_list.comments + chr (10) + "---OTA COMMENT---" + chr(10) + entry(2, comment_str, "$OTACOM$")
+            else:
+                arl_list.comments = arl_list.comments + " "
+
+        if res_line:
+
+            gentable = db_session.query(Gentable).filter(
+                    (func.lower(Gentable.key) == "reservation") &  (Gentable.number1 == res_line.resnr) &  (Gentable.number2 == res_line.reslinnr)).first()
+
+            if gentable:
+                arl_list.resnr_fgcol = 12
+
+        if res_line and show_rate:
+
+            mc_guest = db_session.query(Mc_guest).filter(
+                    (Mc_guest.gastnr == res_line.gastnrmember) &  (Mc_guest.activeflag)).first()
+
+            if mc_guest:
+                arl_list.mc_str_fgcol = 15
+
+
+                arl_list.mc_str_bgcol = 6
+
+        if res_line and res_line.resstatus >= 11:
+
+            if res_line.l_zuordnung[2] == 0:
+                arl_list.rsv_name_fgcol = 9
+
+
+            else:
+                arl_list.rsv_name_bgcol = 9
+                arl_list.rsv_name_fgcol = 15
+
+        if res_line and (res_line.betrieb_gastmem == vipnr1 or res_line.betrieb_gastmem == vipnr2 or res_line.betrieb_gastmem == vipnr3 or res_line.betrieb_gastmem == vipnr4 or res_line.betrieb_gastmem == vipnr5 or res_line.betrieb_gastmem == vipnr6 or res_line.betrieb_gastmem == vipnr7 or res_line.betrieb_gastmem == vipnr8 or res_line.betrieb_gastmem == vipnr9):
+            arl_list.reslin_name_fgcol = 12
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 496)).first()
+        all_inclusive = ";" + htparam.fchar + ";"
+
+        if res_line and re.match(".*;" + res_line.arrangement + ";.*",all_inclusive):
+            arl_list.reslin_name_bgcol = 2
+            arl_list.reslin_name_fgcol = 15
+            arl_list.segmentcode_bgcol = 2
+            arl_list.segmentcode_fgcol = 15
+
+        if res_line and res_line.active_flag == 1 and long_stay > 0 and (res_line.abreise - res_line.ankunft) >= long_stay and res_line.erwachs > 0:
+            arl_list.abreise_fgcol = 915
+
+        if res_line and res_line.active_flag <= 1 and res_line.abreise == res_line.ankunft:
+            arl_list.reslin_name_fgcol = 0
+            arl_list.reslin_name_bgcol = 14
+
+        if res_line and res_line.pseudofix:
+            arl_list.reslin_name_bgcol = 12
+            arl_list.reslin_name_fgcol = 15
+
+        if res_line:
+            done_flag = None
+
+            reslin_queasy = db_session.query(Reslin_queasy).filter(
+                    (func.lower(Reslin_queasy.key) == "flag") &  (Reslin_queasy.resnr == res_line.resnr) &  (Reslin_queasy.reslinnr == res_line.reslinnr) &  (Reslin_queasy.betriebsnr == 0)).first()
+
+            if reslin_queasy:
+                done_flag = True
+
+                for reslin_queasy in db_session.query(Reslin_queasy).filter(
+                        (func.lower(Reslin_queasy.key) == "flag") &  (Reslin_queasy.resnr == res_line.resnr) &  (Reslin_queasy.reslinnr == res_line.reslinnr) &  (Reslin_queasy.betriebsnr == 0)).all():
+
+                    if (reslin_queasy.char1 != "" and reslin_queasy.deci1 == 0):
+                        done_flag = False
+
+                    if (reslin_queasy.char2 != "" and reslin_queasy.deci2 == 0):
+                        done_flag = False
+
+                    if (reslin_queasy.char3 != "" and reslin_queasy.deci3 == 0):
+                        done_flag = False
+
+                    if not done_flag:
+                        break
+
+                if done_flag:
+                    arl_list.ankunft_fgcol = 915
+                else:
+                    arl_list.ankunft_fgcol = 115
+
+            if res_line.active_flag == 0 and res_line.zinr != "" and res_line.ankunft == ci_date:
+
+                zimmer = db_session.query(Zimmer).filter(
+                        (Zimmer.zinr == res_line.zinr)).first()
+
+                if zimmer.zistatus == 1:
+                    arl_list.zinr_fgcol = 0
+                    arl_list.zinr_bgcol = 11
+
+                elif zimmer.zistatus == 2:
+                    arl_list.zinr_fgcol = 0
+                    arl_list.zinr_bgcol = 10
+
+                    queasy = db_session.query(Queasy).filter(
+                            (Queasy.key == 162) &  (Queasy.char1 == zimmer.zinr) &  (Queasy.number1 == 0)).first()
+
+                    if queasy:
+                        arl_list.zinr_fgcol = 15
+                        arl_list.zinr_bgcol = 6
+
+                elif zimmer.zistatus == 3:
+                    arl_list.zinr_fgcol = 12
+                    arl_list.zinr_bgcol = 14
+
+        if res_line:
+
+            guest = db_session.query(Guest).filter(
+                    (Guest.gastnr == res_line.gastnrmember)).first()
+
+            if guest:
+
+                if guest.zimmeranz >= stay and stay > 0:
+                    arl_list.reslin_name_fgcol = 15
+                    arl_list.reslin_name_bgcol = 3
+
+
+        for loopi in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
+
+            if entry(loopi - 1, res_line.zimmer_wunsch, ";") == "WCI_flag":
+                arl_list.webci = entry(loopi - 1, res_line.zimmer_wunsch, ";")
+
+
+                return
+
+        if arl_list.voucher_nr != "":
+            arl_list.voucher_flag = "L"
+
+        if arl_list.kontignr > 0:
+            arl_list.kontignr_flag = "A "
+
+        if arl_list.webci != "":
+            for loopj in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
+                str1 = entry(loopj - 1, res_line.zimmer_wunsch, ";")
+
+                if re.match(".*WCI_req.*",str1):
+                    str2 = entry(1, str1, " == ")
+                    for loopk in range(1,num_entries(str2, ",")  + 1) :
+
+                        queasy = db_session.query(Queasy).filter(
+                                (Queasy.key == 160) &  (Queasy.number1 == to_int(entry(loopk - 1, str2, ",")))).first()
+
+                        if queasy:
+                            for loopl in range(1,num_entries(queasy.char1, ";")  + 1) :
+
+                                if re.match(".*en.*",entry(loopl - 1, queasy.char1, ";")):
+                                    web_com = entry(1, entry(loopl - 1, queasy.char1, ";") , " == ") + ", " + web_com
+
+
+                                    return
+                    arl_list.comments = "-WEB C/I PREFERENCE-" + chr(10) + web_com + chr(10) + arl_list.comments
+
+
+            arl_list.webci_flag = "W"
+
+            queasy = db_session.query(Queasy).filter(
+                    (Queasy.key == 167) &  (Queasy.number1 == res_line.resnr)).first()
+
+            if queasy:
+
+                if arl_list.comments != " ":
+                    arl_list.comments = arl_list.comments + chr(10) + queasy.char3
+
+
+                else:
+                    arl_list.comments = "-WEB C/I PREFERENCE-" + chr(10) + queasy.char3
+
+        if arl_list.webci_flag == "":
+
+            if re.match(".*PCIFLAG.*",res_line.zimmer_wunsch):
+                arl_list.webci_flag = "W"
+
+
+    setup_list = Setup_list()
+    setup_list_list.append(setup_list)
+
+    setup_list.nr = 1
+    setup_list.char = " "
+
+    for paramtext in db_session.query(Paramtext).filter(
+            (Paramtext.txtnr >= 9201) &  (Paramtext.txtnr <= 9299)).all():
+        setup_list = Setup_list()
+        setup_list_list.append(setup_list)
+
+        setup_list.nr = paramtext.txtnr - 9199
+        setup_list.char = substring(paramtext.notes, 0, 1)
+
+    htparam = db_session.query(Htparam).filter(
+            (Htparam.paramnr == 458)).first()
+
+    if htparam:
+        stay = htparam.finteger
+    fixing_blank_resname()
+
+    if num_entries(room, chr(2)) > 1:
+        do_it = False
+        curr_resnr = to_int(entry(1, room, chr(2)))
+        curr_resline = to_int(entry(2, room, chr(2)))
+        today_str = to_string(get_current_date())
+        res_mode = trim(entry(3, room, chr(2)))
+
+
+        room = entry(0, room, chr(2))
+
+        res_line = db_session.query(Res_line).filter(
+                (Res_line.resnr == curr_resnr) &  (Res_line.reslinnr == curr_resline)).first()
+
+        if not res_line:
+            do_it = True
+        else:
+
+            if res_line.active_flag == 1 and res_mode.lower()  == "modify":
+                do_it = True
+            else:
+
+                for res_line in db_session.query(Res_line).filter(
+                        (Res_line.resnr == curr_resnr) &  (Res_line.active_flag <= 1)).all():
+                    reserve_str = res_line.reserve_char
+
+                    if today_str == substring(reserve_str, 0, 8):
+                        reserve_str = substring(reserve_str, 8)
+                        created_time = to_int(substring(reserve_str, 0, 2)) * 3600 +\
+                                to_int(substring(reserve_str, 3, 2)) * 60
+
+                        if created_time >= (get_current_time_in_seconds() - 70):
+                            do_it = True
+                            break
+
+
+    if not do_it:
+
+        return generate_output()
+    vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9 = get_output(get_vipnrbl())
+    disp_arlist1()
+
+    if grpflag:
+        disp_arlist_group()
+
+    for arl_list in query(arl_list_list):
+        b_arl_list = B_arl_list()
+        b_arl_list_list.append(b_arl_list)
+
+        buffer_copy(arl_list, b_arl_list)
+    arl_list._list.clear()
+
+    for b_arl_list in query(b_arl_list_list):
+        arl_list = Arl_list()
+        arl_list_list.append(arl_list)
+
+        buffer_copy(b_arl_list, arl_list)
+        resbemerk = b_arl_list.bemerk
+        resbemerk = replace_str(resbemerk, chr(10) , "")
+        resbemerk = replace_str(resbemerk, chr(13) , "")
+        resbemerk = replace_str(resbemerk, "~n", "")
+        resbemerk = replace_str(resbemerk, "\\n", "")
+        resbemerk = replace_str(resbemerk, "~r", "")
+        resbemerk = replace_str(resbemerk, "~r~n", "")
+        resbemerk = replace_str(resbemerk, chr(10) + chr(13) , "")
+
+        if len(resbemerk) < 3:
+            resbemerk = replace_str(resbemerk, chr(32) , "")
+
+        if len(resbemerk) == None:
+            resbemerk = ""
+        arl_list.bemerk = trim(resbemerk)
+        resbemerk = ""
+        rescomment = b_arl_list.comments
+        rescomment = replace_str(rescomment, chr(10) , "")
+        rescomment = replace_str(rescomment, chr(13) , "")
+        rescomment = replace_str(rescomment, "~n", "")
+        rescomment = replace_str(rescomment, "\\n", "")
+        rescomment = replace_str(rescomment, "~r", "")
+        rescomment = replace_str(rescomment, "~r~n", "")
+        rescomment = replace_str(rescomment, chr(10) + chr(13) , "")
+
+        if len(rescomment) < 3:
+            rescomment = replace_str(rescomment, chr(32) , "")
+
+        if len(rescomment) == None:
+            rescomment = ""
+        arl_list.comments = trim(rescomment)
+        rescomment = ""
+
+    return generate_output()

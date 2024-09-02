@@ -1,0 +1,46 @@
+from sqlalchemy.dialects.postgresql import ARRAY
+import sqlalchemy as sa
+from models.base import Base
+from functions.additional_functions import get_current_date
+
+class Fa_order(Base):
+	__tablename__ = 'fa_order'
+
+	activeflag = sa.Column(sa.Integer, default=0)
+	activereason = sa.Column(sa.String, default="")
+	cancel_by = sa.Column(sa.String, default="")
+	cancel_date = sa.Column(sa.Date, default=None)
+	cancel_time = sa.Column(sa.Integer, default=0)
+	change_by = sa.Column(sa.String, default="")
+	change_date = sa.Column(sa.Date, default=None)
+	change_time = sa.Column(sa.Integer, default=0)
+	close_date = sa.Column(sa.Date, default=None)
+	close_time = sa.Column(sa.Integer, default=0)
+	closeflag = sa.Column(sa.Boolean, default=False)
+	create_by = sa.Column(sa.String, default="")
+	create_date = sa.Column(sa.Date, default=None)
+	create_time = sa.Column(sa.Integer, default=0)
+	currency = sa.Column(sa.Integer, default=0)
+	delete_by = sa.Column(sa.String, default="")
+	delete_date = sa.Column(sa.Date, default=None)
+	delete_time = sa.Column(sa.Integer, default=0)
+	delivered_amount = sa.Column(sa.Numeric, default=0)
+	delivered_date = sa.Column(sa.Date, default=None)
+	delivered_price = sa.Column(sa.Numeric, default=0)
+	delivered_qty = sa.Column(sa.Integer, default=0)
+	discount1 = sa.Column(sa.Numeric, default=0)
+	discount2 = sa.Column(sa.Numeric, default=0)
+	exchangerate = sa.Column(sa.Numeric, default=0)
+	fa_nr = sa.Column(sa.Integer, default=0)
+	fa_pos = sa.Column(sa.Integer, default=0)
+	fa_remarks = sa.Column(sa.String, default="")
+	last_id = sa.Column(sa.String, default="")
+	op_art = sa.Column(sa.Integer, default=0)
+	order_amount = sa.Column(sa.Numeric, default=0)
+	order_nr = sa.Column(sa.String, default="")
+	order_price = sa.Column(sa.Numeric, default=0)
+	order_qty = sa.Column(sa.Integer, default=0)
+	pr_flag = sa.Column(sa.Boolean, default=False)
+	statflag = sa.Column(sa.Integer, default=0)
+	vat = sa.Column(sa.Numeric, default=0)
+	_recid = sa.Column(sa.Integer, primary_key=True)

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_configSetupPrepare" path="/configSetupPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-config-setup-save-horekabl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-config-setup-save-horekabl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_configSetupSave" path="/configSetupSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-config-setup-save-horekabl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-config-setup-save-horekabl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mappingSupplierPrepare" path="/mappingSupplierPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-mapping-supplier-horekabl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-mapping-supplier-horekabl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mappingSupplierSave" path="/mappingSupplierSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mapping-supplier-save-horekabl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mapping-supplier-save-horekabl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+</prgs:model>

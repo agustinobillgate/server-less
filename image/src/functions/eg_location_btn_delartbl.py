@@ -1,0 +1,43 @@
+from functions.additional_functions import *
+import decimal
+from models import Eg_property, Eg_request, Eg_location
+
+def eg_location_btn_delartbl(location_nr:int, rec_id:int):
+    err_code = 0
+    eg_property = eg_request = eg_location = None
+
+    egreq = egpro = None
+
+    Egreq = Eg_property
+    Egpro = Eg_request
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal err_code, eg_property, eg_request, eg_location
+        nonlocal egreq, egpro
+
+
+        nonlocal egreq, egpro
+        return {"err_code": err_code}
+
+
+    egreq = db_session.query(Egreq).filter(
+            (egReq.location == location_nr)).first()
+
+    egpro = db_session.query(Egpro).filter(
+            (egPro.location == location_nr)).first()
+
+    if egReq or egPro:
+        err_code = 1
+
+        return generate_output()
+
+    eg_location = db_session.query(Eg_location).filter(
+            (Eg_location._recid == rec_id)).first()
+
+    eg_location = db_session.query(Eg_location).first()
+    db_session.delete(eg_location)
+
+
+    return generate_output()

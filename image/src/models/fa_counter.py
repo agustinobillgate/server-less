@@ -1,0 +1,15 @@
+from sqlalchemy.dialects.postgresql import ARRAY
+import sqlalchemy as sa
+from models.base import Base
+from functions.additional_functions import get_current_date
+
+class Fa_counter(Base):
+	__tablename__ = 'fa_counter'
+
+	count_type = sa.Column(sa.Integer, default=0)
+	counters = sa.Column(sa.Integer, default=0)
+	dd = sa.Column(sa.Integer, default=0)
+	docu_type = sa.Column(sa.Integer, default=0)
+	mm = sa.Column(sa.Integer, default=0)
+	yy = sa.Column(sa.Integer, default=0)
+	_recid = sa.Column(sa.Integer, primary_key=True)

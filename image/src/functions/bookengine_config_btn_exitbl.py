@@ -1,0 +1,362 @@
+from functions.additional_functions import *
+import decimal
+from sqlalchemy import func
+from models import Queasy, Bediener, Res_history
+
+def bookengine_config_btn_exitbl(user_init:str, bookengid:int, autostart:bool, period:int, delay:int, hotelcode:str, username:str, password:str, liveflag:bool, defcurr:str, pushrateflag:bool, pullbookflag:bool, pushavailflag:bool, workpath:str, progavail:str):
+    i:int = 0
+    str:str = ""
+    ct:str = ""
+    be_name:str = ""
+    queasy = bediener = res_history = None
+
+    t_list = nameqsy = bqueasy = None
+
+    t_list_list, T_list = create_model("T_list", {"autostart":bool, "period":int, "delay":int, "hotelcode":str, "username":str, "password":str, "liveflag":bool, "defcurr":str, "pushrateflag":bool, "pullbookflag":bool, "pushavailflag":bool, "workpath":str, "progavail":str, "prog_avail_update":str, "dyna_code":str, "pushratebypax":bool, "uppercasename":bool, "delayrate":int, "delaypull":int, "delayavail":int, "pushall":bool, "re_calculate":bool, "restriction":bool, "allotment":bool, "pax":int, "bedsetup":bool, "pushbookflag":bool, "delaypushbook":int, "vcwsagent":str, "vcwsagent2":str, "vcwsagent3":str, "vcwsagent4":str, "vcwebhost":str, "vcwebport":str, "email":str, "vcwsagent5":str, "incl_tentative":bool, "restrictionfullsync":bool, "crm_combo":bool})
+
+    Nameqsy = Queasy
+    Bqueasy = Queasy
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal i, str, ct, be_name, queasy, bediener, res_history
+        nonlocal nameqsy, bqueasy
+
+
+        nonlocal t_list, nameqsy, bqueasy
+        nonlocal t_list_list
+        return {}
+
+    def assign_tlist_values():
+
+        nonlocal i, str, ct, be_name, queasy, bediener, res_history
+        nonlocal nameqsy, bqueasy
+
+
+        nonlocal t_list, nameqsy, bqueasy
+        nonlocal t_list_list
+
+        if num_entries(t_list.progavail, " == ") > 1:
+            t_list.prog_avail_update = entry(0, t_list.progavail, " == ")
+            t_list.dyna_code = entry(1, t_list.progavail, " == ")
+
+            if num_entries(t_list.progavail, " == ") >= 3:
+                t_list.pushratebypax = logical(entry(2, t_list.progavail, " == "))
+            else:
+                t_list.pushratebypax = False
+
+            if num_entries(t_list.progavail, " == ") >= 4:
+                t_list.upperCaseName = logical(entry(3, t_list.progavail, " == "))
+            else:
+                t_list.upperCaseName = False
+
+            if num_entries(t_list.progavail, " == ") >= 5:
+                t_list.delayRate = to_int(entry(4, t_list.progavail, " == "))
+                t_list.delayPull = to_int(entry(5, t_list.progavail, " == "))
+                t_list.delayAvail = to_int(entry(6, t_list.progavail, " == "))
+
+
+            else:
+                t_list.delayRate = 300
+                t_list.delayPull = 60
+                t_list.delayAvail = 60
+
+            if num_entries(t_list.progavail, " == ") >= 8:
+                t_list.pushAll = logical(entry(7, t_list.progavail, " == "))
+                t_list.re_calculate = logical(entry(8, t_list.progavail, " == "))
+
+
+            else:
+                t_list.pushAll = False
+                t_list.re_calculate = False
+
+            if num_entries(t_list.progavail, " == ") >= 10:
+                t_list.restriction = logical(entry(9, t_list.progavail, " == "))
+                t_list.allotment = logical(entry(10, t_list.progavail, " == "))
+                t_list.pax = to_int(entry(11, t_list.progavail, " == "))
+                t_list.bedsetup = logical(entry(12, t_list.progavail, " == "))
+
+            if num_entries(t_list.progavail, " == ") >= 14:
+                t_list.pushbookflag = logical(entry(13, t_list.progavail, " == "))
+                t_list.delaypushbook = to_int(entry(14, t_list.progavail, " == "))
+
+            if num_entries(t_list.progavail, " == ") >= 16:
+                t_list.vcWSAgent = entry(15, t_list.progavail, " == ")
+                t_list.vcWSAgent2 = entry(16, t_list.progavail, " == ")
+                t_list.vcWSAgent3 = entry(17, t_list.progavail, " == ")
+                t_list.vcWSAgent4 = entry(18, t_list.progavail, " == ")
+                t_list.vcWebHost = entry(19, t_list.progavail, " == ")
+                t_list.vcWebPort = entry(20, t_list.progavail, " == ")
+
+            if num_entries(t_list.progavail, " == ") >= 22:
+                t_list.email = entry(21, t_list.progavail, " == ")
+
+            if num_entries(t_list.progavail, " == ") >= 23:
+                t_list.vcWSAgent5 = entry(22, t_list.progavail, " == ")
+
+            if num_entries(t_list.progavail, " == ") >= 24:
+                t_list.incl_tentative = logical(entry(23, t_list.progavail, " == "))
+
+            if num_entries(t_list.progavail, " == ") >= 25:
+                t_list.restrictionFullSync = logical(entry(24, t_list.progavail, " == "))
+
+            if num_entries(t_list.progavail, " == ") >= 26:
+                t_list.crm_combo = logical(entry(25, t_list.progavail, " == "))
+
+    def create_logdetails():
+
+        nonlocal i, str, ct, be_name, queasy, bediener, res_history
+        nonlocal nameqsy, bqueasy
+
+
+        nonlocal t_list, nameqsy, bqueasy
+        nonlocal t_list_list
+
+        logmessage:str = ""
+        logmessage = ""
+
+        t_list = query(t_list_list, first=True)
+
+        if t_list:
+
+            if t_list.autostart != autostart:
+                logmessage = logmessage + "autostart == " + to_string(t_list.autostart) + ">>" + to_string(autostart) + " "
+
+            if t_list.period != period:
+                logmessage = logmessage + "period == " + to_string(t_list.period) + ">>" + to_string(period) + " "
+
+            if t_list.delay != delay:
+                logmessage = logmessage + "delay == " + to_string(t_list.delay) + ">>" + to_string(delay) + " "
+
+            if t_list.liveflag != liveflag:
+                logmessage = logmessage + "liveflag == " + to_string(t_list.liveflag) + ">>" + to_string(liveflag) + " "
+
+            if t_list.(defcurr).lower().lower()  != (defcurr).lower() :
+                logmessage = logmessage + "defcurr == " + t_list.defcurr + ">>" + defcurr + " "
+
+            if t_list.(workpath).lower().lower()  != (workpath).lower() :
+                logmessage = logmessage + "workpath == " + t_list.workpath + ">>" + workpath + " "
+
+            if t_list.(hotelcode).lower().lower()  != (hotelcode).lower() :
+                logmessage = logmessage + "htlcode == " + t_list.hotelcode + ">>" + hotelcode + " "
+
+            if t_list.(username).lower().lower()  != (username).lower() :
+                logmessage = logmessage + "usrname == " + t_list.username + ">>" + username + " "
+
+            if t_list.(password).lower().lower()  != (password).lower() :
+                logmessage = logmessage + "pswd == " + t_list.password + ">>" + password + " "
+
+            if t_list.pushrateflag != pushrateflag:
+                logmessage = logmessage + "pushrate == " + to_string(t_list.pushrateflag) + ">>" + to_string(pushrateflag) + " "
+
+            if t_list.pullbookflag != pullbookflag:
+                logmessage = logmessage + "pullbook == " + to_string(t_list.pullbookflag) + ">>" + to_string(pullbookflag) + " "
+
+            if t_list.pushavailflag != pushavailflag:
+                logmessage = logmessage + "pushavail == " + to_string(t_list.pushavailflag) + ">>" + to_string(pushavailflag) + " "
+
+            if t_list.prog_avail_update != entry(0, progavail, " == "):
+                logmessage = logmessage + "progname == " + t_list.prog_avail_update + ">>" + entry(0, progavail, " == ") + " "
+
+            if t_list.dyna_code != entry(1, progavail, " == "):
+                logmessage = logmessage + "dynacode == " + t_list.dyna_code + ">>" + entry(1, progavail, " == ") + " "
+
+            if to_string(t_list.pushratebypax) != entry(2, progavail, " == "):
+                logmessage = logmessage + "bypax == " + to_string(t_list.pushratebypax) + ">>" + entry(2, progavail, " == ") + " "
+
+            if to_string(t_list.uppercasename) != entry(3, progavail, " == "):
+                logmessage = logmessage + "uppercase == " + to_string(t_list.uppercasename) + ">>" + entry(3, progavail, " == ") + " "
+
+            if to_string(t_list.delayrate) != entry(4, progavail, " == "):
+                logmessage = logmessage + "delayrate == " + to_string(t_list.delayrate) + ">>" + entry(4, progavail, " == ") + " "
+
+            if to_string(t_list.delaypull) != entry(5, progavail, " == "):
+                logmessage = logmessage + "delaypull == " + to_string(t_list.delaypull) + ">>" + entry(5, progavail, " == ") + " "
+
+            if to_string(t_list.delayavail) != entry(6, progavail, " == "):
+                logmessage = logmessage + "delayavail == " + to_string(t_list.delayavail) + ">>" + entry(6, progavail, " == ") + " "
+
+            if to_string(t_list.pushall) != entry(7, progavail, " == "):
+                logmessage = logmessage + "pushall == " + to_string(t_list.pushall) + ">>" + entry(7, progavail, " == ") + " "
+
+            if to_string(t_list.re_calculate) != entry(8, progavail, " == "):
+                logmessage = logmessage + "recalc == " + to_string(t_list.re_calculate) + ">>" + entry(8, progavail, " == ") + " "
+
+            if to_string(t_list.restriction) != entry(9, progavail, " == "):
+                logmessage = logmessage + "restrict == " + to_string(t_list.restriction) + ">>" + entry(9, progavail, " == ") + " "
+
+            if to_string(t_list.allotment) != entry(10, progavail, " == "):
+                logmessage = logmessage + "allot == " + to_string(t_list.allotment) + ">>" + entry(10, progavail, " == ") + " "
+
+            if to_string(t_list.pax) != entry(11, progavail, " == "):
+                logmessage = logmessage + "pax == " + to_string(t_list.pax) + ">>" + entry(11, progavail, " == ") + " "
+
+            if to_string(t_list.bedsetup) != entry(12, progavail, " == "):
+                logmessage = logmessage + "bed == " + to_string(t_list.bedsetup) + ">>" + entry(12, progavail, " == ") + " "
+
+            if to_string(t_list.pushbookflag) != entry(13, progavail, " == "):
+                logmessage = logmessage + "pushbook == " + to_string(t_list.pushbookflag) + ">>" + entry(13, progavail, " == ") + " "
+
+            if to_string(t_list.delaypushbook) != entry(14, progavail, " == "):
+                logmessage = logmessage + "delaypushbook == " + to_string(t_list.delaypushbook) + ">>" + entry(14, progavail, " == ") + " "
+
+            if t_list.vcwsagent != entry(15, progavail, " == "):
+                logmessage = logmessage + "pullbookurl == " + t_list.vcwsagent + ">>" + entry(15, progavail, " == ") + " "
+
+            if t_list.vcwsagent2 != entry(16, progavail, " == "):
+                logmessage = logmessage + "pushavailurl == " + t_list.vcwsagent2 + ">>" + entry(16, progavail, " == ") + " "
+
+            if t_list.vcwsagent3 != entry(17, progavail, " == "):
+                logmessage = logmessage + "pushrateurl == " + t_list.vcwsagent3 + ">>" + entry(17, progavail, " == ") + " "
+
+            if t_list.vcwsagent4 != entry(18, progavail, " == "):
+                logmessage = logmessage + "notifurl == " + t_list.vcwsagent4 + ">>" + entry(18, progavail, " == ") + " "
+
+            if t_list.vcwebhost != entry(19, progavail, " == "):
+                logmessage = logmessage + "host == " + t_list.vcwebhost + ">>" + entry(19, progavail, " == ") + " "
+
+            if t_list.vcwebport != entry(20, progavail, " == "):
+                logmessage = logmessage + "port == " + t_list.vcwebport + ">>" + entry(20, progavail, " == ") + " "
+
+            if t_list.email != entry(21, progavail, " == "):
+                logmessage = logmessage + "email == " + t_list.email + ">>" + entry(21, progavail, " == ") + " "
+
+            if t_list.vcwsagent5 != entry(22, progavail, " == "):
+                logmessage = logmessage + "pushbookurl == " + t_list.vcwsagent5 + ">>" + entry(22, progavail, " == ") + " "
+
+            if to_string(t_list.incl_tentative) != entry(23, progavail, " == "):
+                logmessage = logmessage + "incltentative == " + to_string(t_list.incl_tentative) + ">>" + entry(23, progavail, " == ") + " "
+
+            if to_string(t_list.restrictionFullSync) != entry(24, progavail, " == "):
+                logmessage = logmessage + "restrictionsync == " + to_string(t_list.restrictionFullSync) + ">>" + entry(24, progavail, " == ") + " "
+
+            if to_string(t_list.crm_combo) != entry(25, progavail, " == "):
+                logmessage = logmessage + "crmcombo == " + to_string(t_list.crm_combo) + ">>" + entry(25, progavail, " == ") + " "
+
+        if logmessage != "":
+
+            bediener = db_session.query(Bediener).filter(
+                    (func.lower(Bediener.userinit) == (user_init).lower())).first()
+
+            if bediener:
+                res_history = Res_history()
+                db_session.add(res_history)
+
+                res_history.nr = bediener.nr
+                res_history.datum = get_current_date()
+                res_history.zeit = get_current_time_in_seconds()
+                res_history.action = "Booking Engine Interface"
+
+
+                res_history.aenderung = chr(40) + be_name + chr(41) + " " + logmessage
+
+    ct = "$autostart$" + to_string(autostart) + ";" + "$period$" + to_string(period) + ";" + "$delay$" + to_string(delay) + ";" + "$liveflag$" + to_string(liveflag) + ";" + "$defcurr$" + to_string(defcurr) + ";" + "$workpath$" + to_string(workpath) + ";" + "$progname$" + to_string(progavail) + ";" + "$htlcode$" + to_string(hotelcode) + ";" + "$username$" + to_string(username) + ";" + "$password$" + to_string(password) + ";" + "$pushrate$" + to_string(pushrateflag) + ";" + "$pullbook$" + to_string(pullbookflag) + ";" + "$pushavail$" + to_string(pushavailflag)
+
+    nameqsy = db_session.query(Nameqsy).filter(
+            (Nameqsy.key == 159) &  (Nameqsy.number1 == bookengid)).first()
+    be_name = nameqsy.char1 + "|Config"
+    t_list._list.clear()
+
+    queasy = db_session.query(Queasy).filter(
+            (Queasy.key == 160) &  (Queasy.number1 == bookengid)).first()
+
+    if queasy:
+        t_list = T_list()
+        t_list_list.append(t_list)
+
+        for i in range(1,num_entries(queasy.char1, ";")  + 1) :
+            str = entry(i - 1, queasy.char1, ";")
+
+            if substring(str, 0, 11) == "$autostart$":
+                t_list.autostart = logical(substring(str, 11))
+
+            elif substring(str, 0, 8) == "$period$":
+                t_list.period = to_int(substring(str, 8))
+
+            elif substring(str, 0, 7) == "$delay$":
+                t_list.delay = to_int(substring(str, 7))
+
+            elif substring(str, 0, 10) == "$liveflag$":
+                t_list.liveflag = logical(substring(str, 10))
+
+            elif substring(str, 0, 9) == "$defcurr$":
+                t_list.defcurr = substring(str, 9)
+
+            elif substring(str, 0, 10) == "$workpath$":
+                t_list.workpath = substring(str, 10)
+
+            elif substring(str, 0, 10) == "$progname$":
+                t_list.progavail = substring(str, 10)
+
+            elif substring(str, 0, 9) == "$htlcode$":
+                t_list.hotelcode = substring(str, 9)
+
+            elif substring(str, 0, 10) == "$username$":
+                t_list.username = substring(str, 10)
+
+            elif substring(str, 0, 10) == "$password$":
+                t_list.password = substring(str, 10)
+
+            elif substring(str, 0, 10) == "$pushrate$":
+                t_list.pushrateflag = logical(substring(str, 10))
+
+            elif substring(str, 0, 10) == "$pullbook$":
+                t_list.pullbookflag = logical(substring(str, 10))
+
+            elif substring(str, 0, 11) == "$pushavail$":
+                t_list.pushavailflag = logical(substring(str, 11))
+        assign_tlist_values()
+
+        if queasy.char1.lower()  != (ct).lower() :
+            create_logdetails()
+
+            bqueasy = db_session.query(Bqueasy).filter(
+                    (Bqueasy.key == 167) &  (Bqueasy.number1 == bookengid)).first()
+
+            if bqueasy:
+
+                bqueasy = db_session.query(Bqueasy).first()
+                bqueasy.date1 = get_current_date()
+                bqueasy.logi1 = True
+
+                bqueasy = db_session.query(Bqueasy).first()
+
+            else:
+                bqueasy = Bqueasy()
+                db_session.add(bqueasy)
+
+                bqueasy.key = 167
+                bqueasy.date1 = get_current_date()
+                bqueasy.number1 = bookengid
+                bqueasy.logi1 = True
+
+        queasy = db_session.query(Queasy).first()
+        queasy.char1 = ct
+
+        queasy = db_session.query(Queasy).first()
+    else:
+        queasy = Queasy()
+        db_session.add(queasy)
+
+        queasy.key = 160
+        queasy.number1 = bookengid
+        queasy.char1 = ct
+
+        bediener = db_session.query(Bediener).filter(
+                (func.lower(Bediener.userinit) == (user_init).lower())).first()
+
+        if bediener:
+            res_history = Res_history()
+            db_session.add(res_history)
+
+            res_history.nr = bediener.nr
+            res_history.datum = get_current_date()
+            res_history.zeit = get_current_time_in_seconds()
+            res_history.action = "Booking Engine Interface"
+
+
+            res_history.aenderung = chr(40) + be_name + chr(41) + " New Config Has Been Created"
+
+
+    return generate_output()

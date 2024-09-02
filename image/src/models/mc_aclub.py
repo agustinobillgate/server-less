@@ -1,0 +1,46 @@
+from sqlalchemy.dialects.postgresql import ARRAY
+import sqlalchemy as sa
+from models.base import Base
+from functions.additional_functions import get_current_date
+
+class Mc_aclub(Base):
+	__tablename__ = 'mc_aclub'
+
+	artnr = sa.Column(sa.Integer, default=0)
+	bemerk = sa.Column(sa.String, default="")
+	betrag = sa.Column(sa.Numeric, default=0)
+	billdatum = sa.Column(sa.Date, default=None)
+	billtype = sa.Column(sa.Integer, default=0)
+	cardnum = sa.Column(sa.String, default="")
+	char1 = sa.Column(sa.String, default="")
+	char2 = sa.Column(sa.String, default="")
+	char3 = sa.Column(sa.String, default="")
+	char4 = sa.Column(sa.String, default="")
+	char5 = sa.Column(sa.String, default="")
+	date1 = sa.Column(sa.Date, default=None)
+	date2 = sa.Column(sa.Date, default=None)
+	deci1 = sa.Column(sa.Numeric, default=0)
+	deci2 = sa.Column(sa.Numeric, default=0)
+	deci3 = sa.Column(sa.Numeric, default=0)
+	deci4 = sa.Column(sa.Numeric, default=0)
+	deci5 = sa.Column(sa.Numeric, default=0)
+	departement = sa.Column(sa.Integer, default=0)
+	incl_flag = sa.Column(sa.Integer, default=1)
+	key = sa.Column(sa.Integer, default=0)
+	logi1 = sa.Column(sa.Boolean, default=False)
+	logi2 = sa.Column(sa.Boolean, default=False)
+	logi3 = sa.Column(sa.Boolean, default=False)
+	nettobetrag = sa.Column(sa.Numeric, default=0)
+	num1 = sa.Column(sa.Integer, default=0)
+	num2 = sa.Column(sa.Integer, default=0)
+	num3 = sa.Column(sa.Integer, default=0)
+	num4 = sa.Column(sa.Integer, default=0)
+	num5 = sa.Column(sa.Integer, default=0)
+	rechnr = sa.Column(sa.Integer, default=0)
+	reslinnr = sa.Column(sa.Integer, default=0)
+	resnr = sa.Column(sa.Integer, default=0)
+	service = sa.Column(sa.Numeric, default=0)
+	sysdate = sa.Column(sa.Date, default=lambda: get_current_date())
+	vat = sa.Column(sa.Numeric, default=0)
+	zeit = sa.Column(sa.Integer, default=None)
+	_recid = sa.Column(sa.Integer, primary_key=True)

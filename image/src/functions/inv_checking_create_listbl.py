@@ -1,0 +1,240 @@
+from functions.additional_functions import *
+import decimal
+from datetime import date
+from models import Htparam, L_artikel, L_untergrup, Gl_acct, L_besthis, L_bestand
+
+def inv_checking_create_listbl(invtype:int, d1:date):
+    saldo = 0
+    s_list2_list = []
+    art_list2_list = []
+    mon:int = 0
+    art1:int = 0
+    art2:int = 0
+    frnr:int = 0
+    tonr:int = 0
+    saldo1:decimal = 0
+    saldo2:decimal = 0
+    inv_date:date = None
+    htparam = l_artikel = l_untergrup = gl_acct = l_besthis = l_bestand = None
+
+    s_list2 = s_list = coa_list = art_list2 = None
+
+    s_list2_list, S_list2 = create_model("S_list2", {"fibu1":str, "saldo1a":decimal, "saldo2a":decimal, "saldo1":decimal, "saldo3":decimal})
+    s_list_list, S_list = create_model("S_list", {"fibu":str, "saldo1":decimal, "saldo2":decimal, "saldo":decimal})
+    coa_list_list, Coa_list = create_model("Coa_list", {"fibukonto":str, "datum":date, "wert":decimal, "debit":decimal, "credit":decimal})
+    art_list2_list, Art_list2 = create_model("Art_list2", {"artnr":int, "artname":str, "saldo1":decimal, "saldo2":decimal})
+
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal saldo, s_list2_list, art_list2_list, mon, art1, art2, frnr, tonr, saldo1, saldo2, inv_date, htparam, l_artikel, l_untergrup, gl_acct, l_besthis, l_bestand
+
+
+        nonlocal s_list2, s_list, coa_list, art_list2
+        nonlocal s_list2_list, s_list_list, coa_list_list, art_list2_list
+        return {"saldo": saldo, "s-list2": s_list2_list, "art-list2": art_list2_list}
+
+    def create_listhis():
+
+        nonlocal saldo, s_list2_list, art_list2_list, mon, art1, art2, frnr, tonr, saldo1, saldo2, inv_date, htparam, l_artikel, l_untergrup, gl_acct, l_besthis, l_bestand
+
+
+        nonlocal s_list2, s_list, coa_list, art_list2
+        nonlocal s_list2_list, s_list_list, coa_list_list, art_list2_list
+
+
+        coa_list_list.clear()
+        s_list_list.clear()
+        s_list2_list.clear()
+
+        if invtype == 0:
+
+            return
+        mon = get_month(d1) - 1
+        d1 = date_mdy(get_month(d1) , get_day(d1) , get_year(d1)) - 1
+        d1 = date_mdy(get_month(d1) , 1, get_year(d1))
+
+        if invtype == 1:
+            art1 = 3
+            art2 = 5
+            frnr = 1000000
+            tonr = 1999999
+
+        elif invtype == 2:
+            art1 = 6
+            art2 = 6
+            frnr = 2000000
+            tonr = 2999999
+
+        if invtype == 3:
+            frnr = 3000000
+            tonr = 9999999
+
+        for l_artikel in db_session.query(L_artikel).filter(
+                (L_artikel.artnr >= frnr) &  (L_artikel.artnr <= tonr)).all():
+            saldo1 = 0
+            saldo2 = 0
+
+            l_untergrup = db_session.query(L_untergrup).filter(
+                    (L_untergrup.zwkum == l_artikel.zwkum)).first()
+
+            gl_acct = db_session.query(Gl_acct).filter(
+                    (Gl_acct.fibukonto == l_untergrup.fibukonto)).first()
+
+            s_list = query(s_list_list, filters=(lambda s_list :s_list.fibu == gl_acct.fibukonto), first=True)
+
+            if not s_list:
+                s_list = S_list()
+                s_list_list.append(s_list)
+
+
+                if mon > 0:
+                    s_list.fibu = gl_acct.fibukonto
+                    s_list.saldo2 = gl_acct.actual[mon - 1]
+                    saldo2 = gl_acct.actual[mon - 1]
+
+
+                else:
+                    s_list.fibu = gl_acct.fibukonto
+                    s_list.saldo2 = gl_acct.last_yr[11]
+                    saldo2 = gl_acct.last_yr[11]
+
+            l_besthis = db_session.query(L_besthis).filter(
+                    (L_besthis.anf_best_dat == d1) &  (L_besthis.artnr == l_artikel.artnr) &  (L_besthis.lager_nr == 0)).first()
+
+            if l_besthis:
+                s_list.saldo1 = s_list.saldo1 + l_besthis.val_anf_best
+                saldo1 = l_besthis.val_anf_best
+
+
+            art_list2 = Art_list2()
+            art_list2_list.append(art_list2)
+
+            art_list2.artnr = l_artikel.artnr
+            art_list2.artname = l_artikel.bezeich
+            art_list2.saldo1 = saldo1
+            art_list2.saldo2 = saldo2
+
+
+        saldo = 0
+
+        for s_list in query(s_list_list):
+            saldo = saldo + s_list.saldo1 - s_list.saldo2
+            s_list.saldo = saldo
+            s_list2 = S_list2()
+            s_list2_list.append(s_list2)
+
+            s_list2.fibu = s_list.fibu
+            s_list2.saldo1a = s_list.saldo1
+            s_list2.saldo2a = s_list.saldo2
+            s_list2.saldo3 = s_list.saldo1 - s_list.saldo2
+            s_list2.saldo1 = s_list.saldo
+
+    def create_list():
+
+        nonlocal saldo, s_list2_list, art_list2_list, mon, art1, art2, frnr, tonr, saldo1, saldo2, inv_date, htparam, l_artikel, l_untergrup, gl_acct, l_besthis, l_bestand
+
+
+        nonlocal s_list2, s_list, coa_list, art_list2
+        nonlocal s_list2_list, s_list_list, coa_list_list, art_list2_list
+
+
+        coa_list_list.clear()
+        s_list_list.clear()
+        s_list2_list.clear()
+
+        if invtype == 0:
+
+            return
+        mon = get_month(d1) - 1
+
+        if invtype == 1:
+            art1 = 3
+            art2 = 5
+            frnr = 1000000
+            tonr = 1999999
+
+        elif invtype == 2:
+            art1 = 6
+            art2 = 6
+            frnr = 2000000
+            tonr = 2999999
+
+        if invtype == 3:
+            frnr = 3000000
+            tonr = 9999999
+
+        for l_artikel in db_session.query(L_artikel).filter(
+                (L_artikel.artnr >= frnr) &  (L_artikel.artnr <= tonr)).all():
+            saldo1 = 0
+            saldo2 = 0
+
+            l_untergrup = db_session.query(L_untergrup).filter(
+                    (L_untergrup.zwkum == l_artikel.zwkum)).first()
+
+            gl_acct = db_session.query(Gl_acct).filter(
+                    (Gl_acct.fibukonto == l_untergrup.fibukonto)).first()
+
+            s_list = query(s_list_list, filters=(lambda s_list :s_list.fibu == gl_acct.fibukonto), first=True)
+
+            if not s_list:
+                s_list = S_list()
+                s_list_list.append(s_list)
+
+
+                if mon > 0:
+                    s_list.fibu = gl_acct.fibukonto
+                    s_list.saldo2 = gl_acct.actual[mon - 1]
+                    saldo2 = gl_acct.actual[mon - 1]
+
+
+                else:
+                    s_list.fibu = gl_acct.fibukonto
+                    s_list.saldo2 = gl_acct.last_yr[11]
+                    saldo2 = gl_acct.last_yr[11]
+
+            l_bestand = db_session.query(L_bestand).filter(
+                    (L_bestand.artnr == l_artikel.artnr) &  (L_bestand.lager_nr == 0)).first()
+
+            if l_bestand:
+                s_list.saldo1 = s_list.saldo1 + l_bestand.val_anf_best
+                saldo1 = l_bestand.val_anf_best
+
+
+            art_list2 = Art_list2()
+            art_list2_list.append(art_list2)
+
+            art_list2.artnr = l_artikel.artnr
+            art_list2.artname = l_artikel.bezeich
+            art_list2.saldo1 = saldo1
+            art_list2.saldo2 = saldo2
+
+
+        saldo = 0
+
+        for s_list in query(s_list_list):
+            saldo = saldo + s_list.saldo1 - s_list.saldo2
+            s_list.saldo = saldo
+            s_list2 = S_list2()
+            s_list2_list.append(s_list2)
+
+            s_list2.fibu = s_list.fibu
+            s_list2.saldo1a = s_list.saldo1
+            s_list2.saldo2a = s_list.saldo2
+            s_list2.saldo3 = s_list.saldo1 - s_list.saldo2
+            s_list2.saldo1 = s_list.saldo
+
+
+    htparam = db_session.query(Htparam).filter(
+            (Htparam.paramnr == 224)).first()
+
+    if htparam:
+        inv_date = htparam.fdate
+
+    if d1 < inv_date:
+        create_listhis()
+    else:
+        create_list()
+
+    return generate_output()

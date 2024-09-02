@@ -1,0 +1,71 @@
+@openapi.openedge.export FILE(type="REST", executionMode="external", useReturnValue="false", writeDataSetBeforeImage="false").
+
+DEFINE INPUT PARAMETER input-username AS CHARACTER.
+DEFINE INPUT PARAMETER input-userkey AS CHARACTER.
+DEFINE OUTPUT PARAMETER output-ok-flag AS LOGICAL INITIAL NO.
+DEFINE TEMP-TABLE str-list
+  FIELD nebenstelle AS CHAR FORMAT "x(6)"
+  FIELD zero-rate AS LOGICAL INITIAL NO
+  FIELD local AS DECIMAL
+  FIELD ldist AS DECIMAL
+  FIELD ovsea AS DECIMAL
+  FIELD s AS CHAR FORMAT "x(135)".
+.
+
+DEFINE TEMP-TABLE cost-list
+  FIELD num AS INTEGER FORMAT "9999"
+  FIELD name AS CHAR FORMAT "x(24)".
+.
+
+DEFINE TEMP-TABLE output-list
+  FIELD ext AS CHAR FORMAT "x(6)"
+  FIELD datum AS CHAR FORMAT "x(8)"
+  FIELD zeit AS CHAR FORMAT "x(5)"
+  FIELD dialed AS CHAR FORMAT "x(24)"
+  FIELD dest AS CHAR FORMAT "x(16)"
+  FIELD pabx-rate AS CHAR FORMAT "x(13)"
+  FIELD guest-rate AS CHAR FORMAT "x(13)"
+  FIELD duration AS CHAR FORMAT "x(8)"
+  FIELD zinr AS CHAR FORMAT "x(6)"
+  FIELD pulse AS CHAR FORMAT "x(5)"
+  FIELD lin AS CHAR FORMAT "x(4)"
+  FIELD print AS CHAR FORMAT "x(3)"
+  FIELD ref-no AS CHAR FORMAT "x(7)"
+  FIELD username AS CHAR FORMAT "x(32)".
+.
+
+DEFINE TEMP-TABLE print-list
+  FIELD flag AS INTEGER
+  FIELD ext AS CHAR
+  FIELD datum AS CHAR
+  FIELD zeit AS CHAR
+  FIELD dialed AS CHAR
+  FIELD dest AS CHAR
+  FIELD pabx-rate AS CHAR
+  FIELD guest-rate AS CHAR
+  FIELD duration AS CHAR
+  FIELD local AS DECIMAL
+  FIELD ldist AS DECIMAL
+  FIELD ovsea AS DECIMAL .
+.
+
+DEFINE TEMP-TABLE t-parameters 
+  FIELD progname AS CHARACTER
+  FIELD section AS CHARACTER
+  FIELD varname AS CHARACTER
+  FIELD vtype AS INTEGER
+  FIELD vstring AS CHARACTER
+.
+
+DEFINE INPUT-OUTPUT PARAMETER TABLE FOR cost-list.
+DEFINE INPUT        PARAMETER sorttype      AS INTEGER.
+DEFINE INPUT        PARAMETER cost-center   AS INTEGER.
+DEFINE INPUT        PARAMETER to-cc         AS INTEGER.
+DEFINE INPUT        PARAMETER price-decimal AS INTEGER.
+DEFINE INPUT        PARAMETER from-date     AS DATE.
+DEFINE INPUT        PARAMETER to-date       AS DATE.
+DEFINE INPUT        PARAMETER double-currency AS LOGICAL.
+DEFINE INPUT        PARAMETER pr-summary    AS LOGICAL.
+DEFINE OUTPUT       PARAMETER stattype     AS INTEGER.
+DEFINE OUTPUT       PARAMETER TABLE FOR output-list.
+DEFINE OUTPUT       PARAMETER TABLE FOR print-list.

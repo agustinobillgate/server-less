@@ -1,0 +1,47 @@
+from sqlalchemy.dialects.postgresql import ARRAY
+import sqlalchemy as sa
+from models.base import Base
+from functions.additional_functions import get_current_date
+
+class Aktion(Base):
+	__tablename__ = 'aktion'
+
+	a_status = sa.Column(sa.Integer, default=0)
+	abschluss_zeit = sa.Column(sa.Integer, default=0)
+	abschlussdatum = sa.Column(sa.Date, default=None)
+	aktion_datum = sa.Column(sa.Date, default=lambda: get_current_date())
+	aktion_zeit = sa.Column(sa.Integer, default=0)
+	aktionscode = sa.Column(sa.Integer, default=0)
+	anz_entscheider = sa.Column(sa.Integer, default=0)
+	aufg_beginn_datum = sa.Column(sa.Date, default=None)
+	aufg_beginn_zeit = sa.Column(sa.Integer, default=0)
+	aufg_faellig_datum = sa.Column(sa.Date, default=None)
+	aufg_faellig_zeit = sa.Column(sa.Integer, default=0)
+	bediener_nr = sa.Column(sa.Integer, default=0)
+	betrag = sa.Column(sa.Numeric, default=0)
+	betrieb_gast = sa.Column(sa.Integer, default=0)
+	betriebsnr = sa.Column(sa.Integer, default=0)
+	beurteilung = sa.Column(sa.Integer, default=0)
+	bezeich = sa.Column(sa.String, default="")
+	briefnr = sa.Column(sa.Integer, default=0)
+	dauer = sa.Column(sa.Integer, default=0)
+	erled_datum = sa.Column(sa.Date, default=None)
+	erled_zeit = sa.Column(sa.Integer, default=0)
+	erledigt = sa.Column(sa.Boolean, default=False)
+	gastnr = sa.Column(sa.Integer, default=None)
+	kontakt_nr = sa.Column(sa.Integer, default=0)
+	lfd_nr = sa.Column(sa.Integer, default=0)
+	mitbewerber = sa.Column(sa.Integer, default=0)
+	modif_datum = sa.Column(sa.Date, default=None)
+	modif_zeit = sa.Column(sa.Integer, default=0)
+	potential = sa.Column(sa.Numeric, default=0)
+	potential_typ = sa.Column(sa.String, default="")
+	prioritat = sa.Column(sa.Integer, default=0)
+	rec_status = sa.Column(sa.Integer, default=0)
+	rec_status_user = sa.Column(sa.String, default="")
+	texte = sa.Column(ARRAY(sa.String),default=["","","","","","","","","","","","","","","","","","",""])
+	user_code = sa.Column(sa.String, default="")
+	wertigkeit = sa.Column(sa.Integer, default=0)
+	wiederv_datum = sa.Column(sa.Date, default=None)
+	wiederv_zeit = sa.Column(sa.Integer, default=0)
+	_recid = sa.Column(sa.Integer, primary_key=True)

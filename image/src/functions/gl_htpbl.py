@@ -1,0 +1,64 @@
+from functions.additional_functions import *
+import decimal
+from models import Htparam, Paramtext
+
+def gl_htpbl(grpnr:int):
+    t_htparam_list = []
+    htgrp_list = []
+    htparam = paramtext = None
+    t_htparam = htgrp = None
+    t_htparam_list, T_htparam = create_model_like(Htparam)
+    htgrp_list, Htgrp = create_model("Htgrp", {"number":int, "bezeich":str})
+    db_session = local_storage.db_session
+
+
+    def generate_output():
+        nonlocal t_htparam_list, htgrp_list, htparam, paramtext
+
+
+        nonlocal t_htparam, htgrp
+        nonlocal t_htparam_list, htgrp_list
+        return {"t-htparam": t_htparam_list, "htgrp": htgrp_list}
+
+    def create_htgrp():
+        nonlocal t_htparam_list, htgrp_list, htparam, paramtext
+        nonlocal t_htparam, htgrp
+        nonlocal t_htparam_list, htgrp_list
+
+        arr:[int] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 158, 0, 0, 0, 0, 0]
+        i:int = 0
+
+        if grpnr == 20:
+            arr[14] = 143
+            arr[15] = 0
+
+        elif grpnr == 21:
+            arr[14] = 144
+            arr[15] = 0
+        for i in range(1,20 + 1) :
+            if arr[i - 1] != 0:
+                paramtext = db_session.query(Paramtext).filter(
+                        (Paramtext.txtnr == arr[i - 1])).first()
+                htgrp = Htgrp()
+                htgrp_list.append(htgrp)
+                htgrp.number = paramtext.number
+                htgrp.bezeich = paramtext.ptexte
+                print(htgrp.bezeich)
+
+    def create_htparam():
+        nonlocal t_htparam_list, htgrp_list, htparam, paramtext
+        nonlocal t_htparam, htgrp
+        nonlocal t_htparam_list, htgrp_list
+
+        for htparam in db_session.query(Htparam).filter(
+                (Htparam.paramgruppe == htgrp.number)).all():
+            t_htparam = T_htparam()
+            t_htparam_list.append(t_htparam)
+            buffer_copy(htparam, t_htparam)
+
+    create_htgrp()
+
+    for htgrp in query(htgrp_list):
+        create_htparam()
+
+    return generate_output()

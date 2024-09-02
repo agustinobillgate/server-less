@@ -1,0 +1,497 @@
+from functions.additional_functions import *
+import decimal
+from datetime import date
+from sqlalchemy import func
+from models import Htparam, Zimmer, Outorder, Res_line, Guest, Reslin_queasy, Guestseg, Segment
+
+def hk_zimaidbl(pvilanguage:int):
+    output_list_list = []
+    lvcarea:str = "hk_zimaid"
+    stat_list:[str] = ["", "", "", "", "", "", "", "", "", "", ""]
+    stat_list1:[str] = ["", "", "", "", "", "", "", "", "", "", "", ""]
+    vip_nr:[int] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    resbemerk:str = ""
+    htparam = zimmer = outorder = res_line = guest = reslin_queasy = guestseg = segment = None
+
+    output_list = None
+
+    output_list_list, Output_list = create_model("Output_list", {"personal":bool, "reihenfolge":int, "selected":bool, "cleanflag":bool, "odd_even":int, "flag":int, "zinr":str, "rstat":str, "rstat1":str, "departed":str, "gstat":str, "floor":int, "code":str, "inactive":str, "ldry":str, "towel":str, "kbezeich":str, "arrival":bool, "ankunft":date, "abreise":date, "nation":str, "zistatus":int, "gname":str, "resname":str, "bemerk":str, "rsv_flag":bool, "co_time":str, "vip":str}, {"flag": 1})
+
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal output_list_list, lvcarea, stat_list, stat_list1, vip_nr, resbemerk, htparam, zimmer, outorder, res_line, guest, reslin_queasy, guestseg, segment
+
+
+        nonlocal output_list
+        nonlocal output_list_list
+        return {"output-list": output_list_list}
+
+    def fill_vipnr():
+
+        nonlocal output_list_list, lvcarea, stat_list, stat_list1, vip_nr, resbemerk, htparam, zimmer, outorder, res_line, guest, reslin_queasy, guestseg, segment
+
+
+        nonlocal output_list
+        nonlocal output_list_list
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 700)).first()
+        vip_nr[0] = htparam.finteger
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 701)).first()
+        vip_nr[1] = htparam.finteger
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 702)).first()
+        vip_nr[2] = htparam.finteger
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 703)).first()
+        vip_nr[3] = htparam.finteger
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 704)).first()
+        vip_nr[4] = htparam.finteger
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 705)).first()
+        vip_nr[5] = htparam.finteger
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 706)).first()
+        vip_nr[6] = htparam.finteger
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 707)).first()
+        vip_nr[7] = htparam.finteger
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 708)).first()
+        vip_nr[8] = htparam.finteger
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 712)).first()
+        vip_nr[9] = htparam.finteger
+
+    def fill_list():
+
+        nonlocal output_list_list, lvcarea, stat_list, stat_list1, vip_nr, resbemerk, htparam, zimmer, outorder, res_line, guest, reslin_queasy, guestseg, segment
+
+
+        nonlocal output_list
+        nonlocal output_list_list
+
+        i:int = 0
+        anz:int = 0
+        ci_date:date = None
+        off_market:bool = False
+        ldry:int = 0
+        towel:int = 0
+        c_vip:str = ""
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 87)).first()
+        ci_date = htparam.fdate
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 159)).first()
+        ldry = htparam.finteger
+
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 218)).first()
+        towel = htparam.finteger
+
+        for zimmer in db_session.query(Zimmer).filter(
+                (((Zimmer. zistatus >= 0) &  (Zimmer.zistatus <= 6)) |  (Zimmer.zistatus == 8))).all():
+            off_market = False
+
+            outorder = db_session.query(Outorder).filter(
+                    (Outorder.zinr == zimmer.zinr) &  (Outorder.betriebsnr == 2) &  (Outorder.gespstart <= ci_date) &  (Outorder.gespende >= ci_date)).first()
+
+            if outorder:
+                off_market = True
+            output_list = Output_list()
+            output_list_list.append(output_list)
+
+            output_list.reihenfolge = zimmer.reihenfolge
+            output_list.personal = zimmer.personal
+            output_list.floor = zimmer.etage
+            output_list.zinr = zimmer.zinr
+            output_list.zistatus = zimmer.zistatus
+            output_list.kbezeich = zimmer.kbezeich
+            output_list.code = zimmer.code
+
+            if output_list.reihenfolge == 0:
+                output_list.reihenfolge = 1
+
+            if substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "1" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "3" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "5" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "7" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "9":
+                output_list.odd_even = 1
+
+            elif substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "0" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "2" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "4" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "6" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "8":
+                output_list.odd_even = 2
+
+            if off_market:
+                output_list.zistatus = 7
+                output_list.rstat = stat_list[7]
+                output_list.rstat1 = stat_list1[7]
+
+
+            else:
+                output_list.rstat = stat_list[zimmer.zistatus + 1 - 1]
+                output_list.rstat1 = stat_list1[zimmer.zistatus + 1 - 1]
+
+            if output_list.zistatus == 6:
+
+                outorder = db_session.query(Outorder).filter(
+                        (Outorder.zinr == zimmer.zinr)).first()
+
+                if outorder:
+                    output_list.gname = outorder.gespgrund
+
+                if outorder and (outorder.betriebsnr == 3 or outorder.betriebsnr == 4):
+                    output_list.zistatus = 9
+                    output_list.rstat = stat_list[9]
+                    output_list.rstat1 = stat_list1[9]
+
+            if not zimmer.sleeping:
+                output_list.inactive = "i"
+
+            if zimmer.zistatus == 0:
+                output_list.cleanflag = True
+                output_list.flag = 0
+
+            if (zimmer.zistatus >= 3 and zimmer.zistatus <= 5) or zimmer.zistatus == 8:
+
+                res_line = db_session.query(Res_line).filter(
+                        (Res_line.resstatus == 6) &  (Res_line.zinr == zimmer.zinr)).first()
+
+                if res_line:
+
+                    guest = db_session.query(Guest).filter(
+                            (Guest.gastnr == res_line.gastnr)).first()
+                    output_list.resnam = guest.name
+                    output_list.co_time = to_string(res_line.abreisezeit, "HH:MM:SS")
+
+                    reslin_queasy = db_session.query(Reslin_queasy).filter(
+                            (func.lower(Reslin_queasy.key) == ("specialRequest").lower()) &  
+                            (Reslin_queasy.resnr == res_line.resnr) &  
+                            (Reslin_queasy.reslinnr == res_line.reslinnr)).first()
+
+                    if reslin_queasy:
+                        output_list.code = output_list.code + "," + reslin_queasy.char3
+
+                    if ldry != 0 and ci_date > res_line.ankunft:
+
+                        if (ci_date - res_line.ankunft) % ldry == 0:
+                            output_list.ldry = "LD"
+
+                    if towel != 0 and ci_date > res_line.ankunft:
+
+                        if (ci_date - res_line.ankunft) % towel == 0:
+                            output_list.towel = "TW"
+
+                    output_list = query(output_list_list, filters=(lambda output_list :output_list.zinr == res_line.zinr), first=True)
+
+                    if output_list:
+                        output_list.bemerk = res_line.bemerk
+                        output_list.flag = 1
+
+                        guest = db_session.query(Guest).filter(
+                                    (Guest.gastnr == res_line.gastnr)).first()
+
+                        if guest.vorname1 != "":
+                            output_list.resname = guest.name + ", " + guest.vorname1
+                        else:
+                            output_list.resnam = guest.name
+
+                        if output_list.gname == "":
+
+                            guest = db_session.query(Guest).filter(
+                                    (Guest.gastnr == res_line.gastnrmember)).first()
+                            c_vip = check_vip_guest()
+                            output_list.gname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                            output_list.nation = guest.nation1
+
+                            if c_vip != "":
+                                output_list.vip = c_vip
+
+
+                        output_list.ankunft = res_line.ankunft
+                        output_list.abreise = res_line.abreise
+
+                        if res_line.ankunft == res_line.abreise:
+                            anz = res_line.erwachs + res_line.gratis
+
+                            if anz <= 2:
+                                for i in range(1,anz + 1) :
+                                    output_list.gstat = output_list.gstat + "U"
+                            else:
+                                output_list.gstat = to_string(anz) + "U"
+                            anz = res_line.kind1 + res_line.l_zuordnung[3]
+
+                            if anz <= 2:
+                                for i in range(1,anz + 1) :
+                                    output_list.gstat = output_list.gstat + "u"
+                            else:
+                                output_list.gstat = output_list.gstat + to_string(anz) + "u"
+                            for i in range(1,res_line.kind2 + 1) :
+                                output_list.gstat = output_list.gstat + "C"
+
+                        elif res_line.abreise == ci_date:
+                            output_list.zistatus = 3
+                            output_list.rstat = stat_list[3]
+                            output_list.rstat1 = stat_list1[3]
+
+
+                            anz = res_line.erwachs + res_line.gratis
+
+                            if anz <= 2:
+                                for i in range(1,anz + 1) :
+                                    output_list.gstat = output_list.gstat + "D"
+                            else:
+                                output_list.gstat = to_string(anz) + "D"
+                            anz = res_line.kind1 + res_line.l_zuordnung[3]
+
+                            if anz <= 2:
+                                for i in range(1,anz + 1) :
+                                    output_list.gstat = output_list.gstat + "d"
+                            else:
+                                output_list.gstat = output_list.gstat + to_string(anz) + "d"
+                            for i in range(1,res_line.kind2 + 1) :
+                                output_list.gstat = output_list.gstat + "C"
+                        else:
+                            anz = res_line.erwachs + res_line.gratis
+
+                            if anz <= 2:
+                                for i in range(1,anz + 1) :
+                                    output_list.gstat = output_list.gstat + "R"
+                            else:
+                                output_list.gstat = to_string(anz) + "R"
+                            anz = res_line.kind1 + res_line.l_zuordnung[3]
+
+                            if anz <= 2:
+                                for i in range(1,anz + 1) :
+                                    output_list.gstat = output_list.gstat + "r"
+                            else:
+                                output_list.gstat = output_list.gstat + to_string(anz) + "r"
+                            for i in range(1,res_line.kind2 + 1) :
+                                output_list.gstat = output_list.gstat + "C"
+
+            elif zimmer.zistatus <= 2:
+
+                if zimmer.zistatus == 2:
+
+                    if ldry != 0:
+                        output_list.ldry = "LD"
+
+                    if towel != 0:
+                        output_list.towel = "TW"
+
+                    res_line = db_session.query(Res_line).filter(
+                            (Res_line.resstatus == 8) &  
+                            (Res_line.active_flag == 2) &  
+                            (Res_line.abreise == ci_date) &  
+                            (Res_line.zinr == zimmer.zinr)).first()
+
+                    if res_line:
+                        output_list.gstat = output_list.gstat + "*"
+
+                res_line = db_session.query(Res_line).filter(
+                        ((Res_line.resstatus <= 2) |  (Res_line.resstatus == 5)) &  
+                        (Res_line.active_flag == 0) &  
+                        (Res_line.ankunft == ci_date) &  
+                        (Res_line.zinr == zimmer.zinr)
+                        ).first()
+
+                if res_line:
+
+                    output_list = query(output_list_list, filters=(lambda output_list :output_list.zinr == res_line.zinr), first=True)
+
+                    if output_list:
+                        output_list.bemerk = res_line.bemerk
+                        output_list.flag = 1
+
+                        guest = db_session.query(Guest).filter(
+                                    (Guest.gastnr == res_line.gastnr)).first()
+
+                        if guest.vorname1 != "":
+                            output_list.resname = guest.name + ", " + guest.vorname1
+                        else:
+                            output_list.resnam = guest.name
+
+                        if output_list.gname == "":
+
+                            guest = db_session.query(Guest).filter(
+                                    (Guest.gastnr == res_line.gastnrmember)).first()
+                            c_vip = check_vip_guest()
+                            output_list.gname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                            output_list.nation = guest.nation1
+
+                            if c_vip != "":
+                                output_list.vip = c_vip
+
+
+                        output_list.ankunft = res_line.ankunft
+                        output_list.abreise = res_line.abreise
+                        output_list.arrival = True
+                        anz = res_line.erwachs + res_line.gratis
+
+                        if anz <= 2:
+                            for i in range(1,anz + 1) :
+                                output_list.gstat = output_list.gstat + "A"
+                        else:
+                            output_list.gstat = output_list.gstat + to_string(anz) + "A"
+                        anz = res_line.kind1 + res_line.l_zuordnung[3]
+
+                        if anz <= 2:
+                            for i in range(1,anz + 1) :
+                                output_list.gstat = output_list.gstat + "a"
+                        else:
+                            output_list.gstat = output_list.gstat + to_string(anz) + "a"
+                        for i in range(1,res_line.kind2 + 1) :
+                            output_list.gstat = output_list.gstat + "C"
+
+                        reslin_queasy = db_session.query(Reslin_queasy).filter(
+                                (func.lower(Reslin_queasy.key) == "specialRequest") &  
+                                (Reslin_queasy.resnr == res_line.resnr) &  
+                                (Reslin_queasy.reslinnr == res_line.reslinnr)).first()
+
+                        if reslin_queasy:
+                            output_list.code = output_list.code + "," + reslin_queasy.char3
+
+            if output_list.zistatus == 3:
+
+                res_line = db_session.query(Res_line).filter(
+                        ((Res_line.resstatus <= 2) |  (Res_line.resstatus == 5)) &  
+                        (Res_line.active_flag == 0) &  
+                        (Res_line.ankunft == ci_date) &  
+                        (Res_line.zinr == zimmer.zinr)).first()
+
+                if res_line:
+                    output_list = Output_list()
+                    output_list_list.append(output_list)
+
+                    output_list.reihenfolge = 0
+                    output_list.personal = zimmer.personal
+                    output_list.floor = zimmer.etage
+                    output_list.zinr = zimmer.zinr
+                    output_list.zistatus = zimmer.zistatus
+                    output_list.kbezeich = zimmer.kbezeich
+                    output_list.code = zimmer.code
+
+                    if substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "1" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "3" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "5" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "7" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "9":
+                        output_list.odd_even = 1
+
+                    elif substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "0" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "2" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "4" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "6" or substring(zimmer.zinr, len(zimmer.zinr) - 1, 1) == "8":
+                        output_list.odd_even = 2
+                    output_list.bemerk = res_line.bemerk
+                    output_list.flag = 1
+                    output_list.rsv_flag = True
+
+                    guest = db_session.query(Guest).filter(
+                                (Guest.gastnr == res_line.gastnr)).first()
+
+                    if guest.vorname1 != "":
+                        output_list.resname = guest.name + ", " + guest.vorname1
+                    else:
+                        output_list.resnam = guest.name
+
+                    guest = db_session.query(Guest).filter(
+                                (Guest.gastnr == res_line.gastnrmember)).first()
+                    c_vip = check_vip_guest()
+                    output_list.gname = guest.name + ", " + guest.vorname1 +\
+                            " " + guest.anrede1
+                    output_list.nation = guest.nation1
+                    output_list.ankunft = res_line.ankunft
+                    output_list.abreise = res_line.abreise
+                    output_list.arrival = True
+                    anz = res_line.erwachs + res_line.gratis
+
+                    if c_vip != "":
+                        output_list.vip = c_vip
+
+                    if anz <= 2:
+                        for i in range(1,anz + 1) :
+                            output_list.gstat = output_list.gstat + "A"
+                    else:
+                        output_list.gstat = output_list.gstat + to_string(anz) + "A"
+                    anz = res_line.kind1 + res_line.l_zuordnung[3]
+
+                    if anz <= 2:
+                        for i in range(1,anz + 1) :
+                            output_list.gstat = output_list.gstat + "a"
+                    else:
+                        output_list.gstat = output_list.gstat + to_string(anz) + "a"
+                    for i in range(1,res_line.kind2 + 1) :
+                        output_list.gstat = output_list.gstat + "C"
+
+                    reslin_queasy = db_session.query(Reslin_queasy).filter(
+                                (func.lower(Reslin_queasy.key) == "specialRequest") &  (Reslin_queasy.resnr == res_line.resnr) &  (Reslin_queasy.reslinnr == res_line.reslinnr)).first()
+
+                    if reslin_queasy:
+                        output_list.code = output_list.code + "," + reslin_queasy.char3
+
+    def check_vip_guest():
+
+        nonlocal output_list_list, lvcarea, stat_list, stat_list1, vip_nr, resbemerk, htparam, zimmer, outorder, res_line, guest, reslin_queasy, guestseg, segment
+
+
+        nonlocal output_list
+        nonlocal output_list_list
+
+        c_vip = ""
+
+        def generate_inner_output():
+            return c_vip
+
+        guestseg = db_session.query(Guestseg).filter(
+                (Guestseg.gastnr == guest.gastnr) &  ((Guestseg.segmentcode == vip_nr[0]) |  (Guestseg.segmentcode == vip_nr[1]) |  (Guestseg.segmentcode == vip_nr[2]) |  (Guestseg.segmentcode == vip_nr[3]) |  (Guestseg.segmentcode == vip_nr[4]) |  (Guestseg.segmentcode == vip_nr[5]) |  (Guestseg.segmentcode == vip_nr[6]) |  (Guestseg.segmentcode == vip_nr[7]) |  (Guestseg.segmentcode == vip_nr[8]) |  (Guestseg.segmentcode == vip_nr[9]))).first()
+
+        if guestseg:
+
+            segment = db_session.query(Segment).filter(
+                    (Segment.segmentcode == guestseg.segmentcode)).first()
+
+            if segment:
+                c_vip = segment.bezeich + " "
+
+
+        return generate_inner_output()
+
+
+    stat_list[0] = translateExtended ("Vacant Clean Checked", lvcarea, "")
+    stat_list[1] = translateExtended ("Vac. Clean Unchecked", lvcarea, "")
+    stat_list[2] = translateExtended ("Vacant Dirty", lvcarea, "")
+    stat_list[3] = translateExtended ("Expected Departure", lvcarea, "")
+    stat_list[4] = translateExtended ("Occupied Dirty", lvcarea, "")
+    stat_list[5] = translateExtended ("Occupied Cleaned", lvcarea, "")
+    stat_list[6] = translateExtended ("Out_of_Order", lvcarea, "")
+    stat_list[7] = translateExtended ("Off_Market", lvcarea, "")
+    stat_list[8] = translateExtended ("Do not Disturb", lvcarea, "")
+    stat_list[9] = translateExtended ("Out of Service", lvcarea, "")
+    fill_vipnr()
+    fill_list()
+
+    for output_list in query(output_list_list):
+        resbemerk = ""
+        resbemerk = output_list.bemerk
+        resbemerk = replace_str(resbemerk, chr(10) , "")
+        resbemerk = replace_str(resbemerk, chr(13) , "")
+        resbemerk = replace_str(resbemerk, "~n", "")
+        resbemerk = replace_str(resbemerk, "\\n", "")
+        resbemerk = replace_str(resbemerk, "~r", "")
+        resbemerk = replace_str(resbemerk, "~r~n", "")
+        resbemerk = replace_str(resbemerk, chr(10) + chr(13) , "")
+
+        if len(resbemerk) < 3:
+            resbemerk = replace_str(resbemerk, chr(32) , "")
+
+        if len(resbemerk) == None:
+            resbemerk = ""
+        output_list.bemerk = trim(resbemerk)
+        resbemerk = ""
+
+    return generate_output()

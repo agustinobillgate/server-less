@@ -1,0 +1,45 @@
+from sqlalchemy.dialects.postgresql import ARRAY
+import sqlalchemy as sa
+from models.base import Base
+from functions.additional_functions import get_current_date
+
+class Billjournal(Base):
+	__tablename__ = 'billjournal'
+
+	ankauf = sa.Column(sa.Numeric, default=0)
+	anzahl = sa.Column(sa.Integer, default=0)
+	artnr = sa.Column(sa.Integer, default=0)
+	bediener_nr = sa.Column(sa.Integer, default=0)
+	betrag = sa.Column(sa.Numeric, default=0)
+	betriebsnr = sa.Column(sa.Integer, default=0)
+	bezeich = sa.Column(sa.String, default="")
+	bill_datum = sa.Column(sa.Date, default=None)
+	billin_nr = sa.Column(sa.Integer, default=0)
+	billjou_ref = sa.Column(sa.Integer, default=0)
+	billtype = sa.Column(sa.Integer, default=0)
+	card_details = sa.Column(sa.String, default="")
+	comment = sa.Column(sa.String, default="")
+	departement = sa.Column(sa.Integer, default=0)
+	epreis = sa.Column(sa.Numeric, default=0)
+	fremdwaehrng = sa.Column(sa.Numeric, default=0)
+	kassabuch = sa.Column(sa.Boolean, default=False)
+	kassabuch_nr = sa.Column(sa.Integer, default=0)
+	kassarapport = sa.Column(sa.Boolean, default=False)
+	nachbuchen = sa.Column(sa.Boolean, default=False)
+	rechnr = sa.Column(sa.Integer, default=0)
+	segmentcode = sa.Column(sa.Integer, default=0)
+	service_code = sa.Column(sa.Integer, default=0)
+	service_percent = sa.Column(sa.Numeric, default=0)
+	steuer_percent = sa.Column(sa.Numeric, default=0)
+	steuercode = sa.Column(sa.Integer, default=0)
+	stornogrund = sa.Column(sa.String, default="")
+	subtime = sa.Column(sa.Integer, default=0)
+	sysdate = sa.Column(sa.Date, default=lambda: get_current_date())
+	userinit = sa.Column(sa.String, default="")
+	verkauf = sa.Column(sa.Numeric, default=0)
+	wabkurz = sa.Column(sa.String, default="")
+	waehrungcode = sa.Column(sa.Integer, default=0)
+	waehrungsnr = sa.Column(sa.Integer, default=0)
+	zeit = sa.Column(sa.Integer, default=0)
+	zinr = sa.Column(sa.String, default="")
+	_recid = sa.Column(sa.Integer, primary_key=True)

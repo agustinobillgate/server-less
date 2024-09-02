@@ -1,0 +1,500 @@
+from functions.additional_functions import *
+import decimal
+from datetime import date
+from functions.htpdate import htpdate
+from models import Res_line, Zimkateg, Htparam, Zimmer, Genstat, Zkstat
+
+def calculate_occupied_roomsbl(datum:date, rmtype:str, global_occ:bool):
+    occ_rooms = 0
+    use_it:bool = False
+    ci_date:date = None
+    tot_occ_rooms:int = 0
+    rmcat_rooms:int = 0
+    total_rooms:int = 0
+    occ_rooms_1:int = 0
+    i_method:int = 0
+    d_occupancy:decimal = 0
+    calc_rm:bool = False
+    res_line = zimkateg = htparam = zimmer = genstat = zkstat = None
+
+    zkbuff = None
+
+    Zkbuff = Zimkateg
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal occ_rooms, use_it, ci_date, tot_occ_rooms, rmcat_rooms, total_rooms, occ_rooms_1, i_method, d_occupancy, calc_rm, res_line, zimkateg, htparam, zimmer, genstat, zkstat
+        nonlocal zkbuff
+
+
+        nonlocal zkbuff
+        return {"occ_rooms": occ_rooms}
+
+    def cal_method0():
+
+        nonlocal occ_rooms, use_it, ci_date, tot_occ_rooms, rmcat_rooms, total_rooms, occ_rooms_1, i_method, d_occupancy, calc_rm, res_line, zimkateg, htparam, zimmer, genstat, zkstat
+        nonlocal zkbuff
+
+
+        nonlocal zkbuff
+
+        if zimkateg.typ != 0:
+            cal_method0a()
+
+            return
+
+        if datum >= ci_date:
+
+            for res_line in db_session.query(Res_line).filter(
+                    (Res_line.active_flag <= 1) &  (Res_line.resstatus <= 6) &  (Res_line.resstatus != 3) &  (Res_line.resstatus != 4) &  (Res_line.zikatnr == zimkateg.zikatnr) &  (Res_line.ankunft <= datum) &  (Res_line.abreise >= datum)).all():
+                use_it = True
+
+                if res_line.ankunft == res_line.abreise:
+                    use_it = (res_line.zipreis > 0)
+
+                if res_line.abreise > res_line.ankunft and res_line.abreise == datum:
+                    use_it = False
+
+                if use_it and res_line.zinr != "":
+
+                    zimmer = db_session.query(Zimmer).filter(
+                            (Zimmer.zinr == res_line.zinr)).first()
+
+                    if zimmer and not zimmer.sleeping:
+                        use_it = False
+
+                if use_it:
+                    occ_rooms = occ_rooms + res_line.zimmeranz
+        else:
+
+            for genstat in db_session.query(Genstat).filter(
+                    (Genstat.datum == datum) &  (Genstat.zinr != "") &  (Genstat.resstatus == 6) &  (Genstat.res_logic[1]) &  (Genstat.zikatnr == zimkateg.zikatnr)).all():
+                occ_rooms = occ_rooms + 1
+
+    def cal_method0a():
+
+        nonlocal occ_rooms, use_it, ci_date, tot_occ_rooms, rmcat_rooms, total_rooms, occ_rooms_1, i_method, d_occupancy, calc_rm, res_line, zimkateg, htparam, zimmer, genstat, zkstat
+        nonlocal zkbuff
+
+
+        nonlocal zkbuff
+
+
+        Zkbuff = Zimkateg
+
+        if datum >= ci_date:
+
+            for res_line in db_session.query(Res_line).filter(
+                    (Res_line.active_flag <= 1) &  (Res_line.resstatus <= 6) &  (Res_line.resstatus != 3) &  (Res_line.resstatus != 4) &  (Res_line.ankunft <= datum) &  (Res_line.abreise >= datum)).all():
+
+                zkbuff = db_session.query(Zkbuff).filter(
+                        (Zkbuff.zikatnr == res_line.zikatnr)).first()
+                use_it = (zkbuff.typ == zimkateg.typ)
+
+                if use_it:
+
+                    if res_line.ankunft == res_line.abreise:
+                        use_it = (res_line.zipreis > 0)
+
+                    if res_line.abreise > res_line.ankunft and res_line.abreise == datum:
+                        use_it = False
+
+                if use_it and res_line.zinr != "":
+
+                    zimmer = db_session.query(Zimmer).filter(
+                            (Zimmer.zinr == res_line.zinr)).first()
+
+                    if zimmer and not zimmer.sleeping:
+                        use_it = False
+
+                if use_it:
+                    occ_rooms = occ_rooms + res_line.zimmeranz
+        else:
+
+            for genstat in db_session.query(Genstat).filter(
+                    (Genstat.datum == datum) &  (Genstat.zinr != "") &  (Genstat.resstatus == 6) &  (Genstat.res_logic[1])).all():
+
+                zkbuff = db_session.query(Zkbuff).filter(
+                        (Zkbuff.zikatnr == genstat.zikatnr)).first()
+
+                if zkbuff.typ == zimkateg.typ:
+                    occ_rooms = occ_rooms + 1
+
+    def cal_method1():
+
+        nonlocal occ_rooms, use_it, ci_date, tot_occ_rooms, rmcat_rooms, total_rooms, occ_rooms_1, i_method, d_occupancy, calc_rm, res_line, zimkateg, htparam, zimmer, genstat, zkstat
+        nonlocal zkbuff
+
+
+        nonlocal zkbuff
+
+
+        Zkbuff = Zimkateg
+
+        if zimkateg and zimkateg.typ != 0:
+            cal_method1a()
+
+            return
+
+        if datum >= ci_date:
+
+            for zimmer in db_session.query(Zimmer).filter(
+                    (Zimmer.sleeping)).all():
+
+                zkbuff = db_session.query(Zkbuff).filter(
+                        (Zkbuff.zikatnr == zimmer.zikatnr)).first()
+                total_rooms = total_rooms + 1
+
+                if zkbuff.kurzbez == rmtype:
+                    rmcat_rooms = rmcat_rooms + 1
+
+            for res_line in db_session.query(Res_line).filter(
+                    (Res_line.active_flag <= 1) &  (Res_line.resstatus <= 6) &  (Res_line.resstatus != 3) &  (Res_line.resstatus != 4) &  (Res_line.ankunft <= datum) &  (Res_line.abreise >= datum)).all():
+                use_it = True
+
+                if res_line.ankunft == res_line.abreise:
+                    use_it = (res_line.zipreis > 0)
+
+                if res_line.abreise > res_line.ankunft and res_line.abreise == datum:
+                    use_it = False
+
+                if use_it and res_line.zinr != "":
+
+                    zimmer = db_session.query(Zimmer).filter(
+                            (Zimmer.zinr == res_line.zinr)).first()
+
+                    if zimmer and not zimmer.sleeping:
+                        use_it = False
+
+                if use_it:
+                    tot_occ_rooms = tot_occ_rooms + res_line.zimmeranz
+
+            if global_occ:
+                occ_rooms_1 = tot_occ_rooms
+            else:
+                occ_rooms_1 = round(tot_occ_rooms * rmcat_rooms / total_rooms, 0)
+        else:
+
+            for zkstat in db_session.query(Zkstat).filter(
+                    (Zkstat.datum == datum)).all():
+                total_rooms = total_rooms + zkstat.anz100
+
+                if zimkateg and zkstat.zikatnr == zimkateg.zikatnr:
+                    rmcat_rooms = rmcat_rooms + zkstat.anz100
+
+            for genstat in db_session.query(Genstat).filter(
+                    (Genstat.datum == datum) &  (Genstat.zinr != "") &  (Genstat.resstatus == 6) &  (Genstat.res_logic[1])).all():
+                tot_occ_rooms = tot_occ_rooms + 1
+
+            if global_occ:
+                occ_rooms_1 = tot_occ_rooms
+            else:
+                occ_rooms_1 = round(tot_occ_rooms * rmcat_rooms / total_rooms, 0)
+
+    def cal_method1a():
+
+        nonlocal occ_rooms, use_it, ci_date, tot_occ_rooms, rmcat_rooms, total_rooms, occ_rooms_1, i_method, d_occupancy, calc_rm, res_line, zimkateg, htparam, zimmer, genstat, zkstat
+        nonlocal zkbuff
+
+
+        nonlocal zkbuff
+
+
+        Zkbuff = Zimkateg
+
+        if datum >= ci_date:
+
+            for zimmer in db_session.query(Zimmer).filter(
+                    (Zimmer.sleeping)).all():
+
+                zkbuff = db_session.query(Zkbuff).filter(
+                        (Zkbuff.zikatnr == zimmer.zikatnr)).first()
+                total_rooms = total_rooms + 1
+
+                if zkbuff.typ == zimkateg.typ:
+                    rmcat_rooms = rmcat_rooms + 1
+
+            for res_line in db_session.query(Res_line).filter(
+                    (Res_line.active_flag <= 1) &  (Res_line.resstatus <= 6) &  (Res_line.resstatus != 3) &  (Res_line.resstatus != 4) &  (Res_line.ankunft <= datum) &  (Res_line.abreise >= datum)).all():
+                use_it = True
+
+                if res_line.ankunft == res_line.abreise:
+                    use_it = (res_line.zipreis > 0)
+
+                if res_line.abreise > res_line.ankunft and res_line.abreise == datum:
+                    use_it = False
+
+                if use_it and res_line.zinr != "":
+
+                    zimmer = db_session.query(Zimmer).filter(
+                            (Zimmer.zinr == res_line.zinr)).first()
+
+                    if zimmer and not zimmer.sleeping:
+                        use_it = False
+
+                if use_it:
+                    tot_occ_rooms = tot_occ_rooms + res_line.zimmeranz
+
+            if global_occ:
+                occ_rooms_1 = tot_occ_rooms
+            else:
+                occ_rooms_1 = round(tot_occ_rooms * rmcat_rooms / total_rooms, 0)
+        else:
+
+            for zkstat in db_session.query(Zkstat).filter(
+                    (Zkstat.datum == datum)).all():
+                total_rooms = total_rooms + zkstat.anz100
+
+                zkbuff = db_session.query(Zkbuff).filter(
+                        (Zkbuff.zikatnr == zkstat.zikatnr)).first()
+
+                if zkbuff.typ == zimkateg.typ:
+                    rmcat_rooms = rmcat_rooms + zkstat.anz100
+
+            for genstat in db_session.query(Genstat).filter(
+                    (Genstat.datum == datum) &  (Genstat.zinr != "") &  (Genstat.resstatus == 6) &  (Genstat.res_logic[1])).all():
+                tot_occ_rooms = tot_occ_rooms + 1
+
+            if global_occ:
+                occ_rooms_1 = tot_occ_rooms
+            else:
+                occ_rooms_1 = round(tot_occ_rooms * rmcat_rooms / total_rooms, 0)
+
+    def cal_method2():
+
+        nonlocal occ_rooms, use_it, ci_date, tot_occ_rooms, rmcat_rooms, total_rooms, occ_rooms_1, i_method, d_occupancy, calc_rm, res_line, zimkateg, htparam, zimmer, genstat, zkstat
+        nonlocal zkbuff
+
+
+        nonlocal zkbuff
+
+
+        Zkbuff = Zimkateg
+
+        if zimkateg and zimkateg.typ != 0:
+            cal_method2a()
+
+            return
+
+        if datum >= ci_date:
+
+            for zimmer in db_session.query(Zimmer).filter(
+                    (Zimmer.sleeping)).all():
+
+                zkbuff = db_session.query(Zkbuff).filter(
+                        (Zkbuff.zikatnr == zimmer.zikatnr)).first()
+                total_rooms = total_rooms + 1
+
+                if zkbuff.typ == zimkateg.typ:
+                    rmcat_rooms = rmcat_rooms + 1
+
+            for res_line in db_session.query(Res_line).filter(
+                    (Res_line.active_flag <= 1) &  (Res_line.resstatus <= 6) &  (Res_line.resstatus != 3) &  (Res_line.resstatus != 4) &  (Res_line.ankunft <= datum) &  (Res_line.abreise >= datum)).all():
+                use_it = True
+
+                if res_line.ankunft == res_line.abreise:
+                    use_it = (res_line.zipreis > 0)
+
+                if res_line.abreise > res_line.ankunft and res_line.abreise == datum:
+                    use_it = False
+
+                if use_it and res_line.zinr != "":
+
+                    zimmer = db_session.query(Zimmer).filter(
+                            (Zimmer.zinr == res_line.zinr)).first()
+
+                    if zimmer:
+
+                        if not zimmer.sleeping:
+                            use_it = False
+                        else:
+
+                            zkbuff = db_session.query(Zkbuff).filter(
+                                    (Zkbuff.zikatnr == zimmer.zikatnr)).first()
+
+                            if zkbuff.typ == zimkateg.typ:
+                                use_it = True
+                            else:
+                                use_it = False
+
+                if use_it:
+                    tot_occ_rooms = tot_occ_rooms + res_line.zimmeranz
+            occ_rooms_1 = tot_occ_rooms
+
+
+        else:
+
+            for zkstat in db_session.query(Zkstat).filter(
+                    (Zkstat.datum == datum)).all():
+                total_rooms = total_rooms + zkstat.anz100
+
+                if zkbuff.typ == zimkateg.typ:
+                    rmcat_rooms = rmcat_rooms + zkstat.anz100
+
+            for genstat in db_session.query(Genstat).filter(
+                    (Genstat.datum == datum) &  (Genstat.zinr != "") &  (Genstat.resstatus == 6) &  (Genstat.res_logic[1])).all():
+
+                zimmer = db_session.query(Zimmer).filter(
+                        (Zimmer.zinr == genstat.zinr)).first()
+
+                if zimmer:
+
+                    if not zimmer.sleeping:
+                        use_it = False
+                    else:
+
+                        zkbuff = db_session.query(Zkbuff).filter(
+                                (Zkbuff.zikatnr == zimmer.zikatnr)).first()
+
+                        if zkbuff.typ == zimkateg.typ:
+                            use_it = True
+                        else:
+                            use_it = False
+
+                if use_it:
+                    tot_occ_rooms = tot_occ_rooms + 1
+
+
+            occ_rooms_1 = tot_occ_rooms
+
+    def cal_method2a():
+
+        nonlocal occ_rooms, use_it, ci_date, tot_occ_rooms, rmcat_rooms, total_rooms, occ_rooms_1, i_method, d_occupancy, calc_rm, res_line, zimkateg, htparam, zimmer, genstat, zkstat
+        nonlocal zkbuff
+
+
+        nonlocal zkbuff
+
+
+        Zkbuff = Zimkateg
+
+        if datum >= ci_date:
+
+            for zimmer in db_session.query(Zimmer).filter(
+                    (Zimmer.sleeping)).all():
+
+                zkbuff = db_session.query(Zkbuff).filter(
+                        (Zkbuff.zikatnr == zimmer.zikatnr)).first()
+                total_rooms = total_rooms + 1
+
+                if zkbuff.typ == zimkateg.typ:
+                    rmcat_rooms = rmcat_rooms + 1
+
+            for res_line in db_session.query(Res_line).filter(
+                    (Res_line.active_flag <= 1) &  (Res_line.resstatus <= 6) &  (Res_line.resstatus != 3) &  (Res_line.resstatus != 4) &  (Res_line.ankunft <= datum) &  (Res_line.abreise >= datum)).all():
+                use_it = True
+
+                if res_line.ankunft == res_line.abreise:
+                    use_it = (res_line.zipreis > 0)
+
+                if res_line.abreise > res_line.ankunft and res_line.abreise == datum:
+                    use_it = False
+
+                if use_it and res_line.zinr != "":
+
+                    zimmer = db_session.query(Zimmer).filter(
+                            (Zimmer.zinr == res_line.zinr)).first()
+
+                    if zimmer:
+
+                        if not zimmer.sleeping:
+                            use_it = False
+                        else:
+
+                            zkbuff = db_session.query(Zkbuff).filter(
+                                    (Zkbuff.zikatnr == zimmer.zikatnr)).first()
+
+                            if zkbuff.typ == zimkateg.typ:
+                                use_it = True
+                            else:
+                                use_it = False
+
+                if use_it:
+                    tot_occ_rooms = tot_occ_rooms + res_line.zimmeranz
+            occ_rooms_1 = tot_occ_rooms
+
+
+        else:
+
+            for zkstat in db_session.query(Zkstat).filter(
+                    (Zkstat.datum == datum)).all():
+                total_rooms = total_rooms + zkstat.anz100
+
+                zkbuff = db_session.query(Zkbuff).filter(
+                        (Zkbuff.zikatnr == zkstat.zikatnr)).first()
+
+                if zkbuff.typ == zimkateg.typ:
+                    rmcat_rooms = rmcat_rooms + zkstat.anz100
+
+            for genstat in db_session.query(Genstat).filter(
+                    (Genstat.datum == datum) &  (Genstat.zinr != "") &  (Genstat.resstatus == 6) &  (Genstat.res_logic[1])).all():
+
+                zimmer = db_session.query(Zimmer).filter(
+                        (Zimmer.zinr == genstat.zinr)).first()
+
+                if zimmer:
+
+                    if not zimmer.sleeping:
+                        use_it = False
+                    else:
+
+                        zkbuff = db_session.query(Zkbuff).filter(
+                                (Zkbuff.zikatnr == zimmer.zikatnr)).first()
+
+                        if zkbuff.typ == zimkateg.typ:
+                            use_it = True
+                        else:
+                            use_it = False
+
+                if use_it:
+                    tot_occ_rooms = tot_occ_rooms + 1
+
+
+            occ_rooms_1 = tot_occ_rooms
+
+
+    res_line = db_session.query(Res_line).filter(
+            (Res_line.active_flag <= 1) &  (Res_line.resstatus <= 6) &  (Res_line.resstatus != 3) &  (Res_line.resstatus != 4) &  (not Res_line.ankunft > datum) &  (not Res_line.abreise <= datum)).first()
+
+    if not res_line:
+
+        return generate_output()
+    ci_date = get_output(htpdate(87))
+
+    zimkateg = db_session.query(Zimkateg).filter(
+            (Zimkateg.kurzbez == rmtype)).first()
+
+    htparam = db_session.query(Htparam).filter(
+            (Htparam.paramnr == 439)).first()
+
+    if htparam.feldtyp == 1 and htparam.finteger <= 2:
+        i_method = htparam.finteger
+
+    htparam = db_session.query(Htparam).filter(
+            (Htparam.paramnr == 459)).first()
+
+    if htparam:
+        calc_rm = htparam.flogical
+
+    if calc_rm == False:
+
+        if i_method == 0:
+            cal_method0()
+
+        elif i_method == 1:
+            cal_method1()
+            occ_rooms = occ_rooms_1
+
+        elif i_method == 2:
+            cal_method0()
+            cal_method1()
+
+            if occ_rooms_1 > occ_rooms:
+                occ_rooms = occ_rooms_1
+
+    elif calc_rm :
+        cal_method2()
+        occ_rooms = occ_rooms_1
+
+    return generate_output()

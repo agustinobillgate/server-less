@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_callsListPrepare" path="/callsListPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-calls-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-calls-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_callsListGoBtn" path="/callsListGoBtn" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-calls-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-calls-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_callsListUpdate" path="/callsListUpdate" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-calls-list-updatebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-calls-list-updatebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_readBill1" path="/readBill1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-read-bill1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-read-bill1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_callsListLineSwitch" path="/callsListLineSwitch" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-update-rmextbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-update-rmextbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_deptCallsPrepare" path="/deptCallsPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-calls-deptlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-calls-deptlistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_deptCallsList" path="/deptCallsList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-calls-deptlist2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-calls-deptlist2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_phoneList" path="/phoneList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-phone-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-phone-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_phoneListSave" path="/phoneListSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-write-telephonebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-write-telephonebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_phoneListRead" path="/phoneListRead" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-read-telephonebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-read-telephonebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_phoneListDelete" path="/phoneListDelete" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-delete-telephonebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-delete-telephonebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_telopPrepare" path="/telopPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-telop_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-telop_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_telopList" path="/telopList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-telop-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-telop-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_telopLineExtActivate" path="/lineExtActDeact" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-linext-act-deactbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-linext-act-deactbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_wifiExt" path="/wifiExt" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-telop-wifiextbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-telop-wifiextbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_messagePrepare" path="/messagePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-messagesbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-messagesbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_messageInit" path="/messageInit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-messages-init-varbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-messages-init-varbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_messageLoad" path="/messageLoad" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-messages-get-messagebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-messages-get-messagebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_messageSave" path="/messageSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-messages-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-messages-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_messageDel" path="/messageDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-messages-btn-delbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-messages-btn-delbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_arlIncognito" path="/incognitoGuest" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-arl-list-incognitobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-arl-list-incognitobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_callsListBookCall" path="/callsListBookCall" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-calls-list-bookcallbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-calls-list-bookcallbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+</prgs:model>

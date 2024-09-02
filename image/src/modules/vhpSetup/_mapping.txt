@@ -1,0 +1,10 @@
+service,function
+setupDepartPrepare,prepare_setup_departbl
+setupDepart,setup_departbl
+readUmsatz,read_umsatzbl
+setupRmcat,setup_rmcatbl
+setupMain2Prepare,prepare2_main0
+setupMainPrepare,prepare_main0_1
+setupRoomPrepare,prepare_setup_roombl
+setupRoomResline,setup_room_reslinebl
+setupRoom,setup_roombl

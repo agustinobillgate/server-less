@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_poPrepare" path="/poPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-purchase-orderbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-purchase-orderbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poCreateQ2List" path="/poCreateQ2List" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-purchase-order-create-q2-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-purchase-order-create-q2-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poValChgB2" path="/poValChgB2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-purchase-order-val-chg-b2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-purchase-order-val-chg-b2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poDelPO" path="/poDelPO" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-purchase-order-del-pobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-purchase-order-del-pobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOPrepare" path="/poMkPOPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-mk-po-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-mk-po-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOEntryBesteller" path="/poMkPOEntryBesteller" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-entry-bestellerbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-entry-bestellerbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOReturn" path="/poMkPOReturn" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-of-return_webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-of-return_webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOValChgReleaseFlag" path="/poMkPOValChgReleaseFlag" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-valchg-releaseflagbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-valchg-releaseflagbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOBtnHelpUpdateLOrderHdr" path="/poMkPOBtnHelpUpdateLOrderHdr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-btn-help-update-lorderhdrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-btn-help-update-lorderhdrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOCreateLArtikel" path="/poMkPOCreateLArtikel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-create-l-artikelbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-create-l-artikelbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOLoadLArtikel" path="/poMkPOLoadLArtikel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-load-l-artikelbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-load-l-artikelbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOUpdLArtikel" path="/poMkPOUpdLArtikel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-upd-l-artikelbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-upd-l-artikelbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOReturnCostAcct" path="/poMkPOReturnCostAcct" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-return-cost-acctbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-return-cost-acctbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOBtnGo1" path="/poMkPOBtnGo1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poChgPOPrepare" path="/poChgPOPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-chg-pobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-chg-pobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poChgPOBtnGo" path="/poChgPOBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-chg-po-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-chg-po-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poChgPOBtnStop" path="/poChgPOBtnStop" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-chg-po-btn-stopbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-chg-po-btn-stopbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poChgPOUpdateLOrderHdr" path="/poChgPOUpdateLOrderHdr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-chg-po-update-l-orderhdrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-chg-po-update-l-orderhdrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poDelPOLine" path="/poDelPOLine" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-purchase-order-del-po-linebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-purchase-order-del-po-linebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poCheckDel" path="/poCheckDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-purchase-order-check-delbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-purchase-order-check-delbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prPrepare" path="/prPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-pr-list_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-pr-list_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prList" path="/prList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pr-list-disp-list_11bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pr-list-disp-list_11bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prListRefresh" path="/prListRefresh" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pr-list-disp-list_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pr-list-disp-list_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prListRefresh2" path="/prListRefresh2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pr-list-disp-list_2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pr-list-disp-list_2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prAddPrepare" path="/prAddPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-mk-pr_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-mk-pr_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prAddBtnDel" path="/prAddBtnDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-pr-btn-delbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-pr-btn-delbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prAddCheckOrderHdr" path="/prAddCheckOrderHdr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-pr-up-lorderhdrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-pr-up-lorderhdrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prAddCheckCOA" path="/prAddCheckCOA" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-pr-returnbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-pr-returnbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prAddSaveComment" path="/prAddSaveComment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-pr-defaction-b1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-pr-defaction-b1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prAddCheckCost" path="/prAddCheckCost" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-pr-return-cost-acctbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-pr-return-cost-acctbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prAddSave" path="/prAddSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-pr-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-pr-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prListDel" path="/prListDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pr-list-btn-del_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pr-list-btn-del_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prAddBtnStop" path="/prAddBtnStop" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-pr-btn-stopbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-pr-btn-stopbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prInsBtnStop" path="/prInsBtnStop" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ins-pr-btn-stopbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ins-pr-btn-stopbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prChgPrepare" path="/prChgPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-chg-pr_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-chg-pr_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prChgSuppQuotation" path="/prChgSuppQuotation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-chg-pr-enter-suppbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-chg-pr-enter-suppbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prChgSave" path="/prChgSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-chg-pr-save-s-list_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-chg-pr-save-s-list_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prListUpdate" path="/prListUpdate" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pr-list-update-list_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pr-list-update-list_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prChgDefAction" path="/prChgDefAction" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-chg-pr-def-actionbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-chg-pr-def-actionbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dmlPrepare" path="/dmlPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-dml-list_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-dml-list_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dmlList" path="/dmlList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-dml-list-create-it_11bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-dml-list-create-it_11bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dmlSave" path="/dmlSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-dml-list-save-it_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-dml-list-save-it_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prInsB1" path="/prInsB1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ins-pr-b1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ins-pr-b1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prAddReadGLAcct" path="/prAddReadGLAcct" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-pr-read-glacctbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-pr-read-glacctbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_quoteListPrepare" path="/quoteListPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-quote-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-quote-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_quoteListSave" path="/quoteListSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-quote-list-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-quote-list-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dmlToPRPrepare" path="/dmlToPRPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-dml-list2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-dml-list2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dmlToPRSave" path="/dmlToPRSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-dml-list-upd-orderhdrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-dml-list-upd-orderhdrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dmlToPRView" path="/dmlToPRView" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-dml-list-create-pr_11bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-dml-list-create-pr_11bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dmlInsertArticle" path="/dmlInsertArticle" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-dml-list-ins-article_11bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-dml-list-ins-article_11bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dmlToPOPrepare" path="/dmlToPOPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-dml-list3bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-dml-list3bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dmlToPOSave" path="/dmlToPOSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-dml-list-create-po_11bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-dml-list-create-po_11bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_quoteListDelete" path="/quoteListDelete" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-quote-list-btn-helpbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-quote-list-btn-helpbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dmlCopyArticle" path="/dmlCopyArticle" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-dml-list-copy-articles_11bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-dml-list-copy-articles_11bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dmlListCreateNew" path="/dmlListCreateNew" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-dml-list-create-new_11bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-dml-list-create-new_11bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOCreateLOrder" path="/poMkPOCreateLOrder" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-create-l-orderbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-create-l-orderbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poChgPOUpdateLOrder" path="/poChgPOUpdateLOrder" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-chg-po-update-l-orderbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-chg-po-update-l-orderbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poChgPOBtnHelp" path="/poChgPOBtnHelp" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-chg-po-btn-helpbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-chg-po-btn-helpbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOBtnDel" path="/poMkPOBtnDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-btn-delbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-btn-delbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prInsCheckCostAcct" path="/prInsCheckCostAcct" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ins-pr-check-cost-acctbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ins-pr-check-cost-acctbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prInsCostAcct" path="/prInsCostAcct" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ins-pr-cost-acctbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ins-pr-cost-acctbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOBtnStop" path="/poMkPOBtnStop" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-btn-stopbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-btn-stopbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poInsertPOPrepare" path="/poInsertPOPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-insert-pobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-insert-pobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poInsertPOReturnBesteller" path="/poInsertPOReturnBesteller" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-insert-po-return-bestellerbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-insert-po-return-bestellerbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poInsertPOReturnOf" path="/poInsertPOReturnOf" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-insert-po-return-ofbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-insert-po-return-ofbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poInsertPOBtnDel" path="/poInsertPOBtnDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-insert-po-btn-delbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-insert-po-btn-delbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poInsertPOLoadArtikel" path="/poInsertPOLoadArtikel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ins-po-load-l-artikelbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ins-po-load-l-artikelbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poInsertPOBtnHelp2" path="/poInsertPOBtnHelp2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-insert-po-btn-help2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-insert-po-btn-help2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poInsertPOCreateOrder" path="/poInsertPOCreateOrder" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-insert-po-create-l-orderbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-insert-po-create-l-orderbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_pchaseBookBtnGo1" path="/pchaseBookBtnGo1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pchase-book-btn-go_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pchase-book-btn-go_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_pchaseBookSartnr" path="/pchaseBookSartnr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pchase-book-sartnrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pchase-book-sartnrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOCheckLiefnr" path="/poMkPOCheckLiefnr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-check-lief-nrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-check-lief-nrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prInsPrepare" path="/prInsPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ins-pr_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ins-pr_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prInsBtnDel" path="/prInsBtnDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ins-pr-btn-delbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ins-pr-btn-delbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prInsBtnHelp" path="/prInsBtnHelp" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ins-pr-btn-helpbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ins-pr-btn-helpbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOBtnHelp" path="/poMkPOBtnHelp" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-btn-helpbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-btn-helpbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOBtnValChgCurrency" path="/poMkPOBtnValChgCurrency" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-btn-val-chg-currencybl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-btn-val-chg-currencybl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prChgAvailLQuote" path="/prChgAvailLQuote" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-chg-pr-avail-l-quotebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-chg-pr-avail-l-quotebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prChgPrepareSelectCurr" path="/prChgPrepareSelectCurr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-chg-pr-select-currbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-chg-pr-select-currbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poNumberSelPrepare" path="/poNumberSelPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-sel-ponumberbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-sel-ponumberbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_pchaseBook1BtnGo" path="/pchaseBook1BtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pchase-book1-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pchase-book1-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poMkPOAssignLOrder" path="/poMkPOAssignLOrder" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-po-assign-lorderbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-po-assign-lorderbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_costBudgetView" path="/costBudgetView" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-cost-budget-viewbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-cost-budget-viewbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_costBudgetSearch" path="/costBudgetSearch" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-cost-budget-search.pidl::com.progress.openedge.pdt.bpmbindings" name="web-cost-budget-search" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poInvoicePrepare" path="/poInvoicePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-po-invoicebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-po-invoicebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prChgSave1" path="/prChgSave1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-chg-pr-save-s-list_11bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-chg-pr-save-s-list_11bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prListGetHand" path="/prListGetHand" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pr-list-get-handbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pr-list-get-handbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prListInsList" path="/prListInsList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pr-list-ins-list_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pr-list-ins-list_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prListUpdateSlist" path="/prListUpdateSlist" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pr-list-update-slist_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pr-list-update-slist_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prListBtnGo1" path="/prListSearch" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pr-list-btn-go_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pr-list-btn-go_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_pchaseBookPrint" path="/pchaseBookPrint" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pchase-book-printbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pchase-book-printbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dmlListSaveChg" path="/dmlListSaveChg" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-dml-list-save-chg-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-dml-list-save-chg-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prInsBtnGo" path="/prInsBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ins-pr-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ins-pr-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_insMkPOPrepare" path="/insMkPOPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-mk-ins-po-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-mk-ins-po-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_pchaseParser" path="/pchaseParser" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pchase-parserbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pchase-parserbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poLnLPrint" path="/poLnLPrint" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-print-pchase-lnl-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-print-pchase-lnl-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prListMiReprint" path="/prListMiReprint" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pr-list-mi-reprintbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pr-list-mi-reprintbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poChgPOBtnStopSign" path="/poChgPOBtnStopSign" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-chg-po-btn-stop-signbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-chg-po-btn-stop-signbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poChgPOPrepare1" path="/poChgPOPrepare1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-chg-po_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-chg-po_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poChgPOUpdateLOrderHdr1" path="/poChgPOUpdateLOrderHdr1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-chg-po-update-l-orderhdr_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-chg-po-update-l-orderhdr_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poCheckApproval" path="/poCheckApproval" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-check-approval-pobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-check-approval-pobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prChgPrepare1" path="/prChgPrepare1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-chg-pr-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-chg-pr-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prChgSave2" path="/prChgSave2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-chg-pr-save-s-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-chg-pr-save-s-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+</prgs:model>

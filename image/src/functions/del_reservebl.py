@@ -1,0 +1,44 @@
+from functions.additional_functions import *
+import decimal
+from sqlalchemy import func
+from functions.del_reslinebl import del_reslinebl
+from models import Res_line, Bediener, Htparam
+
+def del_reservebl(pvilanguage:int, res_mode:str, resnr:int, user_init:str, cancel_str:str):
+    msg_str = ""
+    del_mainres:bool = False
+    lvcarea:str = "del_reserve"
+    res_line = bediener = htparam = None
+
+    rline = None
+
+    Rline = Res_line
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal msg_str, del_mainres, lvcarea, res_line, bediener, htparam
+        nonlocal rline
+
+
+        nonlocal rline
+        return {"msg_str": msg_str}
+
+
+    bediener = db_session.query(Bediener).filter(
+            (func.lower(Bediener.userinit) == (user_init).lower())).first()
+
+    htparam = db_session.query(Htparam).filter(
+            (Htparam.paramnr == 87)).first()
+
+    if res_mode.lower()  == "cancel" or res_mode.lower()  == "delete":
+
+        res_line = db_session.query(Res_line).filter(
+                (Res_line.resnr == resnr) &  (Res_line.active_flag == 0) &  (Res_line.l_zuordnung[2] == 0)).first()
+        while None != res_line:
+            del_mainres, msg_str = get_output(del_reslinebl(pvilanguage, res_mode, res_line.resnr, res_line.reslinnr, user_init, cancel_str))
+
+            res_line = db_session.query(Res_line).filter(
+                    (Res_line.resnr == resnr) &  (Res_line.active_flag == 0) &  (Res_line.l_zuordnung[2] == 0)).first()
+
+    return generate_output()

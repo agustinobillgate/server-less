@@ -1,0 +1,45 @@
+from sqlalchemy.dialects.postgresql import ARRAY
+import sqlalchemy as sa
+from models.base import Base
+from functions.additional_functions import get_current_date
+
+class Eg_maintain(Base):
+	__tablename__ = 'eg_maintain'
+
+	cancel_by = sa.Column(sa.String, default="")
+	cancel_date = sa.Column(sa.Date, default=None)
+	cancel_time = sa.Column(sa.Integer, default=0)
+	category = sa.Column(sa.Integer, default=0)
+	char1 = sa.Column(sa.String, default="")
+	char2 = sa.Column(sa.String, default="")
+	char3 = sa.Column(sa.String, default="")
+	comments = sa.Column(sa.String, default="")
+	created_by = sa.Column(sa.String, default="")
+	created_date = sa.Column(sa.Date, default=None)
+	date1 = sa.Column(sa.Date, default=None)
+	date2 = sa.Column(sa.Date, default=None)
+	deci1 = sa.Column(sa.Numeric, default=0)
+	deci2 = sa.Column(sa.Numeric, default=0)
+	delete_flag = sa.Column(sa.Boolean, default=False)
+	donedate = sa.Column(sa.Date, default=None)
+	estworkdate = sa.Column(sa.Date, default=None)
+	location = sa.Column(sa.Integer, default=0)
+	logi1 = sa.Column(sa.Boolean, default=False)
+	logi2 = sa.Column(sa.Boolean, default=False)
+	maintainnr = sa.Column(sa.Integer, default=0)
+	maintask = sa.Column(sa.Integer, default=0)
+	memo = sa.Column(sa.String, default="")
+	month = sa.Column(sa.Integer, default=0)
+	number1 = sa.Column(sa.Integer, default=0)
+	number2 = sa.Column(sa.Integer, default=0)
+	number3 = sa.Column(sa.Integer, default=0)
+	pic = sa.Column(sa.Integer, default=0)
+	propertynr = sa.Column(sa.Integer, default=0)
+	smsflag = sa.Column(sa.Boolean, default=False)
+	type = sa.Column(sa.Integer, default=0)
+	typework = sa.Column(sa.Integer, default=0)
+	week = sa.Column(sa.Integer, default=0)
+	workdate = sa.Column(sa.Date, default=None)
+	year = sa.Column(sa.Integer, default=0)
+	zinr = sa.Column(sa.String, default="")
+	_recid = sa.Column(sa.Integer, primary_key=True)

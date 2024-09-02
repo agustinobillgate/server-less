@@ -1,0 +1,204 @@
+from functions.additional_functions import *
+import decimal
+from datetime import date
+from models import H_bill_line, H_artikel, Artikel, Umsatz, Billjournal
+
+def check_gledger_btn_show1bl(currdate:date):
+    s = 0
+    s1_list_list = []
+    h_bill_line = h_artikel = artikel = umsatz = billjournal = None
+
+    t1_list = s1_list = s1buff = None
+
+    t1_list_list, T1_list = create_model("T1_list", {"dept":int, "rechnr":int, "pay":decimal, "rmtrans":decimal, "compli":decimal, "coupon":decimal})
+    s1_list_list, S1_list = create_model("S1_list", {"flag":int, "nr":int, "artnr":int, "bezeich":str, "artart":int, "dept":int, "amt":decimal, "ums":decimal})
+
+    S1buff = S1_list
+    s1buff_list = s1_list_list
+
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal s, s1_list_list, h_bill_line, h_artikel, artikel, umsatz, billjournal
+        nonlocal s1buff
+
+
+        nonlocal t1_list, s1_list, s1buff
+        nonlocal t1_list_list, s1_list_list
+        return {"s": s, "s1-list": s1_list_list}
+
+    def show_bill_vs_rev():
+
+        nonlocal s, s1_list_list, h_bill_line, h_artikel, artikel, umsatz, billjournal
+        nonlocal s1buff
+
+
+        nonlocal t1_list, s1_list, s1buff
+        nonlocal t1_list_list, s1_list_list
+
+        curr_i:int = 0
+        curr_dept:int = 0
+        tot_billamt:decimal = 0
+        tot_revamt:decimal = 0
+        S1buff = S1_list
+        s1_list_list.clear()
+        t1_list_list.clear()
+
+        for h_bill_line in db_session.query(H_bill_line).filter(
+                (H_bill_line.bill_datum == currdate)).all():
+
+            t1_list = query(t1_list_list, filters=(lambda t1_list :t1_list.rechnr == h_bill_line.rechnr and t1_list.dept == h_bill_line.departement), first=True)
+
+            if not t1_list:
+                t1_list = T1_list()
+                t1_list_list.append(t1_list)
+
+                t1_list.rechnr = h_bill_line.rechnr
+                t1_list.dept = h_bill_line.departement
+
+            if h_bill_line.artnr == 0:
+                t1_list.rmTrans = t1_list.rmTrans + h_bill_line.betrag
+            else:
+
+                h_artikel = db_session.query(H_artikel).filter(
+                        (H_artikel.artnr == h_bill_line.artnr) &  (H_artikel.departement == h_bill_line.departement)).first()
+
+                if h_artikel.artart == 11:
+                    t1_list.compli = t1_list.compli + h_bill_line.betrag
+
+                elif h_artikel.artart == 12:
+                    t1_list.coupon = t1_list.coupon + h_bill_line.betrag
+
+                elif h_artikel.artart != 0:
+                    t1_list.pay = t1_list.pay + h_bill_line.betrag
+
+        for t1_list in query(t1_list_list):
+
+            if t1_list.pay != 0 or t1_list.rmTrans != 0:
+                1
+            else:
+                t1_list_list.remove(t1_list)
+
+        for h_bill_line in db_session.query(H_bill_line).filter(
+                (H_bill_line.bill_datum == currdate) &  (H_bill_line.artnr != 0)).all():
+
+            t1_list = query(t1_list_list, filters=(lambda t1_list :t1_list.rechnr == h_bill_line.rechnr and t1_list.dept == h_bill_line.departement), first=True)
+
+            if t1_list:
+
+                h_artikel = db_session.query(H_artikel).filter(
+                        (H_artikel.artnr == h_bill_line.artnr) &  (H_artikel.departement == h_bill_line.departement)).first()
+
+                if h_artikel.artart == 0:
+
+                    artikel = db_session.query(Artikel).filter(
+                            (Artikel.artnr == h_Artikel.artnrfront) &  (Artikel.departement == h_Artikel.departement)).first()
+
+                    s1_list = query(s1_list_list, filters=(lambda s1_list :s1_list.artnr == artikel.artnr and s1_list.dept == artikel.departement), first=True)
+
+                    if not s1_list:
+                        s1_list = S1_list()
+                        s1_list_list.append(s1_list)
+
+                        s1_list.artnr = artikel.artnr
+                        s1_list.bezeich = artikel.bezeich
+                        s1_list.dept = artikel.departement
+
+
+                    s1_list.amt = s1_list.amt + h_bill_line.betrag
+
+                elif h_artikel.artart == 6 or h_artikel.artart == 5:
+
+                    artikel = db_session.query(Artikel).filter(
+                            (Artikel.artnr == h_Artikel.artnrfront) &  (Artikel.departement == 0)).first()
+
+                    s1_list = query(s1_list_list, filters=(lambda s1_list :s1_list.artnr == artikel.artnr and s1_list.dept == 0), first=True)
+
+                    if not s1_list:
+                        s1_list = S1_list()
+                        s1_list_list.append(s1_list)
+
+                        s1_list.artnr = artikel.artnr
+                        s1_list.dept = 0
+                        s1_list.bezeich = artikel.bezeich
+                        s1_list.artart = artikel.artart
+
+
+                    s1_list.amt = s1_list.amt + h_bill_line.betrag
+
+        for umsatz in db_session.query(Umsatz).filter(
+                (Umsatz.datum == currdate)).all():
+
+            artikel = db_session.query(Artikel).filter(
+                    (Artikel.artnr == umsatz.artnr) &  (Artikel.departement == umsatz.departement)).first()
+
+            if artikel and artikel.artart != 10:
+                s = 0
+
+                for billjournal in db_session.query(Billjournal).filter(
+                        (Billjournal.artnr == umsatz.artnr) &  (Billjournal.departement == umsatz.departement) &  (Billjournal.bill_datum == currdate) &  (Billjournal.anzahl != 0)).all():
+                    s = s + billjournal.betrag
+
+                s1_list = query(s1_list_list, filters=(lambda s1_list :s1_list.artnr == umsatz.artnr and s1_list.dept == umsatz.departement), first=True)
+
+                if not s1_list:
+
+                    artikel = db_session.query(Artikel).filter(
+                            (Artikel.artnr == umsatz.artnr) &  (Artikel.departement == umsatz.departement)).first()
+                    s1_list = S1_list()
+                    s1_list_list.append(s1_list)
+
+                    s1_list.artnr = artikel.artnr
+                    s1_list.dept = artikel.departement
+                    s1_list.bezeich = artikel.bezeich
+                    s1_list.artart = artikel.artart
+
+
+                s1_list.amt = s1_list.amt + s
+                s1_list.ums = umsatz.betrag
+
+        for s1_list in query(s1_list_list, filters=(lambda s1_list :s1_list.flag == 0)):
+            curr_i = curr_i + 1
+
+            if curr_i == 1:
+                curr_dept = s1_list.dept
+
+            if curr_dept != s1_list.dept:
+                s1buff = S1buff()
+                s1buff_list.append(s1buff)
+
+                s1buff.flag = 1
+                s1buff.nr = curr_i
+                s1buff.dept = curr_dept
+                s1buff.bezeich = "T O T A L"
+                s1buff.amt = tot_billamt
+                s1buff.ums = tot_revamt
+                curr_dept = s1_list.dept
+                curr_i = curr_i + 1
+                s1_list.nr = curr_i
+                tot_billamt = s1_list.amt
+                tot_revamt = s1_list.ums
+
+
+            else:
+                tot_billamt = tot_billamt + s1_list.amt
+                tot_revamt = tot_revamt + s1_list.ums
+                s1_list.nr = curr_i
+
+
+        s1buff = S1buff()
+        s1buff_list.append(s1buff)
+
+        s1buff.flag = 1
+        s1buff.nr = curr_i
+        s1buff.dept = curr_dept
+        s1buff.bezeich = "T O T A L"
+        s1buff.amt = tot_billamt
+        s1buff.ums = tot_revamt
+        curr_dept = curr_dept
+        curr_i = curr_i + 1
+
+    show_bill_vs_rev()
+
+    return generate_output()

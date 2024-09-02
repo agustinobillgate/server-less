@@ -1,0 +1,47 @@
+from sqlalchemy.dialects.postgresql import ARRAY
+import sqlalchemy as sa
+from models.base import Base
+from functions.additional_functions import get_current_date
+
+class Crm_campaign(Base):
+	__tablename__ = 'crm_campaign'
+
+	action = sa.Column(sa.Integer, default=0)
+	age = sa.Column(sa.String, default="")
+	arrival = sa.Column(sa.String, default="")
+	bemerk = sa.Column(sa.String, default="")
+	birthday = sa.Column(sa.String, default="")
+	char1 = sa.Column(sa.String, default="")
+	char2 = sa.Column(sa.String, default="")
+	char3 = sa.Column(sa.String, default="")
+	char4 = sa.Column(sa.String, default="")
+	char5 = sa.Column(sa.String, default="")
+	char6 = sa.Column(sa.String, default="")
+	char7 = sa.Column(sa.String, default="")
+	city = sa.Column(sa.String, default="")
+	cnr = sa.Column(sa.Integer, default=0)
+	country = sa.Column(sa.String, default="")
+	date1 = sa.Column(sa.Date, default=None)
+	date2 = sa.Column(sa.Date, default=None)
+	datum = sa.Column(sa.Date, default=None)
+	deci1 = sa.Column(sa.Numeric, default=0)
+	deci2 = sa.Column(sa.Numeric, default=0)
+	guesttype = sa.Column(sa.String, default="")
+	inhouse = sa.Column(sa.String, default="")
+	logi1 = sa.Column(sa.Boolean, default=False)
+	logi2 = sa.Column(sa.Boolean, default=False)
+	mob = sa.Column(sa.String, default="")
+	nat = sa.Column(sa.String, default="")
+	number1 = sa.Column(sa.Integer, default=0)
+	number2 = sa.Column(sa.Integer, default=0)
+	numstay = sa.Column(sa.String, default="")
+	relatives = sa.Column(sa.String, default="")
+	repeater = sa.Column(sa.String, default="")
+	revenue = sa.Column(sa.String, default="")
+	rmnight = sa.Column(sa.String, default="")
+	segment = sa.Column(sa.String, default="")
+	sex = sa.Column(sa.String, default="")
+	stay = sa.Column(sa.String, default="")
+	usrid = sa.Column(sa.String, default="")
+	zeit = sa.Column(sa.Integer, default=0)
+	_recid = sa.Column(sa.Integer, primary_key=True)
