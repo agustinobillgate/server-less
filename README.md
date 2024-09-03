@@ -104,3 +104,12 @@ Step:
 > docker push 618733377538.dkr.ecr.ap-southeast-1.amazonaws.com/fastapi-vhp:v0.3
 
 API Docker Sindata: https://g4ob9nit04.execute-api.ap-southeast-1.amazonaws.com/dev
+
+
+Run Locally:
+pip install uvicorn
+
+uvicorn main:app --host 0.0.0.0 --port 8000 
+uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1 --limit-concurrency 2
+
+Contoh URL: http://localhost:8000/dev/Common/getHTParam0

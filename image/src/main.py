@@ -34,7 +34,7 @@ from decimal import Decimal
 # from flask import Flask, request, abort, Response
 # from flask_cors import CORS
 from fastapi import FastAPI, Response, HTTPException, status, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette import status
 from typing import Dict, Any
@@ -292,6 +292,7 @@ def update_output_format(output_data):
 app = FastAPI()
 handler = Mangum(app)
 origins = ["*"]
+
 log_debugging = "Start"
 # print("3:", docker_version)
 app.add_middleware(
@@ -304,6 +305,22 @@ app.add_middleware(
 )
 # print("4:", docker_version)
 input_data = {}
+@app.get('/')
+async def homepage():
+    print("homepage:", "VHPLite Serverless")
+    html_content = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>e1VHP</title>
+    </head>
+    <body>
+        <h1>Cloud VHP</h1>
+        <p>""" + "VHPLite Serverless" + """</p>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html_content)
 @app.get("/{path_param}")
 @app.post("/{path_param}")
 @app.post("/{path_param:path}")
@@ -363,9 +380,10 @@ async def handle_dynamic_data(request: Request, input_data: Dict[str, Any]):
         newlog.awsreqid = amzn_trace_id
         newlog.useragent = user_agent
         
-        newlog.serverinfo = os.environ['AWS_LAMBDA_FUNCTION_NAME'] + "|" + module_name + ", Docker:" + docker_version
+        lambda_function_name = os.getenv('AWS_LAMBDA_FUNCTION_NAME', 'LOCAL_ENV')
+        newlog.serverinfo = lambda_function_name + "|" + module_name + ", Docker:" + docker_version
         newlog.param1 = json.dumps(input_data)
-        newlog.log = os.environ['AWS_LAMBDA_FUNCTION_NAME'] 
+        newlog.log = lambda_function_name
         dblog_session.add(newlog)
         dblog_session.commit()
         logid = newlog.id
@@ -489,13 +507,15 @@ async def handle_dynamic_data(request: Request, input_data: Dict[str, Any]):
         output_data_size = len(data_string)
         log = dblog_session.query(Htlogs).filter(Htlogs.id==logid).first()
         if log:
+            log_stream_name = os.getenv('AWS_LAMBDA_LOG_STREAM_NAME', 'LOCAL_LOG_STREAM')
+            lambda_function_name = os.getenv('AWS_LAMBDA_FUNCTION_NAME', 'LOCAL_ENV')
             log.htl_code = hotel_schema
             log.userid = inputUsername
             timeend = datetime.now()
             log.endpoint = vhp_module + "/" + service_name 
             log.lendata = output_data_size  
-            log.log = os.environ['AWS_LAMBDA_FUNCTION_NAME'] +  "|" + module_name
-            log.serverinfo = "CloudWatch:" + os.environ['AWS_LAMBDA_LOG_STREAM_NAME'] + "|" + "Docker:" + docker_version
+            log.log = lambda_function_name +  "|" + module_name
+            log.serverinfo = "CloudWatch:" + log_stream_name + "|" + "Docker:" + docker_version
             log.timestamp = timeend
             dblog_session.commit()
             dblog_session.close()
@@ -521,7 +541,8 @@ async def handle_dynamic_data(request: Request, input_data: Dict[str, Any]):
             log.userid = inputUsername
             timeend = datetime.now()
             log.endpoint = vhp_module + "/" + service_name 
-            log.log = os.environ['AWS_LAMBDA_FUNCTION_NAME'] + "|" + module_name + "Err:" + error_message
+            lambda_function_name = os.getenv('AWS_LAMBDA_FUNCTION_NAME', 'LOCAL_ENV')
+            log.log = lambda_function_name + "|" + module_name + "Err:" + error_message
             log.timestamp = timeend
             dblog_session.commit()
             dblog_session.close()
@@ -533,6 +554,8 @@ async def handle_dynamic_data(request: Request, input_data: Dict[str, Any]):
         "response" :output_data
     }
     # dblog_session.close()
+    lambda_function_name = os.getenv('AWS_LAMBDA_FUNCTION_NAME', 'LOCAL_ENV')
+    log_stream_name = os.getenv('AWS_LAMBDA_LOG_STREAM_NAME', 'LOCAL_LOG_STREAM')
     ServerInfo["debug"] = debug
     ServerInfo["version"] = docker_version
     ServerInfo["ipclient"] = client_ip
@@ -541,9 +564,9 @@ async def handle_dynamic_data(request: Request, input_data: Dict[str, Any]):
     ServerInfo["error"] = error_message
     ServerInfo["modfunc"] = module_name  + "/" + service_name 
     ServerInfo["lendata"] = output_data_size
-    ServerInfo["AWSFunction"] =  os.environ['AWS_LAMBDA_FUNCTION_NAME']
+    ServerInfo["AWSFunction"] =  lambda_function_name
     ServerInfo["LogDB"] = use_db + ":" + DB_HOST.split('.')[0].replace("vhp", "vxx", -1).replace("login", "lox", -1)  + "/" + DB_NAME.replace('postgres', 'pxxxsss', -1)
-    ServerInfo["AWSCloudWatch"] =  os.environ["AWS_LAMBDA_LOG_STREAM_NAME"]
+    ServerInfo["AWSCloudWatch"] = log_stream_name
     ServerInfo["AWSRequestId"] = amzn_trace_id
     ServerInfo["pythonVersion"] = platform.python_version()
     return {
