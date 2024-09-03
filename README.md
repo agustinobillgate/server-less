@@ -106,7 +106,7 @@ Step:
 API Docker Sindata: https://g4ob9nit04.execute-api.ap-southeast-1.amazonaws.com/dev
 
 
-Spy bisa run Locally:
+# Spy bisa run Locally:
 Step:pip install uvicorn
 Revisi Main.py:remove/update: env variable AWS untuk local uvicorn
 
