@@ -54,4 +54,10 @@
   <prgs:resource consumes="application/json" name="_correctStatisticRsvname" path="/correctStatisticRsvname" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-correct-statistic-rsvnamebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-correct-statistic-rsvnamebl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_correctCoverBtnExit" path="/correctCoverBtnExit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-correct-cover-btn-exitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-correct-cover-btn-exitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_correctCoverDept" path="/correctCoverDept" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-correct-cover-deptbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-correct-cover-deptbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

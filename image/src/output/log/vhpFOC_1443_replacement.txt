@@ -1,0 +1,183 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\deposit_refund_btn_exitbl.py
+Line no: 201
+Line before: debitor.name = reservation.NAME
+Line after: debitor.name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\flag_reportbl.py
+Line no: 48
+Line before: res_history.aenderung = "Flag Report deleted: " + res_line.NAME +\
+Line after: res_history.aenderung = "Flag Report deleted: " + res_line.name +\
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_invoice_btn_billadrbl.py
+Line no: 142
+Line before: bill.name = guest.NAME
+Line after: bill.name = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_invoice_btn_billadrbl.py
+Line no: 144
+Line before: bill_name = bill.NAME
+Line after: bill_name = bill.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_invoice_btn_masbillbl.py
+Line no: 62
+Line before: master_rechnr = to_string(mbill.rechnr) + " - " + mbill.NAME
+Line after: master_rechnr = to_string(mbill.rechnr) + " - " + mbill.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\group_cobl.py
+Line no: 76
+Line before: mainres_list.name = reservation.NAME
+Line after: mainres_list.name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mast_memberbl.py
+Line no: 129
+Line before: b1_list.gname = res_line.NAME
+Line after: b1_list.gname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\nsinv_newbillbl.py
+Line no: 49
+Line before: bill.bilname = bill.NAME
+Line after: bill.bilname = bill.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ns_invoice_getbill_cashlesscodebl.py
+Line no: 34
+Line before: gname = guest.NAME
+Line after: gname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ns_inv_attach_cashless_code_postbl.py
+Line no: 99
+Line before: temp_list.name = guest.NAME
+Line after: temp_list.name = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_master_invbl.py
+Line no: 153
+Line before: f_foinv.gname = guest.NAME
+Line after: f_foinv.gname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 195
+Line before: htl_name = paramtext.ptext
+Line after: htl_name = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 199
+Line before: htl_adr1 = paramtext.ptext
+Line after: htl_adr1 = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 203
+Line before: htl_adr2 = paramtext.ptext
+Line after: htl_adr2 = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 207
+Line before: htl_adr3 = paramtext.ptext
+Line after: htl_adr3 = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 211
+Line before: htl_tel = paramtext.ptext
+Line after: htl_tel = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 215
+Line before: htl_fax = paramtext.ptext
+Line after: htl_fax = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 219
+Line before: htl_email = paramtext.ptext
+Line after: htl_email = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 536
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 585
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 749
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 848
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 897
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 954
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 995
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 1049
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 1810
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 1843
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 2045
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 2082
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 2127
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 2167
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 2209
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\splitbill_updatebillbl.py
+Line no: 183
+Line before: debitor.name = gbuff.NAME
+Line after: debitor.name = gbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\unbalance_billbl.py
+Line no: 46
+Line before: bill_list.resv_name = guest.NAME
+Line after: bill_list.resv_name = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\unbalance_billbl.py
+Line no: 47
+Line before: bill_list.gname = res_line.NAME
+Line after: bill_list.gname = res_line.name
+==================================================

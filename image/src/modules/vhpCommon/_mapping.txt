@@ -8,7 +8,6 @@ readGLAcct,read_gl_acct_1bl
 chgGLJournBtnDel,chg_gljourn_btn_del_1bl
 chgGLJournBtnGo,chg_gljourn_btn_go_1bl
 checkPermission,zugriff_test
-checkPermission2,zugriff_test2
 selectAccount,prepare_select_glacctbl
 getLoadBrief,load_briefbl
 getGuestbook,guestbook_opr_listbl

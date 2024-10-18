@@ -1,0 +1,478 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_chgreq_assign_tobl.py
+Line no: 31
+Line before: usr_name = usr1.NAME
+Line after: usr_name = usr1.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_chgreq_create_historybl.py
+Line no: 110
+Line before: history.username = usr.NAME
+Line after: history.username = usr.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_costclose_btn_okbl.py
+Line no: 20
+Line before: (Eg_budget.YEAR == styear) & (Eg_budget.MONTH == stmonth) & (Eg_budget.nr == intres)).first()
+Line after: (Eg_budget.year == styear) & (Eg_budget.MONTH == stmonth) & (Eg_budget.nr == intres)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_costclose_btn_okbl.py
+Line no: 20
+Line before: (Eg_budget.year == styear) & (Eg_budget.MONTH == stmonth) & (Eg_budget.nr == intres)).first()
+Line after: (Eg_budget.year == styear) & (Eg_budget.month == stmonth) & (Eg_budget.nr == intres)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_costclose_btn_okbl.py
+Line no: 33
+Line before: (Eg_cost.YEAR == styear) & (Eg_cost.MONTH == stmonth) & (Eg_cost.resource_nr == intres)).first()
+Line after: (Eg_cost.year == styear) & (Eg_cost.MONTH == stmonth) & (Eg_cost.resource_nr == intres)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_costclose_btn_okbl.py
+Line no: 33
+Line before: (Eg_cost.year == styear) & (Eg_cost.MONTH == stmonth) & (Eg_cost.resource_nr == intres)).first()
+Line after: (Eg_cost.year == styear) & (Eg_cost.month == stmonth) & (Eg_cost.resource_nr == intres)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_cost_btn_okbl.py
+Line no: 63
+Line before: (Eg_cost.YEAR == fyear1) & (Eg_cost.MONTH == rmonth) & (Eg_cost.resource_nr == intres4)).first()
+Line after: (Eg_cost.year == fyear1) & (Eg_cost.MONTH == rmonth) & (Eg_cost.resource_nr == intres4)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_cost_btn_okbl.py
+Line no: 63
+Line before: (Eg_cost.year == fyear1) & (Eg_cost.MONTH == rmonth) & (Eg_cost.resource_nr == intres4)).first()
+Line after: (Eg_cost.year == fyear1) & (Eg_cost.month == rmonth) & (Eg_cost.resource_nr == intres4)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendardel_disp_webbl.py
+Line no: 52
+Line before: tStatus = query(tstatus_list, (lambda tStatus: tStatus.stat_nr == maintain.TYPE), first=True)
+Line after: tStatus = query(tstatus_list, (lambda tStatus: tStatus.stat_nr == maintain.type), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendardel_disp_webbl.py
+Line no: 95
+Line before: smaintain.stat_nr = maintain.TYPE
+Line after: smaintain.stat_nr = maintain.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendardel_gobl.py
+Line no: 212
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendardel_gobl.py
+Line no: 499
+Line before: maintain.type = qbuff.TYPE
+Line after: maintain.type = qbuff.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendardel_gobl.py
+Line no: 529
+Line before: maintain.type = qbuff.TYPE
+Line after: maintain.type = qbuff.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendar_btn_delbl.py
+Line no: 55
+Line before: maintain.type = qbuff.TYPE
+Line after: maintain.type = qbuff.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendar_btn_delbl.py
+Line no: 73
+Line before: maintain.type = qbuff.TYPE
+Line after: maintain.type = qbuff.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendar_btn_gobl.py
+Line no: 197
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendar_create_maintainbl.py
+Line no: 53
+Line before: maintain.type = qbuff.TYPE
+Line after: maintain.type = qbuff.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendar_create_maintainbl.py
+Line no: 69
+Line before: maintain.type = qbuff.TYPE
+Line after: maintain.type = qbuff.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendar_set_mainbl.py
+Line no: 371
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendar_set_mainbl.py
+Line no: 405
+Line before: maintain.type = qbuff.TYPE
+Line after: maintain.type = qbuff.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendar_set_mainbl.py
+Line no: 423
+Line before: maintain.type = qbuff.TYPE
+Line after: maintain.type = qbuff.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainscheduleed_btn_go_webbl.py
+Line no: 52
+Line before: if eg_maintain.TYPE != maintain.TYPE:
+Line after: if eg_maintain.type != maintain.type:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainscheduleed_btn_go_webbl.py
+Line no: 61
+Line before: ": " + ststat[eg_maintain.TYPE - 1] + " To " + ststat[maintain.TYPE - 1]
+Line after: ": " + ststat[eg_maintain.type - 1] + " To " + ststat[maintain.type - 1]
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainscheduleed_btn_go_webbl.py
+Line no: 147
+Line before: for action in query(action_list, filters=(lambda action: action.SELECTED)):
+Line after: for action in query(action_list, filters=(lambda action: action.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainscheduleed_picbl.py
+Line no: 47
+Line before: staff.name = qbuff.NAME
+Line after: staff.name = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainscheduleed_picbl.py
+Line no: 57
+Line before: e_name = eg_staff.NAME
+Line after: e_name = eg_staff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainschedule_btn_go_webbl.py
+Line no: 79
+Line before: buffer_copy(maintain, eg_maintain,except_fields=["maintain.maintainnr","maintain.TYPE","maintain.created_date","maintain.estworkdate"])
+Line after: buffer_copy(maintain, eg_maintain,except_fields=["maintain.maintainnr","maintain.type","maintain.created_date","maintain.estworkdate"])
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainschedule_btn_go_webbl.py
+Line no: 88
+Line before: for action in query(action_list, filters=(lambda action: action.SELECTED)):
+Line after: for action in query(action_list, filters=(lambda action: action.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainschedule_btn_go_webbl.py
+Line no: 121
+Line before: buffer_copy(maintain, eg_maintain,except_fields=["maintain.maintainnr","maintain.TYPE","maintain.created_date","maintain.estworkdate"])
+Line after: buffer_copy(maintain, eg_maintain,except_fields=["maintain.maintainnr","maintain.type","maintain.created_date","maintain.estworkdate"])
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainschedule_btn_go_webbl.py
+Line no: 130
+Line before: for action in query(action_list, filters=(lambda action: action.SELECTED)):
+Line after: for action in query(action_list, filters=(lambda action: action.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainschedule_btn_go_webbl.py
+Line no: 163
+Line before: buffer_copy(maintain, eg_maintain,except_fields=["maintain.maintainnr","maintain.TYPE","maintain.created_date","maintain.estworkdate"])
+Line after: buffer_copy(maintain, eg_maintain,except_fields=["maintain.maintainnr","maintain.type","maintain.created_date","maintain.estworkdate"])
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainschedule_btn_go_webbl.py
+Line no: 172
+Line before: for action in query(action_list, filters=(lambda action: action.SELECTED)):
+Line after: for action in query(action_list, filters=(lambda action: action.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainschedule_btn_go_webbl.py
+Line no: 205
+Line before: buffer_copy(maintain, eg_maintain,except_fields=["maintain.maintainnr","maintain.TYPE","maintain.created_date","maintain.estworkdate"])
+Line after: buffer_copy(maintain, eg_maintain,except_fields=["maintain.maintainnr","maintain.type","maintain.created_date","maintain.estworkdate"])
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainschedule_btn_go_webbl.py
+Line no: 214
+Line before: for action in query(action_list, filters=(lambda action: action.SELECTED)):
+Line after: for action in query(action_list, filters=(lambda action: action.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainschedule_btn_go_webbl.py
+Line no: 247
+Line before: buffer_copy(maintain, eg_maintain,except_fields=["maintain.maintainnr","maintain.TYPE","maintain.created_date","maintain.estworkdate"])
+Line after: buffer_copy(maintain, eg_maintain,except_fields=["maintain.maintainnr","maintain.type","maintain.created_date","maintain.estworkdate"])
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainschedule_btn_go_webbl.py
+Line no: 256
+Line before: for action in query(action_list, filters=(lambda action: action.SELECTED)):
+Line after: for action in query(action_list, filters=(lambda action: action.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainschedule_btn_go_webbl.py
+Line no: 289
+Line before: buffer_copy(maintain, eg_maintain,except_fields=["maintain.maintainnr","maintain.TYPE","maintain.created_date","maintain.estworkdate"])
+Line after: buffer_copy(maintain, eg_maintain,except_fields=["maintain.maintainnr","maintain.type","maintain.created_date","maintain.estworkdate"])
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainschedule_btn_go_webbl.py
+Line no: 298
+Line before: for action in query(action_list, filters=(lambda action: action.SELECTED)):
+Line after: for action in query(action_list, filters=(lambda action: action.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_propertylist_btn_go_webbl.py
+Line no: 48
+Line before: q1_list.type = eg_property.TYPE
+Line after: q1_list.type = eg_property.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_property_chk_btn_delartbl.py
+Line no: 30
+Line before: (Egmain.propertynr == property_nr) & (Egmain.TYPE != 3)).first()
+Line after: (Egmain.propertynr == property_nr) & (Egmain.type != 3)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_property_chk_btn_delartbl.py
+Line no: 34
+Line before: if egReq.reqstatus != 5 or egmain.TYPE != 3:
+Line after: if egReq.reqstatus != 5 or egmain.type != 3:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_btn_ok1bl.py
+Line no: 31
+Line before: eg_budget.year = sbudget.YEAR
+Line after: eg_budget.year = sbudget.year
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_btn_ok1bl.py
+Line no: 32
+Line before: eg_budget.month = sbudget.MONTH
+Line after: eg_budget.month = sbudget.month
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_btn_ok2bl.py
+Line no: 38
+Line before: (Eg_budget.nr == intres) & (Eg_budget.YEAR == fyear)).order_by(Eg_budget._recid).all():
+Line after: (Eg_budget.nr == intres) & (Eg_budget.year == fyear)).order_by(Eg_budget._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_btn_ok2bl.py
+Line no: 43
+Line before: recbudget.year = eg_budget.YEAR
+Line after: recbudget.year = eg_budget.year
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_btn_ok2bl.py
+Line no: 44
+Line before: recbudget.month = eg_budget.MONTH
+Line after: recbudget.month = eg_budget.month
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_btn_ok2bl.py
+Line no: 58
+Line before: recbudget = query(recbudget_list, filters=(lambda recbudget: recbudget.MONTH == sbudget.MONTH and recbudget.res_nr == sbudget.res_nr and recbudget.YEAR == sbudget.YEAR), first=True)
+Line after: recbudget = query(recbudget_list, filters=(lambda recbudget: recbudget.MONTH == sbudget.MONTH and recbudget.res_nr == sbudget.res_nr and recbudget.year == sbudget.year), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_btn_ok2bl.py
+Line no: 58
+Line before: recbudget = query(recbudget_list, filters=(lambda recbudget: recbudget.MONTH == sbudget.MONTH and recbudget.res_nr == sbudget.res_nr and recbudget.year == sbudget.year), first=True)
+Line after: recbudget = query(recbudget_list, filters=(lambda recbudget: recbudget.month == sbudget.month and recbudget.res_nr == sbudget.res_nr and recbudget.year == sbudget.year), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_btn_ok2bl.py
+Line no: 79
+Line before: to_string(recbudget.YEAR) + ", " + month_list[recbudget.MONTH - 1] + to_string(recbudget.score , "->>,>>>,>>>,>>9.99") +\
+Line after: to_string(recbudget.year) + ", " + month_list[recbudget.MONTH - 1] + to_string(recbudget.score , "->>,>>>,>>>,>>9.99") +\
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_btn_ok2bl.py
+Line no: 79
+Line before: to_string(recbudget.year) + ", " + month_list[recbudget.MONTH - 1] + to_string(recbudget.score , "->>,>>>,>>>,>>9.99") +\
+Line after: to_string(recbudget.year) + ", " + month_list[recbudget.month - 1] + to_string(recbudget.score , "->>,>>>,>>>,>>9.99") +\
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_btn_ok2bl.py
+Line no: 89
+Line before: eg_budget.year = sbudget.YEAR
+Line after: eg_budget.year = sbudget.year
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_btn_ok2bl.py
+Line no: 90
+Line before: eg_budget.month = sbudget.MONTH
+Line after: eg_budget.month = sbudget.month
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_budget_fromgl_webbl.py
+Line no: 41
+Line before: tbudget = query(tbudget_list, filters=(lambda tbudget: tbudget.MONTH == i), first=True)
+Line after: tbudget = query(tbudget_list, filters=(lambda tbudget: tbudget.month == i), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_budget_fromgl_webbl.py
+Line no: 44
+Line before: sbudget = query(sbudget_list, filters=(lambda sbudget: sbudget.MONTH == i), first=True)
+Line after: sbudget = query(sbudget_list, filters=(lambda sbudget: sbudget.month == i), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_create_browse_webbl.py
+Line no: 54
+Line before: t_eg_budget = query(t_eg_budget_list, filters=(lambda t_eg_budget: t_eg_budget.nr == res.res_nr and t_eg_budget.YEAR == s and t_eg_budget.MONTH == i), first=True)
+Line after: t_eg_budget = query(t_eg_budget_list, filters=(lambda t_eg_budget: t_eg_budget.nr == res.res_nr and t_eg_budget.year == s and t_eg_budget.MONTH == i), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_create_browse_webbl.py
+Line no: 54
+Line before: t_eg_budget = query(t_eg_budget_list, filters=(lambda t_eg_budget: t_eg_budget.nr == res.res_nr and t_eg_budget.year == s and t_eg_budget.MONTH == i), first=True)
+Line after: t_eg_budget = query(t_eg_budget_list, filters=(lambda t_eg_budget: t_eg_budget.nr == res.res_nr and t_eg_budget.year == s and t_eg_budget.month == i), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_create_browse_webbl.py
+Line no: 87
+Line before: t_eg_budget = query(t_eg_budget_list, filters=(lambda t_eg_budget: t_eg_budget.nr == intres and t_eg_budget.YEAR == curr_year and t_eg_budget.MONTH == i), first=True)
+Line after: t_eg_budget = query(t_eg_budget_list, filters=(lambda t_eg_budget: t_eg_budget.nr == intres and t_eg_budget.year == curr_year and t_eg_budget.MONTH == i), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_received_create_browse_webbl.py
+Line no: 87
+Line before: t_eg_budget = query(t_eg_budget_list, filters=(lambda t_eg_budget: t_eg_budget.nr == intres and t_eg_budget.year == curr_year and t_eg_budget.MONTH == i), first=True)
+Line after: t_eg_budget = query(t_eg_budget_list, filters=(lambda t_eg_budget: t_eg_budget.nr == intres and t_eg_budget.year == curr_year and t_eg_budget.month == i), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_reglist1_btn_go_webbl.py
+Line no: 714
+Line before: strdept = queasy.CHAR3
+Line after: strdept = queasy.char3
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_repmaintain_disp_webbl.py
+Line no: 55
+Line before: smaintain.stat_nr = t_eg_maintain.TYPE
+Line after: smaintain.stat_nr = t_eg_maintain.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_repmaintain_disp_webbl.py
+Line no: 105
+Line before: tstatus = query(tstatus_list, (lambda tstatus: tstatus.stat_nr == t_eg_maintain.TYPE and tstatus.stat_selected), first=True)
+Line after: tstatus = query(tstatus_list, (lambda tstatus: tstatus.stat_nr == t_eg_maintain.type and tstatus.stat_selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_repmaintain_disp_webbl.py
+Line no: 113
+Line before: tfrequency = query(tfrequency_list, (lambda tfrequency: tfrequency.freq_nr == t_eg_maintain.TYPE), first=True)
+Line after: tfrequency = query(tfrequency_list, (lambda tfrequency: tfrequency.freq_nr == t_eg_maintain.type), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_repmaintain_disp_webbl.py
+Line no: 130
+Line before: tstatus = query(tstatus_list, (lambda tstatus: tstatus.stat_nr == t_eg_maintain.TYPE and tstatus.stat_selected), first=True)
+Line after: tstatus = query(tstatus_list, (lambda tstatus: tstatus.stat_nr == t_eg_maintain.type and tstatus.stat_selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_repmaintain_disp_webbl.py
+Line no: 138
+Line before: tfrequency = query(tfrequency_list, (lambda tfrequency: tfrequency.freq_nr == t_eg_maintain.TYPE), first=True)
+Line after: tfrequency = query(tfrequency_list, (lambda tfrequency: tfrequency.freq_nr == t_eg_maintain.type), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_repmaintain_disp_webbl.py
+Line no: 155
+Line before: tstatus = query(tstatus_list, (lambda tstatus: tstatus.stat_nr == t_eg_maintain.TYPE and tstatus.stat_selected), first=True)
+Line after: tstatus = query(tstatus_list, (lambda tstatus: tstatus.stat_nr == t_eg_maintain.type and tstatus.stat_selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_repmaintain_disp_webbl.py
+Line no: 163
+Line before: tfrequency = query(tfrequency_list, (lambda tfrequency: tfrequency.freq_nr == t_eg_maintain.TYPE), first=True)
+Line after: tfrequency = query(tfrequency_list, (lambda tfrequency: tfrequency.freq_nr == t_eg_maintain.type), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_chgreq_webbl.py
+Line no: 166
+Line before: b = eg_staff.NAME
+Line after: b = eg_staff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_maincalendardel_webbl.py
+Line no: 214
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_maincalendardel_webbl.py
+Line no: 499
+Line before: maintain.type = qbuff.TYPE
+Line after: maintain.type = qbuff.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_maincalendardel_webbl.py
+Line no: 520
+Line before: maintain.type = qbuff.TYPE
+Line after: maintain.type = qbuff.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_maincalendar_webbl.py
+Line no: 457
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_maincalendar_webbl.py
+Line no: 494
+Line before: comstatus = query(comstatus_list, (lambda comstatus: comstatus.stat_nr == eg_maintain.TYPE), first=True)
+Line after: comstatus = query(comstatus_list, (lambda comstatus: comstatus.stat_nr == eg_maintain.type), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_maincalendar_webbl.py
+Line no: 525
+Line before: smaintain.stat_nr = eg_maintain.TYPE
+Line after: smaintain.stat_nr = eg_maintain.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_maincalendar_webbl.py
+Line no: 533
+Line before: smaintain.pic_nm = eg_staff.NAME
+Line after: smaintain.pic_nm = eg_staff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_mainscheduleed_webbl.py
+Line no: 214
+Line before: if maintain.TYPE == 3:
+Line after: if maintain.type == 3:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_mainscheduleed_webbl.py
+Line no: 244
+Line before: mobile.name = qbuff.NAME
+Line after: mobile.name = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_mainscheduleed_webbl.py
+Line no: 245
+Line before: mobile.position = qbuff.POSITION
+Line after: mobile.position = qbuff.position
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_mainscheduleed_webbl.py
+Line no: 309
+Line before: b = eg_mobilenr.NAME
+Line after: b = eg_mobilenr.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_mainscheduleed_webbl.py
+Line no: 459
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_mainscheduleed_webbl.py
+Line no: 490
+Line before: if eg_maintain.TYPE == 1 or eg_maintain.TYPE == 2:
+Line after: if eg_maintain.type == 1 or eg_maintain.type == 2:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_mainschedule_webbl.py
+Line no: 129
+Line before: staff.name = qbuff.NAME
+Line after: staff.name = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_propertylist_webbl.py
+Line no: 107
+Line before: q1_list.type = eg_property.TYPE
+Line after: q1_list.type = eg_property.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_reglist1bl.py
+Line no: 153
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_repdurationbl.py
+Line no: 326
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_repmaintainbl.py
+Line no: 188
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_repmaintaincancelbl.py
+Line no: 184
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_reprequestcancel_webbl.py
+Line no: 353
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_sel_egmainall_webbl.py
+Line no: 47
+Line before: main_task.bezeich = queasy1.CHAR1
+Line after: main_task.bezeich = queasy1.char1
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_sel_egmainbl.py
+Line no: 45
+Line before: main_task.bezeich = queasy1.CHAR1
+Line after: main_task.bezeich = queasy1.char1
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_sel_lookmaintain_webbl.py
+Line no: 168
+Line before: tmaintain.type = mainbuff.TYPE
+Line after: tmaintain.type = mainbuff.type
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_sel_lookmaintain_webbl.py
+Line no: 169
+Line before: tmaintain.type_nm = typestr[mainbuff.TYPE - 1]
+Line after: tmaintain.type_nm = typestr[mainbuff.type - 1]
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_sel_lookmaintain_webbl.py
+Line no: 171
+Line before: tmaintain.typework_nm = typeworkstr[mainbuff.TYPEwork - 1]
+Line after: tmaintain.typework_nm = typeworkstr[mainbuff.typework - 1]
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_sel_userdeptbl.py
+Line no: 66
+Line before: usr.name = usr1.NAME
+Line after: usr.name = usr1.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\sel_copyprop_btn_ok2bl.py
+Line no: 107
+Line before: str_maintask = queasy.CHAR1
+Line after: str_maintask = queasy.char1
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\sel_copyprop_btn_okbl.py
+Line no: 112
+Line before: str_maintask = queasy.CHAR1
+Line after: str_maintask = queasy.char1
+==================================================

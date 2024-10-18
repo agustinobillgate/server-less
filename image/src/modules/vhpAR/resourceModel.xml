@@ -261,4 +261,31 @@
   <prgs:resource consumes="application/json" name="_arPaymentSettlePaymentDebtPay1" path="/arPaymentSettlePaymentDebtPay1" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-settle-payment-ar-debtpay_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-settle-payment-ar-debtpay_1bl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_arPaymentDebtPay1" path="/arPaymentDebtPay1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ar-debtpay-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ar-debtpay-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getARAge2Custom" path="/getARAge2Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ar-age_2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ar-age_2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getPrepareARAging1" path="/getPrepareARAging1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ar-age_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ar-age_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getARAge12" path="/getARAge12" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ar-age1_2-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ar-age1_2-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_cancelARPaymentCheckCustom" path="/cancelARPaymentCheckCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-release-ar-chk-btn-ok-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-release-ar-chk-btn-ok-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_transferGL1Prepare" path="/transferGL1Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-gl-linkar_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-gl-linkar_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getARPaymentList1" path="/getARPaymentList1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ar-paylist_1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ar-paylist_1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_soaPrintedCreateData" path="/soaPrintedCreateData" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-printed-soa-create-databl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-printed-soa-create-databl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_soaPrint1" path="/soaPrint1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ar-printsoa1_1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ar-printsoa1_1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

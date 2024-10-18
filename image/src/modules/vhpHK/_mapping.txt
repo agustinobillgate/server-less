@@ -1,8 +1,4 @@
 service,function
-getMaidTasklist,maid_tasklistbl
-getOOOHistList,ooohist_listbl
-getGuestPreferenceQueryRooms,hk_read_res_linebl.p
-get_imageHK, get_image_housekeepingbl
 getRoomStatus,hk_get_statusbl
 getOverview,hk_count_webbl
 addOffMarketRooms,hk_change_room_status_ombl

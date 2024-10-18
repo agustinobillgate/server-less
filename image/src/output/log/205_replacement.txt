@@ -1,0 +1,193 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_listbl.py
+Line no: 141
+Line before: abf_list.resname = reservation.NAME
+Line after: abf_list.resname = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\opened_tischbl.py
+Line no: 72
+Line before: t_list.gname = res_line.NAME
+Line after: t_list.gname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\opened_tischbl.py
+Line no: 121
+Line before: t_list.gname = res_line.NAME
+Line after: t_list.gname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ordertaker_listbl.py
+Line no: 30
+Line before: if not htparam or not(paramnr == 246):
+Line after: if not htparam or not(htparam.paramnr == 246):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\over_crlimit_listbl.py
+Line no: 47
+Line before: if not htparam or not(paramnr == 240):
+Line after: if not htparam or not(htparam.paramnr == 240):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\over_crlimit_listbl.py
+Line no: 120
+Line before: if not queasy or not(queasy.key == 105 and queasy.char1 == c_list.NAME):
+Line after: if not queasy or not(queasy.key == 105 and queasy.char1 == c_list.name):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\over_crlimit_listbl.py
+Line no: 122
+Line before: (Queasy.key == 105) &  (Queasy.char1 == c_list.NAME)).first()
+Line after: (Queasy.key == 105) &  (Queasy.char1 == c_list.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\over_crlimit_listbl.py
+Line no: 126
+Line before: if not output_list or not(output_list.guest_name == c_list.NAME):
+Line after: if not output_list or not(output_list.guest_name == c_list.name):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\over_crlimit_listbl.py
+Line no: 127
+Line before: output_list = query(output_list_list, filters=(lambda output_list: output_list.guest_name == c_list.NAME), first=True)
+Line after: output_list = query(output_list_list, filters=(lambda output_list: output_list.guest_name == c_list.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\over_crlimit_listbl.py
+Line no: 133
+Line before: output_list.guest_name = c_list.NAME
+Line after: output_list.guest_name = c_list.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_rest_billjournbl.py
+Line no: 44
+Line before: if not htparam or not(paramnr == 110):
+Line after: if not htparam or not(htparam.paramnr == 110):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_rest_rsvplanbl.py
+Line no: 43
+Line before: if not htparam or not(paramnr == 110):
+Line after: if not htparam or not(htparam.paramnr == 110):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_ts_disc1bl.py
+Line no: 38
+Line before: if htparam.paramgr == 19 and htparam.feldtyp == 4:
+Line after: if htparam.paramgruppe == 19 and htparam.feldtyp == 4:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_ts_pguestbl.py
+Line no: 44
+Line before: pguest_list.gname = res_line.NAME
+Line after: pguest_list.gname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_ts_rzinrbl.py
+Line no: 167
+Line before: q1_list.bill_name = bbuff.NAME
+Line after: q1_list.bill_name = bbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_ts_rzinrbl.py
+Line no: 173
+Line before: q1_list.resname = res_line.NAME
+Line after: q1_list.resname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_ts_rzinrbl.py
+Line no: 251
+Line before: q1_list.bill_name = bbuff.NAME
+Line after: q1_list.bill_name = bbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_ts_rzinrbl.py
+Line no: 257
+Line before: q1_list.resname = res_line.NAME
+Line after: q1_list.resname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_ts_splitbillbl.py
+Line no: 118
+Line before: if htparam.paramgr == 19 and htparam.flogical:
+Line after: if htparam.paramgruppe == 19 and htparam.flogical:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_hbilllnlbl.py
+Line no: 331
+Line before: if htparam.paramgr != 19:
+Line after: if htparam.paramgruppe != 19:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\rest_billjourn_journal_list_webbl.py
+Line no: 95
+Line before: curr_guest = res_line.NAME
+Line after: curr_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\rest_daymercure_btn_gobl.py
+Line no: 207
+Line before: guestname = res_line.NAME
+Line after: guestname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\rest_daysalesp2_btn_gobl.py
+Line no: 230
+Line before: guestname = res_line.NAME
+Line after: guestname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\rest_daysalesp2_btn_gobl.py
+Line no: 883
+Line before: guestname = res_line.NAME
+Line after: guestname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_closeinv_pay_typegt1bl.py
+Line no: 59
+Line before: h_bill.bilname = bill.NAME
+Line after: h_bill.bilname = bill.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_disc1_btn_exitbl.py
+Line no: 48
+Line before: if htparam.paramgr == 19:
+Line after: if htparam.paramgruppe == 19:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_disc1_calculate_disc_webbl.py
+Line no: 76
+Line before: if htparam.paramgr == 19 and htparam.feldtyp == 4:
+Line after: if htparam.paramgruppe == 19 and htparam.feldtyp == 4:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_resplan_delete_depositbl.py
+Line no: 118
+Line before: bill.bilname = bill.NAME
+Line after: bill.bilname = bill.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_restdeposit_pay_btn_exitbl.py
+Line no: 87
+Line before: bill.bilname = bill.NAME
+Line after: bill.bilname = bill.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_restinv_checkbl.py
+Line no: 20
+Line before: if not htparam or not(paramnr == 110):
+Line after: if not htparam or not(htparam.paramnr == 110):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_restinv_not_balance_billbl.py
+Line no: 41
+Line before: if not htparam or not(paramnr == 852):
+Line after: if not htparam or not(htparam.paramnr == 852):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_rmaster_check_creditlimitbl.py
+Line no: 20
+Line before: if not htparam or not(paramnr == 68):
+Line after: if not htparam or not(htparam.paramnr == 68):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_rnonstay_check_creditlimitbl.py
+Line no: 29
+Line before: if not htparam or not(paramnr == 68):
+Line after: if not htparam or not(htparam.paramnr == 68):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_rzinr_btn_exitbl.py
+Line no: 31
+Line before: if not htparam or not(paramnr == 68):
+Line after: if not htparam or not(htparam.paramnr == 68):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_table_check_creditlimitbl.py
+Line no: 31
+Line before: if not htparam or not(paramnr == 68):
+Line after: if not htparam or not(htparam.paramnr == 68):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_tbplan_btn_roombl.py
+Line no: 40
+Line before: if not htparam or not(paramnr == 68):
+Line after: if not htparam or not(htparam.paramnr == 68):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_tbplan_return_room1bl.py
+Line no: 35
+Line before: if not htparam or not(paramnr == 68):
+Line after: if not htparam or not(htparam.paramnr == 68):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_tbplan_return_roombl.py
+Line no: 47
+Line before: if not htparam or not(paramnr == 68):
+Line after: if not htparam or not(htparam.paramnr == 68):
+==================================================

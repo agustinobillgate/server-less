@@ -66,4 +66,16 @@
   <prgs:resource consumes="application/json" name="_callsListBookCall" path="/callsListBookCall" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-calls-list-bookcallbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-calls-list-bookcallbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_messageMess" path="/messageMess" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-messages-btn-messbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-messages-btn-messbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_messagePrint" path="/messagePrint" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-messages-btn-printbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-messages-btn-printbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_messageUpdateResline" path="/messageUpdateResline" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-messages-update-reslinebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-messages-update-reslinebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_messageLoadCustom" path="/messageLoadCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-get-messages-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-get-messages-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

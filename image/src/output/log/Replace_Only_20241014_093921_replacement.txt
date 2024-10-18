@@ -1,0 +1,28 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_roomplan_2_webbl.py
+Line no: 124
+Line before: (((Res_line.Res_line.resstatus <= 2) |  (Res_line.Res_line.resstatus == 5)) &  (func.lower(Res_line.zinr) != "") &  (func.lower(Res_line.zinr) >= (from_room).lower()) &  (Res_line.active_flag == 0) & not_(Res_line.to_date < Res_line.ankunft) & not_(Res_line.curr_date >= Res_line.abreise)) |  (((Res_line.resstatus == 6) |  (Res_line.resstatus == 13)) &  (Res_line.active_flag == 1) &  (Res_line.abreise > curr_date) &  (func.lower(Res_line.zinr) >= (from_room).lower() ))).order_by(Res_line._recid).all():
+Line after: (((Res_line.resstatus <= 2) |  (Res_line.resstatus == 5)) &  (func.lower(Res_line.zinr) != "") &  (func.lower(Res_line.zinr) >= (from_room).lower()) &  (Res_line.active_flag == 0) & not_(Res_line.to_date < Res_line.ankunft) & not_(Res_line.curr_date >= Res_line.abreise)) |  (((Res_line.resstatus == 6) |  (Res_line.resstatus == 13)) &  (Res_line.active_flag == 1) &  (Res_line.abreise > curr_date) &  (func.lower(Res_line.zinr) >= (from_room).lower() ))).order_by(Res_line._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_hk_preference_webbl.py
+Line no: 39
+Line before: t_buff.gname = t_res_line.NAME
+Line after: t_buff.gname = t_res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\produce_signbl.py
+Line no: 65
+Line before: if archieve and archieve.CHAR[1] != "":
+Line after: if archieve and archieve.char[1] != "":
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\produce_signbl.py
+Line no: 66
+Line before: image_data = archieve.CHAR[1]
+Line after: image_data = archieve.char[1]
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\produce_signbl.py
+Line no: 130
+Line before: print_rc_list.last_name = guest.NAME
+Line after: print_rc_list.last_name = guest.name
+==================================================

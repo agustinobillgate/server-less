@@ -1,0 +1,68 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\flag_report_create_listbl.py
+Line no: 67
+Line before: s_list.name = res_line.NAME
+Line after: s_list.name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\flag_report_create_listbl.py
+Line no: 107
+Line before: s_list.name = res_line.NAME
+Line after: s_list.name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\flag_report_create_listbl.py
+Line no: 147
+Line before: s_list.name = res_line.NAME
+Line after: s_list.name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\hk_read_res_linebl.py
+Line no: 39
+Line before: guest_name = t_res_line.NAME
+Line after: guest_name = t_res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\hk_rmboy_send_to_mobilebl.py
+Line no: 27
+Line before: if not htparam or not(paramnr == 87):
+Line after: if not htparam or not(htparam.paramnr == 87):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\hk_statadmin_activate_ooobl.py
+Line no: 39
+Line before: for bline_list in query(bline_list_list, filters=(lambda bline_list: bline_list.SELECTED)):
+Line after: for bline_list in query(bline_list_list, filters=(lambda bline_list: bline_list.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\hk_statadmin_chg_zistatusbl.py
+Line no: 111
+Line before: curr_stat = stat_list[zistatus + 1 - 1]
+Line after: curr_stat = stat_list[zimmer.zistatus + 1 - 1]
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\hk_zimaidbl.py
+Line no: 196
+Line before: output_list.resnam = guest.NAME
+Line after: output_list.resnam = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\hk_zimaidbl.py
+Line no: 230
+Line before: output_list.resnam = guest.NAME
+Line after: output_list.resnam = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\hk_zimaidbl.py
+Line no: 343
+Line before: output_list.resnam = guest.NAME
+Line after: output_list.resnam = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\hk_zimaidbl.py
+Line no: 419
+Line before: output_list.resnam = guest.NAME
+Line after: output_list.resnam = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_hk_statadmin2bl.py
+Line no: 33
+Line before: if not htparam or not(paramnr == 87):
+Line after: if not htparam or not(htparam.paramnr == 87):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_hk_statadminbl.py
+Line no: 95
+Line before: if not htparam or not(paramnr == 87):
+Line after: if not htparam or not(htparam.paramnr == 87):
+==================================================

@@ -1,0 +1,138 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_staff_btn_delartbl.py
+Line no: 26
+Line before: if not egmain or not(egMain.pic == staff_nr and egmain.TYPE != 3):
+Line after: if not egmain or not(egMain.pic == staff_nr and egmain.type != 3):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_staff_btn_delartbl.py
+Line no: 28
+Line before: (Egmain.pic == staff_nr) &  (Egmain.TYPE != 3)).first()
+Line after: (Egmain.pic == staff_nr) &  (Egmain.type != 3)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_loadmacro_step1bl.py
+Line no: 87
+Line before: if not parameters or not(parameters.progname.lower()  == ("FO-Macro").lower()  and parameters.SECTION == to_string(briefnr)):
+Line after: if not parameters or not(parameters.progname.lower()  == ("FO-Macro").lower()  and parameters.section == to_string(briefnr)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_loadmacro_step1bl.py
+Line no: 89
+Line before: (func.lower(Parameters.progname) == ("FO-Macro").lower()) &  (Parameters.SECTION == to_string(briefnr))).first()
+Line after: (func.lower(Parameters.progname) == ("FO-Macro").lower()) &  (Parameters.section == to_string(briefnr))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_loadmacro_step1bl.py
+Line no: 98
+Line before: if not parameters or not(parameters.progname.lower()  == ("FO-Macro").lower()  and parameters.SECTION == to_string(briefnr)):
+Line after: if not parameters or not(parameters.progname.lower()  == ("FO-Macro").lower()  and parameters.section == to_string(briefnr)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_loadmacro_step1bl.py
+Line no: 101
+Line before: (func.lower(Parameters.progname) == ("FO-Macro").lower()) &  (Parameters.SECTION == to_string(briefnr))).filter(Parameters._recid > curr_recid).first()
+Line after: (func.lower(Parameters.progname) == ("FO-Macro").lower()) &  (Parameters.section == to_string(briefnr))).filter(Parameters._recid > curr_recid).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_load_macro_webbl.py
+Line no: 280
+Line before: if not parameters or not(parameters.progname.lower()  == ("FO-Macro").lower()  and parameters.SECTION == to_string(briefnr)):
+Line after: if not parameters or not(parameters.progname.lower()  == ("FO-Macro").lower()  and parameters.section == to_string(briefnr)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_load_macro_webbl.py
+Line no: 282
+Line before: (func.lower(Parameters.progname) == ("FO-Macro").lower()) &  (Parameters.SECTION == to_string(briefnr))).first()
+Line after: (func.lower(Parameters.progname) == ("FO-Macro").lower()) &  (Parameters.section == to_string(briefnr))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_load_macro_webbl.py
+Line no: 291
+Line before: if not parameters or not(parameters.progname.lower()  == ("FO-Macro").lower()  and parameters.SECTION == to_string(briefnr)):
+Line after: if not parameters or not(parameters.progname.lower()  == ("FO-Macro").lower()  and parameters.section == to_string(briefnr)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_load_macro_webbl.py
+Line no: 294
+Line before: (func.lower(Parameters.progname) == ("FO-Macro").lower()) &  (Parameters.SECTION == to_string(briefnr))).filter(Parameters._recid > curr_recid).first()
+Line after: (func.lower(Parameters.progname) == ("FO-Macro").lower()) &  (Parameters.section == to_string(briefnr))).filter(Parameters._recid > curr_recid).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_wordadminbl.py
+Line no: 45
+Line before: if not htparam or not(paramnr == 433):
+Line after: if not htparam or not(htparam.paramnr == 433):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_step1bl.py
+Line no: 59
+Line before: if not parameters or not(parameters.progname.lower()  == ("GL-Macro").lower()  and parameters.SECTION == to_string(briefnr)):
+Line after: if not parameters or not(parameters.progname.lower()  == ("GL-Macro").lower()  and parameters.section == to_string(briefnr)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_step1bl.py
+Line no: 61
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.SECTION == to_string(briefnr))).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.section == to_string(briefnr))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_step1bl.py
+Line no: 70
+Line before: if not parameters or not(parameters.progname.lower()  == ("GL-Macro").lower()  and parameters.SECTION == to_string(briefnr)):
+Line after: if not parameters or not(parameters.progname.lower()  == ("GL-Macro").lower()  and parameters.section == to_string(briefnr)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_step1bl.py
+Line no: 73
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.SECTION == to_string(briefnr))).filter(Parameters._recid > curr_recid).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.section == to_string(briefnr))).filter(Parameters._recid > curr_recid).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_webbl.py
+Line no: 396
+Line before: if not parameters or not(parameters.progname.lower()  == ("GL-Macro").lower()  and parameters.SECTION == t_parameters.SECTION):
+Line after: if not parameters or not(parameters.progname.lower()  == ("GL-Macro").lower()  and parameters.section == t_parameters.section):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_webbl.py
+Line no: 398
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.SECTION == t_parameters.SECTION)).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.section == t_parameters.section)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_webbl.py
+Line no: 408
+Line before: if not parameters or not(parameters.progname.lower()  == ("GL-Macro").lower()  and parameters.SECTION == t_parameters.SECTION):
+Line after: if not parameters or not(parameters.progname.lower()  == ("GL-Macro").lower()  and parameters.section == t_parameters.section):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_webbl.py
+Line no: 411
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.SECTION == t_parameters.SECTION)).filter(Parameters._recid > curr_recid).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.section == t_parameters.section)).filter(Parameters._recid > curr_recid).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_copy_hartikelbl.py
+Line no: 31
+Line before: if not htparam or not(paramnr == 852):
+Line after: if not htparam or not(htparam.paramnr == 852):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gl_wordvibl.py
+Line no: 40
+Line before: if not htparam or not(paramnr == 987):
+Line after: if not htparam or not(htparam.paramnr == 987):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_main1bl.py
+Line no: 115
+Line before: if not htparam.flogical or htparam.paramgr != 99:
+Line after: if not htparam.flogical or htparam.paramgruppe != 99:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_main1bl.py
+Line no: 122
+Line before: if not htparam.flogical or htparam.paramgr != 99:
+Line after: if not htparam.flogical or htparam.paramgruppe != 99:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_main1bl.py
+Line no: 154
+Line before: if htparam.paramgr == 99 and htparam.flogical:
+Line after: if htparam.paramgruppe == 99 and htparam.flogical:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_rarticle_adminbl.py
+Line no: 29
+Line before: if not htparam or not(paramnr == 246):
+Line after: if not htparam or not(htparam.paramnr == 246):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_room_adminbl.py
+Line no: 34
+Line before: if not htparam or not(paramnr == 87):
+Line after: if not htparam or not(htparam.paramnr == 87):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ratecode_adm_memberbl.py
+Line no: 39
+Line before: tb11.name = guest.NAME
+Line after: tb11.name = guest.name
+==================================================

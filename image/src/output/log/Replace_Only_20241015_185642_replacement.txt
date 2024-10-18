@@ -1,0 +1,13 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\produce_signbl.py
+Line no: 81
+Line before: print_rc_list.arrival = to_string(ankunft, "99/99/9999")
+Line after: print_rc_list.arrival = to_string(res_line.ankunft, "99/99/9999")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\produce_signbl.py
+Line no: 82
+Line before: print_rc_list.departure = to_string(abreise, "99/99/9999") + " " + to_string(res_line.abreisezeit, "HH:mm")
+Line after: print_rc_list.departure = to_string(res_line.abreise, "99/99/9999") + " " + to_string(res_line.abreisezeit, "HH:mm")
+==================================================

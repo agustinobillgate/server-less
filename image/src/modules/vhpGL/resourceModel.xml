@@ -36,11 +36,8 @@
   <prgs:resource consumes="application/json" name="_getGLJouref" path="/getGLJouref" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-jourefbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-jourefbl" produces="application/json" verb="POST"/>
   </prgs:resource>
-  <prgs:resource consumes="application/json" name="_getPrepareJouHistList" path="/getPrepareJouHistList" produces="application/json">
-    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-gl-jouhislistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-gl-jouhislistbl" produces="application/json" verb="POST"/>
-  </prgs:resource>
   <prgs:resource consumes="application/json" name="_getGLJouHistListCreateList" path="/getGLJouHistListCreateList" produces="application/json">
-    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-jouhislist-create-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-jouhislist-create-listbl" produces="application/json" verb="POST"/>
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-jouhislist-create-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-jouhislist-create-list-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
   <prgs:resource consumes="application/json" name="_getGLJouHistListCheckChg" path="/getGLJouHistListCheckChg" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-jouhislist-check-chgbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-jouhislist-check-chgbl" produces="application/json" verb="POST"/>
@@ -272,5 +269,107 @@
   </prgs:resource>
   <prgs:resource consumes="application/json" name="_getTrialBalanceViewDetailChkEdit" path="/getTrialBalanceViewDetailChkEdit" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-detail1-chk-editbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-detail1-chk-editbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getTrialBalance1" path="/getTrialBalance1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-trialbalance-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-trialbalance-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fcashFlowPrepare" path="/fcashFlowPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fcash-flowbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fcash-flowbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getGLJoulist2" path="/getGLJoulist2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-joulist2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-joulist2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_newDRRList" path="/newDRRList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-new-drrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-new-drrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_newDRRCreateGsheet" path="/newDRRCreateGsheet" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-new-drr-create-gsheet-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-new-drr-create-gsheet-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getGLJoulist3" path="/getGLJoulist3" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-joulist_3-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-joulist_3-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getGLJoulist2Custom" path="/getGLJoulist2Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-joulist2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-joulist2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getGLJoulist2CreateOutput" path="/getGLJoulist2CreateOutput" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-joulist2-create-output-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-joulist2-create-output-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glreportJsiPrepare" path="/glreportJsiPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-glreport-jsibl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-glreport-jsibl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glreportJsiBtnGo" path="/glreportJsiBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-glreport-jsi-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-glreport-jsi-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glacctHallamohana" path="/glacctHallamohana" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-glacct-hallamohanabl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-glacct-hallamohanabl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hmCashflow" path="/hmCashflow" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hm-cashflowbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hm-cashflowbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glTransferHeadoffice" path="/glTransferHeadoffice" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-transfer-headoffice-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-transfer-headoffice-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_newDRRGs" path="/newDRRGs" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-new-drr-gsbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-new-drr-gsbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_newDRRListPrepare" path="/newDRRListPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-new-drrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-new-drrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_newDRRGsDel" path="/newDRRGsDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-new-drr-del-gsbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-new-drr-del-gsbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getGLJoulist2Custom1" path="/getGLJoulist2Custom1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-joulist2-web_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-joulist2-web_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getGLJoulist2CreateOutput1" path="/getGLJoulist2CreateOutput1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-joulist2-create-output-web_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-joulist2-create-output-web_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glAdjustmentBtnDel" path="/glAdjustmentBtnDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-adjustment-btn-delbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-adjustment-btn-delbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glAdjustmentXlsjournBtnGo" path="/glAdjustmentXlsjournBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-adjustment-xlsjourn-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-adjustment-xlsjourn-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glAdjustmentXlsjournPostIt" path="/glAdjustmentXlsjournPostIt" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-adjustment-xlsjourn-post-itbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-adjustment-xlsjourn-post-itbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glAdjustmentPrepare" path="/glAdjustmentPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-gl-adjustmentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-gl-adjustmentbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glAdjustmentXlsjournPrepare" path="/glAdjustmentXlsjournPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-gl-adjustment-xlsjournbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-gl-adjustment-xlsjournbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_chgGLJournalBtnGo11" path="/chgGLJournalBtnGo11" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-chg-gl-journ-btn-go1_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-chg-gl-journ-btn-go1_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glAdjustmentClose" path="/glAdjustmentClose" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-close-adjustmentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-close-adjustmentbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glAdjustmentDeleteAll" path="/glAdjustmentDeleteAll" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-delete-gl-adjustment-allbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-delete-gl-adjustment-allbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getPrepareJouHistList" path="/getPrepareJouHistList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-gl-jouhislistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-gl-jouhislistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mappingCoaPrepare" path="/mappingCoaPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-mappingcoabl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-mappingcoabl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mappingCoaCheckDelete" path="/mappingCoaCheckDelete" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-check-delete-mappingcoabl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-check-delete-mappingcoabl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mappingCoa" path="/mappingCoa" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mapping-coa-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mapping-coa-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glCOABudgetCreateListCustom" path="/glCOABudgetCreateListCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-coa-budget-create-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-coa-budget-create-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glAdjustmentBtnOk" path="/glAdjustmentBtnOk" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-btn-ok-adjustmentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-btn-ok-adjustmentbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glacctExport2" path="/glacctExport2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-glacct-export2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-glacct-export2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glCOABudgetCreateList1Custom" path="/glCOABudgetCreateList1Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-coa-budget-create-list1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-coa-budget-create-list1-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
 </prgs:model>

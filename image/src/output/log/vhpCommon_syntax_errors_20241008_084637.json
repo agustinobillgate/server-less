@@ -1,0 +1,7 @@
+[
+    {
+        "file_path": "D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\\qrcode_generator_codelist_webbl.py",
+        "line": 41,
+        "msg": "Syntax error: leading zeros in decimal integer literals are not permitted; use an 0o prefix for octal integers"
+    }
+]

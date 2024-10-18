@@ -1,0 +1,53 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_wordadminbl.py
+Line no: 45
+Line before: if not htparam or not(paramnr == 433):
+Line after: if not htparam or not(htparam.paramnr == 433):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_copy_hartikelbl.py
+Line no: 31
+Line before: if not htparam or not(paramnr == 852):
+Line after: if not htparam or not(htparam.paramnr == 852):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gl_wordvibl.py
+Line no: 40
+Line before: if not htparam or not(paramnr == 987):
+Line after: if not htparam or not(htparam.paramnr == 987):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_main1bl.py
+Line no: 115
+Line before: if not htparam.flogical or htparam.paramgr != 99:
+Line after: if not htparam.flogical or htparam.paramgruppe != 99:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_main1bl.py
+Line no: 122
+Line before: if not htparam.flogical or htparam.paramgr != 99:
+Line after: if not htparam.flogical or htparam.paramgruppe != 99:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_main1bl.py
+Line no: 154
+Line before: if htparam.paramgr == 99 and htparam.flogical:
+Line after: if htparam.paramgruppe == 99 and htparam.flogical:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_rarticle_adminbl.py
+Line no: 29
+Line before: if not htparam or not(paramnr == 246):
+Line after: if not htparam or not(htparam.paramnr == 246):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_room_adminbl.py
+Line no: 34
+Line before: if not htparam or not(paramnr == 87):
+Line after: if not htparam or not(htparam.paramnr == 87):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ratecode_adm_memberbl.py
+Line no: 39
+Line before: tb11.name = guest.NAME
+Line after: tb11.name = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\vat_adminbl.py
+Line no: 25
+Line before: htparam.bezeich = bezeich
+Line after: htparam.bezeichnung = bezeich
+==================================================

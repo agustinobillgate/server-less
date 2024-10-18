@@ -1,0 +1,43 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 231
+Line before: cl_list.firstname = RIGHT_trim(gmember.vorname1, chr(10))
+Line after: cl_list.firstname = right_trim(gmember.vorname1, chr(10))
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 232
+Line before: cl_list.firstname = RIGHT_trim(cl_list.firstname, chr(13))
+Line after: cl_list.firstname = right_trim(cl_list.firstname, chr(13))
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 234
+Line before: cl_list.lastname = RIGHT_trim(gmember.name, chr(10))
+Line after: cl_list.lastname = right_trim(gmember.name, chr(10))
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 235
+Line before: cl_list.lastname = RIGHT_trim(cl_list.lastname, chr(13))
+Line after: cl_list.lastname = right_trim(cl_list.lastname, chr(13))
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 643
+Line before: cl_list.firstname = RIGHT_trim(gmember.vorname1, chr(10))
+Line after: cl_list.firstname = right_trim(gmember.vorname1, chr(10))
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 644
+Line before: cl_list.firstname = RIGHT_trim(cl_list.firstname, chr(13))
+Line after: cl_list.firstname = right_trim(cl_list.firstname, chr(13))
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 646
+Line before: cl_list.lastname = RIGHT_trim(gmember.name, chr(10))
+Line after: cl_list.lastname = right_trim(gmember.name, chr(10))
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 647
+Line before: cl_list.lastname = RIGHT_trim(cl_list.lastname, chr(13))
+Line after: cl_list.lastname = right_trim(cl_list.lastname, chr(13))
+==================================================

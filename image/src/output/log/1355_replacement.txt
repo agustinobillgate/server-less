@@ -1,0 +1,128 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1bl.py
+Line no: 161
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1bl.py
+Line no: 278
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1bl.py
+Line no: 395
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1bl.py
+Line no: 524
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age_btn_gobl.py
+Line no: 631
+Line before: if not queasy or not(queasy.key == 221 and queasy.number1 == l_kredit.lief_nr and queasy.char1 == l_kredit.NAME):
+Line after: if not queasy or not(queasy.key == 221 and queasy.number1 == l_kredit.lief_nr and queasy.char1 == l_kredit.name):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age_btn_gobl.py
+Line no: 633
+Line before: (Queasy.key == 221) &  (Queasy.number1 == l_kredit.lief_nr) &  (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) &  (Queasy.number1 == l_kredit.lief_nr) &  (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age_btn_gobl.py
+Line no: 671
+Line before: if not queasy or not(queasy.key == 221 and queasy.number1 == l_kredit.lief_nr and queasy.char1 == l_kredit.NAME):
+Line after: if not queasy or not(queasy.key == 221 and queasy.number1 == l_kredit.lief_nr and queasy.char1 == l_kredit.name):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age_btn_gobl.py
+Line no: 673
+Line before: (Queasy.key == 221) &  (Queasy.number1 == l_kredit.lief_nr) &  (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) &  (Queasy.number1 == l_kredit.lief_nr) &  (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 100
+Line before: if not queasy or not(queasy.key == 221 and queasy.char1 == l_kredit.NAME):
+Line after: if not queasy or not(queasy.key == 221 and queasy.char1 == l_kredit.name):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 102
+Line before: (Queasy.key == 221) &  (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) &  (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 113
+Line before: if not gl_jouhdr or not(gl_jouhdr.refno == l_kredit.NAME):
+Line after: if not gl_jouhdr or not(gl_jouhdr.refno == l_kredit.name):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 115
+Line before: (Gl_jouhdr.refno == l_kredit.NAME)).first()
+Line after: (Gl_jouhdr.refno == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 209
+Line before: if not queasy or not(queasy.key == 221 and queasy.char1 == l_kredit.NAME):
+Line after: if not queasy or not(queasy.key == 221 and queasy.char1 == l_kredit.name):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 211
+Line before: (Queasy.key == 221) &  (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) &  (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 222
+Line before: if not gl_jouhdr or not(gl_jouhdr.refno == l_kredit.NAME):
+Line after: if not gl_jouhdr or not(gl_jouhdr.refno == l_kredit.name):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 224
+Line before: (Gl_jouhdr.refno == l_kredit.NAME)).first()
+Line after: (Gl_jouhdr.refno == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_reasonbl.py
+Line no: 29
+Line before: if not queasy or not(queasy.key == 263 and queasy.char1 == l_kredit.NAME):
+Line after: if not queasy or not(queasy.key == 263 and queasy.char1 == l_kredit.name):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_reasonbl.py
+Line no: 31
+Line before: (Queasy.key == 263) &  (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 263) &  (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_reasonbl.py
+Line no: 55
+Line before: if not queasy or not(queasy.key == 263 and queasy.char1 == l_kredit.NAME):
+Line after: if not queasy or not(queasy.key == 263 and queasy.char1 == l_kredit.name):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_reasonbl.py
+Line no: 57
+Line before: (Queasy.key == 263) &  (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 263) &  (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gl_linkapbl.py
+Line no: 33
+Line before: if htparam.paramgr == 38 and htparam.feldtyp == 1 and htparam.finteger > 0:
+Line after: if htparam.paramgruppe == 38 and htparam.feldtyp == 1 and htparam.finteger > 0:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_supply_inlistbl.py
+Line no: 71
+Line before: from_supp = from_supp + ";" + l_kredit.NAME
+Line after: from_supp = from_supp + ";" + l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_supply_listbl.py
+Line no: 39
+Line before: if not htparam or not(paramnr == 992):
+Line after: if not htparam or not(htparam.paramnr == 992):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\release_ap_btn_ok1bl.py
+Line no: 74
+Line before: if not htparam or not(paramnr == 1118):
+Line after: if not htparam or not(htparam.paramnr == 1118):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\release_ap_def_actionbl.py
+Line no: 27
+Line before: if not htparam or not(paramnr == 1118):
+Line after: if not htparam or not(htparam.paramnr == 1118):
+==================================================

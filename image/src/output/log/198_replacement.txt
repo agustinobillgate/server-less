@@ -1,0 +1,28 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\calls_deptlist2bl.py
+Line no: 111
+Line before: print_list.ext = cost_list.NAME
+Line after: print_list.ext = cost_list.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\messages_btn_gobl.py
+Line no: 47
+Line before: if not htparam or not(paramnr == 310):
+Line after: if not htparam or not(htparam.paramnr == 310):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\messages_init_varbl.py
+Line no: 51
+Line before: if not htparam or not(paramnr == 310):
+Line after: if not htparam or not(htparam.paramnr == 310):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_calls_deptlistbl.py
+Line no: 57
+Line before: if not htparam or not(paramnr == 240):
+Line after: if not htparam or not(htparam.paramnr == 240):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 3281
+Line before: telop_list.resname = reservation.NAME
+Line after: telop_list.resname = reservation.name
+==================================================

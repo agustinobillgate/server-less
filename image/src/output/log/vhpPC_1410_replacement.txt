@@ -1,0 +1,33 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_po_btn_go1_webbl.py
+Line no: 54
+Line before: if htparam.paramgr == 21 and htparam.flogical:
+Line after: if htparam.paramgruppe == 21 and htparam.flogical:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_po_btn_go_webbl.py
+Line no: 54
+Line before: if htparam.paramgr == 21 and htparam.flogical:
+Line after: if htparam.paramgruppe == 21 and htparam.flogical:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_dml_list3bl.py
+Line no: 60
+Line before: if htparam.paramgr == 21 and htparam.flogical:
+Line after: if htparam.paramgruppe == 21 and htparam.flogical:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_mk_ins_po_webbl.py
+Line no: 73
+Line before: if htparam.paramgr == 21 and htparam.flogical:
+Line after: if htparam.paramgruppe == 21 and htparam.flogical:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_mk_po1_webbl.py
+Line no: 79
+Line before: if htparam.paramgr == 21 and htparam.flogical:
+Line after: if htparam.paramgruppe == 21 and htparam.flogical:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_mk_po_webbl.py
+Line no: 71
+Line before: if htparam.paramgr == 21 and htparam.flogical:
+Line after: if htparam.paramgruppe == 21 and htparam.flogical:
+==================================================

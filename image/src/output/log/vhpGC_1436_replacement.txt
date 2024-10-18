@@ -1,0 +1,168 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_daysale_daysale_list1bl.py
+Line no: 106
+Line before: for bline_list in query(bline_list_list, filters=(lambda bline_list: bline_list.SELECTED), sort_by=[("name",False)]):
+Line after: for bline_list in query(bline_list_list, filters=(lambda bline_list: bline_list.selected), sort_by=[("name",False)]):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_daysale_daysale_list1bl.py
+Line no: 151
+Line before: turnover.gname = res_line.NAME
+Line after: turnover.gname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_daysale_daysale_list1bl.py
+Line no: 171
+Line before: turnover.gname = res_line.NAME
+Line after: turnover.gname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_daysale_daysale_list_webbl.py
+Line no: 58
+Line before: for bline_list in query(bline_list_list, filters=(lambda bline_list: bline_list.SELECTED), sort_by=[("name",False)]):
+Line after: for bline_list in query(bline_list_list, filters=(lambda bline_list: bline_list.selected), sort_by=[("name",False)]):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_daysale_daysale_list_webbl.py
+Line no: 79
+Line before: summary_list.username = bline_list.NAME
+Line after: summary_list.username = bline_list.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gc_pilistbl.py
+Line no: 47
+Line before: (Bediener.userinit == gc_pi.rcvID)).first()
+Line after: (Bediener.userinit == gc_pi.rcvid)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gc_pilistbl.py
+Line no: 78
+Line before: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvID) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+Line after: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvid) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gc_pilistbl.py
+Line no: 91
+Line before: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvID) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+Line after: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvid) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gc_pilistbl.py
+Line no: 107
+Line before: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvID) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+Line after: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvid) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gc_pilistbl.py
+Line no: 120
+Line before: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvID) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+Line after: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvid) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gc_pilistbl.py
+Line no: 133
+Line before: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvID) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+Line after: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvid) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gc_pilistbl.py
+Line no: 169
+Line before: b1_list.returnamt =  to_decimal(gc_pi.returnAmt)
+Line after: b1_list.returnamt =  to_decimal(gc_pi.returnamt)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gc_pilistbl.py
+Line no: 172
+Line before: b1_list.rcvid = gc_pi.rcvID
+Line after: b1_list.rcvid = gc_pi.rcvid
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gc_pilistbl.py
+Line no: 49
+Line before: (Bediener.userinit == gc_pi.rcvID)).first()
+Line after: (Bediener.userinit == gc_pi.rcvid)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gc_pilistbl.py
+Line no: 80
+Line before: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvID) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+Line after: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvid) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gc_pilistbl.py
+Line no: 93
+Line before: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvID) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+Line after: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvid) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gc_pilistbl.py
+Line no: 109
+Line before: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvID) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+Line after: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvid) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gc_pilistbl.py
+Line no: 122
+Line before: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvID) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+Line after: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvid) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gc_pilistbl.py
+Line no: 136
+Line before: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvID) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+Line after: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvid) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gc_pilistbl.py
+Line no: 148
+Line before: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvID) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+Line after: for gc_pi, ubuff, gc_pitype in db_session.query(Gc_pi, Ubuff, Gc_pitype).join(Ubuff,(Ubuff.userinit == Gc_pi.rcvid) & (Ubuff.username >= fromname) & (Ubuff.username <= toname)).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gc_pilistbl.py
+Line no: 184
+Line before: b1_list.returnamt =  to_decimal(gc_pi.returnAmt)
+Line after: b1_list.returnamt =  to_decimal(gc_pi.returnamt)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gc_pilistbl.py
+Line no: 187
+Line before: b1_list.rcvid = gc_pi.rcvID
+Line after: b1_list.rcvid = gc_pi.rcvid
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_mk_gcpi_webbl.py
+Line no: 65
+Line before: (Bediener.userinit == gc_pi.rcvID)).first()
+Line after: (Bediener.userinit == gc_pi.rcvid)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_mk_gcpi_webbl.py
+Line no: 100
+Line before: (Bediener.userinit == gc_pi.rcvID)).first()
+Line after: (Bediener.userinit == gc_pi.rcvid)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_mk_gcpi_webbl.py
+Line no: 136
+Line before: (Bediener.userinit == gc_pi.rcvID)).first()
+Line after: (Bediener.userinit == gc_pi.rcvid)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_print_gcpi1abl.py
+Line no: 38
+Line before: (Ubuff.userinit == gc_pi.rcvID)).first()
+Line after: (Ubuff.userinit == gc_pi.rcvid)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_print_gcpi1bbl.py
+Line no: 39
+Line before: (Ubuff.userinit == gc_pi.rcvID)).first()
+Line after: (Ubuff.userinit == gc_pi.rcvid)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_print_gcpi1bbl.py
+Line no: 54
+Line before: output_list.amtreturn =  to_decimal(gc_pi.returnAmt)
+Line after: output_list.amtreturn =  to_decimal(gc_pi.returnamt)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_print_gcpi1bbl.py
+Line no: 55
+Line before: output_list.grand_tot =  to_decimal(gc_pi.betrag) - to_decimal(gc_pi.returnAmt)
+Line after: output_list.grand_tot =  to_decimal(gc_pi.betrag) - to_decimal(gc_pi.returnamt)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_print_gcpi1bl.py
+Line no: 42
+Line before: (Ubuff.userinit == gc_pi.rcvID)).first()
+Line after: (Ubuff.userinit == gc_pi.rcvid)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_print_gcpi1bl.py
+Line no: 45
+Line before: (Pibuff.rcvID == gc_pi.rcvID) & (Pibuff.pi_status == 1)).order_by(Pibuff._recid).all():
+Line after: (Pibuff.rcvID == gc_pi.rcvid) & (Pibuff.pi_status == 1)).order_by(Pibuff._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\select_ap_deliverynotebl.py
+Line no: 32
+Line before: b1_list.name = l_kredit.NAME
+Line after: b1_list.name = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\select_gcpibl.py
+Line no: 25
+Line before: for gc_pi, gc_pitype, bediener in db_session.query(Gc_pi, Gc_pitype, Bediener).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).join(Bediener,(Bediener.userinit == Gc_pi.rcvID)).filter(
+Line after: for gc_pi, gc_pitype, bediener in db_session.query(Gc_pi, Gc_pitype, Bediener).join(Gc_pitype,(Gc_pitype.nr == Gc_pi.pi_type)).join(Bediener,(Bediener.userinit == Gc_pi.rcvid)).filter(
+==================================================

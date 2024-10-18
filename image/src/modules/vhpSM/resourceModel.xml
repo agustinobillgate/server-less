@@ -357,4 +357,28 @@
   <prgs:resource consumes="application/json" name="_articleBudgetDelete1" path="/articleBudgetDelete1" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-delete-budget-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-delete-budget-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_top50TareportCustom" path="/top50TareportCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-top50-tareport-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-top50-tareport-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_aktcustSelect1" path="/aktcustSelect1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-select-aktcust_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-select-aktcust_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_aktSalesDisplayAll" path="/aktSalesDisplayAll" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-akt-sales1-disp-all-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-akt-sales1-disp-all-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_custTurnoverListCustom" path="/custTurnoverListCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-cust-turnover-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-cust-turnover-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_custTurnoverOutputList" path="/custTurnoverOutputList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-cust-turnover-output-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-cust-turnover-output-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_custTurnoverSortDetailCustom" path="/custTurnoverSortDetailCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-cust-turnover-sorting-detail-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-cust-turnover-sorting-detail-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_custTurnoverSortDetailOutputList" path="/custTurnoverSortDetailOutputList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-cust-turnover-sorting-detail-output-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-cust-turnover-sorting-detail-output-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rmProductrmtypeCreateUmsatz1" path="/rmProductrmtypeCreateUmsatz1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rm-productrmtype-create-umsatz1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rm-productrmtype-create-umsatz1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

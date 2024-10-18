@@ -1,0 +1,48 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 98
+Line before: rline.resname = guest.NAME
+Line after: rline.resname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1561
+Line before: arl_list.setup_list_char = setup_list.CHAR
+Line after: arl_list.setup_list_char = setup_list.char
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1601
+Line before: arl_list.bestat_dat = reservation.bestat_dat
+Line after: arl_list.bestat_dat = reservation.bestat_datum
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 154
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == zimmer.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == zimmer.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 169
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 234
+Line before: cl_list.lastname = RIGHT_trim(gmember.NAME, chr(10))
+Line after: cl_list.lastname = RIGHT_trim(gmember.name, chr(10))
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 584
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == zkstat.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == zkstat.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 599
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == genstat.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == genstat.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_inhouse4_btn_go_4_cldbl.py
+Line no: 646
+Line before: cl_list.lastname = RIGHT_trim(gmember.NAME, chr(10))
+Line after: cl_list.lastname = RIGHT_trim(gmember.name, chr(10))
+==================================================

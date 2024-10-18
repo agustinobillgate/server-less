@@ -1,0 +1,383 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1_webbl.py
+Line no: 159
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1_webbl.py
+Line no: 271
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1_webbl.py
+Line no: 383
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1_webbl.py
+Line no: 504
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ar_printsoa1_2bl.py
+Line no: 387
+Line before: soa_list.resv_name = reservation.NAME
+Line after: soa_list.resv_name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ar_printsoa1_2bl.py
+Line no: 711
+Line before: soa_list.resv_name = reservation.NAME
+Line after: soa_list.resv_name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ar_printsoa1_2bl.py
+Line no: 1070
+Line before: soa_list.resv_name = reservation.NAME
+Line after: soa_list.resv_name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_dailybl.py
+Line no: 184
+Line before: temp_res.guestname = replace_str(res_line.NAME, chr(10) , "")
+Line after: temp_res.guestname = replace_str(res_line.name, chr(10) , "")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_dailybl.py
+Line no: 261
+Line before: temp_res.reservename = guest.NAME
+Line after: temp_res.reservename = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_dailybl.py
+Line no: 404
+Line before: his_res.guestname = replace_str(res_line.NAME, chr(10) , "")
+Line after: his_res.guestname = replace_str(res_line.name, chr(10) , "")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_dailybl.py
+Line no: 433
+Line before: his_res.reservename = guest.NAME
+Line after: his_res.reservename = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_dailybl.py
+Line no: 540
+Line before: temp_res.guestname = replace_str(res_line.NAME, chr(10) , "")
+Line after: temp_res.guestname = replace_str(res_line.name, chr(10) , "")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_dailybl.py
+Line no: 618
+Line before: temp_res.reservename = guest.NAME
+Line after: temp_res.reservename = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_initialbl.py
+Line no: 187
+Line before: temp_res.guestname = replace_str(res_line.NAME, chr(10) , "")
+Line after: temp_res.guestname = replace_str(res_line.name, chr(10) , "")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_initialbl.py
+Line no: 261
+Line before: temp_res.reservename = guest.NAME
+Line after: temp_res.reservename = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_initialbl.py
+Line no: 401
+Line before: his_res.guestname = replace_str(res_line.NAME, chr(10) , "")
+Line after: his_res.guestname = replace_str(res_line.name, chr(10) , "")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_initialbl.py
+Line no: 428
+Line before: his_res.reservename = guest.NAME
+Line after: his_res.reservename = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_initialbl.py
+Line no: 542
+Line before: temp_res.guestname = replace_str(res_line.NAME, chr(10) , "")
+Line after: temp_res.guestname = replace_str(res_line.name, chr(10) , "")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_initialbl.py
+Line no: 617
+Line before: temp_res.reservename = guest.NAME
+Line after: temp_res.reservename = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 325
+Line before: o_list = query(o_list_list, filters=(lambda o_list: o_list.SELECTED  and o_list.outlook_nr == zimmer.typ), first=True)
+Line after: o_list = query(o_list_list, filters=(lambda o_list: o_list.selected  and o_list.outlook_nr == zimmer.typ), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 558
+Line before: o_list = query(o_list_list, filters=(lambda o_list: o_list.SELECTED  and o_list.outlook_nr == zimmer.typ), first=True)
+Line after: o_list = query(o_list_list, filters=(lambda o_list: o_list.selected  and o_list.outlook_nr == zimmer.typ), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 1084
+Line before: for s_list in query(s_list_list, filters=(lambda s_list: s_list.SELECTED)):
+Line after: for s_list in query(s_list_list, filters=(lambda s_list: s_list.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 1303
+Line before: for bsegm in query(bsegm_list, filters=(lambda bsegm: bsegm.SELECTED)):
+Line after: for bsegm in query(bsegm_list, filters=(lambda bsegm: bsegm.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 1352
+Line before: for bargt in query(bargt_list, filters=(lambda bargt: bargt.SELECTED)):
+Line after: for bargt in query(bargt_list, filters=(lambda bargt: bargt.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 1402
+Line before: for broom in query(broom_list, filters=(lambda broom: broom.SELECTED)):
+Line after: for broom in query(broom_list, filters=(lambda broom: broom.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 1653
+Line before: o_list = query(o_list_list, filters=(lambda o_list: o_list.SELECTED  and o_list.outlook_nr == zimmer.typ), first=True)
+Line after: o_list = query(o_list_list, filters=(lambda o_list: o_list.selected  and o_list.outlook_nr == zimmer.typ), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 2159
+Line before: for s_list in query(s_list_list, filters=(lambda s_list: s_list.SELECTED)):
+Line after: for s_list in query(s_list_list, filters=(lambda s_list: s_list.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\export_topgcfbl.py
+Line no: 164
+Line before: guest_list.maincontact = akt_kont.NAME
+Line after: guest_list.maincontact = akt_kont.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fa_artlist_btn_exit_webbl.py
+Line no: 54
+Line before: mathis.name = m_list.NAME
+Line after: mathis.name = m_list.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fa_artlist_btn_exit_webbl.py
+Line no: 118
+Line before: mathis.name = m_list.NAME
+Line after: mathis.name = m_list.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fa_budgetbl.py
+Line no: 160
+Line before: fa_budget.bezeich = mathis.NAME
+Line after: fa_budget.bezeich = mathis.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_invoice_open_bill_cld_2bl.py
+Line no: 268
+Line before: master_rechnr = to_string(mbill.rechnr) + " - " + mbill.NAME
+Line after: master_rechnr = to_string(mbill.rechnr) + " - " + mbill.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_invoice_sendmail_webbl.py
+Line no: 208
+Line before: guest_name = res_line.NAME
+Line after: guest_name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\get_inhouse_guestlistbl.py
+Line no: 48
+Line before: guest_list.guest_lastname = guest.NAME
+Line after: guest_list.guest_lastname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_joulist_3_webbl.py
+Line no: 4575
+Line before: (Gl_accthis.fibukonto == gl_account.fibukonto) &  (Gl_accthis.YEAR == prev_yr)).first()
+Line after: (Gl_accthis.fibukonto == gl_account.fibukonto) &  (Gl_accthis.year == prev_yr)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 332
+Line before: (func.lower(S_param.progname) == ("GL-macro").lower()) &  (S_param.SECTION == to_string(briefnr)) &  (num_entries(S_param.vstring, ":") == 1) &  (num_entries(S_param.varname, "-") == 3) &  (entry(2, S_param.varname, "-") == ("FO").lower()) &  (substring(S_param.vstring, 0, 4) == ("segm").lower())).order_by(S_param.varname).all():
+Line after: (func.lower(S_param.progname) == ("GL-macro").lower()) &  (S_param.section == to_string(briefnr)) &  (num_entries(S_param.vstring, ":") == 1) &  (num_entries(S_param.varname, "-") == 3) &  (entry(2, S_param.varname, "-") == ("FO").lower()) &  (substring(S_param.vstring, 0, 4) == ("segm").lower())).order_by(S_param.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 591
+Line before: (func.lower(S_param.progname) == ("GL-macro").lower()) &  (S_param.SECTION == to_string(briefnr)) &  (num_entries(S_param.vstring, ":") == 1) &  (num_entries(S_param.varname, "-") == 3) &  (entry(2, S_param.varname, "-") == ("REV").lower())).order_by(S_param.varname).all():
+Line after: (func.lower(S_param.progname) == ("GL-macro").lower()) &  (S_param.section == to_string(briefnr)) &  (num_entries(S_param.vstring, ":") == 1) &  (num_entries(S_param.varname, "-") == 3) &  (entry(2, S_param.varname, "-") == ("REV").lower())).order_by(S_param.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 745
+Line before: (func.lower(B_param.progname) == ("GL-macro").lower()) &  (B_param.SECTION == to_string(briefnr)) &  (num_entries(B_param.vstring, ":") == 1) &  (num_entries(B_param.varname, "-") == 3) &  (entry(2, B_param.varname, "-") == ("FO").lower()) &  (substring(B_param.vstring, 0, 4) == ("stat").lower())).order_by(B_param.varname).all():
+Line after: (func.lower(B_param.progname) == ("GL-macro").lower()) &  (B_param.section == to_string(briefnr)) &  (num_entries(B_param.vstring, ":") == 1) &  (num_entries(B_param.varname, "-") == 3) &  (entry(2, B_param.varname, "-") == ("FO").lower()) &  (substring(B_param.vstring, 0, 4) == ("stat").lower())).order_by(B_param.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1855
+Line before: (func.lower(Parameters.progname) == ("GL-macro").lower()) &  (Parameters.SECTION == to_string(briefnr)) &  (Parameters.vstring == "$IN-FORParameters.EIGN")).first()
+Line after: (func.lower(Parameters.progname) == ("GL-macro").lower()) &  (Parameters.section == to_string(briefnr)) &  (Parameters.vstring == "$IN-FORParameters.EIGN")).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1862
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.SECTION == to_string(briefnr)) &  (num_entries(Parameters.varname, "-") == 3) &  (entry(2, Parameters.varname, "-") == ("CF").lower())).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.section == to_string(briefnr)) &  (num_entries(Parameters.varname, "-") == 3) &  (entry(2, Parameters.varname, "-") == ("CF").lower())).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1870
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.SECTION == to_string(briefnr)) &  (num_entries(Parameters.varname, "-") == 3) &  (entry(2, Parameters.varname, "-") == ("CF").lower())).order_by(Parameters.varname).all():
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.section == to_string(briefnr)) &  (num_entries(Parameters.varname, "-") == 3) &  (entry(2, Parameters.varname, "-") == ("CF").lower())).order_by(Parameters.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1893
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.SECTION == to_string(briefnr)) &  (num_entries(Parameters.varname, "-") == 3) &  (entry(2, Parameters.varname, "-") == ("REV").lower())).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.section == to_string(briefnr)) &  (num_entries(Parameters.varname, "-") == 3) &  (entry(2, Parameters.varname, "-") == ("REV").lower())).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1899
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.SECTION == to_string(briefnr)) &  (func.lower((Parameters.vstring).op("~")(("*segmrev*".lower().replace("*",".*")))) |  (func.lower(Parameters.vstring).op("~")(("*segmpers*".lower().replace("*",".*")))) |  (func.lower(Parameters.vstring).op("~")(("*segmroom*").lower().replace("*",".*"))))).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.section == to_string(briefnr)) &  (func.lower((Parameters.vstring).op("~")(("*segmrev*".lower().replace("*",".*")))) |  (func.lower(Parameters.vstring).op("~")(("*segmpers*".lower().replace("*",".*")))) |  (func.lower(Parameters.vstring).op("~")(("*segmroom*").lower().replace("*",".*"))))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1941
+Line before: (func.lower(Parameters.progname) == ("GL-macro").lower()) &  (Parameters.SECTION == to_string(briefnr))).order_by(Parameters.varname).all():
+Line after: (func.lower(Parameters.progname) == ("GL-macro").lower()) &  (Parameters.section == to_string(briefnr))).order_by(Parameters.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1957
+Line before: (Gl_accthis.fibukonto == parameters.vstring) &  (Gl_accthis.YEAR == gl_year)).first()
+Line after: (Gl_accthis.fibukonto == parameters.vstring) &  (Gl_accthis.year == gl_year)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1961
+Line before: t_gl_accthis = query(t_gl_accthis_list, filters=(lambda t_gl_accthis: t_gl_accthis.fibukonto == gl_accthis.fibukonto and t_gl_accthis.YEAR == gl_accthis.YEAR), first=True)
+Line after: t_gl_accthis = query(t_gl_accthis_list, filters=(lambda t_gl_accthis: t_gl_accthis.fibukonto == gl_accthis.fibukonto and t_gl_accthis.year == gl_accthis.year), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 2201
+Line before: t_gl_accthis = query(t_gl_accthis_list, filters=(lambda t_gl_accthis: t_gl_accthis.fibukonto == t_parameters.vstring and t_gl_accthis.YEAR == gl_year), first=True)
+Line after: t_gl_accthis = query(t_gl_accthis_list, filters=(lambda t_gl_accthis: t_gl_accthis.fibukonto == t_parameters.vstring and t_gl_accthis.year == gl_year), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\hk_preference_list_webbl.py
+Line no: 38
+Line before: guest_name = res_line.NAME
+Line after: guest_name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_webbl.py
+Line no: 462
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.SECTION == t_parameters.SECTION)).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.section == t_parameters.section)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_webbl.py
+Line no: 473
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.SECTION == t_parameters.SECTION)).filter(Parameters._recid > curr_recid).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) &  (Parameters.section == t_parameters.section)).filter(Parameters._recid > curr_recid).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mast_member_webbl.py
+Line no: 129
+Line before: b1_list.gname = res_line.NAME
+Line after: b1_list.gname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\menu_eng_v2_btn_go_webbl.py
+Line no: 114
+Line before: subgr_list = query(subgr_list_list, filters=(lambda subgr_list: subgr_list.subnr == h_artikel.zwkum and subgr_list.SELECTED), first=True)
+Line after: subgr_list = query(subgr_list_list, filters=(lambda subgr_list: subgr_list.subnr == h_artikel.zwkum and subgr_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\menu_eng_v2_btn_go_webbl.py
+Line no: 248
+Line before: subgr_list = query(subgr_list_list, filters=(lambda subgr_list: subgr_list.subnr == h_artikel.zwkum and subgr_list.SELECTED), first=True)
+Line after: subgr_list = query(subgr_list_list, filters=(lambda subgr_list: subgr_list.subnr == h_artikel.zwkum and subgr_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_go_3bl.py
+Line no: 601
+Line before: bill.name = res_line.NAME
+Line after: bill.name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_go_3bl.py
+Line no: 1103
+Line before: bill.name = rgast.NAME
+Line after: bill.name = rgast.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 81
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 269
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 457
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 645
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 911
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 1089
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 1267
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 1445
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 1701
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 1886
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2071
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2256
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2517
+Line before: (Res_line.active_flag == 1) &  ((Res_line.Res_line.resstatus == 6) |  (Res_line.resstatus == 13) |  (Res_line.Res_line.resstatus == 11)) &  (Res_line.abreise == curr_date) &  (((func.lower(Res_line.zinr) >= (froom).lower()) &  (func.lower(Res_line.zinr) <= (troom).lower())) |  ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Reservation.groupname, Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) &  ((Res_line.resstatus == 6) |  (Res_line.resstatus == 13) |  (Res_line.resstatus == 11)) &  (Res_line.abreise == curr_date) &  (((func.lower(Res_line.zinr) >= (froom).lower()) &  (func.lower(Res_line.zinr) <= (troom).lower())) |  ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Reservation.groupname, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2518
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2676
+Line before: (Res_line.active_flag == 1) &  ((Res_line.Res_line.resstatus == 6) |  (Res_line.resstatus == 13) |  (Res_line.Res_line.resstatus == 11)) &  (Res_line.abreise == curr_date) &  (((func.lower(Res_line.zinr) >= (froom).lower()) &  (func.lower(Res_line.zinr) <= (troom).lower())) |  ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Res_line.zinr, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) &  ((Res_line.resstatus == 6) |  (Res_line.resstatus == 13) |  (Res_line.resstatus == 11)) &  (Res_line.abreise == curr_date) &  (((func.lower(Res_line.zinr) >= (froom).lower()) &  (func.lower(Res_line.zinr) <= (troom).lower())) |  ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Res_line.zinr, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2677
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2835
+Line before: (Res_line.active_flag == 1) &  ((Res_line.Res_line.resstatus == 6) |  (Res_line.resstatus == 13) |  (Res_line.Res_line.resstatus == 11)) &  (Res_line.abreise == curr_date) &  (((func.lower(Res_line.zinr) >= (froom).lower()) &  (func.lower(Res_line.zinr) <= (troom).lower())) |  ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Reservation.name, Reservation.groupname, Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) &  ((Res_line.resstatus == 6) |  (Res_line.resstatus == 13) |  (Res_line.resstatus == 11)) &  (Res_line.abreise == curr_date) &  (((func.lower(Res_line.zinr) >= (froom).lower()) &  (func.lower(Res_line.zinr) <= (troom).lower())) |  ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Reservation.name, Reservation.groupname, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2836
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2994
+Line before: (Res_line.active_flag == 1) &  ((Res_line.Res_line.resstatus == 6) |  (Res_line.resstatus == 13) |  (Res_line.Res_line.resstatus == 11)) &  (Res_line.abreise == curr_date) &  (((func.lower(Res_line.zinr) >= (froom).lower()) &  (func.lower(Res_line.zinr) <= (troom).lower())) |  ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Res_line.abreise, Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) &  ((Res_line.resstatus == 6) |  (Res_line.resstatus == 13) |  (Res_line.resstatus == 11)) &  (Res_line.abreise == curr_date) &  (((func.lower(Res_line.zinr) >= (froom).lower()) &  (func.lower(Res_line.zinr) <= (troom).lower())) |  ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Res_line.abreise, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2995
+Line before: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.SELECTED), first=True)
+Line after: zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_fa_newpobl.py
+Line no: 138
+Line before: t_mathis.asset_name = mathis.NAME
+Line after: t_mathis.asset_name = mathis.name
+==================================================

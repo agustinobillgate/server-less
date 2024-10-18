@@ -1,0 +1,503 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\allotm_reviewbl.py
+Line no: 295
+Line before: res_list.s1 = to_string(reservation.NAME, "x(22)") + " " + res_list.s1
+Line after: res_list.s1 = to_string(reservation.name, "x(22)") + " " + res_list.s1
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\allotm_reviewbl.py
+Line no: 529
+Line before: res_list.s1 = to_string(reservation.NAME, "x(22)") + " " + res_list.s1
+Line after: res_list.s1 = to_string(reservation.name, "x(22)") + " " + res_list.s1
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_add_keycardbl.py
+Line no: 67
+Line before: msg_str = msg_str + chr(2) + translateExtended ("Keycard is being used for other guest:", lvcarea, "") + " " + resline.NAME
+Line after: msg_str = msg_str + chr(2) + translateExtended ("Keycard is being used for other guest:", lvcarea, "") + " " + resline.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_add_keycardbl.py
+Line no: 147
+Line before: " " + rline.NAME
+Line after: " " + rline.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 93
+Line before: rline.resname = guest.NAME
+Line after: rline.resname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 1337
+Line before: arl_list.setup_list_char = setup_list.CHAR
+Line after: arl_list.setup_list_char = setup_list.char
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 1377
+Line before: arl_list.bestat_dat = reservation.bestat_dat
+Line after: arl_list.bestat_dat = reservation.bestat_datum
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 96
+Line before: rline.resname = guest.NAME
+Line after: rline.resname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1436
+Line before: arl_list.setup_list_char = setup_list.CHAR
+Line after: arl_list.setup_list_char = setup_list.char
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1476
+Line before: arl_list.bestat_dat = reservation.bestat_dat
+Line after: arl_list.bestat_dat = reservation.bestat_datum
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2bl.py
+Line no: 136
+Line before: arl_list.setup_list_char = setup_list.CHAR
+Line after: arl_list.setup_list_char = setup_list.char
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2bl.py
+Line no: 176
+Line before: arl_list.bestat_dat = reservation.bestat_dat
+Line after: arl_list.bestat_dat = reservation.bestat_datum
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 96
+Line before: rline.resname = guest.NAME
+Line after: rline.resname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1435
+Line before: arl_list.setup_list_char = setup_list.CHAR
+Line after: arl_list.setup_list_char = setup_list.char
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1475
+Line before: arl_list.bestat_dat = reservation.bestat_dat
+Line after: arl_list.bestat_dat = reservation.bestat_datum
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 98
+Line before: rline.resname = guest.NAME
+Line after: rline.resname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1561
+Line before: arl_list.setup_list_char = setup_list.CHAR
+Line after: arl_list.setup_list_char = setup_list.char
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1601
+Line before: arl_list.bestat_dat = reservation.bestat_dat
+Line after: arl_list.bestat_dat = reservation.bestat_datum
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_update_browsebl.py
+Line no: 102
+Line before: arl_list.setup_list_char = setup_list.CHAR
+Line after: arl_list.setup_list_char = setup_list.char
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\avail_ddown_create_listbl.py
+Line no: 61
+Line before: rlist.name = res_line.NAME
+Line after: rlist.name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\avail_ddown_detail_occupiedbl.py
+Line no: 43
+Line before: (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.abreise > datum) & (Res_line.Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+Line after: (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.abreise > datum) & (Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\avail_ddown_run_mainbl.py
+Line no: 153
+Line before: (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.zikatnr == room_list.zikatnr) & (Res_line.abreise > datum) & (Res_line.Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+Line after: (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.zikatnr == room_list.zikatnr) & (Res_line.abreise > datum) & (Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\change_guesttypebl.py
+Line no: 44
+Line before: to_string(t_guest.gastnr) + " - " + t_guest.NAME +\
+Line after: to_string(t_guest.gastnr) + " - " + t_guest.name +\
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ci_cancelbl.py
+Line no: 53
+Line before: ci_list.resname = reservation.NAME
+Line after: ci_list.resname = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ci_cancelbl.py
+Line no: 79
+Line before: ci_list.resname = reservation.NAME
+Line after: ci_list.resname = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ci_cancelbl.py
+Line no: 105
+Line before: ci_list.resname = reservation.NAME
+Line after: ci_list.resname = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\closingscriptbl.py
+Line no: 308
+Line before: cl_list.name = reslin_list.NAME
+Line after: cl_list.name = reslin_list.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\company_glist_get_gastnrbl.py
+Line no: 28
+Line before: from_name = guest.NAME
+Line after: from_name = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\connect_group_join_itbl.py
+Line no: 83
+Line before: " rmno: " + res_line.zinr + " " + res_line.NAME +\
+Line after: " rmno: " + res_line.zinr + " " + res_line.name +\
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\connect_group_join_itbl.py
+Line no: 93
+Line before: " rmno: " + res_line.zinr + " " + res_line.NAME +\
+Line after: " rmno: " + res_line.zinr + " " + res_line.name +\
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\create_rmsharerbl.py
+Line no: 95
+Line before: lname = guest.NAME
+Line after: lname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_availabilitybl.py
+Line no: 1173
+Line before: (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.abreise >= curr_date) & (Res_line.Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+Line after: (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.abreise >= curr_date) & (Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_rmproductbl.py
+Line no: 934
+Line before: output_list.name = to_list.NAME
+Line after: output_list.name = to_list.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_rmproductbl.py
+Line no: 2001
+Line before: output_list.name = to_list.NAME
+Line after: output_list.name = to_list.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\del_reslinebl.py
+Line no: 220
+Line before: name1 = res_line.NAME
+Line after: name1 = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\earlyco_glistbl.py
+Line no: 61
+Line before: earlycog_list.resname = reservation.NAME
+Line after: earlycog_list.resname = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\exportghs_webbl.py
+Line no: 361
+Line before: r_list.lastname = gmember.NAME
+Line after: r_list.lastname = gmember.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\exportghs_webbl.py
+Line no: 362
+Line before: r_list.cardname = gmember.vorname1 + " " + gmember.NAME
+Line after: r_list.cardname = gmember.vorname1 + " " + gmember.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\export_gcfbl.py
+Line no: 76
+Line before: guest_list.maincontact = akt_kont.NAME
+Line after: guest_list.maincontact = akt_kont.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\foreign_list1_webbl.py
+Line no: 260
+Line before: ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.Res_line.resstatus == 8)) & (Res_line.active_flag <= 2) & (not_ (Res_line.ankunft > to_date)) & (not_ (Res_line.abreise - 1 < from_date))).order_by(Res_line.ankunft, Guest.nation1, Res_line.name, Res_line.zinr).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.resstatus == 8)) & (Res_line.active_flag <= 2) & (not_ (Res_line.ankunft > to_date)) & (not_ (Res_line.abreise - 1 < from_date))).order_by(Res_line.ankunft, Guest.nation1, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\foreign_list1_webbl.py
+Line no: 300
+Line before: ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.Res_line.resstatus == 8)) & (Res_line.active_flag <= 2) & (not_ (Res_line.ankunft > to_date)) & (not_ (Res_line.abreise - 1 < from_date))).order_by(Res_line.ankunft, Guest.nation1, Res_line.name, Res_line.zinr).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.resstatus == 8)) & (Res_line.active_flag <= 2) & (not_ (Res_line.ankunft > to_date)) & (not_ (Res_line.abreise - 1 < from_date))).order_by(Res_line.ankunft, Guest.nation1, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\foreign_listbl.py
+Line no: 169
+Line before: ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.Res_line.resstatus == 8)) & (Res_line.active_flag <= 2) & (Res_line.ankunft <= fdate) & (Res_line.abreise > fdate)).order_by(Res_line.ankunft, Guest.nation1, Res_line.name, Res_line.zinr).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.resstatus == 8)) & (Res_line.active_flag <= 2) & (Res_line.ankunft <= fdate) & (Res_line.abreise > fdate)).order_by(Res_line.ankunft, Guest.nation1, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\foreign_listbl.py
+Line no: 195
+Line before: ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.Res_line.resstatus == 8)) & (Res_line.active_flag <= 2) & (Res_line.ankunft == fdate)).order_by(Guest.nation1, Res_line.name, Res_line.zinr).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.resstatus == 8)) & (Res_line.active_flag <= 2) & (Res_line.ankunft == fdate)).order_by(Guest.nation1, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\foreign_listbl.py
+Line no: 209
+Line before: ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.Res_line.resstatus == 8)) & (Res_line.active_flag <= 2) & (Res_line.ankunft <= fdate) & (Res_line.abreise > fdate)).order_by(Res_line.ankunft, Guest.nation1, Res_line.name, Res_line.zinr).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.resstatus == 8)) & (Res_line.active_flag <= 2) & (Res_line.ankunft <= fdate) & (Res_line.abreise > fdate)).order_by(Res_line.ankunft, Guest.nation1, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\foreign_listbl.py
+Line no: 235
+Line before: ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.Res_line.resstatus == 8)) & (Res_line.active_flag <= 2) & (Res_line.ankunft == fdate)).order_by(Guest.nation1, Res_line.name, Res_line.zinr).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.resstatus == 8)) & (Res_line.active_flag <= 2) & (Res_line.ankunft == fdate)).order_by(Guest.nation1, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gcf_atlist_create_listbl.py
+Line no: 64
+Line before: s_list.name = guest.NAME
+Line after: s_list.name = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gcf_list_del_gcfbl.py
+Line no: 111
+Line before: gname = gbuff.NAME
+Line after: gname = gbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gcf_list_webbl.py
+Line no: 119
+Line before: curr_lname = guest.NAME
+Line after: curr_lname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gcf_list_webbl.py
+Line no: 181
+Line before: curr_lname = guest.NAME
+Line after: curr_lname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gcf_list_webbl.py
+Line no: 377
+Line before: lname = guest.NAME
+Line after: lname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gcf_list_webbl.py
+Line no: 402
+Line before: curr_lname = guest.NAME
+Line after: curr_lname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gcf_list_webbl.py
+Line no: 590
+Line before: curr_lname = guest.NAME
+Line after: curr_lname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gcf_rsvlistbl.py
+Line no: 37
+Line before: rline_list.name = guest.NAME
+Line after: rline_list.name = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\get_data_print_confirmletter_webbl.py
+Line no: 80
+Line before: print_list.guestlname = guest.NAME
+Line after: print_list.guestlname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\get_data_print_confirmletter_webbl.py
+Line no: 135
+Line before: print_list.contactname = akt_kont.NAME
+Line after: print_list.contactname = akt_kont.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\glores_controlbl.py
+Line no: 114
+Line before: glores_control_list.firma = guest.NAME
+Line after: glores_control_list.firma = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\glores_review_webbl.py
+Line no: 723
+Line before: sum_list.firma = guest.NAME
+Line after: sum_list.firma = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\group_cibl.py
+Line no: 50
+Line before: mainres_list.name = reservation.NAME
+Line after: mainres_list.name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\keycard_qrbl.py
+Line no: 118
+Line before: guest_name = guest.anrede1 + "," + guest.vorname1 + " " + guest.NAME
+Line after: guest_name = guest.anrede1 + "," + guest.vorname1 + " " + guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\membership_listbl.py
+Line no: 51
+Line before: member_list.last_name = guest.NAME
+Line after: member_list.last_name = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\membership_listbl.py
+Line no: 63
+Line before: member_list.member_name = replace_str(guest.vorname1 + " " + guest.NAME, chr(10) , "")
+Line after: member_list.member_name = replace_str(guest.vorname1 + " " + guest.name, chr(10) , "")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_mainres_btn_gobl.py
+Line no: 193
+Line before: curr_name = reservation.NAME
+Line after: curr_name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_mainres_btn_gobl.py
+Line no: 207
+Line before: " -> " + reservation.NAME
+Line after: " -> " + reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_mainres_btn_gobl.py
+Line no: 238
+Line before: res_line.resname = reservation.NAME
+Line after: res_line.resname = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_query_q1bl.py
+Line no: 61
+Line before: rline_list.rsvname = reservation.NAME
+Line after: rline_list.rsvname = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_query_q1bl.py
+Line no: 78
+Line before: rline_list.name = rline.NAME
+Line after: rline_list.name = rline.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mobile_reportbl.py
+Line no: 54
+Line before: rlist.gname = res_line.NAME
+Line after: rlist.gname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mobile_reportbl.py
+Line no: 103
+Line before: rlist.gname = res_line.NAME
+Line after: rlist.gname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mobile_reportbl.py
+Line no: 152
+Line before: rlist.gname = res_line.NAME
+Line after: rlist.gname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pickup_listbl.py
+Line no: 105
+Line before: pickup_list.resname = guest.NAME
+Line after: pickup_list.resname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pickup_listbl.py
+Line no: 172
+Line before: pickup_list.resname = guest.NAME
+Line after: pickup_list.resname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pickup_listbl.py
+Line no: 239
+Line before: pickup_list.resname = guest.NAME
+Line after: pickup_list.resname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pickup_listbl.py
+Line no: 306
+Line before: pickup_list.resname = guest.NAME
+Line after: pickup_list.resname = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_arrive1_webbl.py
+Line no: 777
+Line before: ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Reservation.name, Reservation.groupname, Res_line.name, Res_line.zinr).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Reservation.name, Reservation.groupname, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_arrive1_webbl.py
+Line no: 811
+Line before: ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, Res_line.name).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_arrive1_webbl.py
+Line no: 845
+Line before: ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Reservation.resdat, Res_line.zinr).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Reservation.resdat, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_arrive1_webbl.py
+Line no: 879
+Line before: ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.arrangement, Reservation.name, Reservation.groupname, Res_line.name).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.arrangement, Reservation.name, Reservation.groupname, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_arrive1_webbl.py
+Line no: 912
+Line before: ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.resstatus, Reservation.name, Reservation.groupname, Res_line.name).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.resstatus, Reservation.name, Reservation.groupname, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_arrive_webbl.py
+Line no: 768
+Line before: ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Reservation.name, Reservation.groupname, Res_line.name, Res_line.zinr).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Reservation.name, Reservation.groupname, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_arrive_webbl.py
+Line no: 802
+Line before: ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, Res_line.name).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_arrive_webbl.py
+Line no: 836
+Line before: ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Reservation.resdat, Res_line.zinr).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Reservation.resdat, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_arrive_webbl.py
+Line no: 870
+Line before: ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.arrangement, Reservation.name, Reservation.groupname, Res_line.name).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.arrangement, Reservation.name, Reservation.groupname, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_arrive_webbl.py
+Line no: 903
+Line before: ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.resstatus, Reservation.name, Reservation.groupname, Res_line.name).all():
+Line after: ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.resstatus, Reservation.name, Reservation.groupname, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_auto_checkinbl.py
+Line no: 51
+Line before: res_list.name = res_line.NAME
+Line after: res_list.name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_chg_gcf1bl.py
+Line no: 216
+Line before: q1_akt_kont.name = akt_kont.NAME
+Line after: q1_akt_kont.name = akt_kont.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_fo_stat_select_sortingbl.py
+Line no: 42
+Line before: segm1_list.bezeich = to_string(segmentcode, ">>9 ") + entry(0, segment.bezeich, "$$0")
+Line after: segm1_list.bezeich = to_string(segment.segmentcode, ">>9 ") + entry(0, segment.bezeich, "$$0")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_pj_select_sortingbl.py
+Line no: 42
+Line before: segm1_list.bezeich = to_string(segmentcode, ">>9 ") + entry(0, segment.bezeich, "$$0")
+Line after: segm1_list.bezeich = to_string(segment.segmentcode, ">>9 ") + entry(0, segment.bezeich, "$$0")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_rm_stat2bl.py
+Line no: 107
+Line before: f_tittle = ": " + entry(0, segment.bezeich, "$$0") + " - " + guest.NAME
+Line after: f_tittle = ": " + entry(0, segment.bezeich, "$$0") + " - " + guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_roomplanbl.py
+Line no: 122
+Line before: (((Res_line.Res_line.resstatus <= 2) | (Res_line.Res_line.resstatus == 5)) & (func.lower(Res_line.zinr) != "") & (func.lower(Res_line.zinr) >= (from_room).lower()) & (Res_line.active_flag == 0) & (not Res_line.to_date < Res_line.ankunft) & (not Res_line.curr_date >= Res_line.abreise)) | (((Res_line.resstatus == 6) | (Res_line.resstatus == 13)) & (Res_line.active_flag == 1) & (Res_line.abreise > curr_date) & (func.lower(Res_line.zinr) >= (from_room).lower() ))).order_by(Res_line._recid).all():
+Line after: (((Res_line.resstatus <= 2) | (Res_line.resstatus == 5)) & (func.lower(Res_line.zinr) != "") & (func.lower(Res_line.zinr) >= (from_room).lower()) & (Res_line.active_flag == 0) & (not Res_line.to_date < Res_line.ankunft) & (not Res_line.curr_date >= Res_line.abreise)) | (((Res_line.resstatus == 6) | (Res_line.resstatus == 13)) & (Res_line.active_flag == 1) & (Res_line.abreise > curr_date) & (func.lower(Res_line.zinr) >= (from_room).lower() ))).order_by(Res_line._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_select_sortingbl.py
+Line no: 42
+Line before: segm1_list.bezeich = to_string(segmentcode, ">>9 ") + entry(0, segment.bezeich, "$$0")
+Line after: segm1_list.bezeich = to_string(segment.segmentcode, ">>9 ") + entry(0, segment.bezeich, "$$0")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\res_changesbl.py
+Line no: 171
+Line before: old_bill_adr = gbuff.NAME
+Line after: old_bill_adr = gbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\res_changesbl.py
+Line no: 177
+Line before: new_bill_adr = guest.NAME
+Line after: new_bill_adr = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\res_checkin2bl.py
+Line no: 513
+Line before: bill.name = receiver.NAME
+Line after: bill.name = receiver.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\res_voucherno1bl.py
+Line no: 66
+Line before: r_list.ta_name = t_guest.NAME
+Line after: r_list.ta_name = t_guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\res_voucherno1bl.py
+Line no: 67
+Line before: r_list.gname = t_part_resline.NAME
+Line after: r_list.gname = t_part_resline.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\rm_revenue_fcast_detail_webbl.py
+Line no: 39
+Line before: res_detail.guest_name = res_line.NAME
+Line after: res_detail.guest_name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\rm_sob_detailbl.py
+Line no: 70
+Line before: genlist.rsv_name = guest.NAME
+Line after: genlist.rsv_name = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\tent_rsvlistbl.py
+Line no: 331
+Line before: t_tent_rsvlist.rsvname = reservation.NAME
+Line after: t_tent_rsvlist.rsvname = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\tent_rsvlistbl.py
+Line no: 332
+Line before: t_tent_rsvlist.rsname = res_line.NAME
+Line after: t_tent_rsvlist.rsname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\update_mainresbl.py
+Line no: 131
+Line before: bill.name = rgast.NAME
+Line after: bill.name = rgast.name
+==================================================

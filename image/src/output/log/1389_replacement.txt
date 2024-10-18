@@ -1,0 +1,73 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ar_remainlistbl.py
+Line no: 77
+Line before: contact = akt_kont.NAME
+Line after: contact = akt_kont.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ar_remainlist_webbl.py
+Line no: 77
+Line before: contact = akt_kont.NAME
+Line after: contact = akt_kont.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ar_subledger_btn_helpbl.py
+Line no: 22
+Line before: guest_name = guest.NAME
+Line after: guest_name = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ar_subledger_create_age_list1abl.py
+Line no: 134
+Line before: gname = res_line.NAME
+Line after: gname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ar_subledger_create_age_list1abl.py
+Line no: 175
+Line before: gname = debitor.NAME
+Line after: gname = debitor.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ar_subledger_create_age_list1_webbl.py
+Line no: 110
+Line before: gname = res_line.NAME
+Line after: gname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ar_subledger_create_age_list1_webbl.py
+Line no: 148
+Line before: gname = debitor.NAME
+Line after: gname = debitor.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gl_linkarbl.py
+Line no: 73
+Line before: if htparam.paramgr == 38 and htparam.feldtyp == 1 and htparam.finteger > 0:
+Line after: if htparam.paramgruppe == 38 and htparam.feldtyp == 1 and htparam.finteger > 0:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gl_postjournbl.py
+Line no: 31
+Line before: if htparam.paramgr == 38 and htparam.feldtyp == 1 and htparam.finteger > 0:
+Line after: if htparam.paramgruppe == 38 and htparam.feldtyp == 1 and htparam.finteger > 0:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_select_glacctbl.py
+Line no: 33
+Line before: if htparam.paramgr == 38 and htparam.fchar != "":
+Line after: if htparam.paramgruppe == 38 and htparam.fchar != "":
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\release_arbl.py
+Line no: 75
+Line before: " | Bill Receiver : "+ guest.NAME +\
+Line after: " | Bill Receiver : "+ guest.name +\
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\release_ar_def_actionbl.py
+Line no: 104
+Line before: " | Bill Receiver : "+ guest.NAME +\
+Line after: " | Bill Receiver : "+ guest.name +\
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\view_history4bl.py
+Line no: 44
+Line before: debit_list.gname = gast.NAME
+Line after: debit_list.gname = gast.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\view_history4bl.py
+Line no: 46
+Line before: debit_list.receiver = debitor.NAME
+Line after: debit_list.receiver = debitor.name
+==================================================

@@ -1,0 +1,113 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_chgreq_assign_tobl.py
+Line no: 32
+Line before: usr_name = usr1.NAME
+Line after: usr_name = usr1.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_chgreq_create_historybl.py
+Line no: 112
+Line before: history.username = usr.NAME
+Line after: history.username = usr.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendardel_gobl.py
+Line no: 216
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendar_btn_gobl.py
+Line no: 201
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_maincalendar_set_mainbl.py
+Line no: 379
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainscheduleed_picbl.py
+Line no: 47
+Line before: staff.name = qbuff.NAME
+Line after: staff.name = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_mainscheduleed_picbl.py
+Line no: 58
+Line before: e_name = eg_staff.NAME
+Line after: e_name = eg_staff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_chgreq_webbl.py
+Line no: 169
+Line before: b = eg_staff.NAME
+Line after: b = eg_staff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_maincalendardel_webbl.py
+Line no: 218
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_maincalendar_webbl.py
+Line no: 469
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_maincalendar_webbl.py
+Line no: 545
+Line before: smaintain.pic_nm = eg_staff.NAME
+Line after: smaintain.pic_nm = eg_staff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_mainscheduleed_webbl.py
+Line no: 252
+Line before: mobile.name = qbuff.NAME
+Line after: mobile.name = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_mainscheduleed_webbl.py
+Line no: 318
+Line before: b = eg_mobilenr.NAME
+Line after: b = eg_mobilenr.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_mainscheduleed_webbl.py
+Line no: 476
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_mainschedule_webbl.py
+Line no: 131
+Line before: staff.name = qbuff.NAME
+Line after: staff.name = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_propertylist_webbl.py
+Line no: 73
+Line before: if not htparam or not(paramnr == 1061):
+Line after: if not htparam or not(htparam.paramnr == 1061):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_reglist1bl.py
+Line no: 157
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_repdurationbl.py
+Line no: 336
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_repmaintainbl.py
+Line no: 190
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_repmaintaincancelbl.py
+Line no: 186
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_reprequestcancel_webbl.py
+Line no: 363
+Line before: tpic.pic_nm = qbuff.NAME
+Line after: tpic.pic_nm = qbuff.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_sel_userdeptbl.py
+Line no: 67
+Line before: usr.name = usr1.NAME
+Line after: usr.name = usr1.name
+==================================================

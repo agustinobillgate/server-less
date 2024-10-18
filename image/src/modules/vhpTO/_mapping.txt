@@ -21,3 +21,7 @@ messageSave,messages_btn_gobl
 messageDel,messages_btn_delbl
 incognitoGuest,arl_list_incognitobl
 callsListBookCall,calls_list_bookcallbl
+messageMess,messages_btn_messbl
+messagePrint,messages_btn_printbl
+messageUpdateResline,messages_update_reslinebl
+messageLoadCustom,get_messages_webbl

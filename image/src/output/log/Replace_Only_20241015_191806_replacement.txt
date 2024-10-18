@@ -1,0 +1,8 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_cr_occfcast1_2bl.py
+Line no: 109
+Line before: for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg.bezeich).all():
+Line after: for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg.bezeichnung).all():
+==================================================
