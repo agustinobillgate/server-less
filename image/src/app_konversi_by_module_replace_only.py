@@ -137,6 +137,10 @@ search_list = [
     ("curr_stat = stat_list[zistatus + 1 - 1]", "curr_stat = stat_list[zimmer.zistatus + 1 - 1]"),
     ("if not parameters or not(progname.lower() ", "if not parameters or not(parameters.progname.lower() "),
     ("arl_list.bestat_dat = reservation.bestat_dat\n", "arl_list.bestat_dat = reservation.bestat_datum\n"),          # arl-list-disp-arlist3-webBL (1641)
+    ("zimmer.zistat\n", "zimmer.zistatus\n"),
+    ("zimmer.zista\n", "zimmer.zistatus\n"),
+    ("zimmer.zist\n", "zimmer.zistatus\n"),
+    ("zimmer.zis\n", "zimmer.zistatus\n"),
     (" zimmer.zistat ", " zimmer.zistatus "),
     (" zimmer.zis ", " zimmer.zistatus "),
     (" zimmer.zistat ", " zimmer.zistatus "),
@@ -148,7 +152,16 @@ search_list = [
     ("and n < len(vstring) :", "and n < len(parameters.vstring) :"),            # prepare_if_country1bl.py, baris 73 dan 138
     ("i = zinrstat.datum - datum1 + 1", "i = (zinrstat.datum - datum1).days + 1"),   # def day_ruse_create_browsebl(from_room:str, curr_date:date):
     ("datum2 = datum1 + 1", "datum2 = datum1 + timedelta(days=1)"),
+
+    ("htparam.fdate - 1", "htparam.fdate - timedelta(days=1)"),
+    ("htparam.fdate + 1", "htparam.fdate + timedelta(days=1)"),
+
+    
+
     ("for datum in range(curr_date,datum1 + 1) :", "for datum in date_range(curr_date,datum1 + timedelta(days=1)) :"),
+    ("for i in range(1,(to_date - curr_date + 1)", "for i in range(1,(to_date - curr_date).days + timedelta(days=1))"),
+    
+                      
     ("l_orderhdr.lieferdatum = billdate + 1", "l_orderhdr.lieferdatum = billdate + timedelta(days=1)"),
     ("to_date = date_mdy(mm + 1, 01, yy) - timedelta(days=1)", "to_date = date_mdy(mm + 1, 1, yy) - timedelta(days=1)"),
     ("to_date = date_mdy(01, 01, yy + timedelta(days=1)) - timedelta(days=1)", " to_date = date_mdy(1, 1, yy + timedelta(days=1)) - timedelta(days=1)"),
@@ -172,7 +185,6 @@ search_list = [
     ("(func.lower(L_ophdr1.(lscheinnr).lower()) == (lscheinnr).lower()) ", "(func.lower(L_ophdr1.(lscheinnr)) == (lscheinnr).lower()) "),
     ("Rline.Rline.", "Rline."),
     ("Rline.Rline.", "Rline."),
-    ("to_string(counter.counter, \"9999\")", "to_string(counters.counter, \"9999\")"),
     ("paramtext.ptext\n", "paramtext.ptexte\n"),
     ("l_order.lief_fax[2] = l_artikel.traubensort\n", "l_order.lief_fax[2] = l_artikel.traubensorte\n"),
     (" (artnr == s_artnr)).first()", " (L_artikel.artnr == s_artnr)).first()"),
@@ -185,7 +197,18 @@ search_list = [
     ("cl_list.lastname = RIGHT_trim(", "cl_list.lastname = right_trim("),
     (".order_by(Zimkateg.bezeich)", ".order_by(Zimkateg.bezeichnung)"),
     ("(not Res_line.to_date < Res_line.ankunft) & ", "(not to_date < Res_line.ankunft) & "),
-    (" (not Res_line.curr_date >= Res_line.abreise))", " (not curr_date >= Res_line.abreise))")
+    (" (not Res_line.curr_date >= Res_line.abreise))", " (not curr_date >= Res_line.abreise))"),
+    ("for zimmer in db_session.query(Zimmer).order_by(len(zinr), zinr).all():", "for zimmer in db_session.query(Zimmer).order_by(len(Zimmer.zinr), Zimmer.zinr).all():"),
+    ("gl_journal.fibukonto = gc_PI.debit_fibu", "gl_journal.fibukonto = gc_pi.debit_fibu"),
+    ("curr_lager = l_op.lager", "curr_lager = l_op.lager_nr"), 
+    ("from_date = htparam.fdate + 1", "from_date = htparam.fdate + timedelta(days=1)"),
+    ("(Qbuff.KEY == ", "(Qbuff.key == "),
+    ("Queasy.KEY == ", "Queasy.key == "),
+    ("comcategory.comcategory.categ_SELECTED)):", "comcategory.categ_selected):"),
+    (").order_by(len(", ").order_by(func.length("),
+    ("Eg_request.property)", "Eg_request.propertynr)"),
+    ("qty = qty + anz_verbrau", "qty = qty + l_verbrauch.anz_verbrau"),
+    ("val = val + wert_verbrau", "val = val + l_verbrauch.wert_verbrau"),
 
 ]
 

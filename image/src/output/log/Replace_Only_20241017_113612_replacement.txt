@@ -1,0 +1,103 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 206
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 333
+Line before: o_list = query(o_list_list, filters=(lambda o_list :o_list.SELECTED  and o_list.outlook_nr == zimmer.typ), first=True)
+Line after: o_list = query(o_list_list, filters=(lambda o_list :o_list.selected  and o_list.outlook_nr == zimmer.typ), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 565
+Line before: o_list = query(o_list_list, filters=(lambda o_list :o_list.SELECTED  and o_list.outlook_nr == zimmer.typ), first=True)
+Line after: o_list = query(o_list_list, filters=(lambda o_list :o_list.selected  and o_list.outlook_nr == zimmer.typ), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 939
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 988
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 1089
+Line before: for s_list in query(s_list_list, filters=(lambda s_list :s_list.SELECTED)):
+Line after: for s_list in query(s_list_list, filters=(lambda s_list :s_list.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 1299
+Line before: for bsegm in query(bsegm_list, filters=(lambda bsegm :bsegm.SELECTED)):
+Line after: for bsegm in query(bsegm_list, filters=(lambda bsegm :bsegm.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 1345
+Line before: for bargt in query(bargt_list, filters=(lambda bargt :bargt.SELECTED)):
+Line after: for bargt in query(bargt_list, filters=(lambda bargt :bargt.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 1392
+Line before: for broom in query(broom_list, filters=(lambda broom :broom.SELECTED)):
+Line after: for broom in query(broom_list, filters=(lambda broom :broom.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 1505
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 1632
+Line before: o_list = query(o_list_list, filters=(lambda o_list :o_list.SELECTED  and o_list.outlook_nr == zimmer.typ), first=True)
+Line after: o_list = query(o_list_list, filters=(lambda o_list :o_list.selected  and o_list.outlook_nr == zimmer.typ), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 1999
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 2050
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2bl.py
+Line no: 2135
+Line before: for s_list in query(s_list_list, filters=(lambda s_list :s_list.SELECTED)):
+Line after: for s_list in query(s_list_list, filters=(lambda s_list :s_list.selected)):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 198
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 933
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 982
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 1526
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 2022
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 2073
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================

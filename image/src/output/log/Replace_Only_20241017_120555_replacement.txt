@@ -1,0 +1,33 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_reglist1_btn_cancelbl.py
+Line no: 75
+Line before: (Queasy.KEY == 133) & (Queasy.number1 == eg_property.maintask)).first()
+Line after: (Queasy.key == 133) & (Queasy.number1 == eg_property.maintask)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_reglist1_btn_go_webbl.py
+Line no: 834
+Line before: (Queasy.KEY == 133) & (Queasy.number1 == eg_property.maintask)).first()
+Line after: (Queasy.key == 133) & (Queasy.number1 == eg_property.maintask)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_repdurationbl.py
+Line no: 216
+Line before: (Queasy.KEY == 133) & (Queasy.number1 == qbuff.maintask)).first()
+Line after: (Queasy.key == 133) & (Queasy.number1 == qbuff.maintask)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_repdurationbl.py
+Line no: 270
+Line before: (Queasy.KEY == 133) & (Queasy.number1 == qbuff.maintask)).first()
+Line after: (Queasy.key == 133) & (Queasy.number1 == qbuff.maintask)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_reprequestcancel_webbl.py
+Line no: 254
+Line before: (Queasy.KEY == 133) & (Queasy.number1 == qbuff.maintask)).first()
+Line after: (Queasy.key == 133) & (Queasy.number1 == qbuff.maintask)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_reprequestcancel_webbl.py
+Line no: 297
+Line before: (Queasy.KEY == 133) & (Queasy.number1 == qbuff.maintask)).first()
+Line after: (Queasy.key == 133) & (Queasy.number1 == qbuff.maintask)).first()
+==================================================

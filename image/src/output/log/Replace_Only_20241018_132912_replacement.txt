@@ -1,0 +1,78 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_mainres_btn_gobl.py
+Line no: 193
+Line before: curr_name = reservation.NAME
+Line after: curr_name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_mainres_btn_gobl.py
+Line no: 207
+Line before: " -> " + reservation.NAME
+Line after: " -> " + reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_mainres_btn_gobl.py
+Line no: 238
+Line before: res_line.resname = reservation.NAME
+Line after: res_line.resname = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_po_create_l_orderbl.py
+Line no: 78
+Line before: l_order.lief_fax[2] = l_artikel.traubensort
+Line after: l_order.lief_fax[2] = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_chg_reservation1bl.py
+Line no: 126
+Line before: guestname = res_line.NAME
+Line after: guestname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_gobl.py
+Line no: 434
+Line before: bill.name = res_line.NAME
+Line after: bill.name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_gobl.py
+Line no: 898
+Line before: bill.name = rgast.NAME
+Line after: bill.name = rgast.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_gobl_chirag.py
+Line no: 434
+Line before: bill.name = res_line.NAME
+Line after: bill.name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_gobl_chirag.py
+Line no: 898
+Line before: bill.name = rgast.NAME
+Line after: bill.name = rgast.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_go_1bl.py
+Line no: 440
+Line before: bill.name = res_line.NAME
+Line after: bill.name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_go_1bl.py
+Line no: 943
+Line before: bill.name = rgast.NAME
+Line after: bill.name = rgast.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_go_2bl.py
+Line no: 445
+Line before: bill.name = res_line.NAME
+Line after: bill.name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_go_2bl.py
+Line no: 947
+Line before: bill.name = rgast.NAME
+Line after: bill.name = rgast.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_query_q1bl.py
+Line no: 61
+Line before: rline_list.rsvname = reservation.NAME
+Line after: rline_list.rsvname = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_query_q1bl.py
+Line no: 78
+Line before: rline_list.name = rline.NAME
+Line after: rline_list.name = rline.name
+==================================================

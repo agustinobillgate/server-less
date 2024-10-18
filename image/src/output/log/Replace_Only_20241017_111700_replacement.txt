@@ -1,0 +1,8 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\flplan_arbl.py
+Line no: 90
+Line before: for zimmer in db_session.query(Zimmer).order_by(len(Zimmer.zinr), Zimmer.zinr).all():
+Line after: for zimmer in db_session.query(Zimmer).order_by(func.length(Zimmer.zinr), Zimmer.zinr).all():
+==================================================

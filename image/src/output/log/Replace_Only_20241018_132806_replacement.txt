@@ -1,0 +1,288 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_fa_pchase_parser_webbl.py
+Line no: 86
+Line before: curr_bez = mathis.NAME
+Line after: curr_bez = mathis.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\produce_signbl.py
+Line no: 65
+Line before: if archieve and archieve.CHAR[1] != "":
+Line after: if archieve and archieve.char[1] != "":
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\produce_signbl.py
+Line no: 66
+Line before: image_data = archieve.CHAR[1]
+Line after: image_data = archieve.char[1]
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\produce_signbl.py
+Line no: 81
+Line before: print_rc_list.arrival = to_string(ankunft, "99/99/9999")
+Line after: print_rc_list.arrival = to_string(res_line.ankunft, "99/99/9999")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\produce_signbl.py
+Line no: 82
+Line before: print_rc_list.departure = to_string(abreise, "99/99/9999") + " " + to_string(res_line.abreisezeit, "HH:mm")
+Line after: print_rc_list.departure = to_string(res_line.abreise, "99/99/9999") + " " + to_string(res_line.abreisezeit, "HH:mm")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\produce_signbl.py
+Line no: 128
+Line before: print_rc_list.last_name = guest.NAME
+Line after: print_rc_list.last_name = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\rest_billjourn_journal_list1_webbl.py
+Line no: 94
+Line before: curr_guest = res_line.NAME
+Line after: curr_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\rest_daysalesp2_btn_go_4bl.py
+Line no: 1144
+Line before: guestname = res_line.NAME
+Line after: guestname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\rest_daysalesp2_btn_go_4bl.py
+Line no: 1766
+Line before: guestname = res_line.NAME
+Line after: guestname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\rest_journal_btn_go_3bl.py
+Line no: 88
+Line before: curr_guest = res_line.NAME
+Line after: curr_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\rest_journal_btn_go_3bl.py
+Line no: 166
+Line before: curr_guest = res_line.NAME
+Line after: curr_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\rest_journal_btn_go_3bl.py
+Line no: 250
+Line before: curr_guest = res_line.NAME
+Line after: curr_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_1_cldbl.py
+Line no: 1527
+Line before: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.YEAR == get_year(t_from_date))).first()
+Line after: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(t_from_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_1_cldbl.py
+Line no: 1531
+Line before: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.YEAR == get_year(t_from_date) - 1)).first()
+Line after: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(t_from_date) - 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_1_cldbl.py
+Line no: 1558
+Line before: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.YEAR == get_year(t_to_date))).first()
+Line after: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(t_to_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_1_cldbl.py
+Line no: 1717
+Line before: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.YEAR == get_year(from_date))).first()
+Line after: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.year == get_year(from_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_1_cldbl.py
+Line no: 1729
+Line before: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.YEAR == get_year(from_date))).first()
+Line after: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.year == get_year(from_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_1_cldbl.py
+Line no: 1761
+Line before: (func.lower(Gl_accthis.fibukonto) == (pnl_acct).lower()) & (Gl_accthis.YEAR == (get_year(t_to_date) - 1))).first()
+Line after: (func.lower(Gl_accthis.fibukonto) == (pnl_acct).lower()) & (Gl_accthis.year == (get_year(t_to_date) - 1))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_1_cldbl.py
+Line no: 1777
+Line before: (func.lower(Hbuff.fibukonto) == (pnl_acct).lower()) & (Hbuff.YEAR == get_year(t_to_date))).first()
+Line after: (func.lower(Hbuff.fibukonto) == (pnl_acct).lower()) & (Hbuff.year == get_year(t_to_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_webbl.py
+Line no: 1524
+Line before: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.YEAR == get_year(t_from_date))).first()
+Line after: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(t_from_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_webbl.py
+Line no: 1528
+Line before: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.YEAR == get_year(t_from_date) - 1)).first()
+Line after: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(t_from_date) - 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_webbl.py
+Line no: 1555
+Line before: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.YEAR == get_year(t_to_date))).first()
+Line after: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(t_to_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_webbl.py
+Line no: 1714
+Line before: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.YEAR == get_year(from_date))).first()
+Line after: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.year == get_year(from_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_webbl.py
+Line no: 1726
+Line before: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.YEAR == get_year(from_date))).first()
+Line after: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.year == get_year(from_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_webbl.py
+Line no: 1758
+Line before: (func.lower(Gl_accthis.fibukonto) == (pnl_acct).lower()) & (Gl_accthis.YEAR == (get_year(t_to_date) - 1))).first()
+Line after: (func.lower(Gl_accthis.fibukonto) == (pnl_acct).lower()) & (Gl_accthis.year == (get_year(t_to_date) - 1))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trialbalance_btn_go_webbl.py
+Line no: 1774
+Line before: (func.lower(Hbuff.fibukonto) == (pnl_acct).lower()) & (Hbuff.YEAR == get_year(t_to_date))).first()
+Line after: (func.lower(Hbuff.fibukonto) == (pnl_acct).lower()) & (Hbuff.year == get_year(t_to_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 209
+Line before: htl_name = paramtext.ptext
+Line after: htl_name = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 213
+Line before: htl_adr1 = paramtext.ptext
+Line after: htl_adr1 = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 217
+Line before: htl_adr2 = paramtext.ptext
+Line after: htl_adr2 = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 221
+Line before: htl_adr3 = paramtext.ptext
+Line after: htl_adr3 = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 225
+Line before: htl_tel = paramtext.ptext
+Line after: htl_tel = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 229
+Line before: htl_fax = paramtext.ptext
+Line after: htl_fax = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 233
+Line before: htl_email = paramtext.ptext
+Line after: htl_email = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 498
+Line before: resv_name = reservation.NAME
+Line after: resv_name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 644
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 693
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 887
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 986
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 1035
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 1092
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 1133
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 1187
+Line before: curr_guest = guest.NAME
+Line after: curr_guest = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 1343
+Line before: bill_recv = bill_recv + guest.NAME
+Line after: bill_recv = bill_recv + guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 1348
+Line before: bill_recv = bill_recv + guest.NAME
+Line after: bill_recv = bill_recv + guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 1579
+Line before: bl_accom = guest.anrede1 + ". " + guest.vorname1 + ", " + guest.NAME
+Line after: bl_accom = guest.anrede1 + ". " + guest.vorname1 + ", " + guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 1610
+Line before: resv_name = reservation.NAME
+Line after: resv_name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 1823
+Line before: resv_name = reservation.NAME
+Line after: resv_name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 2214
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 2247
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 2479
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 2523
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 2548
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 2592
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 2632
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 2674
+Line before: l_guest = res_line.NAME
+Line after: l_guest = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_bill_lnl_selectedbl.py
+Line no: 2757
+Line before: bl_accom = guest.anrede1 + ". " + guest.vorname1 + ", " + guest.NAME
+Line after: bl_accom = guest.anrede1 + ". " + guest.vorname1 + ", " + guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\web_interface_print_fa_pchasebl.py
+Line no: 144
+Line before: curr_bez = mathis.NAME
+Line after: curr_bez = mathis.name
+==================================================

@@ -1,0 +1,28 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_hmcoup_listbl.py
+Line no: 44
+Line before: from_date = htparam.fdate - 1
+Line after: from_date = htparam.fdate - timedelta(days=1)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_hmcoup_listbl.py
+Line no: 45
+Line before: to_date = htparam.fdate - 1
+Line after: to_date = htparam.fdate - timedelta(days=1)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_ktrans_reportbl.py
+Line no: 68
+Line before: from_date = htparam.fdate - 1
+Line after: from_date = htparam.fdate - timedelta(days=1)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_ktrans_reportbl.py
+Line no: 69
+Line before: to_date = htparam.fdate - 1
+Line after: to_date = htparam.fdate - timedelta(days=1)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_reprint_nabl.py
+Line no: 38
+Line before: na_date = htparam.fdate - 1
+Line after: na_date = htparam.fdate - timedelta(days=1)
+==================================================

@@ -1,0 +1,298 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1_2_webbl.py
+Line no: 161
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1_2_webbl.py
+Line no: 274
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1_2_webbl.py
+Line no: 386
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1_2_webbl.py
+Line no: 507
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1_webbl.py
+Line no: 159
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1_webbl.py
+Line no: 271
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1_webbl.py
+Line no: 383
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age1_webbl.py
+Line no: 504
+Line before: age_list.rechnr = l_kredit.NAME
+Line after: age_list.rechnr = l_kredit.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ar_printsoa1_2bl.py
+Line no: 371
+Line before: soa_list.resv_name = reservation.NAME
+Line after: soa_list.resv_name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ar_printsoa1_2bl.py
+Line no: 695
+Line before: soa_list.resv_name = reservation.NAME
+Line after: soa_list.resv_name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ar_printsoa1_2bl.py
+Line no: 1054
+Line before: soa_list.resv_name = reservation.NAME
+Line after: soa_list.resv_name = reservation.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ba_plan_create_wlist_prevbl.py
+Line no: 243
+Line before: gastname = gast.NAME
+Line after: gastname = gast.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_dailybl.py
+Line no: 184
+Line before: temp_res.guestname = replace_str(res_line.NAME, chr(10) , "")
+Line after: temp_res.guestname = replace_str(res_line.name, chr(10) , "")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_dailybl.py
+Line no: 261
+Line before: temp_res.reservename = guest.NAME
+Line after: temp_res.reservename = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_dailybl.py
+Line no: 404
+Line before: his_res.guestname = replace_str(res_line.NAME, chr(10) , "")
+Line after: his_res.guestname = replace_str(res_line.name, chr(10) , "")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_dailybl.py
+Line no: 433
+Line before: his_res.reservename = guest.NAME
+Line after: his_res.reservename = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_dailybl.py
+Line no: 540
+Line before: temp_res.guestname = replace_str(res_line.NAME, chr(10) , "")
+Line after: temp_res.guestname = replace_str(res_line.name, chr(10) , "")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_dailybl.py
+Line no: 618
+Line before: temp_res.reservename = guest.NAME
+Line after: temp_res.reservename = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_initialbl.py
+Line no: 187
+Line before: temp_res.guestname = replace_str(res_line.NAME, chr(10) , "")
+Line after: temp_res.guestname = replace_str(res_line.name, chr(10) , "")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_initialbl.py
+Line no: 261
+Line before: temp_res.reservename = guest.NAME
+Line after: temp_res.reservename = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_initialbl.py
+Line no: 401
+Line before: his_res.guestname = replace_str(res_line.NAME, chr(10) , "")
+Line after: his_res.guestname = replace_str(res_line.name, chr(10) , "")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_initialbl.py
+Line no: 428
+Line before: his_res.reservename = guest.NAME
+Line after: his_res.reservename = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_initialbl.py
+Line no: 542
+Line before: temp_res.guestname = replace_str(res_line.NAME, chr(10) , "")
+Line after: temp_res.guestname = replace_str(res_line.name, chr(10) , "")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bi_avalon_initialbl.py
+Line no: 617
+Line before: temp_res.reservename = guest.NAME
+Line after: temp_res.reservename = guest.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 198
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 933
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 982
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 1526
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 2022
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_occfcast1_2_webbl.py
+Line no: 2073
+Line before: for i in range(1,(to_date - curr_date + 1)  + 1) :
+Line after: for i in range(1,(to_date - curr_date).days + timedelta(days=1))  + 1) :
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fa_artlist_btn_exit_webbl.py
+Line no: 54
+Line before: mathis.name = m_list.NAME
+Line after: mathis.name = m_list.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fa_artlist_btn_exit_webbl.py
+Line no: 118
+Line before: mathis.name = m_list.NAME
+Line after: mathis.name = m_list.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fa_budgetbl.py
+Line no: 160
+Line before: fa_budget.bezeich = mathis.NAME
+Line after: fa_budget.bezeich = mathis.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_invoice_open_bill_cld_2bl.py
+Line no: 268
+Line before: master_rechnr = to_string(mbill.rechnr) + " - " + mbill.NAME
+Line after: master_rechnr = to_string(mbill.rechnr) + " - " + mbill.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_journal_2bl.py
+Line no: 400
+Line before: output_list.guestname = res_line.NAME
+Line after: output_list.guestname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_journal_cld_2bl.py
+Line no: 400
+Line before: output_list.guestname = res_line.NAME
+Line after: output_list.guestname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\get_print_rc_lnlbl.py
+Line no: 45
+Line before: print_rc_list.arrival = to_string(ankunft, "99/99/9999")
+Line after: print_rc_list.arrival = to_string(res_line.ankunft, "99/99/9999")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\get_print_rc_lnlbl.py
+Line no: 46
+Line before: print_rc_list.departure = to_string(abreise, "99/99/9999") + " " + to_string(res_line.abreisezeit, "HH:mm")
+Line after: print_rc_list.departure = to_string(res_line.abreise, "99/99/9999") + " " + to_string(res_line.abreisezeit, "HH:mm")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_joulist_3_webbl.py
+Line no: 4575
+Line before: (Gl_accthis.fibukonto == gl_account.fibukonto) & (Gl_accthis.YEAR == prev_yr)).first()
+Line after: (Gl_accthis.fibukonto == gl_account.fibukonto) & (Gl_accthis.year == prev_yr)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 267
+Line before: (func.lower(S_param.progname) == ("GL-macro").lower()) & (S_param.SECTION == to_string(briefnr)) & (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & (entry(2, S_param.varname, "-") == ("REV").lower())).order_by(S_param.varname).all():
+Line after: (func.lower(S_param.progname) == ("GL-macro").lower()) & (S_param.section == to_string(briefnr)) & (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & (entry(2, S_param.varname, "-") == ("REV").lower())).order_by(S_param.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 491
+Line before: (func.lower(Parameters.progname) == ("GL-macro").lower()) & (Parameters.SECTION == to_string(briefnr)) & (Parameters.vstring == "$IN-FORParameters.EIGN")).first()
+Line after: (func.lower(Parameters.progname) == ("GL-macro").lower()) & (Parameters.section == to_string(briefnr)) & (Parameters.vstring == "$IN-FORParameters.EIGN")).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 498
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.SECTION == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 506
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.SECTION == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).order_by(Parameters.varname).all():
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).order_by(Parameters.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 529
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.SECTION == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("REV").lower())).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("REV").lower())).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 536
+Line before: (func.lower(Parameters.progname) == ("GL-macro").lower()) & (Parameters.SECTION == to_string(briefnr))).order_by(Parameters.varname).all():
+Line after: (func.lower(Parameters.progname) == ("GL-macro").lower()) & (Parameters.section == to_string(briefnr))).order_by(Parameters.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 552
+Line before: (Gl_accthis.fibukonto == parameters.vstring) & (Gl_accthis.YEAR == gl_year)).first()
+Line after: (Gl_accthis.fibukonto == parameters.vstring) & (Gl_accthis.year == gl_year)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 556
+Line before: t_gl_accthis = query(t_gl_accthis_list, filters=(lambda t_gl_accthis: t_gl_accthis.fibukonto == gl_accthis.fibukonto and t_gl_accthis.YEAR == gl_accthis.YEAR), first=True)
+Line after: t_gl_accthis = query(t_gl_accthis_list, filters=(lambda t_gl_accthis: t_gl_accthis.fibukonto == gl_accthis.fibukonto and t_gl_accthis.year == gl_accthis.year), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 796
+Line before: t_gl_accthis = query(t_gl_accthis_list, filters=(lambda t_gl_accthis: t_gl_accthis.fibukonto == t_parameters.vstring and t_gl_accthis.YEAR == gl_year), first=True)
+Line after: t_gl_accthis = query(t_gl_accthis_list, filters=(lambda t_gl_accthis: t_gl_accthis.fibukonto == t_parameters.vstring and t_gl_accthis.year == gl_year), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\hk_preference_list_webbl.py
+Line no: 38
+Line before: guest_name = res_line.NAME
+Line after: guest_name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_webbl.py
+Line no: 393
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.SECTION == t_parameters.SECTION)).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == t_parameters.section)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_webbl.py
+Line no: 404
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.SECTION == t_parameters.SECTION)).filter(Parameters._recid > curr_recid).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == t_parameters.section)).filter(Parameters._recid > curr_recid).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mast_member_webbl.py
+Line no: 129
+Line before: b1_list.gname = res_line.NAME
+Line after: b1_list.gname = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_go_3bl.py
+Line no: 601
+Line before: bill.name = res_line.NAME
+Line after: bill.name = res_line.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_resline_go_3bl.py
+Line no: 1103
+Line before: bill.name = rgast.NAME
+Line after: bill.name = rgast.name
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2517
+Line before: (Res_line.active_flag == 1) & ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.Res_line.resstatus == 11)) & (Res_line.abreise == curr_date) & (((func.lower(Res_line.zinr) >= (froom).lower()) & (func.lower(Res_line.zinr) <= (troom).lower())) | ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Reservation.groupname, Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.resstatus == 11)) & (Res_line.abreise == curr_date) & (((func.lower(Res_line.zinr) >= (froom).lower()) & (func.lower(Res_line.zinr) <= (troom).lower())) | ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Reservation.groupname, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2676
+Line before: (Res_line.active_flag == 1) & ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.Res_line.resstatus == 11)) & (Res_line.abreise == curr_date) & (((func.lower(Res_line.zinr) >= (froom).lower()) & (func.lower(Res_line.zinr) <= (troom).lower())) | ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Res_line.zinr, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.resstatus == 11)) & (Res_line.abreise == curr_date) & (((func.lower(Res_line.zinr) >= (froom).lower()) & (func.lower(Res_line.zinr) <= (troom).lower())) | ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Res_line.zinr, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2835
+Line before: (Res_line.active_flag == 1) & ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.Res_line.resstatus == 11)) & (Res_line.abreise == curr_date) & (((func.lower(Res_line.zinr) >= (froom).lower()) & (func.lower(Res_line.zinr) <= (troom).lower())) | ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Reservation.name, Reservation.groupname, Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.resstatus == 11)) & (Res_line.abreise == curr_date) & (((func.lower(Res_line.zinr) >= (froom).lower()) & (func.lower(Res_line.zinr) <= (troom).lower())) | ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Reservation.name, Reservation.groupname, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pj_depart_4_webbl.py
+Line no: 2994
+Line before: (Res_line.active_flag == 1) & ((Res_line.Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.Res_line.resstatus == 11)) & (Res_line.abreise == curr_date) & (((func.lower(Res_line.zinr) >= (froom).lower()) & (func.lower(Res_line.zinr) <= (troom).lower())) | ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Res_line.abreise, Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & ((Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.resstatus == 11)) & (Res_line.abreise == curr_date) & (((func.lower(Res_line.zinr) >= (froom).lower()) & (func.lower(Res_line.zinr) <= (troom).lower())) | ((func.lower(Res_line.zinr) >= (froom).lower() )))).order_by(Res_line.abreise, Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_fa_newpobl.py
+Line no: 138
+Line before: t_mathis.asset_name = mathis.NAME
+Line after: t_mathis.asset_name = mathis.name
+==================================================
