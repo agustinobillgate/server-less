@@ -1,0 +1,27 @@
+from functions.additional_functions import *
+import decimal
+from sqlalchemy import func
+from models import Bediener
+
+def aktline_list_read_bedienerbl(user_init:str):
+    sales_name = ""
+    bediener = None
+
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal sales_name, bediener
+        nonlocal user_init
+
+
+        return {"sales_name": sales_name}
+
+
+    bediener = db_session.query(Bediener).filter(
+             (func.lower(Bediener.userinit) == (user_init).lower())).first()
+
+    if bediener:
+        sales_name = bediener.username
+
+    return generate_output()

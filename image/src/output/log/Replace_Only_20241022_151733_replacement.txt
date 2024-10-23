@@ -1,0 +1,8 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bill_detailbl.py
+Line no: 36
+Line before: arr = res_line.ankunf
+Line after: arr = res_line.ankunft
+==================================================

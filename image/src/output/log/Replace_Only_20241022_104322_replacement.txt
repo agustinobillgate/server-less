@@ -1,0 +1,8 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ratecode_rate.py
+Line no: 122
+Line before: (Kontline.betriebsnr == 1) & (Kontline.ankunft <= curr_date) & (Kontline.abreise >= curr_date) & (Kontline.kontstat == 1)).order_by(Kontline._recid).all():
+Line after: (Kontline.betriebsnr == 1) & (Kontline.ankunft <= curr_date) & (Kontline.abreise >= curr_date) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+==================================================

@@ -1,0 +1,94 @@
+DEFINE TEMP-TABLE g-list 
+  FIELD docu-nr     AS CHAR 
+  FIELD lscheinnr   AS CHAR 
+  FIELD jnr         LIKE gl-journal.jnr 
+  FIELD fibukonto   LIKE gl-journal.fibukonto 
+  FIELD debit       LIKE gl-journal.debit 
+  FIELD credit      LIKE gl-journal.credit 
+  FIELD bemerk      AS CHAR FORMAT "x(50)" 
+  FIELD userinit    LIKE gl-journal.userinit 
+  FIELD sysdate     LIKE gl-journal.sysdate INITIAL today 
+  FIELD zeit        LIKE gl-journal.zeit 
+  FIELD chginit     LIKE gl-journal.chginit 
+  FIELD chgdate     LIKE gl-journal.chgdate INITIAL ? 
+  FIELD add-note    AS CHAR 
+  FIELD duplicate   AS LOGICAL INITIAL YES
+  FIELD acct-fibukonto LIKE gl-acct.fibukonto
+  FIELD bezeich     LIKE gl-acct.bezeich.
+
+
+DEF INPUT PARAMETER pvILanguage AS INTEGER      NO-UNDO.
+DEF INPUT PARAMETER link-in     AS LOGICAL.
+DEF INPUT PARAMETER to-date     AS DATE.
+DEF INPUT PARAMETER remains     AS DECIMAL.
+DEF INPUT PARAMETER credits     AS DECIMAL.
+DEF INPUT PARAMETER debits      AS DECIMAL.
+DEF INPUT PARAMETER refno       AS CHAR.
+DEF INPUT PARAMETER datum       AS DATE.
+DEF INPUT PARAMETER bezeich     AS CHAR.
+DEF INPUT PARAMETER jtype       AS INT.
+DEF INPUT PARAMETER TABLE FOR g-list.
+
+DEFINE VARIABLE new-hdr AS LOGICAL INITIAL YES. 
+
+{SupertransBL.i} 
+DEF VAR lvCAREA AS CHAR INITIAL "gl-linkstock".
+
+RUN create-header.
+RUN create-journals.
+
+IF link-in THEN FIND FIRST htparam WHERE paramnr = 269 EXCLUSIVE-LOCK. 
+ELSE FIND FIRST htparam WHERE paramnr = 1035 EXCLUSIVE-LOCK. 
+IF htparam.fdate LT to-date THEN htparam.fdate = to-date. 
+FIND CURRENT htparam NO-LOCK. 
+
+PROCEDURE create-header:
+  create gl-jouhdr. 
+  FIND FIRST counters WHERE counters.counter-no = 25 EXCLUSIVE-LOCK NO-ERROR. 
+  IF NOT AVAILABLE counters THEN 
+  DO: 
+    create counters. 
+    counters.counter-no = 25. 
+    counters.counter-bez = translateExtended ("G/L Transaction Journal",lvCAREA,""). 
+  END. 
+  counters.counter = counters.counter + 1.
+  FIND CURRENT counter NO-LOCK.
+
+  gl-jouhdr.jnr = counters.counter. 
+  gl-jouhdr.refno = refno. 
+  gl-jouhdr.datum = datum. 
+  gl-jouhdr.bezeich = bezeich. 
+  gl-jouhdr.batch = YES. 
+  gl-jouhdr.jtype = jtype. 
+  new-hdr = YES. 
+END. 
+ 
+PROCEDURE create-journals: 
+  FOR EACH g-list  NO-LOCK: 
+    create gl-journal. 
+    gl-journal.jnr = counters.counter.
+    gl-journal.fibukonto = g-list.fibukonto. 
+    gl-journal.debit = g-list.debit. 
+    gl-journal.credit = g-list.credit. 
+    gl-journal.bemerk = g-list.bemerk + g-list.add-note. 
+    gl-journal.userinit = g-list.userinit. 
+    gl-journal.zeit = g-list.zeit. 
+  END. 
+  DO transaction: 
+    IF remains = 0.01 OR remains = - 0.01 THEN remains = 0. 
+    FIND CURRENT gl-jouhdr EXCLUSIVE-LOCK. 
+    gl-jouhdr.credit = credits. 
+    gl-jouhdr.debit = debits. 
+    gl-jouhdr.remain = remains. 
+    FIND CURRENT gl-jouhdr NO-LOCK. 
+  END. 
+  release gl-jouhdr. 
+/* 
+  DO transaction: 
+    FIND FIRST htparam WHERE paramnr = 1035 EXCLUSIVE-LOCK. 
+    /* LAST Stock-G/L Transfer DATE */ 
+    htparam.fdate = datum. 
+    FIND CURRENT htparam NO-LOCK. 
+  END. 
+*/ 
+END. 

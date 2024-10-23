@@ -1,0 +1,161 @@
+from functions.additional_functions import *
+import decimal
+from datetime import date
+from sqlalchemy import func
+from models import History, Paramtext, Res_line, Guest
+
+def gcf_history_webbl(gastnr:int, fdate:date, tdate:date, vkey:int):
+    ghistory_list = []
+    summ_list_list = []
+    htl_name:str = ""
+    str:str = ""
+    i:int = 0
+    history = paramtext = res_line = guest = None
+
+    ghistory = summ_list = hist1 = None
+
+    ghistory_list, Ghistory = create_model("Ghistory", {"gastnr":int, "ankunft":date, "abreise":date, "zimmeranz":int, "zikateg":str, "zinr":str, "erwachs":int, "kind":[int,2], "gratis":int, "zipreis":decimal, "arrangement":str, "gesamtumsatz":decimal, "bemerk":str, "logisumsatz":decimal, "argtumsatz":decimal, "f_b_umsatz":decimal, "sonst_umsatz":decimal, "gastinfo":str, "zahlungsart":int, "com_logis":decimal, "com_argt":decimal, "com_f_b":decimal, "com_sonst":decimal, "guestnrcom":int, "abreisezeit":str, "segmentcode":int, "zi_wechsel":bool, "resnr":int, "ums_kurz":decimal, "ums_lang":decimal, "reslinnr":int, "hname":str, "gname":str, "address":str, "s_recid":int, "vcrnr":str, "mblnr":str, "email":str})
+    summ_list_list, Summ_list = create_model_like(History)
+
+    Hist1 = create_buffer("Hist1",History)
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal ghistory_list, summ_list_list, htl_name, str, i, history, paramtext, res_line, guest
+        nonlocal gastnr, fdate, tdate, vkey
+        nonlocal hist1
+
+
+        nonlocal ghistory, summ_list, hist1
+        nonlocal ghistory_list, summ_list_list
+        return {"ghistory": ghistory_list, "summ-list": summ_list_list}
+
+    def create_ghistory():
+
+        nonlocal ghistory_list, summ_list_list, htl_name, str, i, history, paramtext, res_line, guest
+        nonlocal gastnr, fdate, tdate, vkey
+        nonlocal hist1
+
+
+        nonlocal ghistory, summ_list, hist1
+        nonlocal ghistory_list, summ_list_list
+
+        if vkey == 1:
+
+            for history in db_session.query(History).filter(
+                     (History.gastnr == gastnr) & (History.abreise >= fdate) & (History.abreise <= tdate)).order_by(History.abreise.desc()).all():
+                ghistory = Ghistory()
+                ghistory_list.append(ghistory)
+
+                buffer_copy(history, ghistory,except_fields=["gastinfo"])
+
+                hist1 = db_session.query(Hist1).filter(
+                         (Hist1.resnr == history.resnr) & (Hist1.ankunft == history.ankunft) & (Hist1.abreise == history.abreise) & (Hist1.segmentcode == history.segmentcode) & (Hist1.arrangement == history.arrangement)).first()
+
+                if hist1:
+                    ghistory.gastinfo = hist1.gastinfo
+                    ghistory.gname = entry(0, ghistory.gastinfo, "-")
+
+                    if num_entries(ghistory.gastinfo, "-") == 2:
+                        ghistory.address = entry(1, ghistory.gastinfo, "-")
+
+                res_line = db_session.query(Res_line).filter(
+                         (func.lower(Res_line.zimmer_wunsch).op("~")(("*voucher*".lower().replace("*",".*")))) & (Res_line.resnr == history.resnr)).first()
+
+                if res_line:
+                    for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
+                        str = entry(i - 1, res_line.zimmer_wunsch, ";")
+
+                        if substring(str, 0, 7) == ("voucher").lower() :
+                            ghistory.vcrnr = substring(str, 7)
+
+                guest = db_session.query(Guest).filter(
+                         (Guest.gastnr == history.gastnr)).first()
+
+                if guest:
+                    ghistory.mblnr = guest.mobil_telefon
+                    ghistory.email = guest.email_adr
+                ghistory.hname = htl_name
+                ghistory.s_recid = to_int(history._recid)
+
+        elif vkey == 2:
+
+            for history in db_session.query(History).filter(
+                     (History.gastnr == gastnr) & (History.ankunft >= fdate) & (History.ankunft <= tdate)).order_by(History.ankunft.desc()).all():
+                ghistory = Ghistory()
+                ghistory_list.append(ghistory)
+
+                buffer_copy(history, ghistory,except_fields=["gastinfo"])
+
+                hist1 = db_session.query(Hist1).filter(
+                         (Hist1.resnr == history.resnr) & (Hist1.ankunft == history.ankunft) & (Hist1.abreise == history.abreise) & (Hist1.segmentcode == history.segmentcode) & (Hist1.arrangement == history.arrangement)).first()
+
+                if hist1:
+                    ghistory.gastinfo = hist1.gastinfo
+                    ghistory.gname = entry(0, ghistory.gastinfo, "-")
+
+                    if num_entries(ghistory.gastinfo, "-") == 2:
+                        ghistory.address = entry(1, ghistory.gastinfo, "-")
+
+                res_line = db_session.query(Res_line).filter(
+                         (func.lower(Res_line.zimmer_wunsch).op("~")(("*voucher*".lower().replace("*",".*")))) & (Res_line.resnr == history.resnr)).first()
+
+                if res_line:
+                    for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
+                        str = entry(i - 1, res_line.zimmer_wunsch, ";")
+
+                        if substring(str, 0, 7) == ("voucher").lower() :
+                            ghistory.vcrnr = substring(str, 7)
+
+                guest = db_session.query(Guest).filter(
+                         (Guest.gastnr == history.gastnr)).first()
+
+                if guest:
+                    ghistory.mblnr = guest.mobil_telefon
+                    ghistory.email = guest.email_adr
+                ghistory.hname = htl_name
+                ghistory.s_recid = to_int(history._recid)
+
+        for ghistory in query(ghistory_list):
+
+            summ_list = query(summ_list_list, filters=(lambda summ_list: summ_list.gastnr == ghistory.gastnr and summ_list.arrangement == ghistory.arrangement), first=True)
+
+            if not summ_list:
+                summ_list = Summ_list()
+                summ_list_list.append(summ_list)
+
+                summ_list.gastnr = ghistory.gastnr
+                summ_list.zikateg = "T O T A L"
+                summ_list.arrangement = ghistory.arrangement
+                summ_list.zimmeranz = 1
+                summ_list.zipreis =  to_decimal(ghistory.zipreis)
+                summ_list.gesamtumsatz =  to_decimal(ghistory.gesamtumsatz)
+                summ_list.argtumsatz =  to_decimal(ghistory.argtumsatz)
+                summ_list.f_b_umsatz =  to_decimal(ghistory.f_b_umsatz)
+                summ_list.sonst_umsatz =  to_decimal(ghistory.sonst_umsatz)
+
+
+            else:
+                summ_list.zimmeranz = summ_list.zimmeranz + 1
+                summ_list.zipreis =  to_decimal(summ_list.zipreis) + to_decimal(ghistory.zipreis)
+                summ_list.gesamtumsatz =  to_decimal(summ_list.gesamtumsatz) + to_decimal(ghistory.gesamtumsatz)
+                summ_list.argtumsatz =  to_decimal(summ_list.argtumsatz) + to_decimal(ghistory.argtumsatz)
+                summ_list.f_b_umsatz =  to_decimal(summ_list.f_b_umsatz) + to_decimal(ghistory.f_b_umsatz)
+                summ_list.sonst_umsatz =  to_decimal(summ_list.sonst_umsatz) + to_decimal(ghistory.sonst_umsatz)
+
+            guest = db_session.query(Guest).filter(
+                     (Guest.name == entry(0, ghistory.gname, ","))).first()
+
+            if guest:
+                ghistory.mblnr = guest.mobil_telefon
+                ghistory.email = guest.email_adr
+
+    paramtext = db_session.query(Paramtext).filter(
+             (Paramtext.txtnr == 200)).first()
+
+    if paramtext:
+        htl_name = paramtext.ptexte
+    create_ghistory()
+
+    return generate_output()

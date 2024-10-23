@@ -1,0 +1,313 @@
+from functions.additional_functions import *
+import decimal
+from datetime import date
+from sqlalchemy import func
+from models import Zimkateg, Kontline, Bediener, Counters, Res_line
+
+k_list_list, K_list = create_model_like(Kontline)
+
+def globalreservebl(case_type:int, k_list_list:[K_list], rmcat:str, gastnr:int, curr_mode:str, last_code:str, argt:str, comments:str, user_init:str):
+    msg_int = 0
+    globalreserve_list_list = []
+    allot_list_list = []
+    katnr:int = 0
+    ok:bool = False
+    error:bool = False
+    zimkateg = kontline = bediener = counters = res_line = None
+
+    allot_list = z_list = k_list = globalreserve_list = kline = None
+
+    allot_list_list, Allot_list = create_model("Allot_list", {"datum":date, "anz":int})
+    z_list_list, Z_list = create_model_like(Zimkateg)
+    globalreserve_list_list, Globalreserve_list = create_model("Globalreserve_list", {"kontcode":str, "ankunft":date, "abreise":date, "kurzbez":str, "arrangement":str, "zimmeranz":int, "erwachs":int, "kind1":int, "kind2":int, "userinit":str, "useridanlage":str, "resdat":date, "ansprech":str, "bemerk":str, "kontignr":int, "zikatnr":int, "overbooking":int, "ruecktage":int, "rueckdatum":date})
+
+    Kline = create_buffer("Kline",Kontline)
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal msg_int, globalreserve_list_list, allot_list_list, katnr, ok, error, zimkateg, kontline, bediener, counters, res_line
+        nonlocal case_type, rmcat, gastnr, curr_mode, last_code, argt, comments, user_init
+        nonlocal kline
+
+
+        nonlocal allot_list, z_list, k_list, globalreserve_list, kline
+        nonlocal allot_list_list, z_list_list, k_list_list, globalreserve_list_list
+        return {"msg_int": msg_int, "globalreserve-list": globalreserve_list_list, "allot-list": allot_list_list}
+
+    def create_allotment():
+
+        nonlocal msg_int, globalreserve_list_list, allot_list_list, katnr, ok, error, zimkateg, kontline, bediener, counters, res_line
+        nonlocal case_type, rmcat, gastnr, curr_mode, last_code, argt, comments, user_init
+        nonlocal kline
+
+
+        nonlocal allot_list, z_list, k_list, globalreserve_list, kline
+        nonlocal allot_list_list, z_list_list, k_list_list, globalreserve_list_list
+
+        n:int = 1
+        datum:date = None
+        last_code = k_list.kontcode
+        for datum in date_range(k_list.ankunft,k_list.abreise) :
+
+            counters = db_session.query(Counters).filter(
+                     (Counters.counter_no == 10)).first()
+
+            if not counters:
+                counters = Counters()
+                db_session.add(counters)
+
+                counters.counter_no = 10
+                counters.counter_bez = "Allotment counter"
+            counters.counter = counters.counter + 1
+            kontline = Kontline()
+            db_session.add(kontline)
+
+            kontline.kontignr = counters.counter
+            kontline.gastnr = gastnr
+            kontline.useridanlage = ""
+            kontline.betriebsnr = 1
+            kontline.kontcode = k_list.kontcode
+            kontline.ankunft = datum
+            kontline.abreise = datum
+            kontline.zikatnr = zimkateg.zikatnr
+            kontline.arrangement = argt
+            kontline.zimmeranz = k_list.zimmeranz
+            kontline.erwachs = k_list.erwachs
+            kontline.kind1 = k_list.kind1
+            kontline.kind2 = k_list.kind2
+            kontline.overbooking = k_list.overbooking
+            kontline.ruecktage = k_list.ruecktage
+            kontline.rueckdatum = k_list.rueckdatum
+            kontline.ansprech = k_list.ansprech
+            kontline.resdat = get_current_date()
+            kontline.bemerk = comments
+            kontline.bediener_nr = bediener.nr
+
+
+    def chg_allotment():
+
+        nonlocal msg_int, globalreserve_list_list, allot_list_list, katnr, ok, error, zimkateg, kontline, bediener, counters, res_line
+        nonlocal case_type, rmcat, gastnr, curr_mode, last_code, argt, comments, user_init
+        nonlocal kline
+
+
+        nonlocal allot_list, z_list, k_list, globalreserve_list, kline
+        nonlocal allot_list_list, z_list_list, k_list_list, globalreserve_list_list
+
+        n:int = 1
+        last_code = k_list.kontcode
+
+        kontline = db_session.query(Kontline).filter(
+                 (Kontline.kontignr == k_list.kontignr) & (Kontline.gastnr == gastnr)).first()
+
+        if kontline:
+            kontline.betriebsnr = 1
+            kontline.kontcode = k_list.kontcode
+            kontline.ankunft = k_list.ankunft
+            kontline.abreise = k_list.abreise
+            kontline.zikatnr = zimkateg.zikatnr
+            kontline.arrangement = argt
+            kontline.zimmeranz = k_list.zimmeranz
+            kontline.erwachs = k_list.erwachs
+            kontline.kind1 = k_list.kind1
+            kontline.kind2 = k_list.kind2
+            kontline.overbooking = k_list.overbooking
+            kontline.ruecktage = k_list.ruecktage
+            kontline.rueckdatum = k_list.rueckdatum
+            kontline.ansprech = k_list.ansprech
+            kontline.resdat = get_current_date()
+            kontline.bemerk = comments
+            kontline.useridanlage = bediener.userinit
+
+
+    def check_allotment():
+
+        nonlocal msg_int, globalreserve_list_list, allot_list_list, katnr, ok, error, zimkateg, kontline, bediener, counters, res_line
+        nonlocal case_type, rmcat, gastnr, curr_mode, last_code, argt, comments, user_init
+        nonlocal kline
+
+
+        nonlocal allot_list, z_list, k_list, globalreserve_list, kline
+        nonlocal allot_list_list, z_list_list, k_list_list, globalreserve_list_list
+
+        error = False
+        datum:date = None
+        d1:date = None
+        d2:date = None
+        kline = None
+
+        def generate_inner_output():
+            return (error)
+
+        Kline =  create_buffer("Kline",Kontline)
+        allot_list_list.clear()
+
+        res_line_obj_list = []
+        for res_line, kline in db_session.query(Res_line, Kline).join(Kline,(Kline.kontignr == - Res_line.kontignr) & (Kline.kontcode == k_list.kontcode) & (Kline.kontstat == 1)).filter(
+                 (Res_line.kontignr < 0) & (Res_line.gastnr == gastnr) & (Res_line.active_flag < 2) & (Res_line.resstatus < 11) & (not_ (Res_line.ankunft > k_list.abreise)) & (not_ (Res_line.abreise < k_list.ankunft))).order_by(Res_line._recid).all():
+            if res_line._recid in res_line_obj_list:
+                continue
+            else:
+                res_line_obj_list.append(res_line._recid)
+
+            if res_line.ankunft >= k_list.ankunft:
+                d1 = res_line.ankunft
+            else:
+                d1 = k_list.ankunft
+
+            if res_line.abreise <= k_list.abreise:
+                d2 = res_line.abreise - timedelta(days=1)
+            else:
+                d2 = k_list.abreise
+            for datum in date_range(d1,d2) :
+
+                allot_list = query(allot_list_list, filters=(lambda allot_list: allot_list.datum == datum), first=True)
+
+                if not allot_list:
+                    allot_list = Allot_list()
+                    allot_list_list.append(allot_list)
+
+                    allot_list.datum = datum
+                    allot_list.anz = k_list.zimmeranz
+                allot_list.anz = allot_list.anz - res_line.zimmeranz
+
+        allot_list = query(allot_list_list, filters=(lambda allot_list:(allot_list.anz + k_list.overbooking) < 0), first=True)
+
+        if allot_list:
+            error = True
+            msg_int = 7
+
+        return generate_inner_output()
+
+
+    def open_query():
+
+        nonlocal msg_int, globalreserve_list_list, allot_list_list, katnr, ok, error, zimkateg, kontline, bediener, counters, res_line
+        nonlocal case_type, rmcat, gastnr, curr_mode, last_code, argt, comments, user_init
+        nonlocal kline
+
+
+        nonlocal allot_list, z_list, k_list, globalreserve_list, kline
+        nonlocal allot_list_list, z_list_list, k_list_list, globalreserve_list_list
+
+        kontline_obj_list = []
+        for kontline, bediener in db_session.query(Kontline, Bediener).join(Bediener,(Bediener.nr == Kontline.bediener_nr)).filter(
+                 (Kontline.gastnr == gastnr) & (Kontline.kontignr > 0) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).order_by(Kontline.kontcode, Kontline.zikatnr, Kontline.ankunft).all():
+            z_list = query(z_list_list, (lambda z_list: z_list.zikatnr == kontline.zikatnr), first=True)
+            if not z_list:
+                continue
+
+            if kontline._recid in kontline_obj_list:
+                continue
+            else:
+                kontline_obj_list.append(kontline._recid)
+
+
+            globalreserve_list = Globalreserve_list()
+            globalreserve_list_list.append(globalreserve_list)
+
+            globalreserve_list.kontcode = kontline.kontcode
+            globalreserve_list.ankunft = kontline.ankunft
+            globalreserve_list.abreise = kontline.abreise
+            globalreserve_list.kurzbez = z_list.kurzbez
+            globalreserve_list.arrangement = kontline.arrangement
+            globalreserve_list.zimmeranz = kontline.zimmeranz
+            globalreserve_list.erwachs = kontline.erwachs
+            globalreserve_list.kind1 = kontline.kind1
+            globalreserve_list.kind2 = kontline.kind2
+            globalreserve_list.userinit = bediener.userinit
+            globalreserve_list.useridanlage = kontline.useridanlage
+            globalreserve_list.resdat = kontline.resdat
+            globalreserve_list.ansprech = kontline.ansprech
+            globalreserve_list.bemerk = kontline.bemerk
+            globalreserve_list.kontignr = kontline.kontignr
+            globalreserve_list.zikatnr = kontline.zikatnr
+            globalreserve_list.overbooking = kontline.overbooking
+            globalreserve_list.ruecktage = kontline.ruecktage
+            globalreserve_list.rueckdatum = kontline.rueckdatum
+
+
+    def create_zlist():
+
+        nonlocal msg_int, globalreserve_list_list, allot_list_list, katnr, ok, error, zimkateg, kontline, bediener, counters, res_line
+        nonlocal case_type, rmcat, gastnr, curr_mode, last_code, argt, comments, user_init
+        nonlocal kline
+
+
+        nonlocal allot_list, z_list, k_list, globalreserve_list, kline
+        nonlocal allot_list_list, z_list_list, k_list_list, globalreserve_list_list
+
+
+        z_list = Z_list()
+        z_list_list.append(z_list)
+
+        z_list.zikatnr = 0
+        z_list.kurzbez = ""
+
+        for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg._recid).all():
+            z_list = Z_list()
+            z_list_list.append(z_list)
+
+            z_list.zikatnr = zimkateg.zikatnr
+            z_list.kurzbez = zimkateg.kurzbez
+
+    if case_type == 2:
+        create_zlist()
+        open_query()
+
+        return generate_output()
+
+    bediener = db_session.query(Bediener).filter(
+             (func.lower(Bediener.userinit) == (user_init).lower())).first()
+
+    k_list = query(k_list_list, first=True)
+
+    if k_list.kontcode == "" or k_list.ankunft == None or k_list.abreise == None or k_list.zimmeranz == 0:
+        msg_int = 1
+
+        return generate_output()
+
+    if k_list.abreise < k_list.ankunft:
+        msg_int = 2
+
+        return generate_output()
+
+    zimkateg = db_session.query(Zimkateg).filter(
+             (func.lower(Zimkateg.kurzbez) == (rmcat).lower())).first()
+
+    if not zimkateg:
+        msg_int = 3
+
+        return generate_output()
+    katnr = zimkateg.zikatnr
+
+    kline = db_session.query(Kline).filter(
+             (Kline.gastnr == gastnr) & (Kline.betriebsnr == 1) & (Kline.kontcode == k_list.kontcode) & (Kline.kontignr != k_list.kontignr) & (Kline.zikatnr != katnr) & (Kline.kontstat == 1)).first()
+
+    if kline:
+        msg_int = 4
+
+        return generate_output()
+
+    kline = db_session.query(Kline).filter(
+             (Kline.gastnr == gastnr) & (Kline.kontcode == k_list.kontcode) & (Kline.betriebsnr == 1) & (Kline.kontstat == 1) & (Kline.kontignr != k_list.kontignr) & (not Kline.ankunft > k_list.abreise) & (not Kline.abreise < k_list.ankunft) & (Kline.zikatnr == katnr)).first()
+
+    if kline:
+        msg_int = 5
+
+        return generate_output()
+    error = check_allotment()
+
+    if error:
+        msg_int = 6
+
+        return generate_output()
+
+    if curr_mode.lower()  == ("new").lower() :
+        create_allotment()
+
+    elif curr_mode.lower()  == ("chg").lower() :
+        chg_allotment()
+
+    return generate_output()

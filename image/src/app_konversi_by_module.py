@@ -362,9 +362,15 @@ search_list = [
     ("Eg_request.property)", "Eg_request.propertynr)"),
     ("qty = qty + anz_verbrau", "qty = qty + l_verbrauch.anz_verbrau"),
     ("val = val + wert_verbrau", "val = val + l_verbrauch.wert_verbrau"),
-
-
-            
+    ("if bill_line.bill_datum <= date_mdy(08, 31, 18):", "if bill_line.bill_datum <= date_mdy(8, 31, 18):"),
+    ("d2 = date_mdy(get_month(dateval) + timedelta(days=1, 1, get_year(dateval)) - 1)", "d2 = date_mdy(get_month(dateval) + 1, 1, get_year(dateval) - timedelta(days=1))"),
+    ("ci_date = fdate", "ci_date = htparam.fdate"),
+    (f"bediener = db_session.query(Bediener).filter(()).first()", ""),
+    ("(sleeping)).all():", "(Zimmer.sleeping)).all():"),
+    ("(Waehrungsnr == res_line.betriebsnr)).first()", "(Waehrung.waehrungsnr == res_line.betriebsnr)).first()"),
+    ("frate = reserve_dec", "frate = res_line.reserve_dec"), 
+    ("= finteger", "= htparam.finteger"),
+    ("= fdate", "= htparam.fdate"),
 
 ]
 

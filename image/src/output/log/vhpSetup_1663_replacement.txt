@@ -1,0 +1,918 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_list3_webbl.py
+Line no: 56
+Line before: ((Res_line.resstatus != 3) & (Res_line.resstatus != 2) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99)) & (Res_line.active_flag <= 1) & (((Res_line.ankunft <= fdate) & (Res_line.abreise >= fdate)) | ((Res_line.ankunft == fdate) & (Res_line.abreise == fdate) & (Res_line.ankzeit <= mxtime_dayuse))) & (Res_line.l_zuordnung[inc_value(2)] <= 1)).order_by(Res_line.zinr).all():
+Line after: ((Res_line.resstatus != 3) & (Res_line.resstatus != 2) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99)) & (Res_line.active_flag <= 1) & (((Res_line.ankunft <= htparam.fdate) & (Res_line.abreise >= htparam.fdate)) | ((Res_line.ankunft == htparam.fdate) & (Res_line.abreise == htparam.fdate) & (Res_line.ankzeit <= mxtime_dayuse))) & (Res_line.l_zuordnung[inc_value(2)] <= 1)).order_by(Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_list3_webbl.py
+Line no: 162
+Line before: (func.lower(Reslin_queasy.key) == ("argt-line").lower()) & (func.lower(Reslin_queasy.char1) == (contcode).lower()) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci1 > 0)).first()
+Line after: (func.lower(Reslin_queasy.key) == ("argt-line").lower()) & (func.lower(Reslin_queasy.char1) == (contcode).lower()) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.date1 <= htparam.fdate) & (Reslin_queasy.date2 >= htparam.fdate) & (Reslin_queasy.deci1 > 0)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_list3_webbl.py
+Line no: 167
+Line before: (func.lower(Reslin_queasy.key) == ("fargt-line").lower()) & (Reslin_queasy.number1 == bfast_dept) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci1 > 0)).first()
+Line after: (func.lower(Reslin_queasy.key) == ("fargt-line").lower()) & (Reslin_queasy.number1 == bfast_dept) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.date1 <= htparam.fdate) & (Reslin_queasy.date2 >= htparam.fdate) & (Reslin_queasy.deci1 > 0)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_list3_webbl.py
+Line no: 338
+Line before: if res_line.ankunft != fdate:
+Line after: if res_line.ankunft != htparam.fdate:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_list3_webbl.py
+Line no: 343
+Line before: if (res_line.ankunft + 1) != fdate:
+Line after: if (res_line.ankunft + 1) != htparam.fdate:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_listbl.py
+Line no: 47
+Line before: ((Res_line.resstatus != 3) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12)) & (Res_line.active_flag <= 1) & (Res_line.ankunft < fdate) & (Res_line.abreise >= fdate) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.zinr).all():
+Line after: ((Res_line.resstatus != 3) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12)) & (Res_line.active_flag <= 1) & (Res_line.ankunft < fdate) & (Res_line.abreise >= htparam.fdate) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_listbl.py
+Line no: 91
+Line before: (func.lower(Reslin_queasy.key) == ("argt-line").lower()) & (Reslin_queasy.char1 == guest_pr.code) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci1 > 0)).first()
+Line after: (func.lower(Reslin_queasy.key) == ("argt-line").lower()) & (Reslin_queasy.char1 == guest_pr.code) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.date1 <= htparam.fdate) & (Reslin_queasy.date2 >= htparam.fdate) & (Reslin_queasy.deci1 > 0)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_listbl.py
+Line no: 96
+Line before: (func.lower(Reslin_queasy.key) == ("fargt-line").lower()) & (Reslin_queasy.char1 == guest_pr.code) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci1 > 0)).first()
+Line after: (func.lower(Reslin_queasy.key) == ("fargt-line").lower()) & (Reslin_queasy.char1 == guest_pr.code) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.date1 <= htparam.fdate) & (Reslin_queasy.date2 >= htparam.fdate) & (Reslin_queasy.deci1 > 0)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_listbl.py
+Line no: 187
+Line before: if res_line.ankunft != fdate:
+Line after: if res_line.ankunft != htparam.fdate:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_listbl.py
+Line no: 192
+Line before: if (res_line.ankunft + 1) != fdate:
+Line after: if (res_line.ankunft + 1) != htparam.fdate:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\accor_dailyaclubbl.py
+Line no: 28
+Line before: (Mc_aclub.billdatum >= fdate) & (Mc_aclub.billdatum <= tdate) & ((Mc_aclub.key == 2) | (Mc_aclub.key == 1))).order_by(Mc_aclub._recid).all():
+Line after: (Mc_aclub.billdatum >= htparam.fdate) & (Mc_aclub.billdatum <= tdate) & ((Mc_aclub.key == 2) | (Mc_aclub.key == 1))).order_by(Mc_aclub._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\allotmentbl.py
+Line no: 48
+Line before: (Kontline.gastnr == gastnr) & (Kontline.kontignr > 0) & (Kontline.betriebsnr == 0) & (Kontline.kontstat == 1)).order_by(Kontline.kontcode, Kontline.ankunft).all():
+Line after: (Kontline.gastnr == gastnr) & (Kontline.kontignr > 0) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).order_by(Kontline.kontcode, Kontline.ankunft).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\allotmentbl.py
+Line no: 76
+Line before: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstat == 1)).filter(
+Line after: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstatus == 1)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\allotmentbl.py
+Line no: 105
+Line before: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstat == 1)).filter(
+Line after: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstatus == 1)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\allotmentbl.py
+Line no: 156
+Line before: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstat == 1)).filter(
+Line after: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstatus == 1)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\allotm_reviewbl.py
+Line no: 267
+Line before: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (Kontline.kontcode == k_list.kontcode) & (Kontline.kontstat == 1)).filter(
+Line after: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (Kontline.kontcode == k_list.kontcode) & (Kontline.kontstatus == 1)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\allotm_reviewbl.py
+Line no: 295
+Line before: res_list.s1 = to_string(reservation.NAME, "x(22)") + " " + res_list.s1
+Line after: res_list.s1 = to_string(reservation.name, "x(22)") + " " + res_list.s1
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\allotm_reviewbl.py
+Line no: 503
+Line before: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (Kontline.kontcode == k_list.kontcode) & (Kontline.kontstat == 1)).filter(
+Line after: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (Kontline.kontcode == k_list.kontcode) & (Kontline.kontstatus == 1)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\allotm_reviewbl.py
+Line no: 529
+Line before: res_list.s1 = to_string(reservation.NAME, "x(22)") + " " + res_list.s1
+Line after: res_list.s1 = to_string(reservation.name, "x(22)") + " " + res_list.s1
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\allotm_reviewbl.py
+Line no: 819
+Line before: (Kontline.betriebsnr == 0) & (Kontline.kontstat == 1) & (not_ (Kontline.ankunft > to_date)) & (not_ (Kontline.abreise < from_date))).order_by(Guest.name, Kontline.kontcode, Kontline.ankunft).all():
+Line after: (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1) & (not_ (Kontline.ankunft > to_date)) & (not_ (Kontline.abreise < from_date))).order_by(Guest.name, Kontline.kontcode, Kontline.ankunft).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\allotm_reviewbl.py
+Line no: 908
+Line before: (Kontline.betriebsnr == 0) & (Kontline.kontstat == 1) & (not_ (Kontline.ankunft > to_date)) & (not_ (Kontline.abreise < from_date))).order_by(Guest.name, Kontline.kontcode, Kontline.ankunft).all():
+Line after: (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1) & (not_ (Kontline.ankunft > to_date)) & (not_ (Kontline.abreise < from_date))).order_by(Guest.name, Kontline.kontcode, Kontline.ankunft).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age2_webbl.py
+Line no: 494
+Line before: (L_orderhdr.docu_nr == l_kredit.NAME)).first()
+Line after: (L_orderhdr.docu_nr == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age2_webbl.py
+Line no: 552
+Line before: (L_orderhdr.docu_nr == l_kredit.NAME)).first()
+Line after: (L_orderhdr.docu_nr == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age_btn_gobl.py
+Line no: 632
+Line before: (Queasy.key == 221) & (Queasy.number1 == l_kredit.lief_nr) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) & (Queasy.number1 == l_kredit.lief_nr) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age_btn_gobl.py
+Line no: 671
+Line before: (Queasy.key == 221) & (Queasy.number1 == l_kredit.lief_nr) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) & (Queasy.number1 == l_kredit.lief_nr) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 99
+Line before: (Queasy.key == 221) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 111
+Line before: (Gl_jouhdr.refno == l_kredit.NAME)).first()
+Line after: (Gl_jouhdr.refno == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 202
+Line before: (Queasy.key == 221) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 214
+Line before: (Gl_jouhdr.refno == l_kredit.NAME)).first()
+Line after: (Gl_jouhdr.refno == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go_webbl.py
+Line no: 108
+Line before: (Queasy.key == 221) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go_webbl.py
+Line no: 120
+Line before: (Gl_jouhdr.refno == l_kredit.NAME)).first()
+Line after: (Gl_jouhdr.refno == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go_webbl.py
+Line no: 226
+Line before: (Queasy.key == 221) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go_webbl.py
+Line no: 238
+Line before: (Gl_jouhdr.refno == l_kredit.NAME)).first()
+Line after: (Gl_jouhdr.refno == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_reasonbl.py
+Line no: 29
+Line before: (Queasy.key == 263) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 263) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_reasonbl.py
+Line no: 53
+Line before: (Queasy.key == 263) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 263) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 358
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 376
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 394
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 412
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 466
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 484
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 501
+Line before: (Res_line.active_flag == 0) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 525
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 543
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.resname).op("~")(((lname.lower().replace("*",".*")))))).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.resname).op("~")(((lname.lower().replace("*",".*")))))).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 561
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower())).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower())).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 620
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.ankunft, Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.ankunft, Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 795
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 813
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 831
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.resname).op("~")(((lname).lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.resname).op("~")(((lname).lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 849
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower()) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower()) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 955
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate)).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate)).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 972
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((Res_line.resnr == lresnr) | (Res_line.l_zuordnung[inc_value(4)] == lresnr))).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((Res_line.resnr == lresnr) | (Res_line.l_zuordnung[inc_value(4)] == lresnr))).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 1009
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= fdate) & (Res_line.abreise >= ci_date)).order_by(Res_line.ankunft, Reservation.name, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= htparam.fdate) & (Res_line.abreise >= ci_date)).order_by(Res_line.ankunft, Reservation.name, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 1124
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 1142
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 1160
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 1178
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 1231
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= fdate) & (Res_line.abreise >= ci_date) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= htparam.fdate) & (Res_line.abreise >= ci_date) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 1284
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 1336
+Line before: arl_list.setup_list_char = setup_list.CHAR
+Line after: arl_list.setup_list_char = setup_list.char
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 1376
+Line before: arl_list.bestat_dat = reservation.bestat_dat
+Line after: arl_list.bestat_dat = reservation.bestat_datum
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 1409
+Line before: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1bl.py
+Line no: 1419
+Line before: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 130
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 190
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate)).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate)).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 460
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 478
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 496
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 514
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 568
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 586
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 603
+Line before: (Res_line.active_flag == 0) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 627
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 645
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.resname).op("~")(((lname.lower().replace("*",".*")))))).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.resname).op("~")(((lname.lower().replace("*",".*")))))).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 663
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower())).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower())).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 722
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.ankunft, Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.ankunft, Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 897
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 915
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 933
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.resname).op("~")(((lname).lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.resname).op("~")(((lname).lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 951
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower()) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower()) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1057
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate)).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate)).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1074
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((Res_line.resnr == lresnr) | (Res_line.l_zuordnung[inc_value(4)] == lresnr))).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((Res_line.resnr == lresnr) | (Res_line.l_zuordnung[inc_value(4)] == lresnr))).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1111
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= fdate) & (Res_line.abreise >= ci_date)).order_by(Res_line.ankunft, Reservation.name, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= htparam.fdate) & (Res_line.abreise >= ci_date)).order_by(Res_line.ankunft, Reservation.name, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1226
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1244
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1262
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1280
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1333
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= fdate) & (Res_line.abreise >= ci_date) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= htparam.fdate) & (Res_line.abreise >= ci_date) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1386
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1435
+Line before: arl_list.setup_list_char = setup_list.CHAR
+Line after: arl_list.setup_list_char = setup_list.char
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1475
+Line before: arl_list.bestat_dat = reservation.bestat_dat
+Line after: arl_list.bestat_dat = reservation.bestat_datum
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1525
+Line before: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist1_webbl.py
+Line no: 1535
+Line before: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2bl.py
+Line no: 136
+Line before: arl_list.setup_list_char = setup_list.CHAR
+Line after: arl_list.setup_list_char = setup_list.char
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2bl.py
+Line no: 176
+Line before: arl_list.bestat_dat = reservation.bestat_dat
+Line after: arl_list.bestat_dat = reservation.bestat_datum
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2bl.py
+Line no: 209
+Line before: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2bl.py
+Line no: 217
+Line before: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 130
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 190
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate)).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate)).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 460
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 478
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 496
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.name).op("~")((("*" + lname + "*").lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.name).op("~")((("*" + lname + "*").lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 514
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 568
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 586
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.name).op("~")((("*" + lname + "*".lower().replace("*",".*")))))).order_by(Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.name).op("~")((("*" + lname + "*".lower().replace("*",".*")))))).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 603
+Line before: (Res_line.active_flag == 0) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 627
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 645
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 662
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 721
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.ankunft, Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.ankunft, Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 896
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 914
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 932
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 950
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1056
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate)).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate)).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1073
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((Res_line.resnr == lresnr) | (Res_line.l_zuordnung[inc_value(4)] == lresnr))).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((Res_line.resnr == lresnr) | (Res_line.l_zuordnung[inc_value(4)] == lresnr))).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1110
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= fdate) & (Res_line.abreise >= ci_date)).order_by(Res_line.ankunft, Reservation.name, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= htparam.fdate) & (Res_line.abreise >= ci_date)).order_by(Res_line.ankunft, Reservation.name, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1225
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1243
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1261
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1279
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1332
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= fdate) & (Res_line.abreise >= ci_date) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= htparam.fdate) & (Res_line.abreise >= ci_date) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1385
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1434
+Line before: arl_list.setup_list_char = setup_list.CHAR
+Line after: arl_list.setup_list_char = setup_list.char
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1474
+Line before: arl_list.bestat_dat = reservation.bestat_dat
+Line after: arl_list.bestat_dat = reservation.bestat_datum
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1524
+Line before: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist2_webbl.py
+Line no: 1534
+Line before: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 369
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 387
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 405
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.name).op("~")((("*" + lname + "*").lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.name).op("~")((("*" + lname + "*").lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 423
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 480
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 498
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.name).op("~")((("*" + lname + "*".lower().replace("*",".*")))))).order_by(Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (func.lower(Res_line.name).op("~")((("*" + lname + "*".lower().replace("*",".*")))))).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 515
+Line before: (Res_line.active_flag == 0) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 539
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 557
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 574
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 633
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.ankunft, Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.ankunft, Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 811
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 829
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 847
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 865
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 971
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate)).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate)).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 988
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((Res_line.resnr == lresnr) | (Res_line.l_zuordnung[inc_value(4)] == lresnr))).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((Res_line.resnr == lresnr) | (Res_line.l_zuordnung[inc_value(4)] == lresnr))).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1025
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= fdate) & (Res_line.abreise >= ci_date)).order_by(Res_line.ankunft, Reservation.name, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= htparam.fdate) & (Res_line.abreise >= ci_date)).order_by(Res_line.ankunft, Reservation.name, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1140
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1158
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1176
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1194
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Res_line.name, Res_line.zinr).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Res_line.name, Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1374
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (substring(Res_line.zinr, 0, to_int(rmlen)) == (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (substring(Res_line.zinr, 0, to_int(rmlen)) == (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1390
+Line before: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == htparam.fdate) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1560
+Line before: arl_list.setup_list_char = setup_list.CHAR
+Line after: arl_list.setup_list_char = setup_list.char
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1600
+Line before: arl_list.bestat_dat = reservation.bestat_dat
+Line after: arl_list.bestat_dat = reservation.bestat_datum
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1656
+Line before: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_disp_arlist3_webbl.py
+Line no: 1666
+Line before: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_update_browsebl.py
+Line no: 102
+Line before: arl_list.setup_list_char = setup_list.CHAR
+Line after: arl_list.setup_list_char = setup_list.char
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_update_browsebl.py
+Line no: 160
+Line before: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\arl_list_update_browsebl.py
+Line no: 168
+Line before: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 49
+Line before: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.artnr).all():
+Line after: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.artnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 84
+Line before: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.bezeich).all():
+Line after: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.bezeich).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 119
+Line before: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.zwkum, L_artikel.bezeich, L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.zwkum, L_artikel.bezeich, L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 172
+Line before: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.artnr).all():
+Line after: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.artnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 207
+Line before: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.bezeich).all():
+Line after: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.bezeich).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 242
+Line before: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.zwkum, L_artikel.bezeich, L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.zwkum, L_artikel.bezeich, L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 302
+Line before: (H_bill_line.bill_datum >= fdate) & (H_bill_line.bill_datum <= tdate)).order_by(H_bill_line._recid).all():
+Line after: (H_bill_line.bill_datum >= htparam.fdate) & (H_bill_line.bill_datum <= tdate)).order_by(H_bill_line._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 377
+Line before: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0) & (L_op.artnr == l_artikel.artnr)).order_by(L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0) & (L_op.artnr == l_artikel.artnr)).order_by(L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 476
+Line before: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 548
+Line before: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 619
+Line before: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 691
+Line before: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 759
+Line before: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\availability1bl.py
+Line no: 380
+Line before: (Kontline.kontignr > 0) & (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstat == 1)).order_by(Kontline._recid).all():
+Line after: (Kontline.kontignr > 0) & (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\availability1bl.py
+Line no: 632
+Line before: (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstat == 1)).order_by(Kontline.zikatnr).all():
+Line after: (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstatus == 1)).order_by(Kontline.zikatnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\avail_ddown_detail_occupiedbl.py
+Line no: 43
+Line before: (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.abreise > datum) & (Res_line.Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+Line after: (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.abreise > datum) & (Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\avail_ddown_run_mainbl.py
+Line no: 153
+Line before: (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.zikatnr == room_list.zikatnr) & (Res_line.abreise > datum) & (Res_line.Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+Line after: (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.zikatnr == room_list.zikatnr) & (Res_line.abreise > datum) & (Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bfast_card_reportbl.py
+Line no: 61
+Line before: if day_use == fdate:
+Line after: if day_use == htparam.fdate:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bill_parserbl.py
+Line no: 147
+Line before: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeich) != ("Not Used").lower())).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not Used").lower())).order_by(len(Htparam.fchar).desc()).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bill_parserbl.py
+Line no: 147
+Line before: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not Used").lower())).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not Used").lower())).order_by(func.length(Htparam.fchar).desc()).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\chg_sarticle_btn_gobl.py
+Line no: 253
+Line before: (L_art1.artnr == ss_artnr[0)]).first()
+Line after: (L_art1.artnr == ss_artnr[0])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\chg_sarticle_btn_gobl.py
+Line no: 268
+Line before: (L_art1.artnr == ss_artnr[1)]).first()
+Line after: (L_art1.artnr == ss_artnr[1])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\chg_sarticle_btn_gobl.py
+Line no: 283
+Line before: (L_art1.artnr == ss_artnr[2)]).first()
+Line after: (L_art1.artnr == ss_artnr[2])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\close_adjustmentbl.py
+Line no: 49
+Line before: (Gl_accthis.fibukonto == gl_journal.fibukonto) & (Gl_accthis.YEAR == curr_year)).first()
+Line after: (Gl_accthis.fibukonto == gl_journal.fibukonto) & (Gl_accthis.year == curr_year)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\close_adjustmentbl.py
+Line no: 165
+Line before: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.YEAR == curr_year)).first()
+Line after: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.year == curr_year)).first()
+==================================================

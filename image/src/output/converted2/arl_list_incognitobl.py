@@ -29,7 +29,7 @@ def arl_list_incognitobl(t_resnr:int, t_reslinnr:int, user_init:str):
              (Res_line.resnr == t_resnr) & (Res_line.reslinnr == t_reslinnr)).first()
 
     resline = db_session.query(Resline).filter(
-                 (Resline._recid == res_line._recid)).first()
+             (Resline._recid == res_line._recid)).first()
     resline.pseudofix = not resline.pseudofix
 
     if trim(resline.changed_id) != "":
@@ -60,6 +60,5 @@ def arl_list_incognitobl(t_resnr:int, t_reslinnr:int, user_init:str):
 
     reslin_queasy.char3 = to_string(res_line.ankunft) + ";" + to_string(res_line.ankunft) + ";" + to_string(res_line.abreise) + ";" + to_string(res_line.abreise) + ";" + to_string(res_line.zimmeranz) + ";" + to_string(res_line.zimmeranz) + ";" + to_string(res_line.erwachs) + ";" + to_string(res_line.erwachs) + ";" + to_string(res_line.kind1) + ";" + to_string(res_line.kind1) + ";" + to_string(res_line.gratis) + ";" + to_string(res_line.gratis) + ";" + to_string(res_line.zikatnr) + ";" + to_string(res_line.zikatnr) + ";" + to_string(res_line.zinr, "x(6)") + ";" + to_string(res_line.zinr, "x(6)") + ";" + to_string(res_line.arrangement) + ";" + to_string(res_line.arrangement) + ";" + to_string(res_line.zipreis) + ";" + to_string(res_line.zipreis) + ";" + to_string(cid) + ";" + to_string(user_init) + ";" + to_string(" ") + ";" + to_string(get_current_date()) + ";" + to_string(res_line.name) + ";" + to_string(s, "x(16)") + ";" + to_string(" ") + ";" + to_string(" ") + ";"
     pass
-
 
     return generate_output()

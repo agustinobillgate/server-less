@@ -1,0 +1,133 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 49
+Line before: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.artnr).all():
+Line after: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.artnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 84
+Line before: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.bezeich).all():
+Line after: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.bezeich).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 119
+Line before: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.zwkum, L_artikel.bezeich, L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.zwkum, L_artikel.bezeich, L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 172
+Line before: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.artnr).all():
+Line after: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.artnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 207
+Line before: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.bezeich).all():
+Line after: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.bezeich).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 242
+Line before: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.zwkum, L_artikel.bezeich, L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == curr_lager) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0)).order_by(L_artikel.zwkum, L_artikel.bezeich, L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 302
+Line before: (H_bill_line.bill_datum >= fdate) & (H_bill_line.bill_datum <= tdate)).order_by(H_bill_line._recid).all():
+Line after: (H_bill_line.bill_datum >= htparam.fdate) & (H_bill_line.bill_datum <= tdate)).order_by(H_bill_line._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 377
+Line before: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0) & (L_op.artnr == l_artikel.artnr)).order_by(L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0) & (L_op.artnr == l_artikel.artnr)).order_by(L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 476
+Line before: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 548
+Line before: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 619
+Line before: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 691
+Line before: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\autodeduct_listbl.py
+Line no: 759
+Line before: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+Line after: (L_op.lager_nr == h_artikel.lagernr) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate) & ((substring(L_op.lscheinnr, 0, 3) == ("SAD").lower())) & (L_op.loeschflag <= 1) & (L_op.artnr == l_artikel.artnr) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bill_parserbl.py
+Line no: 147
+Line before: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeich) != ("Not Used").lower())).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not Used").lower())).order_by(len(Htparam.fchar).desc()).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bill_parserbl.py
+Line no: 147
+Line before: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not Used").lower())).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not Used").lower())).order_by(func.length(Htparam.fchar).desc()).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\dashboard_initialbl.py
+Line no: 592
+Line before: if res_line.CANCELLED != None:
+Line after: if res_line.cancelled != None:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\dashboard_initialbl.py
+Line no: 593
+Line before: temp_res.cancel_date = to_string(get_month(res_line.CANCELLED) , "99") + "-" + to_string(get_day(res_line.CANCELLED) , "99") + "-" + to_string(get_year(res_line.CANCELLED) , "9999")
+Line after: temp_res.cancel_date = to_string(get_month(res_line.cancelled) , "99") + "-" + to_string(get_day(res_line.cancelled) , "99") + "-" + to_string(get_year(res_line.cancelled) , "9999")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\day_ruse_create_browsebl.py
+Line no: 68
+Line before: i = zinrstat.datum - datum1 + 1
+Line after: i = (zinrstat.datum - datum1).days + 1
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\delete_kontlinebl.py
+Line no: 73
+Line before: (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstat == gastno)).first()
+Line after: (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstatus == gastno)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\delete_onlinetaxbl.py
+Line no: 43
+Line before: (Nitehist.datum == curr_date) & (Nitehist.reihenfolge == nightaudit.reihenfolge) & (Nitehist.LINE == "END-OF-RECORNitehist.D")).first()
+Line after: (Nitehist.datum == curr_date) & (Nitehist.reihenfolge == nightaudit.reihenfolge) & (Nitehist.line == "END-OF-RECORNitehist.D")).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\export_radiant1_initialcrmbl.py
+Line no: 365
+Line before: (Reservation.resnr == res_line.resnr) & (Reservation.resdat >= fdate) & (Reservation.resdat <= tdate)).first()
+Line after: (Reservation.resnr == res_line.resnr) & (Reservation.resdat >= htparam.fdate) & (Reservation.resdat <= tdate)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\export_radiant1_initialcrmbl.py
+Line no: 371
+Line before: (Reservation.resnr == res_line.resnr) & (Reservation.resdat >= fdate) & (Reservation.resdat <= tdate)).filter(Reservation._recid > curr_recid).first()
+Line after: (Reservation.resnr == res_line.resnr) & (Reservation.resdat >= htparam.fdate) & (Reservation.resdat <= tdate)).filter(Reservation._recid > curr_recid).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\flplan_arbl.py
+Line no: 56
+Line before: for zimmer in db_session.query(Zimmer).order_by(len(Zimmer.zinr), Zimmer.zinr).all():
+Line after: for zimmer in db_session.query(Zimmer).order_by(func.length(Zimmer.zinr), Zimmer.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\flplan_arbl.py
+Line no: 90
+Line before: for zimmer in db_session.query(Zimmer).order_by(len(Zimmer.zinr), Zimmer.zinr).all():
+Line after: for zimmer in db_session.query(Zimmer).order_by(func.length(Zimmer.zinr), Zimmer.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_linkfobl.py
+Line no: 484
+Line before: (Artikel.artnr == finteger) & (Artikel.departement == 0)).first()
+Line after: (Artikel.artnr == htparam.finteger) & (Artikel.departement == 0)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_linkfobl.py
+Line no: 493
+Line before: (Artikel.artnr == finteger) & (Artikel.departement == 0)).first()
+Line after: (Artikel.artnr == htparam.finteger) & (Artikel.departement == 0)).first()
+==================================================

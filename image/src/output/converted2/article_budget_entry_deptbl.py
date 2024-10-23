@@ -1,0 +1,42 @@
+from functions.additional_functions import *
+import decimal
+from datetime import date
+from functions.article_budget_disp_itbl import article_budget_disp_itbl
+from models import Budget, Artikel
+
+def article_budget_entry_deptbl(dept:int, from_date:date, to_date:date):
+    t_artikel_list = []
+    t_budget_list = []
+    budget = artikel = None
+
+    t_budget = t_artikel = None
+
+    t_budget_list, T_budget = create_model_like(Budget)
+    t_artikel_list, T_artikel = create_model_like(Artikel)
+
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal t_artikel_list, t_budget_list, budget, artikel
+        nonlocal dept, from_date, to_date
+
+
+        nonlocal t_budget, t_artikel
+        nonlocal t_budget_list, t_artikel_list
+        return {"t-artikel": t_artikel_list, "t-budget": t_budget_list}
+
+
+    for artikel in db_session.query(Artikel).filter(
+             (Artikel.departement == dept) & ((Artikel.Artikel.artart == 0) | (Artikel.artart == 8))).order_by(Artikel.bezeich).all():
+        t_artikel = T_artikel()
+        t_artikel_list.append(t_artikel)
+
+        buffer_copy(artikel, t_artikel)
+
+    t_artikel = query(t_artikel_list, first=True)
+
+    if t_artikel:
+        t_budget_list = get_output(article_budget_disp_itbl(t_artikel.departement, t_artikel.artnr, from_date, to_date))
+
+    return generate_output()

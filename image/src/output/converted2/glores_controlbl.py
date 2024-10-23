@@ -1,0 +1,184 @@
+from functions.additional_functions import *
+import decimal
+from datetime import date
+from sqlalchemy import func
+from models import Bediener, Guest, Res_line, Kontline, Reservation, Zimkateg
+
+def glores_controlbl(pvilanguage:int, del_flag:bool, from_date:date, to_date:date, from_name:str, to_name:str):
+    glores_control_list_list = []
+    datum:date = None
+    usr_init:str = ""
+    i:int = 0
+    count:int = 0
+    currresnr:int = 0
+    anz1:List[int] = create_empty_list(31,0)
+    anz2:List[int] = create_empty_list(31,0)
+    t_anz0:List[int] = create_empty_list(31,0)
+    t_anz1:List[int] = create_empty_list(31,0)
+    t_anz2:List[int] = create_empty_list(31,0)
+    avail_allotm:List[int] = create_empty_list(31,0)
+    overbook:List[int] = create_empty_list(31,0)
+    wday:List[str] = ["SU", "MO", "TU", "WE", "TH", "FR", "SA", "SU"]
+    lvcarea:str = "pickup-list"
+    bediener = guest = res_line = kontline = reservation = zimkateg = None
+
+    glores_control_list = k_list = usr = None
+
+    glores_control_list_list, Glores_control_list = create_model("Glores_control_list", {"datum":date, "gastnr":int, "firma":str, "kontcode":str, "zikatnr":int, "kurzbez":str, "erwachs":int, "kind1":int, "gloanz":int, "gresanz":int, "resanz":int, "resnrstr":str})
+    k_list_list, K_list = create_model("K_list", {"gastnr":int, "bediener_nr":int, "kontcode":str, "ankunft":date, "zikatnr":int, "argt":str, "zimmeranz":[int,31], "erwachs":int, "kind1":int, "ruecktage":int, "overbooking":int, "abreise":date, "useridanlage":str, "resdate":date, "bemerk":str})
+
+    Usr = create_buffer("Usr",Bediener)
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal glores_control_list_list, datum, usr_init, i, count, currresnr, anz1, anz2, t_anz0, t_anz1, t_anz2, avail_allotm, overbook, wday, lvcarea, bediener, guest, res_line, kontline, reservation, zimkateg
+        nonlocal pvilanguage, del_flag, from_date, to_date, from_name, to_name
+        nonlocal usr
+
+
+        nonlocal glores_control_list, k_list, usr
+        nonlocal glores_control_list_list, k_list_list
+        return {"glores-control-list": glores_control_list_list}
+
+    def create_alist():
+
+        nonlocal glores_control_list_list, datum, usr_init, count, currresnr, anz1, anz2, t_anz0, t_anz1, t_anz2, avail_allotm, overbook, wday, lvcarea, bediener, guest, res_line, kontline, reservation, zimkateg
+        nonlocal pvilanguage, del_flag, from_date, to_date, from_name, to_name
+        nonlocal usr
+
+
+        nonlocal glores_control_list, k_list, usr
+        nonlocal glores_control_list_list, k_list_list
+
+        curr_code:str = ""
+        d:date = None
+        d1:date = None
+        d2:date = None
+        i:int = 0
+
+        kontline_obj_list = []
+        for kontline, guest in db_session.query(Kontline, Guest).join(Guest,(Guest.gastnr == Kontline.gastnr) & (func.lower(Guest.name) >= (from_name).lower()) & (func.lower(Guest.name) <= (to_name).lower())).filter(
+                 (Kontline.betriebsnr == 1) & (not_ (Kontline.ankunft > to_date)) & (not_ (Kontline.abreise < from_date)) & (Kontline.kontstatus == 1)).order_by(Guest.name, Kontline.kontcode, Kontline.ankunft).all():
+            if kontline._recid in kontline_obj_list:
+                continue
+            else:
+                kontline_obj_list.append(kontline._recid)
+
+            if curr_code != kontline.kontcode:
+
+                usr = db_session.query(Usr).filter(
+                         (Usr.nr == kontline.bediener_nr)).first()
+                curr_code = kontline.kontcode
+                k_list = K_list()
+                k_list_list.append(k_list)
+
+                k_list.gastnr = guest.gastnr
+                k_list.kontcode = curr_code
+                k_list.ankunft = kontline.ankunft
+                k_list.zikatnr = kontline.zikatnr
+                k_list.argt = kontline.arrangement
+                k_list.erwachs = kontline.erwachs
+                k_list.kind1 = kontline.kind1
+                k_list.ruecktage = kontline.ruecktage
+                k_list.overbooking = kontline.overbooking
+                k_list.abreise = kontline.abreise
+                k_list.useridanlage = kontline.useridanlage
+                k_list.resdat = kontline.resdat
+                k_list.bemerk = kontline.bemerk
+
+                if usr:
+                    k_list.bediener_nr = usr.nr
+            else:
+                k_list.abreise = kontline.abreise
+
+            if from_date > kontline.ankunft:
+                d1 = from_date
+            else:
+                d1 = kontline.ankunft
+
+            if to_date < kontline.abreise:
+                d2 = to_date
+            else:
+                d2 = kontline.abreise
+            i = d1 - from_date
+            for d in date_range(d1,d2) :
+                glores_control_list = Glores_control_list()
+                glores_control_list_list.append(glores_control_list)
+
+
+                zimkateg = db_session.query(Zimkateg).filter(
+                         (Zimkateg.zikatnr == k_list.zikatnr)).first()
+                glores_control_list.datum = d
+                glores_control_list.gastnr = kontline.gastnr
+                glores_control_list.firma = guest.name
+                glores_control_list.kontcode = kontline.kontcode
+                glores_control_list.zikatnr = kontline.zikatnr
+                glores_control_list.gloanz = kontline.zimmeranz
+                glores_control_list.erwachs = kontline.erwachs
+                glores_control_list.kind1 = kontline.kind1
+
+                if zimkateg:
+                    glores_control_list.kurzbez = zimkateg.kurzbez
+
+
+                i = i + 1
+
+                if d >= kontline.ankunft and d <= kontline.abreise:
+                    k_list.zimmeranz[i - 1] = kontline.zimmeranz
+
+
+    k_list_list.clear()
+    glores_control_list_list.clear()
+    create_alist()
+
+    guest_obj_list = []
+    for guest in db_session.query(Guest).filter(
+             ((Guest.gastnr.in_(list(set([k_list.gastnr for k_list in k_list_list)]))))).order_by(Guest.name, k_list.ankunft).all():
+        if guest._recid in guest_obj_list:
+            continue
+        else:
+            guest_obj_list.append(guest._recid)
+
+        k_list = query(k_list_list, (lambda k_list: (guest.gastnr == k_list.gastnr)), first=True)
+
+        for res_line in db_session.query(Res_line).filter(
+                 (Res_line.gastnr == k_list.gastnr) & (Res_line.active_flag <= 1) & (not_ (Res_line.ankunft > to_date)) & (not_ (Res_line.abreise < from_date)) & (Res_line.resstatus <= 6) & (Res_line.resstatus != 3) & (Res_line.resstatus != 4) & (Res_line.kontignr == 0)).order_by(Res_line.resnr).all():
+            for datum in date_range(from_date,to_date) :
+
+                if res_line.ankunft <= datum and res_line.abreise > datum:
+
+                    glores_control_list = query(glores_control_list_list, filters=(lambda glores_control_list: glores_control_list.datum == datum and glores_control_list.gastnr == res_line.gastnr and glores_control_list.zikatnr == res_line.zikatnr and glores_control_list.erwachs >= res_line.erwachs), first=True)
+
+                    if not glores_control_list:
+
+                        glores_control_list = query(glores_control_list_list, filters=(lambda glores_control_list: glores_control_list.datum == datum and glores_control_list.gastnr == res_line.gastnr and glores_control_list.zikatnr == res_line.zikatnr), first=True)
+
+                    if glores_control_list:
+                        glores_control_list.resanz = glores_control_list.resanz + res_line.zimmeranz
+
+                    if currresnr != res_line.resnr:
+                        currresnr = res_line.resnr
+                        glores_control_list.resnrstr = glores_control_list.resnrstr +\
+                                trim(to_string(res_line.resnr, ">>>>>>>9")) + "; "
+
+        res_line_obj_list = []
+        for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == - Res_line.kontignr) & (Kontline.kontcode == k_list.kontcode) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).filter(
+                 (Res_line.gastnr == k_list.gastnr) & (Res_line.active_flag <= 1) & (not_ (Res_line.ankunft > to_date)) & (not_ (Res_line.abreise < from_date)) & (Res_line.resstatus <= 6) & (Res_line.resstatus != 3) & (Res_line.resstatus != 4) & (Res_line.kontignr < 0)).order_by(Res_line.ankunft, Res_line.abreise, Res_line.resnr).all():
+            if res_line._recid in res_line_obj_list:
+                continue
+            else:
+                res_line_obj_list.append(res_line._recid)
+
+            reservation = db_session.query(Reservation).filter(
+                     (Reservation.resnr == res_line.resnr)).first()
+            for datum in date_range(from_date,to_date) :
+
+                if res_line.ankunft <= datum and res_line.abreise > datum:
+
+                    glores_control_list = query(glores_control_list_list, filters=(lambda glores_control_list: glores_control_list.datum == datum and glores_control_list.gastnr == res_line.gastnr and glores_control_list.kontcode == k_list.kontcode), first=True)
+
+                    if glores_control_list:
+                        glores_control_list.gresanz = glores_control_list.gresanz + res_line.zimmeranz
+
+    return generate_output()

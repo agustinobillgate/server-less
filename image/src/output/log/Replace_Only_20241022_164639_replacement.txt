@@ -1,0 +1,8 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\chg_sarticle_btn_gobl.py
+Line no: 268
+Line before: (L_art1.artnr == ss_artnr[1)]).first()
+Line after: (L_art1.artnr == ss_artnr[1])).first()
+==================================================

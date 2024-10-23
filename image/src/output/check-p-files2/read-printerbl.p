@@ -1,0 +1,12 @@
+DEF TEMP-TABLE t-printer LIKE PRINTER.
+
+DEF INPUT  PARAMETER prNo  AS INTEGER NO-UNDO.
+DEF OUTPUT PARAMETER TABLE FOR t-printer.
+
+FIND FIRST printer WHERE printer.nr = prNo NO-LOCK NO-ERROR.
+
+IF AVAILABLE printer THEN
+DO:
+  CREATE t-printer.
+  BUFFER-COPY printer TO t-printer.
+END.

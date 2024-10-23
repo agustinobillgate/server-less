@@ -1,0 +1,15 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_propertylist_btn_okbl.py
+Line no: 60
+Line before: eg_request.reserve_int = location2 eg_request.zinr == zinr
+Line after: eg_request.reserve_int = location2 
+eg_request.zinr == zinr
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\eg_propertylist_btn_okbl.py
+Line no: 103
+Line before: eg_request.reserve_int = location2 eg_request.zinr == zinr
+Line after: eg_request.reserve_int = location2 
+eg_request.zinr == zinr
+==================================================
