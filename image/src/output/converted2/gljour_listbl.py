@@ -24,6 +24,7 @@ def gljour_listbl(sorttype:int, from_date:date, to_date:date):
 
         nonlocal note_list, t_gl_jouhdr, b2_list
         nonlocal note_list_list, t_gl_jouhdr_list, b2_list_list
+
         return {"t-gl-jouhdr": t_gl_jouhdr_list, "b2-list": b2_list_list}
 
     def get_bemerk(bemerk:str):

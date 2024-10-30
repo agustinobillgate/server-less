@@ -14,7 +14,6 @@ def gl_batchjou_chk_delbl(pvilanguage:int, jnr:int, rec_id:int):
         nonlocal msg_str, lvcarea, gl_journal, gl_jouhdr
         nonlocal pvilanguage, jnr, rec_id
 
-
         return {"msg_str": msg_str}
 
 

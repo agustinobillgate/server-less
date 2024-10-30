@@ -21,7 +21,7 @@ def gl_adjustment_xlsjourn_post_itbl(g_list_list:[G_list], pvilanguage:int, datu
 
 
         nonlocal g_list
-        nonlocal g_list_list
+
         return {"t_jnr": t_jnr}
 
     def post_it():
@@ -31,7 +31,6 @@ def gl_adjustment_xlsjourn_post_itbl(g_list_list:[G_list], pvilanguage:int, datu
 
 
         nonlocal g_list
-        nonlocal g_list_list
 
         counters = db_session.query(Counters).filter(
                      (Counters.counter_no == 25)).first()

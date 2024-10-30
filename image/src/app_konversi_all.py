@@ -1,5 +1,6 @@
 import os, re, importlib, json, textwrap, subprocess, sys, shutil, glob
 from functions.additional_functions import *
+from pathlib import Path
 import sqlalchemy as sa
 from fuzzywuzzy import process
 import psycopg2
@@ -14,9 +15,9 @@ folder_log = f"D:/docker/app_konversi/input/vhp-serverless/image/src/output/log"
 base_folder = f"D:/docker/app_konversi"
 vhp_modules = ["Common", "HouseKeeping", "vhpHK", "vhpFOC", "vhpFOR", "vhpTO", 
               "vhpSS", "vhpGL", "vhpGC", "vhpINV", "vhpAR", "vhpAP", "ENG", "vhpIA",
-              "vhpPC", "vhpSM", "vhpFA", "vhpPOS", "vhpSC", "vhpSetup", "preCI", "vhpNA"]
+              "vhpPC", "vhpSM", "vhpFA", "vhpOU", "vhpSC", "vhpSetup", "preCI", "vhpNA"]
 
-# vhp_modules = ["vhpTO" ]
+vhp_modules = ["vhpGL" ]
 nfiles = 0
 nAnakCucu = 0
 
@@ -94,7 +95,6 @@ search_list = [
     ("to_date = date_mdy(01, 01, yy + timedelta(days=1)) - timedelta(days=1)", " to_date = date_mdy(1, 1, yy + timedelta(days=1)) - timedelta(days=1)"),
     ("from_date = date_mdy(mm, 01, yy)", "from_date = date_mdy(mm, 1, yy)"),
     ("from_date = date_mdy(01, 01, yy)", "from_date = date_mdy(1, 1, yy)"),
-    ("from_date = date_mdy(mm {minus} 3, 01, yy)", "from_date = date_mdy(mm - 3, 1, yy)"),
     ("fromdate = billdate - 30", "fromdate = billdate - timedelta(days=30)"),
     ("gc_pi.chequeNo", "gc_pi.chequeno"),
     ("gc_pi.postDate", "gc_pi.postdate"),
@@ -144,7 +144,6 @@ search_list = [
     ("(Waehrungsnr == res_line.betriebsnr)).first()", "(Waehrung.waehrungsnr == res_line.betriebsnr)).first()"),
     ("frate = reserve_dec", "frate = res_line.reserve_dec"), 
     ("= finteger", "= htparam.finteger"),
-    ("= fdate", "= htparam.fdate"),
     ("(Sourccod.source_cod)", "(Sourccod.source_code)"),
     ("(Kontline.kontstat ", "(Kontline.kontstatus "),
     ("(not Res_line.ankunft > tdate)", "(Res_line.ankunft <= tdate)"),
@@ -158,7 +157,7 @@ search_list = [
     ("segm_list.segm_code = segmentcode", "segm_list.segm_code = segment.segmentcode"),
     ("(Waehrungsnr == res_line.betriebsnr)).first()", "(Waehrung.waehrungsnr == res_line.betriebsnr)).first()"),
     ("(Waehrungsnr == genstat.wahrungsnr)).first()", "(Waehrung.waehrungsnr == genstat.wahrungsnr)).first()"),
-    ("tot_avail = tot_avail * (to_date - from_date + 1)", "tot_avail * (date_range(to_date - from_date) + timedelta(days=1))"),
+    ("tot_avail = tot_avail * (to_date - from_date + 1)", "tot_avail * (date_range(to_date , from_date) + timedelta(days=1))"),
     ("res_line.CANCELLED", "res_line.cancelled"),
     ("if get_month(datum) == get_month(to_date):", "if get_month(zinrstat.datum) == get_month(to_date):"),
     ("to_date = curr_date + 27", "to_date = curr_date + timedelta(days=27)"),
@@ -198,7 +197,7 @@ search_list = [
     ("date_fb = fdate", "date_fb = htparam.fdate"),
     ("qty = qty + anz_verbrau", "qty = qty + L_verbrauch.anz_verbrau"),
     ("val = val + wert_verbrau", "val = val + L_verbrauch.wert_verbrau"),
-    ("str_list.d_unit = l_artikel.traubensort\n", "str_list.d_unit = l_artikel.traubensorte\n")
+    ("str_list.d_unit = l_artikel.traubensort\n", "str_list.d_unit = l_artikel.traubensorte\n"),
     ("p_224 = fdate", "p_224 = htparam.fdate"),
     ("if (last_acctdate + 1) <= last_acct_period:", "if (last_acctdate + timedelta(days=1) <= last_acct_period:"),
     ("str_list.d_unit = l_artikel.traubensort", "str_list.d_unit = l_artikel.traubensorte"),
@@ -212,10 +211,23 @@ search_list = [
     ("b1_eknr = finteger", "b1_eknr = htparam.finteger"),
     ("(Gl_acct.fibukonto == fchar)).first()", "(Gl_acct.fibukonto == htparam.fchar)).first()"),
     ("(Brief.briefkateg == l_grpnr) & (Brief.briefnr != reservation.briefnr)", "(Brief.briefkateg == f_mainres.l_grpnr) & (Brief.briefnr != reservation.briefnr)"),
+    ("(Gl_acct.fibukonto == fchar)).first()", "(Gl_acct.fibukonto == htparam.fchar)).first()"),
+    ("argt_list.bezeich = argt_bez", "argt_list.bezeich = arrangement.argt_bez"),
+    ("datetime_server = to_string(get_current_date()) + ", "datetime_server = to_string(get_current_date().strftime(\"%d/%m/%y\")) + "),  # load_datetime_serverbl
+    ("if not htparam or not(paramnr ", "if not htparam or not(Htparam.paramnr "),
+    (" Eg_request.property)", " Eg_request.propertynr)"),
+    ("if eg_property.location != location:", "if eg_property.location != location2:"), 
+    (" guest.bemerk\n", " guest.bemerkung\n") ,
+    (" guest.bemerk ", " guest.bemerkung "),
+    ("zugriff = substring(bediener.permission, 1, 1)", "zugriff = substring(bediener.permissions, 1, 1)"),
+    ("fint = htparam.fint\n", "fint = htparam.finteger\n"),
+    ("(Kline.kontstat ==", "(Kline.kontstatus =="),
+    ("create_rline(end_date + 1, tdate)", "create_rline(end_date + timedelta(days=1), tdate)"),
+
 
 ]
 
-
+search_list = []
 
 def get_list_mapping(module):
     sql_list_url_to_py = """
@@ -271,21 +283,21 @@ def list_files_from_sql(module):
                 shutil.copy(source_file , destination_file)
             #cari anak_cucu
             anak_cucu = get_p_child(r["p_nr"])
-            # for anak in anak_cucu:
-            #     source_file  = f"{base_folder}/{anak['p_path']}"
-            #     destination_file = f"{folder_p}/{anak['p_filename']}"
-            #     if os.path.isfile(source_file ):
-            #         if not os.path.exists(destination_file):
-            #             print("Copying file: ", source_file, "to", destination_file)
-            #             try:
-            #                 nAnakCucu += 1
-            #                 shutil.copy(source_file, destination_file)
-            #                 print("File copied successfully!")
-            #             except Exception as e:
-            #                 print(f"Failed to copy file: {e}")
-            #         else:
-            #             print(f"File {source_file} already exists. Skipping copy.")
-            #     results_list.append(r["p_path"])
+            for anak in anak_cucu:
+                source_file  = f"{base_folder}/{anak['p_path']}"
+                destination_file = f"{folder_p}/{anak['p_filename']}"
+                if os.path.isfile(source_file ):
+                    if not os.path.exists(destination_file):
+                        print("Copying file: ", source_file, "to", destination_file)
+                        try:
+                            nAnakCucu += 1
+                            shutil.copy(source_file, destination_file)
+                            print("File copied successfully!")
+                        except Exception as e:
+                            print(f"Failed to copy file: {e}")
+                    else:
+                        print(f"File {source_file} already exists. Skipping copy.")
+                results_list.append(r["p_path"])
         
     return results_list
 
@@ -383,6 +395,13 @@ def process_file(file_path, search_list, log_file):
 # Define search-replace pairs
 
 
+def count_p_files_in_folder(folder_path):
+    p_files = list(Path(folder_path).rglob('*.p'))
+    return len(p_files)
+
+def count_py_files_in_folder(folder_path):
+    p_files = list(Path(folder_path).rglob('*.py'))
+    return len(p_files)
 
 def cleanup_folder(folder_path):
     # Use subprocess to run the del command, and ensure path handling with quotes
@@ -405,6 +424,28 @@ def connect_db():
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     return conn
 
+def list_p_files_sorted(folder_path, output_txt):
+    # Gather all .p files
+    p_files = sorted(Path(folder_path).rglob('*.p'))
+    
+    # Save the sorted list to a .txt file
+    with open(output_txt, 'w') as f:
+        for p_file in p_files:
+            f.write(str(p_file) + '\n')
+    
+    print(f"File .p saved to {output_txt}")
+
+def list_py_files_sorted(folder_path, output_txt):
+    # Gather all .p files
+    p_files = sorted(Path(folder_path).rglob('*.py'))
+    
+    # Save the sorted list to a .txt file
+    with open(output_txt, 'w') as f:
+        for p_file in p_files:
+            f.write(str(p_file) + '\n')
+    
+    print(f"File .py saved to {output_txt}")
+
 conn = connect_db()
 cursor = conn.cursor(cursor_factory=RealDictCursor)
 cleanup_folder(folder_p)
@@ -412,13 +453,13 @@ cleanup_folder(folder_py)
 print("--------------------------------------------------------------")
 print(f" Collecting files (.p)")
 print("--------------------------------------------------------------\n")
-
+konversi_message = []
 for vhp_module in vhp_modules:
+    cleanup_folder(folder_p)
+    cleanup_folder(folder_py)
     if vhp_module!= '':
-        
         print(vhp_module)
         json_source_list = list_files_from_sql(vhp_module)
-
         script_name = "app_konversi_p_py_converter.py"
         # with open(script_name) as f:
         #     code = f.read()
@@ -430,13 +471,25 @@ for vhp_module in vhp_modules:
         copy_from_converted_path = f"D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2/"
         command = f'cmd /c "{activate_env} && {python_path} {script_name}"'
         command = f'wsl bash -c "source /mnt/d/docker_linux/app_konversi/lenv/bin/activate && python /mnt/d/docker_linux/app_konversi/input/vhp-serverless/image/src/tflinux_p_py_converter.py"'
+        command = f'wsl bash -c "source /mnt/d/docker_linux/app_konversi/lenv/bin/activate && python /mnt/d/docker_linux/app_konversi/input/vhp-serverless/image/src/tflinux_p_py_converter.py"'
+
+        
         print("--------------------------------------------------------------")
-        print(f" Start konversi: nFiles = {nfiles}, nAnakCucu = {nAnakCucu}")
+        print(f" Start konversi {vhp_module}: nFiles = {nfiles}, nAnakCucu = {nAnakCucu}")
         print("--------------------------------------------------------------\n")
         result = subprocess.run(command, capture_output=True, text=True, shell=True)
         print(result.stdout)
         print("----------TF Konversi Selesai-------------------")
-       
+        n_pfiles2 = count_p_files_in_folder(folder_p)
+        n_converted = count_py_files_in_folder(folder_py)
+        print(n_pfiles2, n_converted)
+        list_p_files_sorted(folder_p, f"{folder_log}/{vhp_module}_p_{n_pfiles2}.txt")
+        list_py_files_sorted(folder_py, f"{folder_log}/{vhp_module}_py_{n_converted}.txt")
+        msg = f"{vhp_module}, n_pfiles2: {n_pfiles2}, n_converted: {n_converted}\n"
+        konversi_message.append(msg)
+        if (n_pfiles2 != n_converted):
+            msg = f"n_pfiles2: {n_pfiles2}, n_converted: {n_converted}\nFile konversi ada yang salah, coba run ulang"
+            print(msg)
 
         json_source_list = list_files_in_folder(folder_p)
         json_results_list = list_files_in_folder(folder_py)
@@ -452,7 +505,8 @@ for vhp_module in vhp_modules:
 
         list_converted = json.loads(json_results_list)
         log_file=f"{folder_log}/{vhp_module}_{recid}_replacement.txt"
-        replace_in_files(folder_py, search_list, log_file)
+        # Skip replace string
+        # replace_in_files(folder_py, search_list, log_file)
 
         print("--------------------------------------------------------------\n Tracking ID:", recid)
         print(f" Hasil konversi: {nfiles} files, anak cucu: {nAnakCucu} ")
@@ -481,5 +535,7 @@ for vhp_module in vhp_modules:
         print("--------------------------------------------------------------")
         print(f"Konversi & Copy {vhp_module} selesai.")
         print("--------------------------------------------------------------\n")
+        for msg in konversi_message:
+            print(msg)
         # print((json_output))
 os.chdir(curdir)

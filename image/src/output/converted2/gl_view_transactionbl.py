@@ -23,6 +23,7 @@ def gl_view_transactionbl(srecid:int, jnr:int, refno:str):
 
         nonlocal joulist, b3_list, gl_acct1
         nonlocal joulist_list, b3_list_list
+
         return {"b3-list": b3_list_list}
 
     def get_bemerk(bemerk:str):

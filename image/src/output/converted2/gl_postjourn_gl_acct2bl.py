@@ -17,7 +17,6 @@ def gl_postjourn_gl_acct2bl(pvilanguage:int, curr_mode:str, elim_journal:bool, f
         nonlocal acct_bez, flag_code, msg_str, lvcarea, gl_acct, queasy
         nonlocal pvilanguage, curr_mode, elim_journal, fibukonto
 
-
         return {"acct_bez": acct_bez, "flag_code": flag_code, "msg_str": msg_str}
 
 
@@ -50,3 +49,5 @@ def gl_postjourn_gl_acct2bl(pvilanguage:int, curr_mode:str, elim_journal:bool, f
         flag_code = 2
 
         return generate_output()
+
+    return generate_output()

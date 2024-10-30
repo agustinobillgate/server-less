@@ -25,6 +25,7 @@ def gl_recurracct_btn_exitbl(pvilanguage:int, case_type:int, titel:str, remark:s
 
         nonlocal b1_list, gl_acc1
         nonlocal b1_list_list
+
         return {"msg_str": msg_str, "b1-list": b1_list_list}
 
     def fill_queasy():
@@ -103,3 +104,5 @@ def gl_recurracct_btn_exitbl(pvilanguage:int, case_type:int, titel:str, remark:s
             disp_it()
 
             return generate_output()
+
+    return generate_output()

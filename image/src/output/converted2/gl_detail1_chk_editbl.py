@@ -15,7 +15,6 @@ def gl_detail1_chk_editbl(pvilanguage:int, jnr:int):
         nonlocal msg_str, err_nr, lvcarea, gl_jouhdr, htparam
         nonlocal pvilanguage, jnr
 
-
         return {"msg_str": msg_str, "err_nr": err_nr}
 
 

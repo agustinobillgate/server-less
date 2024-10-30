@@ -29,6 +29,7 @@ def glacct_hallamohanabl(months:int, years:int):
 
         nonlocal note_list, g_list, t_gl_journal, t_gl_jouhdr
         nonlocal note_list_list, g_list_list, t_gl_journal_list, t_gl_jouhdr_list
+
         return {"loc_curr": loc_curr, "t-gl-jouhdr": t_gl_jouhdr_list, "g-list": g_list_list}
 
     def get_bemerk(bemerk:str):

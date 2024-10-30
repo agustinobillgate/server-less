@@ -1,0 +1,23 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\comp_stataccor_create_umsatz_ytdlistbl.py
+Line no: 178
+Line before: last_fdate = date_mdy(1, 1, get_year(to_date) - timedelta(days=1))
+Line after: last_fdate = date_mdy(1, 1, get_year(to_date) - 1)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_akt_account_newbl.py
+Line no: 17
+Line before: mainres_list_list, Mainres_list = create_model("Mainres_list", {"resname":str, "gastnr":int, "resnr":int, "actflag":int, "zimanz":int, "ankunft":date, "abreise":date, "segm":int, "deposit":decimal, "until":date, "paid":decimal, "vesrcode":str, "id1":str, "id2":str, "id2_date":date, "groupname":str, "grpflag":bool, "bemerk":str, "arrival":bool, "resident":bool, "arr_today":bool, "gname":str, "address":str, "city":str}, {"ankunft": 01/01/2099, "abreise": 01/01/1998})
+Line after: mainres_list_list, Mainres_list = create_model("Mainres_list", {"resname":str, "gastnr":int, "resnr":int, "actflag":int, "zimanz":int, "ankunft":date, "abreise":date, "segm":int, "deposit":decimal, "until":date, "paid":decimal, "vesrcode":str, "id1":str, "id2":str, "id2_date":date, "groupname":str, "grpflag":bool, "bemerk":str, "arrival":bool, "resident":bool, "arr_today":bool, "gname":str, "address":str, "city":str}, {"ankunft": 1/1/2099, "abreise": 01/01/1998})
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\rm_atproduct_create_umsatz1_webbl.py
+Line no: 181
+Line before: if (not show_ftd and get_month(guestat1.datum) == mm and get_year(guestat1.datum) == yy) or (show_ftd and guestat1.datum >= fdate and guestat1.datum <= to_date):
+Line after: if (not show_ftd and get_month(guestat1.datum) == mm and get_year(guestat1.datum) == yy) or (show_ftd and guestat1.datum >= htparam.fdate and guestat1.datum <= to_date):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\sales_perform_btn_gobl.py
+Line no: 157
+Line before: (Genstat.datum >= fdate) & (Genstat.datum <= tdate) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat.datum, Guest.name, Guest.gastnr).all():
+Line after: (Genstat.datum >= htparam.fdate) & (Genstat.datum <= tdate) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat.datum, Guest.name, Guest.gastnr).all():
+==================================================

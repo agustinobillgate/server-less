@@ -27,6 +27,7 @@ def gl_transfer_headoffice_webbl(close_month:date, close_year:date, user_init:st
 
         nonlocal t_htparam, t_gl_jouhdr, t_gl_journal
         nonlocal t_htparam_list, t_gl_jouhdr_list, t_gl_journal_list
+
         return {"msg_str": msg_str, "success_flag": success_flag}
 
 
@@ -44,7 +45,7 @@ def gl_transfer_headoffice_webbl(close_month:date, close_year:date, user_init:st
 
         return generate_output()
 
-    if re.match(r".*:.*",not t_htparam.fchar, re.IGNORECASE):
+    if not re.match(r".*:.*",t_htparam.fchar, re.IGNORECASE):
         msg_str = "Wrong Head Office IP:Port format" + " " + t_htparam.fchar
 
         return generate_output()

@@ -13,7 +13,6 @@ def gl_adjustment_btn_delbl(jnr:int):
         nonlocal success_flag, gl_journal, gl_jouhdr
         nonlocal jnr
 
-
         return {"success_flag": success_flag}
 
 

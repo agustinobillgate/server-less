@@ -12,7 +12,6 @@ def chg_gl_journ_btn_go1bl(t_refno:str, t_bezeich:str, t_recid:int):
         nonlocal gl_jouhdr
         nonlocal t_refno, t_bezeich, t_recid
 
-
         return {}
 
 

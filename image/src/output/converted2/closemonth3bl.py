@@ -22,6 +22,7 @@ def closemonth3bl(case_type:int, user_init:str, acct_date:date):
 
 
         nonlocal bparam
+
         return {}
 
 

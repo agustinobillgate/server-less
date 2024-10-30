@@ -1,0 +1,68 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 195
+Line before: htl_name = paramtext.ptext
+Line after: htl_name = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 199
+Line before: htl_adr1 = paramtext.ptext
+Line after: htl_adr1 = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 203
+Line before: htl_adr2 = paramtext.ptext
+Line after: htl_adr2 = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 207
+Line before: htl_adr3 = paramtext.ptext
+Line after: htl_adr3 = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 211
+Line before: htl_tel = paramtext.ptext
+Line after: htl_tel = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 215
+Line before: htl_fax = paramtext.ptext
+Line after: htl_fax = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 219
+Line before: htl_email = paramtext.ptext
+Line after: htl_email = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 286
+Line before: if bill_line.bill_datum <= date_mdy(08, 31, 18):
+Line after: if bill_line.bill_datum <= date_mdy(8, 31, 18):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 331
+Line before: if bill_line.bill_datum <= date_mdy(08, 31, 18):
+Line after: if bill_line.bill_datum <= date_mdy(8, 31, 18):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 1262
+Line before: if bill_line.bill_datum <= date_mdy(08, 31, 18):
+Line after: if bill_line.bill_datum <= date_mdy(8, 31, 18):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 1571
+Line before: if bill_line.bill_datum <= date_mdy(08, 31, 18):
+Line after: if bill_line.bill_datum <= date_mdy(8, 31, 18):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 1622
+Line before: if bill_line.bill_datum <= date_mdy(08, 31, 18):
+Line after: if bill_line.bill_datum <= date_mdy(8, 31, 18):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\quick_post_create_billbl.py
+Line no: 107
+Line before: if na_running and bill_date == fdate:
+Line after: if na_running and bill_date == htparam.fdate:
+==================================================

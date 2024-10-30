@@ -1,8 +1,0 @@
-Replacement Log
-==================================================
-
-Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\dayfcastbl.py
-Line no: 110
-Line before: (Res_line.resstatus <= 6) & (Res_line.resstatus != 3) & (Res_line.active_flag <= 1) & (Res_line.kontignr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (not Res_line.ankunft > tdate) & (not Res_line.abreise <= fdate)).order_by(Res_line._recid).all():
-Line after: (Res_line.resstatus <= 6) & (Res_line.resstatus != 3) & (Res_line.active_flag <= 1) & (Res_line.kontignr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (not Res_line.ankunft > tdate) & (not Res_line.abreise <= htparam.fdate)).order_by(Res_line._recid).all():
-==================================================

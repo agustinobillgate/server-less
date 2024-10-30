@@ -15,7 +15,6 @@ def gl_jouhislist_check_chgbl(pvilanguage:int, jnr:int):
         nonlocal msg_str, err_code, lvcarea, gl_jhdrhis, htparam
         nonlocal pvilanguage, jnr
 
-
         return {"msg_str": msg_str, "err_code": err_code}
 
 

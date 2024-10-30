@@ -25,7 +25,6 @@ def closemonth2bl():
     def generate_output():
         nonlocal profit, revlocal, revfremd, lost, prev_month, curr_month, curr_date, beg_month, end_month, first_date, wahrno, foreign_rate, double_currency, htparam, waehrung, gl_jouhdr, gl_acct, exrate, gl_journal
 
-
         return {}
 
     def closing_month():

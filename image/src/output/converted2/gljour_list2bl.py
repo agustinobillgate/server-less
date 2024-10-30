@@ -21,6 +21,7 @@ def gljour_list2bl(jnr:int):
 
         nonlocal note_list, b2_list
         nonlocal note_list_list, b2_list_list
+
         return {"b2-list": b2_list_list}
 
     def get_bemerk(bemerk:str):

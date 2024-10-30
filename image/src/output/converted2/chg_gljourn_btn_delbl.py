@@ -15,7 +15,6 @@ def chg_gljourn_btn_delbl(jnr:int, rec_id:int):
         nonlocal debits, credits, remains, gl_journal, gl_jouhdr
         nonlocal jnr, rec_id
 
-
         return {"debits": debits, "credits": credits, "remains": remains}
 
 

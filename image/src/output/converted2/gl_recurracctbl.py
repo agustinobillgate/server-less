@@ -19,6 +19,7 @@ def gl_recurracctbl():
 
         nonlocal b1_list
         nonlocal b1_list_list
+
         return {"b1-list": b1_list_list}
 
     queasy_obj_list = []

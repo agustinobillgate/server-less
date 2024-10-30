@@ -1,8 +1,0 @@
-Replacement Log
-==================================================
-
-Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\hk_countsheetbl.py
-Line no: 239
-Line before: out_list.stat = zimmer.zistat
-Line after: out_list.stat = zimmer.zistatus
-==================================================

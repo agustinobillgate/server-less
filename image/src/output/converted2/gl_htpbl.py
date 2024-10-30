@@ -22,6 +22,7 @@ def gl_htpbl(grpnr:int):
 
         nonlocal t_htparam, htgrp
         nonlocal t_htparam_list, htgrp_list
+
         return {"t-htparam": t_htparam_list, "htgrp": htgrp_list}
 
     def create_htgrp():
@@ -48,7 +49,7 @@ def gl_htpbl(grpnr:int):
             if arr[i - 1] != 0:
 
                 paramtext = db_session.query(Paramtext).filter(
-                         (Paramtext.txtnr == arr[i - 1])).first()
+                         (Paramtext.txtnr == arr[i - 1)]).first()
                 htgrp = Htgrp()
                 htgrp_list.append(htgrp)
 
@@ -66,7 +67,7 @@ def gl_htpbl(grpnr:int):
         nonlocal t_htparam_list, htgrp_list
 
         for htparam in db_session.query(Htparam).filter(
-                 (Htparam.paramgruppe == htgrp.number)).order_by(Htparam._recid).all():
+                 (Htparam.paramgr == htgrp.number)).order_by(Htparam._recid).all():
             t_htparam = T_htparam()
             t_htparam_list.append(t_htparam)
 

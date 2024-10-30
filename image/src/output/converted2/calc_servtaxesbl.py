@@ -32,7 +32,6 @@ def calc_servtaxesbl(i_case:int, inp_artno:int, inp_deptno:int, inp_date:date):
         nonlocal service, vat, vat2, fact_scvat, service_code, tax_code, vat_code, bill_date, serv_vat, tax_vat, ct, l_deci, rm_serv, rm_vat, incl_service, incl_mwst, returnflag, artikel, htparam, kontplan
         nonlocal i_case, inp_artno, inp_deptno, inp_date
 
-
         return {"service": service, "vat": vat, "vat2": vat2, "fact_scvat": fact_scvat}
 
     def calculate_it2():
@@ -239,5 +238,7 @@ def calc_servtaxesbl(i_case:int, inp_artno:int, inp_deptno:int, inp_date:date):
         fact_scvat =  to_decimal("1")
         vat =  to_decimal("0")
         vat2 =  to_decimal("0")
+
+    return generate_output()
 
     return generate_output()

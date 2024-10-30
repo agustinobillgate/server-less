@@ -306,7 +306,7 @@ PROCEDURE fill-segment:
         AND genstat.segmentcode NE 0 
         AND genstat.nationnr NE 0
         AND genstat.zinr NE ""
-        AND genstat.res-logic[2] NO-LOCK BY genstat.segmentcode:
+        AND genstat.res-logic[2] EQ YES NO-LOCK BY genstat.segmentcode:
 
         IF prev-segm NE genstat.segmentcode THEN
         DO:
@@ -358,7 +358,7 @@ PROCEDURE fill-segment:
             AND genstat.segmentcode NE 0 
             AND genstat.nationnr NE 0
             AND genstat.zinr NE ""
-            AND genstat.res-logic[2] NO-LOCK BY genstat.segmentcode:
+            AND genstat.res-logic[2] EQ YES NO-LOCK BY genstat.segmentcode:
             
             IF prev-segm NE genstat.segmentcode THEN
             DO:

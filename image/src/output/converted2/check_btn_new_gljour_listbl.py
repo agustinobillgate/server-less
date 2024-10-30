@@ -18,7 +18,6 @@ def check_btn_new_gljour_listbl(pvilanguage:int):
         nonlocal msg_str, fl_temp, close_year, curr_month, lvcarea, htparam
         nonlocal pvilanguage
 
-
         return {"msg_str": msg_str, "fl_temp": fl_temp}
 
 

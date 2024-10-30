@@ -21,6 +21,7 @@ def gl_batchjou_disp_itbl(jnr:int):
 
         nonlocal b2_list, note_list
         nonlocal b2_list_list, note_list_list
+
         return {"b2-list": b2_list_list}
 
     def get_bemerk(bemerk:str):

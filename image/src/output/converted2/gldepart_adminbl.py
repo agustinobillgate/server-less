@@ -14,7 +14,6 @@ def gldepart_adminbl(pvilanguage:int, nr:int):
         nonlocal msg_str, lvcarea, gl_acct, gl_department
         nonlocal pvilanguage, nr
 
-
         return {"msg_str": msg_str}
 
 

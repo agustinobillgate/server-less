@@ -1,0 +1,18 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fa_depn_step_twobl.py
+Line no: 110
+Line before: (Htparam.paramnr == 1366) & (func.lower(Htparam.bezeich) != ("not used").lower())).first()
+Line after: (Htparam.paramnr == 1366) & (func.lower(Htparam.bezeichnung) != ("not used").lower())).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fa_pchase_parser_webbl.py
+Line no: 163
+Line before: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeich) != ("Not used").lower())).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not used").lower())).order_by(len(Htparam.fchar).desc()).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fa_pchase_parser_webbl.py
+Line no: 163
+Line before: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not used").lower())).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not used").lower())).order_by(func.length(Htparam.fchar).desc()).all():
+==================================================

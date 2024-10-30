@@ -1,0 +1,13 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\reservationbl.py
+Line no: 214
+Line before: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == res_line.kontignr) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\reservationbl.py
+Line no: 224
+Line before: (Kontline.kontignr == - res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontignr == - res_line.kontignr) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).first()
+==================================================

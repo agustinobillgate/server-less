@@ -14,7 +14,6 @@ def delete_gl_journalbl(case_type:int, int1:int, str1:str):
         nonlocal successflag, gl_journal
         nonlocal case_type, int1, str1
 
-
         return {"successflag": successflag}
 
 

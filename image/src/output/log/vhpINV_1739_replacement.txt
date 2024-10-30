@@ -1,0 +1,213 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\chg_sarticle_btn_gobl.py
+Line no: 253
+Line before: (L_art1.artnr == ss_artnr[0)]).first()
+Line after: (L_art1.artnr == ss_artnr[0])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\chg_sarticle_btn_gobl.py
+Line no: 268
+Line before: (L_art1.artnr == ss_artnr[1)]).first()
+Line after: (L_art1.artnr == ss_artnr[1])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\chg_sarticle_btn_gobl.py
+Line no: 283
+Line before: (L_art1.artnr == ss_artnr[2)]).first()
+Line after: (L_art1.artnr == ss_artnr[2])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fb_flash1_btn_go_webbl.py
+Line no: 840
+Line before: (Gl_acct.fibukonto == fchar)).first()
+Line after: (Gl_acct.fibukonto == htparam.fchar)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fb_flash1_btn_go_webbl.py
+Line no: 865
+Line before: (Gl_acct.fibukonto == fchar)).first()
+Line after: (Gl_acct.fibukonto == htparam.fchar)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fb_flashbl.py
+Line no: 272
+Line before: (Gl_acct.fibukonto == fchar)).first()
+Line after: (Gl_acct.fibukonto == htparam.fchar)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fb_flashbl.py
+Line no: 296
+Line before: (Gl_acct.fibukonto == fchar)).first()
+Line after: (Gl_acct.fibukonto == htparam.fchar)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_sarticle_btn_gobl.py
+Line no: 103
+Line before: (L_art1.artnr == ss_artnr[0)]).first()
+Line after: (L_art1.artnr == ss_artnr[0])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_sarticle_btn_gobl.py
+Line no: 118
+Line before: (L_art1.artnr == ss_artnr[1)]).first()
+Line after: (L_art1.artnr == ss_artnr[1])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_sarticle_btn_gobl.py
+Line no: 133
+Line before: (L_art1.artnr == ss_artnr[2)]).first()
+Line after: (L_art1.artnr == ss_artnr[2])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_chg_sarticlebl.py
+Line no: 182
+Line before: (L_art1.artnr == ss_artnr[0)]).first()
+Line after: (L_art1.artnr == ss_artnr[0])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_chg_sarticlebl.py
+Line no: 190
+Line before: (L_art1.artnr == ss_artnr[1)]).first()
+Line after: (L_art1.artnr == ss_artnr[1])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_chg_sarticlebl.py
+Line no: 198
+Line before: (L_art1.artnr == ss_artnr[2)]).first()
+Line after: (L_art1.artnr == ss_artnr[2])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\stock_inlistbl.py
+Line no: 73
+Line before: beg_date = fdate - timedelta(days=1)
+Line after: beg_date = htparam.fdate - timedelta(days=1)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 214
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 214
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 424
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 424
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 638
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 638
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 749
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 749
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 941
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 941
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 1146
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 1146
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 1360
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_gobl.py
+Line no: 1360
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 264
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 264
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 524
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 524
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 789
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 789
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 901
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 901
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 1130
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 1130
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 1358
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 1358
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 1596
+Line before: str_list.d_unit = l_artikel.traubensort
+Line after: str_list.d_unit = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\supply_inlist_btn_go_webbl.py
+Line no: 1596
+Line before: str_list.d_unit = l_artikel.traubensorte
+Line after: str_list.d_unit = l_artikel.traubensortee
+==================================================

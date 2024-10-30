@@ -29,6 +29,7 @@ def gl_detaill1bl(fibu:str, from_date:date, to_date:date):
 
         nonlocal b1_list, t_gl_acct
         nonlocal b1_list_list, t_gl_acct_list
+
         return {"b1-list": b1_list_list, "t-gl-acct": t_gl_acct_list}
 
     def lastDay(d:date):

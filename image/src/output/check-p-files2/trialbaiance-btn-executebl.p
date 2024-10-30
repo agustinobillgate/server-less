@@ -1,18 +1,22 @@
+
 DEFINE TEMP-TABLE output-list 
-    FIELD gop-flag      AS LOGICAL INITIAL NO 
-    FIELD nr            AS INTEGER 
-    FIELD STR           AS CHAR 
-    FIELD budget        AS DECIMAL 
-    FIELD proz          AS DECIMAL FORMAT "->>>>>" LABEL "(%)"
-    FIELD mark          AS LOGICAL INITIAL NO FORMAT "Yes/No"
-    FIELD ch            AS CHAR FORMAT "x(2)"
-    FIELD ref-no        AS CHARACTER
-    FIELD begin-bal     AS CHARACTER
-    FIELD tot-debit     AS CHARACTER
-    FIELD tot-credit    AS CHARACTER
-    FIELD net-change    AS CHARACTER
-    FIELD ending-bal    AS CHARACTER
-    FIELD ytd-bal       AS CHARACTER
+    FIELD gop-flag       AS LOGICAL INITIAL NO 
+    FIELD nr             AS INTEGER 
+    FIELD STR            AS CHAR 
+    FIELD budget         AS DECIMAL 
+    FIELD proz           AS DECIMAL FORMAT "->>>>>" LABEL "(%)"
+    FIELD mark           AS LOGICAL INITIAL NO FORMAT "Yes/No"
+    FIELD ch             AS CHAR FORMAT "x(2)"
+    FIELD ref-no         AS CHARACTER
+    FIELD begin-bal      AS CHARACTER
+    FIELD tot-debit      AS CHARACTER
+    FIELD tot-credit     AS CHARACTER
+    FIELD net-change     AS CHARACTER
+    FIELD ending-bal     AS CHARACTER
+    FIELD ytd-bal        AS CHARACTER
+    FIELD dept-nr        AS INTEGER
+    FIELD dept-name      AS CHARACTER
+    FIELD is-show-depart AS LOGICAL
     INDEX nr_idx nr
     .
 
@@ -27,6 +31,8 @@ DEFINE TEMP-TABLE tb-list-summary
     FIELD ytd-balance   AS CHARACTER
     FIELD budget        AS DECIMAL 
     FIELD proz          AS DECIMAL
+    FIELD dept-nr       AS CHARACTER
+    FIELD dept-name     AS CHARACTER
     .
 
 DEFINE TEMP-TABLE tb-list-detail
@@ -39,6 +45,8 @@ DEFINE TEMP-TABLE tb-list-detail
     FIELD net-change    AS CHARACTER  
     FIELD ending-bal    AS CHARACTER 
     FIELD note          AS CHARACTER 
+    FIELD dept-nr       AS CHARACTER
+    FIELD dept-name     AS CHARACTER
     .
 
 DEF INPUT PARAMETER acct-type    AS INT.
@@ -77,9 +85,11 @@ DO:
     END.
 END.
 */
-
-
-RUN trialbalance-btn-go-cldbl.p (acct-type, from-fibu, to-fibu, sorttype, from-dept, from-date,
+/* RUN trialbalance-btn-go-cldbl.p (acct-type, from-fibu, to-fibu, sorttype, from-dept, from-date,
+           to-date, close-month, close-date, pnl-acct, close-year,
+           prev-month, show-longbal, pbal-flag, ASremoteFlag,
+           OUTPUT TABLE output-list). */
+RUN trialbalance-btn-go-cld_1bl.p (acct-type, from-fibu, to-fibu, sorttype, from-dept, from-date,
            to-date, close-month, close-date, pnl-acct, close-year,
            prev-month, show-longbal, pbal-flag, ASremoteFlag,
            OUTPUT TABLE output-list).
@@ -131,8 +141,18 @@ DO:
             tb-list-detail.tot-credit   = tot-credit   
             tb-list-detail.net-change   = net-change   
             tb-list-detail.ending-bal   = ending-bal   
-            tb-list-detail.note         = SUBSTR(output-list.STR,135, 62)
-            .           
+            tb-list-detail.note         = SUBSTR(output-list.STR,135, 62).
+            
+        IF output-list.is-show-depart EQ YES THEN
+        DO:
+            tb-list-detail.dept-nr      = STRING(output-list.dept-nr).
+            tb-list-detail.dept-name    = output-list.dept-name.
+        END.
+        ELSE
+        DO:
+            tb-list-detail.dept-nr      = "".
+            tb-list-detail.dept-name    = "".
+        END.
     END.
 END.
 ELSE    /*summary*/
@@ -179,7 +199,18 @@ DO:
             tb-list-summary.ending-bal   = ending-bal  
             tb-list-summary.ytd-balance  = ytd-balance 
             tb-list-summary.budget       = output-list.budget 
-            tb-list-summary.proz         = output-list.proz   
-            .                           
+            tb-list-summary.proz         = output-list.proz.
+
+        IF output-list.is-show-depart EQ YES THEN
+        DO:
+            tb-list-summary.dept-nr      = STRING(output-list.dept-nr).
+            tb-list-summary.dept-name    = output-list.dept-name.
+        END.
+        ELSE
+        DO:
+            tb-list-summary.dept-nr      = "".
+            tb-list-summary.dept-name    = "".
+        END.
     END. 
 END.
+

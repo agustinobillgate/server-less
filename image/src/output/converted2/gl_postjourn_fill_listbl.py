@@ -26,6 +26,7 @@ def gl_postjourn_fill_listbl(jnr:int):
 
         nonlocal g_list, buf_g_list, gl_acct1
         nonlocal g_list_list, buf_g_list_list
+
         return {"credits": credits, "debits": debits, "remains": remains, "buf-g-list": buf_g_list_list}
 
 

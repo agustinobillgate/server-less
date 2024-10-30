@@ -102,6 +102,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
 
         nonlocal t_parameters, t_gl_accthis, glacct_list, t_gl_acct, t_artikel, t_umsz, g_list, temp_list, coa_list, t_list, stat_list, rev_list, b_stat_list, b_stat, buff_exrate, b_param
         nonlocal t_parameters_list, t_gl_accthis_list, glacct_list_list, t_gl_acct_list, t_artikel_list, t_umsz_list, g_list_list, temp_list_list, coa_list_list, t_list_list, stat_list_list, rev_list_list
+
         return {"mess_result": mess_result}
 
     def fill_exrate():
@@ -776,7 +777,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                                                                 if umsatz:
                                                                                                                                                                                     serv, vat, vat2, fact = get_output(calc_servtaxesbl(1, umsatz.artnr, umsatz.departement, umsatz.datum))
                                                                                                                                                                                 fact =  to_decimal(1.00) + to_decimal(serv) + to_decimal(vat) + to_decimal(vat2)
-                                                                                                                                                                                d_flag = None ! == umsatz and (get_month(umsatz.datum) == get_month(to_date)) and (get_year(umsatz.datum) == get_year(to_date))
+                                                                                                                                                                                d_flag = None != umsatz and (get_month(umsatz.datum) == get_month(to_date)) and (get_year(umsatz.datum) == get_year(to_date))
                                                                                                                                                                                 n_betrag =  to_decimal("0")
 
                                                                                                                                                                                 if umsatz:
@@ -862,7 +863,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                                                                     anz = zinrstat.zimmeranz
                                                                                                                                                                                 else:
                                                                                                                                                                                     anz = anz0
-                                                                                                                                                                                d_flag = None ! == zinrstat and (get_month(zinrstat.datum) == get_month(to_date)) and (get_year(zinrstat.datum) == get_year(to_date))
+                                                                                                                                                                                d_flag = None != zinrstat and (get_month(zinrstat.datum) == get_month(to_date)) and (get_year(zinrstat.datum) == get_year(to_date))
 
                                                                                                                                                                                 if zinrstat:
 
@@ -2199,14 +2200,14 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                         if hist_flag:
 
                             t_gl_accthis = query(t_gl_accthis_list, filters=(lambda t_gl_accthis: t_gl_accthis.fibukonto == t_parameters.vstring and t_gl_accthis.year == gl_year), first=True)
-                        found_flag = None ! == t_gl_accthis
+                        found_flag = None != t_gl_accthis
 
                         if found_flag:
                             buffer_copy(t_gl_accthis, glacct_list)
                     else:
 
                         t_gl_acct = query(t_gl_acct_list, filters=(lambda t_gl_acct: t_gl_acct.fibukonto == t_parameters.vstring), first=True)
-                        found_flag = None ! == t_gl_acct
+                        found_flag = None != t_gl_acct
 
                         if found_flag:
                             buffer_copy(t_gl_acct, glacct_list)

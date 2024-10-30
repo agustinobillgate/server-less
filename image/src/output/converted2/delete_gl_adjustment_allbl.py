@@ -17,7 +17,6 @@ def delete_gl_adjustment_allbl(refno:str, jnr:int, bezeich:str, user_init:str, t
         nonlocal flag, msg, close_year, htparam, gl_jouhdr, gl_journal, bediener, res_history
         nonlocal refno, jnr, bezeich, user_init, to_date
 
-
         return {"flag": flag, "msg": msg}
 
 

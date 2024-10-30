@@ -31,6 +31,7 @@ def closeyear2bl(curr_yr:int, curr_date:date, user_init:str):
 
         nonlocal t_gl_acct, gl_acc1, gl_hbuff, gl_acct1, gbuff, gbuff1
         nonlocal t_gl_acct_list
+
         return {"t-gl-acct": t_gl_acct_list}
 
     htparam = db_session.query(Htparam).filter(

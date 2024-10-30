@@ -1,0 +1,198 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_availabilitybl.py
+Line no: 552
+Line before: (Kontline.betriebsnr == 0) & (Kontline.ankunft <= to_date) & (Kontline.abreise >= from_date) & (Kontline.kontstat == 1)).order_by(Kontline._recid).all():
+Line after: (Kontline.betriebsnr == 0) & (Kontline.ankunft <= to_date) & (Kontline.abreise >= from_date) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_availabilitybl.py
+Line no: 569
+Line before: (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (Res_line.active_flag <= 1) & (Res_line.kontignr > 0) & (not Res_line.ankunft > tdate) & (not Res_line.abreise <= fdate) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+Line after: (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (Res_line.active_flag <= 1) & (Res_line.kontignr > 0) & (Res_line.ankunft <= tdate) & (not Res_line.abreise <= fdate) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_availabilitybl.py
+Line no: 569
+Line before: (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (Res_line.active_flag <= 1) & (Res_line.kontignr > 0) & (Res_line.ankunft <= tdate) & (not Res_line.abreise <= fdate) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+Line after: (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (Res_line.active_flag <= 1) & (Res_line.kontignr > 0) & (Res_line.ankunft <= tdate) & (Res_line.abreise > fdate) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_availabilitybl.py
+Line no: 595
+Line before: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 0) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_availabilitybl.py
+Line no: 735
+Line before: (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstat == 1)).order_by(Kontline._recid).all():
+Line after: (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_availabilitybl.py
+Line no: 994
+Line before: (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstat == 1)).order_by(Kontline._recid).all():
+Line after: (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_availabilitybl.py
+Line no: 1173
+Line before: (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.abreise >= curr_date) & (Res_line.Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+Line after: (Res_line.resstatus == 6) & (Res_line.active_flag == 1) & (Res_line.abreise >= curr_date) & (Res_line.active_flag == 1) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_availabilitybl.py
+Line no: 1337
+Line before: (Kontline.kontignr > 0) & (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.zikatnr == zimkateg.zikatnr) & (Kontline.kontstat == 1)).order_by(Kontline._recid).all():
+Line after: (Kontline.kontignr > 0) & (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.zikatnr == zimkateg.zikatnr) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cr_availabilitybl.py
+Line no: 1396
+Line before: (Kontline.betriebsnr == 0) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstat == 1)).order_by(Kontline._recid).all():
+Line after: (Kontline.betriebsnr == 0) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_loadmacro_step1bl.py
+Line no: 87
+Line before: (func.lower(Parameters.progname) == ("FO-Macro").lower()) & (Parameters.SECTION == to_string(briefnr))).first()
+Line after: (func.lower(Parameters.progname) == ("FO-Macro").lower()) & (Parameters.section == to_string(briefnr))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_loadmacro_step1bl.py
+Line no: 97
+Line before: (func.lower(Parameters.progname) == ("FO-Macro").lower()) & (Parameters.SECTION == to_string(briefnr))).filter(Parameters._recid > curr_recid).first()
+Line after: (func.lower(Parameters.progname) == ("FO-Macro").lower()) & (Parameters.section == to_string(briefnr))).filter(Parameters._recid > curr_recid).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_load_macro_webbl.py
+Line no: 280
+Line before: (func.lower(Parameters.progname) == ("FO-Macro").lower()) & (Parameters.SECTION == to_string(briefnr))).first()
+Line after: (func.lower(Parameters.progname) == ("FO-Macro").lower()) & (Parameters.section == to_string(briefnr))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_load_macro_webbl.py
+Line no: 290
+Line before: (func.lower(Parameters.progname) == ("FO-Macro").lower()) & (Parameters.SECTION == to_string(briefnr))).filter(Parameters._recid > curr_recid).first()
+Line after: (func.lower(Parameters.progname) == ("FO-Macro").lower()) & (Parameters.section == to_string(briefnr))).filter(Parameters._recid > curr_recid).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\if_custom_pushall_availbl.py
+Line no: 446
+Line before: (Kontline.kontstat == 1) & (curr_date >= Kontline.ankunft) & (curr_date <= Kontline.abreise)).order_by(Kontline._recid).all():
+Line after: (Kontline.kontstatus == 1) & (curr_date >= Kontline.ankunft) & (curr_date <= Kontline.abreise)).order_by(Kontline._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\if_custom_pushall_availbl.py
+Line no: 505
+Line before: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 0) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\if_custom_pushall_availbl.py
+Line no: 509
+Line before: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 1) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\if_custom_pushall_availbl.py
+Line no: 564
+Line before: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 0) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\if_custom_pushall_availbl.py
+Line no: 568
+Line before: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 1) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\if_custom_pushall_ratebl.py
+Line no: 113
+Line before: (Kontline.kontstat == 1) & (Kontline.betriebsnr == 1) & (curr_date >= Kontline.ankunft) & (curr_date <= Kontline.abreise)).order_by(Kontline._recid).all():
+Line after: (Kontline.kontstatus == 1) & (Kontline.betriebsnr == 1) & (curr_date >= Kontline.ankunft) & (curr_date <= Kontline.abreise)).order_by(Kontline._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\if_custom_pushall_ratebl.py
+Line no: 144
+Line before: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 1) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\if_custom_pushall_ratebl.py
+Line no: 177
+Line before: (Kontline.kontstat == 1) & (Kontline.betriebsnr == 1) & (Kontline.zikatnr == i_typ) & (curr_date >= Kontline.ankunft) & (curr_date <= Kontline.abreise)).order_by(Kontline._recid).all():
+Line after: (Kontline.kontstatus == 1) & (Kontline.betriebsnr == 1) & (Kontline.zikatnr == i_typ) & (curr_date >= Kontline.ankunft) & (curr_date <= Kontline.abreise)).order_by(Kontline._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\if_custom_pushall_ratebl.py
+Line no: 212
+Line before: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 1) & (Kontline.kontstat == 1)).first()
+Line after: (Kontline.kontcode == kline.kontcode) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_step1bl.py
+Line no: 59
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.SECTION == to_string(briefnr))).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_step1bl.py
+Line no: 69
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.SECTION == to_string(briefnr))).filter(Parameters._recid > curr_recid).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr))).filter(Parameters._recid > curr_recid).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_webbl.py
+Line no: 462
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.SECTION == t_parameters.SECTION)).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == t_parameters.section)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_macro_webbl.py
+Line no: 473
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.SECTION == t_parameters.SECTION)).filter(Parameters._recid > curr_recid).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == t_parameters.section)).filter(Parameters._recid > curr_recid).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_eg_maintaskbl.py
+Line no: 56
+Line before: tcategory.categ_nm = qbuff.CHAR1
+Line after: tcategory.categ_nm = qbuff.char1
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_fo_wordvibl.py
+Line no: 47
+Line before: (Htparam.paramgruppe == 8) & (func.lower(Htparam.bezeich) != ("Not Used").lower())).order_by(Htparam.fchar).all():
+Line after: (Htparam.paramgruppe == 8) & (func.lower(Htparam.bezeichnung) != ("Not Used").lower())).order_by(Htparam.fchar).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_htp_adminbl.py
+Line no: 81
+Line before: (Paramtext.txtnr == arr[i - 1)]).first()
+Line after: (Paramtext.txtnr == arr[i - 1])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ratecode_rate.py
+Line no: 122
+Line before: (Kontline.betriebsnr == 1) & (Kontline.ankunft <= curr_date) & (Kontline.abreise >= curr_date) & (Kontline.kontstat == 1)).order_by(Kontline._recid).all():
+Line after: (Kontline.betriebsnr == 1) & (Kontline.ankunft <= curr_date) & (Kontline.abreise >= curr_date) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\read_res_linebl.py
+Line no: 653
+Line before: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == - Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstat == 1)).filter(
+Line after: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == - Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstatus == 1)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\read_res_linebl.py
+Line no: 668
+Line before: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == - Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.betriebsnr == 1) & (Kontline.kontstat == 1)).filter(
+Line after: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == - Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\read_res_linebl.py
+Line no: 683
+Line before: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstat == 1)).filter(
+Line after: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstatus == 1)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\read_sourccodbl.py
+Line no: 67
+Line before: (Sourccod.betriebsnr == 0) & (Sourccod.source_code != sourceno)).order_by(Sourccod.source_cod).all():
+Line after: (Sourccod.betriebsnr == 0) & (Sourccod.source_code != sourceno)).order_by(Sourccod.source_code).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\read_sourccodbl.py
+Line no: 75
+Line before: (Sourccod.source_code != sourceno)).order_by(Sourccod.source_cod).all():
+Line after: (Sourccod.source_code != sourceno)).order_by(Sourccod.source_code).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\read_sourccodbl.py
+Line no: 91
+Line before: for sourccod in db_session.query(Sourccod).order_by(Sourccod.source_cod).all():
+Line after: for sourccod in db_session.query(Sourccod).order_by(Sourccod.source_code).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\update_global_allotment_browsebl.py
+Line no: 231
+Line before: (Kontline.kontignr > 0) & (Kontline.betriebsnr == 1) & (not Kontline.ankunft > to_date) & (not Kontline.abreise < from_date) & (Kontline.zikatnr == zimkateg.zikatnr) & (Kontline.kontstat == 1)).order_by(Kontline._recid).all():
+Line after: (Kontline.kontignr > 0) & (Kontline.betriebsnr == 1) & (not Kontline.ankunft > to_date) & (not Kontline.abreise < from_date) & (Kontline.zikatnr == zimkateg.zikatnr) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\update_global_allotment_browsebl.py
+Line no: 284
+Line before: (Kontline.kontignr > 0) & (Kontline.betriebsnr == 0) & (not Kontline.ankunft > to_date) & (not Kontline.abreise < from_date) & ((Kontline.zikatnr == zimkateg.zikatnr) | (Kontline.zikatnr == 0)) & (Kontline.kontstat == 1)).order_by(Kontline._recid).all():
+Line after: (Kontline.kontignr > 0) & (Kontline.betriebsnr == 0) & (not Kontline.ankunft > to_date) & (not Kontline.abreise < from_date) & ((Kontline.zikatnr == zimkateg.zikatnr) | (Kontline.zikatnr == 0)) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\update_global_allotment_rmtypebl.py
+Line no: 38
+Line before: (func.lower(Kontline.kontcode) == (currcode).lower()) & (Kontline.kontstat == 1)).order_by(Kontline._recid).all():
+Line after: (func.lower(Kontline.kontcode) == (currcode).lower()) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+==================================================

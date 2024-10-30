@@ -1,0 +1,33 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cost_budget_search.py
+Line no: 76
+Line before: (L_op.artnr == artno) & (L_op.op_art == 3) & (L_op.datum >= fdate) & (L_op.datum <= to_date) & (L_op.loeschflag <= 1)).order_by(L_op._recid).all():
+Line after: (L_op.artnr == artno) & (L_op.op_art == 3) & (L_op.datum >= htparam.fdate) & (L_op.datum <= to_date) & (L_op.loeschflag <= 1)).order_by(L_op._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cost_budget_search.py
+Line no: 87
+Line before: (L_ophis.artnr == artno) & (L_ophis.op_art == 3) & (L_ophis.datum >= fdate) & (L_ophis.datum <= tdate)).order_by(L_ophis._recid).all():
+Line after: (L_ophis.artnr == artno) & (L_ophis.op_art == 3) & (L_ophis.datum >= htparam.fdate) & (L_ophis.datum <= tdate)).order_by(L_ophis._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ins_pr_btn_go_webbl.py
+Line no: 50
+Line before: l_order.lief_fax[2] = l_artikel.traubensort
+Line after: l_order.lief_fax[2] = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_po_create_l_orderbl.py
+Line no: 78
+Line before: l_order.lief_fax[2] = l_artikel.traubensort
+Line after: l_order.lief_fax[2] = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pchase_parserbl.py
+Line no: 93
+Line before: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeich) != ("Not used").lower())).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not used").lower())).order_by(len(Htparam.fchar).desc()).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pchase_parserbl.py
+Line no: 93
+Line before: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not used").lower())).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not used").lower())).order_by(func.length(Htparam.fchar).desc()).all():
+==================================================

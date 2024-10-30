@@ -25,7 +25,7 @@ def gl_postjourn_btn_gobl(g_list_list:[G_list], pvilanguage:int, curr_step:int, 
 
 
         nonlocal g_list
-        nonlocal g_list_list
+
         return {"curr_jnr": curr_jnr, "msg_str": msg_str, "error_flag": error_flag}
 
     def check_date():
@@ -35,7 +35,6 @@ def gl_postjourn_btn_gobl(g_list_list:[G_list], pvilanguage:int, curr_step:int, 
 
 
         nonlocal g_list
-        nonlocal g_list_list
 
         acct_date:date = None
         last_acctdate:date = None
@@ -115,7 +114,6 @@ def gl_postjourn_btn_gobl(g_list_list:[G_list], pvilanguage:int, curr_step:int, 
 
 
         nonlocal g_list
-        nonlocal g_list_list
 
         counters = db_session.query(Counters).filter(
                  (Counters.counter_no == 25)).first()
@@ -150,7 +148,6 @@ def gl_postjourn_btn_gobl(g_list_list:[G_list], pvilanguage:int, curr_step:int, 
 
 
         nonlocal g_list
-        nonlocal g_list_list
 
         for g_list in query(g_list_list, filters=(lambda g_list: g_list.duplicate == False)):
             gl_journal = Gl_journal()

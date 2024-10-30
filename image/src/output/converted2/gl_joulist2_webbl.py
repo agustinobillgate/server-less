@@ -33,6 +33,7 @@ def gl_joulist2_webbl(from_date:date, to_date:date, last_2yr:date, close_year:da
 
         nonlocal out_list, g_list, j_list, bqueasy, tqueasy
         nonlocal out_list_list, g_list_list, j_list_list
+
         return {}
 
     def decode_string(in_str:str):

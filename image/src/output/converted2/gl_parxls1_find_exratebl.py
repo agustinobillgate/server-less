@@ -15,7 +15,6 @@ def gl_parxls1_find_exratebl(curr_date:date, foreign_flag:bool):
         nonlocal exrate_betrag, frate, exrate, htparam, waehrung
         nonlocal curr_date, foreign_flag
 
-
         return {"exrate_betrag": exrate_betrag, "frate": frate}
 
     def find_exrate():

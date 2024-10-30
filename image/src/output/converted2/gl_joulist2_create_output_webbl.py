@@ -27,7 +27,7 @@ def gl_joulist2_create_output_webbl(out_list_list:[Out_list]):
 
 
         nonlocal out_list, bqueasy, pqueasy, tqueasy
-        nonlocal out_list_list
+
         return {"doneflag": doneflag, "out-list": out_list_list}
 
     def decode_string(in_str:str):
@@ -37,7 +37,6 @@ def gl_joulist2_create_output_webbl(out_list_list:[Out_list]):
 
 
         nonlocal out_list, bqueasy, pqueasy, tqueasy
-        nonlocal out_list_list
 
         out_str = ""
         s:str = ""

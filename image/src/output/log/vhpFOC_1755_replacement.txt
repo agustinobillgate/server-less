@@ -1,0 +1,118 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fo_parxls_gsbl.py
+Line no: 7973
+Line before: (func.lower(Parameters.progname) == ("FO-macro").lower()) & (Parameters.SECTION == to_string(briefnr))).order_by(Parameters.varname).all():
+Line after: (func.lower(Parameters.progname) == ("FO-macro").lower()) & (Parameters.section == to_string(briefnr))).order_by(Parameters.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mn_chg_sysdatesbl.py
+Line no: 30
+Line before: if (htparam.fdate + 1) <= get_current_date():
+Line after: if (htparam.fdate + timedelta(days=1)) <= get_current_date():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_fo_parexcelbl.py
+Line no: 65
+Line before: (Htparam.paramgruppe == 8) & (Htparam.fchar != "")).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 8) & (Htparam.fchar != "")).order_by(func.length(Htparam.fchar).desc()).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_fo_parxlsbl.py
+Line no: 73
+Line before: (Htparam.paramgruppe == 8) & (Htparam.fchar != "")).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 8) & (Htparam.fchar != "")).order_by(func.length(Htparam.fchar).desc()).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_fo_parxlsbl.py
+Line no: 1186
+Line before: (func.lower(Parameters.progname) == ("FO-macro").lower()) & (Parameters.SECTION == to_string(briefnr))).order_by(Parameters._recid).all():
+Line after: (func.lower(Parameters.progname) == ("FO-macro").lower()) & (Parameters.section == to_string(briefnr))).order_by(Parameters._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 195
+Line before: htl_name = paramtext.ptext
+Line after: htl_name = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 199
+Line before: htl_adr1 = paramtext.ptext
+Line after: htl_adr1 = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 203
+Line before: htl_adr2 = paramtext.ptext
+Line after: htl_adr2 = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 207
+Line before: htl_adr3 = paramtext.ptext
+Line after: htl_adr3 = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 211
+Line before: htl_tel = paramtext.ptext
+Line after: htl_tel = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 215
+Line before: htl_fax = paramtext.ptext
+Line after: htl_fax = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 219
+Line before: htl_email = paramtext.ptext
+Line after: htl_email = paramtext.ptexte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 286
+Line before: if bill_line.bill_datum <= date_mdy(08, 31, 18):
+Line after: if bill_line.bill_datum <= date_mdy(8, 31, 18):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 331
+Line before: if bill_line.bill_datum <= date_mdy(08, 31, 18):
+Line after: if bill_line.bill_datum <= date_mdy(8, 31, 18):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 1262
+Line before: if bill_line.bill_datum <= date_mdy(08, 31, 18):
+Line after: if bill_line.bill_datum <= date_mdy(8, 31, 18):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 1571
+Line before: if bill_line.bill_datum <= date_mdy(08, 31, 18):
+Line after: if bill_line.bill_datum <= date_mdy(8, 31, 18):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\print_bill_lnlbl.py
+Line no: 1622
+Line before: if bill_line.bill_datum <= date_mdy(08, 31, 18):
+Line after: if bill_line.bill_datum <= date_mdy(8, 31, 18):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ratecode_rate.py
+Line no: 122
+Line before: (Kontline.betriebsnr == 1) & (Kontline.ankunft <= curr_date) & (Kontline.abreise >= curr_date) & (Kontline.kontstat == 1)).order_by(Kontline._recid).all():
+Line after: (Kontline.betriebsnr == 1) & (Kontline.ankunft <= curr_date) & (Kontline.abreise >= curr_date) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\read_htparambl.py
+Line no: 81
+Line before: (Htparam.paramnr == paramno) & (func.lower(Htparam.bezeich) != ("Not used").lower())).first()
+Line after: (Htparam.paramnr == paramno) & (func.lower(Htparam.bezeichnung) != ("Not used").lower())).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\read_res_linebl.py
+Line no: 653
+Line before: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == - Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstat == 1)).filter(
+Line after: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == - Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstatus == 1)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\read_res_linebl.py
+Line no: 668
+Line before: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == - Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.betriebsnr == 1) & (Kontline.kontstat == 1)).filter(
+Line after: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == - Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.betriebsnr == 1) & (Kontline.kontstatus == 1)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\read_res_linebl.py
+Line no: 683
+Line before: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstat == 1)).filter(
+Line after: for res_line, kontline in db_session.query(Res_line, Kontline).join(Kontline,(Kontline.kontignr == Res_line.kontignr) & (func.lower(Kontline.kontcode) == (kontcode).lower()) & (Kontline.kontstatus == 1)).filter(
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\view_ratecode_webbl.py
+Line no: 347
+Line before: comments = guest.bemerk
+Line after: comments = guest.bemerkung
+==================================================

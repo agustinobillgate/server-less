@@ -1176,7 +1176,7 @@ PROCEDURE fill-segment:
             AND genstat.segmentcode = segm
             AND genstat.nationnr NE 0
             AND genstat.zinr NE ""
-            AND genstat.res-logic[2] NO-LOCK BY genstat.segmentcode:
+            AND genstat.res-logic[2] EQ YES NO-LOCK BY genstat.segmentcode:
     
             IF genstat.datum = to-date THEN
             DO:
@@ -1255,7 +1255,7 @@ PROCEDURE fill-segment:
                 AND genstat.segmentcode = segm 
                 AND genstat.nationnr NE 0
                 AND genstat.zinr NE ""
-                AND genstat.res-logic[2] NO-LOCK BY genstat.segmentcode:
+                AND genstat.res-logic[2] EQ YES NO-LOCK BY genstat.segmentcode:
                 
 
                 IF genstat.datum = Lto-date THEN
@@ -2038,7 +2038,7 @@ PROCEDURE fill-rmocc:
       AND genstat.segmentcode NE 0
       AND genstat.nationnr NE 0
       AND genstat.zinr NE ""
-      AND genstat.res-logic[2] /*MU 27032012 sleeping = yes */
+      AND genstat.res-logic[2] EQ YES /*MU 27032012 sleeping = yes */
       USE-INDEX nat_ix NO-LOCK
       BY genstat.segmentcode:
   
@@ -2166,7 +2166,7 @@ DEFINE VARIABLE comp-tday     AS INTEGER.
           AND genstat.segmentcode NE 0 
           AND genstat.nationnr NE 0
           AND genstat.zinr NE ""
-          AND genstat.res-logic[2] NO-LOCK:
+          AND genstat.res-logic[2] EQ YES NO-LOCK:
             
             IF foreign-flag THEN 
             DO: 

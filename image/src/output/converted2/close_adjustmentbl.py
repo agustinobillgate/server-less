@@ -28,7 +28,6 @@ def close_adjustmentbl(pvilanguage:int, user_init:str):
         nonlocal closed, msg_str, lvcarea, curr_date, curr_month, curr_year, prev_month, from_month, to_month, pnl_acct, balance, profit, lost, i, htparam, gl_acct, gl_jouhdr, gl_journal, gl_accthis, bediener, res_history
         nonlocal pvilanguage, user_init
 
-
         return {"closed": closed, "msg_str": msg_str}
 
     def process_journal(inp_jnr:int):

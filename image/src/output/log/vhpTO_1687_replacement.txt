@@ -1,0 +1,383 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 50
+Line before: fdate1 = fdate2
+Line after: fdate1 = htparam.fdate2
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 58
+Line before: fdate2 = fdate1
+Line after: fdate2 = htparam.fdate1
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 72
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 86
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 100
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 116
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2)).order_by(Reservation.name, Res_line.ankunft, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2)).order_by(Reservation.name, Res_line.ankunft, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 130
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2)).order_by(Reservation.name, Res_line.ankunft, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2)).order_by(Reservation.name, Res_line.ankunft, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 144
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (func.lower(Res_line.resname).op("~")(((lname.lower().replace("*",".*")))))).order_by(Res_line.resname, Res_line.ankunft, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft >= htparam.fdate1) & (Res_line.ankunft <= htparam.fdate2) & (func.lower(Res_line.resname).op("~")(((lname.lower().replace("*",".*")))))).order_by(Res_line.resname, Res_line.ankunft, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 160
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft == fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft == htparam.fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 174
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft == fdate2) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft == htparam.fdate2) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 188
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft == fdate2) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft == htparam.fdate2) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 204
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft == fdate2)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft == htparam.fdate2)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 218
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft == fdate2) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft == htparam.fdate2) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower())).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 232
+Line before: (Res_line.active_flag == 0) & (Res_line.ankunft == fdate2) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 0) & (Res_line.ankunft == htparam.fdate2) & (func.lower(Res_line.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 857
+Line before: (Res_line.resstatus == 8) & (Res_line.abreise == fdate2) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (Res_line.abreise == htparam.fdate2) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 871
+Line before: (Res_line.resstatus == 8) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == fdate2) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == htparam.fdate2) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 885
+Line before: (Res_line.resstatus == 8) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & (Res_line.abreise == fdate2) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & (Res_line.abreise == htparam.fdate2) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 901
+Line before: (Res_line.resstatus == 8) & (Res_line.abreise == fdate2)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (Res_line.abreise == htparam.fdate2)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 915
+Line before: (Res_line.resstatus == 8) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == fdate2)).order_by(Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == htparam.fdate2)).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 929
+Line before: (Res_line.resstatus == 8) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & (Res_line.abreise == fdate2)).order_by(Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & (Res_line.abreise == htparam.fdate2)).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 945
+Line before: (Res_line.resstatus == 8) & (Res_line.abreise == fdate2) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, Reservation.name, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (Res_line.abreise == htparam.fdate2) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, Reservation.name, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 959
+Line before: (Res_line.resstatus == 8) & (func.lower(Res_line.resname).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == fdate2) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, Res_line.resname, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (func.lower(Res_line.resname).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == htparam.fdate2) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, Res_line.resname, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 973
+Line before: (Res_line.resstatus == 8) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower()) & (Res_line.abreise == fdate2) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, Res_line.resname, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower()) & (Res_line.abreise == htparam.fdate2) & (func.lower(Res_line.zinr) >= (room).lower())).order_by(Res_line.zinr, Res_line.resname, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 988
+Line before: (Res_line.resstatus == 8) & (Res_line.abreise == fdate2)).order_by(Reservation.name, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (Res_line.abreise == htparam.fdate2)).order_by(Reservation.name, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1002
+Line before: (Res_line.resstatus == 8) & (func.lower(Res_line.resname).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == fdate2)).order_by(Res_line.resname, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (func.lower(Res_line.resname).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == htparam.fdate2)).order_by(Res_line.resname, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1016
+Line before: (Res_line.resstatus == 8) & (Res_line.abreise == fdate2)).order_by(Reservation.name, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (Res_line.abreise == htparam.fdate2)).order_by(Reservation.name, Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1032
+Line before: (Res_line.resstatus == 8) & (Res_line.abreise == fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (Res_line.abreise == htparam.fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1046
+Line before: (Res_line.resstatus == 8) & (func.lower(Res_line.resname).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (func.lower(Res_line.resname).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == htparam.fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1060
+Line before: (Res_line.resstatus == 8) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower()) & (Res_line.abreise == fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower()) & (Res_line.abreise == htparam.fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1076
+Line before: (Res_line.resstatus == 8) & (Res_line.abreise == fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (Res_line.abreise == htparam.fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1090
+Line before: (Res_line.resstatus == 8) & (func.lower(Res_line.resname).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (func.lower(Res_line.resname).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == htparam.fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1104
+Line before: (Res_line.resstatus == 8) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower()) & (Res_line.abreise == fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.resstatus == 8) & (func.lower(Res_line.resname) >= (lname).lower()) & (func.lower(Res_line.resname) <= (to_name).lower()) & (Res_line.abreise == htparam.fdate2)).order_by(Gmember.nation1, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1120
+Line before: (Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.abreise == fdate2)).order_by(Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: (Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.abreise == htparam.fdate2)).order_by(Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1166
+Line before: ((Res_line.active_flag == 1) & (Res_line.resstatus != 12) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room).lower()) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)) | ((Res_line.active_flag == 0) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room).lower()) & (Res_line.ankunft == ci_date)) | ((Res_line.active_flag == 2) & (Res_line.Res_line.resstatus == 8) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room).lower()) & (Res_line.abreise == ci_date))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: ((Res_line.active_flag == 1) & (Res_line.resstatus != 12) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room).lower()) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)) | ((Res_line.active_flag == 0) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room).lower()) & (Res_line.ankunft == ci_date)) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room).lower()) & (Res_line.abreise == ci_date))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1194
+Line before: ((Res_line.active_flag == 1) & (Res_line.resstatus != 12) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room).lower()) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)) | ((Res_line.active_flag == 0) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room).lower()) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & (Res_line.ankunft == ci_date)) | ((Res_line.active_flag == 2) & (Res_line.Res_line.resstatus == 8) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room).lower()) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & (Res_line.abreise == ci_date))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: ((Res_line.active_flag == 1) & (Res_line.resstatus != 12) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room).lower()) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)) | ((Res_line.active_flag == 0) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room).lower()) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & (Res_line.ankunft == ci_date)) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= (room).lower()) & (func.lower(Res_line.name) >= (lname).lower()) & (func.lower(Res_line.name) <= (to_name).lower()) & (Res_line.abreise == ci_date))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1224
+Line before: ((Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)) | ((Res_line.active_flag == 0) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.ankunft == ci_date)) | ((Res_line.active_flag == 2) & (Res_line.Res_line.resstatus == 8) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == ci_date))).order_by(Res_line.name).all():
+Line after: ((Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)) | ((Res_line.active_flag == 0) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.ankunft == ci_date)) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (func.lower(Res_line.name).op("~")(((lname).lower().replace("*",".*")))) & (Res_line.abreise == ci_date))).order_by(Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1400
+Line before: ((Res_line.active_flag == 1) & (Res_line.Res_line.resstatus != 12)) | ((Res_line.active_flag == 0) & (Res_line.ankunft == ci_date)) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.abreise == ci_date))).order_by(Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: ((Res_line.active_flag == 1) & (Res_line.resstatus != 12)) | ((Res_line.active_flag == 0) & (Res_line.ankunft == ci_date)) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.abreise == ci_date))).order_by(Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1413
+Line before: ((Res_line.active_flag == 1) & (Res_line.Res_line.resstatus != 12) & (Res_line.resnr == lresnr)) | ((Res_line.active_flag == 0) & (Res_line.resnr == lresnr) & (Res_line.ankunft == ci_date)) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.resnr == lresnr) & (Res_line.abreise == ci_date))).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+Line after: ((Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resnr == lresnr)) | ((Res_line.active_flag == 0) & (Res_line.resnr == lresnr) & (Res_line.ankunft == ci_date)) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.resnr == lresnr) & (Res_line.abreise == ci_date))).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1447
+Line before: fdate1 = fdate2
+Line after: fdate1 = htparam.fdate2
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1455
+Line before: fdate2 = fdate1
+Line after: fdate2 = htparam.fdate1
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1469
+Line before: (Rline.active_flag == 0) & (Rline.ankunft >= fdate1) & (Rline.ankunft <= fdate2)).order_by((Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.active_flag == 0) & (Rline.ankunft >= htparam.fdate1) & (Rline.ankunft <= htparam.fdate2)).order_by((Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1487
+Line before: (Rline.active_flag == 0) & (Rline.ankunft >= fdate1) & (Rline.ankunft <= fdate2) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower())).order_by(Rline.name).all():
+Line after: (Rline.active_flag == 0) & (Rline.ankunft >= htparam.fdate1) & (Rline.ankunft <= htparam.fdate2) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower())).order_by(Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1505
+Line before: (Rline.active_flag == 0) & (Rline.ankunft >= fdate1) & (Rline.ankunft <= fdate2) & (func.lower(Rline.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Rline.name).all():
+Line after: (Rline.active_flag == 0) & (Rline.ankunft >= htparam.fdate1) & (Rline.ankunft <= htparam.fdate2) & (func.lower(Rline.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1525
+Line before: (Rline.active_flag == 0) & (Rline.ankunft >= fdate1) & (Rline.ankunft <= fdate2)).order_by(Rline.resname, Rline.ankunft, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.active_flag == 0) & (Rline.ankunft >= htparam.fdate1) & (Rline.ankunft <= htparam.fdate2)).order_by(Rline.resname, Rline.ankunft, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1543
+Line before: (Rline.active_flag == 0) & (Rline.ankunft >= fdate1) & (Rline.ankunft <= fdate2) & (func.lower(Rline.resname) >= (lname).lower()) & (func.lower(Rline.resname) <= (to_name).lower())).order_by(Rline.resname, Rline.ankunft, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.active_flag == 0) & (Rline.ankunft >= htparam.fdate1) & (Rline.ankunft <= htparam.fdate2) & (func.lower(Rline.resname) >= (lname).lower()) & (func.lower(Rline.resname) <= (to_name).lower())).order_by(Rline.resname, Rline.ankunft, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1561
+Line before: (Rline.active_flag == 0) & (Rline.ankunft >= fdate1) & (Rline.ankunft <= fdate2) & (func.lower(Rline.resname).op("~")(((lname.lower().replace("*",".*")))))).order_by(Rline.resname, Rline.ankunft, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.active_flag == 0) & (Rline.ankunft >= htparam.fdate1) & (Rline.ankunft <= htparam.fdate2) & (func.lower(Rline.resname).op("~")(((lname.lower().replace("*",".*")))))).order_by(Rline.resname, Rline.ankunft, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1581
+Line before: (Rline.active_flag == 0) & (Rline.ankunft == fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.active_flag == 0) & (Rline.ankunft == htparam.fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1599
+Line before: (Rline.active_flag == 0) & (Rline.ankunft == fdate2) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower())).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.active_flag == 0) & (Rline.ankunft == htparam.fdate2) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower())).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1617
+Line before: (Rline.active_flag == 0) & (Rline.ankunft == fdate2) & (func.lower(Rline.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.active_flag == 0) & (Rline.ankunft == htparam.fdate2) & (func.lower(Rline.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1637
+Line before: (Rline.active_flag == 0) & (Rline.ankunft == fdate2)).order_by((Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.active_flag == 0) & (Rline.ankunft == htparam.fdate2)).order_by((Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1655
+Line before: (Rline.active_flag == 0) & (Rline.ankunft == fdate2) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower())).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.active_flag == 0) & (Rline.ankunft == htparam.fdate2) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower())).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 1673
+Line before: (Rline.active_flag == 0) & (Rline.ankunft == fdate2) & (func.lower(Rline.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.active_flag == 0) & (Rline.ankunft == htparam.fdate2) & (func.lower(Rline.name).op("~")(((lname.lower().replace("*",".*")))))).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2490
+Line before: (Rline.resstatus == 8) & (Rline.abreise == fdate2) & (func.lower(Rline.zinr) >= (room).lower())).order_by(Rline.zinr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (Rline.abreise == htparam.fdate2) & (func.lower(Rline.zinr) >= (room).lower())).order_by(Rline.zinr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2508
+Line before: (Rline.resstatus == 8) & (func.lower(Rline.name).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == fdate2) & (func.lower(Rline.zinr) >= (room).lower())).order_by(Rline.zinr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (func.lower(Rline.name).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == htparam.fdate2) & (func.lower(Rline.zinr) >= (room).lower())).order_by(Rline.zinr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2526
+Line before: (Rline.resstatus == 8) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower()) & (Rline.abreise == fdate2) & (func.lower(Rline.zinr) >= (room).lower())).order_by(Rline.name).all():
+Line after: (Rline.resstatus == 8) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower()) & (Rline.abreise == htparam.fdate2) & (func.lower(Rline.zinr) >= (room).lower())).order_by(Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2546
+Line before: (Rline.resstatus == 8) & (Rline.abreise == fdate2)).order_by((Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (Rline.abreise == htparam.fdate2)).order_by((Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2564
+Line before: (Rline.resstatus == 8) & (func.lower(Rline.name).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == fdate2)).order_by(Rline.name).all():
+Line after: (Rline.resstatus == 8) & (func.lower(Rline.name).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == htparam.fdate2)).order_by(Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2582
+Line before: (Rline.resstatus == 8) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower()) & (Rline.abreise == fdate2)).order_by(Rline.name).all():
+Line after: (Rline.resstatus == 8) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower()) & (Rline.abreise == htparam.fdate2)).order_by(Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2602
+Line before: (Rline.resstatus == 8) & (Rline.abreise == fdate2) & (func.lower(Rline.zinr) >= (room).lower())).order_by(Rline.zinr, Reserv.name, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (Rline.abreise == htparam.fdate2) & (func.lower(Rline.zinr) >= (room).lower())).order_by(Rline.zinr, Reserv.name, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2620
+Line before: (Rline.resstatus == 8) & (func.lower(Rline.resname).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == fdate2) & (func.lower(Rline.zinr) >= (room).lower())).order_by(Rline.zinr, Rline.resname, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (func.lower(Rline.resname).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == htparam.fdate2) & (func.lower(Rline.zinr) >= (room).lower())).order_by(Rline.zinr, Rline.resname, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2638
+Line before: (Rline.resstatus == 8) & (func.lower(Rline.resname) >= (lname).lower()) & (func.lower(Rline.resname) <= (to_name).lower()) & (Rline.abreise == fdate2) & (func.lower(Rline.zinr) >= (room).lower())).order_by(Rline.zinr, Rline.resname, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (func.lower(Rline.resname) >= (lname).lower()) & (func.lower(Rline.resname) <= (to_name).lower()) & (Rline.abreise == htparam.fdate2) & (func.lower(Rline.zinr) >= (room).lower())).order_by(Rline.zinr, Rline.resname, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2658
+Line before: (Rline.resstatus == 8) & (Rline.abreise == fdate2)).order_by(Reserv.name, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (Rline.abreise == htparam.fdate2)).order_by(Reserv.name, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2676
+Line before: (Rline.resstatus == 8) & (func.lower(Rline.resname).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == fdate2)).order_by(Rline.resname, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (func.lower(Rline.resname).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == htparam.fdate2)).order_by(Rline.resname, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2694
+Line before: (Rline.resstatus == 8) & (Rline.abreise == fdate2)).order_by(Rline.resname, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (Rline.abreise == htparam.fdate2)).order_by(Rline.resname, Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2714
+Line before: (Rline.resstatus == 8) & (Rline.abreise == fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (Rline.abreise == htparam.fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2732
+Line before: (Rline.resstatus == 8) & (func.lower(Rline.resname).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (func.lower(Rline.resname).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == htparam.fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2750
+Line before: (Rline.resstatus == 8) & (func.lower(Rline.resname) >= (lname).lower()) & (func.lower(Rline.resname) <= (to_name).lower()) & (Rline.abreise == fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (func.lower(Rline.resname) >= (lname).lower()) & (func.lower(Rline.resname) <= (to_name).lower()) & (Rline.abreise == htparam.fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2770
+Line before: (Rline.resstatus == 8) & (Rline.abreise == fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (Rline.abreise == htparam.fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2788
+Line before: (Rline.resstatus == 8) & (func.lower(Rline.resname).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (func.lower(Rline.resname).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == htparam.fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2806
+Line before: (Rline.resstatus == 8) & (func.lower(Rline.resname) >= (lname).lower()) & (func.lower(Rline.resname) <= (to_name).lower()) & (Rline.abreise == fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.resstatus == 8) & (func.lower(Rline.resname) >= (lname).lower()) & (func.lower(Rline.resname) <= (to_name).lower()) & (Rline.abreise == htparam.fdate2)).order_by(Gme.nation1, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2826
+Line before: (Rline.active_flag == 2) & (Rline.resstatus == 8) & (Rline.abreise == fdate2)).order_by(Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: (Rline.active_flag == 2) & (Rline.resstatus == 8) & (Rline.abreise == htparam.fdate2)).order_by(Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2893
+Line before: ((Rline.active_flag == 1) & (Rline.resstatus != 12) & ((substring(Rline.zinr, 0, to_int(rmlen))) >= (room).lower()) & (Rline.ankunft <= ci_date) & (Rline.abreise >= ci_date)) | ((Rline.active_flag == 0) & ((substring(Rline.zinr, 0, to_int(rmlen))) >= (room).lower()) & (Rline.ankunft == ci_date)) | ((Rline.active_flag == 2) & (Rline.Rline.resstatus == 8) & ((substring(Rline.zinr, 0, to_int(rmlen))) >= (room).lower()) & (Rline.abreise == ci_date))).order_by(Rline.zinr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: ((Rline.active_flag == 1) & (Rline.resstatus != 12) & ((substring(Rline.zinr, 0, to_int(rmlen))) >= (room).lower()) & (Rline.ankunft <= ci_date) & (Rline.abreise >= ci_date)) | ((Rline.active_flag == 0) & ((substring(Rline.zinr, 0, to_int(rmlen))) >= (room).lower()) & (Rline.ankunft == ci_date)) | ((Rline.active_flag == 2) & (Rline.resstatus == 8) & ((substring(Rline.zinr, 0, to_int(rmlen))) >= (room).lower()) & (Rline.abreise == ci_date))).order_by(Rline.zinr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2929
+Line before: ((Rline.active_flag == 1) & (Rline.resstatus != 12) & ((substring(Rline.zinr, 0, to_int(rmlen))) >= (room).lower()) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower()) & (Rline.ankunft <= ci_date) & (Rline.abreise >= ci_date)) | ((Rline.active_flag == 0) & ((substring(Rline.zinr, 0, to_int(rmlen))) >= (room).lower()) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower()) & (Rline.ankunft == ci_date)) | ((Rline.active_flag == 2) & (Rline.Rline.resstatus == 8) & ((substring(Rline.zinr, 0, to_int(rmlen))) >= (room).lower()) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower()) & (Rline.abreise == ci_date))).order_by(Rline.zinr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: ((Rline.active_flag == 1) & (Rline.resstatus != 12) & ((substring(Rline.zinr, 0, to_int(rmlen))) >= (room).lower()) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower()) & (Rline.ankunft <= ci_date) & (Rline.abreise >= ci_date)) | ((Rline.active_flag == 0) & ((substring(Rline.zinr, 0, to_int(rmlen))) >= (room).lower()) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower()) & (Rline.ankunft == ci_date)) | ((Rline.active_flag == 2) & (Rline.resstatus == 8) & ((substring(Rline.zinr, 0, to_int(rmlen))) >= (room).lower()) & (func.lower(Rline.name) >= (lname).lower()) & (func.lower(Rline.name) <= (to_name).lower()) & (Rline.abreise == ci_date))).order_by(Rline.zinr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 2967
+Line before: ((Rline.active_flag == 1) & (Rline.resstatus != 12) & (func.lower(Rline.name).op("~")(((lname).lower().replace("*",".*")))) & (Rline.ankunft <= ci_date) & (Rline.abreise >= ci_date)) | ((Rline.active_flag == 0) & (func.lower(Rline.name).op("~")(((lname).lower().replace("*",".*")))) & (Rline.ankunft == ci_date)) | ((Rline.active_flag == 2) & (Rline.Rline.resstatus == 8) & (func.lower(Rline.name).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == ci_date))).order_by(Rline.name).all():
+Line after: ((Rline.active_flag == 1) & (Rline.resstatus != 12) & (func.lower(Rline.name).op("~")(((lname).lower().replace("*",".*")))) & (Rline.ankunft <= ci_date) & (Rline.abreise >= ci_date)) | ((Rline.active_flag == 0) & (func.lower(Rline.name).op("~")(((lname).lower().replace("*",".*")))) & (Rline.ankunft == ci_date)) | ((Rline.active_flag == 2) & (Rline.resstatus == 8) & (func.lower(Rline.name).op("~")(((lname).lower().replace("*",".*")))) & (Rline.abreise == ci_date))).order_by(Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 3191
+Line before: ((Rline.active_flag == 1) & (Rline.Rline.resstatus != 12)) | ((Rline.active_flag == 0) & (Rline.ankunft == ci_date)) | ((Rline.active_flag == 2) & (Rline.resstatus == 8) & (Rline.abreise == ci_date))).order_by(Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: ((Rline.active_flag == 1) & (Rline.resstatus != 12)) | ((Rline.active_flag == 0) & (Rline.ankunft == ci_date)) | ((Rline.active_flag == 2) & (Rline.resstatus == 8) & (Rline.abreise == ci_date))).order_by(Rline.resnr, (Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\telop_webbl.py
+Line no: 3210
+Line before: ((Rline.active_flag == 1) & (Rline.Rline.resstatus != 12) & (Rline.resnr == lresnr)) | ((Rline.active_flag == 0) & (Rline.resnr == lresnr) & (Rline.ankunft == ci_date)) | ((Rline.active_flag == 2) & (Rline.resstatus == 8) & (Rline.resnr == lresnr) & (Rline.abreise == ci_date))).order_by((Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+Line after: ((Rline.active_flag == 1) & (Rline.resstatus != 12) & (Rline.resnr == lresnr)) | ((Rline.active_flag == 0) & (Rline.resnr == lresnr) & (Rline.ankunft == ci_date)) | ((Rline.active_flag == 2) & (Rline.resstatus == 8) & (Rline.resnr == lresnr) & (Rline.abreise == ci_date))).order_by((Rline.kontakt_nr * Rline.resnr), Rline.resstatus, Rline.name).all():
+==================================================

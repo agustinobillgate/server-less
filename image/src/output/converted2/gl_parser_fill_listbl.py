@@ -38,6 +38,7 @@ def gl_parser_fill_listbl(briefnr:int):
 
         nonlocal t_brief, t_gl_department, t_gl_acct, t_gl_main, brief_list, htp_list, htv_list, t_briefzei
         nonlocal t_brief_list, t_gl_department_list, t_gl_acct_list, t_gl_main_list, brief_list_list, htp_list_list, htv_list_list, t_briefzei_list
+
         return {"keycmd": keycmd, "keyvar": keyvar, "keycont": keycont, "htv-list": htv_list_list, "htp-list": htp_list_list, "brief-list": brief_list_list, "t-brief": t_brief_list, "t-gl-acct": t_gl_acct_list, "t-gl-department": t_gl_department_list, "t-gl-main": t_gl_main_list, "t-briefzei": t_briefzei_list}
 
     def fill_list():
@@ -69,7 +70,7 @@ def gl_parser_fill_listbl(briefnr:int):
         keycont = keycmd + htparam.fchar
 
         for htparam in db_session.query(Htparam).filter(
-                 (Htparam.paramgruppe == 39) & (Htparam.paramnr != 2030)).order_by(func.length(Htparam.fchar).desc()).all():
+                 (Htparam.paramgruppe == 39) & (Htparam.paramnr != 2030)).order_by(len(Htparam.fchar).desc()).all():
 
             if substring(htparam.fchar, 0 , 1) == (".").lower() :
                 htv_list = Htv_list()

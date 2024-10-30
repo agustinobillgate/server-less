@@ -22,6 +22,7 @@ def gl_batchjou_btn_gobl(sorttype:int, from_refno:str, depttype:int, from_date:d
 
         nonlocal b1_list
         nonlocal b1_list_list
+
         return {"b1-list": b1_list_list}
 
     def get_bemerk(bemerk:str):

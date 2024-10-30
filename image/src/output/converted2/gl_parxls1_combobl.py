@@ -40,7 +40,8 @@ def gl_parxls1_combobl(foreign_flag:bool, from_date:date, to_date:date, t_parame
 
 
         nonlocal t_parameters, w1, buff_exrate, s_param, s_param, w_rev, w_pers, w_room
-        nonlocal t_parameters_list, w1_list
+        nonlocal w1_list
+
         return {"w1": w1_list}
 
     def fill_revenue():
@@ -51,7 +52,7 @@ def gl_parxls1_combobl(foreign_flag:bool, from_date:date, to_date:date, t_parame
 
 
         nonlocal t_parameters, w1, buff_exrate, s_param, s_param, w_rev, w_pers, w_room
-        nonlocal t_parameters_list, w1_list
+        nonlocal w1_list
 
         prev_param:str = ""
         ytd_flag:bool = False
@@ -187,7 +188,7 @@ def gl_parxls1_combobl(foreign_flag:bool, from_date:date, to_date:date, t_parame
 
 
         nonlocal t_parameters, w1, buff_exrate, s_param, s_param, w_rev, w_pers, w_room
-        nonlocal t_parameters_list, w1_list
+        nonlocal w1_list
 
         prev_param:str = ""
         ytd_flag:bool = False

@@ -1,0 +1,23 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ins_pr_btn_go_webbl.py
+Line no: 50
+Line before: l_order.lief_fax[2] = l_artikel.traubensort
+Line after: l_order.lief_fax[2] = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\mk_po_create_l_orderbl.py
+Line no: 78
+Line before: l_order.lief_fax[2] = l_artikel.traubensort
+Line after: l_order.lief_fax[2] = l_artikel.traubensorte
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pchase_parserbl.py
+Line no: 93
+Line before: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeich) != ("Not used").lower())).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not used").lower())).order_by(len(Htparam.fchar).desc()).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\pchase_parserbl.py
+Line no: 93
+Line before: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not used").lower())).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 17) & (func.lower(Htparam.bezeichnung) != ("Not used").lower())).order_by(func.length(Htparam.fchar).desc()).all():
+==================================================

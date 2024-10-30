@@ -24,6 +24,7 @@ def gl_jouhislist_view_transactionbl(jnr:int):
 
         nonlocal detail_trans, gl_jou, gl_acct1
         nonlocal detail_trans_list
+
         return {"detail-trans": detail_trans_list}
 
     def get_bemerk(bemerk:str):

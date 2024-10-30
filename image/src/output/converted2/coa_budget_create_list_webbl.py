@@ -21,6 +21,7 @@ def coa_budget_create_list_webbl(disp_all:bool):
 
         nonlocal coa_list
         nonlocal coa_list_list
+
         return {"max_row": max_row, "coa-list": coa_list_list}
 
     def create_list():

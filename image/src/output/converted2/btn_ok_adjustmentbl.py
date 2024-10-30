@@ -12,7 +12,6 @@ def btn_ok_adjustmentbl(user_init:str, passwd:str, id_str:str):
         nonlocal queasy
         nonlocal user_init, passwd, id_str
 
-
         return {}
 
     queasy = Queasy()

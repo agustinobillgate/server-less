@@ -21,6 +21,7 @@ def budget_exrate_create_listbl(curr_year:int):
 
         nonlocal g_list
         nonlocal g_list_list
+
         return {"g-list": g_list_list}
 
     def create_list():

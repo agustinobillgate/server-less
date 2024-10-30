@@ -1730,7 +1730,7 @@ DEFINE VARIABLE frate1         AS DECIMAL NO-UNDO.
       AND genstat.segmentcode NE 0 
       AND genstat.nationnr NE 0
       AND genstat.zinr NE ""
-      AND genstat.res-logic[2] NO-LOCK:
+      AND genstat.res-logic[2] EQ YES NO-LOCK:
 
         IF foreign-flag THEN 
         DO: 
@@ -1820,7 +1820,7 @@ PROCEDURE fill-revenue-segement1:
       AND genstat.segmentcode NE 0 
       AND genstat.nationnr NE 0
       AND genstat.zinr NE ""
-      AND genstat.res-logic[2] NO-LOCK:
+      AND genstat.res-logic[2] EQ YES NO-LOCK:
 
         IF foreign-flag THEN 
         DO: 
@@ -2541,7 +2541,7 @@ DEFINE VARIABLE frate1         AS DECIMAL NO-UNDO.
           AND genstat.segmentcode NE 0 
           AND genstat.nationnr NE 0
           AND genstat.zinr NE ""
-          AND genstat.res-logic[2] NO-LOCK:
+          AND genstat.res-logic[2] EQ YES NO-LOCK:
 
             IF foreign-flag THEN 
             DO: 

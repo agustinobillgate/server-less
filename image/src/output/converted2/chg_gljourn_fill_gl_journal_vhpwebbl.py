@@ -25,7 +25,8 @@ def chg_gljourn_fill_gl_journal_vhpwebbl(case_type:int, jnr:int, user_init:str, 
 
 
         nonlocal b1_list, g_list
-        nonlocal b1_list_list, g_list_list
+        nonlocal b1_list_list
+
         return {"debits": debits, "credits": credits, "remains": remains, "b1-list": b1_list_list}
 
 

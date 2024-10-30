@@ -30,6 +30,7 @@ def delete_gl_jouallbl(refno:str, idnr:str):
 
         nonlocal t_lop
         nonlocal t_lop_list
+
         return {"flag": flag, "msg": msg}
 
     htparam = db_session.query(Htparam).filter(

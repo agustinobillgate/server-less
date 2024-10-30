@@ -21,6 +21,7 @@ def copy_journalbl(desc_cj:str, credit:decimal, debit:decimal, remain:decimal, j
 
 
         nonlocal gl_jnal, gl_jou, gl_hdr
+
         return {}
 
     gl_hdr = Gl_hdr()

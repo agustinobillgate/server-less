@@ -1,0 +1,143 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 198
+Line before: clist = query(clist_list, filters=(lambda clist: clist.gastnr == genstat.gastnr and clist.gname == bguest.NAME), first=True)
+Line after: clist = query(clist_list, filters=(lambda clist: clist.gastnr == genstat.gastnr and clist.gname == bguest.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 290
+Line before: (func.lower(Guest_queasy.key) == ("gast-info").lower()) & (Guest_queasy.date1 >= fdate) & (Guest_queasy.date1 <= tdate)).order_by(Guest_queasy._recid).all():
+Line after: (func.lower(Guest_queasy.key) == ("gast-info").lower()) & (Guest_queasy.date1 >= htparam.fdate) & (Guest_queasy.date1 <= tdate)).order_by(Guest_queasy._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 300
+Line before: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == genstat.gastnr and cust_list_detail.gname == bguest.NAME), first=True)
+Line after: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == genstat.gastnr and cust_list_detail.gname == bguest.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 403
+Line before: clist = query(clist_list, filters=(lambda clist: clist.gastnr == genstat.gastnr and clist.gname == bguest.NAME), first=True)
+Line after: clist = query(clist_list, filters=(lambda clist: clist.gastnr == genstat.gastnr and clist.gname == bguest.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 495
+Line before: (func.lower(Guest_queasy.key) == ("gast-info").lower()) & (Guest_queasy.date1 >= fdate) & (Guest_queasy.date1 <= tdate)).order_by(Guest_queasy._recid).all():
+Line after: (func.lower(Guest_queasy.key) == ("gast-info").lower()) & (Guest_queasy.date1 >= htparam.fdate) & (Guest_queasy.date1 <= tdate)).order_by(Guest_queasy._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 505
+Line before: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == genstat.gastnr and cust_list_detail.gname == bguest.NAME), first=True)
+Line after: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == genstat.gastnr and cust_list_detail.gname == bguest.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 558
+Line before: (Genstat.datum >= fdate) & (Genstat.datum <= tdate) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat.gastnr, Genstat.resnr, Genstat.res_int[0], Guest.land).all():
+Line after: (Genstat.datum >= htparam.fdate) & (Genstat.datum <= tdate) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat.gastnr, Genstat.resnr, Genstat.res_int[0], Guest.land).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 629
+Line before: clist = query(clist_list, filters=(lambda clist: clist.gastnr == genstat.gastnr and clist.gname == bguest.NAME), first=True)
+Line after: clist = query(clist_list, filters=(lambda clist: clist.gastnr == genstat.gastnr and clist.gname == bguest.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 721
+Line before: (func.lower(Guest_queasy.key) == ("gast-info").lower()) & (Guest_queasy.date1 >= fdate) & (Guest_queasy.date1 <= tdate)).order_by(Guest_queasy.number2).all():
+Line after: (func.lower(Guest_queasy.key) == ("gast-info").lower()) & (Guest_queasy.date1 >= htparam.fdate) & (Guest_queasy.date1 <= tdate)).order_by(Guest_queasy.number2).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 731
+Line before: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == genstat.gastnr and cust_list_detail.gname == bguest.NAME), first=True)
+Line after: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == genstat.gastnr and cust_list_detail.gname == bguest.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 777
+Line before: datum1 = fdate
+Line after: datum1 = htparam.fdate
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 787
+Line before: ((Res_line.active_flag <= 1) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (Res_line.resstatus != 12) & (not_ (Res_line.ankunft > tdate)) & (not_ (Res_line.abreise <= fdate))) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.ankunft == ci_date) & (Res_line.abreise == ci_date)) & (Res_line.gastnr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.gastnr, Res_line.resnr, Res_line.reslinnr).all():
+Line after: ((Res_line.active_flag <= 1) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (Res_line.resstatus != 12) & (not_ (Res_line.ankunft > tdate)) & (not_ (Res_line.abreise <= htparam.fdate))) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.ankunft == ci_date) & (Res_line.abreise == ci_date)) & (Res_line.gastnr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.gastnr, Res_line.resnr, Res_line.reslinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 897
+Line before: clist = query(clist_list, filters=(lambda clist: clist.gastnr == res_line.gastnr and clist.gname == res_line.NAME), first=True)
+Line after: clist = query(clist_list, filters=(lambda clist: clist.gastnr == res_line.gastnr and clist.gname == res_line.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 921
+Line before: datum1 = fdate
+Line after: datum1 = htparam.fdate
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1008
+Line before: (func.lower(Guest_queasy.key) == ("gast-info").lower()) & (Guest_queasy.date1 >= fdate) & (Guest_queasy.date1 <= tdate)).order_by(Guest_queasy._recid).all():
+Line after: (func.lower(Guest_queasy.key) == ("gast-info").lower()) & (Guest_queasy.date1 >= htparam.fdate) & (Guest_queasy.date1 <= tdate)).order_by(Guest_queasy._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1015
+Line before: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == res_line.gastnr and cust_list_detail.resno == res_line.resnr and cust_list_detail.gname == res_line.NAME), first=True)
+Line after: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == res_line.gastnr and cust_list_detail.resno == res_line.resnr and cust_list_detail.gname == res_line.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1053
+Line before: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == genstat.gastnr and cust_list_detail.resno == genstat.resnr and cust_list_detail.gname == bguest.NAME), first=True)
+Line after: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == genstat.gastnr and cust_list_detail.resno == genstat.resnr and cust_list_detail.gname == bguest.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1095
+Line before: (Genstat.datum >= fdate) & (Genstat.datum <= tdate) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat.gastnr, Genstat.resnr, Guest.land).all():
+Line after: (Genstat.datum >= htparam.fdate) & (Genstat.datum <= tdate) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat.gastnr, Genstat.resnr, Guest.land).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1166
+Line before: clist = query(clist_list, filters=(lambda clist: clist.gastnr == genstat.gastnr and clist.gname == bguest.NAME), first=True)
+Line after: clist = query(clist_list, filters=(lambda clist: clist.gastnr == genstat.gastnr and clist.gname == bguest.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1258
+Line before: (func.lower(Guest_queasy.key) == ("gast-info").lower()) & (Guest_queasy.date1 >= fdate) & (Guest_queasy.date1 <= tdate)).order_by(Guest_queasy.number2).all():
+Line after: (func.lower(Guest_queasy.key) == ("gast-info").lower()) & (Guest_queasy.date1 >= htparam.fdate) & (Guest_queasy.date1 <= tdate)).order_by(Guest_queasy.number2).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1268
+Line before: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == genstat.gastnr and cust_list_detail.gname == bguest.NAME), first=True)
+Line after: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == genstat.gastnr and cust_list_detail.gname == bguest.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1314
+Line before: datum1 = fdate
+Line after: datum1 = htparam.fdate
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1324
+Line before: ((Res_line.active_flag <= 1) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (Res_line.resstatus != 12) & (not_ (Res_line.ankunft > tdate)) & (not_ (Res_line.abreise <= fdate))) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.ankunft == ci_date) & (Res_line.abreise == ci_date)) & (Res_line.gastnr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.gastnr, Res_line.resnr, Res_line.reslinnr).all():
+Line after: ((Res_line.active_flag <= 1) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (Res_line.resstatus != 12) & (not_ (Res_line.ankunft > tdate)) & (not_ (Res_line.abreise <= htparam.fdate))) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.ankunft == ci_date) & (Res_line.abreise == ci_date)) & (Res_line.gastnr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.gastnr, Res_line.resnr, Res_line.reslinnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1434
+Line before: clist = query(clist_list, filters=(lambda clist: clist.gastnr == res_line.gastnr and clist.gname == res_line.NAME), first=True)
+Line after: clist = query(clist_list, filters=(lambda clist: clist.gastnr == res_line.gastnr and clist.gname == res_line.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1458
+Line before: datum1 = fdate
+Line after: datum1 = htparam.fdate
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1545
+Line before: (func.lower(Guest_queasy.key) == ("gast-info").lower()) & (Guest_queasy.date1 >= fdate) & (Guest_queasy.date1 <= tdate)).order_by(Guest_queasy._recid).all():
+Line after: (func.lower(Guest_queasy.key) == ("gast-info").lower()) & (Guest_queasy.date1 >= htparam.fdate) & (Guest_queasy.date1 <= tdate)).order_by(Guest_queasy._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1552
+Line before: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == res_line.gastnr and cust_list_detail.resno == res_line.resnr and cust_list_detail.gname == res_line.NAME), first=True)
+Line after: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == res_line.gastnr and cust_list_detail.resno == res_line.resnr and cust_list_detail.gname == res_line.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\cust_turnover_sorting_detail_cldbl.py
+Line no: 1590
+Line before: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == genstat.gastnr and cust_list_detail.resno == genstat.resnr and cust_list_detail.gname == bguest.NAME), first=True)
+Line after: cust_list_detail = query(cust_list_detail_list, filters=(lambda cust_list_detail: cust_list_detail.gastnr == genstat.gastnr and cust_list_detail.resno == genstat.resnr and cust_list_detail.gname == bguest.name), first=True)
+==================================================

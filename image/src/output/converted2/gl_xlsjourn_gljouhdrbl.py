@@ -14,7 +14,6 @@ def gl_xlsjourn_gljouhdrbl(journ_no:str):
         nonlocal avail_gl_jouhdr, gl_jouhdr
         nonlocal journ_no
 
-
         return {"avail_gl_jouhdr": avail_gl_jouhdr}
 
 

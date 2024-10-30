@@ -20,7 +20,7 @@ def gl_joulist1bl(out_list_list:[Out_list]):
 
 
         nonlocal out_list, g_jour
-        nonlocal out_list_list
+
         return {}
 
     for out_list in query(out_list_list):

@@ -18,7 +18,6 @@ def closeyearbl():
     def generate_output():
         nonlocal curr_date, curr_yr, err_code, curr_month, end_month, acct_correct, htparam, gl_acct
 
-
         return {"curr_date": curr_date, "curr_yr": curr_yr, "err_code": err_code}
 
 

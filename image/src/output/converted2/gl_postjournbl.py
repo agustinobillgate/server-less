@@ -23,6 +23,7 @@ def gl_postjournbl(refno:str):
 
 
         nonlocal gbuff
+
         return {"fl_code": fl_code, "datum": datum, "bezeich": bezeich}
 
 

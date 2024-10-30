@@ -12,7 +12,6 @@ def gl_batchjou_btn_gltransbl(rec_id:int):
         nonlocal gl_jouhdr
         nonlocal rec_id
 
-
         return {}
 
 

@@ -19,7 +19,6 @@ def gl_htp_checkbl(pvilanguage:int, htp_number:int, htgrp_number:int, intval:int
         nonlocal msg_str, do_it, wert, logv, flag, lvcarea, htparam, gl_jouhdr
         nonlocal pvilanguage, htp_number, htgrp_number, intval, decval, dateval, logval, charval, user_init, i, d, l, dd, s
 
-
         return {"msg_str": msg_str, "do_it": do_it, "wert": wert, "logv": logv, "flag": flag}
 
     def check_closing_date():
@@ -50,7 +49,7 @@ def gl_htp_checkbl(pvilanguage:int, htp_number:int, htgrp_number:int, intval:int
             if get_month(dateval) == 12:
                 d2 = date_mdy(12, 31, get_year(dateval))
             else:
-                d2 = date_mdy(get_month(dateval) + 1, 1, get_year(dateval) - timedelta(days=1))
+                d2 = date_mdy(get_month(dateval) + timedelta(days=1, 1, get_year(dateval)) - 1)
             d1 = date_mdy(get_month(dateval) , 1, get_year(dateval))
 
             gl_jouhdr = db_session.query(Gl_jouhdr).filter(

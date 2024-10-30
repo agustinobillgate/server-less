@@ -18,7 +18,7 @@ def budget_exrate_update_exratebl(g_list_list:[G_list]):
 
 
         nonlocal g_list
-        nonlocal g_list_list
+
         return {}
 
     def update_exrate():
@@ -27,7 +27,6 @@ def budget_exrate_update_exratebl(g_list_list:[G_list]):
 
 
         nonlocal g_list
-        nonlocal g_list_list
 
         i:int = 0
         curr_date:date = None

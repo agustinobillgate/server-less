@@ -1,0 +1,8 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\update_arprintsoa1bl.py
+Line no: 43
+Line before: if bill_list.deptNo == 0:
+Line after: if bill_list.deptno == 0:
+==================================================

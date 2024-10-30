@@ -25,7 +25,8 @@ def glacct_admin_btn_exitbl(g_list_list:[G_list], case_type:int, comments:str, c
 
 
         nonlocal b1_list, g_list
-        nonlocal b1_list_list, g_list_list
+        nonlocal b1_list_list
+
         return {"from_acct": from_acct, "found": found, "success_flag": success_flag, "b1-list": b1_list_list}
 
     def fill_gl_acct():
@@ -35,7 +36,7 @@ def glacct_admin_btn_exitbl(g_list_list:[G_list], case_type:int, comments:str, c
 
 
         nonlocal b1_list, g_list
-        nonlocal b1_list_list, g_list_list
+        nonlocal b1_list_list
 
         i:int = 0
         answer:bool = True
@@ -92,7 +93,7 @@ def glacct_admin_btn_exitbl(g_list_list:[G_list], case_type:int, comments:str, c
 
 
         nonlocal b1_list, g_list
-        nonlocal b1_list_list, g_list_list
+        nonlocal b1_list_list
 
         gl_acct = db_session.query(Gl_acct).filter(
                  (Gl_acct.fibukonto == g_list.fibukonto)).first()

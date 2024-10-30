@@ -22,6 +22,7 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:str):
 
         nonlocal output_list
         nonlocal output_list_list
+
         return {"output-list": output_list_list}
 
     def get_bemerk(bemerk:str):

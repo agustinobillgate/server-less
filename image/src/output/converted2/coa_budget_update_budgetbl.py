@@ -18,7 +18,7 @@ def coa_budget_update_budgetbl(coa_list_list:[Coa_list], sorttype:int):
 
 
         nonlocal coa_list, cbuff
-        nonlocal coa_list_list
+
         return {}
 
     def update_budget():
@@ -28,7 +28,6 @@ def coa_budget_update_budgetbl(coa_list_list:[Coa_list], sorttype:int):
 
 
         nonlocal coa_list, cbuff
-        nonlocal coa_list_list
 
 
         Cbuff = Coa_list

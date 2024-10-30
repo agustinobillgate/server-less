@@ -19,6 +19,7 @@ def cash_flowbl():
 
         nonlocal t_cflow
         nonlocal t_cflow_list
+
         return {"t-cflow": t_cflow_list}
 
     for queasy in db_session.query(Queasy).filter(

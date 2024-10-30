@@ -1,0 +1,83 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age2_webbl.py
+Line no: 494
+Line before: (L_orderhdr.docu_nr == l_kredit.NAME)).first()
+Line after: (L_orderhdr.docu_nr == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age2_webbl.py
+Line no: 552
+Line before: (L_orderhdr.docu_nr == l_kredit.NAME)).first()
+Line after: (L_orderhdr.docu_nr == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age_btn_gobl.py
+Line no: 632
+Line before: (Queasy.key == 221) & (Queasy.number1 == l_kredit.lief_nr) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) & (Queasy.number1 == l_kredit.lief_nr) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_age_btn_gobl.py
+Line no: 671
+Line before: (Queasy.key == 221) & (Queasy.number1 == l_kredit.lief_nr) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) & (Queasy.number1 == l_kredit.lief_nr) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 99
+Line before: (Queasy.key == 221) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 111
+Line before: (Gl_jouhdr.refno == l_kredit.NAME)).first()
+Line after: (Gl_jouhdr.refno == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 202
+Line before: (Queasy.key == 221) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go1bl.py
+Line no: 214
+Line before: (Gl_jouhdr.refno == l_kredit.NAME)).first()
+Line after: (Gl_jouhdr.refno == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go_webbl.py
+Line no: 108
+Line before: (Queasy.key == 221) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go_webbl.py
+Line no: 120
+Line before: (Gl_jouhdr.refno == l_kredit.NAME)).first()
+Line after: (Gl_jouhdr.refno == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go_webbl.py
+Line no: 226
+Line before: (Queasy.key == 221) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 221) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_btn_go_webbl.py
+Line no: 238
+Line before: (Gl_jouhdr.refno == l_kredit.NAME)).first()
+Line after: (Gl_jouhdr.refno == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_reasonbl.py
+Line no: 29
+Line before: (Queasy.key == 263) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 263) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ap_debtpay_reasonbl.py
+Line no: 53
+Line before: (Queasy.key == 263) & (Queasy.char1 == l_kredit.NAME)).first()
+Line after: (Queasy.key == 263) & (Queasy.char1 == l_kredit.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\delv_stock_create_listbl.py
+Line no: 56
+Line before: (L_op.loeschflag < 2) & (L_op.op_art == 1) & (L_op.lief_nr == l_lieferant.lief_nr) & (L_op.datum >= fdate) & (L_op.datum <= tdate)).order_by(L_op.lscheinnr, L_op.artnr).all():
+Line after: (L_op.loeschflag < 2) & (L_op.op_art == 1) & (L_op.lief_nr == l_lieferant.lief_nr) & (L_op.datum >= htparam.fdate) & (L_op.datum <= tdate)).order_by(L_op.lscheinnr, L_op.artnr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\delv_stock_create_listbl.py
+Line no: 110
+Line before: (L_ophis.lief_nr == l_lieferant.lief_nr) & (L_ophis.datum >= fdate) & (L_ophis.datum <= tdate) & (L_ophis.op_art == 1) & (func.lower(not L_ophis.fibukonto).op("~")(("*;CANCELLED*".lower().replace("*",".*"))))).order_by(L_ophis.lscheinnr, L_ophis.artnr).all():
+Line after: (L_ophis.lief_nr == l_lieferant.lief_nr) & (L_ophis.datum >= htparam.fdate) & (L_ophis.datum <= tdate) & (L_ophis.op_art == 1) & (func.lower(not L_ophis.fibukonto).op("~")(("*;CANCELLED*".lower().replace("*",".*"))))).order_by(L_ophis.lscheinnr, L_ophis.artnr).all():
+==================================================

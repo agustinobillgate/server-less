@@ -20,7 +20,7 @@ def gl_adjustment_xlsjourn_btn_gobl(g_list_list:[G_list]):
 
 
         nonlocal g_list
-        nonlocal g_list_list
+
         return {"g-list": g_list_list, "debits": debits, "credits": credits, "remains": remains}
 
     def check_acc():
@@ -29,7 +29,6 @@ def gl_adjustment_xlsjourn_btn_gobl(g_list_list:[G_list]):
 
 
         nonlocal g_list
-        nonlocal g_list_list
 
         for g_list in query(g_list_list):
 
@@ -46,7 +45,6 @@ def gl_adjustment_xlsjourn_btn_gobl(g_list_list:[G_list]):
 
 
         nonlocal g_list
-        nonlocal g_list_list
 
 
         debits = 0

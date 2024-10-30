@@ -13,7 +13,6 @@ def cancel_close_monthbl(from_date:date, to_date:date):
         nonlocal gl_jouhdr, gl_journal, htparam
         nonlocal from_date, to_date
 
-
         return {}
 
     def close_month():

@@ -1,0 +1,218 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\closemonth1bl.py
+Line no: 171
+Line before: (Gl_acct.fibukonto == fchar)).first()
+Line after: (Gl_acct.fibukonto == htparam.fchar)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\closemonth2bl.py
+Line no: 209
+Line before: (Gl_acct.fibukonto == fchar)).first()
+Line after: (Gl_acct.fibukonto == htparam.fchar)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\closeyear2bl.py
+Line no: 48
+Line before: (Gl_accthis.YEAR == curr_yr)).first()
+Line after: (Gl_accthis.year == curr_yr)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\closeyear2bl.py
+Line no: 59
+Line before: (Gl_accthis.YEAR == curr_yr)).filter(Gl_accthis._recid > curr_recid).first()
+Line after: (Gl_accthis.year == curr_yr)).filter(Gl_accthis._recid > curr_recid).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\closeyear2bl.py
+Line no: 144
+Line before: (Gbuff.fibukonto == gl_acct.fibukonto) & (Gbuff.YEAR == curr_yr)).first()
+Line after: (Gbuff.fibukonto == gl_acct.fibukonto) & (Gbuff.year == curr_yr)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\closeyear2bl.py
+Line no: 147
+Line before: (Gbuff1.fibukonto == gl_acct1.fibukonto) & (Gbuff1.YEAR == curr_yr)).first()
+Line after: (Gbuff1.fibukonto == gl_acct1.fibukonto) & (Gbuff1.year == curr_yr)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\close_adjustmentbl.py
+Line no: 49
+Line before: (Gl_accthis.fibukonto == gl_journal.fibukonto) & (Gl_accthis.YEAR == curr_year)).first()
+Line after: (Gl_accthis.fibukonto == gl_journal.fibukonto) & (Gl_accthis.year == curr_year)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\close_adjustmentbl.py
+Line no: 112
+Line before: (Gl_acct.fibukonto == fchar)).first()
+Line after: (Gl_acct.fibukonto == htparam.fchar)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\close_adjustmentbl.py
+Line no: 156
+Line before: (Gl_acct.fibukonto == fchar)).first()
+Line after: (Gl_acct.fibukonto == htparam.fchar)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\close_adjustmentbl.py
+Line no: 165
+Line before: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.YEAR == curr_year)).first()
+Line after: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.year == curr_year)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\glacct_export2bl.py
+Line no: 153
+Line before: fromdate = fdate
+Line after: fromdate = htparam.fdate
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\glreport_jsi_btn_gobl.py
+Line no: 1300
+Line before: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.YEAR == get_year(t_from_date))).first()
+Line after: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(t_from_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\glreport_jsi_btn_gobl.py
+Line no: 1304
+Line before: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.YEAR == get_year(t_from_date) - 1)).first()
+Line after: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(t_from_date) - 1)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\glreport_jsi_btn_gobl.py
+Line no: 1331
+Line before: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.YEAR == get_year(t_to_date))).first()
+Line after: (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(t_to_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\glreport_jsi_btn_gobl.py
+Line no: 1469
+Line before: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.YEAR == get_year(from_date))).first()
+Line after: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.year == get_year(from_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\glreport_jsi_btn_gobl.py
+Line no: 1481
+Line before: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.YEAR == get_year(from_date))).first()
+Line after: (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.year == get_year(from_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\glreport_jsi_btn_gobl.py
+Line no: 1513
+Line before: (func.lower(Gl_accthis.fibukonto) == (pnl_acct).lower()) & (Gl_accthis.YEAR == (get_year(t_to_date) - 1))).first()
+Line after: (func.lower(Gl_accthis.fibukonto) == (pnl_acct).lower()) & (Gl_accthis.year == (get_year(t_to_date) - 1))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\glreport_jsi_btn_gobl.py
+Line no: 1529
+Line before: (func.lower(Hbuff.fibukonto) == (pnl_acct).lower()) & (Hbuff.YEAR == get_year(t_to_date))).first()
+Line after: (func.lower(Hbuff.fibukonto) == (pnl_acct).lower()) & (Hbuff.year == get_year(t_to_date))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_htpbl.py
+Line no: 51
+Line before: (Paramtext.txtnr == arr[i - 1)]).first()
+Line after: (Paramtext.txtnr == arr[i - 1])).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_htpbl.py
+Line no: 69
+Line before: (Htparam.paramgr == htgrp.number)).order_by(Htparam._recid).all():
+Line after: (Htparam.paramgruppe == htgrp.number)).order_by(Htparam._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_htp_checkbl.py
+Line no: 53
+Line before: d2 = date_mdy(get_month(dateval) + timedelta(days=1, 1, get_year(dateval)) - 1)
+Line after: d2 = date_mdy(get_month(dateval) + 1, 1, get_year(dateval) - timedelta(days=1))
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parser_fill_listbl.py
+Line no: 72
+Line before: (Htparam.paramgruppe == 39) & (Htparam.paramnr != 2030)).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 39) & (Htparam.paramnr != 2030)).order_by(func.length(Htparam.fchar).desc()).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 332
+Line before: (func.lower(S_param.progname) == ("GL-macro").lower()) & (S_param.SECTION == to_string(briefnr)) & (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & (entry(2, S_param.varname, "-") == ("FO").lower()) & (substring(S_param.vstring, 0, 4) == ("segm").lower())).order_by(S_param.varname).all():
+Line after: (func.lower(S_param.progname) == ("GL-macro").lower()) & (S_param.section == to_string(briefnr)) & (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & (entry(2, S_param.varname, "-") == ("FO").lower()) & (substring(S_param.vstring, 0, 4) == ("segm").lower())).order_by(S_param.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 591
+Line before: (func.lower(S_param.progname) == ("GL-macro").lower()) & (S_param.SECTION == to_string(briefnr)) & (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & (entry(2, S_param.varname, "-") == ("REV").lower())).order_by(S_param.varname).all():
+Line after: (func.lower(S_param.progname) == ("GL-macro").lower()) & (S_param.section == to_string(briefnr)) & (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & (entry(2, S_param.varname, "-") == ("REV").lower())).order_by(S_param.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 745
+Line before: (func.lower(B_param.progname) == ("GL-macro").lower()) & (B_param.SECTION == to_string(briefnr)) & (num_entries(B_param.vstring, ":") == 1) & (num_entries(B_param.varname, "-") == 3) & (entry(2, B_param.varname, "-") == ("FO").lower()) & (substring(B_param.vstring, 0, 4) == ("stat").lower())).order_by(B_param.varname).all():
+Line after: (func.lower(B_param.progname) == ("GL-macro").lower()) & (B_param.section == to_string(briefnr)) & (num_entries(B_param.vstring, ":") == 1) & (num_entries(B_param.varname, "-") == 3) & (entry(2, B_param.varname, "-") == ("FO").lower()) & (substring(B_param.vstring, 0, 4) == ("stat").lower())).order_by(B_param.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1855
+Line before: (func.lower(Parameters.progname) == ("GL-macro").lower()) & (Parameters.SECTION == to_string(briefnr)) & (Parameters.vstring == "$IN-FORParameters.EIGN")).first()
+Line after: (func.lower(Parameters.progname) == ("GL-macro").lower()) & (Parameters.section == to_string(briefnr)) & (Parameters.vstring == "$IN-FORParameters.EIGN")).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1862
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.SECTION == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1870
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.SECTION == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).order_by(Parameters.varname).all():
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).order_by(Parameters.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1893
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.SECTION == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("REV").lower())).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("REV").lower())).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1899
+Line before: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.SECTION == to_string(briefnr)) & (func.lower((Parameters.vstring).op("~")(("*segmrev*".lower().replace("*",".*")))) | (func.lower(Parameters.vstring).op("~")(("*segmpers*".lower().replace("*",".*")))) | (func.lower(Parameters.vstring).op("~")(("*segmroom*".lower().replace("*",".*")))))).first()
+Line after: (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (func.lower((Parameters.vstring).op("~")(("*segmrev*".lower().replace("*",".*")))) | (func.lower(Parameters.vstring).op("~")(("*segmpers*".lower().replace("*",".*")))) | (func.lower(Parameters.vstring).op("~")(("*segmroom*".lower().replace("*",".*")))))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1941
+Line before: (func.lower(Parameters.progname) == ("GL-macro").lower()) & (Parameters.SECTION == to_string(briefnr))).order_by(Parameters.varname).all():
+Line after: (func.lower(Parameters.progname) == ("GL-macro").lower()) & (Parameters.section == to_string(briefnr))).order_by(Parameters.varname).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1957
+Line before: (Gl_accthis.fibukonto == parameters.vstring) & (Gl_accthis.YEAR == gl_year)).first()
+Line after: (Gl_accthis.fibukonto == parameters.vstring) & (Gl_accthis.year == gl_year)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 1961
+Line before: t_gl_accthis = query(t_gl_accthis_list, filters=(lambda t_gl_accthis: t_gl_accthis.fibukonto == gl_accthis.fibukonto and t_gl_accthis.YEAR == gl_accthis.YEAR), first=True)
+Line after: t_gl_accthis = query(t_gl_accthis_list, filters=(lambda t_gl_accthis: t_gl_accthis.fibukonto == gl_accthis.fibukonto and t_gl_accthis.year == gl_accthis.year), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\gl_parxls3_listbl.py
+Line no: 2201
+Line before: t_gl_accthis = query(t_gl_accthis_list, filters=(lambda t_gl_accthis: t_gl_accthis.fibukonto == t_parameters.vstring and t_gl_accthis.YEAR == gl_year), first=True)
+Line after: t_gl_accthis = query(t_gl_accthis_list, filters=(lambda t_gl_accthis: t_gl_accthis.fibukonto == t_parameters.vstring and t_gl_accthis.year == gl_year), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\main_gl_mi_reportbl.py
+Line no: 35
+Line before: (func.lower(Parameters.progname) == ("GL-macro").lower()) & (Parameters.SECTION == to_string(reportnr))).first()
+Line after: (func.lower(Parameters.progname) == ("GL-macro").lower()) & (Parameters.section == to_string(reportnr))).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\new_drrbl.py
+Line no: 889
+Line before: if get_month(datum) == get_month(to_date):
+Line after: if get_month(zinrstat.datum) == get_month(to_date):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_glreport_jsibl.py
+Line no: 81
+Line before: (Gl_acct.fibukonto == fchar)).first()
+Line after: (Gl_acct.fibukonto == htparam.fchar)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gl_parxls2bl.py
+Line no: 97
+Line before: (Htparam.paramgruppe == 39) & (Htparam.paramnr != 2030)).order_by(len(Htparam.fchar).desc()).all():
+Line after: (Htparam.paramgruppe == 39) & (Htparam.paramnr != 2030)).order_by(func.length(Htparam.fchar).desc()).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_gl_parxls2bl.py
+Line no: 643
+Line before: (Gl_accthis.YEAR == get_year(to_date))).order_by(Gl_accthis._recid).all():
+Line after: (Gl_accthis.year == get_year(to_date))).order_by(Gl_accthis._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_trialbalancebl.py
+Line no: 81
+Line before: (Gl_acct.fibukonto == fchar)).first()
+Line after: (Gl_acct.fibukonto == htparam.fchar)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_trialb_pnlbl.py
+Line no: 55
+Line before: (Gl_acct.fibukonto == fchar)).first()
+Line after: (Gl_acct.fibukonto == htparam.fchar)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trial_closemon1bl.py
+Line no: 52
+Line before: (Gl_acct.fibukonto == fchar)).first()
+Line after: (Gl_acct.fibukonto == htparam.fchar)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\trial_closemon2bl.py
+Line no: 175
+Line before: (Gl_acct.fibukonto == fchar)).first()
+Line after: (Gl_acct.fibukonto == htparam.fchar)).first()
+==================================================

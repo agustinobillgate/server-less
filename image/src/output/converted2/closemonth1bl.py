@@ -34,7 +34,6 @@ def closemonth1bl(pvilanguage:int):
         nonlocal curr_date, msg_str, curr_closeyr, balance, pnl_acct, first_date, bom_597, end_of_month, param269, param1003, param1014, param1035, param1118, param1123, param221, param224, param988, param996, param1016, param997, lvcarea, htparam, gl_jouhdr, gl_acct, gl_journal
         nonlocal pvilanguage
 
-
         return {"curr_date": curr_date, "msg_str": msg_str}
 
 

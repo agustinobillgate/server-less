@@ -14,7 +14,6 @@ def delete_gl_acctbl(case_type:int, int1:int, char1:str):
         nonlocal success_flag, gl_acct
         nonlocal case_type, int1, char1
 
-
         return {"success_flag": success_flag}
 
 

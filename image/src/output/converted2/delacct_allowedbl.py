@@ -16,7 +16,6 @@ def delacct_allowedbl(pvilanguage:int, from_acct:str, mess_it:bool):
         nonlocal do_it, msg_str, lvcarea, gl_acct, gl_journal, artikel, parameters
         nonlocal pvilanguage, from_acct, mess_it
 
-
         return {"do_it": do_it, "msg_str": msg_str}
 
     def delacct_allowed():

@@ -21,6 +21,7 @@ def glacct_listbl(fibukonto:str, from_main:int, from_fstype:int, from_depart:int
 
         nonlocal b1_list
         nonlocal b1_list_list
+
         return {"b1-list": b1_list_list}
 
     def display_it():

@@ -14,7 +14,6 @@ def delete_queasy1bl(case_type:int, int1:int, int2:int, int3:int, char1:str):
         nonlocal success_flag, queasy
         nonlocal case_type, int1, int2, int3, char1
 
-
         return {"success_flag": success_flag}
 
 

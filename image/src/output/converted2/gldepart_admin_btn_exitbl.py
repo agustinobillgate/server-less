@@ -19,7 +19,7 @@ def gldepart_admin_btn_exitbl(g_list_list:[G_list], case_type:int):
 
 
         nonlocal g_list
-        nonlocal g_list_list
+
         return {"success_flag": success_flag}
 
     def fill_gl_department():
@@ -29,7 +29,6 @@ def gldepart_admin_btn_exitbl(g_list_list:[G_list], case_type:int):
 
 
         nonlocal g_list
-        nonlocal g_list_list
 
 
         gl_department.nr = g_list.nr

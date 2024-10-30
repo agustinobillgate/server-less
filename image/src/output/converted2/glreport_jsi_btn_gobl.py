@@ -50,6 +50,7 @@ def glreport_jsi_btn_gobl(acct_type:int, from_fibu:str, to_fibu:str, sorttype:in
 
         nonlocal output_list, output_listhis, result_list, g_list, g_listpre, g_listhis
         nonlocal output_list_list, output_listhis_list, result_list_list, g_list_list, g_listpre_list, g_listhis_list
+
         return {"output-list": output_list_list}
 
     def get_bemerk(bemerk:str):

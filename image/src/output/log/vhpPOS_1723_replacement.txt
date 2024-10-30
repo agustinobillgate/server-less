@@ -1,0 +1,123 @@
+Replacement Log
+==================================================
+
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_list3_webbl.py
+Line no: 56
+Line before: ((Res_line.resstatus != 3) & (Res_line.resstatus != 2) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99)) & (Res_line.active_flag <= 1) & (((Res_line.ankunft <= fdate) & (Res_line.abreise >= fdate)) | ((Res_line.ankunft == fdate) & (Res_line.abreise == fdate) & (Res_line.ankzeit <= mxtime_dayuse))) & (Res_line.l_zuordnung[inc_value(2)] <= 1)).order_by(Res_line.zinr).all():
+Line after: ((Res_line.resstatus != 3) & (Res_line.resstatus != 2) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99)) & (Res_line.active_flag <= 1) & (((Res_line.ankunft <= htparam.fdate) & (Res_line.abreise >= htparam.fdate)) | ((Res_line.ankunft == htparam.fdate) & (Res_line.abreise == htparam.fdate) & (Res_line.ankzeit <= mxtime_dayuse))) & (Res_line.l_zuordnung[inc_value(2)] <= 1)).order_by(Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_list3_webbl.py
+Line no: 162
+Line before: (func.lower(Reslin_queasy.key) == ("argt-line").lower()) & (func.lower(Reslin_queasy.char1) == (contcode).lower()) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci1 > 0)).first()
+Line after: (func.lower(Reslin_queasy.key) == ("argt-line").lower()) & (func.lower(Reslin_queasy.char1) == (contcode).lower()) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.date1 <= htparam.fdate) & (Reslin_queasy.date2 >= htparam.fdate) & (Reslin_queasy.deci1 > 0)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_list3_webbl.py
+Line no: 167
+Line before: (func.lower(Reslin_queasy.key) == ("fargt-line").lower()) & (Reslin_queasy.number1 == bfast_dept) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci1 > 0)).first()
+Line after: (func.lower(Reslin_queasy.key) == ("fargt-line").lower()) & (Reslin_queasy.number1 == bfast_dept) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.date1 <= htparam.fdate) & (Reslin_queasy.date2 >= htparam.fdate) & (Reslin_queasy.deci1 > 0)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_list3_webbl.py
+Line no: 338
+Line before: if res_line.ankunft != fdate:
+Line after: if res_line.ankunft != htparam.fdate:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_list3_webbl.py
+Line no: 343
+Line before: if (res_line.ankunft + 1) != fdate:
+Line after: if (res_line.ankunft + 1) != htparam.fdate:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_listbl.py
+Line no: 47
+Line before: ((Res_line.resstatus != 3) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12)) & (Res_line.active_flag <= 1) & (Res_line.ankunft < fdate) & (Res_line.abreise >= fdate) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.zinr).all():
+Line after: ((Res_line.resstatus != 3) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12)) & (Res_line.active_flag <= 1) & (Res_line.ankunft < fdate) & (Res_line.abreise >= htparam.fdate) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.zinr).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_listbl.py
+Line no: 91
+Line before: (func.lower(Reslin_queasy.key) == ("argt-line").lower()) & (Reslin_queasy.char1 == guest_pr.code) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci1 > 0)).first()
+Line after: (func.lower(Reslin_queasy.key) == ("argt-line").lower()) & (Reslin_queasy.char1 == guest_pr.code) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.date1 <= htparam.fdate) & (Reslin_queasy.date2 >= htparam.fdate) & (Reslin_queasy.deci1 > 0)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_listbl.py
+Line no: 96
+Line before: (func.lower(Reslin_queasy.key) == ("fargt-line").lower()) & (Reslin_queasy.char1 == guest_pr.code) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci1 > 0)).first()
+Line after: (func.lower(Reslin_queasy.key) == ("fargt-line").lower()) & (Reslin_queasy.char1 == guest_pr.code) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.date1 <= htparam.fdate) & (Reslin_queasy.date2 >= htparam.fdate) & (Reslin_queasy.deci1 > 0)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_listbl.py
+Line no: 187
+Line before: if res_line.ankunft != fdate:
+Line after: if res_line.ankunft != htparam.fdate:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\abf_listbl.py
+Line no: 192
+Line before: if (res_line.ankunft + 1) != fdate:
+Line after: if (res_line.ankunft + 1) != htparam.fdate:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\bfast_card_reportbl.py
+Line no: 61
+Line before: if day_use == fdate:
+Line after: if day_use == htparam.fdate:
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fb_statistic_create_list_webbl.py
+Line no: 70
+Line before: (Stat.departement == hoteldpt.num) & (Stat.datum >= fdate) & (Stat.datum <= tdate)).first()
+Line after: (Stat.departement == hoteldpt.num) & (Stat.datum >= htparam.fdate) & (Stat.datum <= tdate)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\fb_statistic_create_list_webbl.py
+Line no: 246
+Line before: (Fbstat.datum >= fdate) & (Fbstat.datum <= tdate) & (Fbstat.departement == hoteldpt.num)).order_by(Fbstat._recid).all():
+Line after: (Fbstat.datum >= htparam.fdate) & (Fbstat.datum <= tdate) & (Fbstat.departement == hoteldpt.num)).order_by(Fbstat._recid).all():
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\over_crlimit_listbl.py
+Line no: 115
+Line before: (Queasy.key == 105) & (Queasy.char1 == c_list.NAME)).first()
+Line after: (Queasy.key == 105) & (Queasy.char1 == c_list.name)).first()
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\over_crlimit_listbl.py
+Line no: 119
+Line before: output_list = query(output_list_list, filters=(lambda output_list: output_list.guest_name == c_list.NAME), first=True)
+Line after: output_list = query(output_list_list, filters=(lambda output_list: output_list.guest_name == c_list.name), first=True)
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\prepare_abf_select_sortingbl.py
+Line no: 42
+Line before: segm1_list.bezeich = to_string(segmentcode, ">>9 ") + entry(0, segment.bezeich, "$$0")
+Line after: segm1_list.bezeich = to_string(segment.segmentcode, ">>9 ") + entry(0, segment.bezeich, "$$0")
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_restinv_add_kdsbl.py
+Line no: 51
+Line before: h_journal.aendertext = menu_list.REQUEST
+Line after: h_journal.aendertext = menu_list.request
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_restinv_add_kdsbl.py
+Line no: 106
+Line before: for menu_list in query(menu_list_list, filters=(lambda menu_list: menu_list.nr == 0 and menu_list.REQUEST != "")):
+Line after: for menu_list in query(menu_list_list, filters=(lambda menu_list: menu_list.nr == 0 and menu_list.request != "")):
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_restinv_posting_menubl.py
+Line no: 205
+Line before: req_str = menu_list.REQUEST
+Line after: req_str = menu_list.request
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_restinv_posting_menubl.py
+Line no: 206
+Line before: request_str = menu_list.REQUEST
+Line after: request_str = menu_list.request
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_restinv_posting_menu_webbl.py
+Line no: 205
+Line before: req_str = menu_list.REQUEST
+Line after: req_str = menu_list.request
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_restinv_posting_menu_webbl.py
+Line no: 206
+Line before: request_str = menu_list.REQUEST
+Line after: request_str = menu_list.request
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_restinv_run_help2bl.py
+Line no: 50
+Line before: h_journal.aendertext = menu_list.REQUEST
+Line after: h_journal.aendertext = menu_list.request
+==================================================
+Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\ts_restinv_run_help2bl.py
+Line no: 80
+Line before: for menu_list in query(menu_list_list, filters=(lambda menu_list: menu_list.nr == 0 and menu_list.REQUEST != "")):
+Line after: for menu_list in query(menu_list_list, filters=(lambda menu_list: menu_list.nr == 0 and menu_list.request != "")):
+==================================================

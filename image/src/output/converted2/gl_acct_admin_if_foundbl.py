@@ -15,7 +15,6 @@ def gl_acct_admin_if_foundbl(fibukonto:str):
         nonlocal success_flag, i, gl_acct
         nonlocal fibukonto
 
-
         return {"success_flag": success_flag}
 
 
