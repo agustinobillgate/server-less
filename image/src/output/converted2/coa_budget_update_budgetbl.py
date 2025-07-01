@@ -1,14 +1,18 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Gl_acct
 
 coa_list_list, Coa_list = create_model_like(Gl_acct)
 
 def coa_budget_update_budgetbl(coa_list_list:[Coa_list], sorttype:int):
+
+    prepare_cache ([Gl_acct])
+
     gl_acct = None
 
     coa_list = cbuff = None
-
 
     db_session = local_storage.db_session
 
@@ -35,10 +39,10 @@ def coa_budget_update_budgetbl(coa_list_list:[Coa_list], sorttype:int):
 
         for cbuff in query(cbuff_list):
 
-            gl_acct = db_session.query(Gl_acct).filter(
-                     (Gl_acct.fibukonto == cbuff.fibukonto)).first()
+            gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, cbuff.fibukonto)]})
 
             if gl_acct:
+                pass
 
                 if sorttype == 1:
                     gl_acct.budget[0] = cbuff.budget[0]
@@ -68,6 +72,9 @@ def coa_budget_update_budgetbl(coa_list_list:[Coa_list], sorttype:int):
                     gl_acct.debit[9] = cbuff.debit[9]
                     gl_acct.debit[10] = cbuff.debit[10]
                     gl_acct.debit[11] = cbuff.debit[11]
+
+
+                pass
 
     update_budget()
 

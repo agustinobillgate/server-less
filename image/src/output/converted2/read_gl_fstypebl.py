@@ -1,15 +1,16 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Gl_fstype
 
-def read_gl_fstypebl(case_type:int, int1:int, char1:str, char2:str):
+def read_gl_fstypebl(case_type:int, int1:int, char1:string, char2:string):
     t_gl_fstype_list = []
     gl_fstype = None
 
     t_gl_fstype = None
 
     t_gl_fstype_list, T_gl_fstype = create_model_like(Gl_fstype)
-
 
     db_session = local_storage.db_session
 
@@ -41,8 +42,7 @@ def read_gl_fstypebl(case_type:int, int1:int, char1:str, char2:str):
 
     if case_type == 1:
 
-        gl_fstype = db_session.query(Gl_fstype).filter(
-                 (Gl_fstype.nr == int1)).first()
+        gl_fstype = get_cache (Gl_fstype, {"nr": [(eq, int1)]})
 
         if gl_fstype:
             assign_it()

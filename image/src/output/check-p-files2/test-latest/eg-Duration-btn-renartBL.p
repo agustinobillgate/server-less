@@ -1,0 +1,7 @@
+
+DEF INPUT PARAMETER Duration-nr AS INT.
+DEF OUTPUT PARAMETER fl-code AS LOGICAL INIT NO.
+
+DEF BUFFER egSub FOR eg-subtask.
+FIND FIRST egSub WHERE egSub.dur-nr = Duration-nr NO-LOCK NO-ERROR.
+IF AVAILABLE egSub THEN fl-code = YES.

@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -27,3 +29,25 @@ class Sms_bcaster(Base):
 	used_point = sa.Column(sa.Numeric, default=0)
 	usrnr = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('activeflag', False)
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('deci1', 0)
+		kwargs.setdefault('deci2', 0)
+		kwargs.setdefault('fdate', None)
+		kwargs.setdefault('id', 0)
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('number1', 0)
+		kwargs.setdefault('number2', 0)
+		kwargs.setdefault('number3', 0)
+		kwargs.setdefault('remain', 0)
+		kwargs.setdefault('sysdate', None)
+		kwargs.setdefault('systime', 0)
+		kwargs.setdefault('tdate', None)
+		kwargs.setdefault('total_point', 0)
+		kwargs.setdefault('used_point', 0)
+		kwargs.setdefault('usrnr', 0)
+		super(Sms_bcaster, self).__init__(*args, **kwargs)

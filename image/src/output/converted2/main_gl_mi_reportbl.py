@@ -1,6 +1,7 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Brief, Parameters
 
 def main_gl_mi_reportbl(reportnr:int):
@@ -11,7 +12,6 @@ def main_gl_mi_reportbl(reportnr:int):
     t_brief = None
 
     t_brief_list, T_brief = create_model_like(Brief)
-
 
     db_session = local_storage.db_session
 
@@ -25,15 +25,13 @@ def main_gl_mi_reportbl(reportnr:int):
 
         return {"avail_parameters": avail_parameters, "t-brief": t_brief_list}
 
-    brief = db_session.query(Brief).filter(
-             (Brief.briefnr == reportnr)).first()
+    brief = get_cache (Brief, {"briefnr": [(eq, reportnr)]})
     t_brief = T_brief()
     t_brief_list.append(t_brief)
 
     buffer_copy(brief, t_brief)
 
-    parameters = db_session.query(Parameters).filter(
-             (func.lower(Parameters.progname) == ("GL-macro").lower()) & (Parameters.section == to_string(reportnr))).first()
+    parameters = get_cache (Parameters, {"progname": [(eq, "gl-macro")],"section": [(eq, to_string(reportnr))]})
 
     if parameters:
         avail_parameters = True

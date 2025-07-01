@@ -1,13 +1,17 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from functions.htpdate import htpdate
-from sqlalchemy import func
 from models import Gl_acct, Gl_accthis, Gl_journal, Gl_jouhdr
 
-coa_list_list, Coa_list = create_model("Coa_list", {"fibu":str})
+coa_list_list, Coa_list = create_model("Coa_list", {"fibu":string})
 
 def glacct_cashflow_1bl(from_date:date, to_date:date, from_lsyr:date, to_lsyr:date, pfrom_date:date, pto_date:date, from_month:date, from_year:date, coa_list_list:[Coa_list]):
+
+    prepare_cache ([Gl_acct, Gl_accthis, Gl_journal])
+
     t_list_list = []
     close_month:date = None
     close_year:date = None
@@ -17,11 +21,10 @@ def glacct_cashflow_1bl(from_date:date, to_date:date, from_lsyr:date, to_lsyr:da
 
     coa_list = t_list = tbuff = None
 
-    t_list_list, T_list = create_model("T_list", {"cf":int, "fibukonto":str, "debit":decimal, "credit":decimal, "debit_lsyear":decimal, "credit_lsyear":decimal, "debit_lsmonth":decimal, "credit_lsmonth":decimal, "balance":decimal, "ly_balance":decimal, "pm_balance":decimal, "debit_today":decimal, "credit_today":decimal, "debit_mtd":decimal, "credit_mtd":decimal, "debit_ytd":decimal, "credit_ytd":decimal, "today_balance":decimal, "mtd_balance":decimal, "ytd_balance":decimal})
+    t_list_list, T_list = create_model("T_list", {"cf":int, "fibukonto":string, "debit":Decimal, "credit":Decimal, "debit_lsyear":Decimal, "credit_lsyear":Decimal, "debit_lsmonth":Decimal, "credit_lsmonth":Decimal, "balance":Decimal, "ly_balance":Decimal, "pm_balance":Decimal, "debit_today":Decimal, "credit_today":Decimal, "debit_mtd":Decimal, "credit_mtd":Decimal, "debit_ytd":Decimal, "credit_ytd":Decimal, "today_balance":Decimal, "mtd_balance":Decimal, "ytd_balance":Decimal})
 
     Tbuff = T_list
     tbuff_list = t_list_list
-
 
     db_session = local_storage.db_session
 
@@ -36,7 +39,7 @@ def glacct_cashflow_1bl(from_date:date, to_date:date, from_lsyr:date, to_lsyr:da
 
         return {"t-list": t_list_list}
 
-    def calc_balance(i_case:int, fibu:str, from_date:date, to_date:date):
+    def calc_balance(i_case:int, fibu:string, from_date:date, to_date:date):
 
         nonlocal t_list_list, close_month, close_year, last_close_yr, prev_month, gl_acct, gl_accthis, gl_journal, gl_jouhdr
         nonlocal from_lsyr, to_lsyr, pfrom_date, pto_date, from_month, from_year
@@ -46,9 +49,9 @@ def glacct_cashflow_1bl(from_date:date, to_date:date, from_lsyr:date, to_lsyr:da
         nonlocal coa_list, t_list, tbuff
         nonlocal t_list_list
 
-        p_bal:decimal = to_decimal("0.0")
-        debit:decimal = to_decimal("0.0")
-        credit:decimal = to_decimal("0.0")
+        p_bal:Decimal = to_decimal("0.0")
+        debit:Decimal = to_decimal("0.0")
+        credit:Decimal = to_decimal("0.0")
         date1:date = None
         date2:date = None
         p_sign:int = 1
@@ -56,8 +59,7 @@ def glacct_cashflow_1bl(from_date:date, to_date:date, from_lsyr:date, to_lsyr:da
         gbuff = None
         Gbuff =  create_buffer("Gbuff",Gl_acct)
 
-        gbuff = db_session.query(Gbuff).filter(
-                 (func.lower(Gbuff.fibukonto) == (fibu).lower())).first()
+        gbuff = get_cache (Gl_acct, {"fibukonto": [(eq, fibu)]})
 
         if not gbuff:
 
@@ -66,6 +68,7 @@ def glacct_cashflow_1bl(from_date:date, to_date:date, from_lsyr:date, to_lsyr:da
         if from_date > close_month:
 
             return
+        pass
 
         if gbuff.acc_type == 1 or gbuff.acc_type == 4:
             p_sign = -1
@@ -86,8 +89,7 @@ def glacct_cashflow_1bl(from_date:date, to_date:date, from_lsyr:date, to_lsyr:da
 
                 else:
 
-                    gl_accthis = db_session.query(Gl_accthis).filter(
-                             (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(from_date))).first()
+                    gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, fibu)],"year": [(eq, get_year(from_date))]})
 
                     if not gl_accthis:
 
@@ -119,8 +121,7 @@ def glacct_cashflow_1bl(from_date:date, to_date:date, from_lsyr:date, to_lsyr:da
 
                     else:
 
-                        gl_accthis = db_session.query(Gl_accthis).filter(
-                                 (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(from_date) - 1)).first()
+                        gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, fibu)],"year": [(eq, get_year(from_date) - 1)]})
 
                         if not gl_accthis:
 
@@ -130,8 +131,7 @@ def glacct_cashflow_1bl(from_date:date, to_date:date, from_lsyr:date, to_lsyr:da
 
                 else:
 
-                    gl_accthis = db_session.query(Gl_accthis).filter(
-                             (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(from_date))).first()
+                    gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, fibu)],"year": [(eq, get_year(from_date))]})
 
                     if not gl_accthis:
 
@@ -148,7 +148,7 @@ def glacct_cashflow_1bl(from_date:date, to_date:date, from_lsyr:date, to_lsyr:da
             date1 = date_mdy(get_month(from_date) , 1, get_year(from_date))
             date2 = date_mdy(get_month(from_date) , get_day(from_date) - timedelta(days=1, get_year(from_date)))
 
-            for gl_jouhdr, gl_journal in db_session.query(Gl_jouhdr, Gl_journal).join(Gl_journal,(Gl_journal.jnr == Gl_jouhdr.jnr) & (func.lower(Gl_journal.fibukonto) == (fibu).lower())).filter(
+            for gl_jouhdr, gl_journal in db_session.query(Gl_jouhdr, Gl_journal).join(Gl_journal,(Gl_journal.jnr == Gl_jouhdr.jnr) & (Gl_journal.fibukonto == (fibu).lower())).filter(
                      (Gl_jouhdr.datum >= date1) & (Gl_jouhdr.datum <= date2)).order_by(Gl_jouhdr._recid).all():
                 p_bal =  to_decimal(p_bal) + to_decimal(gl_journal.debit) - to_decimal(gl_journal.credit)
 
@@ -167,12 +167,12 @@ def glacct_cashflow_1bl(from_date:date, to_date:date, from_lsyr:date, to_lsyr:da
         date1 = date_mdy(get_month(from_date) , get_day(from_date) , get_year(from_date))
         date2 = date_mdy(get_month(to_date) , get_day(to_date) , get_year(to_date))
 
-        for gl_jouhdr, gl_journal in db_session.query(Gl_jouhdr, Gl_journal).join(Gl_journal,(Gl_journal.jnr == Gl_jouhdr.jnr) & (func.lower(Gl_journal.fibukonto) == (fibu).lower())).filter(
+        for gl_jouhdr, gl_journal in db_session.query(Gl_jouhdr, Gl_journal).join(Gl_journal,(Gl_journal.jnr == Gl_jouhdr.jnr) & (Gl_journal.fibukonto == (fibu).lower())).filter(
                  (Gl_jouhdr.datum >= date1) & (Gl_jouhdr.datum <= date2)).order_by(Gl_jouhdr._recid).all():
             credit =  to_decimal(gl_journal.credit)
             debit =  to_decimal(gl_journal.debit)
             i_cf = None
-            i_cf = to_int(entry(1, gl_journal.bemerk, chr(2)))
+            i_cf = to_int(entry(1, gl_journal.bemerk, chr_unicode(2)))
 
 
             pass

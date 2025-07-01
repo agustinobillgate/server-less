@@ -1,16 +1,20 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Htparam, Gl_jouhdr, Gl_journal, Bediener, Res_history
 
-def delete_gl_jouallbl(refno:str, idnr:str):
+def delete_gl_jouallbl(refno:string, idnr:string):
+
+    prepare_cache ([Htparam, Bediener, Res_history])
+
     flag = False
     msg = ""
     fb_close:date = None
     mat_close:date = None
     gl_close:date = None
-    tdate:str = ""
+    tdate:string = ""
     iday:int = 0
     imon:int = 0
     iyear:int = 0
@@ -18,8 +22,7 @@ def delete_gl_jouallbl(refno:str, idnr:str):
 
     t_lop = None
 
-    t_lop_list, T_lop = create_model("T_lop", {"lscheinnr":str})
-
+    t_lop_list, T_lop = create_model("T_lop", {"lscheinnr":string})
 
     db_session = local_storage.db_session
 
@@ -33,20 +36,16 @@ def delete_gl_jouallbl(refno:str, idnr:str):
 
         return {"flag": flag, "msg": msg}
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 221)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 221)]})
     fb_close = htparam.fdate
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 224)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 224)]})
     mat_close = htparam.fdate
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 597)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
     gl_close = htparam.fdate
 
-    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-             (func.lower(Gl_jouhdr.refno) == (refno).lower())).first()
+    gl_jouhdr = get_cache (Gl_jouhdr, {"refno": [(eq, refno)]})
 
     if gl_jouhdr:
 
@@ -59,6 +58,7 @@ def delete_gl_jouallbl(refno:str, idnr:str):
                     for gl_journal in db_session.query(Gl_journal).filter(
                              (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).all():
                         db_session.delete(gl_journal)
+                    pass
                     db_session.delete(gl_jouhdr)
                     flag = True
 
@@ -77,6 +77,7 @@ def delete_gl_jouallbl(refno:str, idnr:str):
                     for gl_journal in db_session.query(Gl_journal).filter(
                              (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).all():
                         db_session.delete(gl_journal)
+                    pass
                     db_session.delete(gl_jouhdr)
                     flag = True
 
@@ -94,21 +95,22 @@ def delete_gl_jouallbl(refno:str, idnr:str):
 
             return generate_output()
 
-    bediener = db_session.query(Bediener).filter(
-             (func.lower(Bediener.userinit) == (idnr).lower())).first()
-    res_history = Res_history()
-    db_session.add(res_history)
+    bediener = get_cache (Bediener, {"userinit": [(eq, idnr)]})
 
-    res_history.nr = bediener.nr
-    res_history.resnr = 0
-    res_history.reslinnr = 0
-    res_history.datum = get_current_date()
-    res_history.zeit = get_current_time_in_seconds()
-    res_history.aenderung = "Journal Transaction & Detail Delete - Reference no " + refno + " by " + bediener.username
-    res_history.betriebsnr = bediener.nr
-    res_history.action = "JournalTransactionDelete"
+    if bediener:
+        res_history = Res_history()
+        db_session.add(res_history)
+
+        res_history.nr = bediener.nr
+        res_history.resnr = 0
+        res_history.reslinnr = 0
+        res_history.datum = get_current_date()
+        res_history.zeit = get_current_time_in_seconds()
+        res_history.aenderung = "Journal Transaction & Detail Delete - Reference no " + refno + " by " + bediener.username
+        res_history.betriebsnr = bediener.nr
+        res_history.action = "JournalTransactionDelete"
 
 
-    pass
+        pass
 
     return generate_output()

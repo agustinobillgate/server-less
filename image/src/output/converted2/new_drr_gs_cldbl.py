@@ -1,45 +1,49 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Paramtext
 
-rev_seg_list_list, Rev_seg_list = create_model("Rev_seg_list", {"ct":int, "segment_code":int, "descr":str, "departement":int, "t_day":decimal, "dper":decimal, "mtd":decimal, "mtd_per":decimal, "mtd_budget":decimal, "variance":decimal, "ytd":decimal, "ytd_budget":decimal, "ytd_per":decimal, "flag":str, "flag_grup":bool})
-rev_list_list, Rev_list = create_model("Rev_list", {"ct":int, "descr":str, "departement":int, "t_day":decimal, "dper":decimal, "mtd":decimal, "mtd_per":decimal, "mtd_budget":decimal, "variance":decimal, "ytd":decimal, "ytd_budget":decimal, "ytd_per":decimal, "flag":str, "flag_grup":bool})
+rev_seg_list_list, Rev_seg_list = create_model("Rev_seg_list", {"ct":int, "segment_code":int, "descr":string, "departement":int, "t_day":Decimal, "dper":Decimal, "mtd":Decimal, "mtd_per":Decimal, "mtd_budget":Decimal, "variance":Decimal, "ytd":Decimal, "ytd_budget":Decimal, "ytd_per":Decimal, "flag":string, "flag_grup":bool})
+rev_list_list, Rev_list = create_model("Rev_list", {"ct":int, "descr":string, "departement":int, "t_day":Decimal, "dper":Decimal, "mtd":Decimal, "mtd_per":Decimal, "mtd_budget":Decimal, "variance":Decimal, "ytd":Decimal, "ytd_budget":Decimal, "ytd_per":Decimal, "flag":string, "flag_grup":bool})
 payable_list_list, Payable_list = create_model_like(Rev_list)
-stat_list_list, Stat_list = create_model("Stat_list", {"ct":int, "descr":str, "departement":int, "t_day":decimal, "mtd":decimal, "mtd_budget":decimal, "variance":decimal, "ytd":decimal, "ytd_budget":decimal, "flag":str})
+stat_list_list, Stat_list = create_model("Stat_list", {"ct":int, "descr":string, "departement":int, "t_day":Decimal, "mtd":Decimal, "mtd_budget":Decimal, "variance":Decimal, "ytd":Decimal, "ytd_budget":Decimal, "flag":string})
 payment_list_list, Payment_list = create_model_like(Stat_list)
-gl_list_list, Gl_list = create_model("Gl_list", {"descr":str, "tot_rev":decimal})
-fb_sales_food_list, Fb_sales_food = create_model("Fb_sales_food", {"ct":int, "artnr":int, "departement":int, "descr":str, "tday_cov":decimal, "tday_avg":decimal, "tday_rev":decimal, "mtd_cov":decimal, "mtd_avg":decimal, "mtd_rev":decimal, "ytd_cov":decimal, "ytd_avg":decimal, "ytd_rev":decimal, "flag":str})
+gl_list_list, Gl_list = create_model("Gl_list", {"descr":string, "tot_rev":Decimal})
+fb_sales_food_list, Fb_sales_food = create_model("Fb_sales_food", {"ct":int, "artnr":int, "departement":int, "descr":string, "tday_cov":Decimal, "tday_avg":Decimal, "tday_rev":Decimal, "mtd_cov":Decimal, "mtd_avg":Decimal, "mtd_rev":Decimal, "ytd_cov":Decimal, "ytd_avg":Decimal, "ytd_rev":Decimal, "flag":string})
 fb_sales_beverage_list, Fb_sales_beverage = create_model_like(Fb_sales_food)
 fb_sales_other_list, Fb_sales_other = create_model_like(Fb_sales_food)
 fb_sales_tot_list, Fb_sales_tot = create_model_like(Fb_sales_food)
 
-def new_drr_gs_cldbl(from_date:date, to_date:date, gsheet_link:str, rev_seg_list_list:[Rev_seg_list], rev_list_list:[Rev_list], payable_list_list:[Payable_list], stat_list_list:[Stat_list], payment_list_list:[Payment_list], gl_list_list:[Gl_list], fb_sales_food_list:[Fb_sales_food], fb_sales_beverage_list:[Fb_sales_beverage], fb_sales_other_list:[Fb_sales_other], fb_sales_tot_list:[Fb_sales_tot]):
-    tot_netpay_tdy:decimal = to_decimal("0.0")
-    tot_netpay_mtd:decimal = to_decimal("0.0")
-    tot_netpay_mtdbudget:decimal = to_decimal("0.0")
-    tot_netpay_ytd:decimal = to_decimal("0.0")
-    tot_grosspay_tdy:decimal = to_decimal("0.0")
-    tot_grosspay_mtd:decimal = to_decimal("0.0")
-    tot_grosspay_mtdbudget:decimal = to_decimal("0.0")
-    tot_grosspay_ytd:decimal = to_decimal("0.0")
-    prev_param:str = ""
+def new_drr_gs_cldbl(from_date:date, to_date:date, gsheet_link:string, rev_seg_list_list:[Rev_seg_list], rev_list_list:[Rev_list], payable_list_list:[Payable_list], stat_list_list:[Stat_list], payment_list_list:[Payment_list], gl_list_list:[Gl_list], fb_sales_food_list:[Fb_sales_food], fb_sales_beverage_list:[Fb_sales_beverage], fb_sales_other_list:[Fb_sales_other], fb_sales_tot_list:[Fb_sales_tot]):
+
+    prepare_cache ([Paramtext])
+
+    tot_netpay_tdy:Decimal = to_decimal("0.0")
+    tot_netpay_mtd:Decimal = to_decimal("0.0")
+    tot_netpay_mtdbudget:Decimal = to_decimal("0.0")
+    tot_netpay_ytd:Decimal = to_decimal("0.0")
+    tot_grosspay_tdy:Decimal = to_decimal("0.0")
+    tot_grosspay_mtd:Decimal = to_decimal("0.0")
+    tot_grosspay_mtdbudget:Decimal = to_decimal("0.0")
+    tot_grosspay_ytd:Decimal = to_decimal("0.0")
+    prev_param:string = ""
     ct_row:int = 0
     ct_row2:int = 0
     j:int = 0
     curr_row:int = 0
-    curr_col:str = ""
-    htl_no:str = ""
-    cell_value:str = ""
-    out_path:str = ""
+    curr_col:string = ""
+    htl_no:string = ""
+    cell_value:string = ""
+    out_path:string = ""
     paramtext = None
 
     rev_seg_list = rev_list = payable_list = tot_list = stat_list = payment_list = gl_list = fb_sales_food = fb_sales_beverage = fb_sales_other = fb_sales_tot = menu_drr = stream_list = None
 
     tot_list_list, Tot_list = create_model_like(Rev_list)
-    menu_drr_list, Menu_drr = create_model("Menu_drr", {"nr":int, "descr":str})
-    stream_list_list, Stream_list = create_model("Stream_list", {"crow":int, "ccol":int, "cval":str})
-
+    menu_drr_list, Menu_drr = create_model("Menu_drr", {"nr":int, "descr":string})
+    stream_list_list, Stream_list = create_model("Stream_list", {"crow":int, "ccol":int, "cval":string})
 
     db_session = local_storage.db_session
 
@@ -53,7 +57,7 @@ def new_drr_gs_cldbl(from_date:date, to_date:date, gsheet_link:str, rev_seg_list
 
         return {}
 
-    def decode_string(in_str:str):
+    def decode_string(in_str:string):
 
         nonlocal tot_netpay_tdy, tot_netpay_mtd, tot_netpay_mtdbudget, tot_netpay_ytd, tot_grosspay_tdy, tot_grosspay_mtd, tot_grosspay_mtdbudget, tot_grosspay_ytd, prev_param, ct_row, ct_row2, curr_row, curr_col, htl_no, cell_value, out_path, paramtext
         nonlocal from_date, to_date, gsheet_link
@@ -63,7 +67,7 @@ def new_drr_gs_cldbl(from_date:date, to_date:date, gsheet_link:str, rev_seg_list
         nonlocal tot_list_list, menu_drr_list, stream_list_list
 
         out_str = ""
-        s:str = ""
+        s:string = ""
         j:int = 0
         len_:int = 0
 
@@ -72,16 +76,15 @@ def new_drr_gs_cldbl(from_date:date, to_date:date, gsheet_link:str, rev_seg_list
 
             s = in_str
             j = asc(substring(s, 0, 1)) - 70
-            len_ = len(in_str) - 1
+            len_ = length(in_str) - 1
             s = substring(in_str, 1, len_)
-            for len_ in range(1,len(s)  + 1) :
-                out_str = out_str + chr (asc(substring(s, len_ - 1, 1)) - j)
+            for len_ in range(1,length(s)  + 1) :
+                out_str = out_str + chr_unicode(asc(substring(s, len_ - 1, 1)) - j)
 
         return generate_inner_output()
 
 
-    paramtext = db_session.query(Paramtext).filter(
-             (Paramtext.txtnr == 243)).first()
+    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
 
     if paramtext and paramtext.ptexte != "":
         htl_no = decode_string(paramtext.ptexte)

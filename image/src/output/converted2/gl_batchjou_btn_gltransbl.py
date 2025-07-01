@@ -1,10 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Gl_jouhdr
 
 def gl_batchjou_btn_gltransbl(rec_id:int):
-    gl_jouhdr = None
 
+    prepare_cache ([Gl_jouhdr])
+
+    gl_jouhdr = None
 
     db_session = local_storage.db_session
 
@@ -15,8 +19,9 @@ def gl_batchjou_btn_gltransbl(rec_id:int):
         return {}
 
 
-    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-             (Gl_jouhdr._recid == rec_id)).first()
+    gl_jouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, rec_id)]})
+    pass
     gl_jouhdr.batch = False
+    pass
 
     return generate_output()

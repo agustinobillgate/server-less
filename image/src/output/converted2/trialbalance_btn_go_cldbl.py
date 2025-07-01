@@ -1,48 +1,51 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from functions.htpdate import htpdate
 from functions.htpchar import htpchar
-from sqlalchemy import func
 from models import Gl_acct, Gl_jouhdr, Gl_journal, Gl_jhdrhis, Gl_jourhis, Gl_main, Htparam, Gl_accthis
 
-def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttype:int, from_dept:int, from_date:date, to_date:date, close_month:int, close_date:date, pnl_acct:str, close_year:date, prev_month:int, show_longbal:bool, pbal_flag:bool, asremoteflag:bool):
+def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:string, to_fibu:string, sorttype:int, from_dept:int, from_date:date, to_date:date, close_month:int, close_date:date, pnl_acct:string, close_year:date, prev_month:int, show_longbal:bool, pbal_flag:bool, asremoteflag:bool):
+
+    prepare_cache ([Gl_acct, Gl_jouhdr, Gl_journal, Gl_jhdrhis, Gl_jourhis, Gl_main, Htparam, Gl_accthis])
+
     output_list_list = []
     num_acctype:int = 0
-    sales:decimal = to_decimal("0.0")
-    cost:decimal = to_decimal("0.0")
-    gop_credit:decimal = to_decimal("0.0")
-    gop_debit:decimal = to_decimal("0.0")
-    tot_diff:decimal = to_decimal("0.0")
+    sales:Decimal = to_decimal("0.0")
+    cost:Decimal = to_decimal("0.0")
+    gop_credit:Decimal = to_decimal("0.0")
+    gop_debit:Decimal = to_decimal("0.0")
+    tot_diff:Decimal = to_decimal("0.0")
     curr_i:int = 0
     in_procedure:bool = False
     numsend:int = 30
     last_acct_close_priod:date = None
     t_from_date:date = None
     t_to_date:date = None
-    t_strgrp:str = ""
-    t_str:str = ""
+    t_strgrp:string = ""
+    t_str:string = ""
     t_int:int = 0
     t_date:date = None
     from_datehis:date = None
     to_datehis:date = None
     readflag:int = 0
-    coa_format:str = ""
+    coa_format:string = ""
     counter:int = 0
-    tt_pbal2:decimal = to_decimal("0.0")
+    tt_pbal2:Decimal = to_decimal("0.0")
     gl_acct = gl_jouhdr = gl_journal = gl_jhdrhis = gl_jourhis = gl_main = htparam = gl_accthis = None
 
     output_list = output_listhis = result_list = t_res_list = t_res_listhis = g_list = g_listpre = g_listhis = None
 
-    output_list_list, Output_list = create_model("Output_list", {"gop_flag":bool, "nr":int, "str":str, "budget":decimal, "proz":decimal, "mark":bool, "ch":str, "ref_no":str, "begin_bal":str, "tot_debit":str, "tot_credit":str, "net_change":str, "ending_bal":str, "ytd_bal":str})
+    output_list_list, Output_list = create_model("Output_list", {"gop_flag":bool, "nr":int, "str":string, "budget":Decimal, "proz":Decimal, "mark":bool, "ch":string, "ref_no":string, "begin_bal":string, "tot_debit":string, "tot_credit":string, "net_change":string, "ending_bal":string, "ytd_bal":string})
     output_listhis_list, Output_listhis = create_model_like(Output_list)
     result_list_list, Result_list = create_model_like(Output_list)
-    t_res_list_list, T_res_list = create_model("T_res_list", {"grp_nr":str, "acc_no":str, "t_date":date, "f1":str, "f2":str, "f3":int, "f4":int, "f5":int, "f6":int, "f7":int, "f8":int, "f9":int, "f10":int, "note":str})
+    t_res_list_list, T_res_list = create_model("T_res_list", {"grp_nr":string, "acc_no":string, "t_date":date, "f1":string, "f2":string, "f3":int, "f4":int, "f5":int, "f6":int, "f7":int, "f8":int, "f9":int, "f10":int, "note":string})
     t_res_listhis_list, T_res_listhis = create_model_like(T_res_list)
-    g_list_list, G_list = create_model("G_list", {"datum":date, "grecid":int, "fibu":str}, {"datum": None})
+    g_list_list, G_list = create_model("G_list", {"datum":date, "grecid":int, "fibu":string}, {"datum": None})
     g_listpre_list, G_listpre = create_model_like(G_list)
     g_listhis_list, G_listhis = create_model_like(G_list)
-
 
     db_session = local_storage.db_session
 
@@ -56,7 +59,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
         return {"output-list": output_list_list}
 
-    def get_bemerk(bemerk:str):
+    def get_bemerk(bemerk:string):
 
         nonlocal output_list_list, num_acctype, sales, cost, gop_credit, gop_debit, tot_diff, curr_i, in_procedure, numsend, last_acct_close_priod, t_from_date, t_to_date, t_strgrp, t_str, t_int, t_date, from_datehis, to_datehis, readflag, coa_format, counter, tt_pbal2, gl_acct, gl_jouhdr, gl_journal, gl_jhdrhis, gl_jourhis, gl_main, htparam, gl_accthis
         nonlocal acct_type, from_fibu, to_fibu, sorttype, from_dept, from_date, to_date, close_month, close_date, pnl_acct, close_year, prev_month, show_longbal, pbal_flag, asremoteflag
@@ -66,9 +69,9 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
         nonlocal output_list_list, output_listhis_list, result_list_list, t_res_list_list, t_res_listhis_list, g_list_list, g_listpre_list, g_listhis_list
 
         n:int = 0
-        s1:str = ""
-        bemerk = replace_str(bemerk, chr(10) , " ")
-        n = 1 + get_index(bemerk, ";&&")
+        s1:string = ""
+        bemerk = replace_str(bemerk, chr_unicode(10) , " ")
+        n = get_index(bemerk, ";&&")
 
         if n > 0:
             s1 = substring(bemerk, 0, n - 1)
@@ -77,7 +80,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
         return s1
 
 
-    def lastDay(d:date):
+    def lastday(d:date):
 
         nonlocal output_list_list, num_acctype, sales, cost, gop_credit, gop_debit, tot_diff, curr_i, in_procedure, numsend, last_acct_close_priod, t_from_date, t_to_date, t_strgrp, t_str, t_int, t_date, from_datehis, to_datehis, readflag, coa_format, counter, tt_pbal2, gl_acct, gl_jouhdr, gl_journal, gl_jhdrhis, gl_jourhis, gl_main, htparam, gl_accthis
         nonlocal acct_type, from_fibu, to_fibu, sorttype, from_dept, from_date, to_date, close_month, close_date, pnl_acct, close_year, prev_month, show_longbal, pbal_flag, asremoteflag
@@ -103,7 +106,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
                  (Gl_jouhdr.datum >= from_date) & (Gl_jouhdr.datum <= to_date)).order_by(Gl_jouhdr.datum).all():
 
             for gl_journal in db_session.query(Gl_journal).filter(
-                     (Gl_journal.jnr == gl_jouhdr.jnr) & (func.lower(Gl_journal.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_journal.fibukonto) <= (to_fibu).lower())).order_by(Gl_journal.fibukonto).all():
+                     (Gl_journal.jnr == gl_jouhdr.jnr) & (Gl_journal.fibukonto >= (from_fibu).lower()) & (Gl_journal.fibukonto <= (to_fibu).lower())).order_by(Gl_journal.fibukonto).all():
                 g_list = G_list()
                 g_list_list.append(g_list)
 
@@ -125,7 +128,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
                  (Gl_jhdrhis.datum >= from_datehis) & (Gl_jhdrhis.datum <= to_datehis)).order_by(Gl_jhdrhis.datum).all():
 
             for gl_jourhis in db_session.query(Gl_jourhis).filter(
-                     (Gl_jourhis.jnr == gl_jhdrhis.jnr) & (func.lower(Gl_jourhis.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_jourhis.fibukonto) <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto).all():
+                     (Gl_jourhis.jnr == gl_jhdrhis.jnr) & (Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto).all():
                 g_list = G_list()
                 g_list_list.append(g_list)
 
@@ -143,28 +146,28 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
         nonlocal output_list, output_listhis, result_list, t_res_list, t_res_listhis, g_list, g_listpre, g_listhis
         nonlocal output_list_list, output_listhis_list, result_list_list, t_res_list_list, t_res_listhis_list, g_list_list, g_listpre_list, g_listhis_list
 
-        konto:str = ""
+        konto:string = ""
         i:int = 0
-        c:str = ""
+        c:string = ""
         ind:int = 0
         n:int = 0
         curr_month:int = 0
         do_it:bool = False
-        t_debit:decimal = to_decimal("0.0")
-        t_credit:decimal = to_decimal("0.0")
-        p_bal:decimal = to_decimal("0.0")
-        t_bal:decimal = to_decimal("0.0")
-        y_bal:decimal = to_decimal("0.0")
-        tot_debit:decimal = to_decimal("0.0")
-        tot_credit:decimal = to_decimal("0.0")
-        prev_bal:decimal = to_decimal("0.0")
-        tot_bal:decimal = to_decimal("0.0")
-        diff:decimal = to_decimal("0.0")
+        t_debit:Decimal = to_decimal("0.0")
+        t_credit:Decimal = to_decimal("0.0")
+        p_bal:Decimal = to_decimal("0.0")
+        t_bal:Decimal = to_decimal("0.0")
+        y_bal:Decimal = to_decimal("0.0")
+        tot_debit:Decimal = to_decimal("0.0")
+        tot_credit:Decimal = to_decimal("0.0")
+        prev_bal:Decimal = to_decimal("0.0")
+        tot_bal:Decimal = to_decimal("0.0")
+        diff:Decimal = to_decimal("0.0")
         act_flag:int = 0
-        to_bal:decimal = to_decimal("0.0")
-        curr_tbal:decimal = to_decimal("0.0")
-        curr_totbal:decimal = to_decimal("0.0")
-        curr_ttbal:decimal = to_decimal("0.0")
+        to_bal:Decimal = to_decimal("0.0")
+        curr_tbal:Decimal = to_decimal("0.0")
+        curr_totbal:Decimal = to_decimal("0.0")
+        curr_ttbal:Decimal = to_decimal("0.0")
         curr_month = close_month
         sales =  to_decimal("0")
         cost =  to_decimal("0")
@@ -182,7 +185,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
             if acct_type == 0:
 
                 for gl_acct in db_session.query(Gl_acct).filter(
-                         (func.lower(Gl_acct.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_acct.fibukonto) <= (to_fibu).lower())).order_by(Gl_acct.fibukonto).all():
+                         (Gl_acct.fibukonto >= (from_fibu).lower()) & (Gl_acct.fibukonto <= (to_fibu).lower())).order_by(Gl_acct.fibukonto).all():
                     konto = gl_acct.fibukonto
                     do_it = True
 
@@ -203,7 +206,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
                         output_list.begin_bal = gl_acct.bezeich
                         output_list.tot_debit = ""
 
-                        if len(gl_acct.bezeich) > 20:
+                        if length(gl_acct.bezeich) > 20:
                             str = str + substring(gl_acct.bezeich, 20, 18)
                         t_debit =  to_decimal("0")
                         t_credit =  to_decimal("0")
@@ -233,11 +236,9 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
                                 if t_date >= from_date and t_date <= to_date:
 
-                                    gl_journal = db_session.query(Gl_journal).filter(
-                                             (Gl_journal._recid == g_list.grecid)).first()
+                                    gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.grecid)]})
 
-                                    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                                             (Gl_jouhdr.jnr == gl_journal.jnr)).first()
+                                    gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, gl_journal.jnr)]})
                                     g_list_list.remove(g_list)
 
                                     if gl_journal:
@@ -297,11 +298,9 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
                                 if t_date >= from_datehis and t_date <= to_datehis:
 
-                                    gl_jourhis = db_session.query(Gl_jourhis).filter(
-                                             (Gl_jourhis._recid == g_list.grecid)).first()
+                                    gl_jourhis = get_cache (Gl_jourhis, {"_recid": [(eq, g_list.grecid)]})
 
-                                    gl_jhdrhis = db_session.query(Gl_jhdrhis).filter(
-                                             (Gl_jhdrhis.jnr == gl_jourhis.jnr)).first()
+                                    gl_jhdrhis = get_cache (Gl_jhdrhis, {"jnr": [(eq, gl_jourhis.jnr)]})
                                     g_list_list.remove(g_list)
 
                                     if gl_jourhis:
@@ -419,7 +418,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
             elif acct_type != 0:
 
                 for gl_acct in db_session.query(Gl_acct).filter(
-                         (Gl_acct.acc_type == to_int(acct_type)) & (func.lower(Gl_acct.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_acct.fibukonto) <= (to_fibu).lower())).order_by(Gl_acct.fibukonto).all():
+                         (Gl_acct.acc_type == to_int(acct_type)) & (Gl_acct.fibukonto >= (from_fibu).lower()) & (Gl_acct.fibukonto <= (to_fibu).lower())).order_by(Gl_acct.fibukonto).all():
                     konto = gl_acct.fibukonto
                     do_it = True
 
@@ -440,7 +439,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
                         output_list.begin_bal = gl_acct.bezeich
                         output_list.tot_debit = ""
 
-                        if len(gl_acct.bezeich) > 20:
+                        if length(gl_acct.bezeich) > 20:
                             str = str + substring(gl_acct.bezeich, 20, 18)
                         t_debit =  to_decimal("0")
                         t_credit =  to_decimal("0")
@@ -464,11 +463,9 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
                                 if t_date >= from_date and t_date <= to_date:
 
-                                    gl_journal = db_session.query(Gl_journal).filter(
-                                             (Gl_journal._recid == g_list.grecid)).first()
+                                    gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.grecid)]})
 
-                                    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                                             (Gl_jouhdr.jnr == gl_journal.jnr)).first()
+                                    gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, gl_journal.jnr)]})
                                     g_list_list.remove(g_list)
 
                                     if gl_journal:
@@ -528,11 +525,9 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
                                 if t_date >= from_datehis and t_date <= to_datehis:
 
-                                    gl_jourhis = db_session.query(Gl_jourhis).filter(
-                                             (Gl_jourhis._recid == g_list.grecid)).first()
+                                    gl_jourhis = get_cache (Gl_jourhis, {"_recid": [(eq, g_list.grecid)]})
 
-                                    gl_jhdrhis = db_session.query(Gl_jhdrhis).filter(
-                                             (Gl_jhdrhis.jnr == gl_jourhis.jnr)).first()
+                                    gl_jhdrhis = get_cache (Gl_jhdrhis, {"jnr": [(eq, gl_jourhis.jnr)]})
                                     g_list_list.remove(g_list)
 
                                     if gl_jourhis:
@@ -694,35 +689,35 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
         nonlocal output_list, output_listhis, result_list, t_res_list, t_res_listhis, g_list, g_listpre, g_listhis
         nonlocal output_list_list, output_listhis_list, result_list_list, t_res_list_list, t_res_listhis_list, g_list_list, g_listpre_list, g_listhis_list
 
-        konto:str = ""
+        konto:string = ""
         i:int = 0
-        c:str = ""
+        c:string = ""
         ind:int = 0
         curr_month:int = 0
-        t_debit:decimal = to_decimal("0.0")
-        t_credit:decimal = to_decimal("0.0")
-        p_bal:decimal = to_decimal("0.0")
-        t_bal:decimal = to_decimal("0.0")
-        y_bal:decimal = to_decimal("0.0")
-        tot_debit:decimal = to_decimal("0.0")
-        tot_credit:decimal = to_decimal("0.0")
-        t_ybal:decimal = to_decimal("0.0")
-        tt_ybal:decimal = to_decimal("0.0")
-        prev_bal:decimal = to_decimal("0.0")
-        tot_bal:decimal = to_decimal("0.0")
-        tot_budget:decimal = to_decimal("0.0")
-        diff:decimal = to_decimal("0.0")
-        tt_debit:decimal = to_decimal("0.0")
-        tt_credit:decimal = to_decimal("0.0")
-        tt_pbal:decimal = to_decimal("0.0")
-        tt_bal:decimal = to_decimal("0.0")
-        tt_diff:decimal = to_decimal("0.0")
+        t_debit:Decimal = to_decimal("0.0")
+        t_credit:Decimal = to_decimal("0.0")
+        p_bal:Decimal = to_decimal("0.0")
+        t_bal:Decimal = to_decimal("0.0")
+        y_bal:Decimal = to_decimal("0.0")
+        tot_debit:Decimal = to_decimal("0.0")
+        tot_credit:Decimal = to_decimal("0.0")
+        t_ybal:Decimal = to_decimal("0.0")
+        tt_ybal:Decimal = to_decimal("0.0")
+        prev_bal:Decimal = to_decimal("0.0")
+        tot_bal:Decimal = to_decimal("0.0")
+        tot_budget:Decimal = to_decimal("0.0")
+        diff:Decimal = to_decimal("0.0")
+        tt_debit:Decimal = to_decimal("0.0")
+        tt_credit:Decimal = to_decimal("0.0")
+        tt_pbal:Decimal = to_decimal("0.0")
+        tt_bal:Decimal = to_decimal("0.0")
+        tt_diff:Decimal = to_decimal("0.0")
         act_flag:int = 0
         n:int = 0
-        to_bal:decimal = to_decimal("0.0")
-        curr_tbal:decimal = to_decimal("0.0")
-        curr_totbal:decimal = to_decimal("0.0")
-        curr_ttbal:decimal = to_decimal("0.0")
+        to_bal:Decimal = to_decimal("0.0")
+        curr_tbal:Decimal = to_decimal("0.0")
+        curr_totbal:Decimal = to_decimal("0.0")
+        curr_ttbal:Decimal = to_decimal("0.0")
         gl_account = None
         Gl_account =  create_buffer("Gl_account",Gl_acct)
         in_procedure = True
@@ -742,12 +737,14 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
             if acct_type == 0:
 
-                gl_main_obj_list = []
-                for gl_main, gl_account in db_session.query(Gl_main, Gl_account).join(Gl_account,(Gl_account.main_nr == Gl_main.nr) & (func.lower(Gl_account.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_account.fibukonto) <= (to_fibu).lower())).order_by(Gl_main.code).all():
-                    if gl_main._recid in gl_main_obj_list:
+                gl_main_obj_list = {}
+                gl_main = Gl_main()
+                gl_account = Gl_acct()
+                for gl_main.code, gl_main.bezeich, gl_main.nr, gl_main._recid, gl_account.fibukonto, gl_account.bezeich, gl_account.acc_type, gl_account.budget, gl_account.ly_budget, gl_account.actual, gl_account.last_yr, gl_account.deptnr, gl_account._recid in db_session.query(Gl_main.code, Gl_main.bezeich, Gl_main.nr, Gl_main._recid, Gl_account.fibukonto, Gl_account.bezeich, Gl_account.acc_type, Gl_account.budget, Gl_account.ly_budget, Gl_account.actual, Gl_account.last_yr, Gl_account.deptnr, Gl_account._recid).join(Gl_account,(Gl_account.main_nr == Gl_main.nr) & (Gl_account.fibukonto >= (from_fibu).lower()) & (Gl_account.fibukonto <= (to_fibu).lower())).order_by(Gl_main.code).all():
+                    if gl_main_obj_list.get(gl_main._recid):
                         continue
                     else:
-                        gl_main_obj_list.append(gl_main._recid)
+                        gl_main_obj_list[gl_main._recid] = True
 
 
                     prev_bal =  to_decimal("0")
@@ -773,7 +770,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
                     str = to_string(to_string(gl_main.code) , "x(16)") + substring(gl_main.bezeich, 0, 38)
 
                     for gl_acct in db_session.query(Gl_acct).filter(
-                             (Gl_acct.main_nr == gl_main.nr) & (func.lower(Gl_acct.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_acct.fibukonto) <= (to_fibu).lower())).order_by(Gl_acct.fibukonto).all():
+                             (Gl_acct.main_nr == gl_main.nr) & (Gl_acct.fibukonto >= (from_fibu).lower()) & (Gl_acct.fibukonto <= (to_fibu).lower())).order_by(Gl_acct.fibukonto).all():
                         konto = gl_acct.fibukonto
                         t_debit =  to_decimal("0")
                         t_credit =  to_decimal("0")
@@ -799,11 +796,9 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
                                 if t_date >= from_datehis and t_date <= to_datehis:
 
-                                    gl_jourhis = db_session.query(Gl_jourhis).filter(
-                                             (Gl_jourhis._recid == g_list.grecid)).first()
+                                    gl_jourhis = get_cache (Gl_jourhis, {"_recid": [(eq, g_list.grecid)]})
 
-                                    gl_jhdrhis = db_session.query(Gl_jhdrhis).filter(
-                                             (Gl_jhdrhis.jnr == gl_jourhis.jnr)).first()
+                                    gl_jhdrhis = get_cache (Gl_jhdrhis, {"jnr": [(eq, gl_jourhis.jnr)]})
                                     g_list_list.remove(g_list)
 
                                     if gl_jourhis:
@@ -835,11 +830,9 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
                                 elif t_date >= from_date and t_date <= to_date:
 
-                                    gl_journal = db_session.query(Gl_journal).filter(
-                                             (Gl_journal._recid == g_list.grecid)).first()
+                                    gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.grecid)]})
 
-                                    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                                             (Gl_jouhdr.jnr == gl_journal.jnr)).first()
+                                    gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, gl_journal.jnr)]})
                                     g_list_list.remove(g_list)
 
                                     if gl_journal:
@@ -970,12 +963,14 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
             else:
 
-                gl_main_obj_list = []
-                for gl_main, gl_account in db_session.query(Gl_main, Gl_account).join(Gl_account,(Gl_account.gl_acct.acc_type == acct_type) & (Gl_account.main_nr == Gl_main.nr) & (func.lower(Gl_account.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_account.fibukonto) <= (to_fibu).lower())).order_by(Gl_main.code).all():
-                    if gl_main._recid in gl_main_obj_list:
+                gl_main_obj_list = {}
+                gl_main = Gl_main()
+                gl_account = Gl_acct()
+                for gl_main.code, gl_main.bezeich, gl_main.nr, gl_main._recid, gl_account.fibukonto, gl_account.bezeich, gl_account.acc_type, gl_account.budget, gl_account.ly_budget, gl_account.actual, gl_account.last_yr, gl_account.deptnr, gl_account._recid in db_session.query(Gl_main.code, Gl_main.bezeich, Gl_main.nr, Gl_main._recid, Gl_account.fibukonto, Gl_account.bezeich, Gl_account.acc_type, Gl_account.budget, Gl_account.ly_budget, Gl_account.actual, Gl_account.last_yr, Gl_account.deptnr, Gl_account._recid).join(Gl_account,(Gl_account.acc_type == acct_type) & (Gl_account.main_nr == Gl_main.nr) & (Gl_account.fibukonto >= (from_fibu).lower()) & (Gl_account.fibukonto <= (to_fibu).lower())).order_by(Gl_main.code).all():
+                    if gl_main_obj_list.get(gl_main._recid):
                         continue
                     else:
-                        gl_main_obj_list.append(gl_main._recid)
+                        gl_main_obj_list[gl_main._recid] = True
 
 
                     prev_bal =  to_decimal("0")
@@ -1001,7 +996,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
                     str = to_string(to_string(gl_main.code) , "x(16)") + substring(gl_main.bezeich, 0, 38)
 
                     for gl_acct in db_session.query(Gl_acct).filter(
-                             (Gl_acct.acc_type == acct_type) & (Gl_acct.main_nr == gl_main.nr) & (func.lower(Gl_acct.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_acct.fibukonto) <= (to_fibu).lower())).order_by(Gl_acct.fibukonto).all():
+                             (Gl_acct.acc_type == acct_type) & (Gl_acct.main_nr == gl_main.nr) & (Gl_acct.fibukonto >= (from_fibu).lower()) & (Gl_acct.fibukonto <= (to_fibu).lower())).order_by(Gl_acct.fibukonto).all():
                         konto = gl_acct.fibukonto
                         t_debit =  to_decimal("0")
                         t_credit =  to_decimal("0")
@@ -1027,11 +1022,9 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
                                 if t_date >= from_datehis and t_date <= to_datehis:
 
-                                    gl_jourhis = db_session.query(Gl_jourhis).filter(
-                                             (Gl_jourhis._recid == g_list.grecid)).first()
+                                    gl_jourhis = get_cache (Gl_jourhis, {"_recid": [(eq, g_list.grecid)]})
 
-                                    gl_jhdrhis = db_session.query(Gl_jhdrhis).filter(
-                                             (Gl_jhdrhis.jnr == gl_jourhis.jnr)).first()
+                                    gl_jhdrhis = get_cache (Gl_jhdrhis, {"jnr": [(eq, gl_jourhis.jnr)]})
                                     g_list_list.remove(g_list)
 
                                     if gl_jourhis:
@@ -1063,11 +1056,9 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
                                 elif t_date >= from_date and t_date <= to_date:
 
-                                    gl_journal = db_session.query(Gl_journal).filter(
-                                             (Gl_journal._recid == g_list.grecid)).first()
+                                    gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.grecid)]})
 
-                                    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                                             (Gl_jouhdr.jnr == gl_journal.jnr)).first()
+                                    gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, gl_journal.jnr)]})
                                     g_list_list.remove(g_list)
 
                                     if gl_journal:
@@ -1233,35 +1224,35 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
         nonlocal output_list, output_listhis, result_list, t_res_list, t_res_listhis, g_list, g_listpre, g_listhis
         nonlocal output_list_list, output_listhis_list, result_list_list, t_res_list_list, t_res_listhis_list, g_list_list, g_listpre_list, g_listhis_list
 
-        konto:str = ""
+        konto:string = ""
         i:int = 0
-        c:str = ""
+        c:string = ""
         ind:int = 0
         curr_month:int = 0
-        t_debit:decimal = to_decimal("0.0")
-        t_credit:decimal = to_decimal("0.0")
-        p_bal:decimal = to_decimal("0.0")
-        t_bal:decimal = to_decimal("0.0")
-        y_bal:decimal = to_decimal("0.0")
-        tot_debit:decimal = to_decimal("0.0")
-        tot_credit:decimal = to_decimal("0.0")
-        t_ybal:decimal = to_decimal("0.0")
-        tt_ybal:decimal = to_decimal("0.0")
-        prev_bal:decimal = to_decimal("0.0")
-        tot_bal:decimal = to_decimal("0.0")
-        tot_budget:decimal = to_decimal("0.0")
-        diff:decimal = to_decimal("0.0")
-        tt_debit:decimal = to_decimal("0.0")
-        tt_credit:decimal = to_decimal("0.0")
-        tt_pbal:decimal = to_decimal("0.0")
-        tt_bal:decimal = to_decimal("0.0")
-        tt_diff:decimal = to_decimal("0.0")
+        t_debit:Decimal = to_decimal("0.0")
+        t_credit:Decimal = to_decimal("0.0")
+        p_bal:Decimal = to_decimal("0.0")
+        t_bal:Decimal = to_decimal("0.0")
+        y_bal:Decimal = to_decimal("0.0")
+        tot_debit:Decimal = to_decimal("0.0")
+        tot_credit:Decimal = to_decimal("0.0")
+        t_ybal:Decimal = to_decimal("0.0")
+        tt_ybal:Decimal = to_decimal("0.0")
+        prev_bal:Decimal = to_decimal("0.0")
+        tot_bal:Decimal = to_decimal("0.0")
+        tot_budget:Decimal = to_decimal("0.0")
+        diff:Decimal = to_decimal("0.0")
+        tt_debit:Decimal = to_decimal("0.0")
+        tt_credit:Decimal = to_decimal("0.0")
+        tt_pbal:Decimal = to_decimal("0.0")
+        tt_bal:Decimal = to_decimal("0.0")
+        tt_diff:Decimal = to_decimal("0.0")
         act_flag:int = 0
         n:int = 0
-        to_bal:decimal = to_decimal("0.0")
-        curr_tbal:decimal = to_decimal("0.0")
-        curr_totbal:decimal = to_decimal("0.0")
-        curr_ttbal:decimal = to_decimal("0.0")
+        to_bal:Decimal = to_decimal("0.0")
+        curr_tbal:Decimal = to_decimal("0.0")
+        curr_totbal:Decimal = to_decimal("0.0")
+        curr_ttbal:Decimal = to_decimal("0.0")
         gl_account = None
         Gl_account =  create_buffer("Gl_account",Gl_acct)
         in_procedure = True
@@ -1279,12 +1270,14 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
         if sorttype == 2:
 
-            gl_main_obj_list = []
-            for gl_main, gl_account in db_session.query(Gl_main, Gl_account).join(Gl_account,(Gl_account.main_nr == Gl_main.nr) & (func.lower(Gl_account.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_account.fibukonto) <= (to_fibu).lower()) & (Gl_account.deptnr == from_dept)).order_by(Gl_main.code).all():
-                if gl_main._recid in gl_main_obj_list:
+            gl_main_obj_list = {}
+            gl_main = Gl_main()
+            gl_account = Gl_acct()
+            for gl_main.code, gl_main.bezeich, gl_main.nr, gl_main._recid, gl_account.fibukonto, gl_account.bezeich, gl_account.acc_type, gl_account.budget, gl_account.ly_budget, gl_account.actual, gl_account.last_yr, gl_account.deptnr, gl_account._recid in db_session.query(Gl_main.code, Gl_main.bezeich, Gl_main.nr, Gl_main._recid, Gl_account.fibukonto, Gl_account.bezeich, Gl_account.acc_type, Gl_account.budget, Gl_account.ly_budget, Gl_account.actual, Gl_account.last_yr, Gl_account.deptnr, Gl_account._recid).join(Gl_account,(Gl_account.main_nr == Gl_main.nr) & (Gl_account.fibukonto >= (from_fibu).lower()) & (Gl_account.fibukonto <= (to_fibu).lower()) & (Gl_account.deptnr == from_dept)).order_by(Gl_main.code).all():
+                if gl_main_obj_list.get(gl_main._recid):
                     continue
                 else:
-                    gl_main_obj_list.append(gl_main._recid)
+                    gl_main_obj_list[gl_main._recid] = True
 
 
                 prev_bal =  to_decimal("0")
@@ -1310,7 +1303,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
                 str = to_string(to_string(gl_main.code) , "x(16)") + substring(gl_main.bezeich, 0, 38)
 
                 for gl_acct in db_session.query(Gl_acct).filter(
-                         (Gl_acct.main_nr == gl_main.nr) & (func.lower(Gl_acct.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_acct.fibukonto) <= (to_fibu).lower()) & (Gl_acct.deptnr == from_dept)).order_by(Gl_acct.fibukonto).all():
+                         (Gl_acct.main_nr == gl_main.nr) & (Gl_acct.fibukonto >= (from_fibu).lower()) & (Gl_acct.fibukonto <= (to_fibu).lower()) & (Gl_acct.deptnr == from_dept)).order_by(Gl_acct.fibukonto).all():
                     konto = gl_acct.fibukonto
                     t_debit =  to_decimal("0")
                     t_credit =  to_decimal("0")
@@ -1336,11 +1329,9 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
                             if t_date >= from_datehis and t_date <= to_datehis:
 
-                                gl_jourhis = db_session.query(Gl_jourhis).filter(
-                                         (Gl_jourhis._recid == g_list.grecid)).first()
+                                gl_jourhis = get_cache (Gl_jourhis, {"_recid": [(eq, g_list.grecid)]})
 
-                                gl_jhdrhis = db_session.query(Gl_jhdrhis).filter(
-                                         (Gl_jhdrhis.jnr == gl_jourhis.jnr)).first()
+                                gl_jhdrhis = get_cache (Gl_jhdrhis, {"jnr": [(eq, gl_jourhis.jnr)]})
                                 g_list_list.remove(g_list)
 
                                 if gl_jourhis:
@@ -1372,11 +1363,9 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
                             elif t_date >= from_date and t_date <= to_date:
 
-                                gl_journal = db_session.query(Gl_journal).filter(
-                                         (Gl_journal._recid == g_list.grecid)).first()
+                                gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.grecid)]})
 
-                                gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                                         (Gl_jouhdr.jnr == gl_journal.jnr)).first()
+                                gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, gl_journal.jnr)]})
                                 g_list_list.remove(g_list)
 
                                 if gl_journal:
@@ -1529,7 +1518,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
             str = str + to_string(c, "x(22)")
 
 
-    def convert_fibu(konto:str):
+    def convert_fibu(konto:string):
 
         nonlocal output_list_list, num_acctype, sales, cost, gop_credit, gop_debit, tot_diff, curr_i, in_procedure, numsend, last_acct_close_priod, t_from_date, t_to_date, t_strgrp, t_str, t_int, t_date, from_datehis, to_datehis, readflag, coa_format, counter, tt_pbal2, gl_acct, gl_jouhdr, gl_journal, gl_jhdrhis, gl_jourhis, gl_main, htparam, gl_accthis
         nonlocal acct_type, from_fibu, to_fibu, sorttype, from_dept, from_date, to_date, close_month, close_date, pnl_acct, close_year, prev_month, show_longbal, pbal_flag, asremoteflag
@@ -1539,7 +1528,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
         nonlocal output_list_list, output_listhis_list, result_list_list, t_res_list_list, t_res_listhis_list, g_list_list, g_listpre_list, g_listhis_list
 
         s = ""
-        ch:str = ""
+        ch:string = ""
         i:int = 0
         j:int = 0
 
@@ -1547,11 +1536,10 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
             return (s)
 
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 977)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 977)]})
         ch = htparam.fchar
         j = 0
-        for i in range(1,len(ch)  + 1) :
+        for i in range(1,length(ch)  + 1) :
 
             if substring(ch, i - 1, 1) >= ("0").lower()  and substring(ch, i - 1, 1) <= ("9").lower() :
                 j = j + 1
@@ -1562,7 +1550,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
         return generate_inner_output()
 
 
-    def calc_prevbalance(fibu:str):
+    def calc_prevbalance(fibu:string):
 
         nonlocal output_list_list, num_acctype, sales, cost, gop_credit, gop_debit, tot_diff, curr_i, in_procedure, numsend, last_acct_close_priod, t_from_date, t_to_date, t_strgrp, t_str, t_int, t_date, from_datehis, to_datehis, readflag, coa_format, counter, tt_pbal2, gl_acct, gl_jouhdr, gl_journal, gl_jhdrhis, gl_jourhis, gl_main, htparam, gl_accthis
         nonlocal acct_type, from_fibu, to_fibu, sorttype, from_dept, from_date, to_date, close_month, close_date, pnl_acct, close_year, prev_month, show_longbal, pbal_flag, asremoteflag
@@ -1580,10 +1568,9 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
         Gbuff =  create_buffer("Gbuff",Gl_acct)
 
-        gbuff = db_session.query(Gbuff).filter(
-                 (func.lower(Gbuff.fibukonto) == (fibu).lower())).first()
+        gbuff = get_cache (Gl_acct, {"fibukonto": [(eq, fibu)]})
 
-        if gbuff.gl_acct.acc_type != 3 and gbuff.gl_acct.acc_type != 4:
+        if gbuff.acc_type != 3 and gbuff.acc_type != 4:
 
             return generate_inner_output()
 
@@ -1595,17 +1582,15 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
             if get_month(t_from_date) >= 2:
 
-                gl_accthis = db_session.query(Gl_accthis).filter(
-                         (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(t_from_date))).first()
+                gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, fibu)],"year": [(eq, get_year(t_from_date))]})
             else:
 
-                gl_accthis = db_session.query(Gl_accthis).filter(
-                         (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(t_from_date) - 1)).first()
+                gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, fibu)],"year": [(eq, get_year(t_from_date) - 1)]})
 
             if gl_accthis:
                 p_bal =  to_decimal(gl_accthis.actual[prev_month - 1])
 
-        if gbuff.gl_acct.acc_type == 4:
+        if gbuff.acc_type == 4:
             p_bal =  -1 * to_decimal(p_bal)
 
         if p_bal != 0:
@@ -1626,19 +1611,18 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
             to_bal =  to_decimal(gbuff.actual[get_month(t_to_date) - 1])
         else:
 
-            gl_accthis = db_session.query(Gl_accthis).filter(
-                     (func.lower(Gl_accthis.fibukonto) == (fibu).lower()) & (Gl_accthis.year == get_year(t_to_date))).first()
+            gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, fibu)],"year": [(eq, get_year(t_to_date))]})
 
             if gl_accthis:
                 to_bal =  to_decimal(gl_accthis.actual[get_month(t_to_date) - 1])
 
-        if gbuff.gl_acct.acc_type == 4:
+        if gbuff.acc_type == 4:
             to_bal =  -1 * to_decimal(to_bal)
 
         return generate_inner_output()
 
 
-    def convert_balance(balance:decimal):
+    def convert_balance(balance:Decimal):
 
         nonlocal output_list_list, num_acctype, sales, cost, gop_credit, gop_debit, tot_diff, curr_i, in_procedure, numsend, last_acct_close_priod, t_from_date, t_to_date, t_strgrp, t_str, t_int, t_date, from_datehis, to_datehis, readflag, coa_format, counter, tt_pbal2, gl_acct, gl_jouhdr, gl_journal, gl_jhdrhis, gl_jourhis, gl_main, htparam, gl_accthis
         nonlocal acct_type, from_fibu, to_fibu, sorttype, from_dept, from_date, to_date, close_month, close_date, pnl_acct, close_year, prev_month, show_longbal, pbal_flag, asremoteflag
@@ -1648,7 +1632,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
         nonlocal output_list_list, output_listhis_list, result_list_list, t_res_list_list, t_res_listhis_list, g_list_list, g_listpre_list, g_listhis_list
 
         s = ""
-        ch:str = ""
+        ch:string = ""
         i:int = 0
         j:int = 0
 
@@ -1678,7 +1662,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
                 else:
                     ch = trim(to_string(balance, "->>,>>>,>>>,>>>,>>9.99"))
             s = "(" + ch + ")"
-            for i in range(1,20 - len(ch)  + 1) :
+            for i in range(1,20 - length(ch)  + 1) :
                 s = " " + s
 
         return generate_inner_output()
@@ -1694,13 +1678,12 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
         nonlocal output_list_list, output_listhis_list, result_list_list, t_res_list_list, t_res_listhis_list, g_list_list, g_listpre_list, g_listhis_list
 
         m:int = 0
-        p_bal:decimal = to_decimal("0.0")
-        t_bal:decimal = to_decimal("0.0")
-        diff:decimal = to_decimal("0.0")
-        c:str = ""
+        p_bal:Decimal = to_decimal("0.0")
+        t_bal:Decimal = to_decimal("0.0")
+        diff:Decimal = to_decimal("0.0")
+        c:string = ""
 
-        gl_acct = db_session.query(Gl_acct).filter(
-                 (func.lower(Gl_acct.fibukonto) == (pnl_acct).lower())).first()
+        gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, pnl_acct)]})
 
         if gl_acct:
 
@@ -1754,7 +1737,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
             str = str + to_string(c, "x(22)")
 
 
-    def calcrevcost(t_bal:decimal, p_bal:decimal, y_bal:decimal):
+    def calcrevcost(t_bal:Decimal, p_bal:Decimal, y_bal:Decimal):
 
         nonlocal output_list_list, num_acctype, sales, cost, gop_credit, gop_debit, tot_diff, curr_i, in_procedure, numsend, last_acct_close_priod, t_from_date, t_to_date, t_strgrp, t_str, t_int, t_date, from_datehis, to_datehis, readflag, coa_format, counter, tt_pbal2, gl_acct, gl_jouhdr, gl_journal, gl_jhdrhis, gl_jourhis, gl_main, htparam, gl_accthis
         nonlocal acct_type, from_fibu, to_fibu, sorttype, from_dept, from_date, to_date, close_month, close_date, pnl_acct, close_year, prev_month, show_longbal, pbal_flag, asremoteflag
@@ -1785,8 +1768,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
                     p_bal =  to_decimal(p_bal) + to_decimal(p_sign) * to_decimal(gl_acct.actual[n - 1])
             else:
 
-                gl_accthis = db_session.query(Gl_accthis).filter(
-                         (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.year == get_year(from_date))).first()
+                gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_acct.fibukonto)],"year": [(eq, get_year(from_date))]})
 
                 if gl_accthis:
                     for n in range(1,get_month(from_date) - 1 + 1) :
@@ -1797,8 +1779,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
                 y_bal =  to_decimal(y_bal) + to_decimal(p_sign) * to_decimal(gl_acct.actual[n - 1])
         else:
 
-            gl_accthis = db_session.query(Gl_accthis).filter(
-                     (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.year == get_year(from_date))).first()
+            gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_acct.fibukonto)],"year": [(eq, get_year(from_date))]})
 
             if gl_accthis:
                 for n in range(1,get_month(to_date)  + 1) :
@@ -1817,20 +1798,18 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
         nonlocal output_list_list, output_listhis_list, result_list_list, t_res_list_list, t_res_listhis_list, g_list_list, g_listpre_list, g_listhis_list
 
         m:int = 0
-        p_bal:decimal = to_decimal("0.0")
-        t_bal:decimal = to_decimal("0.0")
-        diff:decimal = to_decimal("0.0")
-        c:str = ""
+        p_bal:Decimal = to_decimal("0.0")
+        t_bal:Decimal = to_decimal("0.0")
+        diff:Decimal = to_decimal("0.0")
+        c:string = ""
         hbuff = None
         Hbuff =  create_buffer("Hbuff",Gl_accthis)
 
-        gl_acct = db_session.query(Gl_acct).filter(
-                 (func.lower(Gl_acct.fibukonto) == (pnl_acct).lower())).first()
+        gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, pnl_acct)]})
 
         if gl_acct:
 
-            gl_accthis = db_session.query(Gl_accthis).filter(
-                     (func.lower(Gl_accthis.fibukonto) == (pnl_acct).lower()) & (Gl_accthis.year == (get_year(t_to_date) - 1))).first()
+            gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, pnl_acct)],"year": [(eq, (get_year(t_to_date) - 1))]})
 
             if get_year(close_year) == get_year(t_to_date):
                 m = close_month - 1
@@ -1845,8 +1824,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
                         p_bal =  - to_decimal(gl_acct.last_yr[11])
             else:
 
-                hbuff = db_session.query(Hbuff).filter(
-                         (func.lower(Hbuff.fibukonto) == (pnl_acct).lower()) & (Hbuff.year == get_year(t_to_date))).first()
+                hbuff = get_cache (Gl_accthis, {"fibukonto": [(eq, pnl_acct)],"year": [(eq, get_year(t_to_date))]})
 
                 if hbuff:
                     m = close_month - 1
@@ -1916,7 +1894,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
         nonlocal output_list_list, output_listhis_list, result_list_list, t_res_list_list, t_res_listhis_list, g_list_list, g_listpre_list, g_listhis_list
 
         def generate_inner_output():
-            return (result_list)
+            return (result_list_list)
 
         result_list_list.clear()
         curr_i = 1
@@ -1950,19 +1928,17 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
     num_acctype = 0
 
     gl_acct = db_session.query(Gl_acct).filter(
-             (func.lower(Gl_acct.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_acct.fibukonto) <= (to_fibu).lower()) & ((Gl_acct.acc_type == 1) | (Gl_acct.acc_type == 2) | (Gl_acct.acc_type == 5))).first()
+             (Gl_acct.fibukonto >= (from_fibu).lower()) & (Gl_acct.fibukonto <= (to_fibu).lower()) & ((Gl_acct.acc_type == 1) | (Gl_acct.acc_type == 2) | (Gl_acct.acc_type == 5))).first()
 
     if gl_acct:
         num_acctype = 1
 
-    gl_acct = db_session.query(Gl_acct).filter(
-             (func.lower(Gl_acct.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_acct.fibukonto) <= (to_fibu).lower()) & (Gl_acct.acc_type == 3)).first()
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(ge, from_fibu),(le, to_fibu)],"acc_type": [(eq, 3)]})
 
     if gl_acct:
         num_acctype = num_acctype + 1
 
-    gl_acct = db_session.query(Gl_acct).filter(
-             (func.lower(Gl_acct.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_acct.fibukonto) <= (to_fibu).lower()) & (Gl_acct.acc_type == 4)).first()
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(ge, from_fibu),(le, to_fibu)],"acc_type": [(eq, 4)]})
 
     if gl_acct:
         num_acctype = num_acctype + 1
@@ -1974,8 +1950,7 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
 
     g_list_list.clear()
 
-    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-             (Gl_jouhdr.datum <= lastDay (t_from_date))).first()
+    gl_jouhdr = get_cache (Gl_jouhdr, {"datum": [(le, lastday (t_from_date))]})
 
     if gl_jouhdr:
         from_date = t_from_date
@@ -1985,14 +1960,12 @@ def trialbalance_btn_go_cldbl(acct_type:int, from_fibu:str, to_fibu:str, sorttyp
         create_glist()
     else:
 
-        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                 (Gl_jouhdr.datum <= t_to_date)).first()
+        gl_jouhdr = get_cache (Gl_jouhdr, {"datum": [(le, t_to_date)]})
 
         if gl_jouhdr:
             for t_date in date_range(t_from_date,t_to_date) :
 
-                gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                         (Gl_jouhdr.datum <= t_date)).first()
+                gl_jouhdr = get_cache (Gl_jouhdr, {"datum": [(le, t_date)]})
 
                 if gl_jouhdr:
                     from_datehis = t_from_date

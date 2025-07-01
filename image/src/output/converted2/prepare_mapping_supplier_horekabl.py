@@ -1,0 +1,67 @@
+#using conversion tools version: 1.0.0.111
+
+from functions.additional_functions import *
+from decimal import Decimal
+from models import Queasy, L_lieferant
+
+def prepare_mapping_supplier_horekabl():
+
+    prepare_cache ([Queasy, L_lieferant])
+
+    supplier_list = []
+    queasy = l_lieferant = None
+
+    supplier = bqueasy = None
+
+    supplier_list, Supplier = create_model("Supplier", {"supplier_name":string, "lief_nr":string, "supplierid":string})
+
+    Bqueasy = create_buffer("Bqueasy",Queasy)
+
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal supplier_list, queasy, l_lieferant
+        nonlocal bqueasy
+
+
+        nonlocal supplier, bqueasy
+        nonlocal supplier_list
+
+        return {"supplier": supplier_list}
+
+    queasy = get_cache (Queasy, {"key": [(eq, 256)]})
+
+    if not queasy:
+
+        for l_lieferant in db_session.query(L_lieferant).order_by(L_lieferant._recid).all():
+            supplier = Supplier()
+            supplier_list.append(supplier)
+
+            supplier.supplier_name = l_lieferant.firma
+            supplier.lief_nr = to_string(l_lieferant.lief_nr)
+
+
+    else:
+
+        for bqueasy in db_session.query(Bqueasy).filter(
+                 (Bqueasy.key == 256)).order_by(Bqueasy._recid).all():
+            supplier = Supplier()
+            supplier_list.append(supplier)
+
+            supplier.supplier_name = bqueasy.char1
+            supplier.lief_nr = bqueasy.char2
+            supplier.supplierid = bqueasy.char3
+
+        for l_lieferant in db_session.query(L_lieferant).order_by(L_lieferant._recid).all():
+
+            supplier = query(supplier_list, filters=(lambda supplier: supplier.supplier_name == l_lieferant.firma), first=True)
+
+            if not supplier:
+                supplier = Supplier()
+                supplier_list.append(supplier)
+
+                supplier.supplier_name = l_lieferant.firma
+                supplier.lief_nr = to_string(l_lieferant.lief_nr)
+
+    return generate_output()

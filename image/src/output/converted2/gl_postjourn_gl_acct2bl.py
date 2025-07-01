@@ -1,15 +1,18 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Gl_acct, Queasy
 
-def gl_postjourn_gl_acct2bl(pvilanguage:int, curr_mode:str, elim_journal:bool, fibukonto:str):
+def gl_postjourn_gl_acct2bl(pvilanguage:int, curr_mode:string, elim_journal:bool, fibukonto:string):
+
+    prepare_cache ([Gl_acct, Queasy])
+
     acct_bez = ""
     flag_code = 0
     msg_str = ""
-    lvcarea:str = "gl-postjourn"
+    lvcarea:string = "gl-postjourn"
     gl_acct = queasy = None
-
 
     db_session = local_storage.db_session
 
@@ -20,23 +23,20 @@ def gl_postjourn_gl_acct2bl(pvilanguage:int, curr_mode:str, elim_journal:bool, f
         return {"acct_bez": acct_bez, "flag_code": flag_code, "msg_str": msg_str}
 
 
-    gl_acct = db_session.query(Gl_acct).filter(
-             (func.lower(Gl_acct.fibukonto) == (fibukonto).lower()) & (Gl_acct.activeflag) & (Gl_acct.bezeich != "")).first()
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fibukonto)],"activeflag": [(eq, True)],"bezeich": [(ne, "")]})
 
     if not gl_acct:
-        msg_str = msg_str + chr(2) + translateExtended ("No such account found.", lvcarea, "")
+        msg_str = msg_str + chr_unicode(2) + translateExtended ("No such account found.", lvcarea, "")
 
         return generate_output()
 
     if elim_journal:
 
-        queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 108) & (func.lower(Queasy.char1) == (fibukonto).lower())).first()
+        queasy = get_cache (Queasy, {"key": [(eq, 108)],"char1": [(eq, fibukonto)]})
 
         if queasy:
 
-            gl_acct = db_session.query(Gl_acct).filter(
-                     (Gl_acct.fibukonto == queasy.char2)).first()
+            gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, queasy.char2)]})
         fibukonto = gl_acct.fibukonto
     acct_bez = gl_acct.bezeich
 

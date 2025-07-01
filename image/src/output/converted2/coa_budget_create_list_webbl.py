@@ -1,5 +1,7 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Gl_acct
 
 def coa_budget_create_list_webbl(disp_all:bool):
@@ -10,7 +12,6 @@ def coa_budget_create_list_webbl(disp_all:bool):
     coa_list = None
 
     coa_list_list, Coa_list = create_model_like(Gl_acct)
-
 
     db_session = local_storage.db_session
 

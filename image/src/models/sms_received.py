@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -33,3 +35,31 @@ class Sms_received(Base):
 	room_str = sa.Column(sa.String, default="")
 	zeit = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('arrival', None)
+		kwargs.setdefault('bemerk', "")
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('date2', None)
+		kwargs.setdefault('date3', None)
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('departure', None)
+		kwargs.setdefault('email', "")
+		kwargs.setdefault('firstname', "")
+		kwargs.setdefault('flag', 0)
+		kwargs.setdefault('key', "")
+		kwargs.setdefault('mobile_phone', "")
+		kwargs.setdefault('name', "")
+		kwargs.setdefault('number1', 0)
+		kwargs.setdefault('number2', 0)
+		kwargs.setdefault('number3', 0)
+		kwargs.setdefault('origin_msg', "")
+		kwargs.setdefault('qty', 0)
+		kwargs.setdefault('reply_str', "")
+		kwargs.setdefault('resnr', 0)
+		kwargs.setdefault('rmcat', "")
+		kwargs.setdefault('room_str', "")
+		kwargs.setdefault('zeit', "")
+		super(Sms_received, self).__init__(*args, **kwargs)

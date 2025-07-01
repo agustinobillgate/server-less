@@ -1,0 +1,3 @@
+
+DEF OUTPUT PARAMETER datum AS DATE.
+RUN htpdate.p(881, OUTPUT datum).

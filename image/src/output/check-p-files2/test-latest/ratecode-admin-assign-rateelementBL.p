@@ -1,0 +1,10 @@
+
+DEFINE INPUT PARAMETER prcode AS CHARACTER NO-UNDO.
+DEFINE OUTPUT PARAMETER rcode-element AS CHARACTER NO-UNDO.
+
+FIND FIRST queasy WHERE queasy.KEY EQ 289
+    AND queasy.char1 EQ prcode NO-LOCK NO-ERROR.
+IF AVAILABLE queasy THEN
+DO:
+    rcode-element = queasy.char2.
+END.

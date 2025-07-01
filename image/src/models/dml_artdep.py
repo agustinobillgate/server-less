@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -15,3 +17,13 @@ class Dml_artdep(Base):
 	geliefert = sa.Column(sa.Numeric, default=0)
 	userinit = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('anzahl', 0)
+		kwargs.setdefault('artnr', 0)
+		kwargs.setdefault('chginit', "")
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('departement', 0)
+		kwargs.setdefault('einzelpreis', 0)
+		kwargs.setdefault('geliefert', 0)
+		kwargs.setdefault('userinit', "")
+		super(Dml_artdep, self).__init__(*args, **kwargs)

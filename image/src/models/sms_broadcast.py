@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -32,3 +34,30 @@ class Sms_broadcast(Base):
 	usrid = sa.Column(sa.String, default="")
 	zeit = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('bemerk', "")
+		kwargs.setdefault('broadcast_msg', "")
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('date2', None)
+		kwargs.setdefault('date3', None)
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('deci1', 0)
+		kwargs.setdefault('deci2', 0)
+		kwargs.setdefault('deci3', 0)
+		kwargs.setdefault('gastnr', 0)
+		kwargs.setdefault('grpnr', 0)
+		kwargs.setdefault('key', 0)
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('logi2', False)
+		kwargs.setdefault('logi3', False)
+		kwargs.setdefault('mstatus', 0)
+		kwargs.setdefault('number1', 0)
+		kwargs.setdefault('number2', 0)
+		kwargs.setdefault('number3', 0)
+		kwargs.setdefault('phnumber', "")
+		kwargs.setdefault('usrid', "")
+		kwargs.setdefault('zeit', 0)
+		super(Sms_broadcast, self).__init__(*args, **kwargs)

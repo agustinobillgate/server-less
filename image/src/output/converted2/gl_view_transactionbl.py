@@ -1,17 +1,23 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Gl_journal, Gl_acct, Gl_jourhis
 
-def gl_view_transactionbl(srecid:int, jnr:int, refno:str):
+def gl_view_transactionbl(srecid:int, jnr:int, refno:string):
+
+    prepare_cache ([Gl_acct])
+
     b3_list_list = []
     gl_journal = gl_acct = gl_jourhis = None
 
     joulist = b3_list = gl_acct1 = None
 
     joulist_list, Joulist = create_model_like(Gl_journal, {"selflag":bool})
-    b3_list_list, B3_list = create_model("B3_list", {"fibukonto":str, "debit":decimal, "credit":decimal, "bemerk":str, "userinit":str, "sysdate":date, "chginit":str, "chgdate":date, "selflag":bool, "bezeich":str})
+    b3_list_list, B3_list = create_model("B3_list", {"fibukonto":string, "debit":Decimal, "credit":Decimal, "bemerk":string, "userinit":string, "sysdate":date, "chginit":string, "chgdate":date, "selflag":bool, "bezeich":string})
 
     Gl_acct1 = create_buffer("Gl_acct1",Gl_acct)
+
 
     db_session = local_storage.db_session
 
@@ -26,7 +32,7 @@ def gl_view_transactionbl(srecid:int, jnr:int, refno:str):
 
         return {"b3-list": b3_list_list}
 
-    def get_bemerk(bemerk:str):
+    def get_bemerk(bemerk:string):
 
         nonlocal b3_list_list, gl_journal, gl_acct, gl_jourhis
         nonlocal srecid, jnr, refno
@@ -37,9 +43,9 @@ def gl_view_transactionbl(srecid:int, jnr:int, refno:str):
         nonlocal joulist_list, b3_list_list
 
         n:int = 0
-        s1:str = ""
-        bemerk = replace_str(bemerk, chr(10) , " ")
-        n = 1 + get_index(bemerk, ";&&")
+        s1:string = ""
+        bemerk = replace_str(bemerk, chr_unicode(10) , " ")
+        n = get_index(bemerk, ";&&")
 
         if n > 0:
             s1 = substring(bemerk, 0, n - 1)
@@ -47,8 +53,7 @@ def gl_view_transactionbl(srecid:int, jnr:int, refno:str):
             s1 = bemerk
         return s1
 
-    gl_journal = db_session.query(Gl_journal).filter(
-             (Gl_journal.jnr == jnr) & (to_int(Gl_journal._recid) == srecid)).first()
+    gl_journal = get_cache (Gl_journal, {"jnr": [(eq, jnr)],"_recid": [(eq, srecid)]})
 
     if gl_journal:
 
@@ -77,27 +82,23 @@ def gl_view_transactionbl(srecid:int, jnr:int, refno:str):
             if to_int(gl_jourhis._recid) == srecid:
                 joulist.selflag = True
 
-    gl_acct1_obj_list = []
-    for gl_acct1 in db_session.query(Gl_acct1).filter(
-             ((Gl_acct1.fibukonto.in_(list(set([joulist.fibukonto for joulist in joulist_list if joulist.jnr == jnr)]))))).order_by(joulist.selflag.desc(), Gl_acct1.fibukonto).all():
-        if gl_acct1._recid in gl_acct1_obj_list:
-            continue
-        else:
-            gl_acct1_obj_list.append(gl_acct1._recid)
+    for joulist in query(joulist_list, filters=(lambda joulist: joulist.jnr == jnr), sort_by=[("selflag",True),("fibukonto",False)]):
 
-        joulist = query(joulist_list, (lambda joulist: (gl_acct1.fibukonto == joulist.fibukonto)), first=True)
-        b3_list = B3_list()
-        b3_list_list.append(b3_list)
+        gl_acct1 = get_cache (Gl_acct, {"fibukonto": [(eq, joulist.fibukonto)]})
 
-        b3_list.fibukonto = gl_acct1.fibukonto
-        b3_list.debit =  to_decimal(joulist.debit)
-        b3_list.credit =  to_decimal(joulist.credit)
-        b3_list.bemerk = joulist.bemerk
-        b3_list.userinit = joulist.userinit
-        b3_list.sysdate = joulist.sysdate
-        b3_list.chginit = joulist.chginit
-        b3_list.chgdate = joulist.chgdate
-        b3_list.selflag = joulist.selFlag
-        b3_list.bezeich = gl_acct1.bezeich
+        if gl_acct1:
+            b3_list = B3_list()
+            b3_list_list.append(b3_list)
+
+            b3_list.fibukonto = gl_acct1.fibukonto
+            b3_list.debit =  to_decimal(joulist.debit)
+            b3_list.credit =  to_decimal(joulist.credit)
+            b3_list.bemerk = joulist.bemerk
+            b3_list.userinit = joulist.userinit
+            b3_list.sysdate = joulist.sysdate
+            b3_list.chginit = joulist.chginit
+            b3_list.chgdate = joulist.chgdate
+            b3_list.selflag = joulist.selFlag
+            b3_list.bezeich = gl_acct1.bezeich
 
     return generate_output()

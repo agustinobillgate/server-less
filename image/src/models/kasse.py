@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -20,3 +22,18 @@ class Kasse(Base):
 	kwohnort = sa.Column(sa.String, default="")
 	preiskat = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('artnr', 0)
+		kwargs.setdefault('betrieb_gastk', 0)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('kadresse1', "")
+		kwargs.setdefault('kadresse2', "")
+		kwargs.setdefault('kassen_nr', 0)
+		kwargs.setdefault('kassenbez', "")
+		kwargs.setdefault('kgastnr', 0)
+		kwargs.setdefault('kland', "")
+		kwargs.setdefault('kplz', "")
+		kwargs.setdefault('ktelefon', "")
+		kwargs.setdefault('kwohnort', "")
+		kwargs.setdefault('preiskat', 0)
+		super(Kasse, self).__init__(*args, **kwargs)

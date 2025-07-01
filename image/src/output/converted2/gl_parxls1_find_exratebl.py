@@ -1,13 +1,17 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Exrate, Htparam, Waehrung
 
 def gl_parxls1_find_exratebl(curr_date:date, foreign_flag:bool):
+
+    prepare_cache ([Exrate, Htparam, Waehrung])
+
     exrate_betrag = to_decimal("0.0")
     frate = to_decimal("0.0")
     exrate = htparam = waehrung = None
-
 
     db_session = local_storage.db_session
 
@@ -26,32 +30,27 @@ def gl_parxls1_find_exratebl(curr_date:date, foreign_flag:bool):
 
         if foreign_flag:
 
-            exrate = db_session.query(Exrate).filter(
-                     (Exrate.artnr == 99999) & (Exrate.datum == curr_date)).first()
+            exrate = get_cache (Exrate, {"artnr": [(eq, 99999)],"datum": [(eq, curr_date)]})
 
             if exrate:
 
                 return
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 144)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
 
         if htparam.fchar != "":
 
-            waehrung = db_session.query(Waehrung).filter(
-                     (Waehrung.wabkurz == htparam.fchar)).first()
+            waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
 
             if waehrung:
                 foreign_nr = waehrung.waehrungsnr
 
         if foreign_nr != 0:
 
-            exrate = db_session.query(Exrate).filter(
-                     (Exrate.artnr == foreign_nr) & (Exrate.datum == curr_date)).first()
+            exrate = get_cache (Exrate, {"artnr": [(eq, foreign_nr)],"datum": [(eq, curr_date)]})
         else:
 
-            exrate = db_session.query(Exrate).filter(
-                     (Exrate.datum == curr_date)).first()
+            exrate = get_cache (Exrate, {"datum": [(eq, curr_date)]})
 
         if exrate:
             exrate_betrag =  to_decimal(exrate.betrag)

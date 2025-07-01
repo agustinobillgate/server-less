@@ -1,15 +1,19 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Gl_department
 
 g_list_list, G_list = create_model_like(Gl_department)
 
 def gldepart_admin_btn_exitbl(g_list_list:[G_list], case_type:int):
+
+    prepare_cache ([Gl_department])
+
     success_flag = False
     gl_department = None
 
     g_list = None
-
 
     db_session = local_storage.db_session
 
@@ -48,11 +52,11 @@ def gldepart_admin_btn_exitbl(g_list_list:[G_list], case_type:int):
 
     elif case_type == 2:
 
-        gl_department = db_session.query(Gl_department).filter(
-                 (Gl_department.nr == g_list.nr)).first()
+        gl_department = get_cache (Gl_department, {"nr": [(eq, g_list.nr)]})
 
         if gl_department:
             fill_gl_department()
+        pass
         pass
         success_flag = True
 

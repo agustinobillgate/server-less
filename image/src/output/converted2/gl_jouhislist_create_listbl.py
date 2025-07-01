@@ -1,17 +1,20 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Gl_acct, Gl_jourhis, Gl_jhdrhis, Gl_accthis, Htparam
 
-def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_dept:int, from_date:date, to_date:date, close_year:date):
+def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, from_dept:int, from_date:date, to_date:date, close_year:date):
+
+    prepare_cache ([Gl_acct, Gl_jourhis, Gl_jhdrhis, Gl_accthis, Htparam])
+
     output_list_list = []
     gl_acct = gl_jourhis = gl_jhdrhis = gl_accthis = htparam = None
 
     output_list = None
 
-    output_list_list, Output_list = create_model("Output_list", {"marked":str, "fibukonto":str, "jnr":int, "bemerk":str, "str":str})
-
+    output_list_list, Output_list = create_model("Output_list", {"marked":string, "fibukonto":string, "jnr":int, "bemerk":string, "str":string})
 
     db_session = local_storage.db_session
 
@@ -25,7 +28,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
 
         return {"output-list": output_list_list}
 
-    def get_bemerk(bemerk:str):
+    def get_bemerk(bemerk:string):
 
         nonlocal output_list_list, gl_acct, gl_jourhis, gl_jhdrhis, gl_accthis, htparam
         nonlocal sorttype, from_fibu, to_fibu, from_dept, from_date, to_date, close_year
@@ -35,9 +38,9 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
         nonlocal output_list_list
 
         n:int = 0
-        s1:str = ""
-        bemerk = replace_str(bemerk, chr(10) , " ")
-        n = 1 + get_index(bemerk, ";&&")
+        s1:string = ""
+        bemerk = replace_str(bemerk, chr_unicode(10) , " ")
+        n = get_index(bemerk, ";&&")
 
         if n > 0:
             s1 = substring(bemerk, 0, n - 1)
@@ -55,26 +58,26 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
         nonlocal output_list
         nonlocal output_list_list
 
-        debit:decimal = to_decimal("0.0")
-        credit:decimal = to_decimal("0.0")
-        balance:decimal = to_decimal("0.0")
-        konto:str = ""
+        debit:Decimal = to_decimal("0.0")
+        credit:Decimal = to_decimal("0.0")
+        balance:Decimal = to_decimal("0.0")
+        konto:string = ""
         i:int = 0
-        c:str = ""
-        bezeich:str = ""
+        c:string = ""
+        bezeich:string = ""
         datum:date = None
-        refno:str = ""
-        h_bezeich:str = ""
-        id:str = ""
-        chgdate:str = ""
+        refno:string = ""
+        h_bezeich:string = ""
+        id:string = ""
+        chgdate:string = ""
         beg_date:date = None
         beg_day:int = 0
-        t_debit:decimal = to_decimal("0.0")
-        t_credit:decimal = to_decimal("0.0")
-        tot_debit:decimal = to_decimal("0.0")
-        tot_credit:decimal = to_decimal("0.0")
-        e_bal:decimal = to_decimal("0.0")
-        delta:decimal = to_decimal("0.0")
+        t_debit:Decimal = to_decimal("0.0")
+        t_credit:Decimal = to_decimal("0.0")
+        tot_debit:Decimal = to_decimal("0.0")
+        tot_credit:Decimal = to_decimal("0.0")
+        e_bal:Decimal = to_decimal("0.0")
+        delta:Decimal = to_decimal("0.0")
         fdate:date = None
         tdate:date = None
         gl_account = None
@@ -82,9 +85,9 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
         gl_jouh1 = None
         prev_mm:int = 0
         prev_yr:int = 0
-        prev_bal:decimal = to_decimal("0.0")
-        end_bal:decimal = to_decimal("0.0")
-        blankchar:str = ""
+        prev_bal:Decimal = to_decimal("0.0")
+        end_bal:Decimal = to_decimal("0.0")
+        blankchar:string = ""
         Gl_account =  create_buffer("Gl_account",Gl_acct)
         Gl_jour1 =  create_buffer("Gl_jour1",Gl_jourhis)
         Gl_jouh1 =  create_buffer("Gl_jouh1",Gl_jhdrhis)
@@ -103,13 +106,16 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
 
         if sorttype == 2:
 
-            gl_jourhis_obj_list = []
-            for gl_jourhis, gl_jhdrhis, gl_acct in db_session.query(Gl_jourhis, Gl_jhdrhis, Gl_acct).join(Gl_jhdrhis,(Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date)).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto)).filter(
-                         (func.lower(Gl_jourhis.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_jourhis.fibukonto) <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto, Gl_jhdrhis.datum, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
-                if gl_jourhis._recid in gl_jourhis_obj_list:
+            gl_jourhis_obj_list = {}
+            gl_jourhis = Gl_jourhis()
+            gl_jhdrhis = Gl_jhdrhis()
+            gl_acct = Gl_acct()
+            for gl_jourhis.chgdate, gl_jourhis.fibukonto, gl_jourhis.debit, gl_jourhis.credit, gl_jourhis.bemerk, gl_jourhis._recid, gl_jhdrhis.jnr, gl_jhdrhis.datum, gl_jhdrhis._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid in db_session.query(Gl_jourhis.chgdate, Gl_jourhis.fibukonto, Gl_jourhis.debit, Gl_jourhis.credit, Gl_jourhis.bemerk, Gl_jourhis._recid, Gl_jhdrhis.jnr, Gl_jhdrhis.datum, Gl_jhdrhis._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid).join(Gl_jhdrhis,(Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date)).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto)).filter(
+                         (Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto, Gl_jhdrhis.datum, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
+                if gl_jourhis_obj_list.get(gl_jourhis._recid):
                     continue
                 else:
-                    gl_jourhis_obj_list.append(gl_jourhis._recid)
+                    gl_jourhis_obj_list[gl_jourhis._recid] = True
 
                 if gl_jourhis.chgdate == None:
                     chgdate = ""
@@ -119,13 +125,11 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
                 if konto == "":
                     prev_bal =  to_decimal("0")
 
-                    gl_account = db_session.query(Gl_account).filter(
-                                 (Gl_account.fibukonto == gl_acct.fibukonto)).first()
+                    gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_acct.fibukonto)]})
 
                     if prev_yr < get_year(close_year):
 
-                        gl_accthis = db_session.query(Gl_accthis).filter(
-                                     (Gl_accthis.fibukonto == gl_account.fibukonto) & (Gl_accthis.year == prev_yr)).first()
+                        gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_account.fibukonto)],"year": [(eq, prev_yr)]})
 
                         if gl_accthis:
                             prev_bal =  to_decimal(gl_accthis.actual[prev_mm - 1])
@@ -162,13 +166,11 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
                     t_credit =  to_decimal("0")
                     prev_bal =  to_decimal("0")
 
-                    gl_account = db_session.query(Gl_account).filter(
-                                 (Gl_account.fibukonto == gl_acct.fibukonto)).first()
+                    gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_acct.fibukonto)]})
 
                     if prev_yr < get_year(close_year):
 
-                        gl_accthis = db_session.query(Gl_accthis).filter(
-                                     (Gl_accthis.fibukonto == gl_account.fibukonto) & (Gl_accthis.year == prev_yr)).first()
+                        gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_account.fibukonto)],"year": [(eq, prev_yr)]})
 
                         if gl_accthis:
                             prev_bal =  to_decimal(gl_accthis.actual[prev_mm - 1])
@@ -190,8 +192,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
                     str = " " + to_string(c, "x(15)") + to_string(gl_acct.bezeich, "x(40)")
                     konto = gl_acct.fibukonto
 
-                gl_account = db_session.query(Gl_account).filter(
-                             (Gl_account.fibukonto == gl_jourhis.fibukonto)).first()
+                gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_jourhis.fibukonto)]})
 
                 if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                     balance =  to_decimal(balance) - to_decimal(gl_jourhis.debit) + to_decimal(gl_jourhis.credit)
@@ -238,13 +239,16 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
 
         elif sorttype == 1:
 
-            gl_jourhis_obj_list = []
-            for gl_jourhis, gl_jhdrhis, gl_acct in db_session.query(Gl_jourhis, Gl_jhdrhis, Gl_acct).join(Gl_jhdrhis,(Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date)).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto) & (Gl_acct.main_nr == gl_main.nr)).filter(
-                         (func.lower(Gl_jourhis.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_jourhis.fibukonto) <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto, Gl_jhdrhis.datum, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
-                if gl_jourhis._recid in gl_jourhis_obj_list:
+            gl_jourhis_obj_list = {}
+            gl_jourhis = Gl_jourhis()
+            gl_jhdrhis = Gl_jhdrhis()
+            gl_acct = Gl_acct()
+            for gl_jourhis.chgdate, gl_jourhis.fibukonto, gl_jourhis.debit, gl_jourhis.credit, gl_jourhis.bemerk, gl_jourhis._recid, gl_jhdrhis.jnr, gl_jhdrhis.datum, gl_jhdrhis._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid in db_session.query(Gl_jourhis.chgdate, Gl_jourhis.fibukonto, Gl_jourhis.debit, Gl_jourhis.credit, Gl_jourhis.bemerk, Gl_jourhis._recid, Gl_jhdrhis.jnr, Gl_jhdrhis.datum, Gl_jhdrhis._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid).join(Gl_jhdrhis,(Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date)).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto) & (Gl_acct.main_nr == gl_main.nr)).filter(
+                         (Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto, Gl_jhdrhis.datum, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
+                if gl_jourhis_obj_list.get(gl_jourhis._recid):
                     continue
                 else:
-                    gl_jourhis_obj_list.append(gl_jourhis._recid)
+                    gl_jourhis_obj_list[gl_jourhis._recid] = True
 
                 if gl_jourhis.chgdate == None:
                     chgdate = ""
@@ -254,13 +258,11 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
                 if konto == "":
                     prev_bal =  to_decimal("0")
 
-                    gl_account = db_session.query(Gl_account).filter(
-                                 (Gl_account.fibukonto == gl_acct.fibukonto)).first()
+                    gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_acct.fibukonto)]})
 
                     if prev_yr < get_year(close_year):
 
-                        gl_accthis = db_session.query(Gl_accthis).filter(
-                                     (Gl_accthis.fibukonto == gl_account.fibukonto) & (Gl_accthis.year == prev_yr)).first()
+                        gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_account.fibukonto)],"year": [(eq, prev_yr)]})
 
                         if gl_accthis:
                             prev_bal =  to_decimal(gl_accthis.actual[prev_mm - 1])
@@ -297,13 +299,11 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
                     t_credit =  to_decimal("0")
                     prev_bal =  to_decimal("0")
 
-                    gl_account = db_session.query(Gl_account).filter(
-                                 (Gl_account.fibukonto == gl_acct.fibukonto)).first()
+                    gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_acct.fibukonto)]})
 
                     if prev_yr < get_year(close_year):
 
-                        gl_accthis = db_session.query(Gl_accthis).filter(
-                                     (Gl_accthis.fibukonto == gl_account.fibukonto) & (Gl_accthis.year == prev_yr)).first()
+                        gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_account.fibukonto)],"year": [(eq, prev_yr)]})
 
                         if gl_accthis:
                             prev_bal =  to_decimal(gl_accthis.actual[prev_mm - 1])
@@ -325,8 +325,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
                     str = " " + to_string(c, "x(15)") + to_string(gl_acct.bezeich, "x(40)")
                     konto = gl_acct.fibukonto
 
-                gl_account = db_session.query(Gl_account).filter(
-                             (Gl_account.fibukonto == gl_jourhis.fibukonto)).first()
+                gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_jourhis.fibukonto)]})
 
                 if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                     balance =  to_decimal(balance) - to_decimal(gl_jourhis.debit) + to_decimal(gl_jourhis.credit)
@@ -373,13 +372,16 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
 
         elif sorttype == 3:
 
-            gl_jourhis_obj_list = []
-            for gl_jourhis, gl_jhdrhis, gl_acct in db_session.query(Gl_jourhis, Gl_jhdrhis, Gl_acct).join(Gl_jhdrhis,(Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date)).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto) & (Gl_acct.deptnr == from_dept)).filter(
-                         (func.lower(Gl_jourhis.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_jourhis.fibukonto) <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto, Gl_jhdrhis.datum, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
-                if gl_jourhis._recid in gl_jourhis_obj_list:
+            gl_jourhis_obj_list = {}
+            gl_jourhis = Gl_jourhis()
+            gl_jhdrhis = Gl_jhdrhis()
+            gl_acct = Gl_acct()
+            for gl_jourhis.chgdate, gl_jourhis.fibukonto, gl_jourhis.debit, gl_jourhis.credit, gl_jourhis.bemerk, gl_jourhis._recid, gl_jhdrhis.jnr, gl_jhdrhis.datum, gl_jhdrhis._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid in db_session.query(Gl_jourhis.chgdate, Gl_jourhis.fibukonto, Gl_jourhis.debit, Gl_jourhis.credit, Gl_jourhis.bemerk, Gl_jourhis._recid, Gl_jhdrhis.jnr, Gl_jhdrhis.datum, Gl_jhdrhis._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid).join(Gl_jhdrhis,(Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date)).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto) & (Gl_acct.deptnr == from_dept)).filter(
+                         (Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto, Gl_jhdrhis.datum, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
+                if gl_jourhis_obj_list.get(gl_jourhis._recid):
                     continue
                 else:
-                    gl_jourhis_obj_list.append(gl_jourhis._recid)
+                    gl_jourhis_obj_list[gl_jourhis._recid] = True
 
                 if gl_jourhis.chgdate == None:
                     chgdate = ""
@@ -389,13 +391,11 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
                 if konto == "":
                     prev_bal =  to_decimal("0")
 
-                    gl_account = db_session.query(Gl_account).filter(
-                                 (Gl_account.fibukonto == gl_acct.fibukonto)).first()
+                    gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_acct.fibukonto)]})
 
                     if prev_yr < get_year(close_year):
 
-                        gl_accthis = db_session.query(Gl_accthis).filter(
-                                     (Gl_accthis.fibukonto == gl_account.fibukonto) & (Gl_accthis.year == prev_yr)).first()
+                        gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_account.fibukonto)],"year": [(eq, prev_yr)]})
 
                         if gl_accthis:
                             prev_bal =  to_decimal(gl_accthis.actual[prev_mm - 1])
@@ -432,13 +432,11 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
                     t_credit =  to_decimal("0")
                     prev_bal =  to_decimal("0")
 
-                    gl_account = db_session.query(Gl_account).filter(
-                                 (Gl_account.fibukonto == gl_acct.fibukonto)).first()
+                    gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_acct.fibukonto)]})
 
                     if prev_yr < get_year(close_year):
 
-                        gl_accthis = db_session.query(Gl_accthis).filter(
-                                     (Gl_accthis.fibukonto == gl_account.fibukonto) & (Gl_accthis.year == prev_yr)).first()
+                        gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_account.fibukonto)],"year": [(eq, prev_yr)]})
 
                         if gl_accthis:
                             prev_bal =  to_decimal(gl_accthis.actual[prev_mm - 1])
@@ -460,8 +458,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
                     str = " " + to_string(c, "x(15)") + to_string(gl_acct.bezeich, "x(40)")
                     konto = gl_acct.fibukonto
 
-                gl_account = db_session.query(Gl_account).filter(
-                             (Gl_account.fibukonto == gl_jourhis.fibukonto)).first()
+                gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_jourhis.fibukonto)]})
 
                 if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                     balance =  to_decimal(balance) - to_decimal(gl_jourhis.debit) + to_decimal(gl_jourhis.credit)
@@ -507,7 +504,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
             str = str + "GRAND T O T A L " + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
 
 
-    def convert_fibu(konto:str):
+    def convert_fibu(konto:string):
 
         nonlocal output_list_list, gl_acct, gl_jourhis, gl_jhdrhis, gl_accthis, htparam
         nonlocal sorttype, from_fibu, to_fibu, from_dept, from_date, to_date, close_year
@@ -517,7 +514,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
         nonlocal output_list_list
 
         s = ""
-        ch:str = ""
+        ch:string = ""
         i:int = 0
         j:int = 0
 
@@ -525,13 +522,12 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:str, to_fibu:str, from_d
             return (s)
 
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 977)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 977)]})
 
         if htparam:
             ch = htparam.fchar
         j = 0
-        for i in range(1,len(ch)  + 1) :
+        for i in range(1,length(ch)  + 1) :
 
             if substring(ch, i - 1, 1) >= ("0").lower()  and substring(ch, i - 1, 1) <= ("9").lower() :
                 j = j + 1

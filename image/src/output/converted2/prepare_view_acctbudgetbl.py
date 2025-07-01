@@ -1,9 +1,13 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Htparam, Gl_acct
 
-def prepare_view_acctbudgetbl(fibukonto:str):
+def prepare_view_acctbudgetbl(fibukonto:string):
+
+    prepare_cache ([Htparam, Gl_acct])
+
     curr_yr = 0
     price_decimal = 0
     tot_budget = to_decimal("0.0")
@@ -13,9 +17,8 @@ def prepare_view_acctbudgetbl(fibukonto:str):
 
     b_list = gl_acct1 = None
 
-    b_list_list, B_list = create_model("B_list", {"k":int, "monat":str, "wert":decimal})
-    gl_acct1_list, Gl_acct1 = create_model("Gl_acct1", {"fibukonto":str, "bezeich":str, "budget":[decimal,12]})
-
+    b_list_list, B_list = create_model("B_list", {"k":int, "monat":string, "wert":Decimal})
+    gl_acct1_list, Gl_acct1 = create_model("Gl_acct1", {"fibukonto":string, "bezeich":string, "budget":[Decimal,12]})
 
     db_session = local_storage.db_session
 
@@ -39,10 +42,9 @@ def prepare_view_acctbudgetbl(fibukonto:str):
         nonlocal b_list_list, gl_acct1_list
 
         i:int = 0
-        mon:List[str] = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "FalseV", "DEC"]
+        mon:List[string] = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "FalseV", "DEC"]
 
-        gl_acct = db_session.query(Gl_acct).filter(
-                 (func.lower(Gl_acct.fibukonto) == (fibukonto).lower())).first()
+        gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fibukonto)]})
         tot_budget =  to_decimal("0")
         for i in range(1,12 + 1) :
             tot_budget =  to_decimal(tot_budget) + to_decimal(gl_acct.budget[i - 1])
@@ -77,12 +79,10 @@ def prepare_view_acctbudgetbl(fibukonto:str):
             for i in range(1,12 + 1) :
                 gl_acct1.budget[i - 1] = gl_acct.budget[i - 1]
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 597)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
     curr_yr = get_year(htparam.fdate)
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 491)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 491)]})
     price_decimal = htparam.finteger
     create_b_list()
     create_gl_acct1()

@@ -1,17 +1,21 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Htparam, Gl_jouhdr
 
-def gl_htp_checkbl(pvilanguage:int, htp_number:int, htgrp_number:int, intval:int, decval:decimal, dateval:date, logval:bool, charval:str, user_init:str, i:int, d:decimal, l:bool, dd:date, s:str):
+def gl_htp_checkbl(pvilanguage:int, htp_number:int, htgrp_number:int, intval:int, decval:Decimal, dateval:date, logval:bool, charval:string, user_init:string, i:int, d:Decimal, l:bool, dd:date, s:string):
+
+    prepare_cache ([Htparam])
+
     msg_str = ""
     do_it = True
     wert = ""
     logv = False
     flag = False
-    lvcarea:str = "gl-htp-check-closing-date"
+    lvcarea:string = "gl-htp-check-closing-date"
     htparam = gl_jouhdr = None
-
 
     db_session = local_storage.db_session
 
@@ -31,33 +35,39 @@ def gl_htp_checkbl(pvilanguage:int, htp_number:int, htgrp_number:int, intval:int
         mm:int = 0
         yy:int = 0
         close_date:date = None
+        date1:date = None
+        date2:date = None
+        m1:int = 0
 
         if htp_number == 1118 or htp_number == 1123 or htp_number == 1003 or htp_number == 1035 or htp_number == 269 or htp_number == 1014:
 
-            htparam = db_session.query(Htparam).filter(
-                     (Htparam.paramnr == 597)).first()
+            htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
             close_date = htparam.fdate
+            date1 = date_mdy(get_month(close_date) , 1, get_year(close_date))
+            date2 = date1 - timedelta(days=1)
 
-            if dateval < (date_mdy(get_month(close_date) , 1, get_year(close_date)) - 1):
+            if dateval < date2:
                 do_it = False
-                msg_str = msg_str + chr(2) + translateExtended ("Wrong date value in Parameter", lvcarea, "") + " " + to_string(htp_number) + " - " + to_string(dateval) + chr(10) + translateExtended ("Current G/l closing date:", lvcarea, "") + " " + to_string(close_date)
+                msg_str = msg_str + chr_unicode(2) + translateExtended ("Wrong date value in Parameter", lvcarea, "") + " " + to_string(htp_number) + " - " + to_string(dateval) + chr_unicode(10) + translateExtended ("Current G/l closing date:", lvcarea, "") + " " + to_string(close_date)
 
                 return
 
         if htgrp_number == 38 and htp_number == 597:
+            m1 = get_month(dateval) + 1
+            date1 = date_mdy(m1, 1, get_year(dateval))
+            date2 = date1 - timedelta(days=1)
 
             if get_month(dateval) == 12:
                 d2 = date_mdy(12, 31, get_year(dateval))
             else:
-                d2 = date_mdy(get_month(dateval) + timedelta(days=1, 1, get_year(dateval)) - 1)
+                d2 = date2
             d1 = date_mdy(get_month(dateval) , 1, get_year(dateval))
 
-            gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                     (Gl_jouhdr.activeflag == 1) & (Gl_jouhdr.datum <= d2) & (Gl_jouhdr.datum >= d1)).first()
+            gl_jouhdr = get_cache (Gl_jouhdr, {"activeflag": [(eq, 1)],"datum": [(le, d2),(ge, d1)]})
 
             if gl_jouhdr:
                 do_it = False
-                msg_str = msg_str + chr(2) + translateExtended ("Closed GL journal(s) found for that period.", lvcarea, "")
+                msg_str = msg_str + chr_unicode(2) + translateExtended ("Closed GL journal(s) found for that period.", lvcarea, "")
 
         if htgrp_number == 38 and htp_number == 558:
             mm = get_month(dateval) + 1
@@ -69,18 +79,20 @@ def gl_htp_checkbl(pvilanguage:int, htp_number:int, htgrp_number:int, intval:int
 
 
             d1 = date_mdy(mm, 1, yy)
+            m1 = mm + 1
+            date1 = date_mdy(m1, 1, yy)
+            date2 = date1 - timedelta(days=1)
 
             if mm == 12:
                 d2 = date_mdy(12, 31, yy)
             else:
-                d2 = date_mdy(mm + 1, 1, yy) - timedelta(days=1)
+                d2 = date2
 
-            gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                     (Gl_jouhdr.datum >= d1) & (Gl_jouhdr.datum <= d2) & (Gl_jouhdr.activeflag == 1)).first()
+            gl_jouhdr = get_cache (Gl_jouhdr, {"datum": [(ge, d1),(le, d2)],"activeflag": [(eq, 1)]})
 
             if gl_jouhdr:
                 do_it = False
-                msg_str = msg_str + chr(2) + translateExtended ("Closed GL journal(s) found for next period.", lvcarea, "")
+                msg_str = msg_str + chr_unicode(2) + translateExtended ("Closed GL journal(s) found for next period.", lvcarea, "")
 
 
     def update_htparam():
@@ -88,8 +100,7 @@ def gl_htp_checkbl(pvilanguage:int, htp_number:int, htgrp_number:int, intval:int
         nonlocal msg_str, do_it, wert, logv, flag, lvcarea, htparam, gl_jouhdr
         nonlocal pvilanguage, htp_number, htgrp_number, intval, decval, dateval, logval, charval, user_init, i, d, l, dd, s
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == htp_number)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, htp_number)]})
 
         if htparam.feldtyp == 1:
             htparam.finteger = intval
@@ -113,7 +124,8 @@ def gl_htp_checkbl(pvilanguage:int, htp_number:int, htgrp_number:int, intval:int
             htparam.fchar = charval
             wert = to_string(htparam.fchar)
         htparam.lupdate = get_current_date()
-        htparam.fdefault = user_init + " - " + to_string(time, "HH:mm:SS")
+        htparam.fdefault = user_init + " - " + to_string(get_current_time_in_seconds(), "HH:mm:SS")
+        pass
 
 
     check_closing_date()

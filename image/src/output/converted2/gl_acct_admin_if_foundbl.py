@@ -1,13 +1,16 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Gl_acct
 
-def gl_acct_admin_if_foundbl(fibukonto:str):
+def gl_acct_admin_if_foundbl(fibukonto:string):
+
+    prepare_cache ([Gl_acct])
+
     success_flag = False
     i:int = 0
     gl_acct = None
-
 
     db_session = local_storage.db_session
 
@@ -18,8 +21,7 @@ def gl_acct_admin_if_foundbl(fibukonto:str):
         return {"success_flag": success_flag}
 
 
-    gl_acct = db_session.query(Gl_acct).filter(
-             (func.lower(Gl_acct.fibukonto) == (fibukonto).lower())).first()
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fibukonto)]})
 
     if gl_acct:
         for i in range(1,12 + 1) :

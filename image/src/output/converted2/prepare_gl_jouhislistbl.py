@@ -1,9 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Gl_main, Htparam
 
 def prepare_gl_jouhislistbl():
+
+    prepare_cache ([Gl_main, Htparam])
+
     from_date = None
     close_date = None
     close_year = None
@@ -16,10 +21,11 @@ def prepare_gl_jouhislistbl():
 
     gl_main_list = gl_depart_list = gl_main1 = None
 
-    gl_main_list_list, Gl_main_list = create_model("Gl_main_list", {"code":int, "nr":int, "bezeich":str})
-    gl_depart_list_list, Gl_depart_list = create_model("Gl_depart_list", {"nr":int, "bezeich":str})
+    gl_main_list_list, Gl_main_list = create_model("Gl_main_list", {"code":int, "nr":int, "bezeich":string})
+    gl_depart_list_list, Gl_depart_list = create_model("Gl_depart_list", {"nr":int, "bezeich":string})
 
     Gl_main1 = create_buffer("Gl_main1",Gl_main)
+
 
     db_session = local_storage.db_session
 
@@ -34,17 +40,14 @@ def prepare_gl_jouhislistbl():
         return {"from_date": from_date, "close_date": close_date, "close_year": close_year, "from_main": from_main, "main_bez": main_bez, "chr977": chr977, "gl-main-list": gl_main_list_list, "gl-depart-list": gl_depart_list_list}
 
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 110)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
     from_date = htparam.fdate
     from_date = date_mdy(1, 1, get_year(htparam.fdate) - timedelta(days=3))
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 597)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
     close_date = htparam.fdate
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 795)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 795)]})
     close_year = htparam.fdate
     close_year = date_mdy(get_month(close_year) , get_day(close_year) , get_year(close_year) + timedelta(days=1))
 
@@ -69,8 +72,7 @@ def prepare_gl_jouhislistbl():
         gl_depart_list.nr = gl_depart_list.nr
         gl_depart_list.bezeich = gl_depart_list.bezeich
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 977)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 977)]})
     chr977 = htparam.fchar
 
     return generate_output()

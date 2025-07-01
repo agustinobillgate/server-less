@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -19,3 +21,17 @@ class Masseur(Base):
 	sex = sa.Column(sa.Boolean, default=False)
 	tdate = sa.Column(sa.Date, default=None)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('commission', 0)
+		kwargs.setdefault('dayoff', False)
+		kwargs.setdefault('fdate', None)
+		kwargs.setdefault('grund', "")
+		kwargs.setdefault('massnr', 0)
+		kwargs.setdefault('name', "")
+		kwargs.setdefault('oooab', "00:00")
+		kwargs.setdefault('ooobis', "00:00")
+		kwargs.setdefault('pausebeg', "00:00")
+		kwargs.setdefault('pauseend', "00:00")
+		kwargs.setdefault('sex', False)
+		kwargs.setdefault('tdate', None)
+		super(Masseur, self).__init__(*args, **kwargs)

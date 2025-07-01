@@ -1,10 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Gl_acct, Gl_jouhdr, Gl_journal, Gl_jourhis, Gl_jhdrhis
 
-def gl_detaill1bl(fibu:str, from_date:date, to_date:date):
+def gl_detaill1bl(fibu:string, from_date:date, to_date:date):
+
+    prepare_cache ([Gl_jouhdr, Gl_journal, Gl_jourhis, Gl_jhdrhis])
+
     b1_list_list = []
     t_gl_acct_list = []
     t_from_date:date = None
@@ -12,18 +16,18 @@ def gl_detaill1bl(fibu:str, from_date:date, to_date:date):
     from_datehis:date = None
     to_datehis:date = None
     t_date:date = None
+    tmp_lastday:date = None
     gl_acct = gl_jouhdr = gl_journal = gl_jourhis = gl_jhdrhis = None
 
     b1_list = t_gl_acct = None
 
-    b1_list_list, B1_list = create_model("B1_list", {"jnr":int, "datum":date, "refno":str, "bezeich":str, "debit":decimal, "credit":decimal, "userinit":str, "bemerk":str, "jtype":int, "fibukonto":str})
+    b1_list_list, B1_list = create_model("B1_list", {"jnr":int, "datum":date, "refno":string, "bezeich":string, "debit":Decimal, "credit":Decimal, "userinit":string, "bemerk":string, "jtype":int, "fibukonto":string})
     t_gl_acct_list, T_gl_acct = create_model_like(Gl_acct)
-
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal b1_list_list, t_gl_acct_list, t_from_date, t_to_date, from_datehis, to_datehis, t_date, gl_acct, gl_jouhdr, gl_journal, gl_jourhis, gl_jhdrhis
+        nonlocal b1_list_list, t_gl_acct_list, t_from_date, t_to_date, from_datehis, to_datehis, t_date, tmp_lastday, gl_acct, gl_jouhdr, gl_journal, gl_jourhis, gl_jhdrhis
         nonlocal fibu, from_date, to_date
 
 
@@ -32,29 +36,34 @@ def gl_detaill1bl(fibu:str, from_date:date, to_date:date):
 
         return {"b1-list": b1_list_list, "t-gl-acct": t_gl_acct_list}
 
-    def lastDay(d:date):
+    def lastday(d:date):
 
-        nonlocal b1_list_list, t_gl_acct_list, t_from_date, t_to_date, from_datehis, to_datehis, t_date, gl_acct, gl_jouhdr, gl_journal, gl_jourhis, gl_jhdrhis
+        nonlocal b1_list_list, t_gl_acct_list, t_from_date, t_to_date, from_datehis, to_datehis, t_date, tmp_lastday, gl_acct, gl_jouhdr, gl_journal, gl_jourhis, gl_jhdrhis
         nonlocal fibu, from_date, to_date
 
 
         nonlocal b1_list, t_gl_acct
         nonlocal b1_list_list, t_gl_acct_list
 
-
-        return add_interval(date_mdy(get_month(d) , 1, get_year(d)) , 1, "month") - 1
+        tmp_date:date = None
+        tot_date:date = None
+        tmp_date = add_interval(date_mdy(get_month(d) , 1, get_year(d)) , 1, "month")
+        tot_date = tmp_date - timedelta(days=1)
+        return tot_date
 
 
     def disp_it():
 
-        nonlocal b1_list_list, t_gl_acct_list, t_from_date, t_to_date, from_datehis, to_datehis, t_date, gl_acct, gl_jouhdr, gl_journal, gl_jourhis, gl_jhdrhis
+        nonlocal b1_list_list, t_gl_acct_list, t_from_date, t_to_date, from_datehis, to_datehis, t_date, tmp_lastday, gl_acct, gl_jouhdr, gl_journal, gl_jourhis, gl_jhdrhis
         nonlocal fibu, from_date, to_date
 
 
         nonlocal b1_list, t_gl_acct
         nonlocal b1_list_list, t_gl_acct_list
 
-        for gl_jouhdr, gl_journal in db_session.query(Gl_jouhdr, Gl_journal).join(Gl_journal,(Gl_journal.jnr == Gl_jouhdr.jnr) & (func.lower(Gl_journal.fibukonto) == (fibu).lower())).filter(
+        gl_jouhdr = Gl_jouhdr()
+        gl_journal = Gl_journal()
+        for gl_jouhdr.jnr, gl_jouhdr.datum, gl_jouhdr.refno, gl_jouhdr.bezeich, gl_jouhdr.jtype, gl_jouhdr._recid, gl_journal.debit, gl_journal.credit, gl_journal.userinit, gl_journal.bemerk, gl_journal.fibukonto, gl_journal._recid in db_session.query(Gl_jouhdr.jnr, Gl_jouhdr.datum, Gl_jouhdr.refno, Gl_jouhdr.bezeich, Gl_jouhdr.jtype, Gl_jouhdr._recid, Gl_journal.debit, Gl_journal.credit, Gl_journal.userinit, Gl_journal.bemerk, Gl_journal.fibukonto, Gl_journal._recid).join(Gl_journal,(Gl_journal.jnr == Gl_jouhdr.jnr) & (Gl_journal.fibukonto == (fibu).lower())).filter(
                  (Gl_jouhdr.datum >= from_date) & (Gl_jouhdr.datum <= to_date)).order_by(Gl_jouhdr.datum).all():
             b1_list = B1_list()
             b1_list_list.append(b1_list)
@@ -73,14 +82,16 @@ def gl_detaill1bl(fibu:str, from_date:date, to_date:date):
 
     def disp_it_his():
 
-        nonlocal b1_list_list, t_gl_acct_list, t_from_date, t_to_date, from_datehis, to_datehis, t_date, gl_acct, gl_jouhdr, gl_journal, gl_jourhis, gl_jhdrhis
+        nonlocal b1_list_list, t_gl_acct_list, t_from_date, t_to_date, from_datehis, to_datehis, t_date, tmp_lastday, gl_acct, gl_jouhdr, gl_journal, gl_jourhis, gl_jhdrhis
         nonlocal fibu, from_date, to_date
 
 
         nonlocal b1_list, t_gl_acct
         nonlocal b1_list_list, t_gl_acct_list
 
-        for gl_jhdrhis, gl_jourhis in db_session.query(Gl_jhdrhis, Gl_jourhis).join(Gl_jourhis,(Gl_jourhis.jnr == Gl_jhdrhis.jnr) & (func.lower(Gl_jourhis.fibukonto) == (fibu).lower())).filter(
+        gl_jhdrhis = Gl_jhdrhis()
+        gl_jourhis = Gl_jourhis()
+        for gl_jhdrhis.jnr, gl_jhdrhis.datum, gl_jhdrhis.refno, gl_jhdrhis.bezeich, gl_jhdrhis.jtype, gl_jhdrhis._recid, gl_jourhis.debit, gl_jourhis.credit, gl_jourhis.userinit, gl_jourhis.bemerk, gl_jourhis.fibukonto, gl_jourhis._recid in db_session.query(Gl_jhdrhis.jnr, Gl_jhdrhis.datum, Gl_jhdrhis.refno, Gl_jhdrhis.bezeich, Gl_jhdrhis.jtype, Gl_jhdrhis._recid, Gl_jourhis.debit, Gl_jourhis.credit, Gl_jourhis.userinit, Gl_jourhis.bemerk, Gl_jourhis.fibukonto, Gl_jourhis._recid).join(Gl_jourhis,(Gl_jourhis.jnr == Gl_jhdrhis.jnr) & (Gl_jourhis.fibukonto == (fibu).lower())).filter(
                  (Gl_jhdrhis.datum >= from_datehis) & (Gl_jhdrhis.datum <= to_datehis)).order_by(Gl_jhdrhis.datum).all():
             b1_list = B1_list()
             b1_list_list.append(b1_list)
@@ -96,8 +107,7 @@ def gl_detaill1bl(fibu:str, from_date:date, to_date:date):
             b1_list.jtype = gl_jhdrhis.jtype
             b1_list.fibukonto = gl_jourhis.fibukonto
 
-    gl_acct = db_session.query(Gl_acct).filter(
-             (func.lower(Gl_acct.fibukonto) == (fibu).lower())).first()
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fibu)]})
     t_gl_acct = T_gl_acct()
     t_gl_acct_list.append(t_gl_acct)
 
@@ -107,8 +117,10 @@ def gl_detaill1bl(fibu:str, from_date:date, to_date:date):
     from_date = None
     t_date = None
 
-    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-             (Gl_jouhdr.datum <= lastDay (t_from_date))).first()
+
+    tmp_lastday = lastday (t_from_date)
+
+    gl_jouhdr = get_cache (Gl_jouhdr, {"datum": [(le, tmp_lastday)]})
 
     if gl_jouhdr:
         from_date = t_from_date
@@ -118,14 +130,12 @@ def gl_detaill1bl(fibu:str, from_date:date, to_date:date):
         disp_it()
     else:
 
-        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                 (Gl_jouhdr.datum <= t_to_date)).first()
+        gl_jouhdr = get_cache (Gl_jouhdr, {"datum": [(le, t_to_date)]})
 
         if gl_jouhdr:
             for t_date in date_range(t_from_date,t_to_date) :
 
-                gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                         (Gl_jouhdr.datum <= t_date)).first()
+                gl_jouhdr = get_cache (Gl_jouhdr, {"datum": [(le, t_date)]})
 
                 if gl_jouhdr:
                     from_datehis = t_from_date

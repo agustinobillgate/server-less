@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -27,3 +29,25 @@ class Eg_stat(Base):
 	sub_task = sa.Column(sa.String, default="")
 	zinr = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('assign_to', "")
+		kwargs.setdefault('category', 0)
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('dept', 0)
+		kwargs.setdefault('gastnr', None)
+		kwargs.setdefault('maintask', 0)
+		kwargs.setdefault('other_cost', 0)
+		kwargs.setdefault('qty', 0)
+		kwargs.setdefault('reserve_char1', "")
+		kwargs.setdefault('reserve_char2', "")
+		kwargs.setdefault('reserve_char3', "")
+		kwargs.setdefault('reserve_date1', None)
+		kwargs.setdefault('reserve_deci1', 0)
+		kwargs.setdefault('reserve_num1', 0)
+		kwargs.setdefault('reserve_num2', 0)
+		kwargs.setdefault('reserve_num3', 0)
+		kwargs.setdefault('source', 0)
+		kwargs.setdefault('sppart_cost', 0)
+		kwargs.setdefault('sub_task', "")
+		kwargs.setdefault('zinr', "")
+		super(Eg_stat, self).__init__(*args, **kwargs)

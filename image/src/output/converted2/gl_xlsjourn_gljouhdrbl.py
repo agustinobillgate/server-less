@@ -1,12 +1,12 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Gl_jouhdr
 
-def gl_xlsjourn_gljouhdrbl(journ_no:str):
+def gl_xlsjourn_gljouhdrbl(journ_no:string):
     avail_gl_jouhdr = False
     gl_jouhdr = None
-
 
     db_session = local_storage.db_session
 
@@ -17,8 +17,7 @@ def gl_xlsjourn_gljouhdrbl(journ_no:str):
         return {"avail_gl_jouhdr": avail_gl_jouhdr}
 
 
-    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-             (func.lower(Gl_jouhdr.refno) == (journ_no).lower())).first()
+    gl_jouhdr = get_cache (Gl_jouhdr, {"refno": [(eq, journ_no)]})
 
     if gl_jouhdr:
         avail_gl_jouhdr = True

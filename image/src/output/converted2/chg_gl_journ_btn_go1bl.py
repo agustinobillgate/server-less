@@ -1,10 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Gl_jouhdr
 
-def chg_gl_journ_btn_go1bl(t_refno:str, t_bezeich:str, t_recid:int):
-    gl_jouhdr = None
+def chg_gl_journ_btn_go1bl(t_refno:string, t_bezeich:string, t_recid:int):
 
+    prepare_cache ([Gl_jouhdr])
+
+    gl_jouhdr = None
 
     db_session = local_storage.db_session
 
@@ -15,13 +19,20 @@ def chg_gl_journ_btn_go1bl(t_refno:str, t_bezeich:str, t_recid:int):
         return {}
 
 
-    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-             (Gl_jouhdr._recid == t_recid)).first()
+    gl_jouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, t_recid)]})
 
     if t_refno != "":
+        pass
         gl_jouhdr.refno = t_refno
 
+
+        pass
+
     if t_bezeich != "":
+        pass
         gl_jouhdr.bezeich = t_bezeich
+
+
+        pass
 
     return generate_output()

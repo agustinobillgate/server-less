@@ -1,21 +1,25 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Paramtext
 
-def new_drr_del_gs_cldbl(gsheet_link:str):
-    file_path:str = ""
-    ch:str = ""
+def new_drr_del_gs_cldbl(gsheet_link:string):
+
+    prepare_cache ([Paramtext])
+
+    file_path:string = ""
+    ch:string = ""
     counter:int = 0
-    htl_no:str = ""
+    htl_no:string = ""
     crow:int = 0
     ccol:int = 0
-    cval:str = ""
+    cval:string = ""
     paramtext = None
 
     stream_list = None
 
-    stream_list_list, Stream_list = create_model("Stream_list", {"crow":int, "ccol":int, "cval":str})
-
+    stream_list_list, Stream_list = create_model("Stream_list", {"crow":int, "ccol":int, "cval":string})
 
     db_session = local_storage.db_session
 
@@ -29,7 +33,7 @@ def new_drr_del_gs_cldbl(gsheet_link:str):
 
         return {}
 
-    def decode_string(in_str:str):
+    def decode_string(in_str:string):
 
         nonlocal file_path, ch, counter, htl_no, crow, ccol, cval, paramtext
         nonlocal gsheet_link
@@ -39,7 +43,7 @@ def new_drr_del_gs_cldbl(gsheet_link:str):
         nonlocal stream_list_list
 
         out_str = ""
-        s:str = ""
+        s:string = ""
         j:int = 0
         len_:int = 0
 
@@ -48,16 +52,15 @@ def new_drr_del_gs_cldbl(gsheet_link:str):
 
         s = in_str
         j = asc(substring(s, 0, 1)) - 70
-        len_ = len(in_str) - 1
+        len_ = length(in_str) - 1
         s = substring(in_str, 1, len_)
-        for len_ in range(1,len(s)  + 1) :
-            out_str = out_str + chr (asc(substring(s, len_ - 1, 1)) - j)
+        for len_ in range(1,length(s)  + 1) :
+            out_str = out_str + chr_unicode(asc(substring(s, len_ - 1, 1)) - j)
 
         return generate_inner_output()
 
 
-    paramtext = db_session.query(Paramtext).filter(
-             (Paramtext.txtnr == 243)).first()
+    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
 
     if paramtext and paramtext.ptexte != "":
         htl_no = decode_string(paramtext.ptexte)

@@ -1,5 +1,7 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from functions.calc_servvat import calc_servvat
 from models import Parameters, Exrate, Htparam, Artikel, Umsatz, Budget, Genstat, Segmentstat
@@ -7,8 +9,11 @@ from models import Parameters, Exrate, Htparam, Artikel, Umsatz, Budget, Genstat
 t_parameters_list, T_parameters = create_model_like(Parameters)
 
 def gl_parxls1_combobl(foreign_flag:bool, from_date:date, to_date:date, t_parameters_list:[T_parameters]):
+
+    prepare_cache ([Exrate, Htparam, Artikel, Umsatz, Budget, Genstat, Segmentstat])
+
     w1_list = []
-    prev_str:str = ""
+    prev_str:string = ""
     done_segment:bool = False
     datum1:date = None
     jan1:date = None
@@ -17,19 +22,20 @@ def gl_parxls1_combobl(foreign_flag:bool, from_date:date, to_date:date, t_parame
     lto_date:date = None
     do_it:bool = True
     curr_date:date = None
-    serv:decimal = to_decimal("0.0")
-    vat:decimal = to_decimal("0.0")
-    fact:decimal = to_decimal("0.0")
-    n_betrag:decimal = to_decimal("0.0")
-    frate:decimal = 1
+    serv:Decimal = to_decimal("0.0")
+    vat:Decimal = to_decimal("0.0")
+    fact:Decimal = to_decimal("0.0")
+    n_betrag:Decimal = to_decimal("0.0")
+    frate:Decimal = 1
     price_decimal:int = 0
     parameters = exrate = htparam = artikel = umsatz = budget = genstat = segmentstat = None
 
     t_parameters = w1 = buff_exrate = s_param = s_param = w_rev = w_pers = w_room = None
 
-    w1_list, W1 = create_model("W1", {"nr":int, "varname":str, "main_code":int, "s_artnr":str, "artnr":int, "dept":int, "grpflag":int, "done":bool, "bezeich":str, "int_flag":bool, "tday":decimal, "tday_serv":decimal, "tday_tax":decimal, "mtd_serv":decimal, "mtd_tax":decimal, "ytd_serv":decimal, "ytd_tax":decimal, "yesterday":decimal, "saldo":decimal, "lastmon":decimal, "pmtd_serv":decimal, "pmtd_tax":decimal, "lmtd_serv":decimal, "lmtd_tax":decimal, "lastyr":decimal, "lytoday":decimal, "ytd_saldo":decimal, "lytd_saldo":decimal, "year_saldo":[decimal,12], "mon_saldo":[decimal,31], "mon_budget":[decimal,31], "mon_lmtd":[decimal,31], "tbudget":decimal, "budget":decimal, "lm_budget":decimal, "lm_today":decimal, "lm_today_serv":decimal, "lm_today_tax":decimal, "lm_mtd":decimal, "lm_ytd":decimal, "ly_budget":decimal, "ny_budget":decimal, "ytd_budget":decimal, "nytd_budget":decimal, "nmtd_budget":decimal, "lytd_budget":decimal})
+    w1_list, W1 = create_model("W1", {"nr":int, "varname":string, "main_code":int, "s_artnr":string, "artnr":int, "dept":int, "grpflag":int, "done":bool, "bezeich":string, "int_flag":bool, "tday":Decimal, "tday_serv":Decimal, "tday_tax":Decimal, "mtd_serv":Decimal, "mtd_tax":Decimal, "ytd_serv":Decimal, "ytd_tax":Decimal, "yesterday":Decimal, "saldo":Decimal, "lastmon":Decimal, "pmtd_serv":Decimal, "pmtd_tax":Decimal, "lmtd_serv":Decimal, "lmtd_tax":Decimal, "lastyr":Decimal, "lytoday":Decimal, "ytd_saldo":Decimal, "lytd_saldo":Decimal, "year_saldo":[Decimal,12], "mon_saldo":[Decimal,31], "mon_budget":[Decimal,31], "mon_lmtd":[Decimal,31], "tbudget":Decimal, "budget":Decimal, "lm_budget":Decimal, "lm_today":Decimal, "lm_today_serv":Decimal, "lm_today_tax":Decimal, "lm_mtd":Decimal, "lm_ytd":Decimal, "ly_budget":Decimal, "ny_budget":Decimal, "ytd_budget":Decimal, "nytd_budget":Decimal, "nmtd_budget":Decimal, "lytd_budget":Decimal})
 
     Buff_exrate = create_buffer("Buff_exrate",Exrate)
+
 
     db_session = local_storage.db_session
 
@@ -54,7 +60,7 @@ def gl_parxls1_combobl(foreign_flag:bool, from_date:date, to_date:date, t_parame
         nonlocal t_parameters, w1, buff_exrate, s_param, s_param, w_rev, w_pers, w_room
         nonlocal w1_list
 
-        prev_param:str = ""
+        prev_param:string = ""
         ytd_flag:bool = False
         lytd_flag:bool = False
         lmtd_flag:bool = False
@@ -95,8 +101,7 @@ def gl_parxls1_combobl(foreign_flag:bool, from_date:date, to_date:date, t_parame
 
         for w1 in query(w1_list, filters=(lambda w1: w1.nr == 4), sort_by=[("s_artnr",False)]):
 
-            artikel = db_session.query(Artikel).filter(
-                     (Artikel.artnr == to_int(substring(w1.s_artnr, 2))) & (Artikel.departement == to_int(substring(w1.s_artnr, 0, 2)))).first()
+            artikel = get_cache (Artikel, {"artnr": [(eq, to_int(substring(w1.s_artnr, 2)))],"departement": [(eq, to_int(substring(w1.s_artnr, 0, 2)))]})
 
             if artikel:
 
@@ -190,7 +195,7 @@ def gl_parxls1_combobl(foreign_flag:bool, from_date:date, to_date:date, t_parame
         nonlocal t_parameters, w1, buff_exrate, s_param, s_param, w_rev, w_pers, w_room
         nonlocal w1_list
 
-        prev_param:str = ""
+        prev_param:string = ""
         ytd_flag:bool = False
         lytd_flag:bool = False
         lmtd_flag:bool = False
@@ -257,7 +262,7 @@ def gl_parxls1_combobl(foreign_flag:bool, from_date:date, to_date:date, t_parame
         mm = get_month(to_date)
 
         for genstat in db_session.query(Genstat).filter(
-                 (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat.segmentcode).all():
+                 (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat.segmentcode).all():
 
             if prev_segm != genstat.segmentcode:
                 prev_segm = genstat.segmentcode
@@ -309,7 +314,7 @@ def gl_parxls1_combobl(foreign_flag:bool, from_date:date, to_date:date, t_parame
             prev_segm = 0
 
             for genstat in db_session.query(Genstat).filter(
-                     (Genstat.datum >= datum1) & (Genstat.datum <= lto_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat.segmentcode).all():
+                     (Genstat.datum >= datum1) & (Genstat.datum <= lto_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat.segmentcode).all():
 
                 if prev_segm != genstat.segmentcode:
                     prev_segm = genstat.segmentcode
@@ -411,8 +416,7 @@ def gl_parxls1_combobl(foreign_flag:bool, from_date:date, to_date:date, t_parame
     ljan1 = date_mdy(1, 1, get_year(to_date) - timedelta(days=1))
     lfrom_date = date_mdy(get_month(to_date) , 1, get_year(to_date) - timedelta(days=1))
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 491)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 491)]})
     price_decimal = htparam.finteger
 
     t_parameters = query(t_parameters_list, filters=(lambda t_parameters: t_parameters.num_entries(t_parameters.varname, "-") == 3 and entry(2, t_parameters.varname, "-") == ("comboREV").lower()), first=True)
@@ -420,7 +424,7 @@ def gl_parxls1_combobl(foreign_flag:bool, from_date:date, to_date:date, t_parame
     if t_parameters:
         fill_revenue()
 
-    t_parameters = query(t_parameters_list, filters=(lambda t_parameters: t_parameters.re.match(r".*segmrev.*",(t_parameters.vstring, re.IGNORECASE) or re.match(r".*segmpers.*",t_parameters.vstring, re.IGNORECASE) or re.match(r".*segmroom.*"),t_parameters.vstring, re.IGNORECASE) and num_entries(t_parameters.varname, "-") == 3 and entry(2, t_parameters.varname, "-") == ("comboFO").lower()), first=True)
+    t_parameters = query(t_parameters_list, filters=(lambda t_parameters: matches((t_parameters.vstring,r"*segmrev*") or matches(t_parameters.vstring,r"*segmpers*") or matches(t_parameters.vstring,r"*segmroom*")) and num_entries(t_parameters.varname, "-") == 3 and entry(2, t_parameters.varname, "-") == ("comboFO").lower()), first=True)
 
     if t_parameters:
         fill_segment()

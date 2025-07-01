@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -12,7 +14,7 @@ class Fa_artikel(Base):
 	book_wert = sa.Column(sa.Numeric, default=0)
 	changed = sa.Column(sa.Date, default=None)
 	cid = sa.Column(sa.String, default="")
-	created = sa.Column(sa.Date, default=lambda: get_current_date())
+	created = sa.Column(sa.Date, default=get_current_date())
 	credit_fibu = sa.Column(sa.String, default="")
 	debit_fibu = sa.Column(sa.String, default="")
 	deleted = sa.Column(sa.Date, default=None)
@@ -33,3 +35,31 @@ class Fa_artikel(Base):
 	subgrp = sa.Column(sa.Integer, default=0)
 	warenwert = sa.Column(sa.Numeric, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('anz_depn', 0)
+		kwargs.setdefault('anz100', 0)
+		kwargs.setdefault('anzahl', 1)
+		kwargs.setdefault('book_wert', 0)
+		kwargs.setdefault('changed', None)
+		kwargs.setdefault('cid', "")
+		kwargs.setdefault('created', get_current_date())
+		kwargs.setdefault('credit_fibu', "")
+		kwargs.setdefault('debit_fibu', "")
+		kwargs.setdefault('deleted', None)
+		kwargs.setdefault('depn_wert', 0)
+		kwargs.setdefault('did', "")
+		kwargs.setdefault('fibukonto', "")
+		kwargs.setdefault('first_depn', None)
+		kwargs.setdefault('gnr', 0)
+		kwargs.setdefault('id', "")
+		kwargs.setdefault('katnr', 0)
+		kwargs.setdefault('last_depn', None)
+		kwargs.setdefault('lief_nr', 0)
+		kwargs.setdefault('loeschflag', 0)
+		kwargs.setdefault('next_depn', None)
+		kwargs.setdefault('nr', 0)
+		kwargs.setdefault('p_nr', 0)
+		kwargs.setdefault('posted', False)
+		kwargs.setdefault('subgrp', 0)
+		kwargs.setdefault('warenwert', 0)
+		super(Fa_artikel, self).__init__(*args, **kwargs)

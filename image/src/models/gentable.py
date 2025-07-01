@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -27,3 +29,25 @@ class Gentable(Base):
 	number2 = sa.Column(sa.Integer, default=0)
 	number3 = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('activeflag', True)
+		kwargs.setdefault('char_ext', ["","","","","","","","",""])
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('combo_ext', ["","",""])
+		kwargs.setdefault('date_ext', [None,None,None,None,None,None,None,None,None])
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('date2', None)
+		kwargs.setdefault('date3', None)
+		kwargs.setdefault('deci_ext', [0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('inte_ext', [0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('key', "")
+		kwargs.setdefault('logi_ext', [False,False,False,False,False,False,False,False,False])
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('logi2', False)
+		kwargs.setdefault('logi3', False)
+		kwargs.setdefault('number1', 0)
+		kwargs.setdefault('number2', 0)
+		kwargs.setdefault('number3', 0)
+		super(Gentable, self).__init__(*args, **kwargs)

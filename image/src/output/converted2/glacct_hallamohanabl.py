@@ -1,9 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Gl_journal, Gl_jouhdr, Htparam, Gl_acct
 
 def glacct_hallamohanabl(months:int, years:int):
+
+    prepare_cache ([Gl_journal, Htparam, Gl_acct])
+
     fromdate:date = None
     todate:date = None
     mm:int = 0
@@ -14,11 +19,10 @@ def glacct_hallamohanabl(months:int, years:int):
 
     note_list = g_list = t_gl_journal = t_gl_jouhdr = None
 
-    note_list_list, Note_list = create_model("Note_list", {"s_recid":int, "bemerk":str})
-    g_list_list, G_list = create_model("G_list", {"fibukonto":str, "debit":decimal, "credit":decimal, "bemerk":str, "userinit":str, "sysdate":date, "zeit":int, "chginit":str, "chgdate":date, "jnr":int, "bezeich":str, "doc_date":date, "curr":str, "post_date":date, "ref":str, "doc_header":str, "comp":str, "code1":str, "amount":decimal, "costc":str, "profc":str, "acc_type":str, "deptnr":int, "revtype":str})
+    note_list_list, Note_list = create_model("Note_list", {"s_recid":int, "bemerk":string})
+    g_list_list, G_list = create_model("G_list", {"fibukonto":string, "debit":Decimal, "credit":Decimal, "bemerk":string, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "jnr":int, "bezeich":string, "doc_date":date, "curr":string, "post_date":date, "ref":string, "doc_header":string, "comp":string, "code1":string, "amount":Decimal, "costc":string, "profc":string, "acc_type":string, "deptnr":int, "revtype":string})
     t_gl_journal_list, T_gl_journal = create_model_like(Gl_journal)
-    t_gl_jouhdr_list, T_gl_jouhdr = create_model_like(Gl_jouhdr, {"b_recid":int, "code1":str})
-
+    t_gl_jouhdr_list, T_gl_jouhdr = create_model_like(Gl_jouhdr, {"b_recid":int, "code1":string})
 
     db_session = local_storage.db_session
 
@@ -32,7 +36,7 @@ def glacct_hallamohanabl(months:int, years:int):
 
         return {"loc_curr": loc_curr, "t-gl-jouhdr": t_gl_jouhdr_list, "g-list": g_list_list}
 
-    def get_bemerk(bemerk:str):
+    def get_bemerk(bemerk:string):
 
         nonlocal fromdate, todate, mm, loc_curr, t_gl_jouhdr_list, g_list_list, gl_journal, gl_jouhdr, htparam, gl_acct
         nonlocal months, years
@@ -42,9 +46,9 @@ def glacct_hallamohanabl(months:int, years:int):
         nonlocal note_list_list, g_list_list, t_gl_journal_list, t_gl_jouhdr_list
 
         n:int = 0
-        s1:str = ""
-        bemerk = replace_str(bemerk, chr(10) , " ")
-        n = 1 + get_index(bemerk, ";&&")
+        s1:string = ""
+        bemerk = replace_str(bemerk, chr_unicode(10) , " ")
+        n = get_index(bemerk, ";&&")
 
         if n > 0:
             s1 = substring(bemerk, 0, n - 1)
@@ -93,8 +97,7 @@ def glacct_hallamohanabl(months:int, years:int):
                 note_list.s_recid = gl_journal._recid
                 note_list.bemerk = get_bemerk (gl_journal.bemerk)
 
-                gl_acct = db_session.query(Gl_acct).filter(
-                         (Gl_acct.fibukonto == gl_journal.fibukonto) & (Gl_acct.fs_type != 9) & (Gl_acct.main_nr != 37)).first()
+                gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)],"fs_type": [(ne, 9)],"main_nr": [(ne, 37)]})
 
                 if gl_acct:
 
@@ -118,8 +121,7 @@ def glacct_hallamohanabl(months:int, years:int):
                         g_list.post_date = t_gl_jouhdr.datum
                         g_list.acc_type = to_string(gl_acct.acc_type)
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 152)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 152)]})
 
     if htparam:
 

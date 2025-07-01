@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -36,3 +38,34 @@ class Akt_kont(Base):
 	v_titel = sa.Column(sa.String, default="")
 	vorname = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('a_titel', "")
+		kwargs.setdefault('abteilung', "")
+		kwargs.setdefault('anrede', "")
+		kwargs.setdefault('ausweis_art', "")
+		kwargs.setdefault('ausweis_nr1', "")
+		kwargs.setdefault('betrieb_gast', 0)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('briefanrede', "")
+		kwargs.setdefault('durchwahl', "")
+		kwargs.setdefault('email_adr', "")
+		kwargs.setdefault('fax', "")
+		kwargs.setdefault('fax_privat', "")
+		kwargs.setdefault('funktion', "")
+		kwargs.setdefault('gastnr', None)
+		kwargs.setdefault('geburt_ort1', "")
+		kwargs.setdefault('geburtdatum1', None)
+		kwargs.setdefault('hauptkontakt', False)
+		kwargs.setdefault('kategorie', 0)
+		kwargs.setdefault('kontakt_nr', 0)
+		kwargs.setdefault('name', "")
+		kwargs.setdefault('nation2', "")
+		kwargs.setdefault('pass_aust1', "")
+		kwargs.setdefault('pers_bez', 0)
+		kwargs.setdefault('segmentcode', 0)
+		kwargs.setdefault('sprachcode', 1)
+		kwargs.setdefault('telefon', "")
+		kwargs.setdefault('telefon_privat', "")
+		kwargs.setdefault('v_titel', "")
+		kwargs.setdefault('vorname', "")
+		super(Akt_kont, self).__init__(*args, **kwargs)

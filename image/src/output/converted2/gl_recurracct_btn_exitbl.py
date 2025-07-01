@@ -1,19 +1,24 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Queasy, Gl_acct
 
-def gl_recurracct_btn_exitbl(pvilanguage:int, case_type:int, titel:str, remark:str, fibu:str, rec_id:int):
+def gl_recurracct_btn_exitbl(pvilanguage:int, case_type:int, titel:string, remark:string, fibu:string, rec_id:int):
+
+    prepare_cache ([Gl_acct])
+
     msg_str = ""
     b1_list_list = []
-    lvcarea:str = "gl-recurracct"
+    lvcarea:string = "gl-recurracct"
     queasy = gl_acct = None
 
     b1_list = gl_acc1 = None
 
-    b1_list_list, B1_list = create_model_like(Queasy, {"fibukonto":str, "bezeich":str, "rec_id":int})
+    b1_list_list, B1_list = create_model_like(Queasy, {"fibukonto":string, "bezeich":string, "rec_id":int})
 
     Gl_acc1 = create_buffer("Gl_acc1",Gl_acct)
+
 
     db_session = local_storage.db_session
 
@@ -55,10 +60,12 @@ def gl_recurracct_btn_exitbl(pvilanguage:int, case_type:int, titel:str, remark:s
         nonlocal b1_list, gl_acc1
         nonlocal b1_list_list
 
+
+        pass
+
         if queasy:
 
-            gl_acct = db_session.query(Gl_acct).filter(
-                     (Gl_acct.fibukonto == queasy.char3)).first()
+            gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, queasy.char3)]})
             b1_list = B1_list()
             b1_list_list.append(b1_list)
 
@@ -70,11 +77,10 @@ def gl_recurracct_btn_exitbl(pvilanguage:int, case_type:int, titel:str, remark:s
 
     if case_type == 1:
 
-        gl_acc1 = db_session.query(Gl_acc1).filter(
-                 (func.lower(Gl_acc1.fibukonto) == (fibu).lower())).first()
+        gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, fibu)]})
 
         if not gl_acc1:
-            msg_str = msg_str + chr(2) + translateExtended ("No such G/L Account number.", lvcarea, "")
+            msg_str = msg_str + chr_unicode(2) + translateExtended ("No such G/L Account number.", lvcarea, "")
 
             return generate_output()
         else:
@@ -88,19 +94,18 @@ def gl_recurracct_btn_exitbl(pvilanguage:int, case_type:int, titel:str, remark:s
 
     elif case_type == 2:
 
-        gl_acc1 = db_session.query(Gl_acc1).filter(
-                 (func.lower(Gl_acc1.fibukonto) == (fibu).lower())).first()
+        gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, fibu)]})
 
         if not gl_acc1:
 
             return generate_output()
         else:
 
-            queasy = db_session.query(Queasy).filter(
-                     (Queasy._recid == rec_id)).first()
+            queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
 
             if queasy:
                 fill_queasy()
+            pass
             disp_it()
 
             return generate_output()

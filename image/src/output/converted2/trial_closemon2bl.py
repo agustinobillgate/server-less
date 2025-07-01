@@ -1,13 +1,18 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Htparam, Waehrung, Gl_jouhdr, Exrate, Gl_acct, Gl_journal
 
 def trial_closemon2bl():
-    lost:decimal = to_decimal("0.0")
-    profit:decimal = to_decimal("0.0")
-    revlocal:decimal = to_decimal("0.0")
-    revfremd:decimal = to_decimal("0.0")
+
+    prepare_cache ([Htparam, Waehrung, Exrate, Gl_acct])
+
+    lost:Decimal = to_decimal("0.0")
+    profit:Decimal = to_decimal("0.0")
+    revlocal:Decimal = to_decimal("0.0")
+    revfremd:Decimal = to_decimal("0.0")
     curr_date:date = None
     beg_month:int = 0
     end_month:int = 0
@@ -18,7 +23,6 @@ def trial_closemon2bl():
     double_currency:bool = False
     wahrno:int = 0
     htparam = waehrung = gl_jouhdr = exrate = gl_acct = gl_journal = None
-
 
     db_session = local_storage.db_session
 
@@ -46,34 +50,33 @@ def trial_closemon2bl():
 
         nonlocal lost, profit, revlocal, revfremd, curr_date, beg_month, end_month, foreign_rate, curr_month, prev_month, first_date, double_currency, wahrno, htparam, waehrung, gl_jouhdr, exrate, gl_acct, gl_journal
 
-        gl_journal = db_session.query(Gl_journal).filter(
-                 (Gl_journal.jnr == jnr) & (Gl_journal.activeflag == 0)).first()
+        gl_journal = get_cache (Gl_journal, {"jnr": [(eq, jnr)],"activeflag": [(eq, 0)]})
         while None != gl_journal:
 
-            gl_acct = db_session.query(Gl_acct).filter(
-                     (Gl_acct.fibukonto == gl_journal.fibukonto)).first()
+            gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)]})
 
             if gl_acct:
+                pass
                 gl_acct.actual[curr_month - 1] = gl_acct.actual[curr_month - 1] + gl_journal.debit - gl_journal.credit
+                pass
 
                 if gl_acct.acc_type == 1:
                     profit =  to_decimal(profit) - to_decimal(gl_journal.debit) + to_decimal(gl_journal.credit)
 
                     if wahrno != 0:
 
-                        exrate = db_session.query(Exrate).filter(
-                                 (Exrate.artnr == wahrno) & (Exrate.datum == datum)).first()
+                        exrate = get_cache (Exrate, {"artnr": [(eq, wahrno)],"datum": [(eq, datum)]})
 
                         if exrate and exrate.betrag != 0:
                             revlocal =  to_decimal(revlocal) + to_decimal(gl_journal.credit) - to_decimal(gl_journal.debit)
                             revfremd =  to_decimal(revfremd) + to_decimal((gl_journal.credit) - to_decimal(gl_journal.debit)) / to_decimal(exrate.betrag)
 
-            elif gl_acct.acc_type == 2 or gl_acct.acc_type == 5:
-                lost =  to_decimal(lost) + to_decimal(gl_journal.debit) - to_decimal(gl_journal.credit)
+                elif gl_acct.acc_type == 2 or gl_acct.acc_type == 5:
+                    lost =  to_decimal(lost) + to_decimal(gl_journal.debit) - to_decimal(gl_journal.credit)
 
-        curr_recid = gl_journal._recid
-        gl_journal = db_session.query(Gl_journal).filter(
-                 (Gl_journal.jnr == jnr) & (Gl_journal.activeflag == 0)).filter(Gl_journal._recid > curr_recid).first()
+            curr_recid = gl_journal._recid
+            gl_journal = db_session.query(Gl_journal).filter(
+                     (Gl_journal.jnr == jnr) & (Gl_journal.activeflag == 0) & (Gl_journal._recid > curr_recid)).first()
 
 
     def closing_month():
@@ -86,8 +89,7 @@ def trial_closemon2bl():
             return (acct_date)
 
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 597)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
         acct_date = get_month(htparam.fdate)
 
         if get_day(htparam.fdate) < 15:
@@ -98,39 +100,32 @@ def trial_closemon2bl():
 
         return generate_inner_output()
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 597)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
     curr_date = htparam.fdate
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 993)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 993)]})
     end_month = htparam.finteger
     beg_month = htparam.finteger + 1
 
     if beg_month > 12:
         beg_month = 1
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 558)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 558)]})
     first_date = htparam.fdate + timedelta(days=1)
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 240)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 240)]})
 
     if htparam:
         double_currency = htparam.flogical
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 143)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 143)]})
     foreign_rate = htparam.flogical
 
     if foreign_rate or double_currency:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 144)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
 
-        waehrung = db_session.query(Waehrung).filter(
-                 (Waehrung.wabkurz == htparam.fchar)).first()
+        waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
 
         if waehrung:
             wahrno = waehrung.waehrungsnr
@@ -140,18 +135,15 @@ def trial_closemon2bl():
     if prev_month == 0:
         prev_month = 12
 
-    htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 983)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
     htparam.flogical = True
-
     update_glacct()
 
     for gl_jouhdr in db_session.query(Gl_jouhdr).filter(
              (Gl_jouhdr.activeflag == 0) & (Gl_jouhdr.datum >= first_date) & (Gl_jouhdr.datum <= curr_date)).order_by(Gl_jouhdr._recid).all():
         process_journal(gl_jouhdr.jnr, gl_jouhdr.datum)
 
-    exrate = db_session.query(Exrate).filter(
-                 (Exrate.artnr == 99999) & (Exrate.datum == curr_date)).first()
+    exrate = get_cache (Exrate, {"artnr": [(eq, 99999)],"datum": [(eq, curr_date)]})
 
     if not exrate:
         exrate = Exrate()
@@ -166,17 +158,16 @@ def trial_closemon2bl():
 
     else:
         exrate.betrag =  to_decimal("1")
+    pass
 
-    htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 979)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 979)]})
 
-    gl_acct = db_session.query(Gl_acct).filter(
-                 (Gl_acct.fibukonto == fchar)).first()
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fchar)]})
     gl_acct.actual[curr_month - 1] = gl_acct.actual[curr_month - 1] - profit + lost
+    pass
 
-    htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 983)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
     htparam.flogical = False
-
+    pass
 
     return generate_output()

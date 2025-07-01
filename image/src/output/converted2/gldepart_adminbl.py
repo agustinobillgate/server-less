@@ -1,12 +1,13 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Gl_acct, Gl_department
 
 def gldepart_adminbl(pvilanguage:int, nr:int):
     msg_str = ""
-    lvcarea:str = "gldepart-admin"
+    lvcarea:string = "gldepart-admin"
     gl_acct = gl_department = None
-
 
     db_session = local_storage.db_session
 
@@ -17,17 +18,15 @@ def gldepart_adminbl(pvilanguage:int, nr:int):
         return {"msg_str": msg_str}
 
 
-    gl_acct = db_session.query(Gl_acct).filter(
-             (Gl_acct.deptnr == nr)).first()
+    gl_acct = get_cache (Gl_acct, {"deptnr": [(eq, nr)]})
 
     if gl_acct:
-        msg_str = msg_str + chr(2) + translateExtended ("Chart-of-account exists, deleting not possible.", lvcarea, "")
+        msg_str = msg_str + chr_unicode(2) + translateExtended ("Chart-of-account exists, deleting not possible.", lvcarea, "")
 
         return generate_output()
     else:
 
-        gl_department = db_session.query(Gl_department).filter(
-                 (Gl_department.nr == nr)).first()
+        gl_department = get_cache (Gl_department, {"nr": [(eq, nr)]})
 
         if gl_department:
             db_session.delete(gl_department)

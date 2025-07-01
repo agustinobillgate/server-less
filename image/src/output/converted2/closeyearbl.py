@@ -1,9 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Htparam, Gl_acct
 
 def closeyearbl():
+
+    prepare_cache ([Htparam, Gl_acct])
+
     curr_date = None
     curr_yr = 0
     err_code = 0
@@ -11,7 +16,6 @@ def closeyearbl():
     end_month:int = 0
     acct_correct:bool = True
     htparam = gl_acct = None
-
 
     db_session = local_storage.db_session
 
@@ -21,12 +25,10 @@ def closeyearbl():
         return {"curr_date": curr_date, "curr_yr": curr_yr, "err_code": err_code}
 
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 993)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 993)]})
     end_month = htparam.finteger
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 558)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 558)]})
     curr_date = htparam.fdate
     curr_month = get_month(htparam.fdate)
 
@@ -35,8 +37,7 @@ def closeyearbl():
 
         return generate_output()
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 795)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 795)]})
 
     if (get_year(htparam.fdate) + 1) != get_year(curr_date):
         err_code = 2
@@ -44,16 +45,13 @@ def closeyearbl():
         return generate_output()
     curr_yr = get_year(htparam.fdate) + 1
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 599)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 599)]})
 
     if htparam.flogical:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 612)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 612)]})
 
-        gl_acct = db_session.query(Gl_acct).filter(
-                 (Gl_acct.fibukonto == htparam.fchar)).first()
+        gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
 
         if not gl_acct:
             acct_correct = False

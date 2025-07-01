@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -19,3 +21,17 @@ class Argt_line(Base):
 	kind2 = sa.Column(sa.Boolean, default=False)
 	vt_percnt = sa.Column(sa.Numeric, default=0.00)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('argt_artnr', 0)
+		kwargs.setdefault('argtnr', 0)
+		kwargs.setdefault('betrag', 0)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('departement', 0)
+		kwargs.setdefault('erwachs', False)
+		kwargs.setdefault('fakt_modus', 1)
+		kwargs.setdefault('gratis', True)
+		kwargs.setdefault('intervall', 0)
+		kwargs.setdefault('kind1', False)
+		kwargs.setdefault('kind2', False)
+		kwargs.setdefault('vt_percnt', 0.00)
+		super(Argt_line, self).__init__(*args, **kwargs)

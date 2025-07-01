@@ -1,10 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Queasy
 
-def btn_ok_adjustmentbl(user_init:str, passwd:str, id_str:str):
-    queasy = None
+def btn_ok_adjustmentbl(user_init:string, passwd:string, id_str:string):
 
+    prepare_cache ([Queasy])
+
+    queasy = None
 
     db_session = local_storage.db_session
 

@@ -1,8 +1,0 @@
-Replacement Log
-==================================================
-
-Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\precheckin_generator_select_sortingbl.py
-Line no: 42
-Line before: segm1_list.bezeich = to_string(segmentcode, ">>9 ") + entry(0, segment.bezeich, "$$0")
-Line after: segm1_list.bezeich = to_string(segment.segmentcode, ">>9 ") + entry(0, segment.bezeich, "$$0")
-==================================================

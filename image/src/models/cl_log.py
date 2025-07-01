@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -14,3 +16,12 @@ class Cl_log(Base):
 	user_init = sa.Column(sa.String, default="")
 	zeit = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('codenum', "")
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('user_init', "")
+		kwargs.setdefault('zeit', 0)
+		super(Cl_log, self).__init__(*args, **kwargs)

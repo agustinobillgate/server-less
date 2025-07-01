@@ -1,16 +1,20 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Exrate
 
 def budget_exrate_create_listbl(curr_year:int):
+
+    prepare_cache ([Exrate])
+
     g_list_list = []
     exrate = None
 
     g_list = None
 
-    g_list_list, G_list = create_model("G_list", {"monat":int, "wert":decimal, "datum":date})
-
+    g_list_list, G_list = create_model("G_list", {"monat":int, "wert":Decimal, "datum":date})
 
     db_session = local_storage.db_session
 
@@ -48,8 +52,7 @@ def budget_exrate_create_listbl(curr_year:int):
             g_list.wert =  to_decimal("1")
             g_list.datum = curr_date
 
-            exrate = db_session.query(Exrate).filter(
-                     (Exrate.artnr == 99998) & (Exrate.datum == curr_date)).first()
+            exrate = get_cache (Exrate, {"artnr": [(eq, 99998)],"datum": [(eq, curr_date)]})
 
             if exrate:
                 g_list.wert =  to_decimal(exrate.betrag)

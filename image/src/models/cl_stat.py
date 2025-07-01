@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -24,3 +26,22 @@ class Cl_stat(Base):
 	terminate = sa.Column(sa.Integer, default=0)
 	typenr = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('active1', 0)
+		kwargs.setdefault('active2', 0)
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('datum1', None)
+		kwargs.setdefault('deci1', 0)
+		kwargs.setdefault('deci2', 0)
+		kwargs.setdefault('freeze', 0)
+		kwargs.setdefault('key', 0)
+		kwargs.setdefault('number1', 0)
+		kwargs.setdefault('number2', 0)
+		kwargs.setdefault('processed', 0)
+		kwargs.setdefault('revenue1', 0)
+		kwargs.setdefault('revenue2', 0)
+		kwargs.setdefault('revenue3', 0)
+		kwargs.setdefault('terminate', 0)
+		kwargs.setdefault('typenr', 0)
+		super(Cl_stat, self).__init__(*args, **kwargs)

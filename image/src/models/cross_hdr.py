@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -31,3 +33,29 @@ class Cross_hdr(Base):
 	vhp_tableid = sa.Column(sa.Integer, default=0)
 	vhp_tablenm = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('date2', None)
+		kwargs.setdefault('date3', None)
+		kwargs.setdefault('date4', None)
+		kwargs.setdefault('date5', None)
+		kwargs.setdefault('deci1', 0)
+		kwargs.setdefault('deci2', 0)
+		kwargs.setdefault('deci3', 0)
+		kwargs.setdefault('deci4', 0)
+		kwargs.setdefault('deci5', 0)
+		kwargs.setdefault('int1', 0)
+		kwargs.setdefault('int2', 0)
+		kwargs.setdefault('int3', 0)
+		kwargs.setdefault('int4', 0)
+		kwargs.setdefault('int5', 0)
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('logi2', False)
+		kwargs.setdefault('logi3', False)
+		kwargs.setdefault('logi4', False)
+		kwargs.setdefault('logi5', False)
+		kwargs.setdefault('others_tablenm', "")
+		kwargs.setdefault('variant_db', 0)
+		kwargs.setdefault('vhp_tableid', 0)
+		kwargs.setdefault('vhp_tablenm', "")
+		super(Cross_hdr, self).__init__(*args, **kwargs)

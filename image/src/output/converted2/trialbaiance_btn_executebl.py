@@ -1,26 +1,27 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from functions.trialbalance_btn_go_cld_1bl import trialbalance_btn_go_cld_1bl
 
-def trialbaiance_btn_executebl(acct_type:int, from_fibu:str, to_fibu:str, sorttype:int, from_dept:int, from_date:date, to_date:date, close_month:int, close_date:date, pnl_acct:str, close_year:date, prev_month:int, show_longbal:bool, pbal_flag:bool, asremoteflag:bool):
+def trialbaiance_btn_executebl(acct_type:int, from_fibu:string, to_fibu:string, sorttype:int, from_dept:int, from_date:date, to_date:date, close_month:int, close_date:date, pnl_acct:string, close_year:date, prev_month:int, show_longbal:bool, pbal_flag:bool, asremoteflag:bool):
     msg_str = ""
     tb_list_detail_list = []
     tb_list_summary_list = []
-    refno:str = ""
-    begining_bal:str = ""
-    tot_debit:str = ""
-    tot_credit:str = ""
-    net_change:str = ""
-    ending_bal:str = ""
-    ytd_balance:str = ""
+    refno:string = ""
+    begining_bal:string = ""
+    tot_debit:string = ""
+    tot_credit:string = ""
+    net_change:string = ""
+    ending_bal:string = ""
+    ytd_balance:string = ""
 
     output_list = tb_list_summary = tb_list_detail = None
 
-    output_list_list, Output_list = create_model("Output_list", {"gop_flag":bool, "nr":int, "str":str, "budget":decimal, "proz":decimal, "mark":bool, "ch":str, "ref_no":str, "begin_bal":str, "tot_debit":str, "tot_credit":str, "net_change":str, "ending_bal":str, "ytd_bal":str, "dept_nr":int, "dept_name":str, "is_show_depart":bool})
-    tb_list_summary_list, Tb_list_summary = create_model("Tb_list_summary", {"account_no":str, "description":str, "beginingbal":str, "tot_debit":str, "tot_credit":str, "net_change":str, "ending_bal":str, "ytd_balance":str, "budget":decimal, "proz":decimal, "dept_nr":str, "dept_name":str})
-    tb_list_detail_list, Tb_list_detail = create_model("Tb_list_detail", {"marks":str, "date":date, "ref_no":str, "begining_bal":str, "tot_debit":str, "tot_credit":str, "net_change":str, "ending_bal":str, "note":str, "dept_nr":str, "dept_name":str})
-
+    output_list_list, Output_list = create_model("Output_list", {"gop_flag":bool, "nr":int, "str":string, "budget":Decimal, "proz":Decimal, "mark":bool, "ch":string, "ref_no":string, "begin_bal":string, "tot_debit":string, "tot_credit":string, "net_change":string, "ending_bal":string, "ytd_bal":string, "dept_nr":int, "dept_name":string, "is_show_depart":bool})
+    tb_list_summary_list, Tb_list_summary = create_model("Tb_list_summary", {"account_no":string, "description":string, "beginingbal":string, "tot_debit":string, "tot_credit":string, "net_change":string, "ending_bal":string, "ytd_balance":string, "budget":Decimal, "proz":Decimal, "dept_nr":string, "dept_name":string})
+    tb_list_detail_list, Tb_list_detail = create_model("Tb_list_detail", {"marks":string, "date":date, "ref_no":string, "begining_bal":string, "tot_debit":string, "tot_credit":string, "net_change":string, "ending_bal":string, "note":string, "dept_nr":string, "dept_name":string})
 
     db_session = local_storage.db_session
 
@@ -47,34 +48,34 @@ def trialbaiance_btn_executebl(acct_type:int, from_fibu:str, to_fibu:str, sortty
             net_change = output_list.net_change
             ending_bal = output_list.ending_bal
 
-            if re.match(r".*(.*",begining_bal, re.IGNORECASE):
+            if matches(begining_bal,r"*(*"):
                 begining_bal = replace_str(begining_bal, "(", "-")
 
-            if re.match(r".*).*",begining_bal, re.IGNORECASE):
+            if matches(begining_bal,r"*)*"):
                 begining_bal = replace_str(begining_bal, ")", "")
 
-            if re.match(r".*(.*",tot_debit, re.IGNORECASE):
+            if matches(tot_debit,r"*(*"):
                 tot_debit = replace_str(tot_debit, "(", "-")
 
-            if re.match(r".*).*",tot_debit, re.IGNORECASE):
+            if matches(tot_debit,r"*)*"):
                 tot_debit = replace_str(tot_debit, ")", "")
 
-            if re.match(r".*(.*",tot_credit, re.IGNORECASE):
+            if matches(tot_credit,r"*(*"):
                 tot_credit = replace_str(tot_credit, "(", "-")
 
-            if re.match(r".*).*",tot_credit, re.IGNORECASE):
+            if matches(tot_credit,r"*)*"):
                 tot_credit = replace_str(tot_credit, ")", "")
 
-            if re.match(r".*(.*",net_change, re.IGNORECASE):
+            if matches(net_change,r"*(*"):
                 net_change = replace_str(net_change, "(", "-")
 
-            if re.match(r".*).*",net_change, re.IGNORECASE):
+            if matches(net_change,r"*)*"):
                 net_change = replace_str(net_change, ")", "")
 
-            if re.match(r".*(.*",ending_bal, re.IGNORECASE):
+            if matches(ending_bal,r"*(*"):
                 ending_bal = replace_str(ending_bal, "(", "-")
 
-            if re.match(r".*).*",ending_bal, re.IGNORECASE):
+            if matches(ending_bal,r"*)*"):
                 ending_bal = replace_str(ending_bal, ")", "")
             tb_list_detail = Tb_list_detail()
             tb_list_detail_list.append(tb_list_detail)
@@ -106,40 +107,40 @@ def trialbaiance_btn_executebl(acct_type:int, from_fibu:str, to_fibu:str, sortty
             ending_bal = (replace_str(substring(output_list.str, 142, 22) , ",", ""))
             ytd_balance = (replace_str(substring(output_list.str, 164, 22) , ",", ""))
 
-            if re.match(r".*(.*",begining_bal, re.IGNORECASE):
+            if matches(begining_bal,r"*(*"):
                 begining_bal = replace_str(begining_bal, "(", "-")
 
-            if re.match(r".*).*",begining_bal, re.IGNORECASE):
+            if matches(begining_bal,r"*)*"):
                 begining_bal = replace_str(begining_bal, ")", "")
 
-            if re.match(r".*(.*",tot_debit, re.IGNORECASE):
+            if matches(tot_debit,r"*(*"):
                 tot_debit = replace_str(tot_debit, "(", "-")
 
-            if re.match(r".*).*",tot_debit, re.IGNORECASE):
+            if matches(tot_debit,r"*)*"):
                 tot_debit = replace_str(tot_debit, ")", "")
 
-            if re.match(r".*(.*",tot_credit, re.IGNORECASE):
+            if matches(tot_credit,r"*(*"):
                 tot_credit = replace_str(tot_credit, "(", "-")
 
-            if re.match(r".*).*",tot_credit, re.IGNORECASE):
+            if matches(tot_credit,r"*)*"):
                 tot_credit = replace_str(tot_credit, ")", "")
 
-            if re.match(r".*(.*",net_change, re.IGNORECASE):
+            if matches(net_change,r"*(*"):
                 net_change = replace_str(net_change, "(", "-")
 
-            if re.match(r".*).*",net_change, re.IGNORECASE):
+            if matches(net_change,r"*)*"):
                 net_change = replace_str(net_change, ")", "")
 
-            if re.match(r".*(.*",ending_bal, re.IGNORECASE):
+            if matches(ending_bal,r"*(*"):
                 ending_bal = replace_str(ending_bal, "(", "-")
 
-            if re.match(r".*).*",ending_bal, re.IGNORECASE):
+            if matches(ending_bal,r"*)*"):
                 ending_bal = replace_str(ending_bal, ")", "")
 
-            if re.match(r".*(.*",ytd_balance, re.IGNORECASE):
+            if matches(ytd_balance,r"*(*"):
                 ytd_balance = replace_str(ytd_balance, "(", "-")
 
-            if re.match(r".*).*",ytd_balance, re.IGNORECASE):
+            if matches(ytd_balance,r"*)*"):
                 ytd_balance = replace_str(ytd_balance, ")", "")
             tb_list_summary = Tb_list_summary()
             tb_list_summary_list.append(tb_list_summary)

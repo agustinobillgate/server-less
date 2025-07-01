@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -37,3 +39,35 @@ class Genstat(Base):
 	zinr = sa.Column(sa.String, default="")
 	zipreis = sa.Column(sa.Numeric, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('ankflag', False)
+		kwargs.setdefault('argt', "")
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('domestic', 0)
+		kwargs.setdefault('erwachs', 0)
+		kwargs.setdefault('gastnr', None)
+		kwargs.setdefault('gastnrmember', 0)
+		kwargs.setdefault('gratis', 0)
+		kwargs.setdefault('karteityp', 0)
+		kwargs.setdefault('kind1', 0)
+		kwargs.setdefault('kind2', 0)
+		kwargs.setdefault('kind3', 0)
+		kwargs.setdefault('kontcode', "")
+		kwargs.setdefault('logis', 0)
+		kwargs.setdefault('nationnr', 0)
+		kwargs.setdefault('ratelocal', 0)
+		kwargs.setdefault('res_char', ["","","","","","","","",""])
+		kwargs.setdefault('res_date', [None,None,None,None,None,None,None,None,None])
+		kwargs.setdefault('res_deci', [0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('res_int', [0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('res_logic', [False,False,False,False,False,False,False,False,False])
+		kwargs.setdefault('resident', 0)
+		kwargs.setdefault('resnr', 0)
+		kwargs.setdefault('resstatus', 0)
+		kwargs.setdefault('segmentcode', 0)
+		kwargs.setdefault('source', 0)
+		kwargs.setdefault('wahrungsnr', 0)
+		kwargs.setdefault('zikatnr', 0)
+		kwargs.setdefault('zinr', "")
+		kwargs.setdefault('zipreis', 0)
+		super(Genstat, self).__init__(*args, **kwargs)

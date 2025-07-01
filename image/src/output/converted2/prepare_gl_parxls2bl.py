@@ -1,10 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Briefzei, Gl_main, Gl_department, Exrate, Htparam, Gl_acct, Waehrung, Gl_accthis, Brief
 
 def prepare_gl_parxls2bl(pvilanguage:int, briefnr:int, to_date:date, close_month:int):
+
+    prepare_cache ([Htparam, Gl_acct, Waehrung, Gl_accthis, Brief])
+
     end_month = 0
     prev_month = 0
     beg_month = 0
@@ -34,25 +38,24 @@ def prepare_gl_parxls2bl(pvilanguage:int, briefnr:int, to_date:date, close_month
     t_gl_accthis_list = []
     batch_file:bool = False
     curr_row:int = 0
-    curr_texte:str = ""
-    lvcarea:str = "gl-parxls"
+    curr_texte:string = ""
+    lvcarea:string = "gl-parxls"
     i:int = 0
     briefzei = gl_main = gl_department = exrate = htparam = gl_acct = waehrung = gl_accthis = brief = None
 
     htv_list = htp_list = brief_list = batch_list = briefzei_list = gl_main_list = gl_department_list = t_gl_acct = t_exrate = t_exrate1 = t_gl_accthis = None
 
-    htv_list_list, Htv_list = create_model("Htv_list", {"paramnr":int, "fchar":str})
-    htp_list_list, Htp_list = create_model("Htp_list", {"paramnr":int, "fchar":str})
-    brief_list_list, Brief_list = create_model("Brief_list", {"b_text":str})
-    batch_list_list, Batch_list = create_model("Batch_list", {"briefnr":int, "fname":str})
+    htv_list_list, Htv_list = create_model("Htv_list", {"paramnr":int, "fchar":string})
+    htp_list_list, Htp_list = create_model("Htp_list", {"paramnr":int, "fchar":string})
+    brief_list_list, Brief_list = create_model("Brief_list", {"b_text":string})
+    batch_list_list, Batch_list = create_model("Batch_list", {"briefnr":int, "fname":string})
     briefzei_list_list, Briefzei_list = create_model_like(Briefzei)
     gl_main_list_list, Gl_main_list = create_model_like(Gl_main)
     gl_department_list_list, Gl_department_list = create_model_like(Gl_department)
-    t_gl_acct_list, T_gl_acct = create_model("T_gl_acct", {"fibukonto":str, "bezeich":str, "acc_type":int, "main_nr":int, "deptnr":int, "actual":[decimal,12], "budget":[decimal,12], "last_yr":[decimal,12], "ly_budget":[decimal,12], "debit":[decimal,12]})
+    t_gl_acct_list, T_gl_acct = create_model("T_gl_acct", {"fibukonto":string, "bezeich":string, "acc_type":int, "main_nr":int, "deptnr":int, "actual":[Decimal,12], "budget":[Decimal,12], "last_yr":[Decimal,12], "ly_budget":[Decimal,12], "debit":[Decimal,12]})
     t_exrate_list, T_exrate = create_model_like(Exrate)
     t_exrate1_list, T_exrate1 = create_model_like(Exrate)
-    t_gl_accthis_list, T_gl_accthis = create_model("T_gl_accthis", {"fibukonto":str, "year":int, "actual":[decimal,12], "budget":[decimal,12], "last_yr":[decimal,12], "ly_budget":[decimal,12], "debit":[decimal,12]})
-
+    t_gl_accthis_list, T_gl_accthis = create_model("T_gl_accthis", {"fibukonto":string, "year":int, "actual":[Decimal,12], "budget":[Decimal,12], "last_yr":[Decimal,12], "ly_budget":[Decimal,12], "debit":[Decimal,12]})
 
     db_session = local_storage.db_session
 
@@ -78,24 +81,21 @@ def prepare_gl_parxls2bl(pvilanguage:int, briefnr:int, to_date:date, close_month
         i:int = 0
         j:int = 0
         n:int = 0
-        c:str = ""
+        c:string = ""
         l:int = 0
         continued:bool = False
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 600)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 600)]})
         keycmd = htparam.fchar
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 2030)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 2030)]})
         keyvar = htparam.fchar
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 1122)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 1122)]})
         keycont = keycmd + htparam.fchar
 
         for htparam in db_session.query(Htparam).filter(
-                 (Htparam.paramgruppe == 39) & (Htparam.paramnr != 2030)).order_by(len(Htparam.fchar).desc()).all():
+                 (Htparam.paramgruppe == 39) & (Htparam.paramnr != 2030)).order_by(length(Htparam.fchar).desc()).all():
 
             if substring(htparam.fchar, 0 , 1) == (".").lower() :
                 htv_list = Htv_list()
@@ -403,31 +403,31 @@ def prepare_gl_parxls2bl(pvilanguage:int, briefnr:int, to_date:date, close_month
         for briefzei in db_session.query(Briefzei).filter(
                      (Briefzei.briefnr == briefnr)).order_by(Briefzei.briefzeilnr).all():
             j = 1
-            for i in range(1,len(briefzei.texte)  + 1) :
+            for i in range(1,length(briefzei.texte)  + 1) :
 
                 if asc(substring(briefzei.texte, i - 1, 1)) == 10:
                     n = i - j
                     c = substring(briefzei.texte, j - 1, n)
-                    l = len(c)
+                    l = length(c)
 
                     if not continued:
                         brief_list = Brief_list()
-                    brief_list_list.append(brief_list)
+                        brief_list_list.append(brief_list)
 
                     brief_list.b_text = brief_list.b_text + c
                     j = i + 1
 
-                    if l > len((keycont).lower() ) and substring(c, l - len((keycont).lower() ) + 1 - 1, len((keycont).lower() )) == (keycont).lower() :
+                    if l > length((keycont).lower() ) and substring(c, l - length((keycont).lower() ) + 1 - 1, length((keycont).lower() )) == (keycont).lower() :
                         continued = True
-                        b_text = substring(b_text, 0, len(b_text) - len(keycont))
+                        b_text = substring(b_text, 0, length(b_text) - length(keycont))
                     else:
                         continued = False
-            n = len(briefzei.texte) - j + 1
+            n = length(briefzei.texte) - j + 1
             c = substring(briefzei.texte, j - 1, n)
 
             if not continued:
                 brief_list = Brief_list()
-            brief_list_list.append(brief_list)
+                brief_list_list.append(brief_list)
 
             b_text = b_text + c
 
@@ -441,7 +441,7 @@ def prepare_gl_parxls2bl(pvilanguage:int, briefnr:int, to_date:date, close_month
         nonlocal htv_list, htp_list, brief_list, batch_list, briefzei_list, gl_main_list, gl_department_list, t_gl_acct, t_exrate, t_exrate1, t_gl_accthis
         nonlocal htv_list_list, htp_list_list, brief_list_list, batch_list_list, briefzei_list_list, gl_main_list_list, gl_department_list_list, t_gl_acct_list, t_exrate_list, t_exrate1_list, t_gl_accthis_list
 
-        texte:str = ""
+        texte:string = ""
         correct:bool = False
         bnr:int = 0
         row_nr:int = 0
@@ -459,11 +459,10 @@ def prepare_gl_parxls2bl(pvilanguage:int, briefnr:int, to_date:date, close_month
                 if correct:
                     bnr = to_int(texte)
 
-                    brief = db_session.query(Brief).filter(
-                             (Brief.briefnr == bnr)).first()
+                    brief = get_cache (Brief, {"briefnr": [(eq, bnr)]})
 
                     if not brief:
-                        msg_str = msg_str + chr(2) + translateExtended ("No such report file number", lvcarea, "") + " " + to_string(bnr) + chr(10) + translateExtended ("at line number", lvcarea, "") + " " + to_string(row_nr) + chr(10) + substring(texte, 0, len(texte))
+                        msg_str = msg_str + chr_unicode(2) + translateExtended ("No such report file number", lvcarea, "") + " " + to_string(bnr) + chr_unicode(10) + translateExtended ("at line number", lvcarea, "") + " " + to_string(row_nr) + chr_unicode(10) + substring(texte, 0, length(texte))
                         prog_error = True
                         error_nr = - 1
                         return_flag = True
@@ -489,13 +488,12 @@ def prepare_gl_parxls2bl(pvilanguage:int, briefnr:int, to_date:date, close_month
             batch_list_list.append(batch_list)
 
 
-            brief = db_session.query(Brief).filter(
-                     (Brief.briefnr == briefnr)).first()
+            brief = get_cache (Brief, {"briefnr": [(eq, briefnr)]})
             batch_list.briefnr = briefnr
             batch_list.fname = brief.fname
 
 
-    def check_integer(texte:str):
+    def check_integer(texte:string):
 
         nonlocal end_month, prev_month, beg_month, keycmd, keyvar, keycont, c_param64, c_param977, c_param170, c_param144, c_foreign_nr, d_param795, xls_dir, prog_error, error_nr, msg_str, htv_list_list, htp_list_list, brief_list_list, batch_list_list, briefzei_list_list, gl_main_list_list, gl_department_list_list, t_gl_acct_list, t_exrate_list, t_exrate1_list, t_gl_accthis_list, batch_file, curr_row, curr_texte, lvcarea, briefzei, gl_main, gl_department, exrate, htparam, gl_acct, waehrung, gl_accthis, brief
         nonlocal pvilanguage, briefnr, to_date, close_month
@@ -511,15 +509,15 @@ def prepare_gl_parxls2bl(pvilanguage:int, briefnr:int, to_date:date, close_month
             return (correct)
 
 
-        if len(texte) == 0:
+        if length(texte) == 0:
             correct = False
-        for i in range(1,len(texte)  + 1) :
+        for i in range(1,length(texte)  + 1) :
 
             if asc(substring(texte, i - 1, 1)) > 57 or asc(substring(texte, i, 1)) < 48:
                 correct = False
 
         if not correct:
-            msg_str = msg_str + chr(2) + translateExtended ("Program expected a number:", lvcarea, "") + " " + texte + chr(10) + translateExtended ("at line number", lvcarea, "") + " " + to_string(curr_row) + chr(10) + substring(curr_texte, 0, len(curr_texte))
+            msg_str = msg_str + chr_unicode(2) + translateExtended ("Program expected a number:", lvcarea, "") + " " + texte + chr_unicode(10) + translateExtended ("at line number", lvcarea, "") + " " + to_string(curr_row) + chr_unicode(10) + substring(curr_texte, 0, length(curr_texte))
             prog_error = True
             error_nr = - 1
 
@@ -528,17 +526,15 @@ def prepare_gl_parxls2bl(pvilanguage:int, briefnr:int, to_date:date, close_month
         return generate_inner_output()
 
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 418)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 418)]})
 
     if htparam.fchar == "":
-        msg_str = msg_str + chr(2) + translateExtended ("Excel Output Directory not defined (Param 418 Grp 15)", lvcarea, "")
+        msg_str = msg_str + chr_unicode(2) + translateExtended ("Excel Output Directory not defined (Param 418 Grp 15)", lvcarea, "")
 
         return generate_output()
     xls_dir = htparam.fchar
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 993)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 993)]})
     end_month = htparam.finteger
     beg_month = htparam.finteger + 1
 
@@ -559,8 +555,7 @@ def prepare_gl_parxls2bl(pvilanguage:int, briefnr:int, to_date:date, close_month
 
         return generate_output()
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 64)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 64)]})
     c_param64 = htparam.fchar
 
     for briefzei in db_session.query(Briefzei).filter(
@@ -607,26 +602,21 @@ def prepare_gl_parxls2bl(pvilanguage:int, briefnr:int, to_date:date, close_month
 
         buffer_copy(exrate, t_exrate)
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 795)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 795)]})
     d_param795 = htparam.fdate
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 977)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 977)]})
     c_param977 = htparam.fchar
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 170)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 170)]})
     c_param170 = htparam.fchar
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 144)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
     c_param144 = htparam.fchar
 
     if c_param144 != "":
 
-        waehrung = db_session.query(Waehrung).filter(
-                 (func.lower(Waehrung.wabkurz) == (c_param144).lower())).first()
+        waehrung = get_cache (Waehrung, {"wabkurz": [(eq, c_param144)]})
 
         if waehrung:
             c_foreign_nr = waehrung.waehrungsnr

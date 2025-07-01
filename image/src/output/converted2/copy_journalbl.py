@@ -1,9 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Gl_journal, Gl_jouhdr, Counters
 
-def copy_journalbl(desc_cj:str, credit:decimal, debit:decimal, remain:decimal, jnr:int, user_init:str, datum:date, refno:str):
+def copy_journalbl(desc_cj:string, credit:Decimal, debit:Decimal, remain:Decimal, jnr:int, user_init:string, datum:date, refno:string):
+
+    prepare_cache ([Gl_journal, Gl_jouhdr, Counters])
+
     gl_journal = gl_jouhdr = counters = None
 
     gl_jnal = gl_jou = gl_hdr = None
@@ -11,6 +16,7 @@ def copy_journalbl(desc_cj:str, credit:decimal, debit:decimal, remain:decimal, j
     Gl_jnal = create_buffer("Gl_jnal",Gl_journal)
     Gl_jou = create_buffer("Gl_jou",Gl_journal)
     Gl_hdr = create_buffer("Gl_hdr",Gl_jouhdr)
+
 
     db_session = local_storage.db_session
 
@@ -24,12 +30,11 @@ def copy_journalbl(desc_cj:str, credit:decimal, debit:decimal, remain:decimal, j
 
         return {}
 
-    gl_hdr = Gl_hdr()
+    gl_hdr = Gl_jouhdr()
     db_session.add(gl_hdr)
 
 
-    counters = db_session.query(Counters).filter(
-                 (Counters.counter_no == 25)).first()
+    counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
 
     if not counters:
         counters = Counters()
@@ -38,6 +43,7 @@ def copy_journalbl(desc_cj:str, credit:decimal, debit:decimal, remain:decimal, j
         counters.counter_no = 25
         counters.counter_bez = "G/L Transaction Journal"
     counters.counter = counters.counter + 1
+    pass
     gl_hdr.jnr = counters.counter
     gl_hdr.refno = refno
     gl_hdr.datum = datum
@@ -45,10 +51,11 @@ def copy_journalbl(desc_cj:str, credit:decimal, debit:decimal, remain:decimal, j
     gl_hdr.credit =  to_decimal(credit)
     gl_hdr.debit =  to_decimal(debit)
     gl_hdr.remain =  to_decimal(remain)
+    pass
 
     for gl_jou in db_session.query(Gl_jou).filter(
                  (Gl_jou.jnr == jnr)).order_by(Gl_jou._recid).all():
-        gl_jnal = Gl_jnal()
+        gl_jnal = Gl_journal()
         db_session.add(gl_jnal)
 
         gl_jnal.jnr = counters.counter
@@ -58,6 +65,5 @@ def copy_journalbl(desc_cj:str, credit:decimal, debit:decimal, remain:decimal, j
         gl_jnal.credit =  to_decimal(gl_jou.credit)
         gl_jnal.userinit = user_init
         gl_jnal.zeit = get_current_time_in_seconds()
-
 
     return generate_output()

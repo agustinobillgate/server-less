@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -11,3 +13,9 @@ class Printcod(Base):
 	contcode = sa.Column(sa.String, default="")
 	emu = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('bezeichnung', "")
+		kwargs.setdefault('code', "")
+		kwargs.setdefault('contcode', "")
+		kwargs.setdefault('emu', "")
+		super(Printcod, self).__init__(*args, **kwargs)

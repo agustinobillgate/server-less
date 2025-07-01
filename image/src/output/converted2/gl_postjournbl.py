@@ -1,10 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Gl_jouhdr
 
-def gl_postjournbl(refno:str):
+def gl_postjournbl(refno:string):
+
+    prepare_cache ([Gl_jouhdr])
+
     fl_code = 0
     datum = None
     bezeich = ""
@@ -13,6 +17,7 @@ def gl_postjournbl(refno:str):
     gbuff = None
 
     Gbuff = create_buffer("Gbuff",Gl_jouhdr)
+
 
     db_session = local_storage.db_session
 
@@ -27,8 +32,7 @@ def gl_postjournbl(refno:str):
         return {"fl_code": fl_code, "datum": datum, "bezeich": bezeich}
 
 
-    gbuff = db_session.query(Gbuff).filter(
-             (func.lower(Gbuff.refno) == (refno).lower())).first()
+    gbuff = get_cache (Gl_jouhdr, {"refno": [(eq, refno)]})
 
     if gbuff:
         fl_code = 1

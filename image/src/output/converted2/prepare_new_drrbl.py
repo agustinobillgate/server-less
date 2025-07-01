@@ -1,13 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 
 def prepare_new_drrbl():
     menu_drr_list = []
 
     menu_drr = None
 
-    menu_drr_list, Menu_drr = create_model("Menu_drr", {"nr":int, "descr":str})
-
+    menu_drr_list, Menu_drr = create_model("Menu_drr", {"nr":int, "descr":string})
 
     db_session = local_storage.db_session
 

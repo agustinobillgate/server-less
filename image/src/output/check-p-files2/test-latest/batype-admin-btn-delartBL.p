@@ -1,0 +1,5 @@
+
+DEF INPUT PARAMETER rec-id AS INT.
+
+FIND FIRST ba-typ WHERE RECID(ba-typ) = rec-id NO-ERROR.
+IF AVAILABLE ba-typ THEN DELETE ba-typ.

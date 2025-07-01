@@ -1,5 +1,7 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Queasy
 
 t_cflow1_list, T_cflow1 = create_model_like(Queasy)
@@ -11,6 +13,7 @@ def update_status_cashflowbl(case_type:int, t_cflow1_list:[T_cflow1]):
     t_cflow1 = t_queasy = None
 
     T_queasy = create_buffer("T_queasy",Queasy)
+
 
     db_session = local_storage.db_session
 
@@ -30,14 +33,13 @@ def update_status_cashflowbl(case_type:int, t_cflow1_list:[T_cflow1]):
 
         if t_cflow1:
 
-            queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 177) & (Queasy.deci1 == t_cflow1.deci1)).first()
+            queasy = get_cache (Queasy, {"key": [(eq, 177)],"deci1": [(eq, t_cflow1.deci1)]})
 
             if queasy:
 
                 t_queasy = db_session.query(T_queasy).filter(
                          (T_queasy._recid == queasy._recid)).first()
-                t_queasy_list.remove(t_queasy)
+                db_session.delete(t_queasy)
                 pass
                 success_flag = True
     elif case_type == 2:
@@ -63,8 +65,7 @@ def update_status_cashflowbl(case_type:int, t_cflow1_list:[T_cflow1]):
 
         if t_cflow1:
 
-            queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 177) & (t_cflow1.deci1 == Queasy.deci1)).first()
+            queasy = get_cache (Queasy, {"key": [(eq, 177)],"deci1": [(eq, t_cflow1.deci1)]})
 
             if queasy:
 
@@ -75,6 +76,7 @@ def update_status_cashflowbl(case_type:int, t_cflow1_list:[T_cflow1]):
                 t_queasy.logi1 = t_cflow1.logi1
 
 
+                pass
                 pass
                 success_flag = True
 

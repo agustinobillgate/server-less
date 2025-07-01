@@ -1,10 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Gl_acct, Gl_accthis, Htparam, Gl_jouhdr, Gl_journal, Gl_jourhis, Gl_jhdrhis, Bediener, Res_history
 
-def closeyear2bl(curr_yr:int, curr_date:date, user_init:str):
+def closeyear2bl(curr_yr:int, curr_date:date, user_init:string):
+
+    prepare_cache ([Gl_acct, Gl_accthis, Htparam, Gl_jourhis, Bediener, Res_history])
+
     t_gl_acct_list = []
     i:int = 0
     last_2yr:date = None
@@ -21,6 +25,7 @@ def closeyear2bl(curr_yr:int, curr_date:date, user_init:str):
     Gbuff = create_buffer("Gbuff",Gl_accthis)
     Gbuff1 = create_buffer("Gbuff1",Gl_accthis)
 
+
     db_session = local_storage.db_session
 
     def generate_output():
@@ -34,10 +39,8 @@ def closeyear2bl(curr_yr:int, curr_date:date, user_init:str):
 
         return {"t-gl-acct": t_gl_acct_list}
 
-    htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 983)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
     htparam.flogical = True
-
 
     for gl_acct in db_session.query(Gl_acct).order_by(Gl_acct._recid).all():
         t_gl_acct = T_gl_acct()
@@ -45,19 +48,16 @@ def closeyear2bl(curr_yr:int, curr_date:date, user_init:str):
 
         buffer_copy(gl_acct, t_gl_acct)
 
-    gl_accthis = db_session.query(Gl_accthis).filter(
-             (Gl_accthis.year == curr_yr)).first()
+    gl_accthis = get_cache (Gl_accthis, {"year": [(eq, curr_yr)]})
     while None != gl_accthis:
 
-        gl_hbuff = db_session.query(Gl_hbuff).filter(
-                     (Gl_hbuff._recid == gl_accthis._recid)).first()
-        gl_hbuff_list.remove(gl_hbuff)
+        gl_hbuff = get_cache (Gl_accthis, {"_recid": [(eq, gl_accthis._recid)]})
+        db_session.delete(gl_hbuff)
         pass
-
 
         curr_recid = gl_accthis._recid
         gl_accthis = db_session.query(Gl_accthis).filter(
-                 (Gl_accthis.year == curr_yr)).filter(Gl_accthis._recid > curr_recid).first()
+                 (Gl_accthis.year == curr_yr) & (Gl_accthis._recid > curr_recid)).first()
 
     gl_acct = db_session.query(Gl_acct).first()
     while None != gl_acct:
@@ -69,9 +69,9 @@ def closeyear2bl(curr_yr:int, curr_date:date, user_init:str):
 
 
         pass
+        pass
 
-        gl_acc1 = db_session.query(Gl_acc1).filter(
-                     (Gl_acc1._recid == gl_acct._recid)).first()
+        gl_acc1 = get_cache (Gl_acct, {"_recid": [(eq, gl_acct._recid)]})
         for i in range(1,12 + 1) :
             gl_acc1.last_yr[i - 1] = gl_acc1.actual[i - 1]
             gl_acc1.actual[i - 1] = 0
@@ -80,12 +80,13 @@ def closeyear2bl(curr_yr:int, curr_date:date, user_init:str):
             gl_acc1.debit[i - 1] = 0
 
 
+        pass
+
         curr_recid = gl_acct._recid
         gl_acct = db_session.query(Gl_acct).filter(Gl_acct._recid > curr_recid).first()
     last_2yr = date_mdy(1, 1, (curr_yr - timedelta(days=1)))
 
-    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-             (Gl_jouhdr.datum < last_2yr)).first()
+    gl_jouhdr = get_cache (Gl_jouhdr, {"datum": [(lt, last_2yr)]})
     while None != gl_jouhdr:
 
         for gl_journal in db_session.query(Gl_journal).filter(
@@ -98,62 +99,64 @@ def closeyear2bl(curr_yr:int, curr_date:date, user_init:str):
 
 
             pass
+            pass
             db_session.delete(gl_journal)
         gl_jhdrhis = Gl_jhdrhis()
         db_session.add(gl_jhdrhis)
 
         buffer_copy(gl_jouhdr, gl_jhdrhis)
+        pass
+        pass
         db_session.delete(gl_jouhdr)
 
         curr_recid = gl_jouhdr._recid
         gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                     (Gl_jouhdr.datum < last_2yr)).filter(Gl_jouhdr._recid > curr_recid).first()
-
+                     (Gl_jouhdr.datum < last_2yr) & (Gl_jouhdr._recid > curr_recid)).first()
     pass
     pass
 
-    htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 983)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
     htparam.flogical = False
+    pass
 
-    htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 795)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 795)]})
     curr_date = htparam.fdate
     yy = get_year(curr_date) + 1
     htparam.fdate = date_mdy(get_month(curr_date) , get_day(curr_date) , yy)
     htparam.lupdate = get_current_date()
     htparam.fdefault = user_init + " - " + to_string(get_current_time_in_seconds(), "HH:MM:SS")
 
-    htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 599)).first()
+
+    pass
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 599)]})
 
     if htparam.flogical:
 
-        htparam = db_session.query(Htparam).filter(
-                     (Htparam.paramnr == 979)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 979)]})
 
-        gl_acct = db_session.query(Gl_acct).filter(
-                     (Gl_acct.fibukonto == htparam.fchar)).first()
+        gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
 
-        htparam = db_session.query(Htparam).filter(
-                     (Htparam.paramnr == 612)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 612)]})
 
-        gl_acct1 = db_session.query(Gl_acct1).filter(
-                     (Gl_acct1.fibukonto == htparam.fchar)).first()
+        gl_acct1 = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
 
-        gbuff = db_session.query(Gbuff).filter(
-                     (Gbuff.fibukonto == gl_acct.fibukonto) & (Gbuff.year == curr_yr)).first()
+        gbuff = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_acct.fibukonto)],"year": [(eq, curr_yr)]})
 
-        gbuff1 = db_session.query(Gbuff1).filter(
-                     (Gbuff1.fibukonto == gl_acct1.fibukonto) & (Gbuff1.year == curr_yr)).first()
+        gbuff1 = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_acct1.fibukonto)],"year": [(eq, curr_yr)]})
         for i in range(1,12 + 1) :
             gl_acct1.last_yr[i - 1] = gl_acct1.last_yr[i - 1] + gl_acct.last_yr[i - 1]
             gl_acct.last_yr[i - 1] = 0
             gbuff1.actual[i - 1] = gl_acct1.last_yr[i - 1]
             gbuff.actual[i - 1] = 0
 
-    bediener = db_session.query(Bediener).filter(
-                 (func.lower(Bediener.userinit) == (user_init).lower())).first()
+
+        pass
+        pass
+        pass
+        pass
+
+    bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
     res_history = Res_history()
     db_session.add(res_history)
 
@@ -165,6 +168,6 @@ def closeyear2bl(curr_yr:int, curr_date:date, user_init:str):
 
 
     pass
-
+    pass
 
     return generate_output()

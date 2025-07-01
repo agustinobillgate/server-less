@@ -1,16 +1,22 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Gl_acct, Queasy
 
 def select_glacct2bl():
+
+    prepare_cache ([Gl_acct])
+
     q1_list_list = []
     gl_acct = queasy = None
 
     q1_list = gl_acct2 = None
 
-    q1_list_list, Q1_list = create_model("Q1_list", {"fibukonto":str, "bezeich":str, "fibukonto2":str})
+    q1_list_list, Q1_list = create_model("Q1_list", {"fibukonto":string, "bezeich":string, "fibukonto2":string})
 
     Gl_acct2 = create_buffer("Gl_acct2",Gl_acct)
+
 
     db_session = local_storage.db_session
 
@@ -42,13 +48,13 @@ def select_glacct2bl():
         q1_list.fibukonto2 = gl_acct.fibukonto
 
 
-    queasy_obj_list = []
+    queasy_obj_list = {}
     for queasy, gl_acct, gl_acct2 in db_session.query(Queasy, Gl_acct, Gl_acct2).join(Gl_acct,(Gl_acct.fibukonto == Queasy.char1) & (Gl_acct.activeflag)).join(Gl_acct2,(Gl_acct2.fibukonto == Queasy.char2) & (Gl_acct2.activeflag)).filter(
              (Queasy.key == 108)).order_by(Gl_acct.fibukonto).all():
-        if queasy._recid in queasy_obj_list:
+        if queasy_obj_list.get(queasy._recid):
             continue
         else:
-            queasy_obj_list.append(queasy._recid)
+            queasy_obj_list[queasy._recid] = True
 
 
         assign_it()

@@ -1,8 +1,13 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Htparam, Paramtext
 
 def gl_htpbl(grpnr:int):
+
+    prepare_cache ([Paramtext])
+
     t_htparam_list = []
     htgrp_list = []
     htparam = paramtext = None
@@ -10,8 +15,7 @@ def gl_htpbl(grpnr:int):
     t_htparam = htgrp = None
 
     t_htparam_list, T_htparam = create_model_like(Htparam)
-    htgrp_list, Htgrp = create_model("Htgrp", {"number":int, "bezeich":str})
-
+    htgrp_list, Htgrp = create_model("Htgrp", {"number":int, "bezeich":string})
 
     db_session = local_storage.db_session
 
@@ -48,8 +52,7 @@ def gl_htpbl(grpnr:int):
 
             if arr[i - 1] != 0:
 
-                paramtext = db_session.query(Paramtext).filter(
-                         (Paramtext.txtnr == arr[i - 1)]).first()
+                paramtext = get_cache (Paramtext, {"txtnr": [(eq, arr[i - 1])]})
                 htgrp = Htgrp()
                 htgrp_list.append(htgrp)
 
@@ -67,7 +70,7 @@ def gl_htpbl(grpnr:int):
         nonlocal t_htparam_list, htgrp_list
 
         for htparam in db_session.query(Htparam).filter(
-                 (Htparam.paramgr == htgrp.number)).order_by(Htparam._recid).all():
+                 (Htparam.paramgruppe == htgrp.number)).order_by(Htparam._recid).all():
             t_htparam = T_htparam()
             t_htparam_list.append(t_htparam)
 

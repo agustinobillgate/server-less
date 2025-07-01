@@ -1,11 +1,15 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Gl_acct, Gl_main, Gl_fstype, Gl_department
 
 g_list_list, G_list = create_model_like(Gl_acct)
 
-def glacct_admin_btn_exitbl(g_list_list:[G_list], case_type:int, comments:str, curr_mode:str, user_init:str, map_acct:str, prev_fibukonto:str, tax_code:str):
+def glacct_admin_btn_exitbl(g_list_list:[G_list], case_type:int, comments:string, curr_mode:string, user_init:string, map_acct:string, prev_fibukonto:string, tax_code:string):
+
+    prepare_cache ([Gl_main, Gl_fstype, Gl_department])
+
     from_acct = ""
     found = False
     success_flag = False
@@ -14,8 +18,7 @@ def glacct_admin_btn_exitbl(g_list_list:[G_list], case_type:int, comments:str, c
 
     b1_list = g_list = None
 
-    b1_list_list, B1_list = create_model_like(Gl_acct, {"main_bezeich":str, "kurzbez":str, "dept_bezeich":str, "fstype_bezeich":str})
-
+    b1_list_list, B1_list = create_model_like(Gl_acct, {"main_bezeich":string, "kurzbez":string, "dept_bezeich":string, "fstype_bezeich":string})
 
     db_session = local_storage.db_session
 
@@ -95,17 +98,13 @@ def glacct_admin_btn_exitbl(g_list_list:[G_list], case_type:int, comments:str, c
         nonlocal b1_list, g_list
         nonlocal b1_list_list
 
-        gl_acct = db_session.query(Gl_acct).filter(
-                 (Gl_acct.fibukonto == g_list.fibukonto)).first()
+        gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, g_list.fibukonto)]})
 
-        gl_main = db_session.query(Gl_main).filter(
-                 (Gl_main.nr == gl_acct.main_nr)).first()
+        gl_main = get_cache (Gl_main, {"nr": [(eq, gl_acct.main_nr)]})
 
-        gl_fstype = db_session.query(Gl_fstype).filter(
-                 (Gl_fstype.nr == gl_acct.fs_type)).first()
+        gl_fstype = get_cache (Gl_fstype, {"nr": [(eq, gl_acct.fs_type)]})
 
-        gl_department = db_session.query(Gl_department).filter(
-                 (Gl_department.nr == gl_acct.deptnr)).first()
+        gl_department = get_cache (Gl_department, {"nr": [(eq, gl_acct.deptnr)]})
         b1_list = B1_list()
         b1_list_list.append(b1_list)
 
@@ -119,29 +118,25 @@ def glacct_admin_btn_exitbl(g_list_list:[G_list], case_type:int, comments:str, c
 
     if case_type == 1:
 
-        gl_acct = db_session.query(Gl_acct).filter(
-                 (Gl_acct.fibukonto == g_list.fibukonto)).first()
+        gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, g_list.fibukonto)]})
 
         if gl_acct:
 
             return generate_output()
 
-    gl_main = db_session.query(Gl_main).filter(
-             (Gl_main.nr == g_list.main_nr)).first()
+    gl_main = get_cache (Gl_main, {"nr": [(eq, g_list.main_nr)]})
 
     if not gl_main:
 
         return generate_output()
 
-    gl_fstype = db_session.query(Gl_fstype).filter(
-             (Gl_fstype.nr == g_list.fs_type)).first()
+    gl_fstype = get_cache (Gl_fstype, {"nr": [(eq, g_list.fs_type)]})
 
     if not gl_fstype:
 
         return generate_output()
 
-    gl_department = db_session.query(Gl_department).filter(
-             (Gl_department.nr == g_list.deptnr)).first()
+    gl_department = get_cache (Gl_department, {"nr": [(eq, g_list.deptnr)]})
 
     if not gl_department:
 
@@ -157,8 +152,7 @@ def glacct_admin_btn_exitbl(g_list_list:[G_list], case_type:int, comments:str, c
 
     elif case_type == 2:
 
-        gl_acct = db_session.query(Gl_acct).filter(
-                 (func.lower(Gl_acct.fibukonto) == (prev_fibukonto).lower())).first()
+        gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, prev_fibukonto)]})
         fill_gl_acct()
         create_b1_list()
 

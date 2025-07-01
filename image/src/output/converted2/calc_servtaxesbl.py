@@ -1,11 +1,16 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from functions.htpdate import htpdate
 from functions.htplogic import htplogic
 from models import Artikel, Htparam, Kontplan
 
 def calc_servtaxesbl(i_case:int, inp_artno:int, inp_deptno:int, inp_date:date):
+
+    prepare_cache ([Artikel, Htparam, Kontplan])
+
     service = to_decimal("0.0")
     vat = to_decimal("0.0")
     vat2 = to_decimal("0.0")
@@ -16,7 +21,7 @@ def calc_servtaxesbl(i_case:int, inp_artno:int, inp_deptno:int, inp_date:date):
     bill_date:date = None
     serv_vat:bool = False
     tax_vat:bool = False
-    ct:str = ""
+    ct:string = ""
     l_deci:int = 2
     rm_serv:bool = False
     rm_vat:bool = False
@@ -24,7 +29,6 @@ def calc_servtaxesbl(i_case:int, inp_artno:int, inp_deptno:int, inp_date:date):
     incl_mwst:bool = False
     returnflag:bool = False
     artikel = htparam = kontplan = None
-
 
     db_session = local_storage.db_session
 
@@ -39,8 +43,7 @@ def calc_servtaxesbl(i_case:int, inp_artno:int, inp_deptno:int, inp_date:date):
         nonlocal service, vat, vat2, fact_scvat, service_code, tax_code, vat_code, bill_date, serv_vat, tax_vat, ct, l_deci, rm_serv, rm_vat, incl_service, incl_mwst, returnflag, artikel, htparam, kontplan
         nonlocal i_case, inp_artno, inp_deptno, inp_date
 
-        kontplan = db_session.query(Kontplan).filter(
-                 (Kontplan.betriebsnr == inp_deptno) & (Kontplan.kontignr == inp_artno) & (Kontplan.datum == inp_date)).first()
+        kontplan = get_cache (Kontplan, {"betriebsnr": [(eq, inp_deptno)],"kontignr": [(eq, inp_artno)],"datum": [(eq, inp_date)]})
 
         if not kontplan:
 
@@ -55,8 +58,7 @@ def calc_servtaxesbl(i_case:int, inp_artno:int, inp_deptno:int, inp_date:date):
             service =  to_decimal(kontplan.anzkont) / to_decimal("10000")
             vat =  to_decimal(kontplan.anzconf) / to_decimal("10000")
 
-        kontplan = db_session.query(Kontplan).filter(
-                 (Kontplan.betriebsnr == inp_deptno + 100) & (Kontplan.kontignr == inp_artno) & (Kontplan.datum == inp_date)).first()
+        kontplan = get_cache (Kontplan, {"betriebsnr": [(eq, inp_deptno + 100)],"kontignr": [(eq, inp_artno)],"datum": [(eq, inp_date)]})
 
         if kontplan:
             vat2 =  to_decimal(kontplan.anzconf) / to_decimal("10000000")
@@ -100,8 +102,7 @@ def calc_servtaxesbl(i_case:int, inp_artno:int, inp_deptno:int, inp_date:date):
 
         returnflag = True
 
-    artikel = db_session.query(Artikel).filter(
-             (Artikel.artnr == inp_artno) & (Artikel.departement == inp_deptno)).first()
+    artikel = get_cache (Artikel, {"artnr": [(eq, inp_artno)],"departement": [(eq, inp_deptno)]})
 
     if not artikel:
 
@@ -128,13 +129,12 @@ def calc_servtaxesbl(i_case:int, inp_artno:int, inp_deptno:int, inp_date:date):
 
     if service_code != 0:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == service_code)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, service_code)]})
 
         if htparam and htparam.fdecimal != 0:
 
-            if num_entries(htparam.fchar, chr(2)) >= 2:
-                service =  to_decimal(to_decimal(entry(1 , htparam.fchar , chr(2)))) / to_decimal("10000")
+            if num_entries(htparam.fchar, chr_unicode(2)) >= 2:
+                service =  to_decimal(to_decimal(entry(1 , htparam.fchar , chr_unicode(2)))) / to_decimal("10000")
 
 
             else:
@@ -142,13 +142,12 @@ def calc_servtaxesbl(i_case:int, inp_artno:int, inp_deptno:int, inp_date:date):
 
     if tax_code != 0:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == tax_code)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, tax_code)]})
 
         if htparam and htparam.fdecimal != 0:
 
-            if num_entries(htparam.fchar, chr(2)) >= 2:
-                vat2 =  to_decimal(to_decimal(entry(1 , htparam.fchar , chr(2)))) / to_decimal("10000")
+            if num_entries(htparam.fchar, chr_unicode(2)) >= 2:
+                vat2 =  to_decimal(to_decimal(entry(1 , htparam.fchar , chr_unicode(2)))) / to_decimal("10000")
 
 
             else:
@@ -157,7 +156,7 @@ def calc_servtaxesbl(i_case:int, inp_artno:int, inp_deptno:int, inp_date:date):
             if serv_vat:
                 vat2 =  to_decimal(vat2) + (to_decimal(vat2) * to_decimal(service)) / to_decimal("100")
             ct = replace_str(to_string(vat) , ".", ",")
-            l_deci = len(entry(1, ct, ","))
+            l_deci = length(entry(1, ct, ","))
 
             if l_deci <= 2:
                 vat2 = to_decimal(round(vat2 , 2))
@@ -169,13 +168,12 @@ def calc_servtaxesbl(i_case:int, inp_artno:int, inp_deptno:int, inp_date:date):
 
     if vat_code != 0:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == vat_code)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, vat_code)]})
 
         if htparam and htparam.fdecimal != 0:
 
-            if num_entries(htparam.fchar, chr(2)) >= 2:
-                vat =  to_decimal(to_decimal(entry(1 , htparam.fchar , chr(2)))) / to_decimal("10000")
+            if num_entries(htparam.fchar, chr_unicode(2)) >= 2:
+                vat =  to_decimal(to_decimal(entry(1 , htparam.fchar , chr_unicode(2)))) / to_decimal("10000")
 
 
             else:
@@ -190,7 +188,7 @@ def calc_servtaxesbl(i_case:int, inp_artno:int, inp_deptno:int, inp_date:date):
             elif not serv_vat and tax_vat:
                 vat =  to_decimal(vat) + to_decimal(vat) * to_decimal(vat2) / to_decimal("100")
             ct = replace_str(to_string(vat) , ".", ",")
-            l_deci = len(entry(1, ct, ","))
+            l_deci = length(entry(1, ct, ","))
 
             if l_deci <= 2:
                 vat = to_decimal(round(vat , 2))

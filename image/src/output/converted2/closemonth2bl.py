@@ -1,13 +1,18 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Htparam, Waehrung, Gl_jouhdr, Gl_acct, Exrate, Gl_journal
 
 def closemonth2bl():
-    profit:decimal = to_decimal("0.0")
-    revlocal:decimal = to_decimal("0.0")
-    revfremd:decimal = to_decimal("0.0")
-    lost:decimal = to_decimal("0.0")
+
+    prepare_cache ([Htparam, Waehrung, Gl_acct, Exrate, Gl_journal])
+
+    profit:Decimal = to_decimal("0.0")
+    revlocal:Decimal = to_decimal("0.0")
+    revfremd:Decimal = to_decimal("0.0")
+    lost:Decimal = to_decimal("0.0")
     prev_month:int = 0
     curr_month:int = 0
     curr_date:date = None
@@ -18,7 +23,6 @@ def closemonth2bl():
     foreign_rate:bool = False
     double_currency:bool = False
     htparam = waehrung = gl_jouhdr = gl_acct = exrate = gl_journal = None
-
 
     db_session = local_storage.db_session
 
@@ -37,8 +41,7 @@ def closemonth2bl():
             return (acct_date)
 
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 597)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
         acct_date = get_month(htparam.fdate)
 
         if get_day(htparam.fdate) < 15:
@@ -59,8 +62,7 @@ def closemonth2bl():
 
         for gl_acc in db_session.query(Gl_acc).order_by(Gl_acc._recid).all():
 
-            gl_acct = db_session.query(Gl_acct).filter(
-                     (Gl_acct._recid == gl_acc._recid)).first()
+            gl_acct = get_cache (Gl_acct, {"_recid": [(eq, gl_acc._recid)]})
             gl_acct.actual[curr_month - 1] = 0
 
             if gl_acct.acc_type == 3 or gl_acct.acc_type == 4:
@@ -83,29 +85,32 @@ def closemonth2bl():
         Bacct =  create_buffer("Bacct",Gl_acct)
         Bjournal =  create_buffer("Bjournal",Gl_journal)
 
-        gl_journal_obj_list = []
-        for gl_journal, gl_acct in db_session.query(Gl_journal, Gl_acct).join(Gl_acct,(Gl_acct.fibukonto == Gl_journal.fibukonto)).filter(
+        gl_journal_obj_list = {}
+        gl_journal = Gl_journal()
+        gl_acct = Gl_acct()
+        for gl_journal.debit, gl_journal.credit, gl_journal._recid, gl_acct.acc_type, gl_acct.actual, gl_acct.last_yr, gl_acct._recid, gl_acct.fibukonto, gl_acct.modifiable in db_session.query(Gl_journal.debit, Gl_journal.credit, Gl_journal._recid, Gl_acct.acc_type, Gl_acct.actual, Gl_acct.last_yr, Gl_acct._recid, Gl_acct.fibukonto, Gl_acct.modifiable).join(Gl_acct,(Gl_acct.fibukonto == Gl_journal.fibukonto)).filter(
                  (Gl_journal.jnr == jnr) & (Gl_journal.activeflag == 0)).order_by(Gl_journal.fibukonto).all():
-            if gl_journal._recid in gl_journal_obj_list:
+            if gl_journal_obj_list.get(gl_journal._recid):
                 continue
             else:
-                gl_journal_obj_list.append(gl_journal._recid)
+                gl_journal_obj_list[gl_journal._recid] = True
 
             if gl_acct.fibukonto.lower()  == ("10001006").lower() :
                 pass
 
-            bacct = db_session.query(Bacct).filter(
-                     (Bacct._recid == gl_acct._recid)).first()
+            bacct = get_cache (Gl_acct, {"_recid": [(eq, gl_acct._recid)]})
             bacct.actual[curr_month - 1] = bacct.actual[curr_month - 1] +\
                     gl_journal.debit - gl_journal.credit
+
+
+            pass
 
             if gl_acct.acc_type == 1:
                 profit =  to_decimal(profit) - to_decimal(gl_journal.debit) + to_decimal(gl_journal.credit)
 
                 if wahrno != 0:
 
-                    exrate = db_session.query(Exrate).filter(
-                             (Exrate.artnr == wahrno) & (Exrate.datum == datum)).first()
+                    exrate = get_cache (Exrate, {"artnr": [(eq, wahrno)],"datum": [(eq, datum)]})
 
                     if exrate and exrate.betrag != 0:
                         revlocal =  to_decimal(revlocal) + to_decimal(gl_journal.credit) - to_decimal(gl_journal.debit)
@@ -114,9 +119,9 @@ def closemonth2bl():
             elif gl_acct.acc_type == 2 or gl_acct.acc_type == 5:
                 lost =  to_decimal(lost) + to_decimal(gl_journal.debit) - to_decimal(gl_journal.credit)
 
-            bjournal = db_session.query(Bjournal).filter(
-                     (Bjournal._recid == gl_journal._recid)).first()
+            bjournal = get_cache (Gl_journal, {"_recid": [(eq, gl_journal._recid)]})
             bjournal.activeflag = 1
+            pass
             pass
             pass
 
@@ -125,14 +130,15 @@ def closemonth2bl():
 
         nonlocal profit, revlocal, revfremd, lost, prev_month, curr_month, curr_date, beg_month, end_month, first_date, wahrno, foreign_rate, double_currency, htparam, waehrung, gl_jouhdr, gl_acct, exrate, gl_journal
 
-        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                 (Gl_jouhdr.activeflag == 0) & (Gl_jouhdr.datum >= first_date) & (Gl_jouhdr.datum <= curr_date)).first()
+        gl_jouhdr = get_cache (Gl_jouhdr, {"activeflag": [(eq, 0)],"datum": [(ge, first_date),(le, curr_date)]})
         while None != gl_jouhdr:
+            pass
             gl_jouhdr.activeflag = 1
+            pass
 
             curr_recid = gl_jouhdr._recid
             gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                     (Gl_jouhdr.activeflag == 0) & (Gl_jouhdr.datum >= first_date) & (Gl_jouhdr.datum <= curr_date)).filter(Gl_jouhdr._recid > curr_recid).first()
+                     (Gl_jouhdr.activeflag == 0) & (Gl_jouhdr.datum >= first_date) & (Gl_jouhdr.datum <= curr_date) & (Gl_jouhdr._recid > curr_recid)).first()
 
 
     def set_acct_modflag():
@@ -144,43 +150,36 @@ def closemonth2bl():
 
         for gl_acc in db_session.query(Gl_acc).order_by(Gl_acc._recid).all():
 
-            gl_acct = db_session.query(Gl_acct).filter(
-                     (Gl_acct._recid == gl_acc._recid)).first()
+            gl_acct = get_cache (Gl_acct, {"_recid": [(eq, gl_acc._recid)]})
             gl_acct.modifiable = False
+            pass
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 597)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
     curr_date = htparam.fdate
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 993)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 993)]})
     end_month = htparam.finteger
     beg_month = htparam.finteger + 1
 
     if beg_month > 12:
         beg_month = 1
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 558)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 558)]})
     first_date = htparam.fdate + timedelta(days=1)
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 240)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 240)]})
 
     if htparam:
         double_currency = htparam.flogical
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 143)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 143)]})
     foreign_rate = htparam.flogical
 
     if foreign_rate or double_currency:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 144)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
 
-        waehrung = db_session.query(Waehrung).filter(
-                 (Waehrung.wabkurz == htparam.fchar)).first()
+        waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
 
         if waehrung:
             wahrno = waehrung.waehrungsnr
@@ -190,10 +189,15 @@ def closemonth2bl():
     if prev_month == 0:
         prev_month = 12
 
-    htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 983)).first()
-    htparam.flogical = True
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
 
+    if htparam:
+        pass
+        htparam.flogical = True
+
+
+        pass
+        pass
     update_glacct()
 
     for gl_jouhdr in db_session.query(Gl_jouhdr).filter(
@@ -201,26 +205,33 @@ def closemonth2bl():
         process_journal(gl_jouhdr.jnr, gl_jouhdr.datum)
     process_jouhdr()
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 979)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 979)]})
 
-    gl_acct = db_session.query(Gl_acct).filter(
-             (Gl_acct.fibukonto == fchar)).first()
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fchar)]})
     gl_acct.actual[curr_month - 1] = gl_acct.actual[curr_month - 1] - profit + lost
+    pass
 
-    htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 983)).first()
-    htparam.flogical = False
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
 
-    htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 558)).first()
-    htparam.fdate = curr_date
-    htparam.lupdate = get_current_date()
+    if htparam:
+        pass
+        htparam.flogical = False
 
+
+        pass
+        pass
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 558)]})
+
+    if htparam:
+        pass
+        htparam.fdate = curr_date
+        htparam.lupdate = get_current_date()
+        pass
+        pass
     set_acct_modflag()
 
-    exrate = db_session.query(Exrate).filter(
-                 (Exrate.artnr == 99999) & (Exrate.datum == curr_date)).first()
+    exrate = get_cache (Exrate, {"artnr": [(eq, 99999)],"datum": [(eq, curr_date)]})
 
     if not exrate:
         exrate = Exrate()
@@ -229,12 +240,22 @@ def closemonth2bl():
         exrate.artnr = 99999
         exrate.datum = curr_date
 
-    if revfremd != 0:
-        exrate.betrag = to_decimal(round(revlocal / revfremd , 2))
+        if revfremd != 0:
+            exrate.betrag = to_decimal(round(revlocal / revfremd , 2))
 
 
+        else:
+            exrate.betrag =  to_decimal("1")
     else:
-        exrate.betrag =  to_decimal("1")
+        pass
 
+        if revfremd != 0:
+            exrate.betrag = to_decimal(round(revlocal / revfremd , 2))
+
+
+        else:
+            exrate.betrag =  to_decimal("1")
+        pass
+        pass
 
     return generate_output()

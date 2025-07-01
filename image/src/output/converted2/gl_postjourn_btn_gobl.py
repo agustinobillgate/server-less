@@ -1,27 +1,31 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from functions.htpdate import htpdate
-from models import Htparam, Gl_jouhdr, Counters, Gl_journal
+from models import Htparam, Gl_jouhdr, Counters, Gl_journal, Queasy
 
-g_list_list, G_list = create_model("G_list", {"jnr":int, "fibukonto":str, "acct_fibukonto":str, "debit":decimal, "credit":decimal, "userinit":str, "sysdate":date, "zeit":int, "chginit":str, "chgdate":date, "bemerk":str, "bezeich":str, "duplicate":bool, "tax_code":str, "tax_amount":str, "tot_amt":str}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
+g_list_list, G_list = create_model("G_list", {"jnr":int, "fibukonto":string, "acct_fibukonto":string, "debit":Decimal, "credit":Decimal, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "bemerk":string, "bezeich":string, "duplicate":bool, "tax_code":string, "tax_amount":string, "tot_amt":string}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 
-def gl_postjourn_btn_gobl(g_list_list:[G_list], pvilanguage:int, curr_step:int, bezeich:str, credits:[decimal], debits:[decimal], remains:[decimal], refno:str, datum:date, adjust_flag:bool, journaltype:int):
+def gl_postjourn_btn_gobl(g_list_list:[G_list], pvilanguage:int, curr_step:int, bezeich:string, credits:[Decimal], debits:[Decimal], remains:[Decimal], refno:string, datum:date, adjust_flag:bool, journaltype:int):
+
+    prepare_cache ([Htparam, Gl_jouhdr, Counters, Gl_journal, Queasy])
+
     curr_jnr = 0
     msg_str = ""
     error_flag = False
     f_date:date = None
-    lvcarea:str = "gl-postjourn"
-    htparam = gl_jouhdr = counters = gl_journal = None
+    lvcarea:string = "gl-postjourn"
+    htparam = gl_jouhdr = counters = gl_journal = queasy = None
 
     g_list = None
-
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal
-        nonlocal pvilanguage, curr_step, bezeich, credits, debits, remains, refno, datum, adjust_flag, journaltype
+        nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal, queasy
+        nonlocal pvilanguage, curr_step, bezeich, refno, datum, adjust_flag, journaltype
 
 
         nonlocal g_list
@@ -30,8 +34,8 @@ def gl_postjourn_btn_gobl(g_list_list:[G_list], pvilanguage:int, curr_step:int, 
 
     def check_date():
 
-        nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal
-        nonlocal pvilanguage, curr_step, bezeich, credits, debits, remains, refno, datum, adjust_flag, journaltype
+        nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal, queasy
+        nonlocal pvilanguage, curr_step, bezeich, refno, datum, adjust_flag, journaltype
 
 
         nonlocal g_list
@@ -43,29 +47,24 @@ def gl_postjourn_btn_gobl(g_list_list:[G_list], pvilanguage:int, curr_step:int, 
 
         if not adjust_flag:
 
-            htparam = db_session.query(Htparam).filter(
-                     (Htparam.paramnr == 372)).first()
+            htparam = get_cache (Htparam, {"paramnr": [(eq, 372)]})
         else:
 
-            htparam = db_session.query(Htparam).filter(
-                     (Htparam.paramnr == 795)).first()
+            htparam = get_cache (Htparam, {"paramnr": [(eq, 795)]})
         jou_date = htparam.fdate
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 558)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 558)]})
         last_acctdate = htparam.fdate
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 597)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
         acct_date = htparam.fdate
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 795)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 795)]})
         close_year = htparam.fdate
 
         if acct_date == None or last_acctdate == None or jou_date == None or close_year == None:
             msg_str = translateExtended ("Accounting Date is not defined.", lvcarea, "") +\
-                    chr(10) +\
+                    chr_unicode(10) +\
                     translateExtended ("(ParamNo 372, 558, 597, 975)", lvcarea, "")
 
 
@@ -75,7 +74,7 @@ def gl_postjourn_btn_gobl(g_list_list:[G_list], pvilanguage:int, curr_step:int, 
         else:
 
             if (datum <= last_acctdate) and not adjust_flag:
-                msg_str = translateExtended ("Wrong Posting Date", lvcarea, "") + chr(10) + translateExtended ("Last Closing Date :", lvcarea, "") + " " + to_string(last_acctdate) + chr(10) + translateExtended ("Current Closing Date :", lvcarea, "") + " " + to_string(acct_date)
+                msg_str = translateExtended ("Wrong Posting Date", lvcarea, "") + chr_unicode(10) + translateExtended ("Last Closing Date :", lvcarea, "") + " " + to_string(last_acctdate) + chr_unicode(10) + translateExtended ("Current Closing Date :", lvcarea, "") + " " + to_string(acct_date)
                 error_flag = True
 
                 return
@@ -95,28 +94,26 @@ def gl_postjourn_btn_gobl(g_list_list:[G_list], pvilanguage:int, curr_step:int, 
 
             if not adjust_flag:
 
-                gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                         (Gl_jouhdr.jtype == journaltype) & (Gl_jouhdr.datum > datum) & (Gl_jouhdr.activeflag == 0)).first()
+                gl_jouhdr = get_cache (Gl_jouhdr, {"jtype": [(eq, journaltype)],"datum": [(gt, datum)],"activeflag": [(eq, 0)]})
 
                 if gl_jouhdr:
                     msg_str = "&W" +\
                         translateExtended ("Transaction journal found with LATER posting date :", lvcarea, "") +\
-                        chr(10) +\
+                        chr_unicode(10) +\
                         to_string(gl_jouhdr.datum) + " - " + gl_jouhdr.refno +\
-                        chr(10) +\
+                        chr_unicode(10) +\
                         translateExtended ("Please re-check the entered posting date.", lvcarea, "")
 
 
     def create_header():
 
-        nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal
-        nonlocal pvilanguage, curr_step, bezeich, credits, debits, remains, refno, datum, adjust_flag, journaltype
+        nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal, queasy
+        nonlocal pvilanguage, curr_step, bezeich, refno, datum, adjust_flag, journaltype
 
 
         nonlocal g_list
 
-        counters = db_session.query(Counters).filter(
-                 (Counters.counter_no == 25)).first()
+        counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
 
         if not counters:
             counters = Counters()
@@ -127,6 +124,7 @@ def gl_postjourn_btn_gobl(g_list_list:[G_list], pvilanguage:int, curr_step:int, 
 
 
         counters.counter = counters.counter + 1
+        pass
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
@@ -141,10 +139,14 @@ def gl_postjourn_btn_gobl(g_list_list:[G_list], pvilanguage:int, curr_step:int, 
         curr_jnr = counters.counter
 
 
+        pass
+        update_queasy_345(curr_jnr, datum, bezeich)
+
+
     def create_journals():
 
-        nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal
-        nonlocal pvilanguage, curr_step, bezeich, credits, debits, remains, refno, datum, adjust_flag, journaltype
+        nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal, queasy
+        nonlocal pvilanguage, curr_step, bezeich, refno, datum, adjust_flag, journaltype
 
 
         nonlocal g_list
@@ -155,6 +157,45 @@ def gl_postjourn_btn_gobl(g_list_list:[G_list], pvilanguage:int, curr_step:int, 
 
             buffer_copy(g_list, gl_journal)
             gl_journal.jnr = curr_jnr
+
+
+            pass
+
+
+    def update_queasy_345(jnr:int, datum:date, bezeich:string):
+
+        nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal, queasy
+        nonlocal pvilanguage, curr_step, refno, adjust_flag, journaltype
+
+
+        nonlocal g_list
+
+        queasy = get_cache (Queasy, {"key": [(eq, 345)],"number1": [(eq, jnr)],"date1": [(eq, datum)]})
+
+        if queasy:
+            pass
+            queasy.logi1 = True
+            queasy.logi2 = False
+            queasy.logi3 = False
+
+
+            pass
+            pass
+        else:
+            queasy = Queasy()
+            db_session.add(queasy)
+
+            queasy.key = 345
+            queasy.number1 = jnr
+            queasy.number2 = get_current_time_in_seconds()
+            queasy.char1 = bezeich
+            queasy.date1 = datum
+            queasy.logi1 = True
+            queasy.logi2 = False
+            queasy.logi3 = False
+
+
+            pass
 
 
     if curr_step == 1:

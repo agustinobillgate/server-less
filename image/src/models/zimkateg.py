@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -21,3 +23,19 @@ class Zimkateg(Base):
 	zikatnr = sa.Column(sa.Integer, default=0)
 	zimanzargt = sa.Column(ARRAY(sa.Integer),default=[0,0,0,0,0,0,0,0,0])
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('active', False)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('bezeichnung', "")
+		kwargs.setdefault('code', "")
+		kwargs.setdefault('global_kat', False)
+		kwargs.setdefault('kurzbez', "")
+		kwargs.setdefault('maxzimanz', 1)
+		kwargs.setdefault('normalbeleg', 1)
+		kwargs.setdefault('overbooking', 0)
+		kwargs.setdefault('typ', 0)
+		kwargs.setdefault('verfuegbarkeit', False)
+		kwargs.setdefault('zibelstat', False)
+		kwargs.setdefault('zikatnr', 0)
+		kwargs.setdefault('zimanzargt', [0,0,0,0,0,0,0,0,0])
+		super(Zimkateg, self).__init__(*args, **kwargs)

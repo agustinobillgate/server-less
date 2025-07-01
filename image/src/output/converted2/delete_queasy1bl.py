@@ -1,12 +1,12 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Queasy
 
-def delete_queasy1bl(case_type:int, int1:int, int2:int, int3:int, char1:str):
+def delete_queasy1bl(case_type:int, int1:int, int2:int, int3:int, char1:string):
     success_flag = False
     queasy = None
-
 
     db_session = local_storage.db_session
 
@@ -19,8 +19,7 @@ def delete_queasy1bl(case_type:int, int1:int, int2:int, int3:int, char1:str):
 
     if case_type == 1:
 
-        queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == int1) & (Queasy.number1 == int2) & (Queasy.number2 == int3) & (func.lower(Queasy.char1) == (char1).lower())).first()
+        queasy = get_cache (Queasy, {"key": [(eq, int1)],"number1": [(eq, int2)],"number2": [(eq, int3)],"char1": [(eq, char1)]})
 
         if queasy:
             db_session.delete(queasy)
@@ -30,8 +29,7 @@ def delete_queasy1bl(case_type:int, int1:int, int2:int, int3:int, char1:str):
 
     elif case_type == 2:
 
-        queasy = db_session.query(Queasy).filter(
-                 (Queasy._recid == int1)).first()
+        queasy = get_cache (Queasy, {"_recid": [(eq, int1)]})
 
         if queasy:
             db_session.delete(queasy)

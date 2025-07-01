@@ -1,9 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Htparam, Gl_acct
 
 def prepare_trialb_pnlbl():
+
+    prepare_cache ([Htparam])
+
     pbal_flag = False
     to_date = None
     close_date = None
@@ -15,8 +20,7 @@ def prepare_trialb_pnlbl():
 
     gl_depart_list = None
 
-    gl_depart_list_list, Gl_depart_list = create_model("Gl_depart_list", {"nr":int, "bezeich":str})
-
+    gl_depart_list_list, Gl_depart_list = create_model("Gl_depart_list", {"nr":int, "bezeich":string})
 
     db_session = local_storage.db_session
 
@@ -29,31 +33,25 @@ def prepare_trialb_pnlbl():
 
         return {"pbal_flag": pbal_flag, "to_date": to_date, "close_date": close_date, "pnl_acct": pnl_acct, "gl-depart-list": gl_depart_list_list}
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 993)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 993)]})
     end_month = htparam.finteger
     beg_month = htparam.finteger + 1
 
     if beg_month > 12:
         beg_month = 1
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 460)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 460)]})
     pbal_flag = htparam.flogical
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 558)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 558)]})
     to_date = htparam.fdate
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 597)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
     close_date = htparam.fdate
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 979)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 979)]})
 
-    gl_acct = db_session.query(Gl_acct).filter(
-             (Gl_acct.fibukonto == fchar)).first()
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
 
     if gl_acct:
         pnl_acct = htparam.fchar

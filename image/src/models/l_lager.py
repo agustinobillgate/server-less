@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -10,3 +12,8 @@ class L_lager(Base):
 	bezeich = sa.Column(sa.String, default="")
 	lager_nr = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('bezeich', "")
+		kwargs.setdefault('lager_nr', 0)
+		super(L_lager, self).__init__(*args, **kwargs)

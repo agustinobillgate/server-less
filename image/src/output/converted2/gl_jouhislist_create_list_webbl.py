@@ -1,18 +1,19 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from functions.gl_jouhislist_create_listbl import gl_jouhislist_create_listbl
 
-def gl_jouhislist_create_list_webbl(sorttype:int, from_fibu:str, to_fibu:str, from_dept:int, from_date:date, to_date:date, close_year:date):
+def gl_jouhislist_create_list_webbl(sorttype:int, from_fibu:string, to_fibu:string, from_dept:int, from_date:date, to_date:date, close_year:date):
     t_ouput_list_list = []
     curr_date:date = None
-    scurr_date:str = ""
+    scurr_date:string = ""
 
     output_list = t_ouput_list = None
 
-    output_list_list, Output_list = create_model("Output_list", {"marked":str, "fibukonto":str, "jnr":int, "bemerk":str, "str":str})
-    t_ouput_list_list, T_ouput_list = create_model("T_ouput_list", {"marked":str, "fibukonto":str, "jnr":int, "bemerk":str, "datum":str, "refno":str, "bezeich":str, "debit":str, "credit":str, "user_init":str, "created":str, "chgid":str, "chgdate":str, "balance":str})
-
+    output_list_list, Output_list = create_model("Output_list", {"marked":string, "fibukonto":string, "jnr":int, "bemerk":string, "str":string})
+    t_ouput_list_list, T_ouput_list = create_model("T_ouput_list", {"marked":string, "fibukonto":string, "jnr":int, "bemerk":string, "datum":string, "refno":string, "bezeich":string, "debit":string, "credit":string, "user_init":string, "created":string, "chgid":string, "chgdate":string, "balance":string})
 
     db_session = local_storage.db_session
 

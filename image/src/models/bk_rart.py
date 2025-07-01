@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -29,3 +31,27 @@ class Bk_rart(Base):
 	von_zeit = sa.Column(sa.String, default="")
 	zwkum = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('anzahl', 0)
+		kwargs.setdefault('anzeigen', True)
+		kwargs.setdefault('bemerkung', "")
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('bezeich', "")
+		kwargs.setdefault('buchstatus', False)
+		kwargs.setdefault('departement', 0)
+		kwargs.setdefault('fakturiert', 0)
+		kwargs.setdefault('preis', 0)
+		kwargs.setdefault('raum', "")
+		kwargs.setdefault('resstatus', 0)
+		kwargs.setdefault('segmentcode', 0)
+		kwargs.setdefault('setup', "")
+		kwargs.setdefault('setup_id', 0)
+		kwargs.setdefault('standardequipment', False)
+		kwargs.setdefault('veran_artnr', 0)
+		kwargs.setdefault('veran_nr', 0)
+		kwargs.setdefault('veran_resnr', 0)
+		kwargs.setdefault('veran_seite', 0)
+		kwargs.setdefault('veran_typ', 0)
+		kwargs.setdefault('von_zeit', "")
+		kwargs.setdefault('zwkum', 0)
+		super(Bk_rart, self).__init__(*args, **kwargs)

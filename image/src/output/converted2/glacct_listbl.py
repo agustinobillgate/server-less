@@ -1,16 +1,19 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Gl_main, Gl_fstype, Gl_department, Gl_acct, Bediener
 
-def glacct_listbl(fibukonto:str, from_main:int, from_fstype:int, from_depart:int):
+def glacct_listbl(fibukonto:string, from_main:int, from_fstype:int, from_depart:int):
+
+    prepare_cache ([Gl_main, Gl_fstype, Gl_department, Gl_acct, Bediener])
+
     b1_list_list = []
     gl_main = gl_fstype = gl_department = gl_acct = bediener = None
 
     b1_list = None
 
-    b1_list_list, B1_list = create_model("B1_list", {"fibukonto":str, "glacct_bezeich":str, "glmain_bezeich":str, "acc_type":int, "glfstype_bezeich":str, "gldepartment_bezeich":str, "glsubdept":str, "bemerk":str, "nr":int, "code":int})
-
+    b1_list_list, B1_list = create_model("B1_list", {"fibukonto":string, "glacct_bezeich":string, "glmain_bezeich":string, "acc_type":int, "glfstype_bezeich":string, "gldepartment_bezeich":string, "glsubdept":string, "bemerk":string, "nr":int, "code":int})
 
     db_session = local_storage.db_session
 
@@ -35,13 +38,17 @@ def glacct_listbl(fibukonto:str, from_main:int, from_fstype:int, from_depart:int
 
         if from_main == 0 and from_fstype == 0 and from_depart == 0:
 
-            gl_acct_obj_list = []
-            for gl_acct, gl_main, gl_fstype, gl_department in db_session.query(Gl_acct, Gl_main, Gl_fstype, Gl_department).join(Gl_main,(Gl_main.nr == Gl_acct.main_nr)).join(Gl_fstype,(Gl_fstype.nr == Gl_acct.fs_type)).join(Gl_department,(Gl_department.nr == Gl_acct.deptnr)).filter(
-                     (func.lower(Gl_acct.fibukonto) >= (fibukonto).lower()) & (Gl_acct.activeflag)).order_by(Gl_acct.fibukonto).all():
-                if gl_acct._recid in gl_acct_obj_list:
+            gl_acct_obj_list = {}
+            gl_acct = Gl_acct()
+            gl_main = Gl_main()
+            gl_fstype = Gl_fstype()
+            gl_department = Gl_department()
+            for gl_acct.chginit, gl_acct.fibukonto, gl_acct.bezeich, gl_acct.acc_type, gl_acct.bemerk, gl_acct._recid, gl_main.bezeich, gl_main.nr, gl_main.code, gl_main._recid, gl_fstype.bezeich, gl_fstype._recid, gl_department.bezeich, gl_department._recid in db_session.query(Gl_acct.chginit, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct.acc_type, Gl_acct.bemerk, Gl_acct._recid, Gl_main.bezeich, Gl_main.nr, Gl_main.code, Gl_main._recid, Gl_fstype.bezeich, Gl_fstype._recid, Gl_department.bezeich, Gl_department._recid).join(Gl_main,(Gl_main.nr == Gl_acct.main_nr)).join(Gl_fstype,(Gl_fstype.nr == Gl_acct.fs_type)).join(Gl_department,(Gl_department.nr == Gl_acct.deptnr)).filter(
+                     (Gl_acct.fibukonto >= (fibukonto).lower()) & (Gl_acct.activeflag)).order_by(Gl_acct.fibukonto).all():
+                if gl_acct_obj_list.get(gl_acct._recid):
                     continue
                 else:
-                    gl_acct_obj_list.append(gl_acct._recid)
+                    gl_acct_obj_list[gl_acct._recid] = True
 
 
                 assign_it()
@@ -49,13 +56,17 @@ def glacct_listbl(fibukonto:str, from_main:int, from_fstype:int, from_depart:int
 
         elif from_main != 0:
 
-            gl_acct_obj_list = []
-            for gl_acct, gl_main, gl_fstype, gl_department in db_session.query(Gl_acct, Gl_main, Gl_fstype, Gl_department).join(Gl_main,(Gl_main.nr == Gl_acct.main_nr) & (Gl_main.code == from_main)).join(Gl_fstype,(Gl_fstype.nr == Gl_acct.fs_type)).join(Gl_department,(Gl_department.nr == Gl_acct.deptnr)).filter(
-                     (func.lower(Gl_acct.fibukonto) >= (fibukonto).lower()) & (Gl_acct.activeflag)).order_by(Gl_acct.fibukonto).all():
-                if gl_acct._recid in gl_acct_obj_list:
+            gl_acct_obj_list = {}
+            gl_acct = Gl_acct()
+            gl_main = Gl_main()
+            gl_fstype = Gl_fstype()
+            gl_department = Gl_department()
+            for gl_acct.chginit, gl_acct.fibukonto, gl_acct.bezeich, gl_acct.acc_type, gl_acct.bemerk, gl_acct._recid, gl_main.bezeich, gl_main.nr, gl_main.code, gl_main._recid, gl_fstype.bezeich, gl_fstype._recid, gl_department.bezeich, gl_department._recid in db_session.query(Gl_acct.chginit, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct.acc_type, Gl_acct.bemerk, Gl_acct._recid, Gl_main.bezeich, Gl_main.nr, Gl_main.code, Gl_main._recid, Gl_fstype.bezeich, Gl_fstype._recid, Gl_department.bezeich, Gl_department._recid).join(Gl_main,(Gl_main.nr == Gl_acct.main_nr) & (Gl_main.code == from_main)).join(Gl_fstype,(Gl_fstype.nr == Gl_acct.fs_type)).join(Gl_department,(Gl_department.nr == Gl_acct.deptnr)).filter(
+                     (Gl_acct.fibukonto >= (fibukonto).lower()) & (Gl_acct.activeflag)).order_by(Gl_acct.fibukonto).all():
+                if gl_acct_obj_list.get(gl_acct._recid):
                     continue
                 else:
-                    gl_acct_obj_list.append(gl_acct._recid)
+                    gl_acct_obj_list[gl_acct._recid] = True
 
 
                 assign_it()
@@ -63,13 +74,17 @@ def glacct_listbl(fibukonto:str, from_main:int, from_fstype:int, from_depart:int
 
         elif from_fstype != 0:
 
-            gl_acct_obj_list = []
-            for gl_acct, gl_main, gl_fstype, gl_department in db_session.query(Gl_acct, Gl_main, Gl_fstype, Gl_department).join(Gl_main,(Gl_main.nr == Gl_acct.main_nr)).join(Gl_fstype,(Gl_fstype.nr == Gl_acct.fs_type) & (Gl_fstype.nr == from_fstype)).join(Gl_department,(Gl_department.nr == Gl_acct.deptnr)).filter(
-                     (func.lower(Gl_acct.fibukonto) >= (fibukonto).lower()) & (Gl_acct.activeflag)).order_by(Gl_acct.fibukonto).all():
-                if gl_acct._recid in gl_acct_obj_list:
+            gl_acct_obj_list = {}
+            gl_acct = Gl_acct()
+            gl_main = Gl_main()
+            gl_fstype = Gl_fstype()
+            gl_department = Gl_department()
+            for gl_acct.chginit, gl_acct.fibukonto, gl_acct.bezeich, gl_acct.acc_type, gl_acct.bemerk, gl_acct._recid, gl_main.bezeich, gl_main.nr, gl_main.code, gl_main._recid, gl_fstype.bezeich, gl_fstype._recid, gl_department.bezeich, gl_department._recid in db_session.query(Gl_acct.chginit, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct.acc_type, Gl_acct.bemerk, Gl_acct._recid, Gl_main.bezeich, Gl_main.nr, Gl_main.code, Gl_main._recid, Gl_fstype.bezeich, Gl_fstype._recid, Gl_department.bezeich, Gl_department._recid).join(Gl_main,(Gl_main.nr == Gl_acct.main_nr)).join(Gl_fstype,(Gl_fstype.nr == Gl_acct.fs_type) & (Gl_fstype.nr == from_fstype)).join(Gl_department,(Gl_department.nr == Gl_acct.deptnr)).filter(
+                     (Gl_acct.fibukonto >= (fibukonto).lower()) & (Gl_acct.activeflag)).order_by(Gl_acct.fibukonto).all():
+                if gl_acct_obj_list.get(gl_acct._recid):
                     continue
                 else:
-                    gl_acct_obj_list.append(gl_acct._recid)
+                    gl_acct_obj_list[gl_acct._recid] = True
 
 
                 assign_it()
@@ -77,13 +92,17 @@ def glacct_listbl(fibukonto:str, from_main:int, from_fstype:int, from_depart:int
 
         elif from_depart != 0:
 
-            gl_acct_obj_list = []
-            for gl_acct, gl_main, gl_fstype, gl_department in db_session.query(Gl_acct, Gl_main, Gl_fstype, Gl_department).join(Gl_main,(Gl_main.nr == Gl_acct.main_nr)).join(Gl_fstype,(Gl_fstype.nr == Gl_acct.fs_type)).join(Gl_department,(Gl_department.nr == Gl_acct.deptnr) & (Gl_department.nr == from_depart)).filter(
-                     (func.lower(Gl_acct.fibukonto) >= (fibukonto).lower()) & (Gl_acct.activeflag)).order_by(Gl_acct.fibukonto).all():
-                if gl_acct._recid in gl_acct_obj_list:
+            gl_acct_obj_list = {}
+            gl_acct = Gl_acct()
+            gl_main = Gl_main()
+            gl_fstype = Gl_fstype()
+            gl_department = Gl_department()
+            for gl_acct.chginit, gl_acct.fibukonto, gl_acct.bezeich, gl_acct.acc_type, gl_acct.bemerk, gl_acct._recid, gl_main.bezeich, gl_main.nr, gl_main.code, gl_main._recid, gl_fstype.bezeich, gl_fstype._recid, gl_department.bezeich, gl_department._recid in db_session.query(Gl_acct.chginit, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct.acc_type, Gl_acct.bemerk, Gl_acct._recid, Gl_main.bezeich, Gl_main.nr, Gl_main.code, Gl_main._recid, Gl_fstype.bezeich, Gl_fstype._recid, Gl_department.bezeich, Gl_department._recid).join(Gl_main,(Gl_main.nr == Gl_acct.main_nr)).join(Gl_fstype,(Gl_fstype.nr == Gl_acct.fs_type)).join(Gl_department,(Gl_department.nr == Gl_acct.deptnr) & (Gl_department.nr == from_depart)).filter(
+                     (Gl_acct.fibukonto >= (fibukonto).lower()) & (Gl_acct.activeflag)).order_by(Gl_acct.fibukonto).all():
+                if gl_acct_obj_list.get(gl_acct._recid):
                     continue
                 else:
-                    gl_acct_obj_list.append(gl_acct._recid)
+                    gl_acct_obj_list[gl_acct._recid] = True
 
 
                 assign_it()
@@ -97,12 +116,11 @@ def glacct_listbl(fibukonto:str, from_main:int, from_fstype:int, from_depart:int
         nonlocal b1_list
         nonlocal b1_list_list
 
-        usrname:str = " "
+        usrname:string = " "
 
         if trim(gl_acct.chginit) != "":
 
-            bediener = db_session.query(Bediener).filter(
-                     (Bediener.userinit == gl_acct.chginit)).first()
+            bediener = get_cache (Bediener, {"userinit": [(eq, gl_acct.chginit)]})
 
             if bediener:
                 usrname = bediener.username

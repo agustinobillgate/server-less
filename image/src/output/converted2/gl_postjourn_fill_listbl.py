@@ -1,8 +1,13 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Gl_acct, Gl_journal
 
 def gl_postjourn_fill_listbl(jnr:int):
+
+    prepare_cache ([Gl_acct, Gl_journal])
+
     credits = None
     debits = None
     remains = None
@@ -11,10 +16,11 @@ def gl_postjourn_fill_listbl(jnr:int):
 
     g_list = buf_g_list = gl_acct1 = None
 
-    g_list_list, G_list = create_model("G_list", {"jnr":int, "fibukonto":str, "acct_fibukonto":str, "debit":decimal, "credit":decimal, "userinit":str, "sysdate":date, "zeit":int, "chginit":str, "chgdate":date, "bemerk":str, "bezeich":str, "duplicate":bool, "tax_code":str, "tax_amount":str, "tot_amt":str}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
+    g_list_list, G_list = create_model("G_list", {"jnr":int, "fibukonto":string, "acct_fibukonto":string, "debit":Decimal, "credit":Decimal, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "bemerk":string, "bezeich":string, "duplicate":bool, "tax_code":string, "tax_amount":string, "tot_amt":string}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
     buf_g_list_list, Buf_g_list = create_model_like(G_list)
 
     Gl_acct1 = create_buffer("Gl_acct1",Gl_acct)
+
 
     db_session = local_storage.db_session
 
@@ -48,13 +54,13 @@ def gl_postjourn_fill_listbl(jnr:int):
         debits = debits + gl_journal.debit
         remains = debits - credits
 
-    gl_acct1_obj_list = []
+    gl_acct1_obj_list = {}
     for gl_acct1 in db_session.query(Gl_acct1).filter(
-             ((Gl_acct1.fibukonto.in_(list(set([g_list.fibukonto for g_list in g_list_list)]))))).order_by(g_list.sysdate.desc(), g_list.zeit.desc()).all():
-        if gl_acct1._recid in gl_acct1_obj_list:
+             ((Gl_acct1.fibukonto.in_(list(set([g_list.fibukonto for g_list in g_list_list])))))).order_by(g_list.sysdate.desc(), g_list.zeit.desc()).all():
+        if gl_acct1_obj_list.get(gl_acct1._recid):
             continue
         else:
-            gl_acct1_obj_list.append(gl_acct1._recid)
+            gl_acct1_obj_list[gl_acct1._recid] = True
 
 
         buf_g_list = Buf_g_list()

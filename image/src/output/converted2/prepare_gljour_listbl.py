@@ -1,9 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Gl_jouhdr, Htparam
 
 def prepare_gljour_listbl(sorttype:int):
+
+    prepare_cache ([Htparam])
+
     from_date = None
     to_date = None
     t_gl_jouhdr_list = []
@@ -12,7 +17,6 @@ def prepare_gljour_listbl(sorttype:int):
     t_gl_jouhdr = None
 
     t_gl_jouhdr_list, T_gl_jouhdr = create_model_like(Gl_jouhdr)
-
 
     db_session = local_storage.db_session
 
@@ -26,12 +30,10 @@ def prepare_gljour_listbl(sorttype:int):
 
         return {"from_date": from_date, "to_date": to_date, "t-gl-jouhdr": t_gl_jouhdr_list}
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 558)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 558)]})
     from_date = htparam.fdate + timedelta(days=1)
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 597)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
     to_date = get_current_date()
 
     for gl_jouhdr in db_session.query(Gl_jouhdr).filter(

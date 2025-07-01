@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -22,3 +24,20 @@ class Kabine(Base):
 	pausebis = sa.Column(sa.String, default="00:00")
 	tdate = sa.Column(sa.Date, default=None)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('anzpers', 1)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('fdate', None)
+		kwargs.setdefault('gesperrt', False)
+		kwargs.setdefault('grund', "")
+		kwargs.setdefault('kabbez', "")
+		kwargs.setdefault('kabnr', 0)
+		kwargs.setdefault('massnr', 0)
+		kwargs.setdefault('offenab', "00:00")
+		kwargs.setdefault('offenbis', "00:00")
+		kwargs.setdefault('oooab', "00:00")
+		kwargs.setdefault('ooobis', "00:00")
+		kwargs.setdefault('pauseab', "00:00")
+		kwargs.setdefault('pausebis', "00:00")
+		kwargs.setdefault('tdate', None)
+		super(Kabine, self).__init__(*args, **kwargs)

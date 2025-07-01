@@ -1,5 +1,7 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Queasy
 
 def cash_flowbl():
@@ -9,7 +11,6 @@ def cash_flowbl():
     t_cflow = None
 
     t_cflow_list, T_cflow = create_model_like(Queasy)
-
 
     db_session = local_storage.db_session
 

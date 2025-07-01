@@ -1,12 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from functions.read_htparambl import read_htparambl
 from functions.gl_transf_headoffice1bl import gl_transf_headoffice1bl
 from functions.gl_transf_headoffice11bl import gl_transf_headoffice11bl
 from models import Htparam, Gl_jouhdr, Gl_journal
 
-def gl_transfer_headoffice_webbl(close_month:date, close_year:date, user_init:str, language_code:int):
+def gl_transfer_headoffice_webbl(close_month:date, close_year:date, user_init:string, language_code:int):
     msg_str = ""
     success_flag = False
     htparam = gl_jouhdr = gl_journal = None
@@ -16,7 +18,6 @@ def gl_transfer_headoffice_webbl(close_month:date, close_year:date, user_init:st
     t_htparam_list, T_htparam = create_model_like(Htparam)
     t_gl_jouhdr_list, T_gl_jouhdr = create_model_like(Gl_jouhdr)
     t_gl_journal_list, T_gl_journal = create_model_like(Gl_journal)
-
 
     db_session = local_storage.db_session
 
@@ -45,7 +46,7 @@ def gl_transfer_headoffice_webbl(close_month:date, close_year:date, user_init:st
 
         return generate_output()
 
-    if not re.match(r".*:.*",t_htparam.fchar, re.IGNORECASE):
+    if not matches(t_htparam.fchar,r"*:*"):
         msg_str = "Wrong Head Office IP:Port format" + " " + t_htparam.fchar
 
         return generate_output()

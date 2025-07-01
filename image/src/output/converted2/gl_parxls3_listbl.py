@@ -1,5 +1,7 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from sqlalchemy import func
 from functions.calc_servvat import calc_servvat
@@ -8,64 +10,67 @@ from functions.calc_servtaxesbl import calc_servtaxesbl
 from functions.glacct_cashflow_1bl import glacct_cashflow_1bl
 from models import Parameters, Gl_accthis, Gl_acct, Artikel, Exrate, Waehrung, Htparam, Paramtext, Gl_jouhdr, Gl_journal, Umsatz, Genstat, Segmentstat, Budget, Zinrstat, Zkstat, Segment
 
-def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, gl_month:int, link:str):
+def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:string, gl_month:int, link:string):
+
+    prepare_cache ([Parameters, Exrate, Waehrung, Htparam, Paramtext, Gl_jouhdr, Gl_journal, Genstat, Segmentstat, Budget, Zkstat, Segment])
+
     mess_result = "Failed to generate data"
-    month_str:List[str] = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "FalseVEMBER", "DECEMBER"]
-    chcol:List[str] = ["A", "B", "C", "D", "E", "F", "G", "H", "i", "j", "K", "L", "M", "N", "O", "P", "Q", "R", "s", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ"]
+    month_str:List[string] = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "FalseVEMBER", "DECEMBER"]
+    chcol:List[string] = ["A", "B", "C", "D", "E", "F", "G", "H", "i", "j", "K", "L", "M", "N", "O", "P", "Q", "R", "s", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ"]
     curr_date:date = None
     curr_i:int = 0
     curr_row:int = 0
     curr_col:int = 0
-    serv:decimal = to_decimal("0.0")
-    vat:decimal = to_decimal("0.0")
-    fact:decimal = to_decimal("0.0")
-    n_betrag:decimal = to_decimal("0.0")
-    credit:decimal = to_decimal("0.0")
-    debit:decimal = to_decimal("0.0")
-    frate:decimal = 1
+    serv:Decimal = to_decimal("0.0")
+    vat:Decimal = to_decimal("0.0")
+    fact:Decimal = to_decimal("0.0")
+    n_betrag:Decimal = to_decimal("0.0")
+    credit:Decimal = to_decimal("0.0")
+    debit:Decimal = to_decimal("0.0")
+    frate:Decimal = 1
     price_decimal:int = 0
     gl_year:int = 0
-    from_year:decimal = to_decimal("0.0")
-    to_year:decimal = to_decimal("0.0")
+    from_year:Decimal = to_decimal("0.0")
+    to_year:Decimal = to_decimal("0.0")
     foreign_flag:bool = False
-    prev_str:str = ""
-    cell_val:str = ""
-    exrate_betrag:decimal = to_decimal("0.0")
+    prev_str:string = ""
+    cell_val:string = ""
+    exrate_betrag:Decimal = to_decimal("0.0")
     hist_flag:bool = False
     curr_close_year:int = 0
     found_flag:bool = False
-    ytd_bal:decimal = to_decimal("0.0")
+    ytd_bal:Decimal = to_decimal("0.0")
     val_sign:int = 0
     j:int = 0
     i:int = 0
-    diff:decimal = to_decimal("0.0")
-    lmdiff:decimal = to_decimal("0.0")
-    mtd_betrag:decimal = to_decimal("0.0")
-    ytd_betrag:decimal = to_decimal("0.0")
+    diff:Decimal = to_decimal("0.0")
+    lmdiff:Decimal = to_decimal("0.0")
+    mtd_betrag:Decimal = to_decimal("0.0")
+    ytd_betrag:Decimal = to_decimal("0.0")
     start_row:int = 0
     start_col:int = 0
     end_row:int = 0
     end_col:int = 0
-    htl_no:str = ""
+    htl_no:string = ""
     datum1:date = None
     jan1:date = None
     ljan1:date = None
     lfrom_date:date = None
     lto_date:date = None
     cash_flow:bool = False
-    foreign_curr:decimal = to_decimal("0.0")
+    foreign_curr:Decimal = to_decimal("0.0")
     ct1:int = 0
-    mon_saldo:List[decimal] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    vat2:decimal = to_decimal("0.0")
+    mon_saldo:List[Decimal] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    vat2:Decimal = to_decimal("0.0")
     ytd_flag:bool = True
     d_flag:bool = False
-    n_serv:decimal = to_decimal("0.0")
-    n_tax:decimal = to_decimal("0.0")
-    actual_exrate:List[decimal] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    budget_exrate:List[decimal] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    lyear_exrate:List[decimal] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    blyear_exrate:List[decimal] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    bnyear_exrate:List[decimal] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    n_serv:Decimal = to_decimal("0.0")
+    n_tax:Decimal = to_decimal("0.0")
+    actual_exrate:List[Decimal] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    budget_exrate:List[Decimal] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    lyear_exrate:List[Decimal] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    blyear_exrate:List[Decimal] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    bnyear_exrate:List[Decimal] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     parameters = gl_accthis = gl_acct = artikel = exrate = waehrung = htparam = paramtext = gl_jouhdr = gl_journal = umsatz = genstat = segmentstat = budget = zinrstat = zkstat = segment = None
 
     t_parameters = t_gl_accthis = glacct_list = t_gl_acct = t_artikel = t_umsz = g_list = temp_list = coa_list = t_list = stat_list = rev_list = b_stat_list = b_stat = buff_exrate = b_param = None
@@ -75,13 +80,13 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
     glacct_list_list, Glacct_list = create_model_like(Gl_acct)
     t_gl_acct_list, T_gl_acct = create_model_like(Gl_acct)
     t_artikel_list, T_artikel = create_model_like(Artikel)
-    t_umsz_list, T_umsz = create_model("T_umsz", {"curr_date":date, "artnr":int, "dept":int, "fact":decimal, "betrag":decimal})
-    g_list_list, G_list = create_model("G_list", {"datum":date, "grecid":int, "fibu":str}, {"datum": None})
-    temp_list_list, Temp_list = create_model("Temp_list", {"vstring":str, "debit":decimal, "credit":decimal})
-    coa_list_list, Coa_list = create_model("Coa_list", {"fibu":str})
-    t_list_list, T_list = create_model("T_list", {"cf":int, "fibukonto":str, "debit":decimal, "credit":decimal, "debit_lsyear":decimal, "credit_lsyear":decimal, "debit_lsmonth":decimal, "credit_lsmonth":decimal, "balance":decimal, "ly_balance":decimal, "pm_balance":decimal, "debit_today":decimal, "credit_today":decimal, "debit_mtd":decimal, "credit_mtd":decimal, "debit_ytd":decimal, "credit_ytd":decimal, "today_balance":decimal, "mtd_balance":decimal, "ytd_balance":decimal})
-    stat_list_list, Stat_list = create_model("Stat_list", {"ct":int, "descr":str, "departement":int, "t_day":decimal, "mtd":decimal, "mtd_budget":decimal, "variance":decimal, "ytd":decimal, "ytd_budget":decimal, "flag":str})
-    rev_list_list, Rev_list = create_model("Rev_list", {"ct":int, "descr":str, "departement":int, "t_day":decimal, "dper":decimal, "mtd":decimal, "mtd_per":decimal, "mtd_budget":decimal, "variance":decimal, "ytd":decimal, "ytd_budget":decimal, "ytd_per":decimal, "flag":str, "flag_grup":bool})
+    t_umsz_list, T_umsz = create_model("T_umsz", {"curr_date":date, "artnr":int, "dept":int, "fact":Decimal, "betrag":Decimal})
+    g_list_list, G_list = create_model("G_list", {"datum":date, "grecid":int, "fibu":string}, {"datum": None})
+    temp_list_list, Temp_list = create_model("Temp_list", {"vstring":string, "debit":Decimal, "credit":Decimal})
+    coa_list_list, Coa_list = create_model("Coa_list", {"fibu":string})
+    t_list_list, T_list = create_model("T_list", {"cf":int, "fibukonto":string, "debit":Decimal, "credit":Decimal, "debit_lsyear":Decimal, "credit_lsyear":Decimal, "debit_lsmonth":Decimal, "credit_lsmonth":Decimal, "balance":Decimal, "ly_balance":Decimal, "pm_balance":Decimal, "debit_today":Decimal, "credit_today":Decimal, "debit_mtd":Decimal, "credit_mtd":Decimal, "debit_ytd":Decimal, "credit_ytd":Decimal, "today_balance":Decimal, "mtd_balance":Decimal, "ytd_balance":Decimal})
+    stat_list_list, Stat_list = create_model("Stat_list", {"ct":int, "descr":string, "departement":int, "t_day":Decimal, "mtd":Decimal, "mtd_budget":Decimal, "variance":Decimal, "ytd":Decimal, "ytd_budget":Decimal, "flag":string})
+    rev_list_list, Rev_list = create_model("Rev_list", {"ct":int, "descr":string, "departement":int, "t_day":Decimal, "dper":Decimal, "mtd":Decimal, "mtd_per":Decimal, "mtd_budget":Decimal, "variance":Decimal, "ytd":Decimal, "ytd_budget":Decimal, "ytd_per":Decimal, "flag":string, "flag_grup":bool})
 
     B_stat_list = Stat_list
     b_stat_list_list = stat_list_list
@@ -91,6 +96,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
 
     Buff_exrate = create_buffer("Buff_exrate",Exrate)
     B_param = create_buffer("B_param",Parameters)
+
 
     db_session = local_storage.db_session
 
@@ -145,32 +151,27 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                 nyear_date = date_mdy(ind, 1, next_yr) + timedelta(days=35)
                                 nyear_date = date_mdy(get_month(nyear_date) , 1, next_yr) - timedelta(days=1)
 
-                            exrate = db_session.query(Exrate).filter(
-                                     (Exrate.artnr == 99999) & (Exrate.datum == curr_date)).first()
+                            exrate = get_cache (Exrate, {"artnr": [(eq, 99999)],"datum": [(eq, curr_date)]})
 
                             if exrate:
                                 actual_exrate[ind - 1] = exrate.betrag
 
-                            exrate = db_session.query(Exrate).filter(
-                                     (Exrate.artnr == 99999) & (Exrate.datum == lyear_date)).first()
+                            exrate = get_cache (Exrate, {"artnr": [(eq, 99999)],"datum": [(eq, lyear_date)]})
 
                             if exrate:
                                 lyear_exrate[ind - 1] = exrate.betrag
 
-                            exrate = db_session.query(Exrate).filter(
-                                     (Exrate.artnr == 99998) & (Exrate.datum == curr_date)).first()
+                            exrate = get_cache (Exrate, {"artnr": [(eq, 99998)],"datum": [(eq, curr_date)]})
 
                             if exrate:
                                 budget_exrate[ind - 1] = exrate.betrag
 
-                            exrate = db_session.query(Exrate).filter(
-                                     (Exrate.artnr == 99998) & (Exrate.datum == lyear_date)).first()
+                            exrate = get_cache (Exrate, {"artnr": [(eq, 99998)],"datum": [(eq, lyear_date)]})
 
                             if exrate:
                                 blyear_exrate[ind - 1] = exrate.betrag
 
-                            exrate = db_session.query(Exrate).filter(
-                                     (Exrate.artnr == 99998) & (Exrate.datum == nyear_date)).first()
+                            exrate = get_cache (Exrate, {"artnr": [(eq, 99998)],"datum": [(eq, nyear_date)]})
 
                             if exrate:
                                 bnyear_exrate[ind - 1] = exrate.betrag
@@ -190,35 +191,30 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
 
                         if foreign_flag:
 
-                            buff_exrate = db_session.query(Buff_exrate).filter(
-                                     (Buff_exrate.artnr == 99999) & (Buff_exrate.datum == curr_date)).first()
+                            buff_exrate = get_cache (Exrate, {"artnr": [(eq, 99999)],"datum": [(eq, curr_date)]})
 
                             if buff_exrate:
 
                                 return
 
-                        htparam = db_session.query(Htparam).filter(
-                                 (Htparam.paramnr == 144)).first()
+                        htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
 
                         if htparam.fchar != "":
 
-                            waehrung = db_session.query(Waehrung).filter(
-                                     (Waehrung.wabkurz == htparam.fchar)).first()
+                            waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
 
                             if waehrung:
                                 foreign_nr = waehrung.waehrungsnr
 
                         if foreign_nr != 0:
 
-                            buff_exrate = db_session.query(Buff_exrate).filter(
-                                     (Buff_exrate.artnr == foreign_nr) & (Buff_exrate.datum == curr_date)).first()
+                            buff_exrate = get_cache (Exrate, {"artnr": [(eq, foreign_nr)],"datum": [(eq, curr_date)]})
                         else:
 
-                            buff_exrate = db_session.query(Buff_exrate).filter(
-                                     (Buff_exrate.datum == curr_date)).first()
+                            buff_exrate = get_cache (Exrate, {"datum": [(eq, curr_date)]})
 
 
-    def decode_string(in_str:str):
+    def decode_string(in_str:string):
 
         nonlocal mess_result, month_str, chcol, curr_date, curr_i, curr_row, curr_col, serv, vat, fact, n_betrag, credit, debit, frate, price_decimal, gl_year, from_year, to_year, foreign_flag, prev_str, cell_val, exrate_betrag, hist_flag, curr_close_year, found_flag, ytd_bal, val_sign, i, diff, lmdiff, mtd_betrag, ytd_betrag, start_row, start_col, end_row, end_col, htl_no, datum1, jan1, ljan1, lfrom_date, lto_date, cash_flow, foreign_curr, ct1, mon_saldo, vat2, ytd_flag, d_flag, n_serv, n_tax, actual_exrate, budget_exrate, lyear_exrate, blyear_exrate, bnyear_exrate, parameters, gl_accthis, gl_acct, artikel, exrate, waehrung, htparam, paramtext, gl_jouhdr, gl_journal, umsatz, genstat, segmentstat, budget, zinrstat, zkstat, segment
         nonlocal briefnr, from_date, to_date, user_init, gl_month, link
@@ -229,7 +225,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
         nonlocal t_parameters_list, t_gl_accthis_list, glacct_list_list, t_gl_acct_list, t_artikel_list, t_umsz_list, g_list_list, temp_list_list, coa_list_list, t_list_list, stat_list_list, rev_list_list
 
         out_str = ""
-        s:str = ""
+        s:string = ""
         j:int = 0
         len_:int = 0
 
@@ -238,10 +234,10 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
 
                         s = in_str
                         j = asc(substring(s, 0, 1)) - 70
-                        len_ = len(in_str) - 1
+                        len_ = length(in_str) - 1
                         s = substring(in_str, 1, len_)
-                        for len_ in range(1,len(s)  + 1) :
-                            out_str = out_str + chr (asc(substring(s, len_ - 1, 1)) - j)
+                        for len_ in range(1,length(s)  + 1) :
+                            out_str = out_str + chr_unicode(asc(substring(s, len_ - 1, 1)) - j)
 
         return generate_inner_output()
 
@@ -257,7 +253,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
         nonlocal t_parameters_list, t_gl_accthis_list, glacct_list_list, t_gl_acct_list, t_artikel_list, t_umsz_list, g_list_list, temp_list_list, coa_list_list, t_list_list, stat_list_list, rev_list_list
 
         s_param = None
-        prev_param:str = ""
+        prev_param:string = ""
         ytd_flag:bool = False
         lytd_flag:bool = False
         lmtd_flag:bool = False
@@ -267,60 +263,60 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
         segm:int = 0
         mm:int = 0
         prev_segm:int = 0
-        tday_rev:decimal = to_decimal("0.0")
-        tday_pers:decimal = to_decimal("0.0")
-        tday_room:decimal = to_decimal("0.0")
-        mtd_rev:decimal = to_decimal("0.0")
-        mtd_pers:decimal = to_decimal("0.0")
-        mtd_room:decimal = to_decimal("0.0")
-        ytd_rev:decimal = to_decimal("0.0")
-        ytd_pers:decimal = to_decimal("0.0")
-        ytd_room:decimal = to_decimal("0.0")
-        ltday_rev:decimal = to_decimal("0.0")
-        ltday_pers:decimal = to_decimal("0.0")
-        ltday_room:decimal = to_decimal("0.0")
-        lmtd_rev:decimal = to_decimal("0.0")
-        lmtd_pers:decimal = to_decimal("0.0")
-        lmtd_room:decimal = to_decimal("0.0")
-        lytd_rev:decimal = to_decimal("0.0")
-        lytd_pers:decimal = to_decimal("0.0")
-        lytd_room:decimal = to_decimal("0.0")
-        btday_rev:decimal = to_decimal("0.0")
-        btday_pers:decimal = to_decimal("0.0")
-        btday_room:decimal = to_decimal("0.0")
-        bmtd_rev:decimal = to_decimal("0.0")
-        bmtd_pers:decimal = to_decimal("0.0")
-        bmtd_room:decimal = to_decimal("0.0")
-        bytd_rev:decimal = to_decimal("0.0")
-        bytd_pers:decimal = to_decimal("0.0")
-        bytd_room:decimal = to_decimal("0.0")
+        tday_rev:Decimal = to_decimal("0.0")
+        tday_pers:Decimal = to_decimal("0.0")
+        tday_room:Decimal = to_decimal("0.0")
+        mtd_rev:Decimal = to_decimal("0.0")
+        mtd_pers:Decimal = to_decimal("0.0")
+        mtd_room:Decimal = to_decimal("0.0")
+        ytd_rev:Decimal = to_decimal("0.0")
+        ytd_pers:Decimal = to_decimal("0.0")
+        ytd_room:Decimal = to_decimal("0.0")
+        ltday_rev:Decimal = to_decimal("0.0")
+        ltday_pers:Decimal = to_decimal("0.0")
+        ltday_room:Decimal = to_decimal("0.0")
+        lmtd_rev:Decimal = to_decimal("0.0")
+        lmtd_pers:Decimal = to_decimal("0.0")
+        lmtd_room:Decimal = to_decimal("0.0")
+        lytd_rev:Decimal = to_decimal("0.0")
+        lytd_pers:Decimal = to_decimal("0.0")
+        lytd_room:Decimal = to_decimal("0.0")
+        btday_rev:Decimal = to_decimal("0.0")
+        btday_pers:Decimal = to_decimal("0.0")
+        btday_room:Decimal = to_decimal("0.0")
+        bmtd_rev:Decimal = to_decimal("0.0")
+        bmtd_pers:Decimal = to_decimal("0.0")
+        bmtd_room:Decimal = to_decimal("0.0")
+        bytd_rev:Decimal = to_decimal("0.0")
+        bytd_pers:Decimal = to_decimal("0.0")
+        bytd_room:Decimal = to_decimal("0.0")
         do_it:bool = False
         s_param = None
-        prev_param:str = ""
+        prev_param:string = ""
         ytd_flag:bool = False
         lytd_flag:bool = False
         lmtd_flag:bool = False
         ytd_budget_flag:bool = False
         mtd_budget_flag:bool = False
         mm:int = 0
-        cell_datum:str = ""
-        saldo_betrag:decimal = to_decimal("0.0")
-        ytd_betrag:decimal = to_decimal("0.0")
-        t_betrag:decimal = to_decimal("0.0")
-        lastyr_betrag:decimal = to_decimal("0.0")
-        lytd_saldo:decimal = to_decimal("0.0")
-        tbudget:decimal = to_decimal("0.0")
-        mtd_budget:decimal = to_decimal("0.0")
-        ytd_budget:decimal = to_decimal("0.0")
+        cell_datum:string = ""
+        saldo_betrag:Decimal = to_decimal("0.0")
+        ytd_betrag:Decimal = to_decimal("0.0")
+        t_betrag:Decimal = to_decimal("0.0")
+        lastyr_betrag:Decimal = to_decimal("0.0")
+        lytd_saldo:Decimal = to_decimal("0.0")
+        tbudget:Decimal = to_decimal("0.0")
+        mtd_budget:Decimal = to_decimal("0.0")
+        ytd_budget:Decimal = to_decimal("0.0")
         do_it:bool = False
-        key_word:str = ""
+        key_word:string = ""
         do_it:bool = False
-        t_day:decimal = to_decimal("0.0")
-        mtd:decimal = to_decimal("0.0")
-        mtd_budget:decimal = to_decimal("0.0")
-        ytd:decimal = to_decimal("0.0")
-        ytd_budget:decimal = to_decimal("0.0")
-        variance:decimal = to_decimal("0.0")
+        t_day:Decimal = to_decimal("0.0")
+        mtd:Decimal = to_decimal("0.0")
+        mtd_budget:Decimal = to_decimal("0.0")
+        ytd:Decimal = to_decimal("0.0")
+        ytd_budget:Decimal = to_decimal("0.0")
+        variance:Decimal = to_decimal("0.0")
         ct1:int = 0
         datum:date = None
         anz:int = 0
@@ -330,7 +326,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                         S_param =  create_buffer("S_param",Parameters)
 
                         for s_param in db_session.query(S_param).filter(
-                                 (func.lower(S_param.progname) == ("GL-macro").lower()) & (S_param.section == to_string(briefnr)) & (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & (entry(2, S_param.varname, "-") == ("FO").lower()) & (substring(S_param.vstring, 0, 4) == ("segm").lower())).order_by(S_param.varname).all():
+                                 (S_param.progname == ("GL-macro").lower()) & (S_param.section == to_string(briefnr)) & (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & (entry(2, S_param.varname, "-") == ("FO").lower()) & (substring(S_param.vstring, 0, 4) == ("segm").lower())).order_by(S_param.varname).all():
                             curr_row = to_int(entry(0, s_param.varname, "-"))
                             curr_col = to_int(entry(1, s_param.varname, "-"))
                             end_row = curr_row
@@ -405,7 +401,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                             ytd_room =  to_decimal("0")
 
                             for genstat in db_session.query(Genstat).filter(
-                                     (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode == segm) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat.segmentcode).all():
+                                     (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode == segm) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat.segmentcode).all():
 
                                 if genstat.datum == to_date:
 
@@ -475,7 +471,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                 prev_segm = 0
 
                                                                                 for genstat in db_session.query(Genstat).filter(
-                                                                                         (Genstat.datum >= datum1) & (Genstat.datum <= lto_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode == segm) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat.segmentcode).all():
+                                                                                         (Genstat.datum >= datum1) & (Genstat.datum <= lto_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode == segm) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat.segmentcode).all():
 
                                                                                     if genstat.datum == lto_date:
 
@@ -589,7 +585,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                         S_param =  create_buffer("S_param",Parameters)
 
                                                                                                                                     for s_param in db_session.query(S_param).filter(
-                                                                                                                                             (func.lower(S_param.progname) == ("GL-macro").lower()) & (S_param.section == to_string(briefnr)) & (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & (entry(2, S_param.varname, "-") == ("REV").lower())).order_by(S_param.varname).all():
+                                                                                                                                             (S_param.progname == ("GL-macro").lower()) & (S_param.section == to_string(briefnr)) & (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & (entry(2, S_param.varname, "-") == ("REV").lower())).order_by(S_param.varname).all():
                                                                                                                                         curr_row = to_int(entry(0, s_param.varname, "-"))
                                                                                                                                         curr_col = to_int(entry(1, s_param.varname, "-"))
                                                                                                                                         end_row = curr_row
@@ -622,8 +618,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                             if s_param.vtype == 87:
                                                                                                                                                 lytd_flag = True
 
-                                                                                                                                        artikel = db_session.query(Artikel).filter(
-                                                                                                                                                 (Artikel.artnr == to_int(substring(s_param.vstring, 2))) & (Artikel.departement == to_int(substring(s_param.vstring, 0, 2)))).first()
+                                                                                                                                        artikel = get_cache (Artikel, {"artnr": [(eq, to_int(substring(s_param.vstring, 2)))],"departement": [(eq, to_int(substring(s_param.vstring, 0, 2)))]})
 
                                                                                                                                         if artikel:
 
@@ -743,7 +738,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                                                                 do_it = True
 
                                                                                                                                                             for b_param in db_session.query(B_param).filter(
-                                                                                                                                                                     (func.lower(B_param.progname) == ("GL-macro").lower()) & (B_param.section == to_string(briefnr)) & (num_entries(B_param.vstring, ":") == 1) & (num_entries(B_param.varname, "-") == 3) & (entry(2, B_param.varname, "-") == ("FO").lower()) & (substring(B_param.vstring, 0, 4) == ("stat").lower())).order_by(B_param.varname).all():
+                                                                                                                                                                     (B_param.progname == ("GL-macro").lower()) & (B_param.section == to_string(briefnr)) & (num_entries(B_param.vstring, ":") == 1) & (num_entries(B_param.varname, "-") == 3) & (entry(2, B_param.varname, "-") == ("FO").lower()) & (substring(B_param.vstring, 0, 4) == ("stat").lower())).order_by(B_param.varname).all():
                                                                                                                                                                 key_word = b_param.vstring
                                                                                                                                                                 curr_row = to_int(entry(0, b_param.varname, "-"))
                                                                                                                                                                 curr_col = to_int(entry(1, b_param.varname, "-"))
@@ -771,8 +766,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                                                                 serv =  to_decimal("0")
                                                                                                                                                                                 vat =  to_decimal("0")
 
-                                                                                                                                                                                umsatz = db_session.query(Umsatz).filter(
-                                                                                                                                                                                         (Umsatz.datum == curr_date) & (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement)).first()
+                                                                                                                                                                                umsatz = get_cache (Umsatz, {"datum": [(eq, curr_date)],"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)]})
 
                                                                                                                                                                                 if umsatz:
                                                                                                                                                                                     serv, vat, vat2, fact = get_output(calc_servtaxesbl(1, umsatz.artnr, umsatz.departement, umsatz.datum))
@@ -799,8 +793,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                                                                         n_serv = to_decimal(round(n_serv , 0))
                                                                                                                                                                                         n_tax = to_decimal(round(n_tax , 0))
 
-                                                                                                                                                                                budget = db_session.query(Budget).filter(
-                                                                                                                                                                                         (Budget.artnr == artikel.artnr) & (Budget.departement == artikel.departement) & (Budget.datum == curr_date)).first()
+                                                                                                                                                                                budget = get_cache (Budget, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, curr_date)]})
 
                                                                                                                                                                                 if curr_date < from_date:
 
@@ -856,8 +849,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
 
                                                                                                                                                                             for datum in date_range(datum1,to_date) :
 
-                                                                                                                                                                                zinrstat = db_session.query(Zinrstat).filter(
-                                                                                                                                                                                         (Zinrstat.datum == datum) & (func.lower(Zinrstat.zinr) == ("tot-rm").lower())).first()
+                                                                                                                                                                                zinrstat = get_cache (Zinrstat, {"datum": [(eq, datum)],"zinr": [(eq, "tot-rm")]})
 
                                                                                                                                                                                 if zinrstat:
                                                                                                                                                                                     anz = zinrstat.zimmeranz
@@ -980,7 +972,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                                                             stat_list.ytd =  to_decimal(ytd1) - to_decimal(ytd2)
 
 
-    def fill_rmstat(key_word:str):
+    def fill_rmstat(key_word:string):
 
         nonlocal mess_result, month_str, chcol, curr_date, curr_i, curr_row, curr_col, serv, vat, fact, n_betrag, credit, debit, frate, price_decimal, gl_year, from_year, to_year, foreign_flag, prev_str, cell_val, exrate_betrag, hist_flag, curr_close_year, found_flag, ytd_bal, val_sign, j, i, diff, lmdiff, mtd_betrag, ytd_betrag, start_row, start_col, end_row, end_col, htl_no, datum1, jan1, ljan1, lfrom_date, lto_date, cash_flow, foreign_curr, ct1, mon_saldo, vat2, ytd_flag, n_serv, n_tax, actual_exrate, budget_exrate, lyear_exrate, blyear_exrate, bnyear_exrate, parameters, gl_accthis, gl_acct, artikel, exrate, waehrung, htparam, paramtext, gl_jouhdr, gl_journal, umsatz, genstat, segmentstat, budget, zinrstat, zkstat, segment
         nonlocal briefnr, from_date, to_date, user_init, gl_month, link
@@ -995,7 +987,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
         anz0:int = 0
         d_flag:bool = False
         dlmtd_flag:bool = False
-        cur_key:str = ""
+        cur_key:string = ""
                                                                                                                                                                         ct1 = ct1 + 1
 
                                                                                                                                                                         stat_list = query(stat_list_list, filters=(lambda stat_list: stat_list.flag.lower()  == (key_word).lower()), first=True)
@@ -1082,7 +1074,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                                                                 stat_list.flag = "stat-rm-rsv"
 
                                                                                                                                                                             for zinrstat in db_session.query(Zinrstat).filter(
-                                                                                                                                                                                     (Zinrstat.datum >= datum1) & (Zinrstat.datum <= to_date) & (func.lower(Zinrstat.zinr) == (key_word).lower())).order_by(Zinrstat._recid).all():
+                                                                                                                                                                                     (Zinrstat.datum >= datum1) & (Zinrstat.datum <= to_date) & (Zinrstat.zinr == (key_word).lower())).order_by(Zinrstat._recid).all():
                                                                                                                                                                                 d_flag = (get_month(zinrstat.datum) == get_month(to_date)) and (get_year(zinrstat.datum) == get_year(to_date))
 
                                                                                                                                                                                 if d_flag:
@@ -1131,7 +1123,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
         d_flag:bool = False
         dbudget_flag:bool = False
         dlmtd_flag:bool = False
-        frate1:decimal = to_decimal("0.0")
+        frate1:Decimal = to_decimal("0.0")
 
                                                                                                                                                                         if ytd_flag:
                                                                                                                                                                             datum1 = jan1
@@ -1146,7 +1138,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                                                         stat_list.flag = "stat-occ-rm"
 
                                                                                                                                                                         for genstat in db_session.query(Genstat).filter(
-                                                                                                                                                                                 (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.nationnr != 0) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat.segmentcode).all():
+                                                                                                                                                                                 (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.nationnr != 0) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat.segmentcode).all():
                                                                                                                                                                             d_flag = (get_month(genstat.datum) == get_month(to_date)) and (get_year(genstat.datum) == get_year(to_date))
 
                                                                                                                                                                             if genstat.datum == to_date:
@@ -1159,7 +1151,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                                                                 stat_list.ytd =  to_decimal(stat_list.ytd) + to_decimal("1")
 
 
-    def fill_stat(key_word:str):
+    def fill_stat(key_word:string):
 
         nonlocal mess_result, month_str, chcol, curr_date, curr_i, curr_row, curr_col, serv, vat, fact, n_betrag, credit, debit, frate, price_decimal, gl_year, from_year, to_year, foreign_flag, prev_str, cell_val, exrate_betrag, hist_flag, curr_close_year, found_flag, ytd_bal, val_sign, j, i, diff, lmdiff, mtd_betrag, ytd_betrag, start_row, start_col, end_row, end_col, htl_no, datum1, jan1, ljan1, lfrom_date, lto_date, cash_flow, foreign_curr, ct1, mon_saldo, vat2, ytd_flag, d_flag, n_serv, n_tax, actual_exrate, budget_exrate, lyear_exrate, blyear_exrate, bnyear_exrate, parameters, gl_accthis, gl_acct, artikel, exrate, waehrung, htparam, paramtext, gl_jouhdr, gl_journal, umsatz, genstat, segmentstat, budget, zinrstat, zkstat, segment
         nonlocal briefnr, from_date, to_date, user_init, gl_month, link
@@ -1215,7 +1207,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                                                             stat_list.ytd =  to_decimal(ytd1) - to_decimal(ytd2) - to_decimal(ytd3)
 
 
-    def fill_segm(key_word:str):
+    def fill_segm(key_word:string):
 
         nonlocal mess_result, month_str, chcol, curr_date, curr_i, curr_row, curr_col, serv, vat, fact, n_betrag, credit, debit, frate, price_decimal, gl_year, from_year, to_year, foreign_flag, prev_str, cell_val, exrate_betrag, hist_flag, curr_close_year, found_flag, ytd_bal, val_sign, j, i, diff, lmdiff, mtd_betrag, ytd_betrag, start_row, start_col, end_row, end_col, htl_no, datum1, jan1, ljan1, lfrom_date, lto_date, cash_flow, foreign_curr, ct1, mon_saldo, vat2, ytd_flag, n_serv, n_tax, actual_exrate, budget_exrate, lyear_exrate, blyear_exrate, bnyear_exrate, parameters, gl_accthis, gl_acct, artikel, exrate, waehrung, htparam, paramtext, gl_jouhdr, gl_journal, umsatz, genstat, segmentstat, budget, zinrstat, zkstat, segment
         nonlocal briefnr, from_date, to_date, user_init, gl_month, link
@@ -1227,25 +1219,22 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
 
         d_flag:bool = False
         mm:int = 0
-        frate1:decimal = to_decimal("0.0")
+        frate1:Decimal = to_decimal("0.0")
         comp_tday:int = 0
                                                                                                                                                                         mm = get_month(to_date)
                                                                                                                                                                         ct1 = ct1 + 1
 
                                                                                                                                                                         if key_word.lower()  == ("HSE").lower() :
 
-                                                                                                                                                                            segment = db_session.query(Segment).filter(
-                                                                                                                                                                                     (Segment.betriebsnr == 2)).first()
+                                                                                                                                                                            segment = get_cache (Segment, {"betriebsnr": [(eq, 2)]})
 
                                                                                                                                                                         elif key_word.lower()  == ("COM").lower() :
 
-                                                                                                                                                                            segment = db_session.query(Segment).filter(
-                                                                                                                                                                                     (Segment.betriebsnr == 1)).first()
+                                                                                                                                                                            segment = get_cache (Segment, {"betriebsnr": [(eq, 1)]})
 
                                                                                                                                                                         elif key_word.lower()  == ("COM-GS").lower() :
 
-                                                                                                                                                                            segment = db_session.query(Segment).filter(
-                                                                                                                                                                                     (Segment.betriebsnr == 1)).first()
+                                                                                                                                                                            segment = get_cache (Segment, {"betriebsnr": [(eq, 1)]})
 
                                                                                                                                                                         if segment:
                                                                                                                                                                             stat_list = Stat_list()
@@ -1266,7 +1255,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                                                                 stat_list.flag = "stat-numcompl"
 
                                                                                                                                                                             for genstat in db_session.query(Genstat).filter(
-                                                                                                                                                                                     (Genstat.segmentcode == segment.segmentcode) & (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat._recid).all():
+                                                                                                                                                                                     (Genstat.segmentcode == segment.segmentcode) & (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat._recid).all():
 
                                                                                                                                                                                 if foreign_flag:
                                                                                                                                                                                     find_exrate(genstat.datum)
@@ -1307,7 +1296,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
 
         d_flag:bool = False
         mm:int = 0
-        frate1:decimal = to_decimal("0.0")
+        frate1:Decimal = to_decimal("0.0")
                                                                                                                                                                         mm = get_month(to_date)
                                                                                                                                                                         ct1 = ct1 + 1
                                                                                                                                                                         stat_list = Stat_list()
@@ -1317,13 +1306,15 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                                                         stat_list.flag = "Compl"
                                                                                                                                                                         stat_list.descr = "Complimentary Paying Guest"
 
-                                                                                                                                                                        genstat_obj_list = []
-                                                                                                                                                                        for genstat, segment in db_session.query(Genstat, Segment).join(Segment,(Segment.segmentcode == Genstat.segmentcode)).filter(
-                                                                                                                                                                                 (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.zipreis == 0) & (Genstat.gratis == 0) & (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(2))]).order_by(Genstat._recid).all():
-                                                                                                                                                                            if genstat._recid in genstat_obj_list:
+                                                                                                                                                                        genstat_obj_list = {}
+                                                                                                                                                                        genstat = Genstat()
+                                                                                                                                                                        segment = Segment()
+                                                                                                                                                                        for genstat.logis, genstat.erwachs, genstat.kind1, genstat.kind2, genstat.gratis, genstat.datum, genstat.kind3, genstat._recid, segment.segmentcode, segment.betriebsnr, segment._recid in db_session.query(Genstat.logis, Genstat.erwachs, Genstat.kind1, Genstat.kind2, Genstat.gratis, Genstat.datum, Genstat.kind3, Genstat._recid, Segment.segmentcode, Segment.betriebsnr, Segment._recid).join(Segment,(Segment.segmentcode == Genstat.segmentcode)).filter(
+                                                                                                                                                                                 (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.zipreis == 0) & (Genstat.gratis == 0) & (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(2)])).order_by(Genstat._recid).all():
+                                                                                                                                                                            if genstat_obj_list.get(genstat._recid):
                                                                                                                                                                                 continue
                                                                                                                                                                             else:
-                                                                                                                                                                                genstat_obj_list.append(genstat._recid)
+                                                                                                                                                                                genstat_obj_list[genstat._recid] = True
 
                                                                                                                                                                             if segment.betriebsnr == 0:
 
@@ -1504,15 +1495,15 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
         nonlocal t_parameters, t_gl_accthis, glacct_list, t_gl_acct, t_artikel, t_umsz, g_list, temp_list, coa_list, t_list, stat_list, rev_list, b_stat_list, b_stat, buff_exrate, b_param
         nonlocal t_parameters_list, t_gl_accthis_list, glacct_list_list, t_gl_acct_list, t_artikel_list, t_umsz_list, g_list_list, temp_list_list, coa_list_list, t_list_list, stat_list_list, rev_list_list
 
-        tday1:decimal = to_decimal("0.0")
-        tday2:decimal = to_decimal("0.0")
-        tday3:decimal = to_decimal("0.0")
-        mtd1:decimal = to_decimal("0.0")
-        mtd2:decimal = to_decimal("0.0")
-        mtd3:decimal = to_decimal("0.0")
-        ytd1:decimal = to_decimal("0.0")
-        ytd2:decimal = to_decimal("0.0")
-        ytd3:decimal = to_decimal("0.0")
+        tday1:Decimal = to_decimal("0.0")
+        tday2:Decimal = to_decimal("0.0")
+        tday3:Decimal = to_decimal("0.0")
+        mtd1:Decimal = to_decimal("0.0")
+        mtd2:Decimal = to_decimal("0.0")
+        mtd3:Decimal = to_decimal("0.0")
+        ytd1:Decimal = to_decimal("0.0")
+        ytd2:Decimal = to_decimal("0.0")
+        ytd3:Decimal = to_decimal("0.0")
                                                                                                                                                                         ct1 = ct1 + 1
 
                                                                                                                                                                         stat_list = query(stat_list_list, filters=(lambda stat_list: stat_list.flag.lower()  == ("tot-rev").lower()), first=True)
@@ -1525,7 +1516,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                                                                                                                                                             stat_list.flag = "stat-tot-rev"
                                                                                                                                                                             stat_list.descr = "Total Room Revenue"
 
-                                                                                                                                                                            rev_list = query(rev_list_list, filters=(lambda rev_list: rev_list.flag.lower()  == ("Room").lower()  and re.match(r".*Room Revenue.*",rev_list.descr, re.IGNORECASE)), first=True)
+                                                                                                                                                                            rev_list = query(rev_list_list, filters=(lambda rev_list: rev_list.flag.lower()  == ("Room").lower()  and matches(rev_list.descr,r"*Room Revenue*")), first=True)
 
                                                                                                                                                                             if rev_list:
                                                                                                                                                                                 stat_list.t_day =  to_decimal(rev_list.t_day)
@@ -1544,15 +1535,15 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
         nonlocal t_parameters, t_gl_accthis, glacct_list, t_gl_acct, t_artikel, t_umsz, g_list, temp_list, coa_list, t_list, stat_list, rev_list, b_stat_list, b_stat, buff_exrate, b_param
         nonlocal t_parameters_list, t_gl_accthis_list, glacct_list_list, t_gl_acct_list, t_artikel_list, t_umsz_list, g_list_list, temp_list_list, coa_list_list, t_list_list, stat_list_list, rev_list_list
 
-        tday1:decimal = to_decimal("0.0")
-        tday2:decimal = to_decimal("0.0")
-        tday3:decimal = to_decimal("0.0")
-        mtd1:decimal = to_decimal("0.0")
-        mtd2:decimal = to_decimal("0.0")
-        mtd3:decimal = to_decimal("0.0")
-        ytd1:decimal = to_decimal("0.0")
-        ytd2:decimal = to_decimal("0.0")
-        ytd3:decimal = to_decimal("0.0")
+        tday1:Decimal = to_decimal("0.0")
+        tday2:Decimal = to_decimal("0.0")
+        tday3:Decimal = to_decimal("0.0")
+        mtd1:Decimal = to_decimal("0.0")
+        mtd2:Decimal = to_decimal("0.0")
+        mtd3:Decimal = to_decimal("0.0")
+        ytd1:Decimal = to_decimal("0.0")
+        ytd2:Decimal = to_decimal("0.0")
+        ytd3:Decimal = to_decimal("0.0")
                                                                                                                                                                         ct1 = ct1 + 1
 
                                                                                                                                                                         stat_list = query(stat_list_list, filters=(lambda stat_list: stat_list.flag.lower()  == ("avg-rmrate-rp").lower()), first=True)
@@ -1595,15 +1586,15 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
         nonlocal t_parameters, t_gl_accthis, glacct_list, t_gl_acct, t_artikel, t_umsz, g_list, temp_list, coa_list, t_list, stat_list, rev_list, b_stat_list, b_stat, buff_exrate, b_param
         nonlocal t_parameters_list, t_gl_accthis_list, glacct_list_list, t_gl_acct_list, t_artikel_list, t_umsz_list, g_list_list, temp_list_list, coa_list_list, t_list_list, stat_list_list, rev_list_list
 
-        tday1:decimal = to_decimal("0.0")
-        tday2:decimal = to_decimal("0.0")
-        tday3:decimal = to_decimal("0.0")
-        mtd1:decimal = to_decimal("0.0")
-        mtd2:decimal = to_decimal("0.0")
-        mtd3:decimal = to_decimal("0.0")
-        ytd1:decimal = to_decimal("0.0")
-        ytd2:decimal = to_decimal("0.0")
-        ytd3:decimal = to_decimal("0.0")
+        tday1:Decimal = to_decimal("0.0")
+        tday2:Decimal = to_decimal("0.0")
+        tday3:Decimal = to_decimal("0.0")
+        mtd1:Decimal = to_decimal("0.0")
+        mtd2:Decimal = to_decimal("0.0")
+        mtd3:Decimal = to_decimal("0.0")
+        ytd1:Decimal = to_decimal("0.0")
+        ytd2:Decimal = to_decimal("0.0")
+        ytd3:Decimal = to_decimal("0.0")
                                                                                                                                                                         ct1 = ct1 + 1
 
                                                                                                                                                                         stat_list = query(stat_list_list, filters=(lambda stat_list: stat_list.flag.lower()  == ("avg-rmrate-frg").lower()), first=True)
@@ -1650,14 +1641,14 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
         nonlocal t_parameters, t_gl_accthis, glacct_list, t_gl_acct, t_artikel, t_umsz, g_list, temp_list, coa_list, t_list, stat_list, rev_list, b_stat_list, b_stat, buff_exrate, b_param
         nonlocal t_parameters_list, t_gl_accthis_list, glacct_list_list, t_gl_acct_list, t_artikel_list, t_umsz_list, g_list_list, temp_list_list, coa_list_list, t_list_list, stat_list_list, rev_list_list
 
-        tday1:decimal = to_decimal("0.0")
-        tday2:decimal = to_decimal("0.0")
-        mtd1:decimal = to_decimal("0.0")
-        mtd2:decimal = to_decimal("0.0")
-        mtd_budget1:decimal = to_decimal("0.0")
-        mtd_budget2:decimal = to_decimal("0.0")
-        ytd1:decimal = to_decimal("0.0")
-        ytd2:decimal = to_decimal("0.0")
+        tday1:Decimal = to_decimal("0.0")
+        tday2:Decimal = to_decimal("0.0")
+        mtd1:Decimal = to_decimal("0.0")
+        mtd2:Decimal = to_decimal("0.0")
+        mtd_budget1:Decimal = to_decimal("0.0")
+        mtd_budget2:Decimal = to_decimal("0.0")
+        ytd1:Decimal = to_decimal("0.0")
+        ytd2:Decimal = to_decimal("0.0")
                                                                                                                                                                         ct1 = ct1 + 1
 
                                                                                                                                                                         stat_list = query(stat_list_list, filters=(lambda stat_list: stat_list.flag.lower()  == ("revpar").lower()), first=True)
@@ -1712,7 +1703,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
         d_flag:bool = False
         dbudget_flag:bool = False
         dlmtd_flag:bool = False
-        frate1:decimal = to_decimal("0.0")
+        frate1:Decimal = to_decimal("0.0")
 
                                                                                                                                                                         if ytd_flag:
                                                                                                                                                                             datum1 = jan1
@@ -1816,18 +1807,15 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
     ljan1 = date_mdy(1, 1, get_year(to_date) - timedelta(days=1))
     lfrom_date = date_mdy(get_month(to_date) , 1, get_year(to_date) - timedelta(days=1))
 
-    waehrung = db_session.query(Waehrung).filter(
-             (Waehrung.waehrungsnr == 2)).first()
+    waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, 2)]})
 
     if waehrung:
         foreign_curr =  to_decimal(waehrung.ankauf)
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 491)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 491)]})
     price_decimal = htparam.finteger
 
-    paramtext = db_session.query(Paramtext).filter(
-             (Paramtext.txtnr == 243)).first()
+    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
 
     if paramtext and paramtext.ptexte != "":
         htl_no = decode_string(paramtext.ptexte)
@@ -1852,15 +1840,14 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
     OS_DELETE VALUE ("/usr1/vhp/tmp/output_" + htl_no + ".txt")
     OUTPUT STREAM s1 TO VALUE ("/usr1/vhp/tmp/output_" + htl_no + ".txt") APPEND UNBUFFERED
 
-    parameters = db_session.query(Parameters).filter(
-             (func.lower(Parameters.progname) == ("GL-macro").lower()) & (Parameters.section == to_string(briefnr)) & (Parameters.vstring == "$IN-FORParameters.EIGN")).first()
+    parameters = get_cache (Parameters, {"progname": [(eq, "gl-macro")],"section": [(eq, to_string(briefnr))],"vstring": [(eq, "$in-foreign")]})
 
     if parameters:
         foreign_flag = True
         fill_exrate()
 
     parameters = db_session.query(Parameters).filter(
-             (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).first()
+             (Parameters.progname == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).first()
 
     if parameters:
         cash_flow = True
@@ -1868,14 +1855,13 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
     if cash_flow:
 
         for parameters in db_session.query(Parameters).filter(
-                 (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).order_by(Parameters.varname).all():
+                 (Parameters.progname == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).order_by(Parameters.varname).all():
             t_parameters = T_parameters()
             t_parameters_list.append(t_parameters)
 
             buffer_copy(parameters, t_parameters)
 
-            gl_acct = db_session.query(Gl_acct).filter(
-                     (Gl_acct.fibukonto == entry(0, t_parameters.vstring, ":"))).first()
+            gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, entry(0, t_parameters.vstring, ":"))]})
 
             if gl_acct:
 
@@ -1891,13 +1877,13 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
         calc_cf()
 
     parameters = db_session.query(Parameters).filter(
-             (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("REV").lower())).first()
+             (Parameters.progname == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("REV").lower())).first()
 
     if parameters:
         fill_revenue()
 
     parameters = db_session.query(Parameters).filter(
-             (func.lower(Parameters.progname) == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (func.lower((Parameters.vstring).op("~")(("*segmrev*".lower().replace("*",".*")))) | (func.lower(Parameters.vstring).op("~")(("*segmpers*".lower().replace("*",".*")))) | (func.lower(Parameters.vstring).op("~")(("*segmroom*".lower().replace("*",".*")))))).first()
+             (Parameters.progname == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (matches((Parameters.vstring,"*segmrev*")) | (matches(Parameters.vstring,"*segmpers*")) | (matches(Parameters.vstring,"*segmroom*")))).first()
 
     if parameters:
         fill_segment()
@@ -1939,7 +1925,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
     gl_year = get_year(to_date)
 
     for parameters in db_session.query(Parameters).filter(
-             (func.lower(Parameters.progname) == ("GL-macro").lower()) & (Parameters.section == to_string(briefnr))).order_by(Parameters.varname).all():
+             (Parameters.progname == ("GL-macro").lower()) & (Parameters.section == to_string(briefnr))).order_by(Parameters.varname).all():
 
         if prev_str != parameters.varname:
             debit =  to_decimal("0")
@@ -1954,8 +1940,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
 
             if substring(parameters.vstring, 0, 1) != ("$").lower() :
 
-                gl_accthis = db_session.query(Gl_accthis).filter(
-                         (Gl_accthis.fibukonto == parameters.vstring) & (Gl_accthis.year == gl_year)).first()
+                gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, parameters.vstring)],"year": [(eq, gl_year)]})
 
                 if gl_accthis:
 
@@ -1976,8 +1961,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                                 t_gl_accthis.last_yr[curr_i - 1] = t_gl_accthis.last_yr[curr_i - 1] / lyear_exrate[curr_i - 1]
                                 t_gl_accthis.ly_budget[curr_i - 1] = t_gl_accthis.ly_budget[curr_i - 1] / blyear_exrate[curr_i - 1]
 
-                gl_acct = db_session.query(Gl_acct).filter(
-                         (Gl_acct.fibukonto == parameters.vstring)).first()
+                gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, parameters.vstring)]})
 
                 if gl_acct:
 
@@ -2005,8 +1989,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
 
                         if g_list.grecid != 0:
 
-                            gl_journal = db_session.query(Gl_journal).filter(
-                                     (Gl_journal._recid == g_list.grecid)).first()
+                            gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.grecid)]})
 
                             if gl_journal:
                                 debit =  to_decimal(debit) + to_decimal(gl_journal.debit)
@@ -2022,8 +2005,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
 
                 if parameters.vtype == 23 and num_entries(parameters.varname, "-") == 2:
 
-                    artikel = db_session.query(Artikel).filter(
-                             (Artikel.artnr == to_int(substring(parameters.vstring, 2))) & (Artikel.departement == to_int(substring(parameters.vstring, 0, 2)))).first()
+                    artikel = get_cache (Artikel, {"artnr": [(eq, to_int(substring(parameters.vstring, 2)))],"departement": [(eq, to_int(substring(parameters.vstring, 0, 2)))]})
 
                     if artikel:
 
@@ -2038,8 +2020,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
                         serv =  to_decimal("0")
                         vat =  to_decimal("0")
 
-                        umsatz = db_session.query(Umsatz).filter(
-                                 (Umsatz.datum == curr_date) & (Umsatz.artnr == to_int(substring(parameters.vstring, 2))) & (Umsatz.departement == to_int(substring(parameters.vstring, 0, 2)))).first()
+                        umsatz = get_cache (Umsatz, {"datum": [(eq, curr_date)],"artnr": [(eq, to_int(substring(parameters.vstring, 2)))],"departement": [(eq, to_int(substring(parameters.vstring, 0, 2)))]})
 
                         if umsatz:
                             serv, vat = get_output(calc_servvat(umsatz.departement, umsatz.artnr, umsatz.datum, artikel.service_code, artikel.mwst_code))
@@ -2071,8 +2052,7 @@ def gl_parxls3_listbl(briefnr:int, from_date:date, to_date:date, user_init:str, 
     glacct_list_list.append(glacct_list)
 
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 795)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 795)]})
     curr_close_year = get_year(htparam.fdate) + 1
 
     if gl_year < curr_close_year:

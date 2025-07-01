@@ -1,8 +1,10 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Gl_acct
 
-g_list_list, G_list = create_model("G_list", {"jnr":int, "fibukonto":str, "fibukonto2":str, "debit":decimal, "credit":decimal, "userinit":str, "sysdate":date, "zeit":int, "chginit":str, "chgdate":date, "bemerk":str, "descr":str, "duplicate":bool, "correct":int}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
+g_list_list, G_list = create_model("G_list", {"jnr":int, "fibukonto":string, "fibukonto2":string, "debit":Decimal, "credit":Decimal, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "bemerk":string, "descr":string, "duplicate":bool, "correct":int}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 
 def gl_adjustment_xlsjourn_btn_gobl(g_list_list:[G_list]):
     debits = None
@@ -11,7 +13,6 @@ def gl_adjustment_xlsjourn_btn_gobl(g_list_list:[G_list]):
     gl_acct = None
 
     g_list = None
-
 
     db_session = local_storage.db_session
 
@@ -32,8 +33,7 @@ def gl_adjustment_xlsjourn_btn_gobl(g_list_list:[G_list]):
 
         for g_list in query(g_list_list):
 
-            gl_acct = db_session.query(Gl_acct).filter(
-                     (Gl_acct.fibukonto == g_list.fibukonto2)).first()
+            gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, g_list.fibukonto2)]})
 
             if not gl_acct:
                 correct = 2

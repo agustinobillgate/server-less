@@ -1,16 +1,20 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Kontplan, Htparam
 
 def calc_servvat(depart:int, artnr:int, datum:date, service_code:int, mwst_code:int):
+
+    prepare_cache ([Kontplan, Htparam])
+
     serv_htp = to_decimal("0.0")
     vat_htp = to_decimal("0.0")
     serv_vat:bool = False
-    vat:decimal = to_decimal("0.0")
-    service:decimal = to_decimal("0.0")
+    vat:Decimal = to_decimal("0.0")
+    service:Decimal = to_decimal("0.0")
     kontplan = htparam = None
-
 
     db_session = local_storage.db_session
 
@@ -21,8 +25,7 @@ def calc_servvat(depart:int, artnr:int, datum:date, service_code:int, mwst_code:
         return {"serv_htp": serv_htp, "vat_htp": vat_htp}
 
 
-    kontplan = db_session.query(Kontplan).filter(
-             (Kontplan.betriebsnr == depart) & (Kontplan.kontignr == artnr) & (Kontplan.datum == datum)).first()
+    kontplan = get_cache (Kontplan, {"betriebsnr": [(eq, depart)],"kontignr": [(eq, artnr)],"datum": [(eq, datum)]})
 
     if kontplan:
 
@@ -40,20 +43,17 @@ def calc_servvat(depart:int, artnr:int, datum:date, service_code:int, mwst_code:
 
         if service_code != 0:
 
-            htparam = db_session.query(Htparam).filter(
-                     (Htparam.paramnr == service_code)).first()
+            htparam = get_cache (Htparam, {"paramnr": [(eq, service_code)]})
 
             if htparam and htparam.fdecimal != 0:
                 serv_htp =  to_decimal(htparam.fdecimal) / to_decimal("100")
 
-                htparam = db_session.query(Htparam).filter(
-                         (Htparam.paramnr == 479)).first()
+                htparam = get_cache (Htparam, {"paramnr": [(eq, 479)]})
                 serv_vat = htparam.flogical
 
         if mwst_code != 0:
 
-            htparam = db_session.query(Htparam).filter(
-                     (Htparam.paramnr == mwst_code)).first()
+            htparam = get_cache (Htparam, {"paramnr": [(eq, mwst_code)]})
 
             if htparam and htparam.fdecimal != 0:
                 vat_htp =  to_decimal(htparam.fdecimal) / to_decimal("100")

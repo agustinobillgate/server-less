@@ -1,11 +1,12 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Gl_journal, Gl_jouhdr
 
 def gl_adjustment_btn_delbl(jnr:int):
     success_flag = False
     gl_journal = gl_jouhdr = None
-
 
     db_session = local_storage.db_session
 
@@ -16,16 +17,14 @@ def gl_adjustment_btn_delbl(jnr:int):
         return {"success_flag": success_flag}
 
 
-    gl_journal = db_session.query(Gl_journal).filter(
-             (Gl_journal.jnr == jnr)).first()
+    gl_journal = get_cache (Gl_journal, {"jnr": [(eq, jnr)]})
 
     if gl_journal:
 
         return generate_output()
     else:
 
-        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                 (Gl_jouhdr.jnr == jnr)).first()
+        gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
 
         if gl_jouhdr:
             db_session.delete(gl_jouhdr)

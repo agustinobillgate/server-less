@@ -1,10 +1,15 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from functions.htpchar import htpchar
 from models import Gl_journal, Gl_jouhdr, Gl_acct, Gl_main
 
 def glacct_export2bl(fdate:date, tdate:date):
+
+    prepare_cache ([Gl_journal, Gl_acct])
+
     fromdate:date = None
     todate:date = None
     mm:int = 0
@@ -15,11 +20,10 @@ def glacct_export2bl(fdate:date, tdate:date):
 
     note_list = g_list = t_gl_journal = t_gl_jouhdr = None
 
-    note_list_list, Note_list = create_model("Note_list", {"s_recid":int, "bemerk":str})
-    g_list_list, G_list = create_model("G_list", {"fibukonto":str, "debit":decimal, "credit":decimal, "bemerk":str, "userinit":str, "sysdate":date, "zeit":int, "chginit":str, "chgdate":date, "jnr":int, "bezeich":str, "doc_date":date, "curr":str, "post_date":date, "ref":str, "doc_header":str, "comp":str, "code1":str, "amount":decimal, "costc":str, "profc":str, "acc_type":str, "deptnr":int, "revtype":str, "datum":date, "refno":str})
+    note_list_list, Note_list = create_model("Note_list", {"s_recid":int, "bemerk":string})
+    g_list_list, G_list = create_model("G_list", {"fibukonto":string, "debit":Decimal, "credit":Decimal, "bemerk":string, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "jnr":int, "bezeich":string, "doc_date":date, "curr":string, "post_date":date, "ref":string, "doc_header":string, "comp":string, "code1":string, "amount":Decimal, "costc":string, "profc":string, "acc_type":string, "deptnr":int, "revtype":string, "datum":date, "refno":string})
     t_gl_journal_list, T_gl_journal = create_model_like(Gl_journal)
-    t_gl_jouhdr_list, T_gl_jouhdr = create_model_like(Gl_jouhdr, {"b_recid":int, "code1":str})
-
+    t_gl_jouhdr_list, T_gl_jouhdr = create_model_like(Gl_jouhdr, {"b_recid":int, "code1":string})
 
     db_session = local_storage.db_session
 
@@ -33,7 +37,7 @@ def glacct_export2bl(fdate:date, tdate:date):
 
         return {"loc_curr": loc_curr, "t-gl-jouhdr": t_gl_jouhdr_list, "g-list": g_list_list}
 
-    def get_bemerk(bemerk:str):
+    def get_bemerk(bemerk:string):
 
         nonlocal fromdate, todate, mm, loc_curr, t_gl_jouhdr_list, g_list_list, gl_journal, gl_jouhdr, gl_acct, gl_main
         nonlocal fdate, tdate
@@ -43,9 +47,9 @@ def glacct_export2bl(fdate:date, tdate:date):
         nonlocal note_list_list, g_list_list, t_gl_journal_list, t_gl_jouhdr_list
 
         n:int = 0
-        s1:str = ""
-        bemerk = replace_str(bemerk, chr(10) , " ")
-        n = 1 + get_index(bemerk, ";&&")
+        s1:string = ""
+        bemerk = replace_str(bemerk, chr_unicode(10) , " ")
+        n = get_index(bemerk, ";&&")
 
         if n > 0:
             s1 = substring(bemerk, 0, n - 1)
@@ -89,14 +93,11 @@ def glacct_export2bl(fdate:date, tdate:date):
             for gl_journal in db_session.query(Gl_journal).filter(
                      (Gl_journal.jnr == t_gl_jouhdr.jnr)).order_by(Gl_journal.sysdate, Gl_journal.zeit).all():
 
-                gl_acct = db_session.query(Gl_acct).filter(
-                         (Gl_acct.fibukonto == gl_journal.fibukonto)).first()
+                gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)]})
 
-                gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                         (Gl_jouhdr.jnr == gl_journal.jnr)).first()
+                gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, gl_journal.jnr)]})
 
-                gl_main = db_session.query(Gl_main).filter(
-                         (Gl_main.nr == gl_acct.main_nr)).first()
+                gl_main = get_cache (Gl_main, {"nr": [(eq, gl_acct.main_nr)]})
                 g_list = G_list()
                 g_list_list.append(g_list)
 

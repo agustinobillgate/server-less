@@ -1,11 +1,15 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Htparam
 
 def htpdate(htparamnum:int):
+
+    prepare_cache ([Htparam])
+
     htpdate = get_current_date()
     htparam = None
-
 
     db_session = local_storage.db_session
 
@@ -16,8 +20,7 @@ def htpdate(htparamnum:int):
         return {"htpdate": htpdate}
 
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == htparamnum)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, htparamnum)]})
 
     if htparam:
         htpdate = htparam.fdate

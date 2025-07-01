@@ -1,26 +1,29 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Htparam, Gl_jouhdr, Gl_acct, Gl_journal, Gl_department
 
-def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, close_month:int, sorttype:int, from_fibu:str, to_fibu:str, pnl_acct:str, pbal_flag:bool):
+def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, close_month:int, sorttype:int, from_fibu:string, to_fibu:string, pnl_acct:string, pbal_flag:bool):
+
+    prepare_cache ([Htparam, Gl_jouhdr, Gl_acct, Gl_journal, Gl_department])
+
     summary_list_list = []
     detail_list_list = []
-    sales:decimal = to_decimal("0.0")
-    cost:decimal = to_decimal("0.0")
-    gop_credit:decimal = to_decimal("0.0")
-    gop_debit:decimal = to_decimal("0.0")
-    tot_diff:decimal = to_decimal("0.0")
+    sales:Decimal = to_decimal("0.0")
+    cost:Decimal = to_decimal("0.0")
+    gop_credit:Decimal = to_decimal("0.0")
+    gop_debit:Decimal = to_decimal("0.0")
+    tot_diff:Decimal = to_decimal("0.0")
     close_date:date = None
     htparam = gl_jouhdr = gl_acct = gl_journal = gl_department = None
 
     g_list = summary_list = detail_list = None
 
-    g_list_list, G_list = create_model("G_list", {"grecid":int, "fibu":str})
-    summary_list_list, Summary_list = create_model("Summary_list", {"acctno":str, "bezeich":str, "beg_balance":decimal, "t_debit":decimal, "t_credit":decimal, "net_change":decimal, "end_balance":decimal, "ytd_balance":decimal})
-    detail_list_list, Detail_list = create_model("Detail_list", {"datum":date, "refno":str, "bezeich":str, "t_debit":decimal, "t_credit":decimal, "net_change":decimal, "end_balance":decimal, "note":str})
-
+    g_list_list, G_list = create_model("G_list", {"grecid":int, "fibu":string})
+    summary_list_list, Summary_list = create_model("Summary_list", {"acctno":string, "bezeich":string, "beg_balance":Decimal, "t_debit":Decimal, "t_credit":Decimal, "net_change":Decimal, "end_balance":Decimal, "ytd_balance":Decimal})
+    detail_list_list, Detail_list = create_model("Detail_list", {"datum":date, "refno":string, "bezeich":string, "t_debit":Decimal, "t_credit":Decimal, "net_change":Decimal, "end_balance":Decimal, "note":string})
 
     db_session = local_storage.db_session
 
@@ -34,7 +37,7 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
 
         return {"summary-list": summary_list_list, "detail-list": detail_list_list}
 
-    def get_bemerk(bemerk:str):
+    def get_bemerk(bemerk:string):
 
         nonlocal summary_list_list, detail_list_list, sales, cost, gop_credit, gop_debit, tot_diff, close_date, htparam, gl_jouhdr, gl_acct, gl_journal, gl_department
         nonlocal from_depart, from_date, to_date, close_month, sorttype, from_fibu, to_fibu, pnl_acct, pbal_flag
@@ -44,8 +47,8 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
         nonlocal g_list_list, summary_list_list, detail_list_list
 
         n:int = 0
-        s1:str = ""
-        n = 1 + get_index(bemerk, ";&&")
+        s1:string = ""
+        n = get_index(bemerk, ";&&")
 
         if n > 0:
             return substring(bemerk, 0, n - 1)
@@ -70,13 +73,15 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
             for gl_jouhdr in db_session.query(Gl_jouhdr).filter(
                      (Gl_jouhdr.datum >= from_date) & (Gl_jouhdr.datum <= to_date)).order_by(Gl_jouhdr.datum).all():
 
-                gl_journal_obj_list = []
-                for gl_journal, gl_acct in db_session.query(Gl_journal, Gl_acct).join(Gl_acct,(Gl_acct.deptnr == from_depart)).filter(
+                gl_journal_obj_list = {}
+                gl_journal = Gl_journal()
+                gl_acct = Gl_acct()
+                for gl_journal._recid, gl_journal.fibukonto, gl_journal.jnr, gl_journal.credit, gl_journal.debit, gl_journal.bemerk, gl_acct.fibukonto, gl_acct.bezeich, gl_acct.acc_type, gl_acct.actual, gl_acct.last_yr, gl_acct._recid in db_session.query(Gl_journal._recid, Gl_journal.fibukonto, Gl_journal.jnr, Gl_journal.credit, Gl_journal.debit, Gl_journal.bemerk, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct.acc_type, Gl_acct.actual, Gl_acct.last_yr, Gl_acct._recid).join(Gl_acct,(Gl_acct.deptnr == from_depart)).filter(
                          (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).all():
-                    if gl_journal._recid in gl_journal_obj_list:
+                    if gl_journal_obj_list.get(gl_journal._recid):
                         continue
                     else:
-                        gl_journal_obj_list.append(gl_journal._recid)
+                        gl_journal_obj_list[gl_journal._recid] = True
 
 
                     g_list = G_list()
@@ -90,13 +95,15 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
             for gl_jouhdr in db_session.query(Gl_jouhdr).filter(
                      (Gl_jouhdr.datum >= from_date) & (Gl_jouhdr.datum <= to_date)).order_by(Gl_jouhdr.datum).all():
 
-                gl_journal_obj_list = []
-                for gl_journal, gl_acct in db_session.query(Gl_journal, Gl_acct).join(Gl_acct,(Gl_acct.fibukonto == Gl_journal.fibukonto) & (Gl_acct.acc_type != 3) & (Gl_acct.acc_type != 4)).filter(
+                gl_journal_obj_list = {}
+                gl_journal = Gl_journal()
+                gl_acct = Gl_acct()
+                for gl_journal._recid, gl_journal.fibukonto, gl_journal.jnr, gl_journal.credit, gl_journal.debit, gl_journal.bemerk, gl_acct.fibukonto, gl_acct.bezeich, gl_acct.acc_type, gl_acct.actual, gl_acct.last_yr, gl_acct._recid in db_session.query(Gl_journal._recid, Gl_journal.fibukonto, Gl_journal.jnr, Gl_journal.credit, Gl_journal.debit, Gl_journal.bemerk, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct.acc_type, Gl_acct.actual, Gl_acct.last_yr, Gl_acct._recid).join(Gl_acct,(Gl_acct.fibukonto == Gl_journal.fibukonto) & (Gl_acct.acc_type != 3) & (Gl_acct.acc_type != 4)).filter(
                          (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).all():
-                    if gl_journal._recid in gl_journal_obj_list:
+                    if gl_journal_obj_list.get(gl_journal._recid):
                         continue
                     else:
-                        gl_journal_obj_list.append(gl_journal._recid)
+                        gl_journal_obj_list[gl_journal._recid] = True
 
 
                     g_list = G_list()
@@ -114,46 +121,49 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
         nonlocal g_list, summary_list, detail_list
         nonlocal g_list_list, summary_list_list, detail_list_list
 
-        konto:str = ""
+        konto:string = ""
         i:int = 0
-        c:str = ""
+        c:string = ""
         ind:int = 0
         curr_month:int = 0
-        t_debit:decimal = to_decimal("0.0")
-        t_credit:decimal = to_decimal("0.0")
-        p_bal:decimal = to_decimal("0.0")
-        t_bal:decimal = to_decimal("0.0")
-        y_bal:decimal = to_decimal("0.0")
-        tot_debit:decimal = to_decimal("0.0")
-        tot_credit:decimal = to_decimal("0.0")
-        t_ybal:decimal = to_decimal("0.0")
-        tt_ybal:decimal = to_decimal("0.0")
-        prev_bal:decimal = to_decimal("0.0")
-        tot_bal:decimal = to_decimal("0.0")
-        diff:decimal = to_decimal("0.0")
-        tt_debit:decimal = to_decimal("0.0")
-        tt_credit:decimal = to_decimal("0.0")
-        tt_pbal:decimal = to_decimal("0.0")
-        tt_bal:decimal = to_decimal("0.0")
-        tt_diff:decimal = to_decimal("0.0")
+        t_debit:Decimal = to_decimal("0.0")
+        t_credit:Decimal = to_decimal("0.0")
+        p_bal:Decimal = to_decimal("0.0")
+        t_bal:Decimal = to_decimal("0.0")
+        y_bal:Decimal = to_decimal("0.0")
+        tot_debit:Decimal = to_decimal("0.0")
+        tot_credit:Decimal = to_decimal("0.0")
+        t_ybal:Decimal = to_decimal("0.0")
+        tt_ybal:Decimal = to_decimal("0.0")
+        prev_bal:Decimal = to_decimal("0.0")
+        tot_bal:Decimal = to_decimal("0.0")
+        diff:Decimal = to_decimal("0.0")
+        tt_debit:Decimal = to_decimal("0.0")
+        tt_credit:Decimal = to_decimal("0.0")
+        tt_pbal:Decimal = to_decimal("0.0")
+        tt_bal:Decimal = to_decimal("0.0")
+        tt_diff:Decimal = to_decimal("0.0")
         act_flag:int = 0
         n:int = 0
         gl_account = None
+        tmp_date:date = None
         Gl_account =  create_buffer("Gl_account",Gl_acct)
+        tmp_date = date_mdy(get_month(close_date) , 1, get_year(close_date))
+        tmp_date = tmp_date - timedelta(days=1)
         sales =  to_decimal("0")
         cost =  to_decimal("0")
         gop_credit =  to_decimal("0")
         gop_debit =  to_decimal("0")
         tot_diff =  to_decimal("0")
 
-        if to_date <= date_mdy(get_month(close_date) , 1, get_year(close_date)) - 1:
+        if to_date <= tmp_date:
             act_flag = 1
         curr_month = close_month
 
         if sorttype == 1:
 
             for gl_acct in db_session.query(Gl_acct).filter(
-                     (func.lower(Gl_acct.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_acct.fibukonto) <= (to_fibu).lower()) & (Gl_acct.deptnr == from_depart) & ((Gl_acct.acc_type == 1) | (Gl_acct.acc_type == 2) | (Gl_acct.acc_type == 5))).order_by(Gl_acct.fibukonto).all():
+                     (Gl_acct.fibukonto >= (from_fibu).lower()) & (Gl_acct.fibukonto <= (to_fibu).lower()) & (Gl_acct.deptnr == from_depart) & ((Gl_acct.acc_type == 1) | (Gl_acct.acc_type == 2) | (Gl_acct.acc_type == 5))).order_by(Gl_acct.fibukonto).all():
                 detail_list = Detail_list()
                 detail_list_list.append(detail_list)
 
@@ -168,11 +178,9 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
 
                 for g_list in query(g_list_list, filters=(lambda g_list: g_list.fibu == gl_acct.fibukonto)):
 
-                    gl_journal = db_session.query(Gl_journal).filter(
-                             (Gl_journal._recid == g_list.grecid)).first()
+                    gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.grecid)]})
 
-                    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                             (Gl_jouhdr.jnr == gl_journal.jnr)).first()
+                    gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, gl_journal.jnr)]})
                     g_list_list.remove(g_list)
 
                     if gl_acct.fibukonto.lower()  == (pnl_acct).lower() :
@@ -255,10 +263,10 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
                 summary_list = Summary_list()
                 summary_list_list.append(summary_list)
 
-                summary_list.bezeich = to_string(gl_depart.nr, ">>9") + " - " + substring(gl_depart.bezeich, 0, 32)
+                summary_list.bezeich = to_string(gl_department.nr, ">>9") + " - " + substring(gl_department.bezeich, 0, 32)
 
                 for gl_acct in db_session.query(Gl_acct).filter(
-                         (Gl_acct.deptnr == gl_depart.nr)).order_by(Gl_acct.fibukonto).all():
+                         (Gl_acct.deptnr == gl_department.nr)).order_by(Gl_acct.fibukonto).all():
                     t_debit =  to_decimal("0")
                     t_credit =  to_decimal("0")
                     p_bal =  to_decimal("0")
@@ -268,11 +276,9 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
 
                     for g_list in query(g_list_list, filters=(lambda g_list: g_list.fibu == gl_acct.fibukonto)):
 
-                        gl_journal = db_session.query(Gl_journal).filter(
-                                 (Gl_journal._recid == g_list.grecid)).first()
+                        gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.grecid)]})
 
-                        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                                 (Gl_jouhdr.jnr == gl_journal.jnr)).first()
+                        gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, gl_journal.jnr)]})
                         g_list_list.remove(g_list)
 
                         if gl_acct.fibukonto.lower()  == (pnl_acct).lower() :
@@ -345,7 +351,7 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
                         summary_list.t_debit =  to_decimal(t_debit)
                         summary_list.t_credit =  to_decimal(t_credit)
 
-                        if gl_acct.acc_type == 1 or gl_acct.acc_typ == 4:
+                        if gl_acct.acc_type == 1 or gl_acct.acc_type == 4:
                             diff =  - to_decimal(t_debit) + to_decimal(t_credit)
                         else:
                             diff =  to_decimal(t_debit) - to_decimal(t_credit)
@@ -392,39 +398,42 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
         nonlocal g_list, summary_list, detail_list
         nonlocal g_list_list, summary_list_list, detail_list_list
 
-        konto:str = ""
+        konto:string = ""
         i:int = 0
-        c:str = ""
+        c:string = ""
         ind:int = 0
         curr_month:int = 0
-        t_debit:decimal = to_decimal("0.0")
-        t_credit:decimal = to_decimal("0.0")
-        p_bal:decimal = to_decimal("0.0")
-        t_bal:decimal = to_decimal("0.0")
-        y_bal:decimal = to_decimal("0.0")
-        tot_debit:decimal = to_decimal("0.0")
-        tot_credit:decimal = to_decimal("0.0")
-        t_ybal:decimal = to_decimal("0.0")
-        tt_ybal:decimal = to_decimal("0.0")
-        prev_bal:decimal = to_decimal("0.0")
-        tot_bal:decimal = to_decimal("0.0")
-        diff:decimal = to_decimal("0.0")
-        tt_debit:decimal = to_decimal("0.0")
-        tt_credit:decimal = to_decimal("0.0")
-        tt_pbal:decimal = to_decimal("0.0")
-        tt_bal:decimal = to_decimal("0.0")
-        tt_diff:decimal = to_decimal("0.0")
+        t_debit:Decimal = to_decimal("0.0")
+        t_credit:Decimal = to_decimal("0.0")
+        p_bal:Decimal = to_decimal("0.0")
+        t_bal:Decimal = to_decimal("0.0")
+        y_bal:Decimal = to_decimal("0.0")
+        tot_debit:Decimal = to_decimal("0.0")
+        tot_credit:Decimal = to_decimal("0.0")
+        t_ybal:Decimal = to_decimal("0.0")
+        tt_ybal:Decimal = to_decimal("0.0")
+        prev_bal:Decimal = to_decimal("0.0")
+        tot_bal:Decimal = to_decimal("0.0")
+        diff:Decimal = to_decimal("0.0")
+        tt_debit:Decimal = to_decimal("0.0")
+        tt_credit:Decimal = to_decimal("0.0")
+        tt_pbal:Decimal = to_decimal("0.0")
+        tt_bal:Decimal = to_decimal("0.0")
+        tt_diff:Decimal = to_decimal("0.0")
         act_flag:int = 0
         n:int = 0
         gl_account = None
+        tmp_date:date = None
         Gl_account =  create_buffer("Gl_account",Gl_acct)
+        tmp_date = date_mdy(get_month(close_date) , 1, get_year(close_date))
+        tmp_date = tmp_date - timedelta(days=1)
         sales =  to_decimal("0")
         cost =  to_decimal("0")
         gop_credit =  to_decimal("0")
         gop_debit =  to_decimal("0")
         tot_diff =  to_decimal("0")
 
-        if to_date <= date_mdy(get_month(close_date) , 1, get_year(close_date)) - 1:
+        if to_date <= tmp_date:
             act_flag = 1
         curr_month = close_month
 
@@ -441,7 +450,7 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
                 detail_list.bezeich = gl_department.bezeich
 
                 for gl_acct in db_session.query(Gl_acct).filter(
-                         (func.lower(Gl_acct.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_acct.fibukonto) <= (to_fibu).lower()) & (Gl_acct.deptnr == gl_department.nr) & ((Gl_acct.acc_type == 1) | (Gl_acct.acc_type == 2) | (Gl_acct.acc_type == 5))).order_by(Gl_acct.fibukonto).all():
+                         (Gl_acct.fibukonto >= (from_fibu).lower()) & (Gl_acct.fibukonto <= (to_fibu).lower()) & (Gl_acct.deptnr == gl_department.nr) & ((Gl_acct.acc_type == 1) | (Gl_acct.acc_type == 2) | (Gl_acct.acc_type == 5))).order_by(Gl_acct.fibukonto).all():
                     c = convert_fibu(gl_acct.fibukonto)
                     detail_list = Detail_list()
                     detail_list_list.append(detail_list)
@@ -458,11 +467,9 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
 
                     for g_list in query(g_list_list, filters=(lambda g_list: g_list.fibu == gl_acct.fibukonto)):
 
-                        gl_journal = db_session.query(Gl_journal).filter(
-                                 (Gl_journal._recid == g_list.grecid)).first()
+                        gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.grecid)]})
 
-                        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                                 (Gl_jouhdr.jnr == gl_journal.jnr)).first()
+                        gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, gl_journal.jnr)]})
                         g_list_list.remove(g_list)
 
                         if gl_acct.fibukonto.lower()  == (pnl_acct).lower() :
@@ -536,13 +543,15 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
 
         if sorttype == 2:
 
-            gl_department_obj_list = []
-            for gl_department, gl_account in db_session.query(Gl_department, Gl_account).join(Gl_account,(Gl_account.deptnr == Gl_department.nr)).filter(
+            gl_department_obj_list = {}
+            gl_department = Gl_department()
+            gl_account = Gl_acct()
+            for gl_department.nr, gl_department.bezeich, gl_department._recid, gl_account.fibukonto, gl_account.bezeich, gl_account.acc_type, gl_account.actual, gl_account.last_yr, gl_account._recid in db_session.query(Gl_department.nr, Gl_department.bezeich, Gl_department._recid, Gl_account.fibukonto, Gl_account.bezeich, Gl_account.acc_type, Gl_account.actual, Gl_account.last_yr, Gl_account._recid).join(Gl_account,(Gl_account.deptnr == Gl_department.nr)).filter(
                      (Gl_department.nr > 0)).order_by(Gl_department.nr).all():
-                if gl_department._recid in gl_department_obj_list:
+                if gl_department_obj_list.get(gl_department._recid):
                     continue
                 else:
-                    gl_department_obj_list.append(gl_department._recid)
+                    gl_department_obj_list[gl_department._recid] = True
 
 
                 prev_bal =  to_decimal("0")
@@ -555,11 +564,11 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
                 summary_list = Summary_list()
                 summary_list_list.append(summary_list)
 
-                summary_list.bezeich = to_string(gl_depart.nr, ">>9") + " - " +\
-                        substring(gl_depart.bezeich, 0, 32)
+                summary_list.bezeich = to_string(gl_department.nr, ">>9") + " - " +\
+                        substring(gl_department.bezeich, 0, 32)
 
                 for gl_acct in db_session.query(Gl_acct).filter(
-                         (Gl_acct.deptnr == gl_depart.nr)).order_by(Gl_acct.fibukonto).all():
+                         (Gl_acct.deptnr == gl_department.nr)).order_by(Gl_acct.fibukonto).all():
                     t_debit =  to_decimal("0")
                     t_credit =  to_decimal("0")
                     p_bal =  to_decimal("0")
@@ -569,11 +578,9 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
 
                     for g_list in query(g_list_list, filters=(lambda g_list: g_list.fibu == gl_acct.fibukonto)):
 
-                        gl_journal = db_session.query(Gl_journal).filter(
-                                 (Gl_journal._recid == g_list.grecid)).first()
+                        gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.grecid)]})
 
-                        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                                 (Gl_jouhdr.jnr == gl_journal.jnr)).first()
+                        gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, gl_journal.jnr)]})
                         g_list_list.remove(g_list)
 
                         if gl_acct.fibukonto.lower()  == (pnl_acct).lower() :
@@ -646,7 +653,7 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
                         summary_list.t_debit =  to_decimal(t_debit)
                         summary_list.t_credit =  to_decimal(t_credit)
 
-                        if gl_acct.acc_type == 1 or gl_acct.acc_typ == 4:
+                        if gl_acct.acc_type == 1 or gl_acct.acc_type == 4:
                             diff =  - to_decimal(t_debit) + to_decimal(t_credit)
                         else:
                             diff =  to_decimal(t_debit) - to_decimal(t_credit)
@@ -684,7 +691,7 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
             summary_list.ytd_bal =  to_decimal(tt_ybal)
 
 
-    def convert_fibu(konto:str):
+    def convert_fibu(konto:string):
 
         nonlocal summary_list_list, detail_list_list, sales, cost, gop_credit, gop_debit, tot_diff, close_date, htparam, gl_jouhdr, gl_acct, gl_journal, gl_department
         nonlocal from_depart, from_date, to_date, close_month, sorttype, from_fibu, to_fibu, pnl_acct, pbal_flag
@@ -694,7 +701,7 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
         nonlocal g_list_list, summary_list_list, detail_list_list
 
         s = ""
-        ch:str = ""
+        ch:string = ""
         i:int = 0
         j:int = 0
 
@@ -702,11 +709,10 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
             return (s)
 
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 977)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 977)]})
         ch = htparam.fchar
         j = 0
-        for i in range(1,len(ch)  + 1) :
+        for i in range(1,length(ch)  + 1) :
 
             if substring(ch, i - 1, 1) >= ("0").lower()  and substring(ch, i - 1, 1) <= ("9").lower() :
                 j = j + 1
@@ -717,8 +723,7 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
         return generate_inner_output()
 
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 597)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
     close_date = htparam.fdate
     create_glist()
 

@@ -1,17 +1,22 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Htparam, Bediener, Res_history
 
-def closemonth3bl(case_type:int, user_init:str, acct_date:date):
-    fdefault:str = ""
+def closemonth3bl(case_type:int, user_init:string, acct_date:date):
+
+    prepare_cache ([Htparam, Bediener, Res_history])
+
+    fdefault:string = ""
     curr_date:date = None
     htparam = bediener = res_history = None
 
     bparam = None
 
     Bparam = create_buffer("Bparam",Htparam)
+
 
     db_session = local_storage.db_session
 
@@ -28,34 +33,35 @@ def closemonth3bl(case_type:int, user_init:str, acct_date:date):
 
     if case_type == 1:
 
-        htparam = db_session.query(Htparam).filter(
-                     (Htparam.paramnr == 597)).first()
-        htparam.fdate = acct_date
-        htparam.lupdate = get_current_date()
-        htparam.fdefault = user_init + " - " + to_string(get_current_time_in_seconds(), "HH:MM:SS")
-        fdefault = htparam.fdefault
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
+
+        if htparam:
+            pass
+            htparam.fdate = acct_date
+            htparam.lupdate = get_current_date()
+            htparam.fdefault = user_init + " - " + to_string(get_current_time_in_seconds(), "HH:MM:SS")
+            fdefault = htparam.fdefault
 
 
-        pass
+            pass
+            pass
 
-        bparam = db_session.query(Bparam).filter(
-                     (Bparam.paramnr == 558)).first()
+        bparam = get_cache (Htparam, {"paramnr": [(eq, 558)]})
 
         if bparam:
+            pass
             bparam.fdefault = fdefault
 
 
             pass
-
+            pass
 
     elif case_type == 2:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 597)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
         curr_date = htparam.fdate
 
-        bediener = db_session.query(Bediener).filter(
-                 (func.lower(Bediener.userinit) == (user_init).lower())).first()
+        bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
         res_history = Res_history()
         db_session.add(res_history)
 
@@ -66,6 +72,7 @@ def closemonth3bl(case_type:int, user_init:str, acct_date:date):
         res_history.action = "G/L"
 
 
+        pass
         pass
 
     return generate_output()

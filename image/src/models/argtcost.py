@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -23,3 +25,21 @@ class Argtcost(Base):
 	shift = sa.Column(sa.Integer, default=0)
 	zinr = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('anzahl', 0)
+		kwargs.setdefault('artnr', 0)
+		kwargs.setdefault('artnrfront', 0)
+		kwargs.setdefault('costbetrag', 0)
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('departement', 0)
+		kwargs.setdefault('gastnrmember', 0)
+		kwargs.setdefault('mealcoupon', 0)
+		kwargs.setdefault('nettobetrag', 0)
+		kwargs.setdefault('res_char', ["","","","","","","","",""])
+		kwargs.setdefault('res_date', [None,None,None,None,None,None,None,None,None])
+		kwargs.setdefault('res_deci', [0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('res_int', [0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('res_logic', [False,False,False,False,False,False,False,False,False])
+		kwargs.setdefault('shift', 0)
+		kwargs.setdefault('zinr', "")
+		super(Argtcost, self).__init__(*args, **kwargs)

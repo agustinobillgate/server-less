@@ -1,0 +1,42 @@
+#using conversion tools version: 1.0.0.111
+
+from functions.additional_functions import *
+from decimal import Decimal
+from functions.read_res_linebl import read_res_linebl
+from models import Res_line
+
+def hk_read_res_linebl(pvilanguage:int, zinr:string):
+    guest_name = ""
+    msg_str = ""
+    lvcarea:string = ""
+    res_line = None
+
+    t_res_line = None
+
+    t_res_line_list, T_res_line = create_model_like(Res_line)
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal guest_name, msg_str, lvcarea, res_line
+        nonlocal pvilanguage, zinr
+
+
+        nonlocal t_res_line
+        nonlocal t_res_line_list
+
+        return {"guest_name": guest_name, "msg_str": msg_str}
+
+
+    t_res_line_list = get_output(read_res_linebl(7, 0, None, None, 1, zinr, None, None, None, None, ""))
+
+    t_res_line = query(t_res_line_list, first=True)
+
+    if not t_res_line:
+        msg_str = translateExtended ("Room / Inhouse Guest not found.", lvcarea, "")
+
+        return generate_output()
+    else:
+        guest_name = t_res_line.name
+
+    return generate_output()

@@ -1,0 +1,59 @@
+#using conversion tools version: 1.0.0.111
+
+from functions.additional_functions import *
+from decimal import Decimal
+from models import Akt_code
+
+stage_list_list, Stage_list = create_model_like(Akt_code)
+
+def aktstage_admin_btn_exitbl(case_type:int, rec_id:int, stage_list_list:[Stage_list]):
+
+    prepare_cache ([Akt_code])
+
+    akt_code = None
+
+    stage_list = None
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal akt_code
+        nonlocal case_type, rec_id
+
+
+        nonlocal stage_list
+
+        return {}
+
+    def fill_stage_code():
+
+        nonlocal akt_code
+        nonlocal case_type, rec_id
+
+
+        nonlocal stage_list
+
+
+        akt_code.aktiongrup = 2
+        akt_code.aktionscode = stage_list.aktionscode
+        akt_code.bezeich = stage_list.bezeich
+        akt_code.bemerkung = stage_list.bemerkung
+        akt_code.wertigkeit = stage_list.wertigkeit
+
+
+    stage_list = query(stage_list_list, first=True)
+
+    if case_type == 1:
+        akt_code = Akt_code()
+        db_session.add(akt_code)
+
+        fill_stage_code()
+
+    elif case_type == 2:
+
+        akt_code = get_cache (Akt_code, {"_recid": [(eq, rec_id)]})
+        pass
+        fill_stage_code()
+        pass
+
+    return generate_output()

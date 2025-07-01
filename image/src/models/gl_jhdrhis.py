@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -17,3 +19,15 @@ class Gl_jhdrhis(Base):
 	refno = sa.Column(sa.String, default="")
 	remain = sa.Column(sa.Numeric, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('activeflag', 0)
+		kwargs.setdefault('batch', False)
+		kwargs.setdefault('bezeich', "")
+		kwargs.setdefault('credit', 0)
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('debit', 0)
+		kwargs.setdefault('jnr', 0)
+		kwargs.setdefault('jtype', 0)
+		kwargs.setdefault('refno', "")
+		kwargs.setdefault('remain', 0)
+		super(Gl_jhdrhis, self).__init__(*args, **kwargs)

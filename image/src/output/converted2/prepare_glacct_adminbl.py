@@ -1,9 +1,13 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Gl_acct, Gl_main, Gl_fstype, Gl_department, Htparam, L_lieferant
 
 def prepare_glacct_adminbl():
+
+    prepare_cache ([Htparam])
+
     from_acct = ""
     gst_flag = False
     b1_list_list = []
@@ -14,11 +18,10 @@ def prepare_glacct_adminbl():
 
     b1_list = gl_main1 = gl_fstype1 = gl_dept1 = None
 
-    b1_list_list, B1_list = create_model_like(Gl_acct, {"main_bezeich":str, "kurzbez":str, "dept_bezeich":str, "fstype_bezeich":str})
+    b1_list_list, B1_list = create_model_like(Gl_acct, {"main_bezeich":string, "kurzbez":string, "dept_bezeich":string, "fstype_bezeich":string})
     gl_main1_list, Gl_main1 = create_model_like(Gl_main)
     gl_fstype1_list, Gl_fstype1 = create_model_like(Gl_fstype)
     gl_dept1_list, Gl_dept1 = create_model_like(Gl_department)
-
 
     db_session = local_storage.db_session
 
@@ -38,19 +41,18 @@ def prepare_glacct_adminbl():
     if gl_acct:
         db_session.delete(gl_acct)
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 551)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 551)]})
 
     if htparam.paramgruppe == 38 and htparam.fchar != "":
         from_acct = htparam.fchar
 
-    gl_acct_obj_list = []
+    gl_acct_obj_list = {}
     for gl_acct, gl_main, gl_fstype, gl_department in db_session.query(Gl_acct, Gl_main, Gl_fstype, Gl_department).join(Gl_main,(Gl_main.nr == Gl_acct.main_nr)).join(Gl_fstype,(Gl_fstype.nr == Gl_acct.fs_type)).join(Gl_department,(Gl_department.nr == Gl_acct.deptnr)).filter(
-             (func.lower(Gl_acct.fibukonto) >= (from_acct).lower())).order_by(Gl_acct.fibukonto).all():
-        if gl_acct._recid in gl_acct_obj_list:
+             (Gl_acct.fibukonto >= (from_acct).lower())).order_by(Gl_acct.fibukonto).all():
+        if gl_acct_obj_list.get(gl_acct._recid):
             continue
         else:
-            gl_acct_obj_list.append(gl_acct._recid)
+            gl_acct_obj_list[gl_acct._recid] = True
 
 
         b1_list = B1_list()
@@ -80,8 +82,7 @@ def prepare_glacct_adminbl():
 
         buffer_copy(gl_department, gl_dept1)
 
-    l_lieferant = db_session.query(L_lieferant).filter(
-             (func.lower(L_lieferant.firma) == ("GST").lower())).first()
+    l_lieferant = get_cache (L_lieferant, {"firma": [(eq, "gst")]})
 
     if l_lieferant:
         gst_flag = True

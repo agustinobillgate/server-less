@@ -1,15 +1,18 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Htparam, Gl_jouhdr, Gl_journal, Bediener, Res_history
 
-def delete_gl_adjustment_allbl(refno:str, jnr:int, bezeich:str, user_init:str, to_date:date):
+def delete_gl_adjustment_allbl(refno:string, jnr:int, bezeich:string, user_init:string, to_date:date):
+
+    prepare_cache ([Htparam, Bediener, Res_history])
+
     flag = False
     msg = ""
     close_year:date = None
     htparam = gl_jouhdr = gl_journal = bediener = res_history = None
-
 
     db_session = local_storage.db_session
 
@@ -20,12 +23,10 @@ def delete_gl_adjustment_allbl(refno:str, jnr:int, bezeich:str, user_init:str, t
         return {"flag": flag, "msg": msg}
 
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 795)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 795)]})
     close_year = htparam.fdate
 
-    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-             (Gl_jouhdr.jnr == jnr)).first()
+    gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
 
     if gl_jouhdr:
 
@@ -36,6 +37,7 @@ def delete_gl_adjustment_allbl(refno:str, jnr:int, bezeich:str, user_init:str, t
                 for gl_journal in db_session.query(Gl_journal).filter(
                          (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).all():
                     db_session.delete(gl_journal)
+                pass
                 db_session.delete(gl_jouhdr)
                 flag = True
 
@@ -48,8 +50,7 @@ def delete_gl_adjustment_allbl(refno:str, jnr:int, bezeich:str, user_init:str, t
 
                 return generate_output()
 
-    bediener = db_session.query(Bediener).filter(
-             (func.lower(Bediener.userinit) == (user_init).lower())).first()
+    bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
     if bediener:
         res_history = Res_history()
@@ -63,6 +64,7 @@ def delete_gl_adjustment_allbl(refno:str, jnr:int, bezeich:str, user_init:str, t
         res_history.action = "JournalTransactionDelete"
 
 
+        pass
         pass
 
     return generate_output()

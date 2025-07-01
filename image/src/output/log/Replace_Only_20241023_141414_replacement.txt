@@ -1,8 +1,0 @@
-Replacement Log
-==================================================
-
-Filename: D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2\load_datetime_serverbl.py
-Line no: 20
-Line before: datetime_server = to_string(get_current_date()) + " " + to_string(curr_zeit, "HH:MM:SS")
-Line after: datetime_server = to_string(get_current_date().strftime("%d/%m/%y")) + " " + to_string(curr_zeit, "HH:MM:SS")
-==================================================

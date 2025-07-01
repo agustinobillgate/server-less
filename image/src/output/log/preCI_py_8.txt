@@ -1,8 +1,0 @@
-D:\docker\app_konversi\input\vhp-serverless\image\src\output\converted2\precheckin_generator_load_data_v2bl.py
-D:\docker\app_konversi\input\vhp-serverless\image\src\output\converted2\precheckin_generator_load_data_webbl.py
-D:\docker\app_konversi\input\vhp-serverless\image\src\output\converted2\precheckin_generator_select_sortingbl.py
-D:\docker\app_konversi\input\vhp-serverless\image\src\output\converted2\precheckin_loadsetupbl.py
-D:\docker\app_konversi\input\vhp-serverless\image\src\output\converted2\precheckin_savesetupbl.py
-D:\docker\app_konversi\input\vhp-serverless\image\src\output\converted2\precheckin_sendemailbl.py
-D:\docker\app_konversi\input\vhp-serverless\image\src\output\converted2\precheckin_store_qrcodebl.py
-D:\docker\app_konversi\input\vhp-serverless\image\src\output\converted2\precheckin_update_databl.py

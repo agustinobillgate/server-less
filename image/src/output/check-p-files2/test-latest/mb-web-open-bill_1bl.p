@@ -1,0 +1,204 @@
+DEFINE TEMP-TABLE t-bk-reser    LIKE bk-reser.
+DEFINE TEMP-TABLE t-guest       LIKE guest.
+DEFINE TEMP-TABLE t-htparam     LIKE htparam.
+DEFINE TEMP-TABLE t-bk-veran    LIKE bk-veran.
+DEFINE TEMP-TABLE t-bill        LIKE bill
+    FIELD bl-recid  AS INTEGER.
+DEFINE TEMP-TABLE t-bill-line   LIKE bill-line
+    FIELD bl-recid  AS INTEGER
+    FIELD artart    AS INTEGER
+    FIELD tool-tip  AS CHAR
+.
+DEFINE TEMP-TABLE spbill-list 
+    FIELD selected AS LOGICAL INITIAL YES 
+    FIELD bl-recid AS INTEGER. 
+
+DEF TEMP-TABLE b-list 
+    FIELD resnr AS INTEGER 
+    FIELD reslinnr AS INTEGER 
+    FIELD rechnr LIKE bill.rechnr 
+    FIELD saldo LIKE bill.saldo 
+    FIELD parent-nr AS INTEGER INITIAL 0 
+. 
+
+DEF TEMP-TABLE b1-list
+    FIELD resnr       LIKE res-line.resnr
+    FIELD reslinnr    LIKE res-line.reslinnr
+    FIELD zinr        LIKE res-line.zinr
+    FIELD name        LIKE res-line.name
+    FIELD erwachs     LIKE res-line.erwachs
+    FIELD rechnr      AS INTEGER
+    FIELD saldo       AS DECIMAL
+    FIELD resstatus   LIKE res-line.resstatus
+    FIELD ankunft     LIKE res-line.ankunft
+    FIELD abreise     LIKE res-line.abreise
+    FIELD gname       LIKE res-line.NAME
+    FIELD gratis      LIKE res-line.gratis
+    FIELD kind1       LIKE res-line.kind1
+    FIELD kind2       LIKE res-line.kind2
+    FIELD arrangement LIKE res-line.arrangement
+    FIELD zipreis     LIKE res-line.zipreis
+    FIELD wabkurz     LIKE waehrung.wabkurz
+    .
+
+/*FDL - Ticket 007C14*/
+DEFINE TEMP-TABLE t-data
+    FIELD resnr         AS INTEGER
+    FIELD bill-no       AS INTEGER
+    FIELD arrival       AS DATE
+    FIELD departure     AS DATE
+    .
+
+DEFINE INPUT PARAMETER bil-recid        AS INTEGER.
+DEFINE INPUT PARAMETER foreign-rate     AS LOGICAL. 
+DEFINE INPUT PARAMETER double-currency  AS LOGICAL INITIAL NO. 
+DEFINE INPUT PARAMETER ba-dept          AS INTEGER.
+
+DEFINE OUTPUT PARAMETER invno           AS CHAR.
+DEFINE OUTPUT PARAMETER gname           AS CHAR.
+DEFINE OUTPUT PARAMETER resname         AS CHAR.
+DEFINE OUTPUT PARAMETER rescomment      AS CHAR.
+DEFINE OUTPUT PARAMETER printed         AS CHAR.
+DEFINE OUTPUT PARAMETER rechnr          AS DECIMAL.
+DEFINE OUTPUT PARAMETER balance         AS DECIMAL.
+DEFINE OUTPUT PARAMETER balance-foreign AS DECIMAL.
+DEFINE OUTPUT PARAMETER kreditlimit     AS DECIMAL.
+DEFINE OUTPUT PARAMETER enbtn-bareserve AS LOGICAL. 
+
+DEFINE OUTPUT PARAMETER TABLE FOR t-bill-line. 
+DEFINE OUTPUT PARAMETER TABLE FOR t-bill. 
+DEFINE OUTPUT PARAMETER TABLE FOR t-data. 
+
+DEFINE VARIABLE curr-select  AS CHAR.
+DEFINE VARIABLE telbill-flag AS LOGICAL NO-UNDO.
+DEFINE VARIABLE babill-flag  AS LOGICAL NO-UNDO.
+DEFINE VARIABLE curr-gname   AS CHAR INITIAL "". 
+DEFINE VARIABLE curr-invno   AS INTEGER. 
+DEFINE VARIABLE curr-b-recid AS INTEGER. 
+DEFINE VARIABLE art-no       AS INTEGER  NO-UNDO.
+DEFINE VARIABLE res-no       AS INTEGER.
+DEFINE VARIABLE tot-adult    AS INTEGER.
+DEFINE VARIABLE tot-room     AS INTEGER.
+DEFINE VARIABLE room-no      AS CHAR.
+
+curr-select = "".
+RUN read-bill1bl.p (5, bil-recid, ?, ?, ?, ?, ?, ?, ?, ?, OUTPUT TABLE t-bill).
+FIND FIRST t-bill NO-ERROR.
+    
+ASSIGN
+  invno         = STRING(t-bill.rechnr) 
+  curr-invno    = t-bill.rechnr 
+  curr-gname    = gname
+  curr-b-recid  = bil-recid
+  res-no        = t-bill.resnr
+.
+
+RUN mast-memberbl.p(res-no, INPUT-OUTPUT curr-invno, OUTPUT tot-adult, 
+    OUTPUT tot-room, OUTPUT TABLE b1-list).
+FOR EACH b1-list:
+    IF room-no NE b1-list.zinr THEN
+    DO:
+        gname = gname + b1-list.NAME + "  " + "#" + b1-list.zinr + "|".
+    END.
+    room-no = b1-list.zinr.
+END.
+
+/*FDL - Ticket 007C14*/
+FOR EACH t-data:
+    DELETE t-data.
+END.
+FIND FIRST res-line WHERE res-line.resnr EQ res-no NO-LOCK NO-ERROR.
+IF AVAILABLE res-line THEN
+DO:
+    CREATE t-data.
+    ASSIGN
+        t-data.resnr        = res-no
+        t-data.bill-no      = t-bill.rechnr
+        t-data.arrival      = res-line.ankunft
+        t-data.departure    = res-line.abreise
+    .    
+END.
+
+RUN read-guestbl.p(1, t-bill.gastnr, ?, ?, OUTPUT TABLE t-guest).
+FIND FIRST t-guest NO-LOCK. 
+ASSIGN
+    resname = t-guest.name + ", " + t-guest.vorname1 + t-guest.anredefirma 
+          + " " + t-guest.anrede1 
+          + chr(10) + t-guest.adresse1 
+          + chr(10) + t-guest.wohnort + " " + t-guest.plz 
+          + chr(10) + t-guest.land
+    rescomment = t-guest.bemerk
+    art-no     = t-guest.zahlungsart
+    . 
+
+IF t-bill.bilname NE "" AND t-bill.NAME NE t-bill.bilname THEN
+    rescomment = "Guest Name: " + 
+                 t-bill.bilname + CHR(10) + rescomment.
+
+IF t-bill.vesrdepot NE "" THEN
+ASSIGN
+/*       rescomment:BGCOL IN FRAME frame1 = 12 */
+/*       rescomment:FGCOL IN FRAME frame1 = 15 */
+  rescomment = rescomment + CHR(10) + t-bill.vesrdepot + CHR(10)
+    . 
+/*     ELSE                                   */
+/*     ASSIGN                                 */
+/*       rescomment:BGCOL IN FRAME frame1 = 8 */
+/*       rescomment:FGCOL IN FRAME frame1 = 0 */
+/*     .                                      */
+
+IF t-bill.rgdruck = 0 THEN printed = "". 
+ELSE printed = "*". 
+rechnr  = t-bill.rechnr. 
+balance = t-bill.saldo. 
+IF double-currency OR foreign-rate THEN balance-foreign = t-bill.mwst[99]. 
+IF t-guest.kreditlimit NE 0 THEN kreditlimit = t-guest.kreditlimit. 
+ELSE 
+DO: 
+    RUN read-htparambl.p (1, 68, ?, OUTPUT TABLE t-htparam).
+    FIND FIRST t-htparam NO-LOCK. 
+    IF t-htparam.fdecimal NE 0 THEN kreditlimit = t-htparam.fdecimal. 
+    ELSE kreditlimit = t-htparam.finteger. 
+END. 
+/* IF balance LE kreditlimit THEN bcol = 2. */
+/* ELSE bcol = 12.                          */
+
+FOR EACH spbill-list: 
+    DELETE spbill-list. 
+END. 
+
+RUN disp-bill-line(YES). 
+
+IF t-bill.flag = 0 AND t-bill.rechnr > 0 AND t-bill.billtyp = ba-dept AND (t-bill.rechnr NE int(invno)) THEN 
+DO: 
+    RUN read-bk-veranbl.p (3, ?, ?, t-bill.rechnr, 0, OUTPUT TABLE t-bk-veran).
+    FIND FIRST t-bk-veran NO-LOCK NO-ERROR. 
+    IF AVAILABLE t-bk-veran THEN 
+    DO: 
+        RUN read-bk-reserbl.p (4, t-bk-veran.veran-nr, ?, 1, ?, OUTPUT TABLE t-bk-reser).
+        FIND FIRST t-bk-reser NO-LOCK NO-ERROR. 
+        IF AVAILABLE t-bk-reser THEN enbtn-bareserve = YES.
+        ELSE enbtn-bareserve = NO. 
+    END. 
+END. 
+ELSE enbtn-bareserve = NO. 
+
+PROCEDURE disp-bill-line: 
+    DEF INPUT PARAMETER read-flag AS LOGICAL NO-UNDO.
+    
+    IF read-flag THEN
+    RUN read-bill-line1bl.p (3, 1, t-bill.rechnr, ?, ?, ?, ?, ?,OUTPUT TABLE t-bill-line).
+    FOR EACH t-bill-line NO-LOCK :
+        FIND FIRST spbill-list WHERE spbill-list.bl-recid = t-bill-line.bl-recid NO-LOCK NO-ERROR. 
+        IF NOT AVAILABLE spbill-list THEN 
+        DO: 
+            CREATE spbill-list. 
+            ASSIGN 
+            spbill-list.selected = NO 
+            spbill-list.bl-recid = t-bill-line.bl-recid. 
+        END.
+    END.
+/*             OPEN QUERY q1 FOR EACH t-bill-line NO-LOCK,                     */
+/*         FIRST spbill-list WHERE spbill-list.bl-recid = t-bill-line.bl-recid */
+/*         BY t-bill-line.sysdate DESC BY t-bill-line.zeit DESC.               */
+END. 

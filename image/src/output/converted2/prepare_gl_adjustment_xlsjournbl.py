@@ -1,5 +1,7 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from functions.htpchar import htpchar
 from functions.htpdate import htpdate
@@ -9,7 +11,6 @@ def prepare_gl_adjustment_xlsjournbl():
     p_558 = None
     p_597 = None
     to_date = None
-
 
     db_session = local_storage.db_session
 

@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -22,3 +24,20 @@ class Gk_field(Base):
 	private_data = sa.Column(sa.String, default="")
 	updateable = sa.Column(sa.Boolean, default=False)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('compulsory', False)
+		kwargs.setdefault('default_width', 0)
+		kwargs.setdefault('feldtyp', "fill-in")
+		kwargs.setdefault('field_column', 0)
+		kwargs.setdefault('field_height', 1)
+		kwargs.setdefault('field_name', None)
+		kwargs.setdefault('field_order', 0)
+		kwargs.setdefault('field_row', 0)
+		kwargs.setdefault('field_width', 0)
+		kwargs.setdefault('flag', 0)
+		kwargs.setdefault('karteityp', 0)
+		kwargs.setdefault('label_pos', 0)
+		kwargs.setdefault('private_data', "")
+		kwargs.setdefault('updateable', False)
+		super(Gk_field, self).__init__(*args, **kwargs)

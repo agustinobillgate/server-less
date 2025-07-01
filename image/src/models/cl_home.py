@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -18,3 +20,16 @@ class Cl_home(Base):
 	phone = sa.Column(sa.String, default="")
 	zip = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('adresse1', "")
+		kwargs.setdefault('adresse2', "")
+		kwargs.setdefault('banner', "")
+		kwargs.setdefault('cflag', False)
+		kwargs.setdefault('city', "")
+		kwargs.setdefault('email', "")
+		kwargs.setdefault('fax', "")
+		kwargs.setdefault('name', "")
+		kwargs.setdefault('nr', 0)
+		kwargs.setdefault('phone', "")
+		kwargs.setdefault('zip', "")
+		super(Cl_home, self).__init__(*args, **kwargs)

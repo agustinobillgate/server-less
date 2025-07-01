@@ -1,21 +1,24 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Gl_acct, L_kredit, Artikel
 
-def prepare_gl_detailapbl(pvilanguage:int, fibu:str, bemerk:str):
+def prepare_gl_detailapbl(pvilanguage:int, fibu:string, bemerk:string):
+
+    prepare_cache ([Artikel])
+
     receive_date = None
     t_gl_acct_list = []
     s_list_list = []
-    lvcarea:str = "gl-detailAP"
+    lvcarea:string = "gl-detailAP"
     gl_acct = l_kredit = artikel = None
 
     s_list = t_gl_acct = None
 
-    s_list_list, S_list = create_model("S_list", {"rgdatum":date, "artnr":int, "bezeich":str, "saldo":decimal, "name":str, "lscheinnr":str, "fibu":str, "lief_nr":int, "lflag":bool})
+    s_list_list, S_list = create_model("S_list", {"rgdatum":date, "artnr":int, "bezeich":string, "saldo":Decimal, "name":string, "lscheinnr":string, "fibu":string, "lief_nr":int, "lflag":bool})
     t_gl_acct_list, T_gl_acct = create_model_like(Gl_acct)
-
 
     db_session = local_storage.db_session
 
@@ -41,10 +44,10 @@ def prepare_gl_detailapbl(pvilanguage:int, fibu:str, bemerk:str):
         counter:int = 0
         zahlkonto:int = 0
         lief_nr:int = 0
-        saldo:decimal = to_decimal("0.0")
-        docu_nr:str = ""
-        lscheinnr:str = ""
-        bezeich:str = ""
+        saldo:Decimal = to_decimal("0.0")
+        docu_nr:string = ""
+        lscheinnr:string = ""
+        bezeich:string = ""
         ltype:int = 0
         ltype = to_int(substring(entry(1, bemerk, ";") , 2, 1))
 
@@ -69,8 +72,7 @@ def prepare_gl_detailapbl(pvilanguage:int, fibu:str, bemerk:str):
 
             if l_kredit.zahlkonto > 0:
 
-                artikel = db_session.query(Artikel).filter(
-                         (Artikel.artnr == l_kredit.zahlkonto) & (Artikel.departement == 0)).first()
+                artikel = get_cache (Artikel, {"artnr": [(eq, l_kredit.zahlkonto)],"departement": [(eq, 0)]})
                 s_list.artnr = artikel.artnr
                 s_list.bezeich = artikel.bezeich
 
@@ -83,8 +85,7 @@ def prepare_gl_detailapbl(pvilanguage:int, fibu:str, bemerk:str):
             else:
                 s_list.lflag = (l_kredit.zahlkonto == 0)
 
-    gl_acct = db_session.query(Gl_acct).filter(
-             (func.lower(Gl_acct.fibukonto) == (fibu).lower())).first()
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fibu)]})
     t_gl_acct = T_gl_acct()
     t_gl_acct_list.append(t_gl_acct)
 

@@ -1,0 +1,16 @@
+
+DEF INPUT PARAMETER rec-id AS INT.
+DEF OUTPUT PARAMETER err AS INT INIT 0.
+
+FIND FIRST akt-code WHERE RECID(akt-code) = rec-id NO-LOCK NO-ERROR. /* Malik Serverless 774 add if available */
+IF AVAILABLE akt-code THEN 
+DO:
+    FIND FIRST akthdr WHERE akthdr.stufe = akt-code.aktionscode 
+    NO-LOCK NO-ERROR. 
+    IF AVAILABLE akthdr THEN err = 1.
+    ELSE 
+    DO: 
+        FIND CURRENT akt-code EXCLUSIVE-LOCK. 
+        delete akt-code.
+    END. 
+END.

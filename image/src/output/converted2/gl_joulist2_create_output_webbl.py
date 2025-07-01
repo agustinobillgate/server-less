@@ -1,16 +1,20 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Queasy, Paramtext
 
-out_list_list, Out_list = create_model("Out_list", {"s_recid":int, "marked":str, "fibukonto":str, "jnr":int, "jtype":int, "bemerk":str, "trans_date":date, "bezeich":str, "number1":str, "debit":decimal, "credit":decimal, "balance":decimal, "debit_str":str, "credit_str":str, "balance_str":str, "refno":str, "uid":str, "created":date, "chgid":str, "chgdate":date, "tax_code":str, "tax_amount":str, "tot_amt":str, "approved":bool, "prev_bal":str})
+out_list_list, Out_list = create_model("Out_list", {"s_recid":int, "marked":string, "fibukonto":string, "jnr":int, "jtype":int, "bemerk":string, "trans_date":date, "bezeich":string, "number1":string, "debit":Decimal, "credit":Decimal, "balance":Decimal, "debit_str":string, "credit_str":string, "balance_str":string, "refno":string, "uid":string, "created":date, "chgid":string, "chgdate":date, "tax_code":string, "tax_amount":string, "tot_amt":string, "approved":bool, "prev_bal":string})
 
 def gl_joulist2_create_output_webbl(out_list_list:[Out_list]):
+
+    prepare_cache ([Paramtext])
+
     doneflag = False
     counter:int = 0
-    htl_no:str = ""
-    temp_char:str = ""
+    htl_no:string = ""
+    temp_char:string = ""
     queasy = paramtext = None
 
     out_list = bqueasy = pqueasy = tqueasy = None
@@ -18,6 +22,7 @@ def gl_joulist2_create_output_webbl(out_list_list:[Out_list]):
     Bqueasy = create_buffer("Bqueasy",Queasy)
     Pqueasy = create_buffer("Pqueasy",Queasy)
     Tqueasy = create_buffer("Tqueasy",Queasy)
+
 
     db_session = local_storage.db_session
 
@@ -30,7 +35,7 @@ def gl_joulist2_create_output_webbl(out_list_list:[Out_list]):
 
         return {"doneflag": doneflag, "out-list": out_list_list}
 
-    def decode_string(in_str:str):
+    def decode_string(in_str:string):
 
         nonlocal doneflag, counter, htl_no, temp_char, queasy, paramtext
         nonlocal bqueasy, pqueasy, tqueasy
@@ -39,7 +44,7 @@ def gl_joulist2_create_output_webbl(out_list_list:[Out_list]):
         nonlocal out_list, bqueasy, pqueasy, tqueasy
 
         out_str = ""
-        s:str = ""
+        s:string = ""
         j:int = 0
         len_:int = 0
 
@@ -48,22 +53,21 @@ def gl_joulist2_create_output_webbl(out_list_list:[Out_list]):
 
         s = in_str
         j = asc(substring(s, 0, 1)) - 70
-        len_ = len(in_str) - 1
+        len_ = length(in_str) - 1
         s = substring(in_str, 1, len_)
-        for len_ in range(1,len(s)  + 1) :
-            out_str = out_str + chr (asc(substring(s, len_ - 1, 1)) - j)
+        for len_ in range(1,length(s)  + 1) :
+            out_str = out_str + chr_unicode(asc(substring(s, len_ - 1, 1)) - j)
 
         return generate_inner_output()
 
 
-    paramtext = db_session.query(Paramtext).filter(
-             (Paramtext.txtnr == 243)).first()
+    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
 
     if paramtext and paramtext.ptexte != "":
         htl_no = decode_string(paramtext.ptexte)
 
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 280) & (func.lower(Queasy.char1) == ("General Ledger").lower())).order_by(Queasy.number1).all():
+             (Queasy.key == 280) & (Queasy.char1 == ("General Ledger").lower())).order_by(Queasy.number1).yield_per(100):
         counter = counter + 1
 
         if counter > 700:
@@ -102,7 +106,7 @@ def gl_joulist2_create_output_webbl(out_list_list:[Out_list]):
         if entry(6, queasy.char2, "|") != "":
             out_list.trans_date = date_mdy(to_int(entry(1, entry(6, queasy.char2, "|") , "/")) , to_int(entry(0, entry(6, queasy.char2, "|") , "/")) , to_int(entry(2, entry(6, queasy.char2, "|") , "/")))
 
-        if entry(17, queasy.char2, "|") != "" and entry(17, queasy.char2, "|re.match(r".*","), re.IGNORECASE):
+        if entry(17, queasy.char2, "|") != "" and matches(entry(17, queasy.char2, "|"),r"*"):
             out_list.created = date_mdy(to_int(entry(1, entry(17, queasy.char2, "|") , "/")) , to_int(entry(0, entry(17, queasy.char2, "|") , "/")) , to_int(entry(2, entry(17, queasy.char2, "|") , "/")))
 
         if entry(19, queasy.char2, "|") != "":
@@ -110,11 +114,11 @@ def gl_joulist2_create_output_webbl(out_list_list:[Out_list]):
 
         bqueasy = db_session.query(Bqueasy).filter(
                  (Bqueasy._recid == queasy._recid)).first()
-        bqueasy_list.remove(bqueasy)
+        db_session.delete(bqueasy)
         pass
 
     pqueasy = db_session.query(Pqueasy).filter(
-             (Pqueasy.key == 280) & (func.lower(Pqueasy.char1) == ("General Ledger").lower()) & (func.lower(Pqueasy.char3) == ("PROCESS").lower())).first()
+             (Pqueasy.key == 280) & (Pqueasy.char1 == ("General Ledger").lower()) & (Pqueasy.char3 == ("PROCESS").lower())).first()
 
     if pqueasy:
         doneflag = False
@@ -123,7 +127,7 @@ def gl_joulist2_create_output_webbl(out_list_list:[Out_list]):
     else:
 
         tqueasy = db_session.query(Tqueasy).filter(
-                 (Tqueasy.key == 285) & (func.lower(Tqueasy.char1) == ("General Ledger").lower()) & (Tqueasy.number1 == 1)).first()
+                 (Tqueasy.key == 285) & (Tqueasy.char1 == ("General Ledger").lower()) & (Tqueasy.number1 == 1)).first()
 
         if tqueasy:
             doneflag = False

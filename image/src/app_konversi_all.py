@@ -13,11 +13,15 @@ folder_p = f"D:/docker/app_konversi/input/vhp-serverless/image/src/output/check-
 folder_py = f"D:/docker/app_konversi/input/vhp-serverless/image/src/output/converted2"
 folder_log = f"D:/docker/app_konversi/input/vhp-serverless/image/src/output/log"
 base_folder = f"D:/docker/app_konversi"
-vhp_modules = ["Common", "HouseKeeping", "vhpHK", "vhpFOC", "vhpFOR", "vhpTO", 
+vhp_modules = ["Common", "HouseKeeping", "vhpFOC", "vhpFOR", "vhpTO", 
               "vhpSS", "vhpGL", "vhpGC", "vhpINV", "vhpAR", "vhpAP", "ENG", "vhpIA",
               "vhpPC", "vhpSM", "vhpFA", "vhpOU", "vhpSC", "vhpSetup", "preCI", "vhpNA"]
 
-vhp_modules = ["vhpGL" ]
+# vhp_modules = ["Common", "vhpFOC", "vhpFOR", "vhpTO", 
+#               "vhpSS", "vhpGL", "vhpAR", "vhpAP","vhpIA",
+#               "vhpOU"  ]
+
+vhp_modules = ["vhpIA" ]
 nfiles = 0
 nAnakCucu = 0
 
@@ -345,7 +349,7 @@ def replace_get_month_day(query_str):
     return query_str
 
 def process_file(file_path, search_list, log_file):
-    py_filename_list = ["birthday_list_1bl.py"]
+    py_filename_list = []
     # Read file content
     with open(file_path, 'r', encoding='utf-8') as file:
         lines = file.readlines()

@@ -1,17 +1,20 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Gl_jouhdr, Gl_jhdrhis, Gl_acct, Gl_jourhis, Gl_journal, Htparam
 
-def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:str):
+def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:string):
+
+    prepare_cache ([Gl_jouhdr, Gl_jhdrhis, Gl_acct, Gl_jourhis, Gl_journal, Htparam])
+
     output_list_list = []
     gl_jouhdr = gl_jhdrhis = gl_acct = gl_jourhis = gl_journal = htparam = None
 
     output_list = None
 
-    output_list_list, Output_list = create_model("Output_list", {"str":str, "refno":str})
-
+    output_list_list, Output_list = create_model("Output_list", {"str":string, "refno":string})
 
     db_session = local_storage.db_session
 
@@ -25,7 +28,7 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:str):
 
         return {"output-list": output_list_list}
 
-    def get_bemerk(bemerk:str):
+    def get_bemerk(bemerk:string):
 
         nonlocal output_list_list, gl_jouhdr, gl_jhdrhis, gl_acct, gl_jourhis, gl_journal, htparam
         nonlocal sorttype, from_date, to_date, from_refno
@@ -35,8 +38,8 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:str):
         nonlocal output_list_list
 
         n:int = 0
-        s1:str = ""
-        n = 1 + get_index(bemerk, ";&&")
+        s1:string = ""
+        n = get_index(bemerk, ";&&")
 
         if n > 0:
             return substring(bemerk, 0, n - 1)
@@ -53,28 +56,27 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:str):
         nonlocal output_list
         nonlocal output_list_list
 
-        debit:decimal = to_decimal("0.0")
-        credit:decimal = to_decimal("0.0")
-        balance:decimal = to_decimal("0.0")
-        konto:str = ""
+        debit:Decimal = to_decimal("0.0")
+        credit:Decimal = to_decimal("0.0")
+        balance:Decimal = to_decimal("0.0")
+        konto:string = ""
         i:int = 0
-        c:str = ""
-        bezeich:str = ""
+        c:string = ""
+        bezeich:string = ""
         datum:date = None
-        refno:str = ""
-        h_bezeich:str = ""
-        id:str = ""
-        t_debit:decimal = to_decimal("0.0")
-        t_credit:decimal = to_decimal("0.0")
-        tot_debit:decimal = to_decimal("0.0")
-        tot_credit:decimal = to_decimal("0.0")
-        chgdate:str = ""
+        refno:string = ""
+        h_bezeich:string = ""
+        id:string = ""
+        t_debit:Decimal = to_decimal("0.0")
+        t_credit:Decimal = to_decimal("0.0")
+        tot_debit:Decimal = to_decimal("0.0")
+        tot_credit:Decimal = to_decimal("0.0")
+        chgdate:string = ""
         output_list_list.clear()
 
         if sorttype == 2:
 
-            gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                         (Gl_jouhdr.datum >= from_date) & (Gl_jouhdr.datum <= to_date)).first()
+            gl_jouhdr = get_cache (Gl_jouhdr, {"datum": [(ge, from_date),(le, to_date)]})
 
             if not gl_jouhdr:
 
@@ -89,13 +91,15 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:str):
                     output_list.refno = gl_jhdrhis.refno
                     str = " " + to_string(gl_jhdrhis.refno, "x(30)") + to_string(gl_jhdrhis.bezeich, "x(30)")
 
-                    gl_jourhis_obj_list = []
-                    for gl_jourhis, gl_acct in db_session.query(Gl_jourhis, Gl_acct).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto)).filter(
+                    gl_jourhis_obj_list = {}
+                    gl_jourhis = Gl_jourhis()
+                    gl_acct = Gl_acct()
+                    for gl_jourhis.chgdate, gl_jourhis.debit, gl_jourhis.credit, gl_jourhis.userinit, gl_jourhis.sysdate, gl_jourhis.chginit, gl_jourhis.bemerk, gl_jourhis.jnr, gl_jourhis._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid in db_session.query(Gl_jourhis.chgdate, Gl_jourhis.debit, Gl_jourhis.credit, Gl_jourhis.userinit, Gl_jourhis.sysdate, Gl_jourhis.chginit, Gl_jourhis.bemerk, Gl_jourhis.jnr, Gl_jourhis._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto)).filter(
                                  (Gl_jourhis.jnr == gl_jhdrhis.jnr)).order_by(Gl_jourhis.fibukonto).all():
-                        if gl_jourhis._recid in gl_jourhis_obj_list:
+                        if gl_jourhis_obj_list.get(gl_jourhis._recid):
                             continue
                         else:
-                            gl_jourhis_obj_list.append(gl_jourhis._recid)
+                            gl_jourhis_obj_list[gl_jourhis._recid] = True
 
                         if gl_jourhis.chgdate == None:
                             chgdate = ""
@@ -134,13 +138,15 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:str):
                         output_list.refno = gl_jouhdr.refno
                         str = " " + to_string(gl_jouhdr.refno, "x(30)") + to_string(gl_jouhdr.bezeich, "x(30)")
 
-                        gl_journal_obj_list = []
-                        for gl_journal, gl_acct in db_session.query(Gl_journal, Gl_acct).join(Gl_acct,(Gl_acct.fibukonto == Gl_journal.fibukonto)).filter(
+                        gl_journal_obj_list = {}
+                        gl_journal = Gl_journal()
+                        gl_acct = Gl_acct()
+                        for gl_journal.chgdate, gl_journal.debit, gl_journal.credit, gl_journal.userinit, gl_journal.sysdate, gl_journal.chginit, gl_journal.bemerk, gl_journal.jnr, gl_journal._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid in db_session.query(Gl_journal.chgdate, Gl_journal.debit, Gl_journal.credit, Gl_journal.userinit, Gl_journal.sysdate, Gl_journal.chginit, Gl_journal.bemerk, Gl_journal.jnr, Gl_journal._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid).join(Gl_acct,(Gl_acct.fibukonto == Gl_journal.fibukonto)).filter(
                                      (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal.fibukonto).all():
-                            if gl_journal._recid in gl_journal_obj_list:
+                            if gl_journal_obj_list.get(gl_journal._recid):
                                 continue
                             else:
-                                gl_journal_obj_list.append(gl_journal._recid)
+                                gl_journal_obj_list[gl_journal._recid] = True
 
                             if gl_journal.chgdate == None:
                                 chgdate = ""
@@ -173,7 +179,7 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:str):
         else:
 
             for gl_jouhdr in db_session.query(Gl_jouhdr).filter(
-                         (Gl_jouhdr.datum >= from_date) & (Gl_jouhdr.datum <= to_date) & (func.lower(Gl_jouhdr.refno) == (from_refno).lower())).order_by(Gl_jouhdr.datum, Gl_jouhdr.refno).all():
+                         (Gl_jouhdr.datum >= from_date) & (Gl_jouhdr.datum <= to_date) & (Gl_jouhdr.refno == (from_refno).lower())).order_by(Gl_jouhdr.datum, Gl_jouhdr.refno).all():
                 balance =  to_decimal("0")
                 t_debit =  to_decimal("0")
                 t_credit =  to_decimal("0")
@@ -183,13 +189,15 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:str):
                 output_list.refno = gl_jouhdr.refno
                 str = " " + to_string(gl_jouhdr.refno, "x(30)") + to_string(gl_jouhdr.bezeich, "x(30)")
 
-                gl_journal_obj_list = []
-                for gl_journal, gl_acct in db_session.query(Gl_journal, Gl_acct).join(Gl_acct,(Gl_acct.fibukonto == Gl_journal.fibukonto)).filter(
+                gl_journal_obj_list = {}
+                gl_journal = Gl_journal()
+                gl_acct = Gl_acct()
+                for gl_journal.chgdate, gl_journal.debit, gl_journal.credit, gl_journal.userinit, gl_journal.sysdate, gl_journal.chginit, gl_journal.bemerk, gl_journal.jnr, gl_journal._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid in db_session.query(Gl_journal.chgdate, Gl_journal.debit, Gl_journal.credit, Gl_journal.userinit, Gl_journal.sysdate, Gl_journal.chginit, Gl_journal.bemerk, Gl_journal.jnr, Gl_journal._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid).join(Gl_acct,(Gl_acct.fibukonto == Gl_journal.fibukonto)).filter(
                              (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal.fibukonto).all():
-                    if gl_journal._recid in gl_journal_obj_list:
+                    if gl_journal_obj_list.get(gl_journal._recid):
                         continue
                     else:
-                        gl_journal_obj_list.append(gl_journal._recid)
+                        gl_journal_obj_list[gl_journal._recid] = True
 
                     if gl_journal.chgdate == None:
                         chgdate = ""
@@ -221,7 +229,7 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:str):
             str = str + "T O T A L " + to_string(tot_debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(tot_credit, "->>>,>>>,>>>,>>>,>>9.99")
 
 
-    def convert_fibu(konto:str):
+    def convert_fibu(konto:string):
 
         nonlocal output_list_list, gl_jouhdr, gl_jhdrhis, gl_acct, gl_jourhis, gl_journal, htparam
         nonlocal sorttype, from_date, to_date, from_refno
@@ -231,7 +239,7 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:str):
         nonlocal output_list_list
 
         s = ""
-        ch:str = ""
+        ch:string = ""
         i:int = 0
         j:int = 0
 
@@ -239,11 +247,10 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:str):
             return (s)
 
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 977)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 977)]})
         ch = htparam.fchar
         j = 0
-        for i in range(1,len(ch)  + 1) :
+        for i in range(1,length(ch)  + 1) :
 
             if substring(ch, i - 1, 1) >= ("0").lower()  and substring(ch, i - 1, 1) <= ("9").lower() :
                 j = j + 1

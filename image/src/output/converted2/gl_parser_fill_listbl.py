@@ -1,8 +1,13 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Brief, Gl_acct, Gl_main, Gl_department, Briefzei, Htparam
 
 def gl_parser_fill_listbl(briefnr:int):
+
+    prepare_cache ([Brief, Gl_acct, Gl_main, Gl_department, Briefzei, Htparam])
+
     keycmd = ""
     keyvar = ""
     keycont = ""
@@ -20,14 +25,13 @@ def gl_parser_fill_listbl(briefnr:int):
     t_brief = t_gl_department = t_gl_acct = t_gl_main = brief_list = htp_list = htv_list = t_briefzei = None
 
     t_brief_list, T_brief = create_model("T_brief", {"briefnr":int})
-    t_gl_department_list, T_gl_department = create_model("T_gl_department", {"nr":int, "bezeich":str})
-    t_gl_acct_list, T_gl_acct = create_model("T_gl_acct", {"fibukonto":str, "deptnr":int, "bezeich":str, "main_nr":int, "acc_type":int, "actual":[decimal,12], "budget":[decimal,12], "last_yr":[decimal,12], "ly_budget":[decimal,12]})
-    t_gl_main_list, T_gl_main = create_model("T_gl_main", {"nr":int, "code":int, "bezeich":str})
-    brief_list_list, Brief_list = create_model("Brief_list", {"b_text":str})
-    htp_list_list, Htp_list = create_model("Htp_list", {"paramnr":int, "fchar":str})
-    htv_list_list, Htv_list = create_model("Htv_list", {"paramnr":int, "fchar":str})
-    t_briefzei_list, T_briefzei = create_model("T_briefzei", {"briefnr":int, "briefzeilnr":int, "texte":str})
-
+    t_gl_department_list, T_gl_department = create_model("T_gl_department", {"nr":int, "bezeich":string})
+    t_gl_acct_list, T_gl_acct = create_model("T_gl_acct", {"fibukonto":string, "deptnr":int, "bezeich":string, "main_nr":int, "acc_type":int, "actual":[Decimal,12], "budget":[Decimal,12], "last_yr":[Decimal,12], "ly_budget":[Decimal,12]})
+    t_gl_main_list, T_gl_main = create_model("T_gl_main", {"nr":int, "code":int, "bezeich":string})
+    brief_list_list, Brief_list = create_model("Brief_list", {"b_text":string})
+    htp_list_list, Htp_list = create_model("Htp_list", {"paramnr":int, "fchar":string})
+    htv_list_list, Htv_list = create_model("Htv_list", {"paramnr":int, "fchar":string})
+    t_briefzei_list, T_briefzei = create_model("T_briefzei", {"briefnr":int, "briefzeilnr":int, "texte":string})
 
     db_session = local_storage.db_session
 
@@ -53,24 +57,21 @@ def gl_parser_fill_listbl(briefnr:int):
         i:int = 0
         j:int = 0
         n:int = 0
-        c:str = ""
+        c:string = ""
         l:int = 0
         continued:bool = False
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 600)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 600)]})
         keycmd = htparam.fchar
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 2030)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 2030)]})
         keyvar = htparam.fchar
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 1122)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 1122)]})
         keycont = keycmd + htparam.fchar
 
         for htparam in db_session.query(Htparam).filter(
-                 (Htparam.paramgruppe == 39) & (Htparam.paramnr != 2030)).order_by(len(Htparam.fchar).desc()).all():
+                 (Htparam.paramgruppe == 39) & (Htparam.paramnr != 2030)).order_by(length(Htparam.fchar).desc()).all():
 
             if substring(htparam.fchar, 0 , 1) == (".").lower() :
                 htv_list = Htv_list()
@@ -88,31 +89,31 @@ def gl_parser_fill_listbl(briefnr:int):
         for briefzei in db_session.query(Briefzei).filter(
                      (Briefzei.briefnr == briefnr)).order_by(Briefzei.briefzeilnr).all():
             j = 1
-            for i in range(1,len(briefzei.texte)  + 1) :
+            for i in range(1,length(briefzei.texte)  + 1) :
 
                 if asc(substring(briefzei.texte, i - 1, 1)) == 10:
                     n = i - j
                     c = substring(briefzei.texte, j - 1, n)
-                    l = len(c)
+                    l = length(c)
 
                     if not continued:
                         brief_list = Brief_list()
-                    brief_list_list.append(brief_list)
+                        brief_list_list.append(brief_list)
 
                     brief_list.b_text = brief_list.b_text + c
                     j = i + 1
 
-                    if l > len((keycont).lower() ) and substring(c, l - len((keycont).lower() ) + 1 - 1, len((keycont).lower() )) == (keycont).lower() :
+                    if l > length((keycont).lower() ) and substring(c, l - length((keycont).lower() ) + 1 - 1, length((keycont).lower() )) == (keycont).lower() :
                         continued = True
-                        brief_list.b_text = substring(brief_list.b_text, 0, len(brief_list.b_text) - len(keycont))
+                        brief_list.b_text = substring(brief_list.b_text, 0, length(brief_list.b_text) - length(keycont))
                     else:
                         continued = False
-            n = len(briefzei.texte) - j + 1
+            n = length(briefzei.texte) - j + 1
             c = substring(briefzei.texte, j - 1, n)
 
             if not continued:
                 brief_list = Brief_list()
-            brief_list_list.append(brief_list)
+                brief_list_list.append(brief_list)
 
             brief_list.b_text = brief_list.b_text + c
 

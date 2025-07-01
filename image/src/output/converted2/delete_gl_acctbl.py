@@ -1,12 +1,12 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Gl_acct
 
-def delete_gl_acctbl(case_type:int, int1:int, char1:str):
+def delete_gl_acctbl(case_type:int, int1:int, char1:string):
     success_flag = False
     gl_acct = None
-
 
     db_session = local_storage.db_session
 
@@ -19,8 +19,7 @@ def delete_gl_acctbl(case_type:int, int1:int, char1:str):
 
     if case_type == 1:
 
-        gl_acct = db_session.query(Gl_acct).filter(
-                 (func.lower(Gl_acct.fibukonto) == (char1).lower())).first()
+        gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, char1)]})
 
         if gl_acct:
             db_session.delete(gl_acct)

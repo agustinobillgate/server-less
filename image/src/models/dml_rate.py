@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -17,3 +19,15 @@ class Dml_rate(Base):
 	logi1 = sa.Column(sa.Boolean, default=False)
 	number1 = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('artnr', 0)
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('date2', None)
+		kwargs.setdefault('deci1', 0)
+		kwargs.setdefault('einzelpreis', 0)
+		kwargs.setdefault('in_liefunit', False)
+		kwargs.setdefault('lief_nr', 0)
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('number1', 0)
+		super(Dml_rate, self).__init__(*args, **kwargs)

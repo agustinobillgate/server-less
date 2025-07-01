@@ -1,11 +1,15 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Htparam
 
 def htpchar(htparamnum:int):
+
+    prepare_cache ([Htparam])
+
     htpchar = ""
     htparam = None
-
 
     db_session = local_storage.db_session
 
@@ -16,8 +20,7 @@ def htpchar(htparamnum:int):
         return {"htpchar": htpchar}
 
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == htparamnum)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, htparamnum)]})
 
     if htparam:
         htpchar = htparam.fchar

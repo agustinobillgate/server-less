@@ -1,0 +1,37 @@
+#using conversion tools version: 1.0.0.111
+
+from functions.additional_functions import *
+from decimal import Decimal
+from models import Queasy
+
+def select_rcode_elementbl():
+
+    prepare_cache ([Queasy])
+
+    rcode_list_list = []
+    queasy = None
+
+    rcode_list = None
+
+    rcode_list_list, Rcode_list = create_model("Rcode_list", {"code":int, "name":string})
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal rcode_list_list, queasy
+
+
+        nonlocal rcode_list
+        nonlocal rcode_list_list
+
+        return {"rcode-list": rcode_list_list}
+
+    for queasy in db_session.query(Queasy).filter(
+             (Queasy.key == 287)).order_by(Queasy.number1).all():
+        rcode_list = Rcode_list()
+        rcode_list_list.append(rcode_list)
+
+        rcode_list.code = queasy.number1
+        rcode_list.name = queasy.char1
+
+    return generate_output()

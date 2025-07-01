@@ -1,16 +1,16 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Gl_main
 
-def read_gl_mainbl(case_type:int, int1:int, int2:int, char1:str, char2:str):
+def read_gl_mainbl(case_type:int, int1:int, int2:int, char1:string, char2:string):
     t_gl_main_list = []
     gl_main = None
 
     t_gl_main = None
 
     t_gl_main_list, T_gl_main = create_model_like(Gl_main)
-
 
     db_session = local_storage.db_session
 
@@ -35,8 +35,7 @@ def read_gl_mainbl(case_type:int, int1:int, int2:int, char1:str, char2:str):
             buffer_copy(gl_main, t_gl_main)
     elif case_type == 2:
 
-        gl_main = db_session.query(Gl_main).filter(
-                 (Gl_main.code == int1)).first()
+        gl_main = get_cache (Gl_main, {"code": [(eq, int1)]})
 
         if gl_main:
             t_gl_main = T_gl_main()
@@ -45,8 +44,7 @@ def read_gl_mainbl(case_type:int, int1:int, int2:int, char1:str, char2:str):
             buffer_copy(gl_main, t_gl_main)
     elif case_type == 3:
 
-        gl_main = db_session.query(Gl_main).filter(
-                 (Gl_main.nr == int1)).first()
+        gl_main = get_cache (Gl_main, {"nr": [(eq, int1)]})
 
         if gl_main:
             t_gl_main = T_gl_main()
@@ -62,8 +60,7 @@ def read_gl_mainbl(case_type:int, int1:int, int2:int, char1:str, char2:str):
             buffer_copy(gl_main, t_gl_main)
     elif case_type == 5:
 
-        gl_main = db_session.query(Gl_main).filter(
-                 (func.lower(Gl_main.bezeich) == (char1).lower()) & (Gl_main.nr != int1)).first()
+        gl_main = get_cache (Gl_main, {"bezeich": [(eq, char1)],"nr": [(ne, int1)]})
 
         if gl_main:
             t_gl_main = T_gl_main()
@@ -72,8 +69,7 @@ def read_gl_mainbl(case_type:int, int1:int, int2:int, char1:str, char2:str):
             buffer_copy(gl_main, t_gl_main)
     elif case_type == 6:
 
-        gl_main = db_session.query(Gl_main).filter(
-                 (Gl_main.code == int1) & (Gl_main.nr != int2)).first()
+        gl_main = get_cache (Gl_main, {"code": [(eq, int1)],"nr": [(ne, int2)]})
 
         if gl_main:
             t_gl_main = T_gl_main()

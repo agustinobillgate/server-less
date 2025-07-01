@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -27,3 +29,25 @@ class Gl_acct(Base):
 	modifiable = sa.Column(sa.Boolean, default=True)
 	userinit = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('acc_type', 0)
+		kwargs.setdefault('activeflag', False)
+		kwargs.setdefault('actual', [0,0,0,0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('b_flag', False)
+		kwargs.setdefault('bemerk', "")
+		kwargs.setdefault('bezeich', "")
+		kwargs.setdefault('budget', [0,0,0,0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('c_date', None)
+		kwargs.setdefault('chginit', "")
+		kwargs.setdefault('credit', [0,0,0,0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('debit', [0,0,0,0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('deptnr', 0)
+		kwargs.setdefault('fibukonto', "0000000000000")
+		kwargs.setdefault('fs_type', 0)
+		kwargs.setdefault('last_yr', [0,0,0,0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('ly_budget', [0,0,0,0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('m_date', None)
+		kwargs.setdefault('main_nr', 0)
+		kwargs.setdefault('modifiable', True)
+		kwargs.setdefault('userinit', "")
+		super(Gl_acct, self).__init__(*args, **kwargs)

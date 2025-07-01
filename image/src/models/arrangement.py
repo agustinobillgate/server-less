@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -31,3 +33,29 @@ class Arrangement(Base):
 	weeksplit = sa.Column(sa.Boolean, default=False)
 	zuordnung = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('argt_artikelnr', 0)
+		kwargs.setdefault('argt_bez', "")
+		kwargs.setdefault('argt_preis', 0)
+		kwargs.setdefault('argt_rgbez', "")
+		kwargs.setdefault('argt_rgbez2', ["","","",""])
+		kwargs.setdefault('argt_typ', 0)
+		kwargs.setdefault('argtnr', 0)
+		kwargs.setdefault('arrangement', "")
+		kwargs.setdefault('arrangement_art', 0)
+		kwargs.setdefault('artnr_logis', 0)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('fakt_modus', 1)
+		kwargs.setdefault('fixpreisargt', False)
+		kwargs.setdefault('handtuch', 0)
+		kwargs.setdefault('intervall', 0)
+		kwargs.setdefault('logis_preis', 0)
+		kwargs.setdefault('logis_proz', 0)
+		kwargs.setdefault('mwstsplit', False)
+		kwargs.setdefault('options', "")
+		kwargs.setdefault('segmentcode', 0)
+		kwargs.setdefault('ventil', False)
+		kwargs.setdefault('waeschewechsel', 0)
+		kwargs.setdefault('weeksplit', False)
+		kwargs.setdefault('zuordnung', "")
+		super(Arrangement, self).__init__(*args, **kwargs)

@@ -1,23 +1,26 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from models import Gl_acct, Artikel, Umsatz, Billjournal, Htparam, Bill, Billhis, Reservation
 
-def prepare_gl_detailfobl(pvilanguage:int, fibu:str, bemerk:str, from_date:date):
+def prepare_gl_detailfobl(pvilanguage:int, fibu:string, bemerk:string, from_date:date):
+
+    prepare_cache ([Artikel, Umsatz, Billjournal, Htparam, Bill, Billhis, Reservation])
+
     t_gl_acct_list = []
     s_list_list = []
     artnr:int = 0
     dept:int = 0
-    lvcarea:str = "gl-detailFO"
+    lvcarea:string = "gl-detailFO"
     gl_acct = artikel = umsatz = billjournal = htparam = bill = billhis = reservation = None
 
     s_list = t_gl_acct = None
 
-    s_list_list, S_list = create_model("S_list", {"datum":date, "departement":int, "artnr":int, "artart":int, "bezeich":str, "betrag":decimal, "service":decimal, "vat":decimal, "nett":decimal})
+    s_list_list, S_list = create_model("S_list", {"datum":date, "departement":int, "artnr":int, "artart":int, "bezeich":string, "betrag":Decimal, "service":Decimal, "vat":Decimal, "nett":Decimal})
     t_gl_acct_list, T_gl_acct = create_model_like(Gl_acct)
-
 
     db_session = local_storage.db_session
 
@@ -40,25 +43,23 @@ def prepare_gl_detailfobl(pvilanguage:int, fibu:str, bemerk:str, from_date:date)
         nonlocal s_list, t_gl_acct
         nonlocal s_list_list, t_gl_acct_list
 
-        serv:decimal = to_decimal("0.0")
-        vat:decimal = to_decimal("0.0")
-        vat2:decimal = to_decimal("0.0")
-        wert:decimal = to_decimal("0.0")
-        fact:decimal = to_decimal("0.0")
+        serv:Decimal = to_decimal("0.0")
+        vat:Decimal = to_decimal("0.0")
+        vat2:Decimal = to_decimal("0.0")
+        wert:Decimal = to_decimal("0.0")
+        fact:Decimal = to_decimal("0.0")
         serv_vat:bool = False
         price_decimal:int = 0
         dept = to_int(entry(2, bemerk, ";"))
         artnr = to_int(entry(3, bemerk, ";"))
 
-        artikel = db_session.query(Artikel).filter(
-                 (Artikel.artnr == artnr) & (Artikel.departement == dept)).first()
+        artikel = get_cache (Artikel, {"artnr": [(eq, artnr)],"departement": [(eq, dept)]})
 
         if not artikel:
 
             return
 
-        umsatz = db_session.query(Umsatz).filter(
-                 (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement) & (Umsatz.datum == from_date)).first()
+        umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, from_date)]})
 
         if not umsatz:
 
@@ -66,8 +67,7 @@ def prepare_gl_detailfobl(pvilanguage:int, fibu:str, bemerk:str, from_date:date)
 
         if artikel.artart == 5:
 
-            billjournal = db_session.query(Billjournal).filter(
-                     (Billjournal.artnr == artnr) & (Billjournal.departement == dept) & (Billjournal.bill_datum == from_date) & (Billjournal.anzahl != 0)).first()
+            billjournal = get_cache (Billjournal, {"artnr": [(eq, artnr)],"departement": [(eq, dept)],"bill_datum": [(eq, from_date)],"anzahl": [(ne, 0)]})
 
             if not billjournal:
                 return
@@ -75,12 +75,10 @@ def prepare_gl_detailfobl(pvilanguage:int, fibu:str, bemerk:str, from_date:date)
 
             return
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 491)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 491)]})
         price_decimal = htparam.finteger
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 479)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 479)]})
         serv_vat = htparam.flogical
         serv, vat, vat2, fact = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, umsatz.datum))
         vat =  to_decimal(vat) + to_decimal(vat2)
@@ -110,24 +108,22 @@ def prepare_gl_detailfobl(pvilanguage:int, fibu:str, bemerk:str, from_date:date)
         nonlocal s_list, t_gl_acct
         nonlocal s_list_list, t_gl_acct_list
 
-        serv:decimal = to_decimal("0.0")
-        vat:decimal = to_decimal("0.0")
-        vat2:decimal = to_decimal("0.0")
-        wert:decimal = to_decimal("0.0")
-        fact:decimal = 1
+        serv:Decimal = to_decimal("0.0")
+        vat:Decimal = to_decimal("0.0")
+        vat2:Decimal = to_decimal("0.0")
+        wert:Decimal = to_decimal("0.0")
+        fact:Decimal = 1
         serv_vat:bool = False
         price_decimal:int = 0
         n:int = 0
         m:int = 0
         resnr:int = 0
-        s:str = ""
+        s:string = ""
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 491)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 491)]})
         price_decimal = htparam.finteger
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 479)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 479)]})
         serv_vat = htparam.flogical
 
         for billjournal in db_session.query(Billjournal).filter(
@@ -149,23 +145,21 @@ def prepare_gl_detailfobl(pvilanguage:int, fibu:str, bemerk:str, from_date:date)
             if billjournal.rechnr != 0:
                 s_list.bezeich = s_list.bezeich + "; " + translateExtended ("BillNo", lvcarea, "") + " " + to_string(billjournal.rechnr)
 
-                bill = db_session.query(Bill).filter(
-                         (Bill.rechnr == billjournal.rechnr)).first()
+                bill = get_cache (Bill, {"rechnr": [(eq, billjournal.rechnr)]})
 
                 if bill:
                     s_list.bezeich = s_list.bezeich + "; " + bill.name
                 else:
 
-                    billhis = db_session.query(Billhis).filter(
-                             (Billhis.rechnr == billjournal.rechnr)).first()
+                    billhis = get_cache (Billhis, {"rechnr": [(eq, billjournal.rechnr)]})
 
                     if billhis:
                         s_list.bezeich = s_list.bezeich + "; " + billhis.name
 
-            elif re.match(r".*#.*",billjournal.bezeich, re.IGNORECASE):
+            elif matches(billjournal.bezeich,r"*#*"):
                 s = billjournal.bezeich
                 m = 0
-                for n in range(1,len(s)  + 1) :
+                for n in range(1,length(s)  + 1) :
 
                     if substring(s, n - 1, 1) == ("#").lower() :
                         m = n
@@ -177,14 +171,12 @@ def prepare_gl_detailfobl(pvilanguage:int, fibu:str, bemerk:str, from_date:date)
 
                 if resnr > 0:
 
-                    reservation = db_session.query(Reservation).filter(
-                             (Reservation.resnr == resnr)).first()
+                    reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
 
                     if reservation:
                         s_list.bezeich = s_list.bezeich + "; " + reservation.name
 
-    gl_acct = db_session.query(Gl_acct).filter(
-             (func.lower(Gl_acct.fibukonto) == (fibu).lower())).first()
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fibu)]})
     t_gl_acct = T_gl_acct()
     t_gl_acct_list.append(t_gl_acct)
 

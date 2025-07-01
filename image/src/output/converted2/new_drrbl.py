@@ -1,11 +1,15 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
-from sqlalchemy import func
 from models import Umsatz, Waehrung, Htparam, Queasy, Segment, Artikel, Hoteldpt, Uebertrag, Exrate, Genstat, Segmentstat, Budget, Zinrstat, Zkstat
 
 def new_drrbl(from_date:date, to_date:date):
+
+    prepare_cache ([Waehrung, Htparam, Queasy, Segment, Artikel, Hoteldpt, Uebertrag, Exrate, Genstat, Segmentstat, Budget, Zkstat])
+
     rev_seg_list_list = []
     rev_list_list = []
     payable_list_list = []
@@ -20,46 +24,46 @@ def new_drrbl(from_date:date, to_date:date):
     fb_sales_material_list = []
     gsheet_link = ""
     ytd_flag:bool = True
-    str1:str = ""
-    str2:str = ""
-    str3:str = ""
-    st1:str = ""
-    st2:str = ""
-    st3:str = ""
-    st4:str = ""
-    st5:str = ""
-    st6:str = ""
-    st7:str = ""
-    st8:str = ""
-    st9:str = ""
-    st10:str = ""
-    st11:str = ""
-    st12:str = ""
-    st13:str = ""
-    st14:str = ""
-    st15:str = ""
-    st16:str = ""
-    st17:str = ""
-    st18:str = ""
-    st19:str = ""
-    st20:str = ""
-    st21:str = ""
-    st22:str = ""
-    st23:str = ""
-    st24:str = ""
-    st25:str = ""
-    st26:str = ""
-    st27:str = ""
-    st28:str = ""
-    st29:str = ""
-    st30:str = ""
-    st31:str = ""
-    st32:str = ""
-    st33:str = ""
-    st34:str = ""
-    st35:str = ""
-    st36:str = ""
-    st37:str = ""
+    str1:string = ""
+    str2:string = ""
+    str3:string = ""
+    st1:string = ""
+    st2:string = ""
+    st3:string = ""
+    st4:string = ""
+    st5:string = ""
+    st6:string = ""
+    st7:string = ""
+    st8:string = ""
+    st9:string = ""
+    st10:string = ""
+    st11:string = ""
+    st12:string = ""
+    st13:string = ""
+    st14:string = ""
+    st15:string = ""
+    st16:string = ""
+    st17:string = ""
+    st18:string = ""
+    st19:string = ""
+    st20:string = ""
+    st21:string = ""
+    st22:string = ""
+    st23:string = ""
+    st24:string = ""
+    st25:string = ""
+    st26:string = ""
+    st27:string = ""
+    st28:string = ""
+    st29:string = ""
+    st30:string = ""
+    st31:string = ""
+    st32:string = ""
+    st33:string = ""
+    st34:string = ""
+    st35:string = ""
+    st36:string = ""
+    st37:string = ""
     n:int = 0
     n1:int = 0
     n2:int = 0
@@ -94,22 +98,22 @@ def new_drrbl(from_date:date, to_date:date):
     curr_date:date = None
     start_date:date = None
     datum1:date = None
-    serv:decimal = to_decimal("0.0")
-    vat:decimal = to_decimal("0.0")
-    vat2:decimal = to_decimal("0.0")
-    fact:decimal = to_decimal("0.0")
-    n_betrag:decimal = to_decimal("0.0")
-    n_serv:decimal = to_decimal("0.0")
-    n_tax:decimal = to_decimal("0.0")
-    ly_betrag:decimal = to_decimal("0.0")
+    serv:Decimal = to_decimal("0.0")
+    vat:Decimal = to_decimal("0.0")
+    vat2:Decimal = to_decimal("0.0")
+    fact:Decimal = to_decimal("0.0")
+    n_betrag:Decimal = to_decimal("0.0")
+    n_serv:Decimal = to_decimal("0.0")
+    n_tax:Decimal = to_decimal("0.0")
+    ly_betrag:Decimal = to_decimal("0.0")
     d_flag:bool = False
     dbudget_flag:bool = False
     dlmtd_flag:bool = False
-    yes_serv:decimal = to_decimal("0.0")
-    yes_vat:decimal = to_decimal("0.0")
-    yes_vat2:decimal = to_decimal("0.0")
-    yes_fact:decimal = to_decimal("0.0")
-    yes_betrag:decimal = to_decimal("0.0")
+    yes_serv:Decimal = to_decimal("0.0")
+    yes_vat:Decimal = to_decimal("0.0")
+    yes_vat2:Decimal = to_decimal("0.0")
+    yes_fact:Decimal = to_decimal("0.0")
+    yes_betrag:Decimal = to_decimal("0.0")
     date1:date = None
     date2:date = None
     temp_date2:date = None
@@ -118,7 +122,7 @@ def new_drrbl(from_date:date, to_date:date):
     st_date:int = 0
     foreign_nr:int = 0
     foreign_flag:bool = True
-    tot_betrag:decimal = to_decimal("0.0")
+    tot_betrag:Decimal = to_decimal("0.0")
     price_decimal:int = 0
     no_decimal:bool = False
     dept:int = 0
@@ -127,171 +131,171 @@ def new_drrbl(from_date:date, to_date:date):
     dper:int = 0
     mtd_per:int = 0
     ytd_per:int = 0
-    tot_today:decimal = to_decimal("0.0")
-    tot_today_per:decimal = to_decimal("0.0")
-    tot_mtd:decimal = to_decimal("0.0")
-    tot_mtd_per:decimal = to_decimal("0.0")
-    tot_mtd_budget:decimal = to_decimal("0.0")
-    tot_variance:decimal = to_decimal("0.0")
-    tot_ytd:decimal = to_decimal("0.0")
-    tot_ytd_budget:decimal = to_decimal("0.0")
-    tot_ytd_per:decimal = to_decimal("0.0")
-    tot_today1:decimal = to_decimal("0.0")
-    tot_today_per1:decimal = to_decimal("0.0")
-    tot_mtd1:decimal = to_decimal("0.0")
-    tot_mtd_per1:decimal = to_decimal("0.0")
-    tot_mtd_budget1:decimal = to_decimal("0.0")
-    tot_variance1:decimal = to_decimal("0.0")
-    tot_ytd1:decimal = to_decimal("0.0")
-    tot_ytd_budget1:decimal = to_decimal("0.0")
-    tot_ytd_per1:decimal = to_decimal("0.0")
-    tot_today2:decimal = to_decimal("0.0")
-    tot_today_per2:decimal = to_decimal("0.0")
-    tot_mtd2:decimal = to_decimal("0.0")
-    tot_mtd_per2:decimal = to_decimal("0.0")
-    tot_mtd_budget2:decimal = to_decimal("0.0")
-    tot_variance2:decimal = to_decimal("0.0")
-    tot_ytd2:decimal = to_decimal("0.0")
-    tot_ytd_budget2:decimal = to_decimal("0.0")
-    tot_ytd_per2:decimal = to_decimal("0.0")
-    tot_today3:decimal = to_decimal("0.0")
-    tot_mtd3:decimal = to_decimal("0.0")
-    tot_mtd_budget3:decimal = to_decimal("0.0")
-    tot_variance3:decimal = to_decimal("0.0")
-    tot_ytd3:decimal = to_decimal("0.0")
-    tot_ytd_budget3:decimal = to_decimal("0.0")
-    tot_today4:decimal = to_decimal("0.0")
-    tot_mtd4:decimal = to_decimal("0.0")
-    tot_mtd_budget4:decimal = to_decimal("0.0")
-    tot_variance4:decimal = to_decimal("0.0")
-    tot_ytd4:decimal = to_decimal("0.0")
-    tot_ytd_budget4:decimal = to_decimal("0.0")
-    tot_today5:decimal = to_decimal("0.0")
-    tot_mtd5:decimal = to_decimal("0.0")
-    tot_mtd_budget5:decimal = to_decimal("0.0")
-    tot_variance5:decimal = to_decimal("0.0")
-    tot_ytd5:decimal = to_decimal("0.0")
-    tot_ytd_budget5:decimal = to_decimal("0.0")
-    tot_today6:decimal = to_decimal("0.0")
-    tot_mtd6:decimal = to_decimal("0.0")
-    tot_mtd_budget6:decimal = to_decimal("0.0")
-    tot_variance6:decimal = to_decimal("0.0")
-    tot_ytd6:decimal = to_decimal("0.0")
-    tot_ytd_budget6:decimal = to_decimal("0.0")
-    tot_today7:decimal = to_decimal("0.0")
-    tot_mtd7:decimal = to_decimal("0.0")
-    tot_mtd_budget7:decimal = to_decimal("0.0")
-    tot_variance7:decimal = to_decimal("0.0")
-    tot_ytd7:decimal = to_decimal("0.0")
-    tot_ytd_budget7:decimal = to_decimal("0.0")
-    tot_tday_cov:decimal = to_decimal("0.0")
-    tot_tday_avg:decimal = to_decimal("0.0")
-    tot_tday_rev:decimal = to_decimal("0.0")
-    tot_mtd_cov:decimal = to_decimal("0.0")
-    tot_mtd_avg:decimal = to_decimal("0.0")
-    tot_mtd_rev:decimal = to_decimal("0.0")
-    tot_ytd_cov:decimal = to_decimal("0.0")
-    tot_ytd_avg:decimal = to_decimal("0.0")
-    tot_ytd_rev:decimal = to_decimal("0.0")
-    t_today:decimal = to_decimal("0.0")
-    t_today_per:decimal = to_decimal("0.0")
-    t_mtd:decimal = to_decimal("0.0")
-    t_mtd_per:decimal = to_decimal("0.0")
-    t_mtd_budget:decimal = to_decimal("0.0")
-    t_variance:decimal = to_decimal("0.0")
-    t_ytd:decimal = to_decimal("0.0")
-    t_ytd_budget:decimal = to_decimal("0.0")
-    t_ytd_per:decimal = to_decimal("0.0")
-    t_today1:decimal = to_decimal("0.0")
-    t_today_per1:decimal = to_decimal("0.0")
-    t_mtd1:decimal = to_decimal("0.0")
-    t_mtd_per1:decimal = to_decimal("0.0")
-    t_mtd_budget1:decimal = to_decimal("0.0")
-    t_variance1:decimal = to_decimal("0.0")
-    t_ytd1:decimal = to_decimal("0.0")
-    t_ytd_budget1:decimal = to_decimal("0.0")
-    t_ytd_per1:decimal = to_decimal("0.0")
-    t_today11:decimal = to_decimal("0.0")
-    t_today_per11:decimal = to_decimal("0.0")
-    t_mtd11:decimal = to_decimal("0.0")
-    t_mtd_per11:decimal = to_decimal("0.0")
-    t_mtd_budget11:decimal = to_decimal("0.0")
-    t_variance11:decimal = to_decimal("0.0")
-    t_ytd11:decimal = to_decimal("0.0")
-    t_ytd_budget11:decimal = to_decimal("0.0")
-    t_ytd_per11:decimal = to_decimal("0.0")
-    t_today2:decimal = to_decimal("0.0")
-    t_today_per2:decimal = to_decimal("0.0")
-    t_mtd2:decimal = to_decimal("0.0")
-    t_mtd_per2:decimal = to_decimal("0.0")
-    t_mtd_budget2:decimal = to_decimal("0.0")
-    t_variance2:decimal = to_decimal("0.0")
-    t_ytd2:decimal = to_decimal("0.0")
-    t_ytd_budget2:decimal = to_decimal("0.0")
-    t_ytd_per2:decimal = to_decimal("0.0")
-    t_today3:decimal = to_decimal("0.0")
-    t_today_per3:decimal = to_decimal("0.0")
-    t_mtd3:decimal = to_decimal("0.0")
-    t_mtd_per3:decimal = to_decimal("0.0")
-    t_mtd_budget3:decimal = to_decimal("0.0")
-    t_variance3:decimal = to_decimal("0.0")
-    t_ytd3:decimal = to_decimal("0.0")
-    t_ytd_budget3:decimal = to_decimal("0.0")
-    t_ytd_per3:decimal = to_decimal("0.0")
-    tdy_gl1:decimal = to_decimal("0.0")
-    ytd_gl:decimal = to_decimal("0.0")
-    curr_flag:str = ""
+    tot_today:Decimal = to_decimal("0.0")
+    tot_today_per:Decimal = to_decimal("0.0")
+    tot_mtd:Decimal = to_decimal("0.0")
+    tot_mtd_per:Decimal = to_decimal("0.0")
+    tot_mtd_budget:Decimal = to_decimal("0.0")
+    tot_variance:Decimal = to_decimal("0.0")
+    tot_ytd:Decimal = to_decimal("0.0")
+    tot_ytd_budget:Decimal = to_decimal("0.0")
+    tot_ytd_per:Decimal = to_decimal("0.0")
+    tot_today1:Decimal = to_decimal("0.0")
+    tot_today_per1:Decimal = to_decimal("0.0")
+    tot_mtd1:Decimal = to_decimal("0.0")
+    tot_mtd_per1:Decimal = to_decimal("0.0")
+    tot_mtd_budget1:Decimal = to_decimal("0.0")
+    tot_variance1:Decimal = to_decimal("0.0")
+    tot_ytd1:Decimal = to_decimal("0.0")
+    tot_ytd_budget1:Decimal = to_decimal("0.0")
+    tot_ytd_per1:Decimal = to_decimal("0.0")
+    tot_today2:Decimal = to_decimal("0.0")
+    tot_today_per2:Decimal = to_decimal("0.0")
+    tot_mtd2:Decimal = to_decimal("0.0")
+    tot_mtd_per2:Decimal = to_decimal("0.0")
+    tot_mtd_budget2:Decimal = to_decimal("0.0")
+    tot_variance2:Decimal = to_decimal("0.0")
+    tot_ytd2:Decimal = to_decimal("0.0")
+    tot_ytd_budget2:Decimal = to_decimal("0.0")
+    tot_ytd_per2:Decimal = to_decimal("0.0")
+    tot_today3:Decimal = to_decimal("0.0")
+    tot_mtd3:Decimal = to_decimal("0.0")
+    tot_mtd_budget3:Decimal = to_decimal("0.0")
+    tot_variance3:Decimal = to_decimal("0.0")
+    tot_ytd3:Decimal = to_decimal("0.0")
+    tot_ytd_budget3:Decimal = to_decimal("0.0")
+    tot_today4:Decimal = to_decimal("0.0")
+    tot_mtd4:Decimal = to_decimal("0.0")
+    tot_mtd_budget4:Decimal = to_decimal("0.0")
+    tot_variance4:Decimal = to_decimal("0.0")
+    tot_ytd4:Decimal = to_decimal("0.0")
+    tot_ytd_budget4:Decimal = to_decimal("0.0")
+    tot_today5:Decimal = to_decimal("0.0")
+    tot_mtd5:Decimal = to_decimal("0.0")
+    tot_mtd_budget5:Decimal = to_decimal("0.0")
+    tot_variance5:Decimal = to_decimal("0.0")
+    tot_ytd5:Decimal = to_decimal("0.0")
+    tot_ytd_budget5:Decimal = to_decimal("0.0")
+    tot_today6:Decimal = to_decimal("0.0")
+    tot_mtd6:Decimal = to_decimal("0.0")
+    tot_mtd_budget6:Decimal = to_decimal("0.0")
+    tot_variance6:Decimal = to_decimal("0.0")
+    tot_ytd6:Decimal = to_decimal("0.0")
+    tot_ytd_budget6:Decimal = to_decimal("0.0")
+    tot_today7:Decimal = to_decimal("0.0")
+    tot_mtd7:Decimal = to_decimal("0.0")
+    tot_mtd_budget7:Decimal = to_decimal("0.0")
+    tot_variance7:Decimal = to_decimal("0.0")
+    tot_ytd7:Decimal = to_decimal("0.0")
+    tot_ytd_budget7:Decimal = to_decimal("0.0")
+    tot_tday_cov:Decimal = to_decimal("0.0")
+    tot_tday_avg:Decimal = to_decimal("0.0")
+    tot_tday_rev:Decimal = to_decimal("0.0")
+    tot_mtd_cov:Decimal = to_decimal("0.0")
+    tot_mtd_avg:Decimal = to_decimal("0.0")
+    tot_mtd_rev:Decimal = to_decimal("0.0")
+    tot_ytd_cov:Decimal = to_decimal("0.0")
+    tot_ytd_avg:Decimal = to_decimal("0.0")
+    tot_ytd_rev:Decimal = to_decimal("0.0")
+    t_today:Decimal = to_decimal("0.0")
+    t_today_per:Decimal = to_decimal("0.0")
+    t_mtd:Decimal = to_decimal("0.0")
+    t_mtd_per:Decimal = to_decimal("0.0")
+    t_mtd_budget:Decimal = to_decimal("0.0")
+    t_variance:Decimal = to_decimal("0.0")
+    t_ytd:Decimal = to_decimal("0.0")
+    t_ytd_budget:Decimal = to_decimal("0.0")
+    t_ytd_per:Decimal = to_decimal("0.0")
+    t_today1:Decimal = to_decimal("0.0")
+    t_today_per1:Decimal = to_decimal("0.0")
+    t_mtd1:Decimal = to_decimal("0.0")
+    t_mtd_per1:Decimal = to_decimal("0.0")
+    t_mtd_budget1:Decimal = to_decimal("0.0")
+    t_variance1:Decimal = to_decimal("0.0")
+    t_ytd1:Decimal = to_decimal("0.0")
+    t_ytd_budget1:Decimal = to_decimal("0.0")
+    t_ytd_per1:Decimal = to_decimal("0.0")
+    t_today11:Decimal = to_decimal("0.0")
+    t_today_per11:Decimal = to_decimal("0.0")
+    t_mtd11:Decimal = to_decimal("0.0")
+    t_mtd_per11:Decimal = to_decimal("0.0")
+    t_mtd_budget11:Decimal = to_decimal("0.0")
+    t_variance11:Decimal = to_decimal("0.0")
+    t_ytd11:Decimal = to_decimal("0.0")
+    t_ytd_budget11:Decimal = to_decimal("0.0")
+    t_ytd_per11:Decimal = to_decimal("0.0")
+    t_today2:Decimal = to_decimal("0.0")
+    t_today_per2:Decimal = to_decimal("0.0")
+    t_mtd2:Decimal = to_decimal("0.0")
+    t_mtd_per2:Decimal = to_decimal("0.0")
+    t_mtd_budget2:Decimal = to_decimal("0.0")
+    t_variance2:Decimal = to_decimal("0.0")
+    t_ytd2:Decimal = to_decimal("0.0")
+    t_ytd_budget2:Decimal = to_decimal("0.0")
+    t_ytd_per2:Decimal = to_decimal("0.0")
+    t_today3:Decimal = to_decimal("0.0")
+    t_today_per3:Decimal = to_decimal("0.0")
+    t_mtd3:Decimal = to_decimal("0.0")
+    t_mtd_per3:Decimal = to_decimal("0.0")
+    t_mtd_budget3:Decimal = to_decimal("0.0")
+    t_variance3:Decimal = to_decimal("0.0")
+    t_ytd3:Decimal = to_decimal("0.0")
+    t_ytd_budget3:Decimal = to_decimal("0.0")
+    t_ytd_per3:Decimal = to_decimal("0.0")
+    tdy_gl1:Decimal = to_decimal("0.0")
+    ytd_gl:Decimal = to_decimal("0.0")
+    curr_flag:string = ""
     curr_dept:int = 0
     ct:int = 0
     ct3:int = 0
     ct4:int = 0
-    t_day_serv:decimal = to_decimal("0.0")
-    mtd_serv:decimal = to_decimal("0.0")
-    mtd_budget_serv:decimal = to_decimal("0.0")
-    ytd_serv:decimal = to_decimal("0.0")
-    ytd_budget_serv:decimal = to_decimal("0.0")
-    variance_serv:decimal = to_decimal("0.0")
-    t_day_tax:decimal = to_decimal("0.0")
-    mtd_tax:decimal = to_decimal("0.0")
-    mtd_budget_tax:decimal = to_decimal("0.0")
-    ytd_tax:decimal = to_decimal("0.0")
-    ytd_budget_tax:decimal = to_decimal("0.0")
-    variance_tax:decimal = to_decimal("0.0")
+    t_day_serv:Decimal = to_decimal("0.0")
+    mtd_serv:Decimal = to_decimal("0.0")
+    mtd_budget_serv:Decimal = to_decimal("0.0")
+    ytd_serv:Decimal = to_decimal("0.0")
+    ytd_budget_serv:Decimal = to_decimal("0.0")
+    variance_serv:Decimal = to_decimal("0.0")
+    t_day_tax:Decimal = to_decimal("0.0")
+    mtd_tax:Decimal = to_decimal("0.0")
+    mtd_budget_tax:Decimal = to_decimal("0.0")
+    ytd_tax:Decimal = to_decimal("0.0")
+    ytd_budget_tax:Decimal = to_decimal("0.0")
+    variance_tax:Decimal = to_decimal("0.0")
     ct1:int = 0
-    curr_flag1:str = ""
+    curr_flag1:string = ""
     ct2:int = 0
     banq_dept:int = 0
-    frate:decimal = 1
+    frate:Decimal = 1
     jan1:date = None
     budget_flag:bool = False
-    mon_saldo:List[decimal] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    mon_budget:List[decimal] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    foreign_curr:decimal = to_decimal("0.0")
+    mon_saldo:List[Decimal] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    mon_budget:List[Decimal] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    foreign_curr:Decimal = to_decimal("0.0")
     umsatz = waehrung = htparam = queasy = segment = artikel = hoteldpt = uebertrag = exrate = genstat = segmentstat = budget = zinrstat = zkstat = None
 
     rev_seg_list = rev_seg_list1 = rev_list = rev_list_tax = rev_list_serv = payable_list = tot_list = stat_list = payment_list = segment_list = gl_list = fb_sales_food = fb_sales_beverage = fb_sales_other = fb_sales_tot = fb_sales_material = setup_revenue = setup_segment = setup_payment = setup_stat = setup_fbcover = buff_umsatz = b_rev_list = b_rev_seg_list = b_rev_seg_list1 = b_stat_list = brev_list = b_payment_list = bpayment_list = bpayable_list = None
 
-    rev_seg_list_list, Rev_seg_list = create_model("Rev_seg_list", {"ct":int, "segment_code":int, "descr":str, "departement":int, "t_day":decimal, "dper":decimal, "mtd":decimal, "mtd_per":decimal, "mtd_budget":decimal, "variance":decimal, "ytd":decimal, "ytd_budget":decimal, "ytd_per":decimal, "flag":str, "flag_grup":bool})
+    rev_seg_list_list, Rev_seg_list = create_model("Rev_seg_list", {"ct":int, "segment_code":int, "descr":string, "departement":int, "t_day":Decimal, "dper":Decimal, "mtd":Decimal, "mtd_per":Decimal, "mtd_budget":Decimal, "variance":Decimal, "ytd":Decimal, "ytd_budget":Decimal, "ytd_per":Decimal, "flag":string, "flag_grup":bool})
     rev_seg_list1_list, Rev_seg_list1 = create_model_like(Rev_seg_list)
-    rev_list_list, Rev_list = create_model("Rev_list", {"ct":int, "descr":str, "departement":int, "t_day":decimal, "dper":decimal, "mtd":decimal, "mtd_per":decimal, "mtd_budget":decimal, "variance":decimal, "ytd":decimal, "ytd_budget":decimal, "ytd_per":decimal, "flag":str, "flag_grup":bool})
+    rev_list_list, Rev_list = create_model("Rev_list", {"ct":int, "descr":string, "departement":int, "t_day":Decimal, "dper":Decimal, "mtd":Decimal, "mtd_per":Decimal, "mtd_budget":Decimal, "variance":Decimal, "ytd":Decimal, "ytd_budget":Decimal, "ytd_per":Decimal, "flag":string, "flag_grup":bool})
     rev_list_tax_list, Rev_list_tax = create_model_like(Rev_list)
     rev_list_serv_list, Rev_list_serv = create_model_like(Rev_list)
     payable_list_list, Payable_list = create_model_like(Rev_list)
     tot_list_list, Tot_list = create_model_like(Rev_list)
-    stat_list_list, Stat_list = create_model("Stat_list", {"ct":int, "descr":str, "departement":int, "t_day":decimal, "mtd":decimal, "mtd_budget":decimal, "variance":decimal, "ytd":decimal, "ytd_budget":decimal, "flag":str})
+    stat_list_list, Stat_list = create_model("Stat_list", {"ct":int, "descr":string, "departement":int, "t_day":Decimal, "mtd":Decimal, "mtd_budget":Decimal, "variance":Decimal, "ytd":Decimal, "ytd_budget":Decimal, "flag":string})
     payment_list_list, Payment_list = create_model_like(Stat_list)
-    segment_list_list, Segment_list = create_model("Segment_list", {"segmentcode":int, "bezeich":str})
-    gl_list_list, Gl_list = create_model("Gl_list", {"descr":str, "tot_rev":decimal})
-    fb_sales_food_list, Fb_sales_food = create_model("Fb_sales_food", {"ct":int, "artnr":int, "departement":int, "descr":str, "tday_cov":decimal, "tday_avg":decimal, "tday_rev":decimal, "mtd_cov":decimal, "mtd_avg":decimal, "mtd_rev":decimal, "ytd_cov":decimal, "ytd_avg":decimal, "ytd_rev":decimal, "flag":str})
+    segment_list_list, Segment_list = create_model("Segment_list", {"segmentcode":int, "bezeich":string})
+    gl_list_list, Gl_list = create_model("Gl_list", {"descr":string, "tot_rev":Decimal})
+    fb_sales_food_list, Fb_sales_food = create_model("Fb_sales_food", {"ct":int, "artnr":int, "departement":int, "descr":string, "tday_cov":Decimal, "tday_avg":Decimal, "tday_rev":Decimal, "mtd_cov":Decimal, "mtd_avg":Decimal, "mtd_rev":Decimal, "ytd_cov":Decimal, "ytd_avg":Decimal, "ytd_rev":Decimal, "flag":string})
     fb_sales_beverage_list, Fb_sales_beverage = create_model_like(Fb_sales_food)
     fb_sales_other_list, Fb_sales_other = create_model_like(Fb_sales_food)
     fb_sales_tot_list, Fb_sales_tot = create_model_like(Fb_sales_food)
     fb_sales_material_list, Fb_sales_material = create_model_like(Fb_sales_food)
-    setup_revenue_list, Setup_revenue = create_model("Setup_revenue", {"artnr":int, "flag_used":bool, "flag_grup":bool, "descr":str, "departement":int, "flag":str}, {"flag_used": True})
+    setup_revenue_list, Setup_revenue = create_model("Setup_revenue", {"artnr":int, "flag_used":bool, "flag_grup":bool, "descr":string, "departement":int, "flag":string}, {"flag_used": True})
     setup_segment_list, Setup_segment = create_model_like(Setup_revenue)
     setup_payment_list, Setup_payment = create_model("Setup_payment", {"artnr":int, "artart":int, "umsatzart":int, "departement":int, "flag":bool})
-    setup_stat_list, Setup_stat = create_model("Setup_stat", {"zwkum":int, "artnr":int, "flag":str, "descr":str})
-    setup_fbcover_list, Setup_fbcover = create_model("Setup_fbcover", {"departement":int, "artnr":int, "flag":str})
+    setup_stat_list, Setup_stat = create_model("Setup_stat", {"zwkum":int, "artnr":int, "flag":string, "descr":string})
+    setup_fbcover_list, Setup_fbcover = create_model("Setup_fbcover", {"departement":int, "artnr":int, "flag":string})
 
     Buff_umsatz = create_buffer("Buff_umsatz",Umsatz)
     B_rev_list = Rev_list
@@ -318,7 +322,6 @@ def new_drrbl(from_date:date, to_date:date):
     Bpayable_list = Payable_list
     bpayable_list_list = payable_list_list
 
-
     db_session = local_storage.db_session
 
     def generate_output():
@@ -344,12 +347,10 @@ def new_drrbl(from_date:date, to_date:date):
 
         if foreign_nr != 0:
 
-            exrate = db_session.query(Exrate).filter(
-                     (Exrate.artnr == foreign_nr) & (Exrate.datum == curr_date)).first()
+            exrate = get_cache (Exrate, {"artnr": [(eq, foreign_nr)],"datum": [(eq, curr_date)]})
         else:
 
-            exrate = db_session.query(Exrate).filter(
-                     (Exrate.datum == curr_date)).first()
+            exrate = get_cache (Exrate, {"datum": [(eq, curr_date)]})
 
 
     def fill_revenue_segement():
@@ -362,22 +363,22 @@ def new_drrbl(from_date:date, to_date:date):
         nonlocal rev_seg_list, rev_seg_list1, rev_list, rev_list_tax, rev_list_serv, payable_list, tot_list, stat_list, payment_list, segment_list, gl_list, fb_sales_food, fb_sales_beverage, fb_sales_other, fb_sales_tot, fb_sales_material, setup_revenue, setup_segment, setup_payment, setup_stat, setup_fbcover, buff_umsatz, b_rev_list, b_rev_seg_list, b_rev_seg_list1, b_stat_list, brev_list, b_payment_list, bpayment_list, bpayable_list
         nonlocal rev_seg_list_list, rev_seg_list1_list, rev_list_list, rev_list_tax_list, rev_list_serv_list, payable_list_list, tot_list_list, stat_list_list, payment_list_list, segment_list_list, gl_list_list, fb_sales_food_list, fb_sales_beverage_list, fb_sales_other_list, fb_sales_tot_list, fb_sales_material_list, setup_revenue_list, setup_segment_list, setup_payment_list, setup_stat_list, setup_fbcover_list
 
-        t_day:decimal = to_decimal("0.0")
-        mtd:decimal = to_decimal("0.0")
-        mtd_budget:decimal = to_decimal("0.0")
-        ytd:decimal = to_decimal("0.0")
-        ytd_budget:decimal = to_decimal("0.0")
-        variance:decimal = to_decimal("0.0")
+        t_day:Decimal = to_decimal("0.0")
+        mtd:Decimal = to_decimal("0.0")
+        mtd_budget:Decimal = to_decimal("0.0")
+        ytd:Decimal = to_decimal("0.0")
+        ytd_budget:Decimal = to_decimal("0.0")
+        variance:Decimal = to_decimal("0.0")
         ct1:int = 0
         artnr:int = 0
         d_flag:bool = False
         mm:int = 0
-        frate1:decimal = to_decimal("0.0")
+        frate1:Decimal = to_decimal("0.0")
         mm = get_month(to_date)
         artnr = setup_segment.artnr
 
         for genstat in db_session.query(Genstat).filter(
-                 (Genstat.segmentcode == segment.segmentcode) & (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat._recid).all():
+                 (Genstat.segmentcode == segment.segmentcode) & (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat._recid).all():
 
             if foreign_flag:
                 find_exrate(genstat.datum)
@@ -447,21 +448,21 @@ def new_drrbl(from_date:date, to_date:date):
         nonlocal rev_seg_list, rev_seg_list1, rev_list, rev_list_tax, rev_list_serv, payable_list, tot_list, stat_list, payment_list, segment_list, gl_list, fb_sales_food, fb_sales_beverage, fb_sales_other, fb_sales_tot, fb_sales_material, setup_revenue, setup_segment, setup_payment, setup_stat, setup_fbcover, buff_umsatz, b_rev_list, b_rev_seg_list, b_rev_seg_list1, b_stat_list, brev_list, b_payment_list, bpayment_list, bpayable_list
         nonlocal rev_seg_list_list, rev_seg_list1_list, rev_list_list, rev_list_tax_list, rev_list_serv_list, payable_list_list, tot_list_list, stat_list_list, payment_list_list, segment_list_list, gl_list_list, fb_sales_food_list, fb_sales_beverage_list, fb_sales_other_list, fb_sales_tot_list, fb_sales_material_list, setup_revenue_list, setup_segment_list, setup_payment_list, setup_stat_list, setup_fbcover_list
 
-        t_day:decimal = to_decimal("0.0")
-        mtd:decimal = to_decimal("0.0")
-        mtd_budget:decimal = to_decimal("0.0")
-        ytd:decimal = to_decimal("0.0")
-        ytd_budget:decimal = to_decimal("0.0")
-        variance:decimal = to_decimal("0.0")
+        t_day:Decimal = to_decimal("0.0")
+        mtd:Decimal = to_decimal("0.0")
+        mtd_budget:Decimal = to_decimal("0.0")
+        ytd:Decimal = to_decimal("0.0")
+        ytd_budget:Decimal = to_decimal("0.0")
+        variance:Decimal = to_decimal("0.0")
         ct1:int = 0
         artnr:int = 0
         d_flag:bool = False
         mm:int = 0
-        frate1:decimal = to_decimal("0.0")
+        frate1:Decimal = to_decimal("0.0")
         artnr = setup_segment.artnr
 
         for genstat in db_session.query(Genstat).filter(
-                 (Genstat.segmentcode == segment.segmentcode) & (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat._recid).all():
+                 (Genstat.segmentcode == segment.segmentcode) & (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat._recid).all():
 
             if foreign_flag:
                 find_exrate(genstat.datum)
@@ -531,18 +532,17 @@ def new_drrbl(from_date:date, to_date:date):
         nonlocal rev_seg_list, rev_seg_list1, rev_list, rev_list_tax, rev_list_serv, payable_list, tot_list, stat_list, payment_list, segment_list, gl_list, fb_sales_food, fb_sales_beverage, fb_sales_other, fb_sales_tot, fb_sales_material, setup_revenue, setup_segment, setup_payment, setup_stat, setup_fbcover, buff_umsatz, b_rev_list, b_rev_seg_list, b_rev_seg_list1, b_stat_list, brev_list, b_payment_list, bpayment_list, bpayable_list
         nonlocal rev_seg_list_list, rev_seg_list1_list, rev_list_list, rev_list_tax_list, rev_list_serv_list, payable_list_list, tot_list_list, stat_list_list, payment_list_list, segment_list_list, gl_list_list, fb_sales_food_list, fb_sales_beverage_list, fb_sales_other_list, fb_sales_tot_list, fb_sales_material_list, setup_revenue_list, setup_segment_list, setup_payment_list, setup_stat_list, setup_fbcover_list
 
-        t_day:decimal = to_decimal("0.0")
-        mtd:decimal = to_decimal("0.0")
-        mtd_budget:decimal = to_decimal("0.0")
-        ytd:decimal = to_decimal("0.0")
-        ytd_budget:decimal = to_decimal("0.0")
-        variance:decimal = to_decimal("0.0")
+        t_day:Decimal = to_decimal("0.0")
+        mtd:Decimal = to_decimal("0.0")
+        mtd_budget:Decimal = to_decimal("0.0")
+        ytd:Decimal = to_decimal("0.0")
+        ytd_budget:Decimal = to_decimal("0.0")
+        variance:Decimal = to_decimal("0.0")
         for curr_date in date_range(datum1,to_date) :
             serv =  to_decimal("0")
             vat =  to_decimal("0")
 
-            umsatz = db_session.query(Umsatz).filter(
-                     (Umsatz.datum == curr_date) & (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement)).first()
+            umsatz = get_cache (Umsatz, {"datum": [(eq, curr_date)],"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)]})
 
             if umsatz:
                 serv, vat, vat2, fact = get_output(calc_servtaxesbl(1, umsatz.artnr, umsatz.departement, umsatz.datum))
@@ -571,8 +571,7 @@ def new_drrbl(from_date:date, to_date:date):
                     n_serv = to_decimal(round(n_serv , 0))
                     n_tax = to_decimal(round(n_tax , 0))
 
-            budget = db_session.query(Budget).filter(
-                     (Budget.artnr == artikel.artnr) & (Budget.departement == artikel.departement) & (Budget.datum == curr_date)).first()
+            budget = get_cache (Budget, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, curr_date)]})
 
             if curr_date < from_date:
 
@@ -621,8 +620,7 @@ def new_drrbl(from_date:date, to_date:date):
             if not rev_list:
                 ct = ct + 1
 
-                hoteldpt = db_session.query(Hoteldpt).filter(
-                         (Hoteldpt.num == setup_revenue.departement)).first()
+                hoteldpt = get_cache (Hoteldpt, {"num": [(eq, setup_revenue.departement)]})
                 rev_list = Rev_list()
                 rev_list_list.append(rev_list)
 
@@ -631,8 +629,6 @@ def new_drrbl(from_date:date, to_date:date):
                 rev_list.departement = setup_revenue.departement
                 rev_list.descr = hoteldpt.depart
 
-
-                pass
             ct = ct + 1
             rev_list = Rev_list()
             rev_list_list.append(rev_list)
@@ -679,8 +675,7 @@ def new_drrbl(from_date:date, to_date:date):
             serv =  to_decimal("0")
             vat =  to_decimal("0")
 
-            umsatz = db_session.query(Umsatz).filter(
-                     (Umsatz.datum == curr_date) & (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement)).first()
+            umsatz = get_cache (Umsatz, {"datum": [(eq, curr_date)],"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)]})
 
             if umsatz:
                 serv, vat, vat2, fact = get_output(calc_servtaxesbl(1, umsatz.artnr, umsatz.departement, umsatz.datum))
@@ -707,8 +702,7 @@ def new_drrbl(from_date:date, to_date:date):
                     n_serv = to_decimal(round(n_serv , 0))
                     n_tax = to_decimal(round(n_tax , 0))
 
-            budget = db_session.query(Budget).filter(
-                     (Budget.artnr == artikel.artnr) & (Budget.departement == artikel.departement) & (Budget.datum == curr_date)).first()
+            budget = get_cache (Budget, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, curr_date)]})
 
             if curr_date < from_date:
 
@@ -770,8 +764,7 @@ def new_drrbl(from_date:date, to_date:date):
             serv =  to_decimal("0")
             vat =  to_decimal("0")
 
-            umsatz = db_session.query(Umsatz).filter(
-                     (Umsatz.datum == curr_date) & (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement)).first()
+            umsatz = get_cache (Umsatz, {"datum": [(eq, curr_date)],"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)]})
 
             if umsatz:
                 serv, vat, vat2, fact = get_output(calc_servtaxesbl(1, umsatz.artnr, umsatz.departement, umsatz.datum))
@@ -798,8 +791,7 @@ def new_drrbl(from_date:date, to_date:date):
                     n_serv = to_decimal(round(n_serv , 0))
                     n_tax = to_decimal(round(n_tax , 0))
 
-            budget = db_session.query(Budget).filter(
-                     (Budget.artnr == artikel.artnr) & (Budget.departement == artikel.departement) & (Budget.datum == curr_date)).first()
+            budget = get_cache (Budget, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, curr_date)]})
 
             if curr_date < from_date:
 
@@ -853,8 +845,7 @@ def new_drrbl(from_date:date, to_date:date):
 
             for datum in date_range(datum1,to_date) :
 
-                zinrstat = db_session.query(Zinrstat).filter(
-                         (Zinrstat.datum == datum) & (func.lower(Zinrstat.zinr) == ("tot-rm").lower())).first()
+                zinrstat = get_cache (Zinrstat, {"datum": [(eq, datum)],"zinr": [(eq, "tot-rm")]})
 
                 if zinrstat:
                     anz = zinrstat.zimmeranz
@@ -893,8 +884,7 @@ def new_drrbl(from_date:date, to_date:date):
 
                     if setup_stat:
 
-                        budget = db_session.query(Budget).filter(
-                                 (Budget.artnr == setup_stat.artnr) & (Budget.departement == 0) & (Budget.datum == datum)).first()
+                        budget = get_cache (Budget, {"artnr": [(eq, setup_stat.artnr)],"departement": [(eq, 0)],"datum": [(eq, datum)]})
 
                         if budget:
                             stat_list.mtd_budget =  to_decimal(stat_list.mtd_budget) + to_decimal(budget.betrag)
@@ -943,8 +933,7 @@ def new_drrbl(from_date:date, to_date:date):
 
             if setup_stat:
 
-                budget = db_session.query(Budget).filter(
-                         (Budget.artnr == setup_stat.artnr) & (Budget.departement == 0) & (Budget.datum == datum1)).first()
+                budget = get_cache (Budget, {"artnr": [(eq, setup_stat.artnr)],"departement": [(eq, 0)],"datum": [(eq, datum1)]})
 
                 if datum1 < from_date:
                     pass
@@ -1003,7 +992,7 @@ def new_drrbl(from_date:date, to_date:date):
             stat_list.ytd =  to_decimal(ytd1) - to_decimal(ytd2)
 
 
-    def fill_rmstat(key_word:str):
+    def fill_rmstat(key_word:string):
 
         nonlocal rev_seg_list_list, rev_list_list, payable_list_list, stat_list_list, payment_list_list, gl_list_list, fb_sales_food_list, fb_sales_beverage_list, fb_sales_other_list, fb_sales_tot_list, rev_seg_list1_list, fb_sales_material_list, gsheet_link, ytd_flag, str1, str2, str3, st1, st2, st3, st4, st5, st6, st7, st8, st9, st10, st11, st12, st13, st14, st15, st16, st17, st18, st19, st20, st21, st22, st23, st24, st25, st26, st27, st28, st29, st30, st31, st32, st33, st34, st35, st36, st37, n, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15, n16, n17, n18, n19, n20, n21, n22, n23, n24, n25, n26, n27, n28, n29, n30, curr_date, start_date, datum1, serv, vat, vat2, fact, n_betrag, n_serv, n_tax, ly_betrag, dbudget_flag, yes_serv, yes_vat, yes_vat2, yes_fact, yes_betrag, date1, date2, temp_date2, temp_curr_date, l_today, st_date, foreign_nr, foreign_flag, tot_betrag, price_decimal, no_decimal, dept, dept1, zwkum, dper, mtd_per, ytd_per, tot_today, tot_today_per, tot_mtd, tot_mtd_per, tot_mtd_budget, tot_variance, tot_ytd, tot_ytd_budget, tot_ytd_per, tot_today1, tot_today_per1, tot_mtd1, tot_mtd_per1, tot_mtd_budget1, tot_variance1, tot_ytd1, tot_ytd_budget1, tot_ytd_per1, tot_today2, tot_today_per2, tot_mtd2, tot_mtd_per2, tot_mtd_budget2, tot_variance2, tot_ytd2, tot_ytd_budget2, tot_ytd_per2, tot_today3, tot_mtd3, tot_mtd_budget3, tot_variance3, tot_ytd3, tot_ytd_budget3, tot_today4, tot_mtd4, tot_mtd_budget4, tot_variance4, tot_ytd4, tot_ytd_budget4, tot_today5, tot_mtd5, tot_mtd_budget5, tot_variance5, tot_ytd5, tot_ytd_budget5, tot_today6, tot_mtd6, tot_mtd_budget6, tot_variance6, tot_ytd6, tot_ytd_budget6, tot_today7, tot_mtd7, tot_mtd_budget7, tot_variance7, tot_ytd7, tot_ytd_budget7, tot_tday_cov, tot_tday_avg, tot_tday_rev, tot_mtd_cov, tot_mtd_avg, tot_mtd_rev, tot_ytd_cov, tot_ytd_avg, tot_ytd_rev, t_today, t_today_per, t_mtd, t_mtd_per, t_mtd_budget, t_variance, t_ytd, t_ytd_budget, t_ytd_per, t_today1, t_today_per1, t_mtd1, t_mtd_per1, t_mtd_budget1, t_variance1, t_ytd1, t_ytd_budget1, t_ytd_per1, t_today11, t_today_per11, t_mtd11, t_mtd_per11, t_mtd_budget11, t_variance11, t_ytd11, t_ytd_budget11, t_ytd_per11, t_today2, t_today_per2, t_mtd2, t_mtd_per2, t_mtd_budget2, t_variance2, t_ytd2, t_ytd_budget2, t_ytd_per2, t_today3, t_today_per3, t_mtd3, t_mtd_per3, t_mtd_budget3, t_variance3, t_ytd3, t_ytd_budget3, t_ytd_per3, tdy_gl1, ytd_gl, curr_flag, curr_dept, ct, ct3, ct4, t_day_serv, mtd_serv, mtd_budget_serv, ytd_serv, ytd_budget_serv, variance_serv, t_day_tax, mtd_tax, mtd_budget_tax, ytd_tax, ytd_budget_tax, variance_tax, ct1, curr_flag1, ct2, banq_dept, frate, jan1, budget_flag, mon_saldo, mon_budget, foreign_curr, umsatz, waehrung, htparam, queasy, segment, artikel, hoteldpt, uebertrag, exrate, genstat, segmentstat, budget, zinrstat, zkstat
         nonlocal from_date, to_date
@@ -1018,7 +1007,7 @@ def new_drrbl(from_date:date, to_date:date):
         anz0:int = 0
         d_flag:bool = False
         dlmtd_flag:bool = False
-        cur_key:str = ""
+        cur_key:string = ""
         ct1 = ct1 + 1
 
         stat_list = query(stat_list_list, filters=(lambda stat_list: stat_list.flag.lower()  == (key_word).lower()), first=True)
@@ -1087,7 +1076,7 @@ def new_drrbl(from_date:date, to_date:date):
                 stat_list.descr = "Person Departures Tomorrow"
 
             for zinrstat in db_session.query(Zinrstat).filter(
-                     (Zinrstat.datum >= datum1) & (Zinrstat.datum <= to_date) & (func.lower(Zinrstat.zinr) == (key_word).lower())).order_by(Zinrstat._recid).all():
+                     (Zinrstat.datum >= datum1) & (Zinrstat.datum <= to_date) & (Zinrstat.zinr == (key_word).lower())).order_by(Zinrstat._recid).all():
                 d_flag = (get_month(zinrstat.datum) == get_month(to_date)) and (get_year(zinrstat.datum) == get_year(to_date))
 
                 if d_flag:
@@ -1121,8 +1110,7 @@ def new_drrbl(from_date:date, to_date:date):
 
             for setup_stat in query(setup_stat_list):
 
-                budget = db_session.query(Budget).filter(
-                         (Budget.artnr == setup_stat.artnr) & (Budget.departement == 0) & (Budget.datum == curr_date)).first()
+                budget = get_cache (Budget, {"artnr": [(eq, setup_stat.artnr)],"departement": [(eq, 0)],"datum": [(eq, curr_date)]})
 
                 if curr_date < from_date:
                     pass
@@ -1153,7 +1141,7 @@ def new_drrbl(from_date:date, to_date:date):
         d_flag:bool = False
         dbudget_flag:bool = False
         dlmtd_flag:bool = False
-        frate1:decimal = to_decimal("0.0")
+        frate1:Decimal = to_decimal("0.0")
 
         if ytd_flag:
             datum1 = jan1
@@ -1167,13 +1155,15 @@ def new_drrbl(from_date:date, to_date:date):
         stat_list.descr = "Rooms Occupied"
         stat_list.flag = "occ"
 
-        segmentstat_obj_list = []
-        for segmentstat, segment in db_session.query(Segmentstat, Segment).join(Segment,(Segment.segmentcode == Segmentstat.segmentcode)).filter(
+        segmentstat_obj_list = {}
+        segmentstat = Segmentstat()
+        segment = Segment()
+        for segmentstat.budzimmeranz, segmentstat.budlogis, segmentstat.zimmeranz, segmentstat.datum, segmentstat._recid, segment.segmentcode, segment.bezeich, segment.betriebsnr, segment._recid in db_session.query(Segmentstat.budzimmeranz, Segmentstat.budlogis, Segmentstat.zimmeranz, Segmentstat.datum, Segmentstat._recid, Segment.segmentcode, Segment.bezeich, Segment.betriebsnr, Segment._recid).join(Segment,(Segment.segmentcode == Segmentstat.segmentcode)).filter(
                  (Segmentstat.datum >= datum1) & (Segmentstat.datum <= to_date)).order_by(Segmentstat._recid).all():
-            if segmentstat._recid in segmentstat_obj_list:
+            if segmentstat_obj_list.get(segmentstat._recid):
                 continue
             else:
-                segmentstat_obj_list.append(segmentstat._recid)
+                segmentstat_obj_list[segmentstat._recid] = True
 
 
             frate =  to_decimal("1")
@@ -1200,7 +1190,7 @@ def new_drrbl(from_date:date, to_date:date):
                 stat_list.mtd_budget =  to_decimal(stat_list.mtd_budget) + to_decimal(budget.betrag)
 
 
-    def fill_stat(key_word:str):
+    def fill_stat(key_word:string):
 
         nonlocal rev_seg_list_list, rev_list_list, payable_list_list, stat_list_list, payment_list_list, gl_list_list, fb_sales_food_list, fb_sales_beverage_list, fb_sales_other_list, fb_sales_tot_list, rev_seg_list1_list, fb_sales_material_list, gsheet_link, ytd_flag, str1, str2, str3, st1, st2, st3, st4, st5, st6, st7, st8, st9, st10, st11, st12, st13, st14, st15, st16, st17, st18, st19, st20, st21, st22, st23, st24, st25, st26, st27, st28, st29, st30, st31, st32, st33, st34, st35, st36, st37, n, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15, n16, n17, n18, n19, n20, n21, n22, n23, n24, n25, n26, n27, n28, n29, n30, curr_date, start_date, datum1, serv, vat, vat2, fact, n_betrag, n_serv, n_tax, ly_betrag, d_flag, dbudget_flag, dlmtd_flag, yes_serv, yes_vat, yes_vat2, yes_fact, yes_betrag, date1, date2, temp_date2, temp_curr_date, l_today, st_date, foreign_nr, foreign_flag, tot_betrag, price_decimal, no_decimal, dept, dept1, zwkum, dper, mtd_per, ytd_per, tot_today, tot_today_per, tot_mtd, tot_mtd_per, tot_mtd_budget, tot_variance, tot_ytd, tot_ytd_budget, tot_ytd_per, tot_today1, tot_today_per1, tot_mtd1, tot_mtd_per1, tot_mtd_budget1, tot_variance1, tot_ytd1, tot_ytd_budget1, tot_ytd_per1, tot_today2, tot_today_per2, tot_mtd2, tot_mtd_per2, tot_mtd_budget2, tot_variance2, tot_ytd2, tot_ytd_budget2, tot_ytd_per2, tot_today3, tot_mtd3, tot_mtd_budget3, tot_variance3, tot_ytd3, tot_ytd_budget3, tot_today4, tot_mtd4, tot_mtd_budget4, tot_variance4, tot_ytd4, tot_ytd_budget4, tot_today5, tot_mtd5, tot_mtd_budget5, tot_variance5, tot_ytd5, tot_ytd_budget5, tot_today6, tot_mtd6, tot_mtd_budget6, tot_variance6, tot_ytd6, tot_ytd_budget6, tot_today7, tot_mtd7, tot_mtd_budget7, tot_variance7, tot_ytd7, tot_ytd_budget7, tot_tday_cov, tot_tday_avg, tot_tday_rev, tot_mtd_cov, tot_mtd_avg, tot_mtd_rev, tot_ytd_cov, tot_ytd_avg, tot_ytd_rev, t_today, t_today_per, t_mtd, t_mtd_per, t_mtd_budget, t_variance, t_ytd, t_ytd_budget, t_ytd_per, t_today1, t_today_per1, t_mtd1, t_mtd_per1, t_mtd_budget1, t_variance1, t_ytd1, t_ytd_budget1, t_ytd_per1, t_today11, t_today_per11, t_mtd11, t_mtd_per11, t_mtd_budget11, t_variance11, t_ytd11, t_ytd_budget11, t_ytd_per11, t_today2, t_today_per2, t_mtd2, t_mtd_per2, t_mtd_budget2, t_variance2, t_ytd2, t_ytd_budget2, t_ytd_per2, t_today3, t_today_per3, t_mtd3, t_mtd_per3, t_mtd_budget3, t_variance3, t_ytd3, t_ytd_budget3, t_ytd_per3, tdy_gl1, ytd_gl, curr_flag, curr_dept, ct, ct3, ct4, t_day_serv, mtd_serv, mtd_budget_serv, ytd_serv, ytd_budget_serv, variance_serv, t_day_tax, mtd_tax, mtd_budget_tax, ytd_tax, ytd_budget_tax, variance_tax, ct1, curr_flag1, ct2, banq_dept, frate, jan1, budget_flag, mon_saldo, mon_budget, foreign_curr, umsatz, waehrung, htparam, queasy, segment, artikel, hoteldpt, uebertrag, exrate, genstat, segmentstat, budget, zinrstat, zkstat
         nonlocal from_date, to_date
@@ -1264,7 +1254,7 @@ def new_drrbl(from_date:date, to_date:date):
                     stat_list.mtd_budget =  to_decimal(stat_list.mtd_budget) + to_decimal(budget.betrag)
 
 
-    def fill_segm(key_word:str):
+    def fill_segm(key_word:string):
 
         nonlocal rev_seg_list_list, rev_list_list, payable_list_list, stat_list_list, payment_list_list, gl_list_list, fb_sales_food_list, fb_sales_beverage_list, fb_sales_other_list, fb_sales_tot_list, rev_seg_list1_list, fb_sales_material_list, gsheet_link, ytd_flag, str1, str2, str3, st1, st2, st3, st4, st5, st6, st7, st8, st9, st10, st11, st12, st13, st14, st15, st16, st17, st18, st19, st20, st21, st22, st23, st24, st25, st26, st27, st28, st29, st30, st31, st32, st33, st34, st35, st36, st37, n, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15, n16, n17, n18, n19, n20, n21, n22, n23, n24, n25, n26, n27, n28, n29, n30, curr_date, start_date, datum1, serv, vat, vat2, fact, n_betrag, n_serv, n_tax, ly_betrag, dbudget_flag, dlmtd_flag, yes_serv, yes_vat, yes_vat2, yes_fact, yes_betrag, date1, date2, temp_date2, temp_curr_date, l_today, st_date, foreign_nr, foreign_flag, tot_betrag, price_decimal, no_decimal, dept, dept1, zwkum, dper, mtd_per, ytd_per, tot_today, tot_today_per, tot_mtd, tot_mtd_per, tot_mtd_budget, tot_variance, tot_ytd, tot_ytd_budget, tot_ytd_per, tot_today1, tot_today_per1, tot_mtd1, tot_mtd_per1, tot_mtd_budget1, tot_variance1, tot_ytd1, tot_ytd_budget1, tot_ytd_per1, tot_today2, tot_today_per2, tot_mtd2, tot_mtd_per2, tot_mtd_budget2, tot_variance2, tot_ytd2, tot_ytd_budget2, tot_ytd_per2, tot_today3, tot_mtd3, tot_mtd_budget3, tot_variance3, tot_ytd3, tot_ytd_budget3, tot_today4, tot_mtd4, tot_mtd_budget4, tot_variance4, tot_ytd4, tot_ytd_budget4, tot_today5, tot_mtd5, tot_mtd_budget5, tot_variance5, tot_ytd5, tot_ytd_budget5, tot_today6, tot_mtd6, tot_mtd_budget6, tot_variance6, tot_ytd6, tot_ytd_budget6, tot_today7, tot_mtd7, tot_mtd_budget7, tot_variance7, tot_ytd7, tot_ytd_budget7, tot_tday_cov, tot_tday_avg, tot_tday_rev, tot_mtd_cov, tot_mtd_avg, tot_mtd_rev, tot_ytd_cov, tot_ytd_avg, tot_ytd_rev, t_today, t_today_per, t_mtd, t_mtd_per, t_mtd_budget, t_variance, t_ytd, t_ytd_budget, t_ytd_per, t_today1, t_today_per1, t_mtd1, t_mtd_per1, t_mtd_budget1, t_variance1, t_ytd1, t_ytd_budget1, t_ytd_per1, t_today11, t_today_per11, t_mtd11, t_mtd_per11, t_mtd_budget11, t_variance11, t_ytd11, t_ytd_budget11, t_ytd_per11, t_today2, t_today_per2, t_mtd2, t_mtd_per2, t_mtd_budget2, t_variance2, t_ytd2, t_ytd_budget2, t_ytd_per2, t_today3, t_today_per3, t_mtd3, t_mtd_per3, t_mtd_budget3, t_variance3, t_ytd3, t_ytd_budget3, t_ytd_per3, tdy_gl1, ytd_gl, curr_flag, curr_dept, ct, ct3, ct4, t_day_serv, mtd_serv, mtd_budget_serv, ytd_serv, ytd_budget_serv, variance_serv, t_day_tax, mtd_tax, mtd_budget_tax, ytd_tax, ytd_budget_tax, variance_tax, ct1, curr_flag1, ct2, banq_dept, frate, jan1, budget_flag, mon_saldo, mon_budget, foreign_curr, umsatz, waehrung, htparam, queasy, segment, artikel, hoteldpt, uebertrag, exrate, genstat, segmentstat, budget, zinrstat, zkstat
         nonlocal from_date, to_date
@@ -1276,19 +1266,17 @@ def new_drrbl(from_date:date, to_date:date):
 
         d_flag:bool = False
         mm:int = 0
-        frate1:decimal = to_decimal("0.0")
+        frate1:Decimal = to_decimal("0.0")
         mm = get_month(to_date)
         ct1 = ct1 + 1
 
         if key_word.lower()  == ("HSE").lower() :
 
-            segment = db_session.query(Segment).filter(
-                     (Segment.betriebsnr == 2)).first()
+            segment = get_cache (Segment, {"betriebsnr": [(eq, 2)]})
 
         elif key_word.lower()  == ("COM").lower() :
 
-            segment = db_session.query(Segment).filter(
-                     (Segment.betriebsnr == 1)).first()
+            segment = get_cache (Segment, {"betriebsnr": [(eq, 1)]})
 
         if segment:
             stat_list = Stat_list()
@@ -1304,7 +1292,7 @@ def new_drrbl(from_date:date, to_date:date):
                 stat_list.descr = "Complimentary"
 
             for genstat in db_session.query(Genstat).filter(
-                     (Genstat.segmentcode == segment.segmentcode) & (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1))]).order_by(Genstat._recid).all():
+                     (Genstat.segmentcode == segment.segmentcode) & (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.resstatus != 13) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat._recid).all():
 
                 if foreign_flag:
                     find_exrate(genstat.datum)
@@ -1341,15 +1329,15 @@ def new_drrbl(from_date:date, to_date:date):
         datum1:date = None
         datum2:date = None
         curr_date:date = None
-        t_day:decimal = to_decimal("0.0")
-        mtd:decimal = to_decimal("0.0")
-        ytd:decimal = to_decimal("0.0")
-        t_day_rev:decimal = to_decimal("0.0")
-        mtd_rev:decimal = to_decimal("0.0")
-        ytd_rev:decimal = to_decimal("0.0")
-        t_day_avg:decimal = to_decimal("0.0")
-        mtd_avg:decimal = to_decimal("0.0")
-        ytd_avg:decimal = to_decimal("0.0")
+        t_day:Decimal = to_decimal("0.0")
+        mtd:Decimal = to_decimal("0.0")
+        ytd:Decimal = to_decimal("0.0")
+        t_day_rev:Decimal = to_decimal("0.0")
+        mtd_rev:Decimal = to_decimal("0.0")
+        ytd_rev:Decimal = to_decimal("0.0")
+        t_day_avg:Decimal = to_decimal("0.0")
+        mtd_avg:Decimal = to_decimal("0.0")
+        ytd_avg:Decimal = to_decimal("0.0")
 
         if ytd_flag:
             datum1 = jan1
@@ -1359,8 +1347,7 @@ def new_drrbl(from_date:date, to_date:date):
             serv =  to_decimal("0")
             vat =  to_decimal("0")
 
-            umsatz = db_session.query(Umsatz).filter(
-                     (Umsatz.datum == curr_date) & (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == setup_fbcover.departement)).first()
+            umsatz = get_cache (Umsatz, {"datum": [(eq, curr_date)],"artnr": [(eq, artikel.artnr)],"departement": [(eq, setup_fbcover.departement)]})
 
             if umsatz:
                 serv, vat, vat2, fact = get_output(calc_servtaxesbl(1, umsatz.artnr, umsatz.departement, umsatz.datum))
@@ -1417,8 +1404,7 @@ def new_drrbl(from_date:date, to_date:date):
 
             if not fb_sales_food:
 
-                hoteldpt = db_session.query(Hoteldpt).filter(
-                         (Hoteldpt.num == setup_fbcover.departement)).first()
+                hoteldpt = get_cache (Hoteldpt, {"num": [(eq, setup_fbcover.departement)]})
 
                 if hoteldpt:
                     ct = ct + 1
@@ -1436,8 +1422,7 @@ def new_drrbl(from_date:date, to_date:date):
 
             if not fb_sales_beverage:
 
-                hoteldpt = db_session.query(Hoteldpt).filter(
-                         (Hoteldpt.num == setup_fbcover.departement)).first()
+                hoteldpt = get_cache (Hoteldpt, {"num": [(eq, setup_fbcover.departement)]})
 
                 if hoteldpt:
                     ct = ct + 1
@@ -1455,8 +1440,7 @@ def new_drrbl(from_date:date, to_date:date):
 
             if not fb_sales_other:
 
-                hoteldpt = db_session.query(Hoteldpt).filter(
-                         (Hoteldpt.num == setup_fbcover.departement)).first()
+                hoteldpt = get_cache (Hoteldpt, {"num": [(eq, setup_fbcover.departement)]})
 
                 if hoteldpt:
                     ct = ct + 1
@@ -1474,8 +1458,7 @@ def new_drrbl(from_date:date, to_date:date):
 
             if not fb_sales_material:
 
-                hoteldpt = db_session.query(Hoteldpt).filter(
-                         (Hoteldpt.num == setup_fbcover.departement)).first()
+                hoteldpt = get_cache (Hoteldpt, {"num": [(eq, setup_fbcover.departement)]})
 
                 if hoteldpt:
                     ct = ct + 1
@@ -1627,7 +1610,7 @@ def new_drrbl(from_date:date, to_date:date):
 
         d_flag:bool = False
         mm:int = 0
-        frate1:decimal = to_decimal("0.0")
+        frate1:Decimal = to_decimal("0.0")
         mm = get_month(to_date)
         ct1 = ct1 + 1
         stat_list = Stat_list()
@@ -1637,13 +1620,15 @@ def new_drrbl(from_date:date, to_date:date):
         stat_list.flag = "Compl"
         stat_list.descr = "Complimentary Paying Guest"
 
-        genstat_obj_list = []
-        for genstat, segment in db_session.query(Genstat, Segment).join(Segment,(Segment.segmentcode == Genstat.segmentcode)).filter(
-                 (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.zipreis == 0) & (Genstat.gratis == 0) & (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(2))]).order_by(Genstat._recid).all():
-            if genstat._recid in genstat_obj_list:
+        genstat_obj_list = {}
+        genstat = Genstat()
+        segment = Segment()
+        for genstat.datum, genstat.logis, genstat._recid, segment.segmentcode, segment.bezeich, segment.betriebsnr, segment._recid in db_session.query(Genstat.datum, Genstat.logis, Genstat._recid, Segment.segmentcode, Segment.bezeich, Segment.betriebsnr, Segment._recid).join(Segment,(Segment.segmentcode == Genstat.segmentcode)).filter(
+                 (Genstat.datum >= datum1) & (Genstat.datum <= to_date) & (Genstat.zipreis == 0) & (Genstat.gratis == 0) & (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(2)])).order_by(Genstat._recid).all():
+            if genstat_obj_list.get(genstat._recid):
                 continue
             else:
-                genstat_obj_list.append(genstat._recid)
+                genstat_obj_list[genstat._recid] = True
 
             if segment.betriebsnr == 0:
 
@@ -1719,8 +1704,7 @@ def new_drrbl(from_date:date, to_date:date):
 
             if setup_stat:
 
-                budget = db_session.query(Budget).filter(
-                         (Budget.artnr == setup_stat.artnr) & (Budget.departement == 0) & (Budget.datum == curr_date)).first()
+                budget = get_cache (Budget, {"artnr": [(eq, setup_stat.artnr)],"departement": [(eq, 0)],"datum": [(eq, curr_date)]})
 
                 if curr_date < from_date:
                     pass
@@ -1782,8 +1766,7 @@ def new_drrbl(from_date:date, to_date:date):
 
             if setup_stat:
 
-                budget = db_session.query(Budget).filter(
-                         (Budget.artnr == setup_stat.artnr) & (Budget.departement == 0) & (Budget.datum == curr_date)).first()
+                budget = get_cache (Budget, {"artnr": [(eq, setup_stat.artnr)],"departement": [(eq, 0)],"datum": [(eq, curr_date)]})
 
                 if curr_date < from_date:
                     pass
@@ -1845,8 +1828,7 @@ def new_drrbl(from_date:date, to_date:date):
 
             if setup_stat:
 
-                budget = db_session.query(Budget).filter(
-                         (Budget.artnr == setup_stat.artnr) & (Budget.departement == 0) & (Budget.datum == curr_date)).first()
+                budget = get_cache (Budget, {"artnr": [(eq, setup_stat.artnr)],"departement": [(eq, 0)],"datum": [(eq, curr_date)]})
 
                 if curr_date < from_date:
                     pass
@@ -1866,15 +1848,15 @@ def new_drrbl(from_date:date, to_date:date):
         nonlocal rev_seg_list, rev_seg_list1, rev_list, rev_list_tax, rev_list_serv, payable_list, tot_list, stat_list, payment_list, segment_list, gl_list, fb_sales_food, fb_sales_beverage, fb_sales_other, fb_sales_tot, fb_sales_material, setup_revenue, setup_segment, setup_payment, setup_stat, setup_fbcover, buff_umsatz, b_rev_list, b_rev_seg_list, b_rev_seg_list1, b_stat_list, brev_list, b_payment_list, bpayment_list, bpayable_list
         nonlocal rev_seg_list_list, rev_seg_list1_list, rev_list_list, rev_list_tax_list, rev_list_serv_list, payable_list_list, tot_list_list, stat_list_list, payment_list_list, segment_list_list, gl_list_list, fb_sales_food_list, fb_sales_beverage_list, fb_sales_other_list, fb_sales_tot_list, fb_sales_material_list, setup_revenue_list, setup_segment_list, setup_payment_list, setup_stat_list, setup_fbcover_list
 
-        tday1:decimal = to_decimal("0.0")
-        tday2:decimal = to_decimal("0.0")
-        tday3:decimal = to_decimal("0.0")
-        mtd1:decimal = to_decimal("0.0")
-        mtd2:decimal = to_decimal("0.0")
-        mtd3:decimal = to_decimal("0.0")
-        ytd1:decimal = to_decimal("0.0")
-        ytd2:decimal = to_decimal("0.0")
-        ytd3:decimal = to_decimal("0.0")
+        tday1:Decimal = to_decimal("0.0")
+        tday2:Decimal = to_decimal("0.0")
+        tday3:Decimal = to_decimal("0.0")
+        mtd1:Decimal = to_decimal("0.0")
+        mtd2:Decimal = to_decimal("0.0")
+        mtd3:Decimal = to_decimal("0.0")
+        ytd1:Decimal = to_decimal("0.0")
+        ytd2:Decimal = to_decimal("0.0")
+        ytd3:Decimal = to_decimal("0.0")
         ct1 = ct1 + 1
 
         stat_list = query(stat_list_list, filters=(lambda stat_list: stat_list.flag.lower()  == ("tot-rev").lower()), first=True)
@@ -1887,7 +1869,7 @@ def new_drrbl(from_date:date, to_date:date):
             stat_list.flag = "tot-rev"
             stat_list.descr = "Total Room Revenue"
 
-            rev_list = query(rev_list_list, filters=(lambda rev_list: rev_list.flag.lower()  == ("Room").lower()  and re.match(r".*Total Room Revenue.*",rev_list.descr, re.IGNORECASE)), first=True)
+            rev_list = query(rev_list_list, filters=(lambda rev_list: rev_list.flag.lower()  == ("Room").lower()  and matches(rev_list.descr,r"*Total Room Revenue*")), first=True)
 
             if rev_list:
                 stat_list.t_day =  to_decimal(rev_list.t_day)
@@ -1906,15 +1888,15 @@ def new_drrbl(from_date:date, to_date:date):
         nonlocal rev_seg_list, rev_seg_list1, rev_list, rev_list_tax, rev_list_serv, payable_list, tot_list, stat_list, payment_list, segment_list, gl_list, fb_sales_food, fb_sales_beverage, fb_sales_other, fb_sales_tot, fb_sales_material, setup_revenue, setup_segment, setup_payment, setup_stat, setup_fbcover, buff_umsatz, b_rev_list, b_rev_seg_list, b_rev_seg_list1, b_stat_list, brev_list, b_payment_list, bpayment_list, bpayable_list
         nonlocal rev_seg_list_list, rev_seg_list1_list, rev_list_list, rev_list_tax_list, rev_list_serv_list, payable_list_list, tot_list_list, stat_list_list, payment_list_list, segment_list_list, gl_list_list, fb_sales_food_list, fb_sales_beverage_list, fb_sales_other_list, fb_sales_tot_list, fb_sales_material_list, setup_revenue_list, setup_segment_list, setup_payment_list, setup_stat_list, setup_fbcover_list
 
-        tday1:decimal = to_decimal("0.0")
-        tday2:decimal = to_decimal("0.0")
-        tday3:decimal = to_decimal("0.0")
-        mtd1:decimal = to_decimal("0.0")
-        mtd2:decimal = to_decimal("0.0")
-        mtd3:decimal = to_decimal("0.0")
-        ytd1:decimal = to_decimal("0.0")
-        ytd2:decimal = to_decimal("0.0")
-        ytd3:decimal = to_decimal("0.0")
+        tday1:Decimal = to_decimal("0.0")
+        tday2:Decimal = to_decimal("0.0")
+        tday3:Decimal = to_decimal("0.0")
+        mtd1:Decimal = to_decimal("0.0")
+        mtd2:Decimal = to_decimal("0.0")
+        mtd3:Decimal = to_decimal("0.0")
+        ytd1:Decimal = to_decimal("0.0")
+        ytd2:Decimal = to_decimal("0.0")
+        ytd3:Decimal = to_decimal("0.0")
         ct1 = ct1 + 1
 
         stat_list = query(stat_list_list, filters=(lambda stat_list: stat_list.flag.lower()  == ("avg-rmrate-rp").lower()), first=True)
@@ -1950,8 +1932,7 @@ def new_drrbl(from_date:date, to_date:date):
 
             if setup_stat:
 
-                budget = db_session.query(Budget).filter(
-                         (Budget.artnr == setup_stat.artnr) & (Budget.departement == 0) & (Budget.datum == curr_date)).first()
+                budget = get_cache (Budget, {"artnr": [(eq, setup_stat.artnr)],"departement": [(eq, 0)],"datum": [(eq, curr_date)]})
 
                 if curr_date < from_date:
                     pass
@@ -1971,15 +1952,15 @@ def new_drrbl(from_date:date, to_date:date):
         nonlocal rev_seg_list, rev_seg_list1, rev_list, rev_list_tax, rev_list_serv, payable_list, tot_list, stat_list, payment_list, segment_list, gl_list, fb_sales_food, fb_sales_beverage, fb_sales_other, fb_sales_tot, fb_sales_material, setup_revenue, setup_segment, setup_payment, setup_stat, setup_fbcover, buff_umsatz, b_rev_list, b_rev_seg_list, b_rev_seg_list1, b_stat_list, brev_list, b_payment_list, bpayment_list, bpayable_list
         nonlocal rev_seg_list_list, rev_seg_list1_list, rev_list_list, rev_list_tax_list, rev_list_serv_list, payable_list_list, tot_list_list, stat_list_list, payment_list_list, segment_list_list, gl_list_list, fb_sales_food_list, fb_sales_beverage_list, fb_sales_other_list, fb_sales_tot_list, fb_sales_material_list, setup_revenue_list, setup_segment_list, setup_payment_list, setup_stat_list, setup_fbcover_list
 
-        tday1:decimal = to_decimal("0.0")
-        tday2:decimal = to_decimal("0.0")
-        tday3:decimal = to_decimal("0.0")
-        mtd1:decimal = to_decimal("0.0")
-        mtd2:decimal = to_decimal("0.0")
-        mtd3:decimal = to_decimal("0.0")
-        ytd1:decimal = to_decimal("0.0")
-        ytd2:decimal = to_decimal("0.0")
-        ytd3:decimal = to_decimal("0.0")
+        tday1:Decimal = to_decimal("0.0")
+        tday2:Decimal = to_decimal("0.0")
+        tday3:Decimal = to_decimal("0.0")
+        mtd1:Decimal = to_decimal("0.0")
+        mtd2:Decimal = to_decimal("0.0")
+        mtd3:Decimal = to_decimal("0.0")
+        ytd1:Decimal = to_decimal("0.0")
+        ytd2:Decimal = to_decimal("0.0")
+        ytd3:Decimal = to_decimal("0.0")
         ct1 = ct1 + 1
 
         stat_list = query(stat_list_list, filters=(lambda stat_list: stat_list.flag.lower()  == ("avg-rmrate-frg").lower()), first=True)
@@ -2019,8 +2000,7 @@ def new_drrbl(from_date:date, to_date:date):
 
             if setup_stat:
 
-                budget = db_session.query(Budget).filter(
-                         (Budget.artnr == setup_stat.artnr) & (Budget.departement == 0) & (Budget.datum == curr_date)).first()
+                budget = get_cache (Budget, {"artnr": [(eq, setup_stat.artnr)],"departement": [(eq, 0)],"datum": [(eq, curr_date)]})
 
                 if curr_date < from_date:
                     pass
@@ -2040,14 +2020,14 @@ def new_drrbl(from_date:date, to_date:date):
         nonlocal rev_seg_list, rev_seg_list1, rev_list, rev_list_tax, rev_list_serv, payable_list, tot_list, stat_list, payment_list, segment_list, gl_list, fb_sales_food, fb_sales_beverage, fb_sales_other, fb_sales_tot, fb_sales_material, setup_revenue, setup_segment, setup_payment, setup_stat, setup_fbcover, buff_umsatz, b_rev_list, b_rev_seg_list, b_rev_seg_list1, b_stat_list, brev_list, b_payment_list, bpayment_list, bpayable_list
         nonlocal rev_seg_list_list, rev_seg_list1_list, rev_list_list, rev_list_tax_list, rev_list_serv_list, payable_list_list, tot_list_list, stat_list_list, payment_list_list, segment_list_list, gl_list_list, fb_sales_food_list, fb_sales_beverage_list, fb_sales_other_list, fb_sales_tot_list, fb_sales_material_list, setup_revenue_list, setup_segment_list, setup_payment_list, setup_stat_list, setup_fbcover_list
 
-        tday1:decimal = to_decimal("0.0")
-        tday2:decimal = to_decimal("0.0")
-        mtd1:decimal = to_decimal("0.0")
-        mtd2:decimal = to_decimal("0.0")
-        mtd_budget1:decimal = to_decimal("0.0")
-        mtd_budget2:decimal = to_decimal("0.0")
-        ytd1:decimal = to_decimal("0.0")
-        ytd2:decimal = to_decimal("0.0")
+        tday1:Decimal = to_decimal("0.0")
+        tday2:Decimal = to_decimal("0.0")
+        mtd1:Decimal = to_decimal("0.0")
+        mtd2:Decimal = to_decimal("0.0")
+        mtd_budget1:Decimal = to_decimal("0.0")
+        mtd_budget2:Decimal = to_decimal("0.0")
+        ytd1:Decimal = to_decimal("0.0")
+        ytd2:Decimal = to_decimal("0.0")
         ct1 = ct1 + 1
 
         stat_list = query(stat_list_list, filters=(lambda stat_list: stat_list.flag.lower()  == ("revpar").lower()), first=True)
@@ -2086,33 +2066,27 @@ def new_drrbl(from_date:date, to_date:date):
 
     jan1 = date_mdy(1, 1, get_year(to_date))
 
-    waehrung = db_session.query(Waehrung).filter(
-             (Waehrung.waehrungsnr == 2)).first()
+    waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, 2)]})
 
     if waehrung:
         foreign_curr =  to_decimal(waehrung.ankauf)
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 184)).first()
-    foreign_nr = htparam.fint
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 184)]})
+    foreign_nr = htparam.finteger
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 186)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 186)]})
 
     if htparam.feldtyp == 3 and htparam.fdate != None:
         start_date = htparam.fdate
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 900)).first()
-    banq_dept = htparam.fint
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 900)]})
+    banq_dept = htparam.finteger
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 491)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 491)]})
     price_decimal = htparam.finteger
     no_decimal = (price_decimal == 0)
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 801)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 801)]})
 
     if ytd_flag:
         datum1 = jan1
@@ -2123,8 +2097,7 @@ def new_drrbl(from_date:date, to_date:date):
         price_decimal = 2
     no_decimal = (price_decimal == 0)
 
-    queasy = db_session.query(Queasy).filter(
-             (Queasy.key == 265)).first()
+    queasy = get_cache (Queasy, {"key": [(eq, 265)]})
 
     if queasy:
         str1 = queasy.char1
@@ -2394,8 +2367,7 @@ def new_drrbl(from_date:date, to_date:date):
 
     for setup_revenue in query(setup_revenue_list, sort_by=[("flag",True),("departement",False),("flag_grup",True),("descr",False)]):
 
-        artikel = db_session.query(Artikel).filter(
-                 (Artikel.departement == setup_revenue.departement) & (Artikel.artnr == setup_revenue.artnr)).first()
+        artikel = get_cache (Artikel, {"departement": [(eq, setup_revenue.departement)],"artnr": [(eq, setup_revenue.artnr)]})
 
         if artikel:
 
@@ -2406,8 +2378,7 @@ def new_drrbl(from_date:date, to_date:date):
 
     for setup_segment in query(setup_segment_list):
 
-        segment = db_session.query(Segment).filter(
-                 (Segment.segmentcode == setup_segment.artnr)).first()
+        segment = get_cache (Segment, {"segmentcode": [(eq, setup_segment.artnr)]})
 
         if segment:
             fill_revenue_segement()
@@ -2415,8 +2386,7 @@ def new_drrbl(from_date:date, to_date:date):
 
     for setup_payment in query(setup_payment_list):
 
-        artikel = db_session.query(Artikel).filter(
-                 (Artikel.departement == setup_payment.departement) & (Artikel.artnr == setup_payment.artnr) & (Artikel.artart == setup_payment.artart) & (Artikel.umsatzart == setup_payment.umsatzart)).first()
+        artikel = get_cache (Artikel, {"departement": [(eq, setup_payment.departement)],"artnr": [(eq, setup_payment.artnr)],"artart": [(eq, setup_payment.artart)],"umsatzart": [(eq, setup_payment.umsatzart)]})
 
         if artikel:
             ct2 = ct2 + 1
@@ -2424,11 +2394,9 @@ def new_drrbl(from_date:date, to_date:date):
 
     for setup_fbcover in query(setup_fbcover_list, sort_by=[("departement",False)]):
 
-        hoteldpt = db_session.query(Hoteldpt).filter(
-                 (Hoteldpt.num == setup_fbcover.departement)).first()
+        hoteldpt = get_cache (Hoteldpt, {"num": [(eq, setup_fbcover.departement)]})
 
-        artikel = db_session.query(Artikel).filter(
-                 (Artikel.artnr == setup_fbcover.artnr) & (Artikel.departement == setup_fbcover.departement)).first()
+        artikel = get_cache (Artikel, {"artnr": [(eq, setup_fbcover.artnr)],"departement": [(eq, setup_fbcover.departement)]})
 
         if artikel:
             create_fbcover()
@@ -2493,8 +2461,7 @@ def new_drrbl(from_date:date, to_date:date):
 
         elif curr_flag.lower()  != "" and curr_flag.lower()  != ("zeich-dept").lower()  and curr_dept != 0 and curr_dept != rev_list.departement:
 
-            hoteldpt = db_session.query(Hoteldpt).filter(
-                     (Hoteldpt.num == curr_dept)).first()
+            hoteldpt = get_cache (Hoteldpt, {"num": [(eq, curr_dept)]})
             b_rev_list = B_rev_list()
             b_rev_list_list.append(b_rev_list)
 
@@ -3350,8 +3317,7 @@ def new_drrbl(from_date:date, to_date:date):
     if payment_list:
         tdy_gl1 =  to_decimal(tdy_gl1) + to_decimal(payment_list.t_day)
 
-    uebertrag = db_session.query(Uebertrag).filter(
-             (Uebertrag.datum == to_date - timedelta(days=1))).first()
+    uebertrag = get_cache (Uebertrag, {"datum": [(eq, to_date - timedelta(days=1))]})
 
     if uebertrag:
         ytd_gl =  to_decimal(uebertrag.betrag)

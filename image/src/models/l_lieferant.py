@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -33,3 +35,31 @@ class L_lieferant(Base):
 	z_code = sa.Column(sa.String, default="")
 	ziel = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('adresse1', "")
+		kwargs.setdefault('adresse2', "")
+		kwargs.setdefault('adresse3', "")
+		kwargs.setdefault('anrede1', "")
+		kwargs.setdefault('anredefirma', "")
+		kwargs.setdefault('bank', "")
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('blz', "")
+		kwargs.setdefault('fax', "")
+		kwargs.setdefault('firma', "")
+		kwargs.setdefault('kontonr', "")
+		kwargs.setdefault('land', "")
+		kwargs.setdefault('lief_nr', 0)
+		kwargs.setdefault('lieferdatum', None)
+		kwargs.setdefault('namekontakt', "")
+		kwargs.setdefault('notizen', ["","",""])
+		kwargs.setdefault('plz', "")
+		kwargs.setdefault('rabatt', 0)
+		kwargs.setdefault('segment1', 0)
+		kwargs.setdefault('skonto', 0)
+		kwargs.setdefault('telefon', "")
+		kwargs.setdefault('telex', "")
+		kwargs.setdefault('vorname1', "")
+		kwargs.setdefault('wohnort', "")
+		kwargs.setdefault('z_code', "")
+		kwargs.setdefault('ziel', 0)
+		super(L_lieferant, self).__init__(*args, **kwargs)

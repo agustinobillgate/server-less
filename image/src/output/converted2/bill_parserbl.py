@@ -1,0 +1,5768 @@
+#using conversion tools version: 1.0.0.111
+
+from functions.additional_functions import *
+from decimal import Decimal
+from datetime import date
+from functions.bill_vatsum import bill_vatsum
+import re
+from functions.ratecode_rate import ratecode_rate
+from functions.pricecod_rate import pricecod_rate
+from models import Res_line, Reservation, Bediener, Htparam, Guest, Bill, Bill_line, Waehrung, Printer, Briefzei, Artikel, Queasy, Printcod, Akt_kont, Zimkateg, Zimmer, Master, Guest_pr, Reslin_queasy, Arrangement, Katpreis, exrate, Fixleist, Genstat
+
+t_spbill_list_list, T_spbill_list = create_model("T_spbill_list", {"selected":bool, "bl_recid":int}, {"selected": True})
+
+def bill_parserbl(pvilanguage:int, case_type:int, briefnr:int, reslinnr:int, resnr:int, rechnr:int, gastnr:int, f_page:bool, spbill_flag:bool, inv_type:int, user_init:string, printnr:int, t_spbill_list_list:[T_spbill_list]):
+
+    prepare_cache ([Res_line, Reservation, Htparam, Guest, Waehrung, Printer, Briefzei, Artikel, Queasy, Zimkateg, Guest_pr, Arrangement, Katpreis, exrate, Fixleist, Genstat])
+
+    succes_flag = False
+    outfile = ""
+    run_ask = False
+    bill_list_list = []
+    output_list_list = []
+    lvcarea:string = "bill-parser"
+    new_contrate:bool = False
+    billdate:date = None
+    price_decimal:int = 0
+    vat_artnr:List[int] = [0, 0, 0, 0, 0]
+    n:int = 0
+    serv_vat:bool = False
+    briefnr2:int = 0
+    briefnr21:int = 0
+    print_rc:bool = False
+    f_gastnr:bool = False
+    f_resnr:bool = False
+    f_resline:bool = False
+    f_bill:bool = False
+    longer_billamt:bool = False
+    long_billamt:bool = False
+    master_ankunft:date = None
+    master_abreise:date = None
+    fixrate_flag:bool = False
+    long_digit:bool = False
+    exchg_rate:Decimal = 1
+    curr_line:int = 0
+    curr_page:int = 0
+    curr_pos:int = 0
+    blloop:int = 0
+    headloop:int = 0
+    f_lmargin:bool = False
+    lmargin:int = 1
+    proforma_inv:bool = False
+    bline_flag:int = -1
+    keychar:string = ""
+    bl_balance:Decimal = to_decimal("0.0")
+    bl_balance1:Decimal = to_decimal("0.0")
+    bl0_balance:Decimal = to_decimal("0.0")
+    bl0_balance1:Decimal = to_decimal("0.0")
+    bl1_balance:Decimal = to_decimal("0.0")
+    bl1_balance1:Decimal = to_decimal("0.0")
+    bline_nr:int = 0
+    print_all_member:bool = False
+    g_length:int = 16
+    d_length:int = 24
+    c_length:int = 48
+    w_length:int = 40
+    v_length:int = 16
+    print_member:bool = True
+    short_arrival:bool = False
+    short_depart:bool = False
+    ntab:int = 1
+    nskip:int = 1
+    wd_array:List[int] = [7, 1, 2, 3, 4, 5, 6, 7]
+    bonus_array:List[bool] = create_empty_list(999, False)
+    curr_bl_vat:Decimal = to_decimal("0.0")
+    bl_netto:Decimal = to_decimal("0.0")
+    res_line = reservation = bediener = htparam = guest = bill = bill_line = waehrung = printer = briefzei = artikel = queasy = printcod = akt_kont = zimkateg = zimmer = master = guest_pr = reslin_queasy = arrangement = katpreis = exrate = fixleist = genstat = None
+
+    brief_list = htp_list = loop_list = loop1_list = header_list = bill_list = output_list = s_list = t_list = bline_list = t_spbill_list = rmember = mainres = None
+
+    brief_list_list, Brief_list = create_model("Brief_list", {"b_text":string})
+    htp_list_list, Htp_list = create_model("Htp_list", {"paramnr":int, "fchar":string})
+    loop_list_list, Loop_list = create_model("Loop_list", {"texte":string})
+    loop1_list_list, Loop1_list = create_model("Loop1_list", {"texte":string})
+    header_list_list, Header_list = create_model("Header_list", {"texte":string})
+    bill_list_list, Bill_list = create_model("Bill_list", {"rechnr":int, "name":string, "rechnr2":int})
+    output_list_list, Output_list = create_model("Output_list", {"str":string, "pos":int})
+    s_list_list, S_list = create_model("S_list", {"nr":int, "ankunft":date, "abreise":date, "bezeich":string, "rmcat":string, "preis":Decimal, "lrate":Decimal, "datum":date, "qty":int, "erwachs":int, "kind1":int, "kind2":int})
+    t_list_list, T_list = create_model("T_list", {"nr":int, "ankunft":date, "abreise":date, "bezeich":string, "rmcat":string, "preis":Decimal, "lrate":Decimal, "tage":int, "date1":date, "date2":date, "qty":int, "betrag":Decimal, "erwachs":int, "kind1":int, "kind2":int})
+    bline_list_list, Bline_list = create_model("Bline_list", {"bl_recid":int, "artnr":int, "dept":int, "anzahl":int, "massnr":int, "billin_nr":int, "zeit":int, "mwst_code":int, "vatproz":Decimal, "epreis":Decimal, "netto":Decimal, "fsaldo":Decimal, "saldo":Decimal, "orts_tax":Decimal, "voucher":string, "bezeich":string, "zinr":string, "gname":string, "origin_id":string, "userinit":string, "ankunft":date, "abreise":date, "datum":date}, {"origin_id": ""})
+
+    Rmember = create_buffer("Rmember",Res_line)
+    Mainres = create_buffer("Mainres",Reservation)
+
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        return {"succes_flag": succes_flag, "outfile": outfile, "run_ask": run_ask, "bill-list": bill_list_list, "output-list": output_list_list}
+
+    def get_rackrate(erwachs:int, kind1:int, kind2:int):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        rate:Decimal = to_decimal("0.0")
+
+        if erwachs >= 1 and erwachs <= 4:
+            rate =  to_decimal(rate) + to_decimal(katpreis.perspreis[erwachs - 1])
+        rate =  to_decimal(rate) + to_decimal(kind1) * to_decimal(katpreis.kindpreis[0] + kind2) * to_decimal(katpreis.kindpreis[1])
+        return rate
+
+
+    def fill_list():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        i:int = 0
+        j:int = 0
+        l:int = 0
+        n:int = 0
+        c:string = ""
+        keycont:string = ""
+        continued:bool = False
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 600)]})
+        keychar = htparam.fchar
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 1122)]})
+        keycont = keychar + htparam.fchar
+
+        for htparam in db_session.query(Htparam).filter(
+                 (Htparam.paramgruppe == 17) & (Htparam.bezeichnung != ("Not Used").lower())).order_by(length(Htparam.fchar).desc()).all():
+            htp_list = Htp_list()
+            htp_list_list.append(htp_list)
+
+            htp_list.paramnr = htparam.paramnr
+            htp_list.fchar = keychar + htparam.fchar
+
+        for briefzei in db_session.query(Briefzei).filter(
+                     (Briefzei.briefnr == briefnr)).order_by(Briefzei.briefzeilnr).all():
+            j = 1
+            for i in range(1,length(briefzei.texte)  + 1) :
+
+                if asc(substring(briefzei.texte, i - 1, 1)) == 10:
+                    n = i - j
+                    c = substring(briefzei.texte, j - 1, n)
+                    l = length(c)
+
+                    if not continued:
+                        brief_list = Brief_list()
+                        brief_list_list.append(brief_list)
+
+                    brief_list.b_text = brief_list.b_text + c
+                    j = i + 1
+
+                    if l > length((keycont).lower() ) and substring(c, l - length((keycont).lower() ) + 1 - 1, length((keycont).lower() )) == (keycont).lower() :
+                        continued = True
+                        b_text = substring(b_text, 0, length(b_text) - length(keycont))
+                    else:
+                        continued = False
+            n = length(briefzei.texte) - j + 1
+            c = substring(briefzei.texte, j - 1, n)
+
+            if not continued:
+                brief_list = Brief_list()
+                brief_list_list.append(brief_list)
+
+            brief_list.b_text = brief_list.b_text + c
+
+
+    def analyse_text():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        len_:int = 0
+
+        htp_list = query(htp_list_list, filters=(lambda htp_list: htp_list.paramnr == 2300), first=True)
+
+        if trim(brief_list.b_text) == htp_list.fchar:
+            headloop = 1
+
+        htp_list = query(htp_list_list, filters=(lambda htp_list: htp_list.paramnr == 2301), first=True)
+
+        if trim(brief_list.b_text) == htp_list.fchar:
+            headloop = headloop + 1
+
+        htp_list = query(htp_list_list, filters=(lambda htp_list: htp_list.paramnr == 2302), first=True)
+
+        if trim(brief_list.b_text) == htp_list.fchar:
+            blloop = 1
+            bline_flag = -1
+        else:
+            len_ = length(trim(brief_list.b_text))
+
+            if substring(trim(brief_list.b_text) , 0, len_ - 1) == htp_list.fchar:
+
+                if substring(trim(brief_list.b_text) , len_ - 1, 1) == ("0").lower() :
+                    blloop = 1
+                    bline_flag = 0
+
+                elif substring(trim(brief_list.b_text) , len_ - 1, 1) == ("1").lower() :
+                    blloop = 1
+                    bline_flag = 1
+
+                elif substring(trim(brief_list.b_text) , len_ - 1, 1) == ("2").lower() :
+                    blloop = 1
+                    bline_flag = 2
+
+        htp_list = query(htp_list_list, filters=(lambda htp_list: htp_list.paramnr == 2303), first=True)
+
+        if trim(brief_list.b_text) == htp_list.fchar:
+            blloop = blloop + 1
+
+
+    def build_text_line(curr_texte:string):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        i:int = 0
+        j:int = 1
+        n:int = 0
+        found:bool = False
+        for i in range(1,length(curr_texte)  + 1) :
+
+            if substring(curr_texte, i - 1, 1) == (keychar).lower() :
+
+                if i == length(curr_texte):
+                    found = False
+
+                elif substring(curr_texte, i + 1 - 1, 1) == " ":
+                    found = False
+                else:
+                    put_string(substring(curr_texte, j - 1, i - j))
+                    i, found = interprete_text(curr_texte, i)
+                    j = i + 1
+            else:
+                found = False
+
+        if not found:
+            put_string(substring(curr_texte, j - 1, length(curr_texte) - j + 1))
+
+
+    def build_loop_line(curr_texte:string):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        i:int = 0
+        j:int = 1
+        n:int = 0
+        found:bool = False
+        for i in range(1,length(curr_texte)  + 1) :
+
+            if substring(curr_texte, i - 1, 1) == (keychar).lower() :
+
+                if i == length(curr_texte):
+                    found = False
+
+                elif substring(curr_texte, i + 1 - 1, 1) == " ":
+                    found = False
+                else:
+                    put_string(substring(curr_texte, j - 1, i - j))
+                    i, found = interprete_text(curr_texte, i)
+                    j = i + 1
+            else:
+                found = False
+
+        if not found:
+            put_string(substring(curr_texte, j - 1, length(curr_texte) - j + 1))
+
+
+    def cal_vat():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        t_vat = to_decimal("0.0")
+        vat:Decimal = to_decimal("0.0")
+        serv:Decimal = to_decimal("0.0")
+        fact:Decimal = to_decimal("0.0")
+
+        def generate_inner_output():
+            return (t_vat)
+
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement) & (Artikel.artart != 2) & (Artikel.artart != 4) & (Artikel.artart != 6) & (Artikel.artart != 7)).filter(
+                 (Bill_line.rechnr == rechnr)).order_by(Bill_line._recid).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+
+            serv =  to_decimal("0")
+            vat =  to_decimal("0")
+
+            if bill_line.orts_tax != 0:
+                t_vat =  to_decimal(t_vat) + to_decimal(bill_line.orts_tax)
+            else:
+
+                if artikel.service_code != 0 and serv_vat:
+
+                    htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.service_code)]})
+
+                    if htparam:
+                        serv =  to_decimal(htparam.fdecimal) / to_decimal("100")
+
+                if artikel.mwst_code != 0:
+
+                    htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.mwst_code)]})
+
+                    if htparam:
+                        vat =  to_decimal(htparam.fdecimal) / to_decimal("100")
+
+                    if serv_vat:
+                        vat =  to_decimal(vat) + to_decimal(vat) * to_decimal(serv)
+
+                if (artikel.artnr == vat_artnr[0] or artikel.artnr == vat_artnr[1] or artikel.artnr == vat_artnr[2] or artikel.artnr == vat_artnr[3] or artikel.artnr == vat_artnr[4]) and artikel.departement == 0:
+                    fact =  to_decimal("1")
+                    vat =  to_decimal("1")
+                    serv =  to_decimal("0")
+                else:
+                    fact =  to_decimal(1.00) + to_decimal(serv) + to_decimal(vat)
+                t_vat =  to_decimal(t_vat) + to_decimal(bill_line.betrag) / to_decimal(fact) * to_decimal(vat)
+
+        return generate_inner_output()
+
+
+    def cal_spvat():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        t_vat = to_decimal("0.0")
+        vat:Decimal = to_decimal("0.0")
+        serv:Decimal = to_decimal("0.0")
+        fact:Decimal = to_decimal("0.0")
+
+        def generate_inner_output():
+            return (t_vat)
+
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement) & (Artikel.artart != 2) & (Artikel.artart != 4) & (Artikel.artart != 6) & (Artikel.artart != 7)).filter(
+                 (Bill_line._recid.in_(list(set([t_spbill_list.bl_recid for t_spbill_list in t_spbill_list_list if t_spbill_list.selected ])))) & (Bill_line.rechnr == rechnr)).order_by(Bill_line._recid).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+
+            serv =  to_decimal("0")
+            vat =  to_decimal("0")
+
+            if bill_line.orts_tax != 0:
+                t_vat =  to_decimal(t_vat) + to_decimal(bill_line.orts_tax)
+            else:
+
+                if artikel.service_code != 0 and serv_vat:
+
+                    htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.service_code)]})
+
+                    if htparam:
+                        serv =  to_decimal(htparam.fdecimal) / to_decimal("100")
+
+                if artikel.mwst_code != 0:
+
+                    htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.mwst_code)]})
+
+                    if htparam:
+                        vat =  to_decimal(htparam.fdecimal) / to_decimal("100")
+
+                    if serv_vat:
+                        vat =  to_decimal(vat) + to_decimal(vat) * to_decimal(serv)
+
+                if (artikel.artnr == vat_artnr[0] or artikel.artnr == vat_artnr[1] or artikel.artnr == vat_artnr[2] or artikel.artnr == vat_artnr[3] or artikel.artnr == vat_artnr[4]) and artikel.departement == 0:
+                    fact =  to_decimal("1")
+                    vat =  to_decimal("1")
+                    serv =  to_decimal("0")
+                else:
+                    fact =  to_decimal(1.00) + to_decimal(serv) + to_decimal(vat)
+                t_vat =  to_decimal(t_vat) + to_decimal(bill_line.betrag) / to_decimal(fact) * to_decimal(vat)
+
+        return generate_inner_output()
+
+
+    def do_billlinea():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        saldo:Decimal = to_decimal("0.0")
+        paidout:int = 0
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 242)]})
+        paidout = htparam.finteger
+        bl_balance =  to_decimal("0")
+        bl_balance1 =  to_decimal("0")
+        bline_list_list.clear()
+
+        for bill_line in db_session.query(Bill_line).filter(
+                 (Bill_line.rechnr == rechnr)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+
+            artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+
+            if not artikel:
+
+                artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, 0)]})
+
+            bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich and bline_list.datum == bill_line.bill_datum and bline_list.saldo == - bill_line.betrag), first=True)
+
+            if bline_list:
+                bline_list_list.remove(bline_list)
+            else:
+                bline_list = Bline_list()
+                bline_list_list.append(bline_list)
+
+                buffer_copy(bill_line, bline_list)
+                bline_list.bl_recid = bill_line._recid
+                bline_list.dept = bill_line.departement
+                bline_list.datum = bill_line.bill_datum
+                bline_list.fsaldo =  to_decimal(bill_line.fremdwbetrag)
+                bline_list.saldo =  to_decimal(bill_line.betrag)
+
+
+            bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
+        bline_nr = 0
+
+        bill_line_obj_list = {}
+        for bill_line in db_session.query(Bill_line).filter(
+                 (Bill_line.rechnr == rechnr)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            bline_list = query(bline_list_list, (lambda bline_list: bline_list.bl_recid == to_int(bill_line._recid)), first=True)
+            if not bline_list:
+                continue
+
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+
+            bline_nr = bline_nr + 1
+            bl_balance =  to_decimal(bl_balance) + to_decimal(bill_line.betrag)
+            bl_balance1 =  to_decimal(bl_balance1) + to_decimal(bill_line.fremdwbetrag)
+            saldo =  to_decimal(saldo) + to_decimal(bill_line.betrag)
+
+            if curr_line >= printer.pglen:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_page = curr_page + 1
+                curr_line = 1
+                do_billhead()
+
+            for loop_list in query(loop_list_list):
+                curr_pos = 1
+
+                if f_lmargin:
+                    for n in range(1,lmargin + 1) :
+                        put_string(" ")
+                build_loop_line(loop_list.texte)
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+
+        if f_bill:
+
+            bill = get_cache (Bill, {"rechnr": [(eq, rechnr)]})
+            bl_balance =  to_decimal(bill.saldo)
+
+        if (bl_balance - saldo) >= 0.5 or (saldo - bl_balance) >= 0.5:
+            pass
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_billlineb():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        s_bezeich:string = ""
+        netto:Decimal = to_decimal("0.0")
+        curr_bl_vat:Decimal = to_decimal("0.0")
+        paidout:int = 0
+        vat_perc:Decimal = to_decimal("0.0")
+        vatcode:int = 0
+        foart = None
+        Foart =  create_buffer("Foart",Artikel)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 242)]})
+        paidout = htparam.finteger
+        bl0_balance =  to_decimal("0")
+        bl0_balance1 =  to_decimal("0")
+        bline_list_list.clear()
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement) & ((Artikel.artart == 0) | (Artikel.artart == 1) | (Artikel.artart == 8) | (Artikel.artart == 9) | ((Artikel.artart == 6) & (Artikel.zwkum == paidout)))).filter(
+                 (Bill_line.rechnr == rechnr)).order_by(Bill_line._recid).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+            if bill_line.origin_id != "":
+                vat_perc = get_vat(bill_line.origin_id)
+                vatcode = 0
+
+                if vat_perc == 1000:
+                    vat_perc =  to_decimal("0")
+                    curr_bl_vat =  to_decimal("0")
+
+
+                else:
+                    curr_bl_vat =  to_decimal(vat_perc)
+
+                    htparam = get_cache (Htparam, {"fdecimal": [(eq, vat_perc)]})
+
+                    if htparam:
+                        vatcode = htparam.paramnr
+
+                bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.vatProz == vat_perc), first=True)
+
+                if not bline_list:
+                    bline_list = Bline_list()
+                    bline_list_list.append(bline_list)
+
+                    buffer_copy(bill_line, bline_list,except_fields=["bill_line.orts_tax","bill_line.anzahl"])
+                    bline_list.bl_recid = bill_line._recid
+                    bline_list.dept = bill_line.departement
+                    bline_list.zinr = bill.zinr
+                    bline_list.mwst_code = vatcode
+                    bline_list.vatproz =  to_decimal(vat_perc)
+
+
+                bline_list.fsaldo =  to_decimal(bline_list.fsaldo) + to_decimal(bill_line.fremdwbetrag)
+                bline_list.saldo =  to_decimal(bline_list.saldo) + to_decimal(bill_line.betrag)
+                bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
+                bl0_balance1 =  to_decimal(bl0_balance1) + to_decimal(bill_line.fremdwbetrag)
+
+                if bill_line.orts_tax != 0:
+                    netto =  to_decimal(bill_line.betrag) - to_decimal(bill_line.orts_tax)
+                else:
+                    netto =  to_decimal(bill_line.betrag) / to_decimal((1) + to_decimal(curr_bl_vat) / to_decimal("100") )
+                    netto = to_decimal(round(netto , price_decimal))
+
+
+                bline_list.netto =  to_decimal(bline_list.netto) + to_decimal(netto)
+            else:
+
+                bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.mwst_code == artikel.mwst_code), first=True)
+
+                if not bline_list:
+                    bline_list = Bline_list()
+                    bline_list_list.append(bline_list)
+
+                    buffer_copy(bill_line, bline_list,except_fields=["bill_line.orts_tax","bill_line.anzahl"])
+                    bline_list.bl_recid = bill_line._recid
+                    bline_list.dept = bill_line.departement
+                    bline_list.zinr = bill.zinr
+                    bline_list.mwst_code = artikel.mwst_code
+
+
+                bline_list.fsaldo =  to_decimal(bline_list.fsaldo) + to_decimal(bill_line.fremdwbetrag)
+                bline_list.saldo =  to_decimal(bline_list.saldo) + to_decimal(bill_line.betrag)
+                bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
+                bl0_balance1 =  to_decimal(bl0_balance1) + to_decimal(bill_line.fremdwbetrag)
+
+                if (artikel.artnr == vat_artnr[0] or artikel.artnr == vat_artnr[1] or artikel.artnr == vat_artnr[2] or artikel.artnr == vat_artnr[3] or artikel.artnr == vat_artnr[4]) and artikel.departement == 0:
+                    pass
+                else:
+
+                    foart = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+
+                    if foart:
+
+                        htparam = get_cache (Htparam, {"paramnr": [(eq, foart.mwst_code)]})
+
+                        if htparam:
+                            curr_bl_vat =  to_decimal(htparam.fdecimal)
+                            bline_list.vatproz =  to_decimal(curr_bl_vat)
+
+
+                        else:
+                            curr_bl_vat =  to_decimal("0")
+
+                    if bill_line.orts_tax != 0:
+                        netto =  to_decimal(bill_line.betrag) - to_decimal(bill_line.orts_tax)
+                    else:
+                        netto =  to_decimal(bill_line.betrag) / to_decimal((1) + to_decimal(curr_bl_vat) / to_decimal("100") )
+                        netto =  to_decimal(round (netto , price_decimal) )
+
+
+                    bline_list.netto =  to_decimal(bline_list.netto) + to_decimal(netto)
+        bline_nr = 0
+
+        for bline_list in query(bline_list_list):
+            bline_nr = bline_nr + 1
+            bl_balance =  to_decimal(bl_balance) + to_decimal(bline_list.saldo)
+            bl_balance1 =  to_decimal(bl_balance1) + to_decimal(bline_list.fsaldo)
+
+            if curr_line >= printer.pglen:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_page = curr_page + 1
+                curr_line = 1
+                do_billhead()
+
+            for loop_list in query(loop_list_list):
+                curr_pos = 1
+
+                if f_lmargin:
+                    for n in range(1,lmargin + 1) :
+                        put_string(" ")
+                build_loop_line(loop_list.texte)
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_billlinec():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        saldo:Decimal = to_decimal("0.0")
+        descript:string = ""
+        resline = None
+        rline = None
+        paidout:int = 0
+        Resline =  create_buffer("Resline",Res_line)
+        Rline =  create_buffer("Rline",Res_line)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 242)]})
+        paidout = htparam.finteger
+        bl0_balance =  to_decimal("0")
+        bl_balance =  to_decimal("0")
+        bl_balance1 =  to_decimal("0")
+        bline_list_list.clear()
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement) & ((Artikel.artart == 0) | (Artikel.artart == 1) | (Artikel.artart == 8) | (Artikel.artart == 9))).filter(
+                 (Bill_line.rechnr == rechnr)).order_by(Bill_line.zinr, Bill_line.bezeich, Bill_line.bill_datum.desc()).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+            if inv_type == 3:
+
+                if artikel.bezaendern or artikel.artart == 1:
+
+                    bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich), first=True)
+                else:
+
+                    bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement), first=True)
+
+            elif inv_type == 4:
+
+                if artikel.bezaendern or artikel.artart == 1:
+
+                    bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich and bline_list.zinr == bill_line.zinr), first=True)
+                else:
+
+                    bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.zinr == bill_line.zinr), first=True)
+
+            if not bline_list:
+
+                mainres = get_cache (Reservation, {"resnr": [(eq, bill_line.massnr)]})
+
+                resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                if resline and resline.zimmerfix:
+
+                    rline = db_session.query(Rline).filter(
+                             (Rline.resnr == resline.resnr) & (Rline.zinr == resline.zinr) & not_ (Rline.zimmerfix)).first()
+
+                    if rline:
+
+                        resline = get_cache (Res_line, {"_recid": [(eq, rline._recid)]})
+
+                if not resline:
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10)]})
+                bline_list = Bline_list()
+                bline_list_list.append(bline_list)
+
+                buffer_copy(bill_line, bline_list,except_fields=["bill_line.orts_tax","bill_line.anzahl"])
+                bline_list.bl_recid = bill_line._recid
+                bline_list.dept = bill_line.departement
+                bline_list.datum = bill_line.bill_datum
+
+                if resline:
+                    bline_list.gname = resline.name
+
+                if mainres:
+                    bline_list.voucher = mainres.vesrdepot
+            bline_list.orts_tax =  to_decimal(bline_list.orts_tax) + to_decimal(bill_line.orts_tax)
+            bline_list.anzahl = bline_list.anzahl + bill_line.anzahl
+            bline_list.saldo =  to_decimal(bline_list.saldo) + to_decimal(bill_line.betrag)
+            bline_list.fsaldo =  to_decimal(bline_list.fsaldo) + to_decimal(bill_line.fremdwbetrag)
+            bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement) & ((Artikel.artart == 2) | (Artikel.artart == 5) | (Artikel.artart == 6) | (Artikel.artart == 7))).filter(
+                 (Bill_line.rechnr == rechnr)).order_by(Bill_line.bezeich, Bill_line.bill_datum.desc()).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+            bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich), first=True)
+
+            if not bline_list:
+                bline_list = Bline_list()
+                bline_list_list.append(bline_list)
+
+                buffer_copy(bill_line, bline_list,except_fields=["bill_line.orts_tax","bill_line.anzahl"])
+                bline_list.bl_recid = bill_line._recid
+
+
+            bline_list.saldo =  to_decimal(bline_list.saldo) + to_decimal(bill_line.betrag)
+            bline_list.dept = bill_line.departement
+            bline_list.fsaldo =  to_decimal(bline_list.fsaldo) + to_decimal(bill_line.fremdwbetrag)
+
+            if artikel.zwkum == paidout:
+                bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
+
+        for bline_list in query(bline_list_list, filters=(lambda bline_list: bline_list.saldo == 0)):
+            bline_list_list.remove(bline_list)
+        bline_nr = 0
+
+        for bline_list in query(bline_list_list):
+            bline_nr = bline_nr + 1
+            bl_balance =  to_decimal(bl_balance) + to_decimal(bline_list.saldo)
+            bl_balance1 =  to_decimal(bl_balance1) + to_decimal(bline_list.fsaldo)
+            saldo =  to_decimal(saldo) + to_decimal(bline_list.saldo)
+
+            if curr_line >= printer.pglen:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_page = curr_page + 1
+                curr_line = 1
+                do_billhead()
+
+            for loop_list in query(loop_list_list):
+                curr_pos = 1
+
+                if f_lmargin:
+                    for n in range(1,lmargin + 1) :
+                        put_string(" ")
+                build_loop_line(loop_list.texte)
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+
+        if f_bill:
+
+            bill = get_cache (Bill, {"rechnr": [(eq, rechnr)]})
+            bl_balance =  to_decimal(bill.saldo)
+
+        if (bl_balance - saldo) >= 0.5 or (saldo - bl_balance) >= 0.5:
+            pass
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_spbillline():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        saldo:Decimal = to_decimal("0.0")
+        bl_balance =  to_decimal("0")
+        bl_balance1 =  to_decimal("0")
+        bline_list_list.clear()
+
+        bill_line_obj_list = {}
+        for bill_line in db_session.query(Bill_line).filter(
+                 (Bill_line._recid.in_(list(set([t_spbill_list.bl_recid for t_spbill_list in t_spbill_list_list if t_spbill_list.selected ])))) & (Bill_line.rechnr == rechnr)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+            bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich and bline_list.datum == bill_line.bill_datum and bline_list.saldo == - bill_line.betrag), first=True)
+
+            if bline_list:
+                bline_list_list.remove(bline_list)
+            else:
+                bline_list = Bline_list()
+                bline_list_list.append(bline_list)
+
+                buffer_copy(bill_line, bline_list)
+                bline_list.bl_recid = bill_line._recid
+                bline_list.datum = bill_line.bill_datum
+                bline_list.dept = bill_line.departement
+                bline_list.fsaldo =  to_decimal(bill_line.fremdwbetrag)
+                bline_list.saldo =  to_decimal(bill_line.betrag)
+
+
+        bline_nr = 0
+
+        bill_line_obj_list = {}
+        for bill_line in db_session.query(Bill_line).filter(
+                 (Bill_line.rechnr == rechnr)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            bline_list = query(bline_list_list, (lambda bline_list: bline_list.bl_recid == to_int(bill_line._recid)), first=True)
+            if not bline_list:
+                continue
+
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+
+            bline_nr = bline_nr + 1
+            bl_balance =  to_decimal(bl_balance) + to_decimal(bill_line.betrag)
+            bl_balance1 =  to_decimal(bl_balance1) + to_decimal(bill_line.fremdwbetrag)
+            saldo =  to_decimal(saldo) + to_decimal(bill_line.betrag)
+
+            if curr_line >= printer.pglen:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_page = curr_page + 1
+                curr_line = 1
+                do_billhead()
+
+            for loop_list in query(loop_list_list):
+                curr_pos = 1
+
+                if f_lmargin:
+                    for n in range(1,lmargin + 1) :
+                        put_string(" ")
+                build_loop_line(loop_list.texte)
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+
+        if f_bill:
+
+            bill = get_cache (Bill, {"rechnr": [(eq, rechnr)]})
+
+            if not spbill_flag:
+                bl_balance =  to_decimal(bill.saldo)
+
+        if ((bl_balance - saldo) >= 0.5 or (saldo - bl_balance) >= 0.5) and not spbill_flag:
+            pass
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_billline0():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        resline = None
+        paidout:int = 0
+        Resline =  create_buffer("Resline",Res_line)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 242)]})
+        paidout = htparam.finteger
+        bl0_balance =  to_decimal("0")
+        bl0_balance1 =  to_decimal("0")
+        bl_balance =  to_decimal("0")
+        bl_balance1 =  to_decimal("0")
+        bline_list_list.clear()
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement) & ((Artikel.artart == 0) | (Artikel.artart == 1) | (Artikel.artart == 8) | (Artikel.artart == 9) | ((Artikel.artart == 6) & (Artikel.zwkum == paidout)))).filter(
+                 (Bill_line.rechnr == rechnr)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+            bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich and bline_list.datum == bill_line.bill_datum and bline_list.saldo == - bill_line.betrag), first=True)
+
+            if bline_list:
+                bline_list_list.remove(bline_list)
+            else:
+
+                mainres = get_cache (Reservation, {"resnr": [(eq, bill_line.massnr)]})
+
+                resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                if not resline:
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)]})
+                bline_list = Bline_list()
+                bline_list_list.append(bline_list)
+
+                buffer_copy(bill_line, bline_list)
+                bline_list.bl_recid = bill_line._recid
+                bline_list.datum = bill_line.bill_datum
+                bline_list.dept = bill_line.departement
+                bline_list.fsaldo =  to_decimal(bill_line.fremdwbetrag)
+                bline_list.saldo =  to_decimal(bill_line.betrag)
+
+                if resline:
+                    bline_list.gname = resline.name
+
+                if mainres:
+                    bline_list.voucher = mainres.vesrdepot
+        bline_nr = 0
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement) & ((Artikel.artart == 0) | (Artikel.artart == 1) | (Artikel.artart == 8) | (Artikel.artart == 9) | ((Artikel.artart == 6) & (Artikel.zwkum == paidout)))).filter(
+                 (Bill_line.rechnr == rechnr)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            bline_list = query(bline_list_list, (lambda bline_list: bline_list.bl_recid == to_int(bill_line._recid)), first=True)
+            if not bline_list:
+                continue
+
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+
+            bline_nr = bline_nr + 1
+            bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
+            bl0_balance1 =  to_decimal(bl0_balance1) + to_decimal(bill_line.fremdwbetrag)
+            bl_balance =  to_decimal(bl_balance) + to_decimal(bill_line.betrag)
+            bl_balance1 =  to_decimal(bl_balance1) + to_decimal(bill_line.fremdwbetrag)
+
+            if curr_line >= printer.pglen:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_page = curr_page + 1
+                curr_line = 1
+                do_billhead()
+
+            for loop_list in query(loop_list_list):
+                curr_pos = 1
+
+                if f_lmargin:
+                    for n in range(1,lmargin + 1) :
+                        put_string(" ")
+                build_loop_line(loop_list.texte)
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_billline0c():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        paidout:int = 0
+        resline = None
+        rline = None
+        Resline =  create_buffer("Resline",Res_line)
+        Rline =  create_buffer("Rline",Res_line)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 242)]})
+        paidout = htparam.finteger
+        bl0_balance =  to_decimal("0")
+        bl0_balance1 =  to_decimal("0")
+        bline_list_list.clear()
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement) & ((Artikel.artart == 0) | (Artikel.artart == 1) | (Artikel.artart == 8) | (Artikel.artart == 9) | ((Artikel.artart == 6) & (Artikel.zwkum == paidout)))).filter(
+                 (Bill_line.rechnr == rechnr)).order_by(Bill_line.zinr, Bill_line.bezeich, Bill_line.bill_datum).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+            if inv_type == 3:
+
+                if artikel.bezaendern or artikel.artart == 1:
+
+                    bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich), first=True)
+                else:
+
+                    bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement), first=True)
+
+            elif inv_type == 4:
+
+                if artikel.bezaendern or artikel.artart == 1:
+
+                    bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich and bline_list.zinr == bill_line.zinr), first=True)
+                else:
+
+                    bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.zinr == bill_line.zinr), first=True)
+
+            if not bline_list:
+
+                mainres = get_cache (Reservation, {"resnr": [(eq, bill_line.massnr)]})
+
+                resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                if resline and resline.zimmerfix:
+
+                    rline = db_session.query(Rline).filter(
+                             (Rline.resnr == resline.resnr) & (Rline.zinr == resline.zinr) & not_ (Rline.zimmerfix)).first()
+
+                    if rline:
+
+                        resline = get_cache (Res_line, {"_recid": [(eq, rline._recid)]})
+
+                if not resline:
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)],"l_zuordnung[2]": [(eq, 0)]})
+                bline_list = Bline_list()
+                bline_list_list.append(bline_list)
+
+                buffer_copy(bill_line, bline_list,except_fields=["bill_line.orts_tax","bill_line.anzahl"])
+                bline_list.bl_recid = bill_line._recid
+                bline_list.dept = bill_line.departement
+                bline_list.datum = bill_line.bill_datum
+
+                if resline:
+                    bline_list.gname = resline.name
+
+                if mainres:
+                    bline_list.voucher = mainres.vesrdepot
+            bline_list.orts_tax =  to_decimal(bline_list.orts_tax) + to_decimal(bill_line.orts_tax)
+            bline_list.anzahl = bline_list.anzahl + bill_line.anzahl
+            bline_list.saldo =  to_decimal(bline_list.saldo) + to_decimal(bill_line.betrag)
+            bline_list.fsaldo =  to_decimal(bline_list.fsaldo) + to_decimal(bill_line.fremdwbetrag)
+
+        for bline_list in query(bline_list_list, filters=(lambda bline_list: bline_list.saldo == 0)):
+            bline_list_list.remove(bline_list)
+        bline_nr = 0
+
+        for bline_list in query(bline_list_list):
+            bline_nr = bline_nr + 1
+            bl0_balance =  to_decimal(bl0_balance) + to_decimal(bline_list.saldo)
+            bl0_balance1 =  to_decimal(bl0_balance1) + to_decimal(bline_list.fsaldo)
+
+            if curr_line >= printer.pglen:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_page = curr_page + 1
+                curr_line = 1
+                do_billhead()
+
+            for loop_list in query(loop_list_list):
+                curr_pos = 1
+
+                if f_lmargin:
+                    for n in range(1,lmargin + 1) :
+                        put_string(" ")
+                build_loop_line(loop_list.texte)
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_spbillline0():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        resline = None
+        paidout:int = 0
+        Resline =  create_buffer("Resline",Res_line)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 242)]})
+        paidout = htparam.finteger
+        bl0_balance =  to_decimal("0")
+        bl0_balance1 =  to_decimal("0")
+        bline_list_list.clear()
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement) & ((Artikel.artart == 0) | (Artikel.artart == 1) | (Artikel.artart == 8) | (Artikel.artart == 9) | ((Artikel.artart == 6) & (Artikel.zwkum == paidout)))).filter(
+                 (Bill_line._recid.in_(list(set([t_spbill_list.bl_recid for t_spbill_list in t_spbill_list_list if t_spbill_list.selected ])))) & (Bill_line.rechnr == rechnr)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+            bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich and bline_list.datum == bill_line.bill_datum and bline_list.saldo == - bill_line.betrag), first=True)
+
+            if bline_list:
+                bline_list_list.remove(bline_list)
+            else:
+
+                mainres = get_cache (Reservation, {"resnr": [(eq, bill_line.massnr)]})
+
+                resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                if not resline:
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)]})
+                bline_list = Bline_list()
+                bline_list_list.append(bline_list)
+
+                buffer_copy(bill_line, bline_list)
+                bline_list.bl_recid = bill_line._recid
+                bline_list.datum = bill_line.bill_datum
+                bline_list.dept = bill_line.departement
+                bline_list.fsaldo =  to_decimal(bill_line.fremdwbetrag)
+                bline_list.saldo =  to_decimal(bill_line.betrag)
+
+                if resline:
+                    bline_list.gname = resline.name
+
+                if mainres:
+                    bline_list.voucher = mainres.vesrdepot
+        bline_nr = 0
+
+        if inv_type == 4:
+
+            bill_line_obj_list = {}
+            for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement) & ((Artikel.artart == 0) | (Artikel.artart == 1) | (Artikel.artart == 8) | (Artikel.artart == 9) | ((Artikel.artart == 6) & (Artikel.zwkum == paidout)))).filter(
+                     (Bill_line.rechnr == rechnr)).order_by(Bill_line.zinr, Bill_line.sysdate, Bill_line.zeit).all():
+                bline_list = query(bline_list_list, (lambda bline_list: bline_list.bl_recid == to_int(bill_line._recid)), first=True)
+                if not bline_list:
+                    continue
+
+                if bill_line_obj_list.get(bill_line._recid):
+                    continue
+                else:
+                    bill_line_obj_list[bill_line._recid] = True
+
+
+                bline_nr = bline_nr + 1
+                bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
+                bl0_balance1 =  to_decimal(bl0_balance1) + to_decimal(bill_line.fremdwbetrag)
+                bl_balance =  to_decimal(bl_balance) + to_decimal(bill_line.betrag)
+                bl_balance1 =  to_decimal(bl_balance1) + to_decimal(bill_line.fremdwbetrag)
+
+                if curr_line >= printer.pglen:
+                    output_list.str = output_list.str + ""
+
+
+                    output_list = Output_list()
+                    output_list_list.append(output_list)
+
+                    curr_page = curr_page + 1
+                    curr_line = 1
+                    do_billhead()
+
+                for loop_list in query(loop_list_list):
+                    curr_pos = 1
+
+                    if f_lmargin:
+                        for n in range(1,lmargin + 1) :
+                            put_string(" ")
+                    build_loop_line(loop_list.texte)
+                    output_list.str = output_list.str + ""
+
+
+                    output_list = Output_list()
+                    output_list_list.append(output_list)
+
+                    curr_line = curr_line + 1
+
+        else:
+
+            bill_line_obj_list = {}
+            for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement) & ((Artikel.artart == 0) | (Artikel.artart == 1) | (Artikel.artart == 8) | (Artikel.artart == 9) | ((Artikel.artart == 6) & (Artikel.zwkum == paidout)))).filter(
+                     (Bill_line.rechnr == rechnr)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+                bline_list = query(bline_list_list, (lambda bline_list: bline_list.bl_recid == to_int(bill_line._recid)), first=True)
+                if not bline_list:
+                    continue
+
+                if bill_line_obj_list.get(bill_line._recid):
+                    continue
+                else:
+                    bill_line_obj_list[bill_line._recid] = True
+
+
+                bline_nr = bline_nr + 1
+                bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
+                bl0_balance1 =  to_decimal(bl0_balance1) + to_decimal(bill_line.fremdwbetrag)
+                bl_balance =  to_decimal(bl_balance) + to_decimal(bill_line.betrag)
+                bl_balance1 =  to_decimal(bl_balance1) + to_decimal(bill_line.fremdwbetrag)
+
+                if curr_line >= printer.pglen:
+                    output_list.str = output_list.str + ""
+
+
+                    output_list = Output_list()
+                    output_list_list.append(output_list)
+
+                    curr_page = curr_page + 1
+                    curr_line = 1
+                    do_billhead()
+
+                for loop_list in query(loop_list_list):
+                    curr_pos = 1
+
+                    if f_lmargin:
+                        for n in range(1,lmargin + 1) :
+                            put_string(" ")
+                    build_loop_line(loop_list.texte)
+                    output_list.str = output_list.str + ""
+
+
+                    output_list = Output_list()
+                    output_list_list.append(output_list)
+
+                    curr_line = curr_line + 1
+
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_spbillline0b():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        s_bezeich:string = ""
+        netto:Decimal = to_decimal("0.0")
+        curr_bl_vat:Decimal = to_decimal("0.0")
+        paidout:int = 0
+        foart = None
+        Foart =  create_buffer("Foart",Artikel)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 242)]})
+        paidout = htparam.finteger
+        bl0_balance =  to_decimal("0")
+        bl0_balance1 =  to_decimal("0")
+        bline_list_list.clear()
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement) & ((Artikel.artart == 0) | (Artikel.artart == 1) | (Artikel.artart == 8) | (Artikel.artart == 9) | ((Artikel.artart == 6) & (Artikel.zwkum == paidout)))).filter(
+                 (Bill_line._recid.in_(list(set([t_spbill_list.bl_recid for t_spbill_list in t_spbill_list_list if t_spbill_list.selected]))))).order_by(Bill_line._recid).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+            bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.mwst_code == artikel.mwst_code), first=True)
+
+            if not bline_list:
+                bline_list = Bline_list()
+                bline_list_list.append(bline_list)
+
+                buffer_copy(bill_line, bline_list,except_fields=["bill_line.orts_tax","bill_line.anzahl"])
+                bline_list.bl_recid = bill_line._recid
+                bline_list.dept = bill_line.departement
+                bline_list.zinr = bill.zinr
+                bline_list.mwst_code = artikel.mwst_code
+
+
+            bline_list.fsaldo =  to_decimal(bline_list.fsaldo) + to_decimal(bill_line.fremdwbetrag)
+            bline_list.saldo =  to_decimal(bline_list.saldo) + to_decimal(bill_line.betrag)
+            bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
+            bl0_balance1 =  to_decimal(bl0_balance1) + to_decimal(bill_line.fremdwbetrag)
+
+            if (artikel.artnr == vat_artnr[0] or artikel.artnr == vat_artnr[1] or artikel.artnr == vat_artnr[2] or artikel.artnr == vat_artnr[3] or artikel.artnr == vat_artnr[4]) and artikel.departement == 0:
+                pass
+            else:
+
+                foart = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+
+                if foart:
+
+                    htparam = get_cache (Htparam, {"paramnr": [(eq, foart.mwst_code)]})
+
+                    if htparam:
+                        curr_bl_vat =  to_decimal(htparam.fdecimal)
+                    else:
+                        curr_bl_vat =  to_decimal("0")
+
+                if bill_line.orts_tax != 0:
+                    netto =  to_decimal(bill_line.betrag) - to_decimal(bill_line.orts_tax)
+                else:
+                    netto =  to_decimal(bill_line.betrag) / to_decimal((1) + to_decimal(curr_bl_vat) / to_decimal(100))
+                    netto =  to_decimal(round (netto , price_decimal))
+                bline_list.netto =  to_decimal(bline_list.netto) + to_decimal(netto)
+        bline_nr = 0
+
+        if bline_list:
+            bline_nr = 1
+            bl_balance =  to_decimal(bline_list.saldo)
+            bl_balance1 =  to_decimal(bline_list.fsaldo)
+
+            if curr_line >= printer.pglen:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_page = curr_page + 1
+                curr_line = 1
+                do_billhead()
+
+            for loop_list in query(loop_list_list):
+                curr_pos = 1
+
+                if f_lmargin:
+                    for n in range(1,lmargin + 1) :
+                        put_string(" ")
+                build_loop_line(loop_list.texte)
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_spbillline0c():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        resline = None
+        rline = None
+        paidout:int = 0
+        Resline =  create_buffer("Resline",Res_line)
+        Rline =  create_buffer("Rline",Res_line)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 242)]})
+        paidout = htparam.finteger
+        bl0_balance =  to_decimal("0")
+        bl0_balance1 =  to_decimal("0")
+        bline_list_list.clear()
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement) & ((Artikel.artart == 0) | (Artikel.artart == 1) | (Artikel.artart == 8) | (Artikel.artart == 9) | ((Artikel.artart == 6) & (Artikel.zwkum == paidout)))).filter(
+                 (Bill_line._recid.in_(list(set([t_spbill_list.bl_recid for t_spbill_list in t_spbill_list_list if t_spbill_list.selected]))))).order_by(Bill_line.zinr, Bill_line.bezeich, Bill_line.bill_datum).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+            if inv_type == 3:
+
+                if artikel.bezaendern or artikel.artart == 1:
+
+                    bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich), first=True)
+                else:
+
+                    bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement), first=True)
+
+            elif inv_type == 4:
+
+                if artikel.bezaendern or artikel.artart == 1:
+
+                    bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich and bline_list.zinr == bill_line.zinr), first=True)
+                else:
+
+                    bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.zinr == bill_line.zinr), first=True)
+
+            if not bline_list:
+
+                mainres = get_cache (Reservation, {"resnr": [(eq, bill_line.massnr)]})
+
+                resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                if resline and resline.zimmerfix:
+
+                    rline = db_session.query(Rline).filter(
+                             (Rline.resnr == resline.resnr) & (Rline.zinr == resline.zinr) & not_ (Rline.zimmerfix)).first()
+
+                    if rline:
+
+                        resline = get_cache (Res_line, {"_recid": [(eq, rline._recid)]})
+
+                if not resline:
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)]})
+                bline_list = Bline_list()
+                bline_list_list.append(bline_list)
+
+                buffer_copy(bill_line, bline_list,except_fields=["bill_line.orts_tax","bill_line.anzahl"])
+                bline_list.bl_recid = bill_line._recid
+                bline_list.dept = bill_line.departement
+                bline_list.datum = bill_line.bill_datum
+
+                if resline:
+                    bline_list.gname = resline.name
+
+                if mainres:
+                    bline_list.voucher = mainres.vesrdepot
+            bline_list.orts_tax =  to_decimal(bline_list.orts_tax) + to_decimal(bill_line.orts_tax)
+            bline_list.anzahl = bline_list.anzahl + bill_line.anzahl
+            bline_list.saldo =  to_decimal(bline_list.saldo) + to_decimal(bill_line.betrag)
+            bline_list.fsaldo =  to_decimal(bline_list.fsaldo) + to_decimal(bill_line.fremdwbetrag)
+
+        for bline_list in query(bline_list_list, filters=(lambda bline_list: bline_list.saldo == 0)):
+            bline_list_list.remove(bline_list)
+        bline_nr = 0
+
+        for bline_list in query(bline_list_list):
+            bline_nr = bline_nr + 1
+            bl0_balance =  to_decimal(bl0_balance) + to_decimal(bline_list.saldo)
+            bl0_balance1 =  to_decimal(bl0_balance1) + to_decimal(bline_list.fsaldo)
+
+            if curr_line >= printer.pglen:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_page = curr_page + 1
+                curr_line = 1
+                do_billhead()
+
+            for loop_list in query(loop_list_list):
+                curr_pos = 1
+
+                if f_lmargin:
+                    for n in range(1,lmargin + 1) :
+                        put_string(" ")
+                build_loop_line(loop_list.texte)
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_billline1():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        resline = None
+        paidout:int = 0
+        Resline =  create_buffer("Resline",Res_line)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 242)]})
+        paidout = htparam.finteger
+        bl1_balance =  to_decimal("0")
+        bl1_balance1 =  to_decimal("0")
+        bline_list_list.clear()
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == 0) & ((Artikel.artart == 2) | (Artikel.artart == 5) | (Artikel.artart == 6) | (Artikel.artart == 7)) & (Artikel.zwkum != paidout)).filter(
+                 (Bill_line.rechnr == rechnr)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+            bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich and bline_list.datum == bill_line.bill_datum and bline_list.saldo == - bill_line.betrag), first=True)
+
+            if bline_list:
+                bline_list_list.remove(bline_list)
+            else:
+
+                mainres = get_cache (Reservation, {"resnr": [(eq, bill_line.massnr)]})
+
+                resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                if not resline:
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)]})
+                bline_list = Bline_list()
+                bline_list_list.append(bline_list)
+
+                buffer_copy(bill_line, bline_list,except_fields=["bill_line.orts_tax","bill_line.anzahl"])
+                bline_list.bl_recid = bill_line._recid
+                bline_list.datum = bill_line.bill_datum
+                bline_list.dept = bill_line.departement
+                bline_list.saldo =  to_decimal(bline_list.saldo) + to_decimal(bill_line.betrag)
+                bline_list.fsaldo =  to_decimal(bline_list.fsaldo) + to_decimal(bill_line.fremdwbetrag)
+
+                if resline:
+                    bline_list.gname = resline.name
+
+                if mainres:
+                    bline_list.voucher = mainres.vesrdepot
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == 0) & ((Artikel.artart == 2) | (Artikel.artart == 5) | (Artikel.artart == 6) | (Artikel.artart == 7)) & (Artikel.zwkum != paidout)).filter(
+                 (Bill_line.rechnr == rechnr) & (Bill_line.departement == 0)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            bline_list = query(bline_list_list, (lambda bline_list: bline_list.bl_recid == to_int(bill_line._recid)), first=True)
+            if not bline_list:
+                continue
+
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+
+            bline_nr = bline_nr + 1
+            bl1_balance =  to_decimal(bl1_balance) + to_decimal(bill_line.betrag)
+            bl1_balance1 =  to_decimal(bl1_balance1) + to_decimal(bill_line.fremdwbetrag)
+            bl_balance =  to_decimal(bl_balance) + to_decimal(bill_line.betrag)
+            bl_balance1 =  to_decimal(bl_balance1) + to_decimal(bill_line.fremdwbetrag)
+
+            if artikel.zwkum == paidout:
+                bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
+
+            if curr_line >= printer.pglen:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_page = curr_page + 1
+                curr_line = 1
+                do_billhead()
+
+            for loop_list in query(loop_list_list):
+                curr_pos = 1
+
+                if f_lmargin:
+                    for n in range(1,lmargin + 1) :
+                        put_string(" ")
+                build_loop_line(loop_list.texte)
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_spbillline1():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        resline = None
+        paidout:int = 0
+        Resline =  create_buffer("Resline",Res_line)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 242)]})
+        paidout = htparam.finteger
+        bl1_balance =  to_decimal("0")
+        bl1_balance1 =  to_decimal("0")
+        bline_list_list.clear()
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == 0) & ((Artikel.artart == 2) | (Artikel.artart == 5) | (Artikel.artart == 6) | (Artikel.artart == 7)) & (Artikel.zwkum != paidout)).filter(
+                 (Bill_line._recid.in_(list(set([t_spbill_list.bl_recid for t_spbill_list in t_spbill_list_list if t_spbill_list.selected ])))) & (Bill_line.rechnr == rechnr)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+            bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich and bline_list.datum == bill_line.bill_datum and bline_list.saldo == - bill_line.betrag), first=True)
+
+            if bline_list:
+                bline_list_list.remove(bline_list)
+            else:
+
+                mainres = get_cache (Reservation, {"resnr": [(eq, bill_line.massnr)]})
+
+                resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                if not resline:
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)]})
+                bline_list = Bline_list()
+                bline_list_list.append(bline_list)
+
+                buffer_copy(bill_line, bline_list,except_fields=["bill_line.orts_tax","bill_line.anzahl"])
+                bline_list.bl_recid = bill_line._recid
+                bline_list.datum = bill_line.bill_datum
+                bline_list.dept = bill_line.departement
+                bline_list.saldo =  to_decimal(bline_list.saldo) + to_decimal(bill_line.betrag)
+                bline_list.fsaldo =  to_decimal(bline_list.fsaldo) + to_decimal(bill_line.fremdwbetrag)
+
+                if resline:
+                    bline_list.gname = resline.name
+
+                if mainres:
+                    bline_list.voucher = mainres.vesrdepot
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == 0) & ((Artikel.artart == 2) | (Artikel.artart == 5) | (Artikel.artart == 6) | (Artikel.artart == 7)) & (Artikel.zwkum != paidout)).filter(
+                 (Bill_line.rechnr == rechnr) & (Bill_line.departement == 0)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            bline_list = query(bline_list_list, (lambda bline_list: bline_list.bl_recid == to_int(bill_line._recid)), first=True)
+            if not bline_list:
+                continue
+
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+
+            bline_nr = bline_nr + 1
+            bl1_balance =  to_decimal(bl1_balance) + to_decimal(bill_line.betrag)
+            bl1_balance1 =  to_decimal(bl1_balance1) + to_decimal(bill_line.fremdwbetrag)
+            bl_balance =  to_decimal(bl_balance) + to_decimal(bill_line.betrag)
+            bl_balance1 =  to_decimal(bl_balance1) + to_decimal(bill_line.fremdwbetrag)
+
+            if artikel.zwkum == paidout:
+                bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
+
+            if curr_line >= printer.pglen:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_page = curr_page + 1
+                curr_line = 1
+                do_billhead()
+
+            for loop_list in query(loop_list_list):
+                curr_pos = 1
+
+                if f_lmargin:
+                    for n in range(1,lmargin + 1) :
+                        put_string(" ")
+                build_loop_line(loop_list.texte)
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_billline2():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        resline = None
+        paidout:int = 0
+        Resline =  create_buffer("Resline",Res_line)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 242)]})
+        paidout = htparam.finteger
+        bl1_balance =  to_decimal("0")
+        bl1_balance1 =  to_decimal("0")
+        bline_list_list.clear()
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == 0) & ((Artikel.artart == 6) | (Artikel.artart == 7)) & (Artikel.zwkum != paidout)).filter(
+                 (Bill_line.rechnr == rechnr)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+            bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich and bline_list.datum == bill_line.bill_datum and bline_list.saldo == - bill_line.betrag), first=True)
+
+            if bline_list:
+                bline_list_list.remove(bline_list)
+            else:
+
+                mainres = get_cache (Reservation, {"resnr": [(eq, bill_line.massnr)]})
+
+                resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                if not resline:
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)]})
+                bline_list = Bline_list()
+                bline_list_list.append(bline_list)
+
+                buffer_copy(bill_line, bline_list)
+                bline_list.bl_recid = bill_line._recid
+                bline_list.datum = bill_line.bill_datum
+                bline_list.dept = bill_line.departement
+                bline_list.fsaldo =  to_decimal(bill_line.fremdwbetrag)
+                bline_list.saldo =  to_decimal(bill_line.betrag)
+
+                if resline:
+                    bline_list.gname = resline.name
+
+                if mainres:
+                    bline_list.voucher = mainres.vesrdepot
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == 0) & ((Artikel.artart == 6) | (Artikel.artart == 7)) & (Artikel.zwkum != paidout)).filter(
+                 (Bill_line.rechnr == rechnr) & (Bill_line.departement == 0)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            bline_list = query(bline_list_list, (lambda bline_list: bline_list.bl_recid == to_int(bill_line._recid)), first=True)
+            if not bline_list:
+                continue
+
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+
+            bline_nr = bline_nr + 1
+            bl1_balance =  to_decimal(bl1_balance) + to_decimal(bill_line.betrag)
+            bl1_balance1 =  to_decimal(bl1_balance1) + to_decimal(bill_line.fremdwbetrag)
+            bl_balance =  to_decimal(bl_balance) + to_decimal(bill_line.betrag)
+            bl_balance1 =  to_decimal(bl_balance1) + to_decimal(bill_line.fremdwbetrag)
+
+            if artikel.zwkum == paidout:
+                bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
+
+            if curr_line >= printer.pglen:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_page = curr_page + 1
+                curr_line = 1
+                do_billhead()
+
+            for loop_list in query(loop_list_list):
+                curr_pos = 1
+
+                if f_lmargin:
+                    for n in range(1,lmargin + 1) :
+                        put_string(" ")
+                build_loop_line(loop_list.texte)
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_spbillline2():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        resline = None
+        paidout:int = 0
+        Resline =  create_buffer("Resline",Res_line)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 242)]})
+        paidout = htparam.finteger
+        bl1_balance =  to_decimal("0")
+        bl1_balance1 =  to_decimal("0")
+        bline_list_list.clear()
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == 0) & ((Artikel.artart == 6) | (Artikel.artart == 7)) & (Artikel.zwkum != paidout)).filter(
+                 (Bill_line._recid.in_(list(set([t_spbill_list.bl_recid for t_spbill_list in t_spbill_list_list if t_spbill_list.selected ])))) & (Bill_line.rechnr == rechnr)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+            bline_list = query(bline_list_list, filters=(lambda bline_list: bline_list.artnr == bill_line.artnr and bline_list.dept == bill_line.departement and bline_list.bezeich == bill_line.bezeich and bline_list.datum == bill_line.bill_datum and bline_list.saldo == - bill_line.betrag), first=True)
+
+            if bline_list:
+                bline_list_list.remove(bline_list)
+            else:
+
+                mainres = get_cache (Reservation, {"resnr": [(eq, bill_line.massnr)]})
+
+                resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                if not resline:
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)]})
+                bline_list = Bline_list()
+                bline_list_list.append(bline_list)
+
+                buffer_copy(bill_line, bline_list)
+                bline_list.bl_recid = bill_line._recid
+                bline_list.datum = bill_line.bill_datum
+                bline_list.dept = bill_line.departement
+                bline_list.fsaldo =  to_decimal(bill_line.fremdwbetrag)
+                bline_list.saldo =  to_decimal(bill_line.betrag)
+
+                if resline:
+                    bline_list.gname = resline.name
+
+                if mainres:
+                    bline_list.voucher = mainres.vesrdepot
+
+        bill_line_obj_list = {}
+        for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == 0) & ((Artikel.artart == 6) | (Artikel.artart == 7)) & (Artikel.zwkum != paidout)).filter(
+                 (Bill_line.rechnr == rechnr) & (Bill_line.departement == 0)).order_by(Bill_line.sysdate, Bill_line.zeit).all():
+            bline_list = query(bline_list_list, (lambda bline_list: bline_list.bl_recid == to_int(bill_line._recid)), first=True)
+            if not bline_list:
+                continue
+
+            if bill_line_obj_list.get(bill_line._recid):
+                continue
+            else:
+                bill_line_obj_list[bill_line._recid] = True
+
+
+            bline_nr = bline_nr + 1
+            bl1_balance =  to_decimal(bl1_balance) + to_decimal(bill_line.betrag)
+            bl1_balance1 =  to_decimal(bl1_balance1) + to_decimal(bill_line.fremdwbetrag)
+            bl_balance =  to_decimal(bl_balance) + to_decimal(bill_line.betrag)
+            bl_balance1 =  to_decimal(bl_balance1) + to_decimal(bill_line.fremdwbetrag)
+
+            if artikel.zwkum == paidout:
+                bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
+
+            if curr_line >= printer.pglen:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_page = curr_page + 1
+                curr_line = 1
+                do_billhead()
+
+            for loop_list in query(loop_list_list):
+                curr_pos = 1
+
+                if f_lmargin:
+                    for n in range(1,lmargin + 1) :
+                        put_string(" ")
+                build_loop_line(loop_list.texte)
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_pbill_line():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        bl_balance =  to_decimal("0")
+        bl_balance1 =  to_decimal("0")
+
+        for t_list in query(t_list_list, sort_by=[("nr",False),("date1",False)]):
+            bl_balance =  to_decimal(bl_balance) + to_decimal(t_list.betrag)
+            bl_balance1 =  to_decimal(bl_balance)
+
+            if curr_line >= printer.pglen:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_page = curr_page + 1
+                curr_line = 1
+                do_billhead()
+
+            for loop_list in query(loop_list_list):
+                curr_pos = 1
+
+                if f_lmargin:
+                    for n in range(1,lmargin + 1) :
+                        put_string(" ")
+                build_loop_line(loop_list.texte)
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+        loop_list_list.clear()
+        blloop = 0
+
+
+    def do_billhead():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        n:int = 0
+        headloop = 3
+        header_list_list.clear()
+
+        for loop1_list in query(loop1_list_list):
+            header_list = Header_list()
+            header_list_list.append(header_list)
+
+            curr_pos = 1
+
+            if f_lmargin:
+                for n in range(1,lmargin + 1) :
+                    put_string(" ")
+            build_loop_line(loop1_list.texte)
+        headloop = 0
+        print_billhead()
+
+
+    def print_billhead():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        i:int = 0
+
+        for header_list in query(header_list_list):
+            curr_pos = 1
+            for i in range(1,length(header_list.texte)  + 1) :
+                output_list.str = output_list.str + to_string(substring(header_list.texte, i - 1, 1) , "x(1)")
+
+
+            output_list.str = output_list.str + ""
+
+
+            output_list = Output_list()
+            output_list_list.append(output_list)
+
+            curr_line = curr_line + 1
+
+
+    def interprete_text(curr_texte:string, i:int):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        found = False
+        j:int = 0
+        rowno:int = 0
+
+        def generate_inner_output():
+            return (i, found)
+
+        j = i
+
+        htp_list = query(htp_list_list, first=True)
+        while None != htp_list and not found:
+
+            if htp_list.fchar == substring(curr_texte, j - 1, length(htp_list.fchar)):
+                found = True
+                i = j + length(htp_list.fchar) - 1
+                print_all_member = False
+
+                if htp_list.paramnr == 1094:
+
+                    if substring(curr_texte, i + 1 - 1, 1) == ("*").lower() :
+                        i = i + 1
+                        print_all_member = True
+
+                    if substring(curr_texte, i + 1 - 1, 1) >= ("0").lower()  and substring(curr_texte, i + 1 - 1, 1) <= ("9").lower()  and substring(curr_texte, i + 2 - 1, 1) >= ("0").lower()  and substring(curr_texte, i + 2 - 1, 1) <= ("9").lower() :
+                        g_length = to_int(substring(curr_texte, i + 1 - 1, 2))
+                        i = i + 2
+
+                elif htp_list.paramnr == 1063:
+
+                    if substring(curr_texte, i + 1 - 1, 1) >= ("0").lower()  and substring(curr_texte, i + 1 - 1, 1) <= ("9").lower()  and substring(curr_texte, i + 2 - 1, 1) >= ("0").lower()  and substring(curr_texte, i + 2 - 1, 1) <= ("9").lower() :
+                        rowno = to_int(substring(curr_texte, i + 1 - 1, 2))
+
+                        if rowno > printer.pglen:
+                            rowno = printer.pglen
+                        i = i + 2
+
+                        if curr_line < rowno:
+                            for j in range(1,(rowno - curr_line)  + 1) :
+                                output_list.str = output_list.str + ""
+
+
+                                output_list = Output_list()
+                                output_list_list.append(output_list)
+
+                            curr_line = rowno
+                            curr_pos = 1
+
+                        elif curr_line > rowno:
+                            curr_page = curr_page + 1
+                            curr_line = 1
+                            do_billhead()
+                            for j in range(1,(rowno - curr_line)  + 1) :
+                                output_list.str = output_list.str + ""
+
+
+                                output_list = Output_list()
+                                output_list_list.append(output_list)
+
+                            curr_line = rowno
+                            curr_pos = 1
+
+                    elif curr_line > rowno:
+                        for j in range(1,(rowno - curr_line)  + 1) :
+                            output_list.str = output_list.str + ""
+
+
+                            output_list = Output_list()
+                            output_list_list.append(output_list)
+
+                        curr_line = rowno
+                        curr_pos = 1
+
+                    if curr_line >= printer.pglen:
+                        curr_page = curr_page + 1
+                        curr_line = 1
+                        do_billhead()
+
+                elif htp_list.paramnr == 1091:
+
+                    if substring(curr_texte, i + 1 - 1, 1) >= ("0").lower()  and substring(curr_texte, i + 1 - 1, 1) <= ("9").lower()  and substring(curr_texte, i + 2 - 1, 1) >= ("0").lower()  and substring(curr_texte, i + 2 - 1, 1) <= ("9").lower() :
+                        c_length = to_int(substring(curr_texte, i + 1 - 1, 2))
+                        i = i + 2
+
+                elif htp_list.paramnr == 1096:
+
+                    if substring(curr_texte, i + 1 - 1, 1) >= ("0").lower()  and substring(curr_texte, i + 1 - 1, 1) <= ("9").lower()  and substring(curr_texte, i + 2 - 1, 1) >= ("0").lower()  and substring(curr_texte, i + 2 - 1, 1) <= ("9").lower() :
+                        w_length = to_int(substring(curr_texte, i + 1 - 1, 2))
+                        i = i + 2
+
+                elif htp_list.paramnr == 1589:
+
+                    if substring(curr_texte, i + 1 - 1, 1) >= ("0").lower()  and substring(curr_texte, i + 1 - 1, 1) <= ("9").lower()  and substring(curr_texte, i + 2 - 1, 1) >= ("0").lower()  and substring(curr_texte, i + 2 - 1, 1) <= ("9").lower() :
+                        v_length = to_int(substring(curr_texte, i + 1 - 1, 2))
+                        i = i + 2
+
+                elif htp_list.paramnr == 664:
+
+                    if substring(curr_texte, i + 1 - 1, 1) == ("0").lower() :
+                        print_member = False
+                        i = i + 1
+
+                elif htp_list.paramnr == 655:
+
+                    if substring(curr_texte, i + 1 - 1, 1) == ("0").lower() :
+                        short_arrival = True
+                        i = i + 1
+
+                elif htp_list.paramnr == 656:
+
+                    if substring(curr_texte, i + 1 - 1, 1) == ("0").lower() :
+                        short_depart = True
+                        i = i + 1
+                i = decode_key(curr_texte, htp_list.paramnr, i)
+
+            htp_list = query(htp_list_list, next=True)
+
+        if not found:
+            put_string(substring(curr_texte, j - 1, 1))
+
+        return generate_inner_output()
+
+
+    def decode_key(curr_texte:string, paramnr:int, i:int):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        out_str:string = ""
+        status_code:int = 0
+        n:int = 0
+        m:int = 0
+
+        def generate_inner_output():
+            return (i)
+
+
+        if (htparam.paramnr <= 500):
+            out_str, status_code = decode_key1(htparam.paramnr)
+
+        elif ((htparam.paramnr >= 501) and (htparam.paramnr <= 649)) or (htparam.paramnr == 1110):
+            out_str, status_code = decode_key2(htparam.paramnr)
+
+        elif (htparam.paramnr >= 650) and (htparam.paramnr <= 699):
+            out_str, status_code = decode_key3(htparam.paramnr)
+
+        elif (htparam.paramnr == 1105) or (htparam.paramnr == 1107):
+            out_str, status_code = decode_key4(htparam.paramnr)
+
+        elif (htparam.paramnr >= 700) and (htparam.paramnr <= 1092):
+            out_str, status_code = decode_key4(htparam.paramnr)
+
+        elif (htparam.paramnr == 1095) or (htparam.paramnr == 1096):
+            out_str, status_code = decode_key4(htparam.paramnr)
+
+        elif (htparam.paramnr >= 1094) and (htparam.paramnr <= 2401):
+
+            if proforma_inv:
+                out_str, status_code = decode_key5p(htparam.paramnr)
+            else:
+
+                if inv_type == 1:
+                    out_str, status_code = decode_key5a(htparam.paramnr)
+
+                elif inv_type == 2:
+                    out_str, status_code = decode_key5b(htparam.paramnr)
+
+                elif inv_type == 3 or inv_type == 4:
+                    out_str, status_code = decode_key5c(htparam.paramnr)
+
+        if (status_code >= 1 and status_code <= 3) or status_code == 10:
+            i = find_parameter(htparam.paramnr, curr_texte, status_code, i)
+
+        if status_code == 1:
+            m = curr_pos + 1
+
+            if curr_pos > ntab:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+                curr_pos = 1
+                for n in range(2,ntab + 1) :
+                    put_string(" ")
+            else:
+                for n in range(m,ntab + 1) :
+                    put_string(" ")
+            curr_pos = ntab
+
+        elif status_code == 2 and headloop == 0 and blloop == 0:
+            for n in range(1,nskip + 1) :
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_pos = 1
+                curr_line = curr_line + 1
+
+        elif status_code == 3:
+            for n in range(1,lmargin + 1) :
+                put_string(" ")
+
+        return generate_inner_output()
+
+
+    def find_parameter(paramnr:int, curr_texte:string, status_code:int, i:int):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        j:int = 0
+        n:int = 0
+        d_length:int = 24
+        stopped:bool = False
+
+        def generate_inner_output():
+            return (i)
+
+
+        htp_list = query(htp_list_list, filters=(lambda htp_list: htp_list.paramnr == paramnr), first=True)
+        j = i + 1
+        while not stopped:
+
+            if substring(curr_texte, j - 1, 1) < ("0").lower()  or substring(curr_texte, j - 1, 1) > ("9").lower() :
+                stopped = True
+            else:
+                j = j + 1
+
+        if j > (i + 1):
+            j = j - 1
+            n = to_int(substring(curr_texte, i + 1 - 1, j - i))
+
+            if status_code == 1:
+                ntab = n
+
+            elif status_code == 2:
+                nskip = n
+
+            elif status_code == 3:
+                lmargin = n
+
+            elif status_code == 10:
+                d_length = n
+            i = j
+
+        return generate_inner_output()
+
+
+    def decode_key1(paramnr:int):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        out_str = ""
+        status_code = 0
+        summe:Decimal = to_decimal("0.0")
+        t_vat:Decimal = to_decimal("0.0")
+        gmember = None
+
+        def generate_inner_output():
+            return (out_str, status_code)
+
+        Gmember =  create_buffer("Gmember",Guest)
+
+        if htparam.paramnr == 100:
+
+            if f_bill:
+
+                if not spbill_flag:
+                    t_vat = cal_vat()
+                else:
+                    t_vat = cal_spvat()
+
+            if not long_digit:
+                put_string(to_string(t_vat, "->>>,>>>,>>9.99"))
+            else:
+                put_string(to_string(t_vat, "->>,>>>,>>>,>>9"))
+
+        elif htparam.paramnr == 361 and f_resnr:
+
+            if not long_digit:
+                put_string(to_string(reservation.depositgef2, "->>,>>>,>>9.99"))
+            else:
+                put_string(to_string(reservation.depositgef2, "->,>>>,>>>,>>9"))
+
+        elif htparam.paramnr == 362 and f_resnr:
+            put_string(to_string(reservation.limitdate2))
+
+        elif htparam.paramnr == 365:
+
+            if not long_digit:
+
+                if price_decimal == 0:
+                    put_string(to_string(exchg_rate, ">>,>>9.99"))
+                else:
+                    put_string(to_string(exchg_rate, ">>,>>9.999999"))
+            else:
+                put_string(to_string(exchg_rate, ">,>>>,>>9"))
+
+        elif (htparam.paramnr == 366 or htparam.paramnr == 367) and f_resnr:
+            summe = ( to_decimal(reservation.depositbez) + to_decimal(reservation.depositbez2))
+
+            if not long_digit:
+                put_string(to_string(summe, "->>,>>>,>>9.99"))
+            else:
+                put_string(to_string(summe, "->,>>>,>>>,>>9"))
+
+        elif htparam.paramnr == 380 and f_resline:
+            summe = ( to_decimal(res_line.zipreis) * to_decimal(res_line.zimmeranz) * to_decimal(res_line.anztage))
+            put_string(to_string(summe), "->,>>>,>>>,>>9.99")
+
+        elif htparam.paramnr == 381:
+            summe =  to_decimal("0")
+
+            for res_line in db_session.query(Res_line).filter(
+                     (Res_line.resnr == bill.resnr) & (Res_line.active_flag <= 1)).order_by(Res_line._recid).all():
+                summe =  to_decimal(summe) + to_decimal((res_line.zipreis) * to_decimal(res_line.zimmeranz) * to_decimal(res_line.anztage))
+            put_string(to_string(summe, "->>,>>>,>>9.99"))
+
+        elif htparam.paramnr == 382:
+
+            if guest:
+                put_string(to_string(guest.telefon, "x(24)"))
+
+        elif htparam.paramnr == 383 and f_resnr:
+            put_string(trim(reservation.useridanlage))
+
+        elif htparam.paramnr == 386:
+            put_string(to_string(bill.resnr, ">>,>>>,>>9"))
+
+        elif htparam.paramnr == 397 and f_resnr:
+            put_string(substring(res_line.flight_nr, 0, 6))
+
+        elif htparam.paramnr == 413 and f_resline:
+
+            gmember = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+            put_string(to_string(gmember.mobil_telefon, "x(16)"))
+
+        elif htparam.paramnr == 414 and f_resline:
+            put_string(to_string(res_line.abreise - res_line.ankunft, ">>9"))
+
+        return generate_inner_output()
+
+
+    def decode_key2(paramnr:int):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        out_str = ""
+        status_code = 0
+        n:int = 0
+        rline = None
+
+        def generate_inner_output():
+            return (out_str, status_code)
+
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, paramnr)]})
+
+        if htparam.paramnr == 601:
+            pass
+
+        elif htparam.paramnr == 602:
+            put_string(to_string(curr_page))
+
+        elif htparam.paramnr == 603:
+            status_code = 1
+
+        elif htparam.paramnr == 604:
+            put_string(to_string(get_current_date()))
+
+        elif htparam.paramnr == 1110:
+            put_string(to_string(billdate))
+
+        elif htparam.paramnr == 605:
+            put_string(to_string(get_current_time_in_seconds(), "HH:mm:SS"))
+
+        elif htparam.paramnr == 606:
+            put_string(to_string(get_current_date()))
+
+        elif htparam.paramnr == 607:
+
+            if res_line and res_line.code != "":
+
+                queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+
+                if queasy:
+                    put_string(queasy.char1)
+
+        elif htparam.paramnr == 608:
+            status_code = -1
+
+        elif htparam.paramnr == 609:
+            status_code = -2
+
+        elif htparam.paramnr == 616:
+            f_lmargin = True
+            status_code = 3
+
+        elif htparam.paramnr == 617:
+            f_lmargin = False
+
+        elif (htparam.paramnr >= 618) and (htparam.paramnr <= 629):
+
+            printcod = get_cache (Printcod, {"emu": [(eq, printer.emu)],"code": [(eq, htparam.fchar)]})
+
+            if printcod:
+                put_string(trim(printcod.contcod))
+
+        elif htparam.paramnr == 630:
+            put_string(trim(guest.adresse1))
+
+            if headloop == 0:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+                curr_pos = 1
+
+            if f_lmargin:
+                for n in range(1,lmargin + 1) :
+                    put_string(" ")
+            put_string(trim(guest.adresse2))
+
+            if headloop == 0:
+                output_list.str = output_list.str + ""
+
+
+                output_list = Output_list()
+                output_list_list.append(output_list)
+
+                curr_line = curr_line + 1
+                curr_pos = 1
+            curr_line = curr_line + 1
+            curr_pos = 1
+
+            if f_lmargin:
+                for n in range(1,lmargin + 1) :
+                    put_string(" ")
+            put_string(trim(guest.adresse3))
+
+        elif htparam.paramnr == 635:
+
+            if guest.geburtdatum1 != None:
+                put_string(to_string(guest.geburtdatum1))
+            else:
+                put_string(" ")
+
+        elif htparam.paramnr == 637:
+
+            akt_kont = get_cache (Akt_kont, {"gastnr": [(eq, guest.gastnr)],"hauptkontakt": [(eq, True)]})
+
+            if akt_kont:
+                put_string(akt_kont.name + ", " + akt_kont.vorname + " " + akt_kont.anrede)
+
+        elif htparam.paramnr == 638:
+            Rline =  create_buffer("Rline",Res_line)
+
+            if proforma_inv:
+
+                rline = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+
+                if not rline:
+
+                    rline = get_cache (Res_line, {"resnr": [(eq, resnr)],"resstatus": [(ne, 9),(ne, 10),(ne, 12),(ne, 99)]})
+                put_string(trim(rline.name))
+            else:
+                put_string(trim(guest.name))
+
+        elif htparam.paramnr == 639:
+            put_string(trim(guest.vorname1))
+
+        elif htparam.paramnr == 641:
+            put_string(trim(guest.anrede1))
+
+        elif htparam.paramnr == 643:
+            put_string(trim(guest.adresse1))
+
+        elif htparam.paramnr == 644:
+            put_string(trim(guest.adresse2))
+
+        elif htparam.paramnr == 645:
+            put_string(trim(guest.adresse3))
+
+        elif htparam.paramnr == 646:
+            put_string(trim(guest.land))
+
+        elif htparam.paramnr == 647:
+            put_string(to_string(guest.plz))
+
+        elif htparam.paramnr == 648:
+            put_string(trim(guest.wohnort))
+
+        return generate_inner_output()
+
+
+    def decode_key3(paramnr:int):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        out_str = ""
+        status_code = 0
+        saldo:Decimal = to_decimal("0.0")
+        i:int = 0
+        bemerk:string = ""
+        guest1 = None
+        gmember = None
+        ank_str:string = ""
+        abr_str:string = ""
+        wi_gastnr:int = 0
+        ind_gastnr:int = 0
+        gast = None
+        mbill = None
+        billname:string = ""
+        rechnr_str:string = ""
+
+        def generate_inner_output():
+            return (out_str, status_code)
+
+        Guest1 =  create_buffer("Guest1",Guest)
+        Gmember =  create_buffer("Gmember",Guest)
+        pass
+
+        if f_resline:
+
+            gmember = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+
+        if htparam.paramnr == 650:
+            status_code = 6
+
+        elif htparam.paramnr == 651:
+            status_code = 7
+
+        elif htparam.paramnr == 652 and f_resnr:
+            put_string(to_string(reservation.resart))
+
+        elif htparam.paramnr == 653 and f_resnr:
+            put_string(to_string(reservation.refdatum))
+
+        elif htparam.paramnr == 654 and f_resline:
+            put_string(trim(res_line.arrangement))
+
+        elif htparam.paramnr == 655 and f_resline:
+
+            if bill and bill.resnr > 0 and bill.reslinnr == 0:
+                put_string(to_string(master_ankunft))
+            else:
+                ank_str = to_string(res_line.ankunft)
+
+                if res_line.ankzeit != 0 and not short_arrival:
+                    ank_str = ank_str + " " + to_string(res_line.ankzeit, "HH:mm")
+                put_string(ank_str)
+
+        elif htparam.paramnr == 656 and f_resline:
+
+            if bill and bill.resnr > 0 and bill.reslinnr == 0:
+                put_string(to_string(master_abreise))
+            else:
+                abr_str = to_string(res_line.abreise)
+
+                if res_line.abreisezeit != 0 and not short_depart:
+                    abr_str = abr_str + " " + to_string(res_line.abreisezeit, "HH:mm")
+                put_string(abr_str)
+
+        elif htparam.paramnr == 657 and f_resline:
+
+            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
+            put_string(zimkateg.kurzbez + " / " + to_string(res_line.zimmeranz))
+
+        elif htparam.paramnr == 658 and f_resline:
+            Gast =  create_buffer("Gast",Guest)
+
+            htparam = get_cache (Htparam, {"paramnr": [(eq, 109)]})
+            wi_gastnr = htparam.finteger
+
+            htparam = get_cache (Htparam, {"paramnr": [(eq, 123)]})
+            ind_gastnr = htparam.finteger
+
+            gast = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+
+            if gast.karteityp == 0 or gast.gastnr == wi_gastnr or gast.gastnr == ind_gastnr:
+                put_string(trim(to_string(res_line.zipreis, ">>>,>>>,>>9.99")))
+
+            elif res_line.gastnrmember == res_line.gastnrpay:
+                put_string(trim(to_string(res_line.zipreis, ">>>,>>>,>>9.99")))
+            else:
+                put_string(to_string("", "x(14)"))
+
+        elif htparam.paramnr == 660 and f_resnr:
+            put_string(to_string(reservation.depositgef, "->,>>>,>>>,>>9"))
+
+        elif htparam.paramnr == 661 and f_resnr:
+            put_string(to_string(reservation.limitdate))
+
+        elif htparam.paramnr == 662 and f_resline:
+            put_string(trim(res_line.zinr))
+
+        elif htparam.paramnr == 663 and f_resline:
+            put_string(to_string(res_line.erwachs + res_line.gratis))
+
+        elif htparam.paramnr == 664:
+            Mbill =  create_buffer("Mbill",Bill)
+
+            if proforma_inv:
+
+                mbill = db_session.query(Mbill).filter(
+                         (Mbill.resnr == resnr) & (Mbill.reslinnr == 0)).first()
+
+                if mbill:
+
+                    guest1 = get_cache (Guest, {"gastnr": [(eq, mbill.gastnr)]})
+                else:
+
+                    guest1 = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+                put_string(guest1.name + ", " + guest1.vorname1 + " " + guest1.anrede1 + guest1.anredefirma)
+
+            elif f_resline and reslinnr > 0:
+
+                guest1 = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+                put_string(guest1.name + ", " + guest1.vorname1 + " " + guest1.anrede1 + guest1.anredefirma)
+
+            elif f_bill:
+
+                guest1 = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+                billname = guest1.name + ", " + guest1.vorname1 + " " + guest1.anrede1 + guest1.anredefirma
+
+                if guest1.karteityp > 0 and f_resline and print_member:
+
+                    if gmember and gmember.gastnr != guest1.gastnr and gmember.karteityp == 0:
+                        billname = billname + " / " + res_line.name
+            put_string(billname)
+
+        elif htparam.paramnr == 665:
+            put_string(to_string(resnr))
+
+        elif htparam.paramnr == 666 and f_resnr:
+
+            guest1 = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+            put_gname(guest1.name + ", " + guest1.vorname1 + " " + guest1.anrede1 + guest1.anredefirma)
+
+        elif htparam.paramnr == 667 and f_resnr:
+            put_string(trim(reservation.groupname))
+
+        elif htparam.paramnr == 668:
+            status_code = 10
+
+        elif htparam.paramnr == 670:
+            status_code = 8
+
+        elif htparam.paramnr == 671:
+            status_code = 9
+
+        elif htparam.paramnr == 672 and f_bill:
+            put_string(to_string(bill.datum))
+
+        elif htparam.paramnr == 673 and f_bill:
+
+            if bill.flag == 0:
+                put_string(to_string(bill.rechnr))
+                put_string(" / ")
+                put_string(to_string(bill.printnr))
+
+            elif bill.flag == 1:
+                rechnr_str = to_string(bill.rechnr) + translateExtended ("(DUPLICATE)", lvcarea, "")
+                put_string(rechnr_str)
+
+        elif htparam.paramnr == 674:
+            saldo =  to_decimal("0")
+
+            if f_bill:
+
+                bill = get_cache (Bill, {"rechnr": [(eq, rechnr)]})
+                saldo =  to_decimal(bill.saldo)
+
+            if not long_digit:
+                put_string(to_string(saldo, "->>>,>>>,>>9.99"))
+            else:
+                put_string(to_string(saldo, "->>>,>>>,>>>,>>9"))
+
+        elif htparam.paramnr == 680:
+
+            akt_kont = get_cache (Akt_kont, {"gastnr": [(eq, guest.gastnr)],"hauptkontakt": [(eq, True)]})
+
+            if akt_kont:
+                put_string(trim(akt_kont.name))
+
+        elif htparam.paramnr == 681:
+
+            akt_kont = get_cache (Akt_kont, {"gastnr": [(eq, guest.gastnr)],"hauptkontakt": [(eq, True)]})
+
+            if akt_kont:
+                put_string(trim(akt_kont.vorname))
+
+        elif htparam.paramnr == 682:
+
+            akt_kont = get_cache (Akt_kont, {"gastnr": [(eq, guest.gastnr)],"hauptkontakt": [(eq, True)]})
+
+            if akt_kont:
+                put_string(trim(akt_kont.funktion))
+
+        elif htparam.paramnr == 683:
+
+            akt_kont = get_cache (Akt_kont, {"gastnr": [(eq, guest.gastnr)],"hauptkontakt": [(eq, True)]})
+
+            if akt_kont:
+                put_string(trim(akt_kont.abteilung))
+
+        elif htparam.paramnr == 684:
+
+            akt_kont = get_cache (Akt_kont, {"gastnr": [(eq, guest.gastnr)],"hauptkontakt": [(eq, True)]})
+
+            if akt_kont:
+                put_string(trim(akt_kont.anrede))
+
+        elif htparam.paramnr == 686 and f_resline:
+
+            zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+
+            if zimmer:
+                put_string(trim(zimmer.bezeich))
+
+        elif htparam.paramnr == 689:
+
+            if guest.karteityp > 0:
+                put_string(trim(guest.name))
+
+        elif htparam.paramnr == 690:
+            put_string(trim(guest.anredefirma))
+
+        elif htparam.paramnr == 691:
+            put_string(trim(guest.fax))
+
+        elif htparam.paramnr == 692:
+            bemerk = ""
+            for i in range(1,length(guest.bemerkung)  + 1) :
+
+                if substring(guest.bemerkung, i - 1, 1) == chr_unicode(10):
+                    bemerk = bemerk + " "
+                else:
+                    bemerk = bemerk + substring(guest.bemerkung, i - 1, 1)
+            put_string(substring(trim(bemerk), 0, 48))
+
+        elif htparam.paramnr == 693:
+            put_string(to_string(guest.gastnr))
+
+        elif htparam.paramnr == 694:
+
+            if gmember:
+                put_string(trim(gmember.nation1))
+            else:
+                put_string(trim(guest.nation1))
+
+        elif htparam.paramnr == 695:
+
+            if gmember:
+                put_string(trim(gmember.geburt_ort1))
+            else:
+                put_string(trim(guest.geburt_ort1))
+
+        elif htparam.paramnr == 696:
+
+            if gmember:
+                put_string(trim(gmember.beruf))
+            else:
+                put_string(trim(guest.beruf))
+
+        elif htparam.paramnr == 697:
+
+            if gmember:
+                put_string(trim(gmember.ausweis_art))
+            else:
+                put_string(trim(guest.ausweis_art))
+
+        elif htparam.paramnr == 698:
+
+            if gmember:
+                put_string(trim(gmember.ausweis_nr1))
+            else:
+                put_string(trim(guest.ausweis_nr1))
+
+        elif htparam.paramnr == 699:
+
+            if gmember:
+                put_string(trim(gmember.autonr))
+            else:
+                put_string(trim(guest.autonr))
+
+        return generate_inner_output()
+
+
+    def decode_key4(paramnr:int):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        out_str = ""
+        status_code = 0
+        i:int = 0
+        pos1:int = 0
+        bemerk:string = ""
+        gname:string = ""
+        voucher:string = ""
+        vat_str:string = ""
+        resline = None
+        gmember = None
+        rsvguest = None
+        ct:string = ""
+        anz:int = 0
+        gbuff = None
+        cc_str:string = ""
+        cc_nr:string = ""
+        mm:int = 0
+        yy:int = 0
+        cc_valid:bool = True
+        discval:Decimal = to_decimal("0.0")
+        do_it:bool = True
+        publish_rate:Decimal = to_decimal("0.0")
+        mresline = None
+        progname:string = ""
+        str1:string = ""
+        str2:string = ""
+        str3:string = ""
+        exrate:Decimal = 1
+        exchg_buff = None
+
+        def generate_inner_output():
+            return (out_str, status_code)
+
+        Resline =  create_buffer("Resline",Res_line)
+        Gmember =  create_buffer("Gmember",Guest)
+        Rsvguest =  create_buffer("Rsvguest",Guest)
+
+        if htparam.paramnr == 711:
+
+            if f_bill:
+
+                gmember = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+                put_string(to_string(gmember.sternzeichen, "x(20)"))
+            else:
+                put_string(to_string("", "x(20)"))
+
+        elif htparam.paramnr == 713 and f_resline:
+            put_string(substring(res_line.flight_nr, 6, 5))
+
+        elif htparam.paramnr == 714 and f_resline:
+            put_string(substring(res_line.flight_nr, 11, 6))
+
+        elif htparam.paramnr == 715 and f_resline:
+            put_string(substring(res_line.flight_nr, 17, 5))
+
+        elif htparam.paramnr == 717:
+            put_string("(R)")
+
+        elif htparam.paramnr == 725 and f_resline:
+
+            gmember = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+            put_string(to_string(gmember.telex, "x(24)"))
+
+        elif htparam.paramnr == 726 and f_resline:
+
+            gmember = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+
+            if gmember.geburtdatum2 != None:
+                put_string(to_string(gmember.geburtdatum2, "99/99/9999"))
+            else:
+                put_string(to_string("", "x(10)"))
+
+        elif htparam.paramnr == 730 and f_resline:
+            for anz in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
+                ct = entry(anz - 1, res_line.zimmer_wunsch, ";")
+
+                if substring(ct, 0, 8) == ("segm_pur").lower() :
+                    ct = substring(ct, 8)
+
+                    queasy = get_cache (Queasy, {"key": [(eq, 143)],"number1": [(eq, to_int(ct))]})
+
+                    if queasy:
+                        ct = queasy.char3
+                    return generate_inner_output()
+            put_string(to_string(ct, "x(12)"))
+
+        elif htparam.paramnr == 731 and f_resline:
+
+            gmember = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+            put_string(to_string(gmember.mobil_telefon, "x(16)"))
+
+        elif htparam.paramnr == 733 and f_resline:
+
+            gmember = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+
+            if gmember.master_gastnr != 0:
+                Gbuff =  create_buffer("Gbuff",Guest)
+
+                gbuff = get_cache (Guest, {"gastnr": [(eq, gmember.master_gastnr)]})
+
+                if gbuff:
+                    put_string(to_string((gbuff.name + ", " + gbuff.anredefirma), "x(24)"))
+
+        elif htparam.paramnr == 743 and f_resline:
+            put_string(to_string(res_line.erwachs))
+
+        elif htparam.paramnr == 746 and f_resline:
+            put_string(to_string(res_line.gratis))
+
+        elif htparam.paramnr == 759 and f_resnr:
+
+            rsvguest = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+            put_string(rsvguest.adresse1)
+
+        elif htparam.paramnr == 760 and f_resnr:
+
+            rsvguest = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+            put_string(rsvguest.adresse2)
+
+        elif htparam.paramnr == 761 and f_resnr:
+
+            rsvguest = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+            put_string(rsvguest.adresse3)
+
+        elif htparam.paramnr == 762 and f_resnr:
+
+            rsvguest = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+            put_string(rsvguest.wohnort)
+
+        elif htparam.paramnr == 763 and f_resnr:
+
+            rsvguest = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+            put_string(rsvguest.plz)
+
+        elif htparam.paramnr == 765 and f_resnr:
+
+            rsvguest = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+            put_string(rsvguest.land)
+
+        elif htparam.paramnr == 766 and f_resnr:
+
+            gmember = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+
+            if gmember.ausweis_nr2 != "":
+                cc_str = entry(0, gmember.ausweis_nr2, "|")
+                cc_nr = entry(1, cc_str, "\\")
+                mm = to_int(substring(entry(2, cc_str, "\\") , 0, 2))
+                yy = to_int(substring(entry(2, cc_str, "\\") , 2))
+
+                if cc_nr == "":
+                    cc_valid = False
+
+                if cc_valid:
+
+                    if yy < get_year(get_current_date()):
+                        cc_valid = False
+
+                if cc_valid:
+
+                    if (yy == get_year(get_current_date()) and mm < get_month(get_current_date())):
+                        cc_valid = False
+
+                if cc_valid:
+                    cc_nr = substring(cc_nr, 0, 1) +\
+                            fill("X", length(cc_nr) - 5) +\
+                            substring(cc_nr, length(cc_nr) - 3 - 1)
+                    cc_nr = cc_nr + ", " + substring(entry(2, cc_str, "\\") , 0, 2) + "/" +\
+                            substring(entry(2, cc_str, "\\") , 2)
+
+
+                    put_string(cc_nr)
+
+        elif htparam.paramnr == 764:
+            vat_str = get_output(bill_vatsum(rechnr, curr_pos))
+            put_string(vat_str)
+
+        elif htparam.paramnr == 847 and f_resnr:
+            put_string(reservation.vesrdepot)
+
+        elif htparam.paramnr == 849:
+
+            master = get_cache (Master, {"resnr": [(eq, resnr)]})
+
+            if master:
+                read_proforma_inv()
+            else:
+                read_proforma_inv1()
+            proforma_inv = True
+
+        elif htparam.paramnr == 1087:
+            put_string(trim(guest.email_adr))
+
+        elif htparam.paramnr == 1088 and f_resnr:
+            put_string(to_string(reservation.source_code))
+
+        elif htparam.paramnr == 1091 and f_resline:
+            bemerk = ""
+            for i in range(1,length(res_line.bemerk)  + 1) :
+
+                if substring(res_line.bemerk, i - 1, 1) == chr_unicode(10):
+                    bemerk = bemerk + " "
+                else:
+                    bemerk = bemerk + substring(res_line.bemerk, i - 1, 1)
+            for i in range(1,c_length + 1) :
+
+                if length(bemerk) < i:
+                    put_string(" ")
+                else:
+                    put_string(substring(bemerk, i - 1, 1))
+
+        elif htparam.paramnr == 1092 and f_resnr:
+            bemerk = ""
+            for i in range(1,length(reservation.bemerk)  + 1) :
+
+                if substring(reservation.bemerk, i - 1, 1) == chr_unicode(10):
+                    bemerk = bemerk + " "
+                else:
+                    bemerk = bemerk + substring(reservation.bemerk, i - 1, 1)
+            put_string(substring(trim(bemerk), 0, 48))
+
+        elif htparam.paramnr == 1077 and f_bill:
+            put_string(to_string(bill.rechnr2))
+
+        elif htparam.paramnr == 1078 and f_bill:
+            Mresline =  create_buffer("Mresline",Res_line)
+
+            if bill.flag == 0 and bill.zinr != "":
+
+                mresline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+
+                guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, reservation.gastnr)]})
+
+                if guest_pr and mresline.zipreis > 0:
+
+                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+                    do_it = None != reslin_queasy
+
+                if do_it and mresline.zipreis > 0:
+
+                    arrangement = get_cache (Arrangement, {"arrangement": [(eq, mresline.arrangement)]})
+
+                    katpreis = get_cache (Katpreis, {"zikatnr": [(eq, mresline.zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, billdate)],"endperiode": [(ge, billdate)],"betriebsnr": [(eq, wd_array[get_weekday(billdate) - 1])]})
+
+                    if not katpreis:
+
+                        katpreis = get_cache (Katpreis, {"zikatnr": [(eq, mresline.zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, billdate)],"endperiode": [(ge, billdate)],"betriebsnr": [(eq, 0)]})
+
+                    if katpreis:
+                        publish_rate =  to_decimal(get_rackrate (mresline.erwachs , mresline.kind1 , mresline.kind2))
+
+                if publish_rate > 0:
+                    discval = ( to_decimal("1") - to_decimal((mresline.zipreis) / to_decimal(publish_rate))) * to_decimal("100")
+                discval = to_decimal(round(discval , 0))
+
+                if discval == 0:
+                    put_string(" ")
+                else:
+                    put_string(to_string(discval))
+
+        elif htparam.paramnr == 1094 and f_bill and not print_all_member:
+
+            if bill.resnr > 0:
+
+                resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                if not resline:
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)]})
+
+            elif bill_line.zinr != "":
+
+                resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                if not resline:
+
+                    if bill.datum > bill_line.bill_datum:
+
+                        resline = get_cache (Res_line, {"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)],"ankunft": [(le, bill_line.bill_datum)],"abreise": [(gt, bill_line.bill_datum)]})
+                    else:
+
+                        resline = get_cache (Res_line, {"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)],"ankunft": [(le, bill_line.bill_datum)],"abreise": [(ge, bill_line.bill_datum)]})
+
+            if resline:
+                gname = resline.name
+
+            elif bline_list:
+                gname = bline_list.gname
+
+            if mainres:
+                voucher = mainres.vesrdepot
+            for i in range(1,g_length + 1) :
+
+                if length(gname) < i:
+                    output_list.str = output_list.str + " "
+
+
+                else:
+                    output_list.str = output_list.str + to_string(substring(gname, i - 1, 1) , "x(1)")
+
+
+            curr_pos = curr_pos + g_length
+
+        elif htparam.paramnr == 1094 and f_bill and print_all_member:
+
+            for resline in db_session.query(Resline).filter(
+                     (Resline.resnr == bill.resnr) & (Resline.resstatus != 12) & (Resline.resstatus != 9) & (Resline.resstatus != 10) & (Resline.resstatus != 13) & (Resline.resstatus != 99)).order_by(Resline.name, Resline.zinr).all():
+                gname = resline.name
+
+                if pos1 != 0:
+                    output_list.str = output_list.str + ""
+
+
+                    output_list = Output_list()
+                    output_list_list.append(output_list)
+
+                    curr_line = curr_line + 1
+                    for i in range(1,pos1 + 1) :
+                        output_list.str = output_list.str + to_string(" ", "x(1)")
+
+
+                for i in range(1,g_length + 1) :
+
+                    if length(gname) < i:
+                        output_list.str = output_list.str + " "
+
+
+                    else:
+                        output_list.str = output_list.str + to_string(substring(gname, i - 1, 1) , "x(1)")
+
+
+                output_list.str = output_list.str + to_string(" #", "x(2)")
+
+
+                output_list.str = output_list.str + to_string(resline.zinr, "x(6)")
+
+                if pos1 == 0:
+                    pos1 = curr_pos - 1
+                    curr_pos = curr_pos + g_length + 7
+
+        elif htparam.paramnr == 1095:
+            put_string(to_string(bline_nr, ">>9"))
+
+        elif htparam.paramnr == 1096:
+
+            if briefnr == briefnr2 or briefnr == briefnr21:
+
+                htparam = get_cache (Htparam, {"paramnr": [(eq, 416)]})
+            else:
+
+                htparam = get_cache (Htparam, {"paramnr": [(eq, 410)]})
+            progname = htparam.fchar
+
+            if (progname != "") and bill:
+
+                if progname.lower()  == ("word_chinese.p").lower() :
+
+                    if briefnr == briefnr2:
+                        str1, str2, str3 = get_output(run_program(progname,(bl0_balance1, w_length)))
+                    else:
+
+                        if bl0_balance != 0:
+                            str1, str2, str3 = get_output(run_program(progname,(bl0_balance, w_length)))
+
+                        elif inv_type == 2 or spbill_flag:
+                            str1, str2, str3 = get_output(run_program(progname,(bl_balance, w_length)))
+                        else:
+                            str1, str2, str3 = get_output(run_program(progname,(bill.saldo, w_length)))
+                else:
+
+                    if briefnr == briefnr2 or briefnr == briefnr21:
+                        str1, str2 = get_output(run_program(progname,(bl0_balance1, w_length)))
+                    else:
+
+                        if bl0_balance != 0:
+                            str1, str2 = get_output(run_program(progname,(bl0_balance, w_length)))
+
+                        elif inv_type == 2 or spbill_flag:
+                            str1, str2 = get_output(run_program(progname,(bl_balance, w_length)))
+                        else:
+                            str1, str2 = get_output(run_program(progname,(bill.saldo, w_length)))
+
+                if str3 != "":
+                    for i in range(1,length(str3)  + 1) :
+                        output_list.str = output_list.str + to_string(substring(str3, i - 1, 1) , "x(1)")
+
+
+                    output_list.str = output_list.str + " "
+
+
+                    output_list = Output_list()
+                    output_list_list.append(output_list)
+
+                    curr_line = curr_line + 1
+                    for i in range(1,(curr_pos - 1)  + 1) :
+                        output_list.str = output_list.str + to_string(" ", "x(1)")
+
+
+                for i in range(1,length(str1)  + 1) :
+                    output_list.str = output_list.str + to_string(substring(str1, i - 1, 1) , "x(1)")
+
+                if str2 == "":
+                    curr_pos = curr_pos + length(str1)
+                else:
+                    output_list.str = output_list.str + ""
+
+
+                    output_list = Output_list()
+                    output_list_list.append(output_list)
+
+                    curr_line = curr_line + 1
+                    for i in range(1,(curr_pos - 1)  + 1) :
+                        output_list.str = output_list.str + to_string(" ", "x(1)")
+
+
+                    for i in range(1,length(str2)  + 1) :
+                        output_list.str = output_list.str + to_string(substring(str2, i - 1, 1) , "x(1)")
+
+
+                    curr_pos = curr_pos + length(str2)
+
+        elif htparam.paramnr == 1107:
+            Exchg_buff =  create_buffer("Exchg_buff",exrate)
+
+            if f_resline:
+
+                if res_line.reserve_dec != 0:
+
+                    if res_line.ankunft == billdate:
+
+                        waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
+
+                        if waehrung:
+                            exrate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+                        else:
+                            exrate =  to_decimal(res_line.reserve_dec)
+                    else:
+
+                        exchg_buff = get_cache (exrate, {"datum": [(eq, res_line.ankunft)],"artnr": [(eq, res_line.betriebsnr)]})
+
+                        if exchg_buff:
+                            exrate =  to_decimal(exchg_buff.betrag)
+                        else:
+                            exrate =  to_decimal(res_line.reserve_dec)
+                else:
+
+                    waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
+
+                    if waehrung:
+                        exrate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+
+            if not long_digit:
+
+                if price_decimal == 0:
+                    put_string(to_string(exrate, ">>,>>9.99"))
+                else:
+                    put_string(to_string(exrate, ">>,>>9.999999"))
+            else:
+                put_string(to_string(exrate, ">,>>>,>>9"))
+
+        elif htparam.paramnr == 1105:
+
+            if f_resline:
+
+                waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
+
+                if waehrung:
+                    put_string(to_string(waehrung.wabkurz, "x(4)"))
+                else:
+                    put_string(to_string(" ", "x(4)"))
+            else:
+                put_string(to_string(" ", "x(4)"))
+
+        elif htparam.paramnr == 1589:
+
+            if bill_line.zinr != "":
+
+                mainres = get_cache (Reservation, {"resnr": [(eq, bill_line.massnr)]})
+
+            if mainres:
+                voucher = mainres.vesrdepot
+            for i in range(1,v_length + 1) :
+
+                if length(voucher) < i:
+                    output_list.str = output_list.str + " "
+
+
+                else:
+                    output_list.str = output_list.str + to_string(substring(voucher, i - 1, 1) , "x(1)")
+
+
+            curr_pos = curr_pos + v_length
+
+        return generate_inner_output()
+
+
+    def decode_key5a(paramnr:int):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        out_str = ""
+        status_code = 0
+        stime:string = ""
+        i:int = 0
+        netto:Decimal = to_decimal("0.0")
+        gname:string = ""
+        voucher:string = ""
+        pos1:int = 0
+        foart = None
+        resline = None
+        guest1 = None
+        fbal:Decimal = to_decimal("0.0")
+        gname1:string = ""
+
+        def generate_inner_output():
+            return (out_str, status_code)
+
+        Foart =  create_buffer("Foart",Artikel)
+        Resline =  create_buffer("Resline",Res_line)
+        Guest1 =  create_buffer("Guest1",Guest)
+
+        if htparam.paramnr == 1094 and not print_all_member:
+
+            if f_resline and reslinnr > 0:
+                gname = res_line.name
+
+            elif f_resline and reslinnr == 0:
+
+                if not bill_line:
+
+                    bill_line = get_cache (Bill_line, {"rechnr": [(eq, bill.rechnr)],"zinr": [(ne, "")]})
+
+                if not bill_line:
+
+                    bill_line = get_cache (Bill_line, {"rechnr": [(eq, bill.rechnr)]})
+
+                if bill_line and bill_line.zinr != "":
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                    if not resline:
+
+                        resline = get_cache (Res_line, {"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)],"active_flag": [(ge, 1),(le, 2)],"ankunft": [(le, bill_line.bill_datum)],"abreise": [(gt, bill_line.bill_datum)]})
+
+                    if resline:
+                        gname = resline.name
+            for i in range(1,g_length + 1) :
+
+                if length(gname) < i:
+                    output_list.str = output_list.str + " "
+
+
+                else:
+                    output_list.str = output_list.str + to_string(substring(gname, i - 1, 1) , "x(1)")
+
+
+            curr_pos = curr_pos + g_length
+
+        elif htparam.paramnr == 1094 and print_all_member:
+
+            for resline in db_session.query(Resline).filter(
+                     (Resline.resnr == bill.resnr) & (Resline.resstatus != 12) & (Resline.resstatus != 9) & (Resline.resstatus != 10) & (Resline.resstatus != 13) & (Resline.resstatus != 99)).order_by(Resline.name, Resline.zinr).all():
+                gname = resline.name
+
+                if pos1 != 0:
+                    output_list.str = output_list.str + ""
+
+
+                    output_list = Output_list()
+                    output_list_list.append(output_list)
+
+                    curr_line = curr_line + 1
+                    for i in range(1,pos1 + 1) :
+                        output_list.str = output_list.str + to_string(" ", "x(1)")
+
+
+                for i in range(1,g_length + 1) :
+
+                    if length(gname) < i:
+                        output_list.str = output_list.str + " "
+
+
+                    else:
+                        output_list.str = output_list.str + to_string(substring(gname, i - 1, 1) , "x(1)")
+
+
+                output_list.str = output_list.str + to_string(" #", "x(2)")
+
+
+                output_list.str = output_list.str + to_string(resline.zinr, "x(6)")
+
+                if pos1 == 0:
+                    pos1 = curr_pos - 1
+                    curr_pos = curr_pos + g_length + 7
+
+        elif htparam.paramnr == 1103:
+
+            if f_resline and reslinnr > 0:
+                output_list.str = output_list.str + to_string(res_line.ankunft)
+
+            elif f_resline and reslinnr == 0:
+
+                if bill_line.zinr != "":
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                    if not resline:
+
+                        resline = get_cache (Res_line, {"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)],"active_flag": [(ge, 1),(le, 2)],"ankunft": [(le, bill_line.bill_datum)],"abreise": [(gt, bill_line.bill_datum)]})
+
+                    if resline:
+                        output_list.str = output_list.str + to_string(resline.ankunft)
+
+
+                    else:
+                        output_list.str = output_list.str + to_string("", "x(8)")
+
+
+                else:
+                    output_list.str = output_list.str + to_string("", "x(8)")
+
+
+            curr_pos = curr_pos + 8
+
+        elif htparam.paramnr == 1104:
+
+            if f_resline and reslinnr > 0:
+                output_list.str = output_list.str + to_string(res_line.abreise)
+
+            elif f_resline and reslinnr == 0:
+
+                if bill_line.zinr != "":
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+
+                    if not resline:
+
+                        resline = get_cache (Res_line, {"zinr": [(eq, bill_line.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)],"active_flag": [(ge, 1),(le, 2)],"ankunft": [(le, bill_line.bill_datum)],"abreise": [(gt, bill_line.bill_datum)]})
+
+                    if resline:
+                        output_list.str = output_list.str + to_string(resline.abreise)
+
+
+                    else:
+                        output_list.str = output_list.str + to_string("", "x(8)")
+
+
+                else:
+                    output_list.str = output_list.str + to_string("", "x(8)")
+
+
+            curr_pos = curr_pos + 8
+
+        elif htparam.paramnr == 1117:
+            output_list.str = output_list.str + to_string(bill_line.userinit, "x(4)")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 1380:
+
+            if bill_line.orts_tax != 0:
+                curr_bl_vat = get_vat(bill_line.origin_id)
+            else:
+
+                foart = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+
+                if foart:
+
+                    htparam = get_cache (Htparam, {"paramnr": [(eq, foart.mwst_code)]})
+
+                    if htparam:
+                        curr_bl_vat =  to_decimal(htparam.fdecimal)
+                    else:
+                        curr_bl_vat =  to_decimal("0")
+
+            if curr_bl_vat == 1000:
+                output_list.str = output_list.str + to_string(" ", "x(5)")
+
+
+            else:
+                output_list.str = output_list.str + to_string(curr_bl_vat, ">9.99")
+
+
+            curr_pos = curr_pos + 5
+
+        elif htparam.paramnr == 1400:
+
+            if (artikel.artnr == vat_artnr[0] or artikel.artnr == vat_artnr[1] or artikel.artnr == vat_artnr[2] or artikel.artnr == vat_artnr[3] or artikel.artnr == vat_artnr[4]) and artikel.departement == 0:
+                netto =  to_decimal("0")
+
+            elif bill_line.orts_tax != 0:
+                netto =  to_decimal(bill_line.betrag) - to_decimal(bill_line.orts_tax)
+            else:
+
+                foart = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+
+                if foart:
+
+                    htparam = get_cache (Htparam, {"paramnr": [(eq, foart.mwst_code)]})
+
+                    if htparam:
+                        curr_bl_vat =  to_decimal(htparam.fdecimal)
+                    else:
+                        curr_bl_vat =  to_decimal("0")
+                netto =  to_decimal(bill_line.betrag) / to_decimal((1) + to_decimal(curr_bl_vat) / to_decimal(100))
+                netto =  to_decimal(round (netto , price_decimal))
+            bl_netto =  to_decimal(bl_netto) + to_decimal(netto)
+
+            if not long_digit:
+                output_list.str = output_list.str + to_string(netto, "->>,>>>,>>9.99")
+
+
+                curr_pos = curr_pos + 14
+            else:
+                output_list.str = output_list.str + to_string(netto, "->>>,>>>,>>>,>>9")
+
+
+                curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 1401:
+
+            if not long_digit:
+                output_list.str = output_list.str + to_string(bl_netto, "->>,>>>,>>9.99")
+
+
+                curr_pos = curr_pos + 14
+            else:
+                output_list.str = output_list.str + to_string(bl_netto, "->>>,>>>,>>>,>>9")
+
+
+                curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 1589:
+
+            mainres = get_cache (Reservation, {"resnr": [(eq, bill_line.massnr)]})
+
+            if mainres:
+                voucher = mainres.vesrdepot
+            for i in range(1,v_length + 1) :
+
+                if length(voucher) < i:
+                    output_list.str = output_list.str + " "
+
+
+                else:
+                    output_list.str = output_list.str + to_string(substring(voucher, i - 1, 1) , "x(1)")
+
+
+            curr_pos = curr_pos + v_length
+
+        elif htparam.paramnr == 2304:
+            output_list.str = output_list.str + to_string(bill_line.artnr, ">>>9")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2305:
+            output_list.str = output_list.str + to_string(bill_line.anzahl, "->>9")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2306:
+            for i in range(1,d_length + 1) :
+
+                if length(bill_line.bezeich) < i:
+                    output_list.str = output_list.str + " "
+
+
+                else:
+                    output_list.str = output_list.str + to_string(substring(bill_line.bezeich, i - 1, 1) , "x(1)")
+
+
+            curr_pos = curr_pos + d_length
+
+        elif htparam.paramnr == 2307:
+
+            if not long_digit:
+                output_list.str = output_list.str + to_string(bill_line.epreis, "->,>>>,>>9.99")
+
+
+            else:
+                output_list.str = output_list.str + to_string(bill_line.epreis, "->>>>,>>>,>>9")
+
+
+            curr_pos = curr_pos + 13
+
+        elif htparam.paramnr == 2308:
+
+            if not long_digit:
+
+                if longer_billamt:
+                    output_list.str = output_list.str + to_string(bill_line.betrag, "->>>>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 16
+
+                elif long_billamt:
+                    output_list.str = output_list.str + to_string(bill_line.betrag, "->>>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 15
+                else:
+                    output_list.str = output_list.str + to_string(bill_line.betrag, "->>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 14
+            else:
+                output_list.str = output_list.str + to_string(bill_line.betrag, "->>>,>>>,>>>,>>9")
+
+
+                curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 2318:
+            output_list.str = output_list.str + to_string(bill_line.fremdwbetrag, "->>,>>9.99")
+
+
+            curr_pos = curr_pos + 10
+
+        elif htparam.paramnr == 2309:
+
+            if bill_line.zinr != "":
+                output_list.str = output_list.str + to_string(bill_line.zinr, "x(6)")
+
+
+            else:
+                output_list.str = output_list.str + to_string(" ")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2310:
+
+            if inv_type == 1:
+                output_list.str = output_list.str + to_string(bill_line.bill_datum)
+
+
+            else:
+                output_list.str = output_list.str + to_string(" ")
+
+
+            curr_pos = curr_pos + 8
+
+        elif htparam.paramnr == 2316:
+
+            if not long_digit:
+                output_list.str = output_list.str + to_string(bl_balance, "->>>,>>>,>>9.99")
+
+
+                curr_pos = curr_pos + 15
+            else:
+                output_list.str = output_list.str + to_string(bl_balance, "->>>,>>>,>>>,>>9")
+
+
+                curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 2319:
+
+            if bline_flag == 0:
+
+                if fixrate_flag and res_line and res_line.reserve_dec != 0 and bl0_balance != 0:
+                    bl0_balance1 =  to_decimal(bl0_balance) / to_decimal(res_line.reserve_dec)
+
+                if bl0_balance1 != 0:
+
+                    if bl0_balance1 >= 100000 or bl0_balance1 <= -100000:
+                        output_list.str = output_list.str + to_string(bl0_balance1, "->>>,>>>,>>>,>>9.99")
+
+
+                        curr_pos = curr_pos + 16
+                    else:
+                        output_list.str = output_list.str + to_string(bl0_balance1, "->>,>>9.99")
+
+
+                        curr_pos = curr_pos + 10
+                else:
+                    fbal = ( to_decimal(bl0_balance) / to_decimal(exchg_rate))
+
+                    if fbal >= 100000 or fbal <= -100000:
+                        output_list.str = output_list.str + to_string(fbal, "->>>,>>>,>>>,>>9")
+
+
+                        curr_pos = curr_pos + 16
+                    else:
+                        output_list.str = output_list.str + to_string(fbal, "->>,>>9.99")
+
+
+                        curr_pos = curr_pos + 10
+            else:
+
+                if bl_balance1 >= 100000 or bl_balance1 <= -100000:
+                    output_list.str = output_list.str + to_string(bl_balance1, "->>>,>>>,>>>,>>9")
+
+
+                    curr_pos = curr_pos + 16
+                else:
+                    output_list.str = output_list.str + to_string(bl_balance1, "->>,>>9.99")
+
+
+                    curr_pos = curr_pos + 10
+
+        elif htparam.paramnr == 2317:
+
+            guest1 = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+
+            if guest1:
+                gname1 = guest1.name + ", " + guest1.vorname1 + " " + guest1.anrede1
+                put_string(gname1)
+                curr_pos = curr_pos + 32
+
+        elif htparam.paramnr == 2311:
+            stime = to_string(get_current_time_in_seconds(), "HH:mm")
+            put_string(stime)
+
+        elif htparam.paramnr == 2312:
+            put_string(user_init)
+
+        elif htparam.paramnr == 2401:
+            put_string(to_string(bediener.username, "x(16)"))
+
+        return generate_inner_output()
+
+
+    def decode_key5b(paramnr:int):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        out_str = ""
+        status_code = 0
+        stime:string = ""
+        i:int = 0
+        bezeich:string = ""
+        netto:Decimal = to_decimal("0.0")
+        voucher:string = ""
+        foart = None
+        resline = None
+        htp = None
+        guest1 = None
+        gname:string = ""
+
+        def generate_inner_output():
+            return (out_str, status_code)
+
+        Foart =  create_buffer("Foart",Artikel)
+        Resline =  create_buffer("Resline",Res_line)
+        Htp =  create_buffer("Htp",Htparam)
+        Guest1 =  create_buffer("Guest1",Guest)
+
+        if htparam.paramnr == 1103:
+
+            if f_resline and reslinnr > 0:
+                output_list.str = output_list.str + to_string(res_line.ankunft)
+
+            elif f_resline and reslinnr == 0:
+
+                if bline_list.zinr != "":
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bline_list.massnr)],"reslinnr": [(eq, bline_list.billin_nr)]})
+
+                    if not resline:
+
+                        resline = get_cache (Res_line, {"zinr": [(eq, bline_list.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)],"active_flag": [(ge, 1),(le, 2)],"ankunft": [(le, bline_list.datum)],"abreise": [(gt, bline_list.datum)]})
+
+                    if resline:
+                        output_list.str = output_list.str + to_string(resline.ankunft)
+
+
+                    else:
+                        output_list.str = output_list.str + to_string("", "x(8)")
+
+
+                else:
+                    output_list.str = output_list.str + to_string("", "x(8)")
+
+
+            curr_pos = curr_pos + 8
+
+        elif htparam.paramnr == 1104:
+
+            if f_resline and reslinnr > 0:
+                output_list.str = output_list.str + to_string(res_line.abreise)
+
+            elif f_resline and reslinnr == 0:
+
+                if bline_list.zinr != "":
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bline_list.massnr)],"reslinnr": [(eq, bline_list.billin_nr)]})
+
+                    if not resline:
+
+                        resline = get_cache (Res_line, {"zinr": [(eq, bline_list.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)],"active_flag": [(ge, 1),(le, 2)],"ankunft": [(le, bline_list.datum)],"abreise": [(gt, bline_list.datum)]})
+
+                    if resline:
+                        output_list.str = output_list.str + to_string(resline.abreise)
+
+
+                    else:
+                        output_list.str = output_list.str + to_string(to_string("", "x(8)"))
+
+
+                else:
+                    output_list.str = output_list.str + to_string("", "x(8)")
+
+
+            curr_pos = curr_pos + 8
+
+        elif htparam.paramnr == 1380:
+
+            if bill_line and bill_line.orts_tax != 0:
+                curr_bl_vat = get_vat(bill_line.origin_id)
+            else:
+
+                foart = get_cache (Artikel, {"artnr": [(eq, bline_list.artnr)],"departement": [(eq, bline_list.dept)]})
+
+                if foart:
+
+                    htparam = get_cache (Htparam, {"paramnr": [(eq, foart.mwst_code)]})
+
+                    if htparam:
+                        curr_bl_vat =  to_decimal(htparam.fdecimal)
+                    else:
+                        curr_bl_vat =  to_decimal("0")
+
+            if curr_bl_vat == 1000:
+                output_list.str = output_list.str + to_string(" ", "x(5)")
+
+
+            else:
+                output_list.str = output_list.str + to_string(curr_bl_vat, ">9.99")
+
+
+            curr_pos = curr_pos + 5
+
+        elif htparam.paramnr == 1400:
+
+            if bline_list.netto != 0:
+                netto =  to_decimal(bline_list.netto)
+
+            elif (bline_list.artnr == vat_artnr[0] or bline_list.artnr == vat_artnr[1] or bline_list.artnr == vat_artnr[2] or bline_list.artnr == vat_artnr[3] or bline_list.artnr == vat_artnr[4]) and bline_list.dept == 0:
+                netto =  to_decimal("0")
+
+            elif bline_list.orts_tax != 0:
+                netto =  to_decimal(bline_list.saldo) - to_decimal(bline_list.orts_tax)
+            else:
+
+                foart = get_cache (Artikel, {"artnr": [(eq, bline_list.artnr)],"departement": [(eq, bline_list.dept)]})
+
+                if foart:
+
+                    htparam = get_cache (Htparam, {"paramnr": [(eq, foart.mwst_code)]})
+
+                    if htparam:
+                        curr_bl_vat =  to_decimal(htparam.fdecimal)
+                    else:
+                        curr_bl_vat =  to_decimal("0")
+                netto =  to_decimal(bline_list.saldo) / to_decimal((1) + to_decimal(curr_bl_vat) / to_decimal(100))
+            netto =  to_decimal(round (netto , price_decimal))
+            bl_netto =  to_decimal(bl_netto) + to_decimal(netto)
+
+            if not long_digit:
+                output_list.str = output_list.str + to_string(netto, "->>,>>>,>>9.99")
+
+
+                curr_pos = curr_pos + 14
+            else:
+                output_list.str = output_list.str + to_string(netto, "->>>,>>>,>>>,>>9")
+
+
+                curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 1401:
+
+            if not long_digit:
+                output_list.str = output_list.str + to_string(bl_netto, "->>,>>>,>>9.99")
+
+
+                curr_pos = curr_pos + 14
+            else:
+                output_list.str = output_list.str + to_string(bl_netto, "->>>,>>>,>>>,>>9")
+
+
+                curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 1589:
+
+            if bline_list.zinr != "":
+
+                mainres = get_cache (Reservation, {"resnr": [(eq, bline_list.massnr)]})
+
+            if mainres:
+                voucher = mainres.vesrdepot
+            for i in range(1,v_length + 1) :
+
+                if length(voucher) < i:
+                    output_list.str = output_list.str + to_string(" ")
+
+
+                else:
+                    output_list.str = output_list.str + to_string(substring(voucher, i - 1, 1) , "x(1)")
+
+
+            curr_pos = curr_pos + v_length
+
+        elif htparam.paramnr == 2304:
+            output_list.str = output_list.str + to_string(0, ">>>>")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2305:
+            output_list.str = output_list.str + to_string(1, "->>9")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2306:
+            bezeich = bline_list.bezeich
+            for i in range(1,d_length + 1) :
+
+                if length(bezeich) < i:
+                    output_list.str = output_list.str + to_string(" ")
+
+
+                else:
+                    output_list.str = output_list.str + to_string(substring(bezeich, i - 1, 1) , "x(1)")
+
+
+            curr_pos = curr_pos + d_length
+
+        elif htparam.paramnr == 2307:
+            output_list.str = output_list.str + to_string(0, "->>>>,>>>,>>>")
+
+
+            curr_pos = curr_pos + 13
+
+        elif htparam.paramnr == 2308:
+
+            if not long_digit:
+
+                if longer_billamt:
+                    output_list.str = output_list.str + to_string(bline_list.saldo, "->>>>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 16
+
+                elif long_billamt:
+                    output_list.str = output_list.str + to_string(bline_list.saldo, "->>>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 15
+                else:
+                    output_list.str = output_list.str + to_string(bline_list.saldo, "->>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 14
+            else:
+                output_list.str = output_list.str + to_string(bline_list.saldo, "->>>,>>>,>>>,>>9")
+
+
+                curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 2318:
+            output_list.str = output_list.str + to_string(bline_list.fsaldo, "->>,>>9.99")
+
+
+            curr_pos = curr_pos + 10
+
+        elif htparam.paramnr == 2309:
+            output_list.str = output_list.str + to_string(" ")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2310:
+            output_list.str = output_list.str + to_string(" ", "x(8)")
+
+
+            curr_pos = curr_pos + 8
+
+        elif htparam.paramnr == 1117:
+            output_list.str = output_list.str + to_string(" ", "x(4)")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2316:
+
+            if not long_digit:
+                output_list.str = output_list.str + to_string(bl_balance, "->>>,>>>,>>9.99")
+
+
+                curr_pos = curr_pos + 15
+            else:
+                output_list.str = output_list.str + to_string(bl_balance, "->>>,>>>,>>>,>>9")
+
+
+                curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 2319:
+
+            if bl_balance1 >= 100000 or bl_balance1 <= -100000:
+                output_list.str = output_list.str + to_string(bl_balance1, "->>>,>>>,>>>,>>9.99")
+
+
+                curr_pos = curr_pos + 16
+            else:
+                output_list.str = output_list.str + to_string(bl_balance1, "->>,>>9.99")
+
+
+                curr_pos = curr_pos + 10
+
+        elif htparam.paramnr == 2317:
+
+            guest1 = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+            gname = guest1.name + ", " + guest1.vorname1 + " " + guest1.anrede1
+            put_string(gname)
+            curr_pos = curr_pos + 32
+
+        elif htparam.paramnr == 2311:
+            stime = to_string(get_current_time_in_seconds(), "HH:mm")
+            put_string(stime)
+
+        elif htparam.paramnr == 2312:
+            put_string(user_init)
+
+        elif htparam.paramnr == 2401:
+            put_string(to_string(bediener.username, "x(16)"))
+
+        return generate_inner_output()
+
+
+    def decode_key5c(paramnr:int):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        out_str = ""
+        status_code = 0
+        guest1 = None
+        stime:string = ""
+        i:int = 0
+        netto:Decimal = to_decimal("0.0")
+        pos1:int = 0
+        gname:string = ""
+        foart = None
+        resline = None
+        fbal:Decimal = to_decimal("0.0")
+
+        def generate_inner_output():
+            return (out_str, status_code)
+
+        Guest1 =  create_buffer("Guest1",Guest)
+        Foart =  create_buffer("Foart",Artikel)
+        Resline =  create_buffer("Resline",Res_line)
+
+        if htparam.paramnr == 1380:
+
+            if bline_list.orts_tax != 0:
+                curr_bl_vat = get_vat(bline_list.origin_id)
+            else:
+
+                foart = get_cache (Artikel, {"artnr": [(eq, bline_list.artnr)],"departement": [(eq, bline_list.dept)]})
+
+                if foart:
+
+                    htparam = get_cache (Htparam, {"paramnr": [(eq, foart.mwst_code)]})
+
+                    if htparam:
+                        curr_bl_vat =  to_decimal(htparam.fdecimal)
+                    else:
+                        curr_bl_vat =  to_decimal("0")
+
+            if curr_bl_vat == 1000:
+                output_list.str = output_list.str + to_string(" ", "x(5)")
+
+
+            else:
+                output_list.str = output_list.str + to_string(curr_bl_vat, ">9.99")
+
+
+            curr_pos = curr_pos + 5
+
+        elif htparam.paramnr == 1400:
+
+            if (bline_list.artnr == vat_artnr[0] or bline_list.artnr == vat_artnr[1] or bline_list.artnr == vat_artnr[2] or bline_list.artnr == vat_artnr[3] or bline_list.artnr == vat_artnr[4]) and bline_list.dept == 0:
+                netto =  to_decimal("0")
+
+            elif bline_list.orts_tax != 0:
+                netto =  to_decimal(bline_list.saldo) - to_decimal(bline_list.orts_tax)
+            else:
+
+                foart = get_cache (Artikel, {"artnr": [(eq, bline_list.artnr)],"departement": [(eq, bline_list.dept)]})
+
+                if foart:
+
+                    htparam = get_cache (Htparam, {"paramnr": [(eq, foart.mwst_code)]})
+
+                    if htparam:
+                        curr_bl_vat =  to_decimal(htparam.fdecimal)
+                    else:
+                        curr_bl_vat =  to_decimal("0")
+                netto =  to_decimal(bline_list.saldo) / to_decimal((1) + to_decimal(curr_bl_vat) / to_decimal(100))
+                netto =  to_decimal(round (netto , price_decimal))
+            bl_netto =  to_decimal(bl_netto) + to_decimal(netto)
+
+            if not long_digit:
+                output_list.str = output_list.str + to_string(netto, "->>,>>>,>>9.99")
+
+
+                curr_pos = curr_pos + 14
+            else:
+                output_list.str = output_list.str + to_string(netto, "->>>,>>>,>>>,>>9")
+
+
+                curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 1401:
+
+            if not long_digit:
+                output_list.str = output_list.str + to_string(bl_netto, "->>,>>>,>>9.99")
+
+
+                curr_pos = curr_pos + 14
+            else:
+                output_list.str = output_list.str + to_string(bl_netto, "->>>,>>>,>>>,>>9")
+
+
+                curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 1094 and not print_all_member:
+            for i in range(1,g_length + 1) :
+
+                if length(bline_list.gname) < i:
+                    output_list.str = output_list.str + " "
+
+
+                else:
+                    output_list.str = output_list.str + to_string(substring(bline_list.gname, i - 1, 1) , "x(1)")
+
+
+            curr_pos = curr_pos + g_length
+
+        elif htparam.paramnr == 1094 and print_all_member:
+
+            for resline in db_session.query(Resline).filter(
+                     (Resline.resnr == bill.resnr) & (Resline.resstatus != 12) & (Resline.resstatus != 9) & (Resline.resstatus != 10) & (Resline.resstatus != 13) & (Resline.resstatus != 99)).order_by(Resline.name, Resline.zinr).all():
+                gname = resline.name
+
+                if pos1 != 0:
+                    output_list.str = output_list.str + ""
+
+
+                    output_list = Output_list()
+                    output_list_list.append(output_list)
+
+                    curr_line = curr_line + 1
+                    for i in range(1,pos1 + 1) :
+                        output_list.str = output_list.str + to_string(" ", "x(1)")
+
+
+                for i in range(1,g_length + 1) :
+
+                    if length(gname) < i:
+                        output_list.str = output_list.str + " "
+
+
+                    else:
+                        output_list.str = output_list.str + to_string(substring(gname, i - 1, 1) , "x(1)")
+
+
+                output_list.str = output_list.str + to_string(" #", "x(2)")
+
+
+                output_list.str = output_list.str + to_string(resline.zinr, "x(6)")
+
+                if pos1 == 0:
+                    pos1 = curr_pos - 1
+                    curr_pos = curr_pos + g_length + 7
+
+        elif htparam.paramnr == 1103:
+
+            if f_resline and reslinnr > 0:
+                output_list.str = output_list.str + to_string(res_line.ankunft)
+
+            elif f_resline and reslinnr == 0:
+
+                if bline_list.zinr != "":
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bline_list.massnr)],"reslinnr": [(eq, bline_list.billin_nr)]})
+
+                    if not resline:
+
+                        resline = get_cache (Res_line, {"zinr": [(eq, bline_list.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)],"active_flag": [(ge, 1),(le, 2)],"ankunft": [(le, bline_list.datum)],"abreise": [(gt, bline_list.datum)]})
+
+                    if resline:
+                        output_list.str = output_list.str + to_string(resline.ankunft)
+
+
+                    else:
+                        output_list.str = output_list.str + to_string("", "x(8)")
+
+
+                else:
+                    output_list.str = output_list.str + to_string("", "x(8)")
+
+
+            curr_pos = curr_pos + 8
+
+        elif htparam.paramnr == 1104:
+
+            if f_resline and reslinnr > 0:
+                output_list.str = output_list.str + to_string(res_line.abreise)
+
+            elif f_resline and reslinnr == 0:
+
+                if bline_list.zinr != "":
+
+                    resline = get_cache (Res_line, {"resnr": [(eq, bline_list.massnr)],"reslinnr": [(eq, bline_list.billin_nr)]})
+
+                    if not resline:
+
+                        resline = get_cache (Res_line, {"zinr": [(eq, bline_list.zinr)],"resstatus": [(ne, 12),(ne, 9),(ne, 10),(ne, 99)],"active_flag": [(ge, 1),(le, 2)],"ankunft": [(le, bline_list.datum)],"abreise": [(gt, bline_list.datum)]})
+
+                    if resline:
+                        output_list.str = output_list.str + to_string(resline.abreise)
+
+
+                    else:
+                        output_list.str = output_list.str + to_string("", "x(8)")
+
+
+                else:
+                    output_list.str = output_list.str + to_string("", "x(8)")
+
+
+            curr_pos = curr_pos + 8
+
+        elif htparam.paramnr == 1589:
+            for i in range(1,v_length + 1) :
+
+                if length(bline_list.voucher) < i:
+                    output_list.str = output_list.str + " "
+
+
+                else:
+                    output_list.str = output_list.str + to_string(substring(bline_list.voucher, i - 1, 1) , "x(1)")
+
+
+            curr_pos = curr_pos + v_length
+
+        elif htparam.paramnr == 2304:
+            output_list.str = output_list.str + to_string(bline_list.artnr, ">>>9")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2305:
+            output_list.str = output_list.str + to_string(bline_list.anzahl, "->>9")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2306:
+            for i in range(1,d_length + 1) :
+
+                if length(bline_list.bezeich) < i:
+                    output_list.str = output_list.str + " "
+
+
+                else:
+                    output_list.str = output_list.str + to_string(substring(bline_list.bezeich, i - 1, 1) , "x(1)")
+
+
+            curr_pos = curr_pos + d_length
+
+        elif htparam.paramnr == 2307:
+
+            if not long_digit:
+                output_list.str = output_list.str + to_string(bline_list.epreis, "->,>>>,>>9.99")
+
+
+            else:
+                output_list.str = output_list.str + to_string(bline_list.epreis, "->>>>,>>>,>>9")
+
+
+            curr_pos = curr_pos + 13
+
+        elif htparam.paramnr == 2308:
+
+            if not long_digit:
+
+                if longer_billamt:
+                    output_list.str = output_list.str + to_string(bline_list.saldo, "->>>>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 16
+
+                elif long_billamt:
+                    output_list.str = output_list.str + to_string(bline_list.saldo, "->>>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 15
+                else:
+                    output_list.str = output_list.str + to_string(bline_list.saldo, "->>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 14
+            else:
+                output_list.str = output_list.str + to_string(bline_list.saldo, "->>>,>>>,>>>,>>9")
+
+
+                curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 2318:
+            output_list.str = output_list.str + to_string(bline_list.fsaldo, "->>,>>9.99")
+
+
+            curr_pos = curr_pos + 10
+
+        elif htparam.paramnr == 2309:
+
+            if bline_list.zinr != "":
+                output_list.str = output_list.str + to_string(bline_list.zinr, "x(6)")
+
+
+            else:
+                output_list.str = output_list.str + " "
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2310:
+
+            if bline_list.datum == None:
+                output_list.str = output_list.str + to_string(" ", "x(8)")
+
+
+            else:
+                output_list.str = output_list.str + to_string(bline_list.datum)
+
+
+            curr_pos = curr_pos + 8
+
+        elif htparam.paramnr == 1117:
+            output_list.str = output_list.str + to_string(bline_list.userinit, "x(4)")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2316:
+
+            if bline_flag == -1:
+
+                if not long_digit:
+                    output_list.str = output_list.str + to_string(bl_balance, "->>>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 15
+                else:
+                    output_list.str = output_list.str + to_string(bl_balance, "->>>,>>>,>>>,>>9")
+
+
+                    curr_pos = curr_pos + 16
+
+            elif bline_flag == 0:
+
+                if not long_digit:
+                    output_list.str = output_list.str + to_string(bl0_balance, "->>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 14
+                else:
+                    output_list.str = output_list.str + to_string(bl0_balance, "->>>,>>>,>>>,>>9")
+
+
+                    curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 2319:
+
+            if bline_flag == -1:
+
+                if bl_balance1 >= 100000 or bl_balance1 <= -100000:
+                    output_list.str = output_list.str + to_string(bl_balance1, "->>>,>>>,>>>,>>9")
+
+
+                    curr_pos = curr_pos + 16
+                else:
+                    output_list.str = output_list.str + to_string(bl_balance1, "->>,>>9.99")
+
+
+                    curr_pos = curr_pos + 10
+
+            elif bline_flag == 0:
+
+                if bl0_balance1 != 0:
+                    fbal =  to_decimal(bl0_balance1)
+                else:
+                    fbal =  to_decimal(bl0_balance) / to_decimal(exchg_rate)
+
+                if fbal >= 100000 or fbal <= -100000:
+                    output_list.str = output_list.str + to_string(fbal, "->>>,>>>,>>>,>>9")
+
+
+                    curr_pos = curr_pos + 16
+                else:
+                    output_list.str = output_list.str + to_string(fbal, "->>,>>9.99")
+
+
+                    curr_pos = curr_pos + 10
+
+        elif htparam.paramnr == 2317:
+
+            guest1 = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+            gname = guest1.name + ", " + guest1.vorname1 + " " + guest1.anrede1
+            put_string(gname)
+            curr_pos = curr_pos + 32
+
+        elif htparam.paramnr == 2311:
+            stime = to_string(get_current_time_in_seconds(), "HH:mm")
+            put_string(stime)
+
+        elif htparam.paramnr == 2312:
+            put_string(user_init)
+
+        elif htparam.paramnr == 2401:
+            put_string(to_string(bediener.username, "x(16)"))
+
+        return generate_inner_output()
+
+
+    def decode_key5p(paramnr:int):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        out_str = ""
+        status_code = 0
+        guest1 = None
+        stime:string = ""
+        i:int = 0
+        ch:string = ""
+
+        def generate_inner_output():
+            return (out_str, status_code)
+
+        Guest1 =  create_buffer("Guest1",Guest)
+
+        if htparam.paramnr == 2304:
+            output_list.str = output_list.str + to_string(t_list.nr, ">>>>")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2305:
+            output_list.str = output_list.str + to_string(t_list.qty, "->>9")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2306:
+
+            if t_list.rmcat != "":
+                ch = (t_list.rmcat + " " + t_list.bezeich)
+            else:
+                ch = t_list.bezeich
+            for i in range(1,d_length + 1) :
+
+                if length(ch) < i:
+                    output_list.str = output_list.str + " "
+
+
+                else:
+                    output_list.str = output_list.str + to_string(substring(ch, i - 1, 1) , "x(1)")
+
+
+            curr_pos = curr_pos + d_length
+
+        elif htparam.paramnr == 2307:
+
+            if not long_digit:
+                output_list.str = output_list.str + to_string(t_list.preis, "->,>>>,>>9.99")
+
+
+            else:
+                output_list.str = output_list.str + to_string(t_list.preis, "->>>>,>>>,>>9")
+
+
+            curr_pos = curr_pos + 13
+
+        elif htparam.paramnr == 2308:
+
+            if not long_digit:
+
+                if longer_billamt:
+                    output_list.str = output_list.str + to_string(t_list.betrag, "->>>>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 16
+
+                elif long_billamt:
+                    output_list.str = output_list.str + to_string(t_list.betrag, "->>>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 15
+                else:
+                    output_list.str = output_list.str + to_string(t_list.betrag, "->>,>>>,>>9.99")
+
+
+                    curr_pos = curr_pos + 14
+            else:
+                output_list.str = output_list.str + to_string(t_list.betrag, "->>>,>>>,>>>,>>9")
+
+
+                curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 2318:
+            output_list.str = output_list.str + to_string(t_list.betrag, "->>,>>9.99")
+
+
+            curr_pos = curr_pos + 10
+
+        elif htparam.paramnr == 2309:
+            output_list.str = output_list.str + to_string(t_list.tage, ">>9")
+
+
+            curr_pos = curr_pos + 3
+
+        elif htparam.paramnr == 2310:
+            output_list.str = output_list.str + to_string(t_list.date1)
+
+
+            curr_pos = curr_pos + 8
+
+        elif htparam.paramnr == 1117:
+            output_list.str = output_list.str + to_string(" ", "x(4)")
+
+
+            curr_pos = curr_pos + 4
+
+        elif htparam.paramnr == 2316:
+
+            if not long_digit:
+                output_list.str = output_list.str + to_string(bl_balance, "->>>,>>>,>>9.99")
+
+
+                curr_pos = curr_pos + 15
+            else:
+                output_list.str = output_list.str + to_string(bl_balance, "->>>,>>>,>>>,>>9")
+
+
+                curr_pos = curr_pos + 16
+
+        elif htparam.paramnr == 2319:
+
+            if bl_balance1 >= 100000 or bl_balance1 <= -100000:
+                output_list.str = output_list.str + to_string(bl_balance1, " ->>>,>>>,>>9.99")
+
+
+                curr_pos = curr_pos + 16
+            else:
+                output_list.str = output_list.str + to_string(bl_balance1, "->>,>>9.99")
+
+
+                curr_pos = curr_pos + 10
+
+        elif htparam.paramnr == 2317:
+
+            guest1 = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+            put_string(guest1.name + ", " + guest1.vorname1 + " " + guest1.anrede1)
+            curr_pos = curr_pos + length(guest1.name + ", " + guest1.vorname1 + " " + guest1.anrede1)
+
+        elif htparam.paramnr == 2311:
+            stime = to_string(get_current_time_in_seconds(), "HH:mm")
+            put_string(stime)
+
+        elif htparam.paramnr == 2312:
+            put_string(user_init)
+
+        elif htparam.paramnr == 2401:
+            put_string(to_string(bediener.username, "x(16)"))
+
+        return generate_inner_output()
+
+
+    def put_string(str:string):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        len_:int = 0
+        i:int = 0
+        len_ = length(str)
+        for i in range(1,len + 1) :
+
+            if headloop == 0:
+                output_list.str = output_list.str + to_string(substring(str, i - 1, 1) , "x(1)")
+
+            elif headloop == 3:
+                header_list.texte = header_list.texte + substring(str, i - 1, 1)
+
+            if substring(str, i - 1, 1) == chr_unicode(10):
+                curr_pos = 1
+        curr_pos = curr_pos + len
+
+
+    def put_gname(str:string):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        len_:int = 0
+        i:int = 0
+        len_ = round(length(str) / 2 + 0.4, 0)
+        for i in range(1,len + 1) :
+            output_list.str = output_list.str + to_string(substring(str, (i * 2 - 1) - 1, 2) , "x(2)")
+
+
+        curr_pos = curr_pos + len_ * 2
+
+
+    def create_bonus():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        i:int = 0
+        j:int = 1
+        k:int = 0
+        n:int = 0
+        stay:int = 0
+        pay:int = 0
+        num_bonus:int = 0
+        for i in range(1,999 + 1) :
+            bonus_array[i - 1] = False
+        j = 1
+        for i in range(1,4 + 1) :
+            stay = to_int(substring(arrangement.options, j - 1, 2))
+            pay = to_int(substring(arrangement.options, j + 2 - 1, 2))
+
+            if (stay - pay) > 0:
+                n = num_bonus + pay + 1
+                for k in range(n,stay + 1) :
+                    bonus_array[k - 1] = True
+                num_bonus = stay - pay
+            j = j + 4
+
+
+    def read_proforma_inv():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        datum:date = None
+        co_date:date = None
+        add_it:bool = False
+        ankunft:date = None
+        abreise:date = None
+        rm_rate:Decimal = to_decimal("0.0")
+        argt_rate:Decimal = to_decimal("0.0")
+        argt_defined:bool = False
+        delta:int = 0
+        start_date:date = None
+        fixed_rate:bool = False
+        qty:int = 0
+        it_exist:bool = False
+        exrate1:Decimal = 1
+        ex2:Decimal = 1
+        pax:int = 0
+        child1:int = 0
+        bill_date:date = None
+        curr_zikatnr:int = 0
+        ebdisc_flag:bool = False
+        kbdisc_flag:bool = False
+        rate_found:bool = False
+        early_flag:bool = False
+        kback_flag:bool = False
+        w1 = None
+        resline = None
+        i:int = 0
+        j:int = 0
+        qty1:int = 0
+        ct:string = ""
+        contcode:string = ""
+        W1 =  create_buffer("W1",Waehrung)
+        Resline =  create_buffer("Resline",Res_line)
+
+        for resline in db_session.query(Resline).filter(
+                 (Resline.resnr == resnr) & (Resline.active_flag <= 2) & (Resline.resstatus != 12) & (Resline.resstatus != 9) & (Resline.resstatus != 10) & (Resline.resstatus != 99)).order_by(Resline._recid).all():
+            ebdisc_flag = matches(resline.zimmer_wunsch, ("*ebdisc*"))
+            kbdisc_flag = matches(resline.zimmer_wunsch, ("*kbdisc*"))
+
+            if resline.l_zuordnung[0] != 0:
+                curr_zikatnr = resline.l_zuordnung[0]
+            else:
+                curr_zikatnr = resline.zikatnr
+
+            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, resline.zikatnr)]})
+
+            arrangement = get_cache (Arrangement, {"arrangement": [(eq, resline.arrangement)]})
+            ankunft = resline.ankunft
+            abreise = resline.abreise
+            fixed_rate = False
+
+            if resline.was_status == 1:
+                fixed_rate = True
+            co_date = resline.abreise
+
+            if co_date > resline.ankunft:
+                co_date = co_date - timedelta(days=1)
+            create_bonus()
+            for datum in date_range(resline.ankunft,co_date) :
+                bill_date = datum
+                argt_rate =  to_decimal("0")
+                rm_rate =  to_decimal(resline.zipreis)
+                pax = resline.erwachs
+
+                if fixed_rate:
+
+                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, resline.resnr)],"reslinnr": [(eq, resline.reslinnr)],"date1": [(le, datum)],"date2": [(ge, datum)]})
+
+                    if reslin_queasy:
+                        rm_rate =  to_decimal(reslin_queasy.deci1)
+
+                        if reslin_queasy.number3 != 0:
+                            pax = reslin_queasy.number3
+                else:
+
+                    guest = get_cache (Guest, {"gastnr": [(eq, resline.gastnr)]})
+
+                    guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, guest.gastnr)]})
+
+                    if guest_pr:
+
+                        queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, resline.reserve_int)]})
+
+                        if queasy and queasy.logi3:
+                            bill_date = resline.ankunft
+
+                        if new_contrate:
+                            rate_found, rm_rate, early_flag, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, resline.resnr, resline.reslinnr, guest_pr.code, None, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, arrangement.argtnr, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline.reserve_dec, resline.betriebsnr))
+                        else:
+                            rm_rate, rate_found = get_output(pricecod_rate(resline.resnr, resline.reslinnr, guest_pr.code, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, arrangement.argtnr, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline.reserve_dec, resline.betriebsnr))
+
+                            if it_exist:
+                                rate_found = True
+
+                            if not it_exist and bonus_array[datum - resline.ankunft + 1 - 1] :
+                                rm_rate =  to_decimal("0")
+
+                s_list = query(s_list_list, filters=(lambda s_list: s_list.bezeich == arrangement.argt_rgbez and s_list.rmcat == zimkateg.kurzbez and s_list.preis == rm_rate and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2), first=True)
+
+                if not s_list:
+                    s_list = S_list()
+                    s_list_list.append(s_list)
+
+                    s_list.bezeich = arrangement.argt_rgbez
+                    s_list.rmcat = zimkateg.kurzbez
+                    s_list.preis =  to_decimal(rm_rate)
+                    s_list.datum = datum
+                    s_list.ankunft = resline.ankunft
+                    s_list.abreise = resline.abreise
+                    s_list.erwachs = pax
+                    s_list.kind1 = resline.kind1
+                    s_list.kind2 = resline.kind2
+                s_list.qty = s_list.qty + resline.zimmeranz
+
+                for fixleist in db_session.query(Fixleist).filter(
+                         (Fixleist.resnr == resline.resnr) & (Fixleist.reslinnr == resline.reslinnr)).order_by(Fixleist._recid).all():
+                    add_it = False
+                    argt_rate =  to_decimal("0")
+
+                    if fixleist.sequenz == 1:
+                        add_it = True
+
+                    elif fixleist.sequenz == 2 or fixleist.sequenz == 3:
+
+                        if resline.ankunft == datum:
+                            add_it = True
+
+                    elif fixleist.sequenz == 4 and get_day(datum) == 1:
+                        add_it = True
+
+                    elif fixleist.sequenz == 5 and get_day(datum + 1) == 1:
+                        add_it = True
+
+                    elif fixleist.sequenz == 6:
+
+                        if fixleist.lfakt == None:
+                            delta = 0
+                        else:
+                            delta = fixleist.lfakt - resline.ankunft
+
+                            if delta < 0:
+                                delta = 0
+                        start_date = resline.ankunft + timedelta(days=delta)
+
+                        if (resline.abreise - start_date) < fixleist.dekade:
+                            start_date = resline.ankunft
+
+                        if datum <= (start_date + timedelta(days=(fixleist.dekade - 1))):
+                            add_it = True
+
+                        if datum < start_date:
+                            add_it = False
+
+                    if add_it:
+
+                        artikel = get_cache (Artikel, {"artnr": [(eq, fixleist.artnr)],"departement": [(eq, fixleist.departement)]})
+                        argt_rate =  to_decimal(fixleist.betrag) * to_decimal(fixleist.number)
+
+                        if not fixed_rate and guest_pr:
+                            contcode = guest_pr.code
+                            ct = resline.zimmer_wunsch
+
+                            if matches(ct,r"*$CODE$*"):
+                                ct = substring(ct, get_index(ct, "$CODE$") + 6 - 1)
+                                contcode = substring(ct, 0, get_index(ct, ";") - 1)
+
+                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, resline.reserve_int)],"number2": [(eq, arrangement.argtnr)],"reslinnr": [(eq, resline.zikatnr)],"number3": [(eq, fixleist.artnr)],"resnr": [(eq, fixleist.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
+
+                            if reslin_queasy:
+                                argt_rate =  to_decimal(reslin_queasy.deci1) * to_decimal(fixleist.number)
+
+                    if argt_rate != 0:
+
+                        s_list = query(s_list_list, filters=(lambda s_list: s_list.bezeich == artikel.bezeich and s_list.preis == (argt_rate / fixleist.number) and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2), first=True)
+
+                        if not s_list:
+                            s_list = S_list()
+                            s_list_list.append(s_list)
+
+                            s_list.nr = artikel.artnr
+                            s_list.bezeich = artikel.bezeich
+                            s_list.preis =  to_decimal(argt_rate) / to_decimal(fixleist.number)
+                            s_list.datum = datum
+                            s_list.ankunft = resline.ankunft
+                            s_list.abreise = resline.abreise
+                            s_list.erwachs = pax
+                            s_list.kind1 = resline.kind1
+                            s_list.kind2 = resline.kind2
+                        s_list.qty = s_list.qty + (fixleist.number * resline.zimmeranz)
+
+        for s_list in query(s_list_list, sort_by=[("ankunft",False),("datum",False),("bezeich",False),("erwachs",False)]):
+
+            if s_list.nr == 0:
+
+                t_list = query(t_list_list, filters=(lambda t_list: t_list.bezeich == s_list.bezeich and t_list.rmcat == s_list.rmcat and t_list.preis == s_list.preis and t_list.ankunft == s_list.ankunft and t_list.abreise == s_list.abreise and t_list.erwachs == s_list.erwachs and t_list.kind1 == s_list.kind1 and t_list.kind2 == s_list.kind2), first=True)
+
+                if not t_list:
+                    t_list = T_list()
+                    t_list_list.append(t_list)
+
+                    t_list.nr = s_list.nr
+                    t_list.bezeich = s_list.bezeich
+                    t_list.rmcat = s_list.rmcat
+                    t_list.preis =  to_decimal(s_list.preis)
+                    t_list.date1 = s_list.datum
+                    t_list.ankunft = s_list.ankunft
+                    t_list.abreise = s_list.abreise
+                    t_list.erwachs = s_list.erwachs
+                    t_list.kind1 = s_list.kind1
+                    t_list.kind2 = s_list.kind2
+
+                if s_list.qty >= t_list.qty:
+                    t_list.tage = t_list.tage + 1
+                t_list.date2 = s_list.datum
+
+                if s_list.datum == t_list.date1:
+                    t_list.qty = t_list.qty + s_list.qty
+
+                if s_list.qty != t_list.qty and s_list.preis == t_list.preis:
+                    qty1 = t_list.qty
+                    t_list = T_list()
+                    t_list_list.append(t_list)
+
+                    t_list.nr = s_list.nr
+                    t_list.bezeich = s_list.bezeich
+                    t_list.rmcat = s_list.rmcat
+                    t_list.preis =  to_decimal(s_list.preis)
+                    t_list.date1 = s_list.datum
+                    t_list.ankunft = s_list.ankunft
+                    t_list.abreise = s_list.abreise
+                    t_list.erwachs = s_list.erwachs
+                    t_list.kind1 = s_list.kind1
+                    t_list.kind2 = s_list.kind2
+                    t_list.date1 = s_list.datum
+                    t_list.tage = 1
+
+                    if s_list.qty > qty1:
+                        j = s_list.qty - qty1
+                        t_list.qty = j
+
+
+                    else:
+                        j = qty1 - s_list.qty
+                        t_list.qty = s_list.qty
+
+
+            else:
+
+                t_list = query(t_list_list, filters=(lambda t_list: t_list.bezeich == s_list.bezeich and t_list.preis == s_list.preis and t_list.ankunft == s_list.ankunft and t_list.abreise == s_list.abreise and t_list.erwachs == s_list.erwachs and t_list.kind1 == s_list.kind1 and t_list.kind2 == s_list.kind2), first=True)
+
+                if not t_list:
+                    t_list = T_list()
+                    t_list_list.append(t_list)
+
+                    t_list.nr = s_list.nr
+                    t_list.bezeich = s_list.bezeich
+                    t_list.preis =  to_decimal(s_list.preis)
+                    t_list.date1 = s_list.datum
+                    t_list.ankunft = s_list.ankunft
+                    t_list.abreise = s_list.abreise
+                    t_list.erwachs = s_list.erwachs
+                    t_list.kind1 = s_list.kind1
+                    t_list.kind2 = s_list.kind2
+                t_list.tage = t_list.tage + 1
+                t_list.date2 = s_list.datum
+
+                if s_list.datum == t_list.date1:
+                    t_list.qty = t_list.qty + s_list.qty
+            s_list_list.remove(s_list)
+
+        for t_list in query(t_list_list):
+            t_list.betrag =  to_decimal(t_list.qty) * to_decimal(t_list.tage) * to_decimal(t_list.preis)
+
+
+    def read_proforma_inv1():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        datum:date = None
+        co_date:date = None
+        add_it:bool = False
+        ankunft:date = None
+        abreise:date = None
+        rm_rate:Decimal = to_decimal("0.0")
+        argt_rate:Decimal = to_decimal("0.0")
+        argt_defined:bool = False
+        delta:int = 0
+        start_date:date = None
+        fixed_rate:bool = False
+        qty:int = 0
+        it_exist:bool = False
+        exrate1:Decimal = 1
+        ex2:Decimal = 1
+        pax:int = 0
+        child1:int = 0
+        bill_date:date = None
+        curr_zikatnr:int = 0
+        curr_no:int = 1000
+        do_it:bool = False
+        curr_date:date = None
+        lrate:Decimal = to_decimal("0.0")
+        ebdisc_flag:bool = False
+        kbdisc_flag:bool = False
+        rate_found:bool = False
+        early_flag:bool = False
+        kback_flag:bool = False
+        w1 = None
+        resline = None
+        ct:string = ""
+        contcode:string = ""
+        W1 =  create_buffer("W1",Waehrung)
+        Resline =  create_buffer("Resline",Res_line)
+
+        for resline in db_session.query(Resline).filter(
+                 (Resline.resnr == resnr) & (Resline.reslinnr == reslinnr)).order_by(Resline._recid).all():
+            ebdisc_flag = matches(resline.zimmer_wunsch, ("*ebdisc*"))
+            kbdisc_flag = matches(resline.zimmer_wunsch, ("*kbdisc*"))
+
+            if resline.l_zuordnung[0] != 0:
+                curr_zikatnr = resline.l_zuordnung[0]
+            else:
+                curr_zikatnr = resline.zikatnr
+
+            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, resline.zikatnr)]})
+
+            arrangement = get_cache (Arrangement, {"arrangement": [(eq, resline.arrangement)]})
+            ankunft = resline.ankunft
+            abreise = resline.abreise
+            fixed_rate = False
+
+            if resline.was_status == 1:
+                fixed_rate = True
+            co_date = resline.abreise
+
+            if co_date > resline.ankunft:
+                co_date = co_date - timedelta(days=1)
+            create_bonus()
+            for datum in date_range(resline.ankunft,co_date) :
+                bill_date = datum
+                argt_rate =  to_decimal("0")
+                rm_rate =  to_decimal(resline.zipreis)
+                pax = resline.erwachs
+
+                if fixed_rate:
+
+                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, resline.resnr)],"reslinnr": [(eq, resline.reslinnr)],"date1": [(le, datum)],"date2": [(ge, datum)]})
+
+                    if reslin_queasy:
+                        rm_rate =  to_decimal(reslin_queasy.deci1)
+
+                        if reslin_queasy.number3 != 0:
+                            pax = reslin_queasy.number3
+                else:
+
+                    guest = get_cache (Guest, {"gastnr": [(eq, resline.gastnr)]})
+
+                    guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, guest.gastnr)]})
+
+                    if guest_pr:
+
+                        queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, resline.reserve_int)]})
+
+                        if queasy and queasy.logi3:
+                            bill_date = resline.ankunft
+
+                        if new_contrate:
+                            rate_found, rm_rate, early_flag, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, resline.resnr, resline.reslinnr, guest_pr.code, None, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, arrangement.argtnr, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline.reserve_dec, resline.betriebsnr))
+                        else:
+                            rm_rate, rate_found = get_output(pricecod_rate(resline.resnr, resline.reslinnr, guest_pr.code, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, arrangement.argtnr, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline.reserve_dec, resline.betriebsnr))
+
+                            if it_exist:
+                                rate_found = True
+
+                            if not it_exist and bonus_array[datum - resline.ankunft + 1 - 1] :
+                                rm_rate =  to_decimal("0")
+                lrate =  to_decimal(rm_rate)
+
+                if datum < billdate:
+
+                    genstat = get_cache (Genstat, {"resnr": [(eq, resnr)],"res_int[0]": [(eq, reslinnr)],"datum": [(eq, datum)]})
+
+                    if genstat:
+                        rm_rate =  to_decimal(genstat.ratelocal)
+                    else:
+
+                        exrate = get_cache (exrate, {"artnr": [(eq, resline.betriebsnr)],"datum": [(eq, datum)]})
+
+                        if exrate:
+                            lrate =  to_decimal(rm_rate) * to_decimal(exrate.betrag)
+                else:
+
+                    waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, resline.betriebsnr)]})
+
+                    if waehrung:
+                        lrate =  to_decimal(rm_rate) * to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+
+                s_list = query(s_list_list, filters=(lambda s_list: s_list.bezeich == arrangement.argt_rgbez and s_list.rmcat == zimkateg.kurzbez and s_list.preis == rm_rate and s_list.lrate == lrate and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2), first=True)
+
+                if not s_list:
+                    s_list = S_list()
+                    s_list_list.append(s_list)
+
+                    s_list.bezeich = arrangement.argt_rgbez
+                    s_list.rmcat = zimkateg.kurzbez
+                    s_list.preis =  to_decimal(rm_rate)
+                    s_list.lrate =  to_decimal(lrate)
+                    s_list.datum = datum
+                    s_list.ankunft = resline.ankunft
+                    s_list.abreise = resline.abreise
+                    s_list.erwachs = pax
+                    s_list.kind1 = resline.kind1
+                    s_list.kind2 = resline.kind2
+
+
+                s_list.qty = s_list.qty + resline.zimmeranz
+
+                for fixleist in db_session.query(Fixleist).filter(
+                         (Fixleist.resnr == resline.resnr) & (Fixleist.reslinnr == resline.reslinnr)).order_by(Fixleist._recid).all():
+                    add_it = False
+                    argt_rate =  to_decimal("0")
+
+                    if fixleist.sequenz == 1:
+                        add_it = True
+
+                    elif fixleist.sequenz == 2 or fixleist.sequenz == 3:
+
+                        if resline.ankunft == datum:
+                            add_it = True
+
+                    elif fixleist.sequenz == 4 and get_day(datum) == 1:
+                        add_it = True
+
+                    elif fixleist.sequenz == 5 and get_day(datum + 1) == 1:
+                        add_it = True
+
+                    elif fixleist.sequenz == 6:
+
+                        if fixleist.lfakt == None:
+                            delta = 0
+                        else:
+                            delta = fixleist.lfakt - resline.ankunft
+
+                            if delta < 0:
+                                delta = 0
+                        start_date = resline.ankunft + timedelta(days=delta)
+
+                        if (resline.abreise - start_date) < fixleist.dekade:
+                            start_date = resline.ankunft
+
+                        if datum <= (start_date + timedelta(days=(fixleist.dekade - 1))):
+                            add_it = True
+
+                        if datum < start_date:
+                            add_it = False
+
+                    if add_it:
+
+                        artikel = get_cache (Artikel, {"artnr": [(eq, fixleist.artnr)],"departement": [(eq, fixleist.departement)]})
+                        argt_rate =  to_decimal(fixleist.betrag) * to_decimal(fixleist.number)
+
+                        if not fixed_rate and guest_pr:
+                            contcode = guest_pr.code
+                            ct = resline.zimmer_wunsch
+
+                            if matches(ct,r"*$CODE$*"):
+                                ct = substring(ct, get_index(ct, "$CODE$") + 6 - 1)
+                                contcode = substring(ct, 0, get_index(ct, ";") - 1)
+
+                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, resline.reserve_int)],"number2": [(eq, arrangement.argtnr)],"reslinnr": [(eq, resline.zikatnr)],"number3": [(eq, fixleist.artnr)],"resnr": [(eq, fixleist.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
+
+                            if reslin_queasy:
+                                argt_rate =  to_decimal(reslin_queasy.deci1) * to_decimal(fixleist.number)
+
+                    if argt_rate != 0:
+
+                        s_list = query(s_list_list, filters=(lambda s_list: s_list.bezeich == artikel.bezeich and s_list.preis == (argt_rate / fixleist.number) and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2), first=True)
+
+                        if not s_list:
+                            s_list = S_list()
+                            s_list_list.append(s_list)
+
+                            s_list.nr = artikel.artnr
+                            s_list.bezeich = artikel.bezeich
+                            s_list.preis =  to_decimal(argt_rate) / to_decimal(fixleist.number)
+                            s_list.datum = datum
+                            s_list.ankunft = resline.ankunft
+                            s_list.abreise = resline.abreise
+                            s_list.erwachs = pax
+                            s_list.kind1 = resline.kind1
+                            s_list.kind2 = resline.kind2
+                        s_list.qty = s_list.qty + (fixleist.number * resline.zimmeranz)
+
+        for s_list in query(s_list_list, sort_by=[("ankunft",False),("datum",False),("bezeich",False),("erwachs",False)]):
+
+            if s_list.nr == 0:
+
+                t_list = query(t_list_list, filters=(lambda t_list: t_list.bezeich == s_list.bezeich and t_list.rmcat == s_list.rmcat and t_list.preis == s_list.preis and t_list.lrate == s_list.lrate and t_list.ankunft == s_list.ankunft and t_list.abreise == s_list.abreise and t_list.erwachs == s_list.erwachs and t_list.kind1 == s_list.kind1 and t_list.kind2 == s_list.kind2), first=True)
+
+                if not t_list:
+                    t_list = T_list()
+                    t_list_list.append(t_list)
+
+                    t_list.nr = s_list.nr
+                    t_list.bezeich = s_list.bezeich
+                    t_list.rmcat = s_list.rmcat
+                    t_list.preis =  to_decimal(s_list.preis)
+                    t_list.lrate =  to_decimal(s_list.lrate)
+                    t_list.date1 = s_list.datum
+                    t_list.ankunft = s_list.ankunft
+                    t_list.abreise = s_list.abreise
+                    t_list.erwachs = s_list.erwachs
+                    t_list.kind1 = s_list.kind1
+                    t_list.kind2 = s_list.kind2
+
+
+                t_list.tage = t_list.tage + 1
+                t_list.date2 = s_list.datum
+
+                if s_list.datum == t_list.date1:
+                    t_list.qty = t_list.qty + s_list.qty
+            else:
+
+                t_list = query(t_list_list, filters=(lambda t_list: t_list.bezeich == s_list.bezeich and t_list.preis == s_list.preis and t_list.lrate == s_list.lrate and t_list.ankunft == s_list.ankunft and t_list.abreise == s_list.abreise and t_list.erwachs == s_list.erwachs and t_list.kind1 == s_list.kind1 and t_list.kind2 == s_list.kind2), first=True)
+
+                if not t_list:
+                    t_list = T_list()
+                    t_list_list.append(t_list)
+
+                    t_list.nr = s_list.nr
+                    t_list.bezeich = s_list.bezeich
+                    t_list.preis =  to_decimal(s_list.preis)
+                    t_list.lrate =  to_decimal(s_list.lrate)
+                    t_list.date1 = s_list.datum
+                    t_list.ankunft = s_list.ankunft
+                    t_list.abreise = s_list.abreise
+                    t_list.erwachs = s_list.erwachs
+                    t_list.kind1 = s_list.kind1
+                    t_list.kind2 = s_list.kind2
+
+
+                t_list.tage = t_list.tage + 1
+                t_list.date2 = s_list.datum
+
+                if s_list.datum == t_list.date1:
+                    t_list.qty = t_list.qty + s_list.qty
+            s_list_list.remove(s_list)
+
+        for t_list in query(t_list_list):
+
+            if t_list.lrate != 0:
+                t_list.betrag =  to_decimal(t_list.qty) * to_decimal(t_list.tage) * to_decimal(t_list.lrate)
+            else:
+                t_list.betrag =  to_decimal(t_list.qty) * to_decimal(t_list.tage) * to_decimal(t_list.preis)
+
+        if rechnr > 0:
+
+            bill_line_obj_list = {}
+            for bill_line, artikel in db_session.query(Bill_line, Artikel).join(Artikel,(Artikel.artnr == Bill_line.artnr) & (Artikel.departement == Bill_line.departement)).filter(
+                     (Bill_line.rechnr == bill.rechnr)).order_by(Bill_line.bill_datum, Bill_line.zeit).all():
+                if bill_line_obj_list.get(bill_line._recid):
+                    continue
+                else:
+                    bill_line_obj_list[bill_line._recid] = True
+
+
+                do_it = True
+
+                if artikel.artart == 9:
+
+                    arrangement = get_cache (Arrangement, {"argt_artikelnr": [(eq, artikel.artnr)]})
+
+                    if not arrangement or arrangement.segmentcode == 0:
+                        do_it = False
+
+                if do_it:
+                    t_list = T_list()
+                    t_list_list.append(t_list)
+
+                    curr_no = curr_no + 1
+                    t_list.nr = curr_no
+                    t_list.bezeich = bill_line.bezeich
+                    t_list.preis =  to_decimal("0")
+                    t_list.date1 = bill_line.bill_datum
+                    t_list.betrag =  to_decimal(bill_line.betrag)
+
+
+    def get_vat(inp_str:string):
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        mwst = 1000
+        tokcounter:int = 0
+        messtr:string = ""
+        mestoken:string = ""
+        mesvalue:string = ""
+
+        def generate_inner_output():
+            return (mwst)
+
+
+        if get_index(inp_str, "vat%") == 0:
+
+            return generate_inner_output()
+        for tokcounter in range(1,num_entries(inp_str, ";") - 1 + 1) :
+            messtr = entry(tokcounter - 1, inp_str, ";")
+            mestoken = entry(0, messtr, ",")
+            mesvalue = entry(1, messtr, ",")
+
+            if mestoken == "vat%":
+                mwst =  to_decimal(to_decimal(mesvalue)) / to_decimal("100")
+
+                return generate_inner_output()
+
+        return generate_inner_output()
+
+
+    def update_bill():
+
+        nonlocal succes_flag, outfile, run_ask, bill_list_list, output_list_list, lvcarea, new_contrate, billdate, price_decimal, vat_artnr, n, serv_vat, briefnr2, briefnr21, print_rc, f_gastnr, f_resnr, f_resline, f_bill, longer_billamt, long_billamt, master_ankunft, master_abreise, fixrate_flag, long_digit, exchg_rate, curr_line, curr_page, curr_pos, blloop, headloop, f_lmargin, lmargin, proforma_inv, bline_flag, keychar, bl_balance, bl_balance1, bl0_balance, bl0_balance1, bl1_balance, bl1_balance1, bline_nr, print_all_member, g_length, d_length, c_length, w_length, v_length, print_member, short_arrival, short_depart, ntab, nskip, wd_array, bonus_array, curr_bl_vat, bl_netto, res_line, reservation, bediener, htparam, guest, bill, bill_line, waehrung, printer, briefzei, artikel, queasy, printcod, akt_kont, zimkateg, zimmer, master, guest_pr, reslin_queasy, arrangement, katpreis, exrate, fixleist, genstat
+        nonlocal pvilanguage, case_type, briefnr, reslinnr, resnr, rechnr, gastnr, f_page, spbill_flag, inv_type, user_init, printnr
+        nonlocal rmember, mainres
+
+
+        nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
+        nonlocal brief_list_list, htp_list_list, loop_list_list, loop1_list_list, header_list_list, bill_list_list, output_list_list, s_list_list, t_list_list, bline_list_list
+
+        bill = get_cache (Bill, {"rechnr": [(eq, rechnr)]})
+
+        if bill:
+            bill.rechnr2 = briefnr
+
+
+            succes_flag = True
+
+        bill = db_session.query(Bill).first()
+
+
+    bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+
+    if case_type == 2:
+        update_bill()
+
+        return generate_output()
+    output_list = Output_list()
+    output_list_list.append(output_list)
+
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 550)]})
+
+    if htparam.feldtyp == 4:
+        new_contrate = htparam.flogical
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
+    billdate = htparam.fdate
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 491)]})
+    price_decimal = htparam.finteger
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 132)]})
+
+    if htparam.feldtyp == 1:
+        vat_artnr[0] = htparam.finteger
+
+    elif htparam.feldtyp == 5:
+        for n in range(1,num_entries(htparam.fchar, ";")  + 1) :
+
+            if trim(entry(n - 1, htparam.fchar, ";")) != "" and n <= 5:
+                vat_artnr[n - 1] = to_int(trim(entry(n - 1, htparam.fchar, ";")))
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 479)]})
+    serv_vat = htparam.flogical
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 415)]})
+    briefnr2 = htparam.finteger
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 495)]})
+    briefnr21 = htparam.finteger
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 435)]})
+    print_rc = (htparam.finteger == briefnr)
+
+    guest = get_cache (Guest, {"gastnr": [(eq, gastnr)]})
+
+    if guest:
+        f_gastnr = True
+
+    reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
+
+    if reservation:
+        f_resnr = True
+    f_resline = False
+
+    if resnr > 0 and reslinnr > 0:
+
+        res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+
+        if res_line:
+            f_resline = True
+
+    bill = get_cache (Bill, {"rechnr": [(eq, rechnr)]})
+
+    if bill:
+        f_bill = True
+
+        for bill_line in db_session.query(Bill_line).filter(
+                 (Bill_line.rechnr == bill.rechnr)).order_by(Bill_line.betrag).yield_per(100):
+
+            if (bill_line.betrag <= -1000000000) or (bill_line.betrag >= 1000000000):
+                longer_billamt = True
+                break
+
+            elif bill_line.betrag <= -100000000 or (bill_line.betrag >= 1000000000):
+                long_billamt = True
+
+    if f_bill and bill.resnr > 0 and bill.reslinnr == 0:
+
+        res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"resstatus": [(eq, 6)]})
+
+        if not res_line:
+
+            res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"resstatus": [(eq, 8)]})
+
+        if res_line:
+            f_resline = True
+            master_ankunft = res_line.ankunft
+            master_abreise = res_line.abreise
+
+            for rmember in db_session.query(Rmember).filter(
+                     (Rmember.resnr == bill.resnr) & (Rmember.resstatus >= 6) & (Rmember.resstatus <= 8)).order_by(Rmember._recid).all():
+
+                if rmember.ankunft < master_ankunft:
+                    master_ankunft = rmember.ankunft
+
+                if rmember.abreise > master_abreise:
+                    master_abreise = rmember.abreise
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 264)]})
+    fixrate_flag = htparam.flogical
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 246)]})
+    long_digit = htparam.flogical
+
+    if f_resline:
+
+        if res_line.reserve_dec != 0:
+            exchg_rate =  to_decimal(res_line.reserve_dec)
+        else:
+
+            waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
+
+            if waehrung:
+                exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+            else:
+
+                htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
+
+                waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
+
+                if waehrung:
+                    exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+    else:
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
+
+        waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
+
+        if waehrung:
+            exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+
+    if printnr == 0:
+        outfile = ".\\vhp-letter.rtf"
+    else:
+
+        printer = get_cache (Printer, {"nr": [(eq, printnr)]})
+
+        if not printer:
+
+            return generate_output()
+        else:
+            outfile = printer.path
+    fill_list()
+    curr_line = 1
+    curr_page = 1
+
+    for brief_list in query(brief_list_list):
+
+        if curr_line >= printer.pglen:
+            output_list.str = output_list.str + ""
+
+
+            output_list = Output_list()
+            output_list_list.append(output_list)
+
+            curr_page = curr_page + 1
+            curr_line = 1
+            do_billhead()
+        curr_pos = 1
+        analyse_text()
+
+        if blloop == 0 and headloop == 0:
+
+            if f_lmargin:
+                for n in range(1,lmargin + 1) :
+                    put_string(" ")
+            build_text_line(brief_list.b_text)
+            output_list.str = output_list.str + ""
+
+
+            output_list = Output_list()
+            output_list_list.append(output_list)
+
+            curr_line = curr_line + 1
+            curr_pos = 1
+
+        elif blloop == 2:
+            loop_list = Loop_list()
+            loop_list_list.append(loop_list)
+
+            loop_list.texte = brief_list.b_text
+            curr_pos = 1
+
+        elif headloop == 2:
+            loop1_list = Loop1_list()
+            loop1_list_list.append(loop1_list)
+
+            loop1_list.texte = brief_list.b_text
+            curr_pos = 1
+
+        elif blloop == 3:
+
+            if proforma_inv:
+                do_pbill_line()
+            else:
+
+                if bline_flag == -1:
+
+                    if not spbill_flag:
+
+                        if inv_type == 1:
+                            do_billlinea()
+
+                        elif inv_type == 2:
+                            do_billlineb()
+
+                        elif inv_type >= 3:
+                            do_billlinec()
+                    else:
+                        do_spbillline()
+
+                elif bline_flag == 0:
+
+                    if not spbill_flag:
+
+                        if inv_type == 1:
+                            do_billline0()
+
+                        elif inv_type == 2:
+                            do_billlineb()
+
+                        elif inv_type >= 3:
+                            do_billline0c()
+                    else:
+
+                        if inv_type == 1:
+                            do_spbillline0()
+
+                        elif inv_type == 2:
+                            do_spbillline0b()
+
+                        elif inv_type >= 3:
+                            do_spbillline0c()
+
+                elif bline_flag == 1:
+
+                    if not spbill_flag:
+                        do_billline1()
+                    else:
+                        do_spbillline1()
+
+                elif bline_flag == 2:
+
+                    if not spbill_flag:
+                        do_billline2()
+                    else:
+                        do_spbillline2()
+
+        elif headloop == 3:
+            do_billhead()
+
+        if blloop == 1:
+            blloop = 2
+
+        if headloop == 1:
+            headloop = 2
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 465)]})
+
+    if (not proforma_inv) and bill and bill.rechnr != 0 and htparam.flogical:
+        run_ask = True
+
+    for bill in db_session.query(Bill).filter(
+             (Bill.rechnr == rechnr)).order_by(Bill._recid).all():
+        buffer_copy(bill, bill_list)
+
+    return generate_output()

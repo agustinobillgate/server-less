@@ -1,0 +1,9 @@
+
+DEF INPUT PARAMETER maintask AS INT.
+DEF OUTPUT PARAMETER do-it AS LOGICAL INIT NO.
+DEF OUTPUT PARAMETER char1 AS CHAR.
+
+FIND FIRST queasy WHERE queasy.KEY = 133 AND 
+    queasy.number1 = maintask NO-LOCK NO-ERROR.
+IF NOT AVAILABLE queasy THEN do-it = YES.
+ELSE char1 = queasy.char1.

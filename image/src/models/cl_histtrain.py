@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -29,3 +31,27 @@ class Cl_histtrain(Base):
 	voucherno = sa.Column(sa.String, default="")
 	zinr = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('class', "")
+		kwargs.setdefault('codenum', "")
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('deci1', 0)
+		kwargs.setdefault('deci2', 0)
+		kwargs.setdefault('deci3', 0)
+		kwargs.setdefault('endtime', 0)
+		kwargs.setdefault('num1', 0)
+		kwargs.setdefault('num2', 0)
+		kwargs.setdefault('num3', 0)
+		kwargs.setdefault('rechnr', 0)
+		kwargs.setdefault('remain', 0)
+		kwargs.setdefault('remarks', "")
+		kwargs.setdefault('reslinnr', 0)
+		kwargs.setdefault('resnr', 0)
+		kwargs.setdefault('starttime', 0)
+		kwargs.setdefault('trainer', 0)
+		kwargs.setdefault('voucherno', "")
+		kwargs.setdefault('zinr', "")
+		super(Cl_histtrain, self).__init__(*args, **kwargs)

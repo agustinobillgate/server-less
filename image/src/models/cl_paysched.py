@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -21,3 +23,19 @@ class Cl_paysched(Base):
 	paynum = sa.Column(sa.Integer, default=0)
 	period = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('deci1', 0)
+		kwargs.setdefault('deci2', "")
+		kwargs.setdefault('deci3', "")
+		kwargs.setdefault('descript', "")
+		kwargs.setdefault('nr', 0)
+		kwargs.setdefault('num1', 0)
+		kwargs.setdefault('num2', 0)
+		kwargs.setdefault('num3', 0)
+		kwargs.setdefault('payint', 0)
+		kwargs.setdefault('paynum', 0)
+		kwargs.setdefault('period', 0)
+		super(Cl_paysched, self).__init__(*args, **kwargs)

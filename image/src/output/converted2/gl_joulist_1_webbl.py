@@ -1,10 +1,15 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from sqlalchemy import func
 from models import Gl_jhdrhis, Gl_jourhis, Gl_jouhdr, Gl_journal, Gl_acct, Gl_accthis, Htparam
 
-def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:date, journaltype:int, excl_other:bool, other_dept:bool, summ_date:bool, from_fibu:str, to_fibu:str, sorttype:int, from_dept:int, journaltype1:int, cashflow:bool, f_note:str, from_main:int):
+def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:date, journaltype:int, excl_other:bool, other_dept:bool, summ_date:bool, from_fibu:string, to_fibu:string, sorttype:int, from_dept:int, journaltype1:int, cashflow:bool, f_note:string, from_main:int):
+
+    prepare_cache ([Gl_jhdrhis, Gl_jourhis, Gl_jouhdr, Gl_journal, Gl_acct, Gl_accthis, Htparam])
+
     out_list_list = []
     datum1:date = None
     datum2:date = None
@@ -12,10 +17,9 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
     out_list = g_list = j_list = None
 
-    out_list_list, Out_list = create_model("Out_list", {"s_recid":int, "marked":str, "fibukonto":str, "jnr":int, "jtype":int, "bemerk":str, "trans_date":date, "bezeich":str, "number1":str, "debit":decimal, "credit":decimal, "balance":decimal, "debit_str":str, "credit_str":str, "balance_str":str, "refno":str, "uid":str, "created":date, "chgid":str, "chgdate":date, "tax_code":str, "tax_amount":str, "tot_amt":str, "approved":bool, "prev_bal":str})
-    g_list_list, G_list = create_model("G_list", {"grecid":int, "fibu":str})
-    j_list_list, J_list = create_model("J_list", {"grecid":int, "fibu":str, "datum":date})
-
+    out_list_list, Out_list = create_model("Out_list", {"s_recid":int, "marked":string, "fibukonto":string, "jnr":int, "jtype":int, "bemerk":string, "trans_date":date, "bezeich":string, "number1":string, "debit":Decimal, "credit":Decimal, "balance":Decimal, "debit_str":string, "credit_str":string, "balance_str":string, "refno":string, "uid":string, "created":date, "chgid":string, "chgdate":date, "tax_code":string, "tax_amount":string, "tot_amt":string, "approved":bool, "prev_bal":string})
+    g_list_list, G_list = create_model("G_list", {"grecid":int, "fibu":string})
+    j_list_list, J_list = create_model("J_list", {"grecid":int, "fibu":string, "datum":date})
 
     db_session = local_storage.db_session
 
@@ -29,7 +33,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
         return {"out-list": out_list_list}
 
-    def get_bemerk(bemerk:str):
+    def get_bemerk(bemerk:string):
 
         nonlocal out_list_list, datum1, datum2, gl_jhdrhis, gl_jourhis, gl_jouhdr, gl_journal, gl_acct, gl_accthis, htparam
         nonlocal from_date, to_date, last_2yr, close_year, journaltype, excl_other, other_dept, summ_date, from_fibu, to_fibu, sorttype, from_dept, journaltype1, cashflow, f_note, from_main
@@ -39,9 +43,9 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
         nonlocal out_list_list, g_list_list, j_list_list
 
         n:int = 0
-        s1:str = ""
-        bemerk = replace_str(bemerk, chr(10) , " ")
-        n = 1 + get_index(bemerk, ";&&")
+        s1:string = ""
+        bemerk = replace_str(bemerk, chr_unicode(10) , " ")
+        n = get_index(bemerk, ";&&")
 
         if n > 0:
             s1 = substring(bemerk, 0, n - 1)
@@ -74,7 +78,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                 continue
 
             for gl_jourhis in db_session.query(Gl_jourhis).filter(
-                     (Gl_jourhis.jnr == gl_jhdrhis.jnr) & (func.lower(Gl_jourhis.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_jourhis.fibukonto) <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto).all():
+                     (Gl_jourhis.jnr == gl_jhdrhis.jnr) & (Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto).all():
                 j_list = J_list()
                 j_list_list.append(j_list)
 
@@ -95,7 +99,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                 continue
 
             for gl_journal in db_session.query(Gl_journal).filter(
-                     (Gl_journal.jnr == gl_jouhdr.jnr) & (func.lower(Gl_journal.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_journal.fibukonto) <= (to_fibu).lower())).order_by(Gl_journal.fibukonto).all():
+                     (Gl_journal.jnr == gl_jouhdr.jnr) & (Gl_journal.fibukonto >= (from_fibu).lower()) & (Gl_journal.fibukonto <= (to_fibu).lower())).order_by(Gl_journal.fibukonto).all():
                 j_list = J_list()
                 j_list_list.append(j_list)
 
@@ -113,30 +117,30 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
         nonlocal out_list, g_list, j_list
         nonlocal out_list_list, g_list_list, j_list_list
 
-        debit:decimal = to_decimal("0.0")
-        credit:decimal = to_decimal("0.0")
-        balance:decimal = to_decimal("0.0")
-        konto:str = ""
+        debit:Decimal = to_decimal("0.0")
+        credit:Decimal = to_decimal("0.0")
+        balance:Decimal = to_decimal("0.0")
+        konto:string = ""
         i:int = 0
-        c:str = ""
-        bezeich:str = ""
+        c:string = ""
+        bezeich:string = ""
         datum:date = None
-        refno:str = ""
-        h_bezeich:str = ""
-        id:str = ""
+        refno:string = ""
+        h_bezeich:string = ""
+        id:string = ""
         chgdate:date = None
         beg_date:date = None
         beg_day:int = 0
         date1:date = None
-        ddebit:decimal = to_decimal("0.0")
-        dcredit:decimal = to_decimal("0.0")
-        dbalance:decimal = to_decimal("0.0")
-        t_debit:decimal = to_decimal("0.0")
-        t_credit:decimal = to_decimal("0.0")
-        tot_debit:decimal = to_decimal("0.0")
-        tot_credit:decimal = to_decimal("0.0")
-        e_bal:decimal = to_decimal("0.0")
-        delta:decimal = to_decimal("0.0")
+        ddebit:Decimal = to_decimal("0.0")
+        dcredit:Decimal = to_decimal("0.0")
+        dbalance:Decimal = to_decimal("0.0")
+        t_debit:Decimal = to_decimal("0.0")
+        t_credit:Decimal = to_decimal("0.0")
+        tot_debit:Decimal = to_decimal("0.0")
+        tot_credit:Decimal = to_decimal("0.0")
+        e_bal:Decimal = to_decimal("0.0")
+        delta:Decimal = to_decimal("0.0")
         fdate:date = None
         tdate:date = None
         gl_account = None
@@ -144,10 +148,10 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
         gl_jouh1 = None
         prev_mm:int = 0
         prev_yr:int = 0
-        prev_bal:decimal = to_decimal("0.0")
-        end_bal:decimal = to_decimal("0.0")
-        blankchar:str = ""
-        acc_bez:str = ""
+        prev_bal:Decimal = to_decimal("0.0")
+        end_bal:Decimal = to_decimal("0.0")
+        blankchar:string = ""
+        acc_bez:string = ""
         Gl_account =  create_buffer("Gl_account",Gl_acct)
         Gl_jour1 =  create_buffer("Gl_jour1",Gl_jourhis)
         Gl_jouh1 =  create_buffer("Gl_jouh1",Gl_jhdrhis)
@@ -168,16 +172,13 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
             for j_list in query(j_list_list, sort_by=[("fibu",False),("datum",False)]):
 
-                gl_jourhis = db_session.query(Gl_jourhis).filter(
-                             (Gl_jourhis._recid == j_list.grecid)).first()
+                gl_jourhis = get_cache (Gl_jourhis, {"_recid": [(eq, j_list.grecid)]})
 
                 if gl_jourhis:
 
-                    gl_jhdrhis = db_session.query(Gl_jhdrhis).filter(
-                                 (Gl_jhdrhis.jnr == gl_jourhis.jnr)).first()
+                    gl_jhdrhis = get_cache (Gl_jhdrhis, {"jnr": [(eq, gl_jourhis.jnr)]})
 
-                    gl_acct = db_session.query(Gl_acct).filter(
-                                 (Gl_acct.fibukonto == gl_jourhis.fibukonto)).first()
+                    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, gl_jourhis.fibukonto)]})
                     j_list_list.remove(j_list)
 
                     if gl_jourhis.chgdate == None:
@@ -199,7 +200,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                         if cashflow :
                             out_list.bemerk = to_string(out_list.bemerk, "x(40)") + to_string(prev_bal, "->>>,>>>,>>>,>>9.99")
                         else:
-                            out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)) , "x(40)") + to_string(prev_bal, "->>>,>>>,>>>,>>9.99")
+                            out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)) , "x(40)") + to_string(prev_bal, "->>>,>>>,>>>,>>9.99")
                         konto = gl_acct.fibukonto
                         acc_bez = gl_acct.bezeich
 
@@ -223,8 +224,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                             if gl_journal:
 
-                                if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                                    out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                                if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                                    out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                             if gl_acct:
 
@@ -234,7 +235,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                                 if cashflow :
                                     out_list.bemerk = to_string(out_list.bemerk)
                                 else:
-                                    out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                    out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                             ddebit =  to_decimal("0")
                             dcredit =  to_decimal("0")
                             date1 = gl_jhdrhis.datum
@@ -296,12 +297,11 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                                 if cashflow :
                                     out_list.bemerk = to_string(out_list.bemerk)
                                 else:
-                                    out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                    out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                             ddebit =  to_decimal("0")
                             dcredit =  to_decimal("0")
 
-                    gl_account = db_session.query(Gl_account).filter(
-                                 (Gl_account.fibukonto == gl_jourhis.fibukonto)).first()
+                    gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_jourhis.fibukonto)]})
 
                     if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                         balance =  to_decimal(balance) - to_decimal(gl_jourhis.debit) + to_decimal(gl_jourhis.credit)
@@ -357,19 +357,16 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                         if cashflow :
                             out_list.bemerk = to_string(out_list.bemerk)
                         else:
-                            out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                            out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                 else:
 
-                    gl_journal = db_session.query(Gl_journal).filter(
-                                 (Gl_journal._recid == j_list.grecid)).first()
+                    gl_journal = get_cache (Gl_journal, {"_recid": [(eq, j_list.grecid)]})
 
                     if gl_journal:
 
-                        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                                     (Gl_jouhdr.jnr == gl_journal.jnr)).first()
+                        gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, gl_journal.jnr)]})
 
-                        gl_acct = db_session.query(Gl_acct).filter(
-                                     (Gl_acct.fibukonto == gl_journal.fibukonto)).first()
+                        gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)]})
                         j_list_list.remove(j_list)
 
                         if gl_journal.chgdate == None:
@@ -412,8 +409,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                                 if gl_journal:
 
-                                    if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                                        out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                                    if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                                        out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                                 if gl_acct:
 
@@ -423,7 +420,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                                     if cashflow :
                                         out_list.bemerk = to_string(out_list.bemerk)
                                     else:
-                                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                                 ddebit =  to_decimal("0")
                                 dcredit =  to_decimal("0")
                                 date1 = gl_jouhdr.datum
@@ -484,12 +481,11 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                                     if cashflow :
                                         out_list.bemerk = to_string(out_list.bemerk)
                                     else:
-                                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                                 ddebit =  to_decimal("0")
                                 dcredit =  to_decimal("0")
 
-                        gl_account = db_session.query(Gl_account).filter(
-                                     (Gl_account.fibukonto == gl_journal.fibukonto)).first()
+                        gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)]})
 
                         if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                             balance =  to_decimal(balance) - to_decimal(gl_journal.debit) + to_decimal(gl_journal.credit)
@@ -542,8 +538,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                             if gl_journal:
 
-                                if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                                    out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                                if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                                    out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                             if num_entries(gl_acct.bemerk, ";") > 1:
                                 out_list.tax_code = entry(1, gl_acct.bemerk, ";")
@@ -551,7 +547,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk, "x(50)")
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)) , "x(50)")
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)) , "x(50)")
 
             if summ_date:
                 out_list = Out_list()
@@ -570,8 +566,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                 if gl_journal:
 
-                    if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                        out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                    if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                        out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
                 ddebit =  to_decimal("0")
                 dcredit =  to_decimal("0")
 
@@ -604,16 +600,13 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
             for j_list in query(j_list_list, sort_by=[("fibu",False),("datum",False)]):
 
-                gl_jourhis = db_session.query(Gl_jourhis).filter(
-                             (Gl_jourhis._recid == j_list.grecid)).first()
+                gl_jourhis = get_cache (Gl_jourhis, {"_recid": [(eq, j_list.grecid)]})
 
                 if gl_jourhis:
 
-                    gl_jhdrhis = db_session.query(Gl_jhdrhis).filter(
-                                 (Gl_jhdrhis.jnr == gl_jourhis.jnr)).first()
+                    gl_jhdrhis = get_cache (Gl_jhdrhis, {"jnr": [(eq, gl_jourhis.jnr)]})
 
-                    gl_acct = db_session.query(Gl_acct).filter(
-                                 (Gl_acct.fibukonto == gl_jourhis.fibukonto) & (Gl_acct.main_nr == from_main)).first()
+                    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, gl_jourhis.fibukonto)],"main_nr": [(eq, from_main)]})
                     j_list_list.remove(j_list)
 
                     if gl_jourhis.chgdate == None:
@@ -653,8 +646,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                             if gl_journal:
 
-                                if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                                    out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                                if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                                    out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                             if gl_acct:
 
@@ -664,7 +657,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                                 if cashflow :
                                     out_list.bemerk = to_string(out_list.bemerk)
                                 else:
-                                    out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                    out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                             ddebit =  to_decimal("0")
                             dcredit =  to_decimal("0")
                             date1 = gl_jhdrhis.datum
@@ -726,12 +719,11 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                                 if cashflow :
                                     out_list.bemerk = to_string(out_list.bemerk)
                                 else:
-                                    out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                    out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                             ddebit =  to_decimal("0")
                             dcredit =  to_decimal("0")
 
-                    gl_account = db_session.query(Gl_account).filter(
-                                 (Gl_account.fibukonto == gl_jourhis.fibukonto)).first()
+                    gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_jourhis.fibukonto)]})
 
                     if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                         balance =  to_decimal(balance) - to_decimal(gl_jourhis.debit) + to_decimal(gl_jourhis.credit)
@@ -781,16 +773,13 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             out_list.tax_code = entry(1, gl_acct.bemerk, ";")
                 else:
 
-                    gl_journal = db_session.query(Gl_journal).filter(
-                                 (Gl_journal._recid == j_list.grecid)).first()
+                    gl_journal = get_cache (Gl_journal, {"_recid": [(eq, j_list.grecid)]})
 
                     if gl_journal:
 
-                        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                                     (Gl_jouhdr.jnr == gl_journal.jnr)).first()
+                        gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, gl_journal.jnr)]})
 
-                        gl_acct = db_session.query(Gl_acct).filter(
-                                     (Gl_acct.fibukonto == gl_journal.fibukonto) & (Gl_acct.main_nr == from_main)).first()
+                        gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)],"main_nr": [(eq, from_main)]})
                         j_list_list.remove(j_list)
 
                         if gl_journal.chgdate == None:
@@ -833,8 +822,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                                 if gl_journal:
 
-                                    if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                                        out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                                    if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                                        out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                                 if gl_acct:
 
@@ -844,7 +833,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                                     if cashflow :
                                         out_list.bemerk = to_string(out_list.bemerk)
                                     else:
-                                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                                 ddebit =  to_decimal("0")
                                 dcredit =  to_decimal("0")
                                 date1 = gl_jouhdr.datum
@@ -909,12 +898,11 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                                     if cashflow :
                                         out_list.bemerk = to_string(out_list.bemerk)
                                     else:
-                                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                                 ddebit =  to_decimal("0")
                                 dcredit =  to_decimal("0")
 
-                        gl_account = db_session.query(Gl_account).filter(
-                                     (Gl_account.fibukonto == gl_journal.fibukonto)).first()
+                        gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)]})
 
                         if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                             balance =  to_decimal(balance) - to_decimal(gl_journal.debit) + to_decimal(gl_journal.credit)
@@ -962,8 +950,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                             if gl_journal:
 
-                                if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                                    out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                                if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                                    out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                             if num_entries(gl_acct.bemerk, ";") > 1:
                                 out_list.tax_code = entry(1, gl_acct.bemerk, ";")
@@ -971,7 +959,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk, "x(50)")
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)) , "x(50)")
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)) , "x(50)")
 
             if summ_date:
                 out_list = Out_list()
@@ -990,8 +978,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                 if gl_journal:
 
-                    if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                        out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                    if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                        out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                 if gl_acct:
 
@@ -1001,7 +989,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     if cashflow :
                         out_list.bemerk = to_string(out_list.bemerk)
                     else:
-                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                 ddebit =  to_decimal("0")
                 dcredit =  to_decimal("0")
 
@@ -1019,16 +1007,13 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
             for j_list in query(j_list_list, sort_by=[("fibu",False),("datum",False)]):
 
-                gl_jourhis = db_session.query(Gl_jourhis).filter(
-                             (Gl_jourhis._recid == j_list.grecid)).first()
+                gl_jourhis = get_cache (Gl_jourhis, {"_recid": [(eq, j_list.grecid)]})
 
                 if gl_jourhis:
 
-                    gl_jhdrhis = db_session.query(Gl_jhdrhis).filter(
-                                 (Gl_jhdrhis.jnr == gl_jourhis.jnr)).first()
+                    gl_jhdrhis = get_cache (Gl_jhdrhis, {"jnr": [(eq, gl_jourhis.jnr)]})
 
-                    gl_acct = db_session.query(Gl_acct).filter(
-                                 (Gl_acct.fibukonto == gl_jourhis.fibukonto) & (Gl_acct.deptnr == from_dept)).first()
+                    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, gl_jourhis.fibukonto)],"deptnr": [(eq, from_dept)]})
                     j_list_list.remove(j_list)
 
                     if gl_jourhis.chgdate == None:
@@ -1068,8 +1053,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                             if gl_journal:
 
-                                if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                                    out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                                if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                                    out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                             if gl_acct:
 
@@ -1079,7 +1064,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                                 if cashflow :
                                     out_list.bemerk = to_string(out_list.bemerk)
                                 else:
-                                    out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                    out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                             ddebit =  to_decimal("0")
                             dcredit =  to_decimal("0")
                             date1 = gl_jhdrhis.datum
@@ -1141,12 +1126,11 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                                 if cashflow :
                                     out_list.bemerk = to_string(out_list.bemerk)
                                 else:
-                                    out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                    out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                             ddebit =  to_decimal("0")
                             dcredit =  to_decimal("0")
 
-                    gl_account = db_session.query(Gl_account).filter(
-                                 (Gl_account.fibukonto == gl_jourhis.fibukonto)).first()
+                    gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_jourhis.fibukonto)]})
 
                     if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                         balance =  to_decimal(balance) - to_decimal(gl_jourhis.debit) + to_decimal(gl_jourhis.credit)
@@ -1198,19 +1182,16 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                         if cashflow :
                             out_list.bemerk = to_string(out_list.bemerk)
                         else:
-                            out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                            out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                 else:
 
-                    gl_journal = db_session.query(Gl_journal).filter(
-                                 (Gl_journal._recid == j_list.grecid)).first()
+                    gl_journal = get_cache (Gl_journal, {"_recid": [(eq, j_list.grecid)]})
 
                     if gl_journal:
 
-                        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                                     (Gl_jouhdr.jnr == gl_journal.jnr)).first()
+                        gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, gl_journal.jnr)]})
 
-                        gl_acct = db_session.query(Gl_acct).filter(
-                                     (Gl_acct.fibukonto == gl_journal.fibukonto) & (Gl_acct.deptnr == from_dept)).first()
+                        gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)],"deptnr": [(eq, from_dept)]})
                         j_list_list.remove(j_list)
 
                         if gl_journal.chgdate == None:
@@ -1253,8 +1234,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                                 if gl_journal:
 
-                                    if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                                        out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                                    if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                                        out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                                 if gl_acct:
 
@@ -1264,7 +1245,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                                     if cashflow :
                                         out_list.bemerk = to_string(out_list.bemerk)
                                     else:
-                                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                                 ddebit =  to_decimal("0")
                                 dcredit =  to_decimal("0")
                                 date1 = gl_jouhdr.datum
@@ -1329,12 +1310,11 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                                     if cashflow :
                                         out_list.bemerk = to_string(out_list.bemerk)
                                     else:
-                                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                                 ddebit =  to_decimal("0")
                                 dcredit =  to_decimal("0")
 
-                        gl_account = db_session.query(Gl_account).filter(
-                                     (Gl_account.fibukonto == gl_journal.fibukonto)).first()
+                        gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)]})
 
                         if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                             balance =  to_decimal(balance) - to_decimal(gl_journal.debit) + to_decimal(gl_journal.credit)
@@ -1382,8 +1362,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                             if gl_journal:
 
-                                if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                                    out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                                if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                                    out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                             if num_entries(gl_acct.bemerk, ";") > 1:
                                 out_list.tax_code = entry(1, gl_acct.bemerk, ";")
@@ -1391,7 +1371,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk, "x(50)")
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)) , "x(50)")
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)) , "x(50)")
 
             if summ_date:
                 out_list = Out_list()
@@ -1410,8 +1390,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                 if gl_journal:
 
-                    if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                        out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                    if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                        out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                 if gl_acct:
 
@@ -1421,7 +1401,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     if cashflow :
                         out_list.bemerk = to_string(out_list.bemerk)
                     else:
-                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                 ddebit =  to_decimal("0")
                 dcredit =  to_decimal("0")
 
@@ -1475,7 +1455,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     continue
 
                 for gl_jourhis in db_session.query(Gl_jourhis).filter(
-                         (Gl_jourhis.jnr == gl_jhdrhis.jnr) & (func.lower(Gl_jourhis.bemerk).op("~")(("*" + f_note + "*".lower().replace("*",".*")))) & (func.lower(Gl_jourhis.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_jourhis.fibukonto) <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto).all():
+                         (Gl_jourhis.jnr == gl_jhdrhis.jnr) & (matches(Gl_jourhis.bemerk,"*" + f_note + "*")) & (Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto).all():
                     g_list = G_list()
                     g_list_list.append(g_list)
 
@@ -1495,7 +1475,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     continue
 
                 for gl_jourhis in db_session.query(Gl_jourhis).filter(
-                         (Gl_jourhis.jnr == gl_jhdrhis.jnr) & (func.lower(Gl_jourhis.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_jourhis.fibukonto) <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto).all():
+                         (Gl_jourhis.jnr == gl_jhdrhis.jnr) & (Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto).all():
                     g_list = G_list()
                     g_list_list.append(g_list)
 
@@ -1512,30 +1492,30 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
         nonlocal out_list, g_list, j_list
         nonlocal out_list_list, g_list_list, j_list_list
 
-        debit:decimal = to_decimal("0.0")
-        credit:decimal = to_decimal("0.0")
-        balance:decimal = to_decimal("0.0")
-        konto:str = ""
+        debit:Decimal = to_decimal("0.0")
+        credit:Decimal = to_decimal("0.0")
+        balance:Decimal = to_decimal("0.0")
+        konto:string = ""
         i:int = 0
-        c:str = ""
-        bezeich:str = ""
+        c:string = ""
+        bezeich:string = ""
         datum:date = None
-        refno:str = ""
-        h_bezeich:str = ""
-        id:str = ""
+        refno:string = ""
+        h_bezeich:string = ""
+        id:string = ""
         chgdate:date = None
         beg_date:date = None
         beg_day:int = 0
         date1:date = None
-        ddebit:decimal = to_decimal("0.0")
-        dcredit:decimal = to_decimal("0.0")
-        dbalance:decimal = to_decimal("0.0")
-        t_debit:decimal = to_decimal("0.0")
-        t_credit:decimal = to_decimal("0.0")
-        tot_debit:decimal = to_decimal("0.0")
-        tot_credit:decimal = to_decimal("0.0")
-        e_bal:decimal = to_decimal("0.0")
-        delta:decimal = to_decimal("0.0")
+        ddebit:Decimal = to_decimal("0.0")
+        dcredit:Decimal = to_decimal("0.0")
+        dbalance:Decimal = to_decimal("0.0")
+        t_debit:Decimal = to_decimal("0.0")
+        t_credit:Decimal = to_decimal("0.0")
+        tot_debit:Decimal = to_decimal("0.0")
+        tot_credit:Decimal = to_decimal("0.0")
+        e_bal:Decimal = to_decimal("0.0")
+        delta:Decimal = to_decimal("0.0")
         fdate:date = None
         tdate:date = None
         gl_account = None
@@ -1543,10 +1523,10 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
         gl_jouh1 = None
         prev_mm:int = 0
         prev_yr:int = 0
-        prev_bal:decimal = to_decimal("0.0")
-        end_bal:decimal = to_decimal("0.0")
-        blankchar:str = ""
-        acc_bez:str = ""
+        prev_bal:Decimal = to_decimal("0.0")
+        end_bal:Decimal = to_decimal("0.0")
+        blankchar:string = ""
+        acc_bez:string = ""
         Gl_account =  create_buffer("Gl_account",Gl_acct)
         Gl_jour1 =  create_buffer("Gl_jour1",Gl_jourhis)
         Gl_jouh1 =  create_buffer("Gl_jouh1",Gl_jhdrhis)
@@ -1565,13 +1545,13 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
         if sorttype == 2:
 
-            gl_jourhis_obj_list = []
+            gl_jourhis_obj_list = {}
             for gl_jourhis, gl_jhdrhis, gl_acct in db_session.query(Gl_jourhis, Gl_jhdrhis, Gl_acct).join(Gl_jhdrhis,(Gl_jhdrhis.jnr == Gl_jourhis.jnr)).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto)).filter(
                          (Gl_jourhis._recid.in_(list(set([g_list.grecid for g_list in g_list_list]))))).order_by(Gl_jourhis.fibukonto, Gl_jourhis.datum, Gl_jourhis.zeit, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
-                if gl_jourhis._recid in gl_jourhis_obj_list:
+                if gl_jourhis_obj_list.get(gl_jourhis._recid):
                     continue
                 else:
-                    gl_jourhis_obj_list.append(gl_jourhis._recid)
+                    gl_jourhis_obj_list[gl_jourhis._recid] = True
 
                 g_list = query(g_list_list, (lambda g_list: (gl_jourhis._recid == g_list.grecid)), first=True)
                 g_list_list.remove(g_list)
@@ -1601,7 +1581,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     if cashflow :
                         out_list.bemerk = to_string(out_list.bemerk, "x(40)")
                     else:
-                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)) , "x(40)")
+                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)) , "x(40)")
                     konto = gl_acct.fibukonto
                     acc_bez = gl_acct.bezeich
 
@@ -1625,8 +1605,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                         if gl_jourhis:
 
-                            if num_entries(gl_jourhis.bemerk, chr(2)) > 1:
-                                out_list.number1 = entry(1, gl_jourhis.bemerk, chr(2))
+                            if num_entries(gl_jourhis.bemerk, chr_unicode(2)) > 1:
+                                out_list.number1 = entry(1, gl_jourhis.bemerk, chr_unicode(2))
 
                         if gl_acct:
 
@@ -1636,7 +1616,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk)
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                         ddebit =  to_decimal("0")
                         dcredit =  to_decimal("0")
                         date1 = gl_jhdrhis.datum
@@ -1700,12 +1680,11 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk)
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                         ddebit =  to_decimal("0")
                         dcredit =  to_decimal("0")
 
-                gl_account = db_session.query(Gl_account).filter(
-                             (Gl_account.fibukonto == gl_jourhis.fibukonto)).first()
+                gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_jourhis.fibukonto)]})
 
                 if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                     balance =  to_decimal(balance) - to_decimal(gl_jourhis.debit) + to_decimal(gl_jourhis.credit)
@@ -1761,7 +1740,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     if cashflow :
                         out_list.bemerk = to_string(out_list.bemerk)
                     else:
-                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
 
             if summ_date:
                 out_list = Out_list()
@@ -1780,8 +1759,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                 if gl_jourhis:
 
-                    if num_entries(gl_jourhis.bemerk, chr(2)) > 1:
-                        out_list.number1 = entry(1, gl_jourhis.bemerk, chr(2))
+                    if num_entries(gl_jourhis.bemerk, chr_unicode(2)) > 1:
+                        out_list.number1 = entry(1, gl_jourhis.bemerk, chr_unicode(2))
                 ddebit =  to_decimal("0")
                 dcredit =  to_decimal("0")
 
@@ -1813,13 +1792,13 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
         elif sorttype == 1:
 
-            gl_jourhis_obj_list = []
+            gl_jourhis_obj_list = {}
             for gl_jourhis, gl_jhdrhis, gl_acct in db_session.query(Gl_jourhis, Gl_jhdrhis, Gl_acct).join(Gl_jhdrhis,(Gl_jhdrhis.jnr == Gl_jourhis.jnr)).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto) & (Gl_acct.main_nr == from_main)).filter(
                          (Gl_jourhis._recid.in_(list(set([g_list.grecid for g_list in g_list_list]))))).order_by(Gl_jourhis.fibukonto, Gl_jourhis.datum, Gl_jourhis.zeit, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
-                if gl_jourhis._recid in gl_jourhis_obj_list:
+                if gl_jourhis_obj_list.get(gl_jourhis._recid):
                     continue
                 else:
-                    gl_jourhis_obj_list.append(gl_jourhis._recid)
+                    gl_jourhis_obj_list[gl_jourhis._recid] = True
 
                 g_list = query(g_list_list, (lambda g_list: (gl_jourhis._recid == g_list.grecid)), first=True)
                 g_list_list.remove(g_list)
@@ -1862,8 +1841,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                         if gl_jourhis:
 
-                            if num_entries(gl_jourhis.bemerk, chr(2)) > 1:
-                                out_list.number1 = entry(1, gl_jourhis.bemerk, chr(2))
+                            if num_entries(gl_jourhis.bemerk, chr_unicode(2)) > 1:
+                                out_list.number1 = entry(1, gl_jourhis.bemerk, chr_unicode(2))
 
                         if gl_acct:
 
@@ -1873,7 +1852,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk)
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                         ddebit =  to_decimal("0")
                         dcredit =  to_decimal("0")
                         date1 = gl_jhdrhis.datum
@@ -1937,12 +1916,11 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk)
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                         ddebit =  to_decimal("0")
                         dcredit =  to_decimal("0")
 
-                gl_account = db_session.query(Gl_account).filter(
-                             (Gl_account.fibukonto == gl_jourhis.fibukonto)).first()
+                gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_jourhis.fibukonto)]})
 
                 if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                     balance =  to_decimal(balance) - to_decimal(gl_jourhis.debit) + to_decimal(gl_jourhis.credit)
@@ -2008,8 +1986,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                 if gl_jourhis:
 
-                    if num_entries(gl_jourhis.bemerk, chr(2)) > 1:
-                        out_list.number1 = entry(1, gl_jourhis.bemerk, chr(2))
+                    if num_entries(gl_jourhis.bemerk, chr_unicode(2)) > 1:
+                        out_list.number1 = entry(1, gl_jourhis.bemerk, chr_unicode(2))
 
                 if gl_acct:
 
@@ -2019,7 +1997,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     if cashflow :
                         out_list.bemerk = to_string(out_list.bemerk)
                     else:
-                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                 ddebit =  to_decimal("0")
                 dcredit =  to_decimal("0")
 
@@ -2036,13 +2014,13 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
         elif sorttype == 3:
 
-            gl_jourhis_obj_list = []
+            gl_jourhis_obj_list = {}
             for gl_jourhis, gl_jhdrhis, gl_acct in db_session.query(Gl_jourhis, Gl_jhdrhis, Gl_acct).join(Gl_jhdrhis,(Gl_jhdrhis.jnr == Gl_jourhis.jnr)).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto) & (Gl_acct.deptnr == from_dept)).filter(
                          (Gl_jourhis._recid.in_(list(set([g_list.grecid for g_list in g_list_list]))))).order_by(Gl_jourhis.fibukonto, Gl_jourhis.datum, Gl_jourhis.zeit, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
-                if gl_jourhis._recid in gl_jourhis_obj_list:
+                if gl_jourhis_obj_list.get(gl_jourhis._recid):
                     continue
                 else:
-                    gl_jourhis_obj_list.append(gl_jourhis._recid)
+                    gl_jourhis_obj_list[gl_jourhis._recid] = True
 
                 g_list = query(g_list_list, (lambda g_list: (gl_jourhis._recid == g_list.grecid)), first=True)
                 g_list_list.remove(g_list)
@@ -2085,8 +2063,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                         if gl_jourhis:
 
-                            if num_entries(gl_jourhis.bemerk, chr(2)) > 1:
-                                out_list.number1 = entry(1, gl_jourhis.bemerk, chr(2))
+                            if num_entries(gl_jourhis.bemerk, chr_unicode(2)) > 1:
+                                out_list.number1 = entry(1, gl_jourhis.bemerk, chr_unicode(2))
 
                         if gl_acct:
 
@@ -2096,7 +2074,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk)
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                         ddebit =  to_decimal("0")
                         dcredit =  to_decimal("0")
                         date1 = gl_jhdrhis.datum
@@ -2160,12 +2138,11 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk)
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                         ddebit =  to_decimal("0")
                         dcredit =  to_decimal("0")
 
-                gl_account = db_session.query(Gl_account).filter(
-                             (Gl_account.fibukonto == gl_jourhis.fibukonto)).first()
+                gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_jourhis.fibukonto)]})
 
                 if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                     balance =  to_decimal(balance) - to_decimal(gl_jourhis.debit) + to_decimal(gl_jourhis.credit)
@@ -2217,7 +2194,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     if cashflow :
                         out_list.bemerk = to_string(out_list.bemerk)
                     else:
-                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
 
             if summ_date:
                 out_list = Out_list()
@@ -2236,8 +2213,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                 if gl_jourhis:
 
-                    if num_entries(gl_jourhis.bemerk, chr(2)) > 1:
-                        out_list.number1 = entry(1, gl_jourhis.bemerk, chr(2))
+                    if num_entries(gl_jourhis.bemerk, chr_unicode(2)) > 1:
+                        out_list.number1 = entry(1, gl_jourhis.bemerk, chr_unicode(2))
 
                 if gl_acct:
 
@@ -2247,7 +2224,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     if cashflow :
                         out_list.bemerk = to_string(out_list.bemerk)
                     else:
-                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                 ddebit =  to_decimal("0")
                 dcredit =  to_decimal("0")
 
@@ -2305,7 +2282,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     continue
 
                 for gl_journal in db_session.query(Gl_journal).filter(
-                         (Gl_journal.jnr == gl_jouhdr.jnr) & (func.lower(Gl_journal.bemerk).op("~")(("*" + f_note + "*".lower().replace("*",".*")))) & (func.lower(Gl_journal.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_journal.fibukonto) <= (to_fibu).lower())).order_by(Gl_journal.fibukonto).all():
+                         (Gl_journal.jnr == gl_jouhdr.jnr) & (matches(Gl_journal.bemerk,"*" + f_note + "*")) & (Gl_journal.fibukonto >= (from_fibu).lower()) & (Gl_journal.fibukonto <= (to_fibu).lower())).order_by(Gl_journal.fibukonto).all():
                     g_list = G_list()
                     g_list_list.append(g_list)
 
@@ -2328,7 +2305,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     continue
 
                 for gl_journal in db_session.query(Gl_journal).filter(
-                         (Gl_journal.jnr == gl_jouhdr.jnr) & (func.lower(Gl_journal.fibukonto) >= (from_fibu).lower()) & (func.lower(Gl_journal.fibukonto) <= (to_fibu).lower())).order_by(Gl_journal.fibukonto).all():
+                         (Gl_journal.jnr == gl_jouhdr.jnr) & (Gl_journal.fibukonto >= (from_fibu).lower()) & (Gl_journal.fibukonto <= (to_fibu).lower())).order_by(Gl_journal.fibukonto).all():
                     g_list = G_list()
                     g_list_list.append(g_list)
 
@@ -2345,41 +2322,42 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
         nonlocal out_list, g_list, j_list
         nonlocal out_list_list, g_list_list, j_list_list
 
-        debit:decimal = to_decimal("0.0")
-        credit:decimal = to_decimal("0.0")
-        balance:decimal = to_decimal("0.0")
+        debit:Decimal = to_decimal("0.0")
+        credit:Decimal = to_decimal("0.0")
+        balance:Decimal = to_decimal("0.0")
         i:int = 0
-        c:str = ""
-        bezeich:str = ""
-        refno:str = ""
+        c:string = ""
+        bezeich:string = ""
+        refno:string = ""
         datum:date = None
-        h_bezeich:str = ""
-        id:str = ""
+        h_bezeich:string = ""
+        id:string = ""
         chgdate:date = None
         beg_date:date = None
         beg_day:int = 0
         date1:date = None
         fdate:date = None
         tdate:date = None
-        ddebit:decimal = to_decimal("0.0")
-        dcredit:decimal = to_decimal("0.0")
-        dbalance:decimal = to_decimal("0.0")
-        e_bal:decimal = to_decimal("0.0")
-        delta:decimal = to_decimal("0.0")
+        ddebit:Decimal = to_decimal("0.0")
+        dcredit:Decimal = to_decimal("0.0")
+        dbalance:Decimal = to_decimal("0.0")
+        e_bal:Decimal = to_decimal("0.0")
+        delta:Decimal = to_decimal("0.0")
         prev_mm:int = 0
         prev_yr:int = 0
-        prev_bal:decimal = to_decimal("0.0")
-        end_bal:decimal = to_decimal("0.0")
-        blankchar:str = ""
-        acc_bez:str = ""
-        t_debit:decimal = to_decimal("0.0")
-        t_credit:decimal = to_decimal("0.0")
-        tot_debit:decimal = to_decimal("0.0")
-        tot_credit:decimal = to_decimal("0.0")
-        konto:str = ""
+        prev_bal:Decimal = to_decimal("0.0")
+        end_bal:Decimal = to_decimal("0.0")
+        blankchar:string = ""
+        acc_bez:string = ""
+        t_debit:Decimal = to_decimal("0.0")
+        t_credit:Decimal = to_decimal("0.0")
+        tot_debit:Decimal = to_decimal("0.0")
+        tot_credit:Decimal = to_decimal("0.0")
+        konto:string = ""
         gl_account = None
         gl_jour1 = None
         gl_jouh1 = None
+        curr_recid:int = 0
         Gl_account =  create_buffer("Gl_account",Gl_acct)
         Gl_jour1 =  create_buffer("Gl_jour1",Gl_journal)
         Gl_jouh1 =  create_buffer("Gl_jouh1",Gl_jouhdr)
@@ -2398,15 +2376,16 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
         if sorttype == 2:
 
-            gl_journal_obj_list = []
+            gl_journal_obj_list = {}
             for gl_journal, gl_jouhdr, gl_acct in db_session.query(Gl_journal, Gl_jouhdr, Gl_acct).join(Gl_jouhdr,(Gl_jouhdr.jnr == Gl_journal.jnr)).join(Gl_acct,(Gl_acct.fibukonto == Gl_journal.fibukonto)).filter(
                          (Gl_journal._recid.in_(list(set([g_list.grecid for g_list in g_list_list]))))).order_by(Gl_journal.fibukonto, Gl_jouhdr.datum, Gl_jouhdr.refno, func.substring(Gl_journal.bemerk, 0, 24)).all():
-                if gl_journal._recid in gl_journal_obj_list:
+                if gl_journal_obj_list.get(gl_journal._recid):
                     continue
                 else:
-                    gl_journal_obj_list.append(gl_journal._recid)
+                    gl_journal_obj_list[gl_journal._recid] = True
 
                 g_list = query(g_list_list, (lambda g_list: (gl_journal._recid == g_list.grecid)), first=True)
+                curr_recid = g_list.grecid
                 g_list_list.remove(g_list)
 
                 if gl_journal.chgdate == None:
@@ -2436,7 +2415,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                         out_list = Out_list()
                         out_list_list.append(out_list)
 
-                        out_list.s_recid = to_int(gl_journal._recid)
+                        out_list.s_recid = curr_recid
                         out_list.fibukonto = konto
                         out_list.trans_date = date1
                         out_list.bezeich = acc_bez
@@ -2450,8 +2429,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                         if gl_journal:
 
-                            if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                                out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                            if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                                out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                         if gl_acct:
 
@@ -2461,7 +2440,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk)
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                         ddebit =  to_decimal("0")
                         dcredit =  to_decimal("0")
                         date1 = gl_jouhdr.datum
@@ -2526,12 +2505,11 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk)
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                         ddebit =  to_decimal("0")
                         dcredit =  to_decimal("0")
 
-                gl_account = db_session.query(Gl_account).filter(
-                             (Gl_account.fibukonto == gl_journal.fibukonto)).first()
+                gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)]})
 
                 if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                     balance =  to_decimal(balance) - to_decimal(gl_journal.debit) + to_decimal(gl_journal.credit)
@@ -2562,7 +2540,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     out_list = Out_list()
                     out_list_list.append(out_list)
 
-                    out_list.s_recid = to_int(gl_journal._recid)
+                    out_list.s_recid = curr_recid
                     out_list.fibukonto = gl_journal.fibukonto
                     out_list.jnr = gl_jouhdr.jnr
                     out_list.jtype = gl_jouhdr.jtype
@@ -2584,8 +2562,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                     if gl_journal:
 
-                        if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                            out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                        if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                            out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                     if num_entries(gl_acct.bemerk, ";") > 1:
                         out_list.tax_code = entry(1, gl_acct.bemerk, ";")
@@ -2593,13 +2571,13 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     if cashflow :
                         out_list.bemerk = to_string(out_list.bemerk, "x(100)")
                     else:
-                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)) , "x(100)")
+                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)) , "x(100)")
 
             if summ_date:
                 out_list = Out_list()
                 out_list_list.append(out_list)
 
-                out_list.s_recid = to_int(gl_journal._recid)
+                out_list.s_recid = curr_recid
                 out_list.fibukonto = konto
                 out_list.trans_date = date1
                 out_list.bezeich = acc_bez
@@ -2613,8 +2591,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                 if gl_journal:
 
-                    if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                        out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                    if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                        out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                 if gl_acct:
 
@@ -2624,7 +2602,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     if cashflow :
                         out_list.bemerk = to_string(out_list.bemerk)
                     else:
-                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                 ddebit =  to_decimal("0")
                 dcredit =  to_decimal("0")
 
@@ -2656,15 +2634,16 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
         elif sorttype == 1:
 
-            gl_journal_obj_list = []
+            gl_journal_obj_list = {}
             for gl_journal, gl_jouhdr, gl_acct in db_session.query(Gl_journal, Gl_jouhdr, Gl_acct).join(Gl_jouhdr,(Gl_jouhdr.jnr == Gl_journal.jnr)).join(Gl_acct,(Gl_acct.fibukonto == Gl_journal.fibukonto) & (Gl_acct.main_nr == from_main)).filter(
                          (Gl_journal._recid.in_(list(set([g_list.grecid for g_list in g_list_list]))))).order_by(Gl_journal.fibukonto, Gl_jouhdr.datum, Gl_jouhdr.refno, func.substring(Gl_journal.bemerk, 0, 24)).all():
-                if gl_journal._recid in gl_journal_obj_list:
+                if gl_journal_obj_list.get(gl_journal._recid):
                     continue
                 else:
-                    gl_journal_obj_list.append(gl_journal._recid)
+                    gl_journal_obj_list[gl_journal._recid] = True
 
                 g_list = query(g_list_list, (lambda g_list: (gl_journal._recid == g_list.grecid)), first=True)
+                curr_recid = g_list.grecid
                 g_list_list.remove(g_list)
 
                 if gl_journal.chgdate == None:
@@ -2694,7 +2673,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                         out_list = Out_list()
                         out_list_list.append(out_list)
 
-                        out_list.s_recid = to_int(gl_journal._recid)
+                        out_list.s_recid = curr_recid
                         out_list.fibukonto = konto
                         out_list.trans_date = date1
                         out_list.bezeich = acc_bez
@@ -2708,8 +2687,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                         if gl_journal:
 
-                            if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                                out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                            if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                                out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                         if gl_acct:
 
@@ -2719,7 +2698,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk)
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                         ddebit =  to_decimal("0")
                         dcredit =  to_decimal("0")
                         date1 = gl_jouhdr.datum
@@ -2786,12 +2765,11 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk)
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                         ddebit =  to_decimal("0")
                         dcredit =  to_decimal("0")
 
-                gl_account = db_session.query(Gl_account).filter(
-                             (Gl_account.fibukonto == gl_journal.fibukonto)).first()
+                gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)]})
 
                 if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                     balance =  to_decimal(balance) - to_decimal(gl_journal.debit) + to_decimal(gl_journal.credit)
@@ -2818,7 +2796,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     out_list = Out_list()
                     out_list_list.append(out_list)
 
-                    out_list.s_recid = to_int(gl_journal._recid)
+                    out_list.s_recid = curr_recid
                     out_list.fibukonto = gl_journal.fibukonto
                     out_list.jnr = gl_jouhdr.jnr
                     out_list.jtype = gl_jouhdr.jtype
@@ -2839,8 +2817,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                     if gl_journal:
 
-                        if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                            out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                        if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                            out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                     if num_entries(gl_acct.bemerk, ";") > 1:
                         out_list.tax_code = entry(1, gl_acct.bemerk, ";")
@@ -2848,13 +2826,13 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     if cashflow :
                         out_list.bemerk = to_string(out_list.bemerk, "x(100)")
                     else:
-                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)) , "x(100)")
+                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)) , "x(100)")
 
             if summ_date:
                 out_list = Out_list()
                 out_list_list.append(out_list)
 
-                out_list.s_recid = to_int(gl_journal._recid)
+                out_list.s_recid = curr_recid
                 out_list.fibukonto = konto
                 out_list.trans_date = date1
                 out_list.bezeich = acc_bez
@@ -2868,8 +2846,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                 if gl_journal:
 
-                    if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                        out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                    if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                        out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                 if gl_acct:
 
@@ -2879,7 +2857,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     if cashflow :
                         out_list.bemerk = to_string(out_list.bemerk)
                     else:
-                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                 ddebit =  to_decimal("0")
                 dcredit =  to_decimal("0")
 
@@ -2911,15 +2889,16 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
         elif sorttype == 3:
 
-            gl_journal_obj_list = []
+            gl_journal_obj_list = {}
             for gl_journal, gl_jouhdr, gl_acct in db_session.query(Gl_journal, Gl_jouhdr, Gl_acct).join(Gl_jouhdr,(Gl_jouhdr.jnr == Gl_journal.jnr)).join(Gl_acct,(Gl_acct.fibukonto == Gl_journal.fibukonto) & (Gl_acct.deptnr == from_dept)).filter(
                          (Gl_journal._recid.in_(list(set([g_list.grecid for g_list in g_list_list]))))).order_by(Gl_journal.fibukonto, Gl_jouhdr.datum, Gl_jouhdr.refno, func.substring(Gl_journal.bemerk, 0, 24)).all():
-                if gl_journal._recid in gl_journal_obj_list:
+                if gl_journal_obj_list.get(gl_journal._recid):
                     continue
                 else:
-                    gl_journal_obj_list.append(gl_journal._recid)
+                    gl_journal_obj_list[gl_journal._recid] = True
 
                 g_list = query(g_list_list, (lambda g_list: (gl_journal._recid == g_list.grecid)), first=True)
+                curr_recid = g_list.grecid
                 g_list_list.remove(g_list)
 
                 if gl_journal.chgdate == None:
@@ -2949,7 +2928,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                         out_list = Out_list()
                         out_list_list.append(out_list)
 
-                        out_list.s_recid = to_int(gl_journal._recid)
+                        out_list.s_recid = curr_recid
                         out_list.fibukonto = konto
                         out_list.trans_date = date1
                         out_list.bezeich = acc_bez
@@ -2963,8 +2942,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                         if gl_journal:
 
-                            if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                                out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                            if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                                out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                         if gl_acct:
 
@@ -2974,7 +2953,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk)
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                         ddebit =  to_decimal("0")
                         dcredit =  to_decimal("0")
                         date1 = gl_jouhdr.datum
@@ -3041,12 +3020,11 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                             if cashflow :
                                 out_list.bemerk = to_string(out_list.bemerk)
                             else:
-                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                                out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                         ddebit =  to_decimal("0")
                         dcredit =  to_decimal("0")
 
-                gl_account = db_session.query(Gl_account).filter(
-                             (Gl_account.fibukonto == gl_journal.fibukonto)).first()
+                gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)]})
 
                 if gl_account.acc_type == 1 or gl_account.acc_type == 4:
                     balance =  to_decimal(balance) - to_decimal(gl_journal.debit) + to_decimal(gl_journal.credit)
@@ -3073,7 +3051,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     out_list = Out_list()
                     out_list_list.append(out_list)
 
-                    out_list.s_recid = to_int(gl_journal._recid)
+                    out_list.s_recid = curr_recid
                     out_list.fibukonto = gl_journal.fibukonto
                     out_list.jnr = gl_jouhdr.jnr
                     out_list.jtype = gl_jouhdr.jtype
@@ -3094,8 +3072,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                     if gl_journal:
 
-                        if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                            out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                        if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                            out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                     if num_entries(gl_acct.bemerk, ";") > 1:
                         out_list.tax_code = entry(1, gl_acct.bemerk, ";")
@@ -3103,13 +3081,13 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     if cashflow :
                         out_list.bemerk = to_string(out_list.bemerk, "x(100)")
                     else:
-                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)) , "x(100)")
+                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)) , "x(100)")
 
             if summ_date:
                 out_list = Out_list()
                 out_list_list.append(out_list)
 
-                out_list.s_recid = to_int(gl_journal._recid)
+                out_list.s_recid = curr_recid
                 out_list.fibukonto = konto
                 out_list.trans_date = date1
                 out_list.bezeich = acc_bez
@@ -3123,8 +3101,8 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
 
                 if gl_journal:
 
-                    if num_entries(gl_journal.bemerk, chr(2)) > 1:
-                        out_list.number1 = entry(1, gl_journal.bemerk, chr(2))
+                    if num_entries(gl_journal.bemerk, chr_unicode(2)) > 1:
+                        out_list.number1 = entry(1, gl_journal.bemerk, chr_unicode(2))
 
                 if gl_acct:
 
@@ -3134,7 +3112,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                     if cashflow :
                         out_list.bemerk = to_string(out_list.bemerk)
                     else:
-                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr(2)))
+                        out_list.bemerk = to_string(entry(0, out_list.bemerk, chr_unicode(2)))
                 ddebit =  to_decimal("0")
                 dcredit =  to_decimal("0")
 
@@ -3165,7 +3143,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
             out_list.credit_str = to_string(tot_credit, "->,>>>,>>>,>>>,>>9.99")
 
 
-    def calc_prev_bal(fibu:str, prev_mm:int, prev_yr:int):
+    def calc_prev_bal(fibu:string, prev_mm:int, prev_yr:int):
 
         nonlocal out_list_list, datum1, datum2, gl_jhdrhis, gl_jourhis, gl_jouhdr, gl_journal, gl_acct, gl_accthis, htparam
         nonlocal from_date, to_date, last_2yr, close_year, journaltype, excl_other, other_dept, summ_date, from_fibu, to_fibu, sorttype, from_dept, journaltype1, cashflow, f_note, from_main
@@ -3190,13 +3168,11 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
         Joubuff =  create_buffer("Joubuff",Gl_journal)
         prev_bal =  to_decimal("0")
 
-        gl_account = db_session.query(Gl_account).filter(
-                 (func.lower(Gl_account.fibukonto) == (fibu).lower())).first()
+        gl_account = get_cache (Gl_acct, {"fibukonto": [(eq, fibu)]})
 
         if prev_yr < get_year(close_year):
 
-            gl_accthis = db_session.query(Gl_accthis).filter(
-                     (Gl_accthis.fibukonto == gl_account.fibukonto) & (Gl_accthis.year == prev_yr)).first()
+            gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_account.fibukonto)],"year": [(eq, prev_yr)]})
 
             if gl_accthis:
                 prev_bal =  to_decimal(gl_accthis.actual[prev_mm - 1])
@@ -3211,7 +3187,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
                              (Hdrbuff.datum == curr_datum) & (Hdrbuff.activeflag <= 1)).order_by(Hdrbuff._recid).all():
 
                     for joubuff in db_session.query(Joubuff).filter(
-                                 (Joubuff.jnr == hdrbuff.jnr) & (func.lower(Joubuff.fibukonto) == (fibu).lower())).order_by(Joubuff._recid).all():
+                                 (Joubuff.jnr == hdrbuff.jnr) & (Joubuff.fibukonto == (fibu).lower())).order_by(Joubuff._recid).all():
                         prev_bal =  to_decimal(prev_bal) + to_decimal(joubuff.debit) - to_decimal(joubuff.credit)
 
         if gl_account.acc_type == 1 or gl_account.acc_type == 4:
@@ -3229,7 +3205,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
         return generate_inner_output()
 
 
-    def convert_fibu(konto:str):
+    def convert_fibu(konto:string):
 
         nonlocal out_list_list, datum1, datum2, gl_jhdrhis, gl_jourhis, gl_jouhdr, gl_journal, gl_acct, gl_accthis, htparam
         nonlocal from_date, to_date, last_2yr, close_year, journaltype, excl_other, other_dept, summ_date, from_fibu, to_fibu, sorttype, from_dept, journaltype1, cashflow, f_note, from_main
@@ -3239,7 +3215,7 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
         nonlocal out_list_list, g_list_list, j_list_list
 
         s = ""
-        ch:str = ""
+        ch:string = ""
         i:int = 0
         j:int = 0
 
@@ -3247,11 +3223,10 @@ def gl_joulist_1_webbl(from_date:date, to_date:date, last_2yr:date, close_year:d
             return (s)
 
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 977)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 977)]})
         ch = htparam.fchar
         j = 0
-        for i in range(1,len(ch)  + 1) :
+        for i in range(1,length(ch)  + 1) :
 
             if substring(ch, i - 1, 1) >= ("0").lower()  and substring(ch, i - 1, 1) <= ("9").lower() :
                 j = j + 1

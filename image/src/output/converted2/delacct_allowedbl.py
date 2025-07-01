@@ -1,14 +1,17 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Gl_acct, Gl_journal, Artikel, Parameters
 
-def delacct_allowedbl(pvilanguage:int, from_acct:str, mess_it:bool):
+def delacct_allowedbl(pvilanguage:int, from_acct:string, mess_it:bool):
+
+    prepare_cache ([Gl_acct, Artikel])
+
     do_it = False
     msg_str = ""
-    lvcarea:str = "gl-export-import-journal"
+    lvcarea:string = "gl-export-import-journal"
     gl_acct = gl_journal = artikel = parameters = None
-
 
     db_session = local_storage.db_session
 
@@ -23,39 +26,35 @@ def delacct_allowedbl(pvilanguage:int, from_acct:str, mess_it:bool):
         nonlocal do_it, msg_str, lvcarea, gl_acct, gl_journal, artikel, parameters
         nonlocal pvilanguage, from_acct, mess_it
 
-        gl_journal = db_session.query(Gl_journal).filter(
-                 (Gl_journal.fibukonto == gl_acct.fibukonto)).first()
+        gl_journal = get_cache (Gl_journal, {"fibukonto": [(eq, gl_acct.fibukonto)]})
 
         if gl_journal:
 
             if mess_it:
-                msg_str = msg_str + chr(2) + translateExtended ("G/L Journal entry exists, deleting not possible.", lvcarea, "")
+                msg_str = msg_str + chr_unicode(2) + translateExtended ("G/L Journal entry exists, deleting not possible.", lvcarea, "")
 
             return
 
-        artikel = db_session.query(Artikel).filter(
-                 (Artikel.fibukonto == gl_acct.fibukonto)).first()
+        artikel = get_cache (Artikel, {"fibukonto": [(eq, gl_acct.fibukonto)]})
 
         if artikel:
 
             if mess_it:
-                msg_str = msg_str + chr(2) + translateExtended ("Front-office Article exists, deleting not possible", lvcarea, "") + chr(10) + to_string(artikel.artnr) + " - " + artikel.bezeich
+                msg_str = msg_str + chr_unicode(2) + translateExtended ("Front-office Article exists, deleting not possible", lvcarea, "") + chr_unicode(10) + to_string(artikel.artnr) + " - " + artikel.bezeich
 
             return
 
-        parameters = db_session.query(Parameters).filter(
-                 (func.lower(Parameters.progname) == ("CostCenter").lower()) & (func.lower(Parameters.section) == ("Alloc").lower()) & (Parameters.vtype == 1) & (Parameters.vstring == gl_acct.fibukonto)).first()
+        parameters = get_cache (Parameters, {"progname": [(eq, "costcenter")],"section": [(eq, "alloc")],"vtype": [(eq, 1)],"vstring": [(eq, gl_acct.fibukonto)]})
 
         if parameters:
 
             if mess_it:
-                msg_str = msg_str + chr(2) + translateExtended ("Cost Allocation exists, deleting not possible.", lvcarea, "")
+                msg_str = msg_str + chr_unicode(2) + translateExtended ("Cost Allocation exists, deleting not possible.", lvcarea, "")
 
             return
         do_it = True
 
-    gl_acct = db_session.query(Gl_acct).filter(
-             (func.lower(Gl_acct.fibukonto) == (from_acct).lower())).first()
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, from_acct)]})
 
     if not gl_acct:
         msg_str = translateExtended ("No such Account Number:", lvcarea, "") + " " + from_acct

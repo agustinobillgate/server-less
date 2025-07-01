@@ -1,6 +1,7 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
-from sqlalchemy import func
+from decimal import Decimal
 from models import Htparam
 
 def read_htparambl(case_type:int, paramno:int, paramgrup:int):
@@ -10,7 +11,6 @@ def read_htparambl(case_type:int, paramno:int, paramgrup:int):
     t_htparam = None
 
     t_htparam_list, T_htparam = create_model_like(Htparam)
-
 
     db_session = local_storage.db_session
 
@@ -26,8 +26,7 @@ def read_htparambl(case_type:int, paramno:int, paramgrup:int):
 
     if case_type == 1:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == paramno)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, paramno)]})
 
         if htparam:
             t_htparam = T_htparam()
@@ -44,8 +43,7 @@ def read_htparambl(case_type:int, paramno:int, paramgrup:int):
             buffer_copy(htparam, t_htparam)
     elif case_type == 3:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == paramno) & (Htparam.paramgruppe == paramgrup)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, paramno)],"paramgruppe": [(eq, paramgrup)]})
 
         if htparam:
             t_htparam = T_htparam()
@@ -78,8 +76,7 @@ def read_htparambl(case_type:int, paramno:int, paramgrup:int):
             buffer_copy(htparam, t_htparam)
     elif case_type == 7:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == paramno) & (func.lower(Htparam.bezeich) != ("Not used").lower())).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, paramno)],"bezeichnung": [(ne, "not used")]})
 
         if htparam:
             t_htparam = T_htparam()

@@ -1,16 +1,20 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from models import Gl_journal, Gl_acct
 
 def gl_batchjou_disp_itbl(jnr:int):
+
+    prepare_cache ([Gl_journal, Gl_acct])
+
     b2_list_list = []
     gl_journal = gl_acct = None
 
     b2_list = note_list = None
 
-    b2_list_list, B2_list = create_model("B2_list", {"fibukonto":str, "debit":decimal, "credit":decimal, "bemerk":str, "userinit":str, "sysdate":date, "zeit":int, "chginit":str, "chgdate":date, "bezeich":str})
-    note_list_list, Note_list = create_model("Note_list", {"s_recid":int, "bemerk":str})
-
+    b2_list_list, B2_list = create_model("B2_list", {"fibukonto":string, "debit":Decimal, "credit":Decimal, "bemerk":string, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "bezeich":string})
+    note_list_list, Note_list = create_model("Note_list", {"s_recid":int, "bemerk":string})
 
     db_session = local_storage.db_session
 
@@ -24,7 +28,7 @@ def gl_batchjou_disp_itbl(jnr:int):
 
         return {"b2-list": b2_list_list}
 
-    def get_bemerk(bemerk:str):
+    def get_bemerk(bemerk:string):
 
         nonlocal b2_list_list, gl_journal, gl_acct
         nonlocal jnr
@@ -34,8 +38,8 @@ def gl_batchjou_disp_itbl(jnr:int):
         nonlocal b2_list_list, note_list_list
 
         n:int = 0
-        s1:str = ""
-        n = 1 + get_index(bemerk, ";&&")
+        s1:string = ""
+        n = get_index(bemerk, ";&&")
 
         if n > 0:
             return substring(bemerk, 0, n - 1)
@@ -78,17 +82,17 @@ def gl_batchjou_disp_itbl(jnr:int):
         note_list.s_recid = gl_journal._recid
         note_list.bemerk = get_bemerk (gl_journal.bemerk)
 
-    gl_journal_obj_list = []
+    gl_journal_obj_list = {}
     for gl_journal, gl_acct in db_session.query(Gl_journal, Gl_acct).join(Gl_acct,(Gl_acct.fibukonto == Gl_journal.fibukonto)).filter(
              (Gl_journal.jnr == jnr)).order_by(Gl_journal.sysdate, Gl_journal.zeit).all():
         note_list = query(note_list_list, (lambda note_list: note_list.s_recid == to_int(gl_journal._recid)), first=True)
         if not note_list:
             continue
 
-        if gl_journal._recid in gl_journal_obj_list:
+        if gl_journal_obj_list.get(gl_journal._recid):
             continue
         else:
-            gl_journal_obj_list.append(gl_journal._recid)
+            gl_journal_obj_list[gl_journal._recid] = True
 
 
         assign_b2()

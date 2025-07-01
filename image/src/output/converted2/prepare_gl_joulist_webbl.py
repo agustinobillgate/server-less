@@ -1,10 +1,14 @@
+#using conversion tools version: 1.0.0.111
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Htparam, Gl_main, L_lieferant, Queasy
 
 def prepare_gl_joulist_webbl():
+
+    prepare_cache ([Htparam, Gl_main])
+
     from_date = None
     close_date = None
     close_year = None
@@ -16,7 +20,6 @@ def prepare_gl_joulist_webbl():
     cflow_flag = False
     htparam = gl_main = l_lieferant = queasy = None
 
-
     db_session = local_storage.db_session
 
     def generate_output():
@@ -25,16 +28,13 @@ def prepare_gl_joulist_webbl():
         return {"from_date": from_date, "close_date": close_date, "close_year": close_year, "to_date": to_date, "curr_yr": curr_yr, "from_main": from_main, "main_bez": main_bez, "gst_flag": gst_flag, "cflow_flag": cflow_flag}
 
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 558)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 558)]})
     from_date = htparam.fdate + timedelta(days=1)
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 597)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
     close_date = htparam.fdate
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 795)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 795)]})
     close_year = htparam.fdate
     close_year = date_mdy(get_month(close_year) , get_day(close_year) , get_year(close_year) + timedelta(days=1))
     to_date = get_current_date()
@@ -46,8 +46,7 @@ def prepare_gl_joulist_webbl():
         from_main = gl_main.nr
         main_bez = gl_main.bezeich
 
-    l_lieferant = db_session.query(L_lieferant).filter(
-             (func.lower(L_lieferant.firma) == ("GST").lower())).first()
+    l_lieferant = get_cache (L_lieferant, {"firma": [(eq, "gst")]})
 
     if l_lieferant:
         gst_flag = True
@@ -56,8 +55,7 @@ def prepare_gl_joulist_webbl():
     else:
         gst_flag = False
 
-    queasy = db_session.query(Queasy).filter(
-             (Queasy.key == 177)).first()
+    queasy = get_cache (Queasy, {"key": [(eq, 177)]})
 
     if queasy:
         cflow_flag = True
