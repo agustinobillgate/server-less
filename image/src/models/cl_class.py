@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -33,3 +35,31 @@ class Cl_class(Base):
 	start_time = sa.Column(sa.String, default="0000")
 	week_day = sa.Column(ARRAY(sa.Boolean),default=[False,False,False,False,False,False,False])
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('activeflag', True)
+		kwargs.setdefault('capacity', 0)
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('deci1', 0)
+		kwargs.setdefault('deci2', 0)
+		kwargs.setdefault('deci3', 0)
+		kwargs.setdefault('end_date', None)
+		kwargs.setdefault('end_time', "0000")
+		kwargs.setdefault('fee1', 0)
+		kwargs.setdefault('fee2', 0)
+		kwargs.setdefault('instructor', [0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('location_nr', 0)
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('logi2', False)
+		kwargs.setdefault('logi3', False)
+		kwargs.setdefault('name', "")
+		kwargs.setdefault('nr', 0)
+		kwargs.setdefault('num1', 0)
+		kwargs.setdefault('num2', 0)
+		kwargs.setdefault('num3', 0)
+		kwargs.setdefault('paymode', 0)
+		kwargs.setdefault('start_date', None)
+		kwargs.setdefault('start_time', "0000")
+		kwargs.setdefault('week_day', [False,False,False,False,False,False,False])
+		super(Cl_class, self).__init__(*args, **kwargs)

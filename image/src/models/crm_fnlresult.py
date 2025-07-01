@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -20,3 +22,18 @@ class Crm_fnlresult(Base):
 	range1 = sa.Column(sa.Integer, default=0)
 	range2 = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('date2', None)
+		kwargs.setdefault('description', "")
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('logi2', False)
+		kwargs.setdefault('number1', 0)
+		kwargs.setdefault('number2', 0)
+		kwargs.setdefault('number3', 0)
+		kwargs.setdefault('range1', 0)
+		kwargs.setdefault('range2', 0)
+		super(Crm_fnlresult, self).__init__(*args, **kwargs)

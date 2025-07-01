@@ -72,4 +72,13 @@
   <prgs:resource consumes="application/json" name="_roomRevenueBreakdownList42" path="/roomRevenueBreakdownList42" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rmrev-bdown-create-billbalance4-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rmrev-bdown-create-billbalance4-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getInhouseGuestlist" path="/getInhouseGuestlist" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-get-inhouse-guestlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-get-inhouse-guestlistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_competitorAdmUpdate1" path="/competitorAdmUpdate1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-competitor-adm-update-it_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-competitor-adm-update-it_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_competitorAdmPrepareCustom" path="/competitorAdmPrepareCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-competitor-stat-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-competitor-stat-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

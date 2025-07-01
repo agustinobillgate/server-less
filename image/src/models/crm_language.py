@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -32,3 +34,30 @@ class Crm_language(Base):
 	websentflag = sa.Column(sa.Boolean, default=False)
 	webstatusflag = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('confirmflag', False)
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('date2', None)
+		kwargs.setdefault('date3', None)
+		kwargs.setdefault('defaults', False)
+		kwargs.setdefault('description', "")
+		kwargs.setdefault('hno', 0)
+		kwargs.setdefault('int1', 0)
+		kwargs.setdefault('int2', 0)
+		kwargs.setdefault('int3', 0)
+		kwargs.setdefault('language_nr', 0)
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('logi2', False)
+		kwargs.setdefault('logi3', False)
+		kwargs.setdefault('sentdate', None)
+		kwargs.setdefault('sentflag', False)
+		kwargs.setdefault('senttime', 0)
+		kwargs.setdefault('shortdesc', "")
+		kwargs.setdefault('statusflag', 0)
+		kwargs.setdefault('webconfirmflag', False)
+		kwargs.setdefault('websentflag', False)
+		kwargs.setdefault('webstatusflag', 0)
+		super(Crm_language, self).__init__(*args, **kwargs)

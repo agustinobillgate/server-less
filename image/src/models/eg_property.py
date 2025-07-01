@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -36,3 +38,34 @@ class Eg_property(Base):
 	type = sa.Column(sa.String, default="")
 	zinr = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('activeflag', True)
+		kwargs.setdefault('asset', "")
+		kwargs.setdefault('bezeich', "")
+		kwargs.setdefault('brand', "")
+		kwargs.setdefault('capacity', "")
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('date2', None)
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('deci1', 0)
+		kwargs.setdefault('deci2', 0)
+		kwargs.setdefault('dimension', "")
+		kwargs.setdefault('hourmax', 0)
+		kwargs.setdefault('location', 0)
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('logi2', False)
+		kwargs.setdefault('maintask', 0)
+		kwargs.setdefault('metermax', 0)
+		kwargs.setdefault('meterrec', False)
+		kwargs.setdefault('nr', 0)
+		kwargs.setdefault('number1', 0)
+		kwargs.setdefault('number2', 0)
+		kwargs.setdefault('number3', 0)
+		kwargs.setdefault('price', 0)
+		kwargs.setdefault('spec', "")
+		kwargs.setdefault('type', "")
+		kwargs.setdefault('zinr', "")
+		super(Eg_property, self).__init__(*args, **kwargs)

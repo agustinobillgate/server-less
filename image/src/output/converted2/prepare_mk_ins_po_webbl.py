@@ -1,0 +1,310 @@
+#using conversion tools version: 1.0.0.111
+
+from functions.additional_functions import *
+from decimal import Decimal
+from datetime import date
+from functions.htpint import htpint
+from sqlalchemy import func
+from models import L_order, L_orderhdr, Htparam, Waehrung, L_lieferant, Parameters, Queasy, L_artikel
+
+def prepare_mk_ins_po_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr:int, po_type:int, potype:int, bediener_username:string, ordername_screen_value:string, crterm:int):
+
+    prepare_cache ([Htparam, Waehrung, L_lieferant, Parameters, Queasy, L_artikel])
+
+    local_nr = 0
+    billdate = None
+    zeroprice_flag = False
+    deptname = ""
+    supplier = ""
+    curr_liefnr = 0
+    p_222 = False
+    p_234 = False
+    p_266 = to_decimal("0.0")
+    pos = 0
+    t_amount = to_decimal("0.0")
+    currency_add_first = ""
+    currency_screen_value = ""
+    msg_str = ""
+    p_1093 = 0
+    p_464 = 0
+    p_220 = 0
+    globaldisc = to_decimal("0.0")
+    t_waehrung_list = []
+    t_l_order_list = []
+    t_l_orderhdr_list = []
+    t_parameters_list = []
+    art_supp_list = []
+    l_order = l_orderhdr = htparam = waehrung = l_lieferant = parameters = queasy = l_artikel = None
+
+    t_parameters = t_waehrung = t_l_order = t_l_orderhdr = art_supp = None
+
+    t_parameters_list, T_parameters = create_model("T_parameters", {"varname":string, "vstring":string})
+    t_waehrung_list, T_waehrung = create_model("T_waehrung", {"wabkurz":string})
+    t_l_order_list, T_l_order = create_model_like(L_order, {"rec_id":int, "a_bezeich":string, "price0":Decimal, "brutto":Decimal, "disc":Decimal, "disc2":Decimal, "vat":Decimal, "disc_val":Decimal, "disc2_val":Decimal, "vat_val":Decimal, "addvat_value":Decimal, "amount":Decimal})
+    t_l_orderhdr_list, T_l_orderhdr = create_model_like(L_orderhdr, {"rec_id":int, "avail_addvat":bool})
+    art_supp_list, Art_supp = create_model("Art_supp", {"rec_id":int, "artnr":int, "bezeich":string, "ek_aktuell":Decimal, "ek_letzter":Decimal, "traubensort":string, "lief_einheit":Decimal, "lief_nr1":int, "lief_nr2":int, "lief_nr3":int, "jahrgang":int, "alkoholgrad":Decimal})
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal local_nr, billdate, zeroprice_flag, deptname, supplier, curr_liefnr, p_222, p_234, p_266, pos, t_amount, currency_add_first, currency_screen_value, msg_str, p_1093, p_464, p_220, globaldisc, t_waehrung_list, t_l_order_list, t_l_orderhdr_list, t_parameters_list, art_supp_list, l_order, l_orderhdr, htparam, waehrung, l_lieferant, parameters, queasy, l_artikel
+        nonlocal docu_nr, pvilanguage, lief_nr, pr_deptnr, po_type, potype, bediener_username, ordername_screen_value, crterm
+
+
+        nonlocal t_parameters, t_waehrung, t_l_order, t_l_orderhdr, art_supp
+        nonlocal t_parameters_list, t_waehrung_list, t_l_order_list, t_l_orderhdr_list, art_supp_list
+
+        return {"docu_nr": docu_nr, "local_nr": local_nr, "billdate": billdate, "zeroprice_flag": zeroprice_flag, "deptname": deptname, "supplier": supplier, "curr_liefnr": curr_liefnr, "p_222": p_222, "p_234": p_234, "p_266": p_266, "pos": pos, "t_amount": t_amount, "currency_add_first": currency_add_first, "currency_screen_value": currency_screen_value, "msg_str": msg_str, "p_1093": p_1093, "p_464": p_464, "p_220": p_220, "globaldisc": globaldisc, "t-waehrung": t_waehrung_list, "t-l-order": t_l_order_list, "t-l-orderhdr": t_l_orderhdr_list, "t-parameters": t_parameters_list, "art-supp": art_supp_list}
+
+    def new_po_number():
+
+        nonlocal local_nr, billdate, zeroprice_flag, deptname, supplier, curr_liefnr, p_222, p_234, p_266, pos, t_amount, currency_add_first, currency_screen_value, msg_str, p_1093, p_464, p_220, globaldisc, t_waehrung_list, t_l_order_list, t_l_orderhdr_list, t_parameters_list, art_supp_list, l_order, l_orderhdr, htparam, waehrung, l_lieferant, parameters, queasy, l_artikel
+        nonlocal docu_nr, pvilanguage, lief_nr, pr_deptnr, po_type, potype, bediener_username, ordername_screen_value, crterm
+
+
+        nonlocal t_parameters, t_waehrung, t_l_order, t_l_orderhdr, art_supp
+        nonlocal t_parameters_list, t_waehrung_list, t_l_order_list, t_l_orderhdr_list, art_supp_list
+
+        l_orderhdr1 = None
+        s:string = ""
+        i:int = 1
+        mm:int = 0
+        yy:int = 0
+        L_orderhdr1 =  create_buffer("L_orderhdr1",L_orderhdr)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 973)]})
+
+        if htparam.paramgruppe == 21 and htparam.flogical:
+            mm = get_month(billdate)
+            yy = get_year(billdate)
+            s = "P" + substring(to_string(get_year(billdate)) , 2, 2) + to_string(get_month(billdate) , "99")
+
+            for l_orderhdr1 in db_session.query(L_orderhdr1).filter(
+                     (get_month(L_orderhdr1.bestelldatum) == mm) & (get_year(L_orderhdr1.bestelldatum) == yy) & (L_orderhdr1.betriebsnr <= 1) & (matches(L_orderhdr1.docu_nr,"P*"))).order_by(L_orderhdr1.docu_nr.desc()).all():
+                i = to_int(substring(l_orderhdr1.docu_nr, 5, 5))
+                i = i + 1
+                docu_nr = s + to_string(i, "99999")
+
+                return
+            docu_nr = s + to_string(i, "99999")
+
+            return
+        s = "P" + substring(to_string(get_year(billdate)) , 2, 2) + to_string(get_month(billdate) , "99") + to_string(get_day(billdate) , "99")
+
+        for l_orderhdr1 in db_session.query(L_orderhdr1).filter(
+                 (L_orderhdr1.bestelldatum == billdate) & (L_orderhdr1.betriebsnr <= 1) & (matches(L_orderhdr1.docu_nr,"P*"))).order_by(L_orderhdr1.docu_nr.desc()).all():
+            i = to_int(substring(l_orderhdr1.docu_nr, 7, 3))
+            i = i + 1
+            docu_nr = s + to_string(i, "999")
+
+            return
+        docu_nr = s + to_string(i, "999")
+
+
+    def currency_list():
+
+        nonlocal local_nr, billdate, zeroprice_flag, deptname, supplier, curr_liefnr, p_222, p_234, p_266, pos, t_amount, currency_add_first, currency_screen_value, msg_str, p_1093, p_464, p_220, globaldisc, t_waehrung_list, t_l_order_list, t_l_orderhdr_list, t_parameters_list, art_supp_list, l_order, l_orderhdr, htparam, waehrung, l_lieferant, parameters, queasy, l_artikel
+        nonlocal docu_nr, pvilanguage, lief_nr, pr_deptnr, po_type, potype, bediener_username, ordername_screen_value, crterm
+
+
+        nonlocal t_parameters, t_waehrung, t_l_order, t_l_orderhdr, art_supp
+        nonlocal t_parameters_list, t_waehrung_list, t_l_order_list, t_l_orderhdr_list, art_supp_list
+
+        waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, local_nr)]})
+        currency_add_first = waehrung.wabkurz
+        currency_screen_value = waehrung.wabkurz
+
+        for waehrung in db_session.query(Waehrung).filter(
+                 (Waehrung.waehrungsnr != local_nr) & (Waehrung.ankauf > 0) & (Waehrung.betriebsnr != 0)).order_by(Waehrung.wabkurz).all():
+            t_waehrung = T_waehrung()
+            t_waehrung_list.append(t_waehrung)
+
+            t_waehrung.wabkurz = waehrung.wabkurz
+
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 152)]})
+
+    waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
+
+    if not waehrung:
+        msg_str = msg_str + chr_unicode(2) + "Local Currency Code incorrect! (Param 152 / Grp 7)"
+
+        return generate_output()
+    local_nr = waehrung.waehrungsnr
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 975)]})
+
+    if htparam.finteger != 1 and htparam.finteger != 2:
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
+        billdate = htparam.fdate
+    else:
+        billdate = get_current_date()
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 776)]})
+    zeroprice_flag = htparam.flogical
+
+    if docu_nr == "":
+        new_po_number()
+    currency_list()
+
+    l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, lief_nr)]})
+    p_1093 = get_output(htpint(1093))
+    p_464 = get_output(htpint(464))
+    p_220 = get_output(htpint(220))
+
+    if po_type == 1:
+
+        l_orderhdr = get_cache (L_orderhdr, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, docu_nr)]})
+
+        if not l_orderhdr:
+            l_orderhdr = L_orderhdr()
+            db_session.add(l_orderhdr)
+
+            l_orderhdr.lief_nr = lief_nr
+            l_orderhdr.docu_nr = docu_nr
+
+
+        l_orderhdr.angebot_lief[0] = pr_deptnr
+        l_orderhdr.bestelldatum = billdate
+        l_orderhdr.lieferdatum = billdate + timedelta(days=1)
+        l_orderhdr.besteller = bediener_username
+        l_orderhdr.lief_fax[0] = l_lieferant.fax
+        l_orderhdr.lief_fax[1] = ordername_screen_value
+        l_orderhdr.angebot_lief[1] = crterm
+        l_orderhdr.angebot_lief[2] = local_nr
+        l_orderhdr.gedruckt = None
+
+        if potype == 2:
+            l_orderhdr.betriebsnr = 1
+
+        if pr_deptnr != 0:
+
+            parameters = db_session.query(Parameters).filter(
+                         (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Name").lower()) & (to_int(Parameters.varname) == l_orderhdr.angebot_lief[0])).first()
+
+        if parameters:
+            deptname = parameters.vstring
+        pass
+
+    l_orderhdr = get_cache (L_orderhdr, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, docu_nr)]})
+
+    if l_orderhdr:
+        t_l_orderhdr = T_l_orderhdr()
+        t_l_orderhdr_list.append(t_l_orderhdr)
+
+        buffer_copy(l_orderhdr, t_l_orderhdr)
+        t_l_orderhdr.rec_id = l_orderhdr._recid
+
+        queasy = get_cache (Queasy, {"key": [(eq, 303)]})
+
+        if queasy:
+            t_l_orderhdr.avail_addvat = True
+
+        if po_type == 3:
+
+            if l_orderhdr.angebot_lief[2] == 0:
+                l_orderhdr.angebot_lief[2] = local_nr
+
+            waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, l_orderhdr.angebot_lief[2])]})
+
+            if waehrung:
+                currency_add_first = waehrung.wabkurz
+                currency_screen_value = waehrung.wabkurz
+
+
+        pass
+    supplier = l_lieferant.firma + " - " + l_lieferant.wohnort
+    curr_liefnr = lief_nr
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 222)]})
+    p_222 = htparam.flogical
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 234)]})
+    p_234 = htparam.flogical
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 266)]})
+    p_266 =  to_decimal(htparam.fdecimal)
+    pos = 0
+    t_amount =  to_decimal("0")
+
+    for l_order in db_session.query(L_order).filter(
+             (L_order.docu_nr == (docu_nr).lower()) & (L_order.pos > 0) & (L_order.loeschflag == 0)).order_by(L_order._recid).all():
+        t_l_order = T_l_order()
+        t_l_order_list.append(t_l_order)
+
+        buffer_copy(l_order, t_l_order)
+        t_l_order.rec_id = l_order._recid
+
+        queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_order.docu_nr)],"number1": [(eq, l_order.artnr)]})
+
+        if queasy:
+            t_l_order.addvat_value =  to_decimal(queasy.deci1)
+            t_l_order.amount =  to_decimal(t_l_order.amount) + to_decimal((l_order.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
+
+
+        else:
+            t_l_order.amount =  to_decimal(t_l_order.amount) + to_decimal(l_order.warenwert)
+
+        l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_order.artnr)]})
+        t_l_order.a_bezeich = l_artikel.bezeich
+
+        if l_order.lief_nr == lief_nr and l_order.loeschflag == 0 and docu_nr != "":
+            pos = pos + 1
+
+            if substring(substring(l_order.quality, 0, 2) , 1, 2) == (".").lower() :
+                t_l_order.disc = to_decimal(substring(l_order.quality, 0, 5))
+                t_l_order.vat = to_decimal(substring(l_order.quality, 5, 5))
+                t_l_order.disc2 = to_decimal(substring(l_order.quality, 10, 5))
+
+
+            else:
+                t_l_order.disc = to_decimal(substring(l_order.quality, 0, 5))
+                t_l_order.vat = to_decimal(substring(l_order.quality, 6, 5))
+                t_l_order.disc2 = to_decimal(substring(l_order.quality, 11, 5))
+
+
+            t_l_order.disc_val = to_decimal(substring(l_order.quality, 18, 18))
+            t_l_order.disc2_val = to_decimal(substring(l_order.quality, 36, 18))
+            t_l_order.vat_val = to_decimal(substring(l_order.quality, 54))
+
+
+            t_l_order.price0 =  to_decimal(l_order.einzelpreis) / to_decimal((1) - to_decimal(t_l_order.disc) * to_decimal(0.01)) / to_decimal((1) - to_decimal(t_l_order.disc2) * to_decimal(0.01)) / to_decimal((1) + to_decimal(t_l_order.vat) * to_decimal(0.01))
+            t_l_order.brutto =  to_decimal(t_l_order.price0) * to_decimal(l_order.anzahl)
+            t_amount =  to_decimal(t_amount) + to_decimal(l_order.warenwert)
+
+    l_order = get_cache (L_order, {"pos": [(eq, 0)],"docu_nr": [(eq, docu_nr)],"loeschflag": [(eq, 0)]})
+
+    if l_order:
+        globaldisc =  to_decimal(l_order.warenwert)
+
+    for parameters in db_session.query(Parameters).filter(
+             (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Name").lower())).order_by(Parameters._recid).all():
+        t_parameters = T_parameters()
+        t_parameters_list.append(t_parameters)
+
+        t_parameters.varname = parameters.varname
+        t_parameters.vstring = parameters.vstring
+
+    if p_234:
+
+        for l_artikel in db_session.query(L_artikel).filter(
+                 ((L_artikel.lief_nr1 == lief_nr) | (L_artikel.lief_nr2 == lief_nr) | (L_artikel.lief_nr3 == lief_nr))).order_by(L_artikel._recid).all():
+            art_supp = Art_supp()
+            art_supp_list.append(art_supp)
+
+            art_supp.rec_id = l_artikel._recid
+            art_supp.artnr = l_artikel.artnr
+            art_supp.bezeich = l_artikel.bezeich
+            art_supp.ek_aktuell =  to_decimal(l_artikel.ek_aktuell)
+            art_supp.ek_letzter =  to_decimal(l_artikel.ek_letzter)
+            art_supp.traubensort = l_artikel.traubensorte
+            art_supp.lief_einheit =  to_decimal(l_artikel.lief_einheit)
+            art_supp.lief_nr1 = l_artikel.lief_nr1
+            art_supp.lief_nr2 = l_artikel.lief_nr2
+            art_supp.lief_nr3 = l_artikel.lief_nr3
+            art_supp.jahrgang = l_artikel.jahrgang
+            art_supp.alkoholgrad =  to_decimal(l_artikel.alkoholgrad)
+
+
+    return generate_output()

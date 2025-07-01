@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -16,3 +18,14 @@ class Kontakt(Base):
 	sprachcode = sa.Column(sa.Integer, default=1)
 	vorname = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('abteilung', "")
+		kwargs.setdefault('anrede', "")
+		kwargs.setdefault('bankettnr', 0)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('durchwahl', "")
+		kwargs.setdefault('hauptkontakt', False)
+		kwargs.setdefault('name', "")
+		kwargs.setdefault('sprachcode', 1)
+		kwargs.setdefault('vorname', "")
+		super(Kontakt, self).__init__(*args, **kwargs)

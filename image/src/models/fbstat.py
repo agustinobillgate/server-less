@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -27,3 +29,25 @@ class Fbstat(Base):
 	other_wpax = sa.Column(ARRAY(sa.Integer),default=[0,0,0,0])
 	other_wrev = sa.Column(ARRAY(sa.Numeric),default=[0,0,0,0])
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('bev_gcost', [0,0,0,0])
+		kwargs.setdefault('bev_gpax', [0,0,0,0])
+		kwargs.setdefault('bev_grev', [0,0,0,0])
+		kwargs.setdefault('bev_wcost', [0,0,0,0])
+		kwargs.setdefault('bev_wpax', [0,0,0,0])
+		kwargs.setdefault('bev_wrev', [0,0,0,0])
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('departement', 0)
+		kwargs.setdefault('food_gcost', [0,0,0,0])
+		kwargs.setdefault('food_gpax', [0,0,0,0])
+		kwargs.setdefault('food_grev', [0,0,0,0])
+		kwargs.setdefault('food_wcost', [0,0,0,0])
+		kwargs.setdefault('food_wpax', [0,0,0,0])
+		kwargs.setdefault('food_wrev', [0,0,0,0])
+		kwargs.setdefault('other_gcost', [0,0,0,0])
+		kwargs.setdefault('other_gpax', [0,0,0,0])
+		kwargs.setdefault('other_grev', [0,0,0,0])
+		kwargs.setdefault('other_wcost', [0,0,0,0])
+		kwargs.setdefault('other_wpax', [0,0,0,0])
+		kwargs.setdefault('other_wrev', [0,0,0,0])
+		super(Fbstat, self).__init__(*args, **kwargs)

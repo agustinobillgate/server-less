@@ -1,7 +1,4 @@
 service,function
-getMaidTasklist,maid_tasklistbl
-getOOOHistList,ooohist_listbl
-getImageHK,get_image_housekeepingbl
 getRoomStatus,hk_get_statusbl
 getOverview,hk_count_webbl
 addOffMarketRooms,hk_change_room_status_ombl
@@ -62,3 +59,11 @@ hkRmboySendToMobile,hk_rmboy_send_to_mobilebl
 getVipList1,vip_list_disp_arlist_webbl
 getOOORemoveSelectedData,hk_ooo_remove_selected_data_webbl
 getTaskReportList1,flag_report_create_list_1bl
+getMaidTasklist,maid_tasklistbl
+hkRmboyStarttime,hk_rmboy_starttimebl
+hkRmboySetDuration,hk_rmboy_set_durationbl
+getOOOHistList,ooohist_listbl
+getVipList1Custom,vip_list_disp_arlist1_webbl
+uploadImageHK,upload_image_housekeepingbl
+getImageHK,get_image_housekeepingbl
+deleteImageHK,delete_image_housekeepingbl

@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -33,3 +35,31 @@ class Genlayout(Base):
 	tinte_ext = sa.Column(ARRAY(sa.String),default=["","","","","","","","",""])
 	tlogi_ext = sa.Column(ARRAY(sa.String),default=["","","","","","","","",""])
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('activeflag', True)
+		kwargs.setdefault('add_height', 0)
+		kwargs.setdefault('add_width', 0)
+		kwargs.setdefault('button_ext', ["","","","","",""])
+		kwargs.setdefault('canc_height', 0)
+		kwargs.setdefault('canc_width', 0)
+		kwargs.setdefault('char_ext', ["","","","","","","","",""])
+		kwargs.setdefault('combo_ext', ["","",""])
+		kwargs.setdefault('date_ext', ["","","","","","","","",""])
+		kwargs.setdefault('deci_ext', ["","","","","","","","",""])
+		kwargs.setdefault('del_height', 0)
+		kwargs.setdefault('del_width', 0)
+		kwargs.setdefault('exit_height', 0)
+		kwargs.setdefault('exit_width', 0)
+		kwargs.setdefault('frame_height', 0)
+		kwargs.setdefault('frame_title', "")
+		kwargs.setdefault('frame_width', 0)
+		kwargs.setdefault('inte_ext', ["","","","","","","","",""])
+		kwargs.setdefault('key', "")
+		kwargs.setdefault('logi_ext', ["","","","","","","","",""])
+		kwargs.setdefault('string_ext', ["","","","","","","","",""])
+		kwargs.setdefault('tchar_ext', ["","","","","","","","",""])
+		kwargs.setdefault('tdate_ext', ["","","","","","","","",""])
+		kwargs.setdefault('tdeci_ext', ["","","","","","","","",""])
+		kwargs.setdefault('tinte_ext', ["","","","","","","","",""])
+		kwargs.setdefault('tlogi_ext', ["","","","","","","","",""])
+		super(Genlayout, self).__init__(*args, **kwargs)

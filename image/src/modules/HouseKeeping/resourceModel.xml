@@ -180,4 +180,28 @@
   <prgs:resource consumes="application/json" name="_getTaskReportList1" path="/getTaskReportList1" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-flag-report-create-list_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-flag-report-create-list_1bl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getMaidTasklist" path="/getMaidTasklist" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-maid-tasklistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-maid-tasklistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hkRmboyStarttime" path="/hkRmboyStarttime" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hk-rmboy-starttimebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hk-rmboy-starttimebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hkRmboySetDuration" path="/hkRmboySetDuration" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hk-rmboy-set-durationbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hk-rmboy-set-durationbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getOOOHistList" path="/getOOOHistList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ooohist-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ooohist-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getVipList1Custom" path="/getVipList1Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-vip-list-disp-arlist1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-vip-list-disp-arlist1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_uploadImage" path="/uploadImageHK" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-upload-image-housekeepingbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-upload-image-housekeepingbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getImageHK" path="/getImageHK" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-get-image-housekeepingbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-get-image-housekeepingbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_deleteImageHK" path="/deleteImageHK" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-delete-image-housekeepingbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-delete-image-housekeepingbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -39,3 +41,37 @@ class History(Base):
 	zinr = sa.Column(sa.String, default="")
 	zipreis = sa.Column(sa.Numeric, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('abreise', None)
+		kwargs.setdefault('abreisezeit', "")
+		kwargs.setdefault('ankunft', None)
+		kwargs.setdefault('argtumsatz', 0)
+		kwargs.setdefault('arrangement', "000")
+		kwargs.setdefault('bemerk', "")
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('com_argt', 0)
+		kwargs.setdefault('com_f_b', 0)
+		kwargs.setdefault('com_logis', 0)
+		kwargs.setdefault('com_sonst', 0)
+		kwargs.setdefault('erwachs', 0)
+		kwargs.setdefault('f_b_umsatz', 0)
+		kwargs.setdefault('gastinfo', "")
+		kwargs.setdefault('gastnr', 0)
+		kwargs.setdefault('gesamtumsatz', 0)
+		kwargs.setdefault('gratis', 0)
+		kwargs.setdefault('guestnrcom', 0)
+		kwargs.setdefault('kind', [0,0])
+		kwargs.setdefault('logisumsatz', 0)
+		kwargs.setdefault('reslinnr', 1)
+		kwargs.setdefault('resnr', 0)
+		kwargs.setdefault('segmentcode', 0)
+		kwargs.setdefault('sonst_umsatz', 0)
+		kwargs.setdefault('ums_kurz', 0)
+		kwargs.setdefault('ums_lang', 0)
+		kwargs.setdefault('zahlungsart', 0)
+		kwargs.setdefault('zi_wechsel', False)
+		kwargs.setdefault('zikateg', "")
+		kwargs.setdefault('zimmeranz', 0)
+		kwargs.setdefault('zinr', "")
+		kwargs.setdefault('zipreis', 0)
+		super(History, self).__init__(*args, **kwargs)

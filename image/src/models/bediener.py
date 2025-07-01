@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -19,3 +21,17 @@ class Bediener(Base):
 	userinit = sa.Column(sa.String, default="")
 	username = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('flag', 0)
+		kwargs.setdefault('kassenbest', 0)
+		kwargs.setdefault('mapi_password', "")
+		kwargs.setdefault('mapi_profile', "")
+		kwargs.setdefault('nr', 0)
+		kwargs.setdefault('permissions', "")
+		kwargs.setdefault('user_group', 0)
+		kwargs.setdefault('usercode', "")
+		kwargs.setdefault('userinit', "")
+		kwargs.setdefault('username', "")
+		super(Bediener, self).__init__(*args, **kwargs)

@@ -171,4 +171,31 @@
   <prgs:resource consumes="application/json" name="_apPaymentReason" path="/apPaymentReason" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ap-debtpay-reasonbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ap-debtpay-reasonbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getAgingListCustom" path="/getAgingListCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ap-age2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ap-age2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getAPList1Custom" path="/getAPList1Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ap-list_1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ap-list_1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getAgingList2Custom" path="/getAgingList2Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ap-age1_2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ap-age1_2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_apAgingListExecuteQueryCustom" path="/apAgingListExecuteQueryCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ap-age-btn-go_2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ap-age-btn-go_2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_transferGL1Prepare" path="/transferGL1Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-gl-linkap_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-gl-linkap_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mkAPCheckImportxls" path="/mkAPCheckImportxls" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-ap-check-importxls-databl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-ap-check-importxls-databl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_apPaymentGetAPList1" path="/apPaymentGetAPList1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ap-debtpay-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ap-debtpay-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getPurchaseOrderListCustom" path="/getPurchaseOrderListCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-get-po-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-get-po-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getAPListMiChgsupp" path="/getAPListMiChgsupp" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ap-list-mi-chgsuppbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ap-list-mi-chgsuppbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -8,7 +10,7 @@ class L_orderhdr(Base):
 
 	angebot_lief = sa.Column(ARRAY(sa.Integer),default=[0,0,0])
 	bestellart = sa.Column(sa.String, default="")
-	bestelldatum = sa.Column(sa.Date, default=lambda: get_current_date())
+	bestelldatum = sa.Column(sa.Date, default=get_current_date())
 	besteller = sa.Column(sa.String, default="")
 	betriebsnr = sa.Column(sa.Integer, default=0)
 	docu_nr = sa.Column(sa.String, default="")
@@ -19,3 +21,17 @@ class L_orderhdr(Base):
 	lieferdatum = sa.Column(sa.Date, default=None)
 	txtnr = sa.Column(sa.Integer, default=None)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('angebot_lief', [0,0,0])
+		kwargs.setdefault('bestellart', "")
+		kwargs.setdefault('bestelldatum', get_current_date())
+		kwargs.setdefault('besteller', "")
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('docu_nr', "")
+		kwargs.setdefault('gedruckt', None)
+		kwargs.setdefault('gefaxt', None)
+		kwargs.setdefault('lief_fax', ["","",""])
+		kwargs.setdefault('lief_nr', 0)
+		kwargs.setdefault('lieferdatum', None)
+		kwargs.setdefault('txtnr', None)
+		super(L_orderhdr, self).__init__(*args, **kwargs)

@@ -1,0 +1,5 @@
+
+DEF INPUT PARAMETER s-recid AS INT.
+
+FIND FIRST gc-PIbline WHERE RECID(gc-PIbline) = s-recid EXCLUSIVE-LOCK.
+DELETE gc-PIbline.

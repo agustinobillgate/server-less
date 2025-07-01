@@ -1,0 +1,100 @@
+#using conversion tools version: 1.0.0.111
+
+from functions.additional_functions import *
+from decimal import Decimal
+from models import Htparam, Artikel, Guest, Billjournal, Bill_line, Bill
+
+def get_guest_deposit_balance_webbl(guest_number:int):
+
+    prepare_cache ([Htparam, Artikel, Guest, Bill_line])
+
+    gdeposit_list_list = []
+    depoart_guest:int = 0
+    depobez_guest:string = ""
+    depoart_rsv:int = 0
+    depoart_bqt:int = 0
+    depoart_pos:int = 0
+    depo_balance:Decimal = to_decimal("0.0")
+    htparam = artikel = guest = billjournal = bill_line = bill = None
+
+    gdeposit_list = None
+
+    gdeposit_list_list, Gdeposit_list = create_model("Gdeposit_list", {"gdeposit_balance":Decimal, "guest_deposit_num":int, "guest_type":string})
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal gdeposit_list_list, depoart_guest, depobez_guest, depoart_rsv, depoart_bqt, depoart_pos, depo_balance, htparam, artikel, guest, billjournal, bill_line, bill
+        nonlocal guest_number
+
+
+        nonlocal gdeposit_list
+        nonlocal gdeposit_list_list
+
+        return {"gdeposit-list": gdeposit_list_list}
+
+
+    gdeposit_list = Gdeposit_list()
+    gdeposit_list_list.append(gdeposit_list)
+
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 1068)]})
+
+    if htparam:
+        gdeposit_list.guest_deposit_num = htparam.finteger
+
+        artikel = get_cache (Artikel, {"artnr": [(eq, htparam.finteger)],"departement": [(eq, 0)]})
+
+        if artikel and artikel.artart == 5:
+            depoart_guest = artikel.artnr
+            depobez_guest = artikel.bezeich
+
+    guest = get_cache (Guest, {"gastnr": [(eq, guest_number)]})
+
+    if guest:
+
+        if guest.karteityp == 0:
+            gdeposit_list.guest_type = "Individual"
+
+        elif guest.karteityp == 1:
+            gdeposit_list.guest_type = "Company"
+        else:
+            gdeposit_list.guest_type = "Travel Agent"
+
+    if gdeposit_list.guest_deposit_num != 0 and gdeposit_list.guest_type.lower()  != ("Individual").lower() :
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 120)]})
+
+        if htparam:
+            depoart_rsv = htparam.finteger
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 117)]})
+
+        if htparam:
+            depoart_bqt = htparam.finteger
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 1361)]})
+
+        if htparam:
+            depoart_pos = htparam.finteger
+
+        billjournal = db_session.query(Billjournal).filter(
+                 (Billjournal.billjou_ref == guest_number) & (Billjournal.artnr != 0) & (Billjournal.artnr != depoart_guest) & (Billjournal.artnr != depoart_rsv) & (Billjournal.artnr != depoart_bqt) & (Billjournal.artnr != depoart_pos) & (num_entries(Billjournal.bezeich, "[") > 1) & (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit").lower())).first()
+
+        if billjournal:
+
+            billjournal = db_session.query(Billjournal).filter(
+                     (Billjournal.billjou_ref == guest_number) & (Billjournal.artnr != 0) & (Billjournal.artnr != depoart_guest) & (Billjournal.artnr != depoart_rsv) & (Billjournal.artnr != depoart_bqt) & (Billjournal.artnr != depoart_pos) & (num_entries(Billjournal.bezeich, "[") > 1) & (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit").lower())).first()
+            while None != billjournal:
+                depo_balance =  to_decimal(depo_balance) + to_decimal(- to_decimal(billjournal.betrag))
+
+                curr_recid = billjournal._recid
+                billjournal = db_session.query(Billjournal).filter(
+                         (Billjournal.billjou_ref == guest_number) & (Billjournal.artnr != 0) & (Billjournal.artnr != depoart_guest) & (Billjournal.artnr != depoart_rsv) & (Billjournal.artnr != depoart_bqt) & (Billjournal.artnr != depoart_pos) & (num_entries(Billjournal.bezeich, "[") > 1) & (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit").lower()) & (Billjournal._recid > curr_recid)).first()
+
+            for bill, bill_line in db_session.query(Bill, Bill_line).join(Bill_line,(Bill_line.rechnr == Bill.rechnr) & (Bill_line.artnr == depoart_guest)).filter(
+                     (Bill.rechnr > 0) & (Bill.gastnr == guest_number)).order_by(Bill._recid).all():
+                depo_balance =  to_decimal(depo_balance) + to_decimal(bill_line.betrag)
+            gdeposit_list.gdeposit_balance =  to_decimal(depo_balance)
+
+    return generate_output()

@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -31,3 +33,29 @@ class Cl_memtype(Base):
 	serviceflag = sa.Column(ARRAY(sa.Boolean),default=[False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False])
 	tdate = sa.Column(sa.Date, default=None)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('activeflag', True)
+		kwargs.setdefault('all_flag', False)
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('code', "")
+		kwargs.setdefault('dauer', 0)
+		kwargs.setdefault('deci1', 0)
+		kwargs.setdefault('deci2', 0)
+		kwargs.setdefault('descript', "")
+		kwargs.setdefault('fdate', None)
+		kwargs.setdefault('fee', 0)
+		kwargs.setdefault('fee1', 0)
+		kwargs.setdefault('fee2', 0)
+		kwargs.setdefault('fee3', 0)
+		kwargs.setdefault('iservice', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('max_adult', 1)
+		kwargs.setdefault('max_children', 0)
+		kwargs.setdefault('nr', 0)
+		kwargs.setdefault('num1', 0)
+		kwargs.setdefault('num2', 0)
+		kwargs.setdefault('num3', "")
+		kwargs.setdefault('serviceflag', [False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False])
+		kwargs.setdefault('tdate', None)
+		super(Cl_memtype, self).__init__(*args, **kwargs)

@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -37,3 +39,35 @@ class Cl_trainer(Base):
 	startdate = sa.Column(sa.Date, default=None)
 	zip = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('activeflag', True)
+		kwargs.setdefault('adresse1', "")
+		kwargs.setdefault('adresse2', "")
+		kwargs.setdefault('birthdate', None)
+		kwargs.setdefault('certificate', "")
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('city', "")
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('date2', "")
+		kwargs.setdefault('date3', "")
+		kwargs.setdefault('deci1', 0)
+		kwargs.setdefault('deci2', 0)
+		kwargs.setdefault('deci3', 0)
+		kwargs.setdefault('email', "")
+		kwargs.setdefault('gender', "M")
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('logi2', False)
+		kwargs.setdefault('logi3', False)
+		kwargs.setdefault('name', "")
+		kwargs.setdefault('nr', 0)
+		kwargs.setdefault('num1', 0)
+		kwargs.setdefault('num2', 0)
+		kwargs.setdefault('num3', 0)
+		kwargs.setdefault('offdays', [False,False,False,False,False,False,False])
+		kwargs.setdefault('phone', "")
+		kwargs.setdefault('salary', 0)
+		kwargs.setdefault('startdate', None)
+		kwargs.setdefault('zip', "")
+		super(Cl_trainer, self).__init__(*args, **kwargs)

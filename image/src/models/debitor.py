@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -21,7 +23,7 @@ class Debitor(Base):
 	name = sa.Column(sa.String, default="")
 	opart = sa.Column(sa.Integer, default=0)
 	rechnr = sa.Column(sa.Integer, default=0)
-	rgdatum = sa.Column(sa.Date, default=lambda: get_current_date())
+	rgdatum = sa.Column(sa.Date, default=get_current_date())
 	saldo = sa.Column(sa.Numeric, default=0)
 	transzeit = sa.Column(sa.Integer, default=0)
 	versanddat = sa.Column(sa.Date, default=None)
@@ -34,3 +36,32 @@ class Debitor(Base):
 	zahlkonto = sa.Column(sa.Integer, default=0)
 	zinr = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('artnr', 0)
+		kwargs.setdefault('bediener_nr', 0)
+		kwargs.setdefault('betrieb_gast', 0)
+		kwargs.setdefault('betrieb_gastmem', 0)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('counter', 0)
+		kwargs.setdefault('debref', 0)
+		kwargs.setdefault('departement', 0)
+		kwargs.setdefault('gastnr', 0)
+		kwargs.setdefault('gastnrmember', 0)
+		kwargs.setdefault('kontakt_nr', 0)
+		kwargs.setdefault('mahnstufe', 0)
+		kwargs.setdefault('name', "")
+		kwargs.setdefault('opart', 0)
+		kwargs.setdefault('rechnr', 0)
+		kwargs.setdefault('rgdatum', get_current_date())
+		kwargs.setdefault('saldo', 0)
+		kwargs.setdefault('transzeit', 0)
+		kwargs.setdefault('versanddat', None)
+		kwargs.setdefault('verstat', 0)
+		kwargs.setdefault('vesrcod', "")
+		kwargs.setdefault('vesrdat', None)
+		kwargs.setdefault('vesrdep', 0)
+		kwargs.setdefault('vesrdepot', "")
+		kwargs.setdefault('vesrdepot2', "")
+		kwargs.setdefault('zahlkonto', 0)
+		kwargs.setdefault('zinr', "")
+		super(Debitor, self).__init__(*args, **kwargs)

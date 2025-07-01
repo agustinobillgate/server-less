@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -12,3 +14,10 @@ class Gl_cost(Base):
 	f_betrag = sa.Column(sa.Numeric, default=0)
 	fibukonto = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('b_betrag', 0)
+		kwargs.setdefault('betrag', 0)
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('f_betrag', 0)
+		kwargs.setdefault('fibukonto', "")
+		super(Gl_cost, self).__init__(*args, **kwargs)

@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -10,3 +12,8 @@ class Gl_fstype(Base):
 	kurzbez = sa.Column(sa.String, default="")
 	nr = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('bezeich', "")
+		kwargs.setdefault('kurzbez', "")
+		kwargs.setdefault('nr', 0)
+		super(Gl_fstype, self).__init__(*args, **kwargs)

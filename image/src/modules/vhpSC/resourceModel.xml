@@ -399,4 +399,37 @@
   <prgs:resource consumes="application/json" name="_baresCopyOverlappingCheck1B" path="/baresCopyOverlappingCheck1B" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-copy-bares-overlapping-check1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-copy-bares-overlapping-check1bl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_depositList1" path="/depositList1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-deposit-list1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-deposit-list1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_baPlanBtnNote" path="/baPlanBtnNote" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ba-plan-btn-notebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ba-plan-btn-notebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_baresnoteEdit" path="/baresnoteEdit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-edit-baresnotebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-edit-baresnotebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_baresnoteUpdate" path="/baresnoteUpdate" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-update-baresnotebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-update-baresnotebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mainHisFsBtn" path="/mainHisFsBtn" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-main-his-fs-btnbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-main-his-fs-btnbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mainHisFsCreateFsl" path="/mainHisFsCreateFsl" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-main-his-fs-create-fsl-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-main-his-fs-create-fsl-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mainHisFsDispPage3" path="/mainHisFsDispPage3" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-main-his-fs-disp-page3bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-main-his-fs-disp-page3bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mainHisFsProcBtnPage2" path="/mainHisFsProcBtnPage2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-main-his-fs-proc-btn-page2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-main-his-fs-proc-btn-page2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mainHisFsReadequipment" path="/mainHisFsReadequipment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-main-his-fs-readequipmentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-main-his-fs-readequipmentbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_banquetPlanLoad1" path="/banquetPlanLoad1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-load-banquet-plan1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-load-banquet-plan1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_depositList2" path="/depositList2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-deposit-list2_bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-deposit-list2_bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -14,3 +16,12 @@ class Fa_kateg(Base):
 	nutzjahr = sa.Column(sa.Integer, default=0)
 	rate = sa.Column(sa.Numeric, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('bezeich', "")
+		kwargs.setdefault('deci', [0,0,0])
+		kwargs.setdefault('katnr', 0)
+		kwargs.setdefault('methode', 0)
+		kwargs.setdefault('num', [0,0,0])
+		kwargs.setdefault('nutzjahr', 0)
+		kwargs.setdefault('rate', 0)
+		super(Fa_kateg, self).__init__(*args, **kwargs)

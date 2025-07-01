@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -31,3 +33,29 @@ class Eg_reqif(Base):
 	usr_id = sa.Column(sa.String, default="")
 	zinr = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('category', "")
+		kwargs.setdefault('email', "")
+		kwargs.setdefault('frm_dept', "")
+		kwargs.setdefault('frm_usr', "")
+		kwargs.setdefault('mobile_ph', "")
+		kwargs.setdefault('pager', "")
+		kwargs.setdefault('reqnr', 0)
+		kwargs.setdefault('request_date', None)
+		kwargs.setdefault('reserve_char', "")
+		kwargs.setdefault('reserve_date', None)
+		kwargs.setdefault('reserve_int', 0)
+		kwargs.setdefault('reserve_log', False)
+		kwargs.setdefault('rstatus', 0)
+		kwargs.setdefault('sent_date', None)
+		kwargs.setdefault('sent_time', 0)
+		kwargs.setdefault('source', "")
+		kwargs.setdefault('sub_taskdesc', "")
+		kwargs.setdefault('task_def', "")
+		kwargs.setdefault('task_solution', "")
+		kwargs.setdefault('to_dept', "")
+		kwargs.setdefault('to_usr', "")
+		kwargs.setdefault('type', 0)
+		kwargs.setdefault('usr_id', "")
+		kwargs.setdefault('zinr', "")
+		super(Eg_reqif, self).__init__(*args, **kwargs)

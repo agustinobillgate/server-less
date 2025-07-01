@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -39,3 +41,37 @@ class Rg_reports(Base):
 	view_name = sa.Column(ARRAY(sa.String),default=["","","","","","","","",""])
 	visible_to_group = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('activeflag', 0)
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('col_dim', "")
+		kwargs.setdefault('created_by', "")
+		kwargs.setdefault('created_date', None)
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('date2', None)
+		kwargs.setdefault('facts_dim', "")
+		kwargs.setdefault('form_dim', "")
+		kwargs.setdefault('last_updated', None)
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('logi2', False)
+		kwargs.setdefault('metadata', False)
+		kwargs.setdefault('num1', 0)
+		kwargs.setdefault('num2', 0)
+		kwargs.setdefault('num3', 0)
+		kwargs.setdefault('out_dim', "")
+		kwargs.setdefault('overwrite_by', "")
+		kwargs.setdefault('ovwrite_by_group', "")
+		kwargs.setdefault('report_group', 0)
+		kwargs.setdefault('report_sub', 0)
+		kwargs.setdefault('report_title', "")
+		kwargs.setdefault('reportnr', 0)
+		kwargs.setdefault('row_dim', "")
+		kwargs.setdefault('slice_name', ["","","","","","","","",""])
+		kwargs.setdefault('updated_by', "")
+		kwargs.setdefault('usercode', "")
+		kwargs.setdefault('usr_access', "")
+		kwargs.setdefault('view_name', ["","","","","","","","",""])
+		kwargs.setdefault('visible_to_group', "")
+		super(Rg_reports, self).__init__(*args, **kwargs)

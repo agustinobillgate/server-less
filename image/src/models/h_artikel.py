@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -32,3 +34,30 @@ class H_artikel(Base):
 	service_code = sa.Column(sa.Integer, default=0)
 	zwkum = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('abbuchung', 0)
+		kwargs.setdefault('activeflag', False)
+		kwargs.setdefault('aenderwunsch', False)
+		kwargs.setdefault('artart', 0)
+		kwargs.setdefault('artnr', 0)
+		kwargs.setdefault('artnrfront', 0)
+		kwargs.setdefault('artnrlager', 0)
+		kwargs.setdefault('artnrrezept', 0)
+		kwargs.setdefault('autosaldo', False)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('bezaendern', False)
+		kwargs.setdefault('bezeich', "")
+		kwargs.setdefault('bondruckernr', [0,0,0,0])
+		kwargs.setdefault('departement', 0)
+		kwargs.setdefault('e_gueltig', None)
+		kwargs.setdefault('endkum', 0)
+		kwargs.setdefault('epreis1', 0)
+		kwargs.setdefault('epreis2', 0)
+		kwargs.setdefault('gang', 0)
+		kwargs.setdefault('lagernr', 0)
+		kwargs.setdefault('mwst_code', 0)
+		kwargs.setdefault('prozent', 0)
+		kwargs.setdefault('s_gueltig', None)
+		kwargs.setdefault('service_code', 0)
+		kwargs.setdefault('zwkum', 0)
+		super(H_artikel, self).__init__(*args, **kwargs)

@@ -1,0 +1,11 @@
+
+DEF INPUT PARAMETER rec-id AS INT.
+
+FIND FIRST l-order WHERE RECID(l-order) = rec-id NO-LOCK NO-ERROR.
+IF AVAILABLE l-order THEN DO:
+    FIND CURRENT l-order EXCLUSIVE-LOCK.
+    DELETE l-order.
+    /*FIND CURRENT l-order NO-LOCK.*/
+    RELEASE l-order NO-ERROR.
+END.
+

@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -16,3 +18,14 @@ class Brief(Base):
 	sprachcode = sa.Column(sa.Integer, default=1)
 	tabulator = sa.Column(ARRAY(sa.Integer),default=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('briefbezeich', "")
+		kwargs.setdefault('briefkateg', 1)
+		kwargs.setdefault('briefnr', 0)
+		kwargs.setdefault('etk_anzahl', None)
+		kwargs.setdefault('fname', "")
+		kwargs.setdefault('ftyp', 0)
+		kwargs.setdefault('sprachcode', 1)
+		kwargs.setdefault('tabulator', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+		super(Brief, self).__init__(*args, **kwargs)

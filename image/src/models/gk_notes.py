@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -16,3 +18,14 @@ class Gk_notes(Base):
 	reslinnr = sa.Column(sa.Integer, default=0)
 	resnr = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('betrieb_gast', 0)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('e_notes', "")
+		kwargs.setdefault('gastnr', None)
+		kwargs.setdefault('notes', ["","","","","","","","","","","","","","","","","",""])
+		kwargs.setdefault('page_nr', 0)
+		kwargs.setdefault('program', 0)
+		kwargs.setdefault('reslinnr', 0)
+		kwargs.setdefault('resnr', 0)
+		super(Gk_notes, self).__init__(*args, **kwargs)

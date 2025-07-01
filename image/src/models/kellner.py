@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -22,3 +24,20 @@ class Kellner(Base):
 	storno_begruendung = sa.Column(sa.Boolean, default=False)
 	updatedatum = sa.Column(sa.Date, default=None)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('departement', 0)
+		kwargs.setdefault('ignore_pers', False)
+		kwargs.setdefault('kcredit_nr', 0)
+		kwargs.setdefault('kel_unique', False)
+		kwargs.setdefault('kellner_nr', 1)
+		kwargs.setdefault('kellnername', "")
+		kwargs.setdefault('kumsatz_nr', 0)
+		kwargs.setdefault('kzahl_nr', 0)
+		kwargs.setdefault('masterkey', False)
+		kwargs.setdefault('nullbon', False)
+		kwargs.setdefault('saldo', 0)
+		kwargs.setdefault('sprachcode', 1)
+		kwargs.setdefault('storno_begruendung', False)
+		kwargs.setdefault('updatedatum', None)
+		super(Kellner, self).__init__(*args, **kwargs)

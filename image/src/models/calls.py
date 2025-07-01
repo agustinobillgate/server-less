@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -21,8 +23,29 @@ class Calls(Base):
 	rufnummer = sa.Column(sa.String, default="")
 	satz_id = sa.Column(sa.String, default="")
 	sequence = sa.Column(sa.Integer, default=0)
-	transdatum = sa.Column(sa.Date, default=lambda: get_current_date())
+	transdatum = sa.Column(sa.Date, default=get_current_date())
 	transzeit = sa.Column(sa.Integer, default=0)
 	zeit = sa.Column(sa.Integer, default=0)
 	zinr = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('aufschlag', 0)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('buchflag', 0)
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('dauer', 0)
+		kwargs.setdefault('gastbetrag', 0)
+		kwargs.setdefault('impulse', 0)
+		kwargs.setdefault('key', 0)
+		kwargs.setdefault('leitung', 0)
+		kwargs.setdefault('nebenstelle', "")
+		kwargs.setdefault('pabxbetrag', 0)
+		kwargs.setdefault('rechnr', 0)
+		kwargs.setdefault('rufnummer', "")
+		kwargs.setdefault('satz_id', "")
+		kwargs.setdefault('sequence', 0)
+		kwargs.setdefault('transdatum', get_current_date())
+		kwargs.setdefault('transzeit', 0)
+		kwargs.setdefault('zeit', 0)
+		kwargs.setdefault('zinr', "")
+		super(Calls, self).__init__(*args, **kwargs)

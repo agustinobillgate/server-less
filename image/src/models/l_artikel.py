@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -35,3 +37,33 @@ class L_artikel(Base):
 	wert_verbrau = sa.Column(sa.Numeric, default=0)
 	zwkum = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('alkoholgrad', 0)
+		kwargs.setdefault('anzverbrauch', 0)
+		kwargs.setdefault('artnr', 0)
+		kwargs.setdefault('bestellt', False)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('bezeich', "")
+		kwargs.setdefault('ek_aktuell', 0)
+		kwargs.setdefault('ek_letzter', 0)
+		kwargs.setdefault('endkum', 0)
+		kwargs.setdefault('erfass_art', False)
+		kwargs.setdefault('fibukonto', "")
+		kwargs.setdefault('herkunft', "")
+		kwargs.setdefault('inhalt', 1)
+		kwargs.setdefault('jahrgang', 0)
+		kwargs.setdefault('letz_ausgang', None)
+		kwargs.setdefault('letz_eingang', None)
+		kwargs.setdefault('lief_artnr', ["","",""])
+		kwargs.setdefault('lief_einheit', 1)
+		kwargs.setdefault('lief_nr1', 0)
+		kwargs.setdefault('lief_nr2', 0)
+		kwargs.setdefault('lief_nr3', 0)
+		kwargs.setdefault('lieferfrist', 0)
+		kwargs.setdefault('masseinheit', "")
+		kwargs.setdefault('min_bestand', 0)
+		kwargs.setdefault('traubensorte', "")
+		kwargs.setdefault('vk_preis', 0)
+		kwargs.setdefault('wert_verbrau', 0)
+		kwargs.setdefault('zwkum', 0)
+		super(L_artikel, self).__init__(*args, **kwargs)

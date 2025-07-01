@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -21,3 +23,19 @@ class Argtstat(Base):
 	res_logic = sa.Column(ARRAY(sa.Boolean),default=[False,False,False,False,False,False,False,False,False])
 	zinr = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('aiflag', False)
+		kwargs.setdefault('argtnr', 0)
+		kwargs.setdefault('artnr', 0)
+		kwargs.setdefault('betrag', 0)
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('departement', 0)
+		kwargs.setdefault('gastnrmember', 0)
+		kwargs.setdefault('netto', 0)
+		kwargs.setdefault('res_char', ["","","","","","","","",""])
+		kwargs.setdefault('res_date', [None,None,None,None,None,None,None,None,None])
+		kwargs.setdefault('res_deci', [0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('res_int', [0,0,0,0,0,0,0,0,0])
+		kwargs.setdefault('res_logic', [False,False,False,False,False,False,False,False,False])
+		kwargs.setdefault('zinr', "")
+		super(Argtstat, self).__init__(*args, **kwargs)

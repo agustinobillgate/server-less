@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -18,3 +20,16 @@ class Cl_towel(Base):
 	towelnum = sa.Column(sa.String, default="")
 	toweltype = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('activeflag', True)
+		kwargs.setdefault('booked', 0)
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('num1', 0)
+		kwargs.setdefault('num2', 0)
+		kwargs.setdefault('num3', 0)
+		kwargs.setdefault('servnr', 0)
+		kwargs.setdefault('towelnum', "")
+		kwargs.setdefault('toweltype', 0)
+		super(Cl_towel, self).__init__(*args, **kwargs)

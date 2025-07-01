@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -37,3 +39,35 @@ class Bk_package(Base):
 	von_i = sa.Column(sa.Integer, default=0)
 	von_zeit = sa.Column(sa.String, default="")
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('anzahl', 0)
+		kwargs.setdefault('arrangemdat', None)
+		kwargs.setdefault('arrangement', "")
+		kwargs.setdefault('artnr', 0)
+		kwargs.setdefault('bemerkung', "")
+		kwargs.setdefault('betrag', 0)
+		kwargs.setdefault('betrieb_gastver', 0)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('bezeich', "")
+		kwargs.setdefault('bis_datum', None)
+		kwargs.setdefault('bis_i', 0)
+		kwargs.setdefault('bis_zeit', "")
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('datum', None)
+		kwargs.setdefault('deci1', 0)
+		kwargs.setdefault('departement', 0)
+		kwargs.setdefault('fakturiert', 0)
+		kwargs.setdefault('gastnrver', 0)
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('notizen', "")
+		kwargs.setdefault('number1', 0)
+		kwargs.setdefault('personen', 0)
+		kwargs.setdefault('preis', 0)
+		kwargs.setdefault('raum', "")
+		kwargs.setdefault('raum_bez', "")
+		kwargs.setdefault('veran_nr', 0)
+		kwargs.setdefault('veran_resnr', 0)
+		kwargs.setdefault('von_i', 0)
+		kwargs.setdefault('von_zeit', "")
+		super(Bk_package, self).__init__(*args, **kwargs)

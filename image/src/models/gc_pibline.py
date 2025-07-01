@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -17,3 +19,15 @@ class Gc_pibline(Base):
 	supplier = sa.Column(sa.String, default="")
 	zeit = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('created', None)
+		kwargs.setdefault('docu_nr', "")
+		kwargs.setdefault('inv_acctno', "")
+		kwargs.setdefault('inv_amount', 0)
+		kwargs.setdefault('inv_bemerk', "")
+		kwargs.setdefault('inv_bezeich', "")
+		kwargs.setdefault('invoice_nr', "")
+		kwargs.setdefault('lief_nr', 0)
+		kwargs.setdefault('supplier', "")
+		kwargs.setdefault('zeit', 0)
+		super(Gc_pibline, self).__init__(*args, **kwargs)

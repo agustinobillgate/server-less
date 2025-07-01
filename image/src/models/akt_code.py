@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -22,3 +24,20 @@ class Akt_code(Base):
 	korrespondenz = sa.Column(sa.Boolean, default=False)
 	wertigkeit = sa.Column(sa.Integer, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('aktiongrup', 1)
+		kwargs.setdefault('aktionscode', 0)
+		kwargs.setdefault('bemerkung', "")
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('bezeich', "")
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('date2', None)
+		kwargs.setdefault('flag', 0)
+		kwargs.setdefault('int1', 0)
+		kwargs.setdefault('int2', 0)
+		kwargs.setdefault('int3', 0)
+		kwargs.setdefault('korrespondenz', False)
+		kwargs.setdefault('wertigkeit', 0)
+		super(Akt_code, self).__init__(*args, **kwargs)

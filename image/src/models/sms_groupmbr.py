@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -26,3 +28,24 @@ class Sms_groupmbr(Base):
 	number3 = sa.Column(sa.Integer, default=0)
 	tdate = sa.Column(sa.Date, default=None)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('activeflag', False)
+		kwargs.setdefault('bemerk', "")
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('created_by', "")
+		kwargs.setdefault('createddate', None)
+		kwargs.setdefault('date1', None)
+		kwargs.setdefault('date2', None)
+		kwargs.setdefault('fdate', None)
+		kwargs.setdefault('gastnr', None)
+		kwargs.setdefault('grpnr', 0)
+		kwargs.setdefault('key', 0)
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('logi2', False)
+		kwargs.setdefault('number1', 0)
+		kwargs.setdefault('number2', 0)
+		kwargs.setdefault('number3', 0)
+		kwargs.setdefault('tdate', None)
+		super(Sms_groupmbr, self).__init__(*args, **kwargs)

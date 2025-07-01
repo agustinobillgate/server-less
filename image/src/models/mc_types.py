@@ -1,3 +1,5 @@
+#version: 1.0.0.3
+
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as sa
 from models.base import Base
@@ -32,3 +34,30 @@ class Mc_types(Base):
 	rm_compli = sa.Column(sa.Integer, default=0)
 	rm_disc = sa.Column(sa.Numeric, default=0)
 	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('activeflag', True)
+		kwargs.setdefault('bemerk', "")
+		kwargs.setdefault('bev_disc', 0)
+		kwargs.setdefault('bezeich', "")
+		kwargs.setdefault('char1', "")
+		kwargs.setdefault('char2', "")
+		kwargs.setdefault('char3', "")
+		kwargs.setdefault('dauer', 0)
+		kwargs.setdefault('deci1', 0)
+		kwargs.setdefault('deci2', 0)
+		kwargs.setdefault('deci3', 0)
+		kwargs.setdefault('food_disc', 0)
+		kwargs.setdefault('joinfee', 0)
+		kwargs.setdefault('logi1', False)
+		kwargs.setdefault('logi2', False)
+		kwargs.setdefault('logi3', False)
+		kwargs.setdefault('nr', 0)
+		kwargs.setdefault('number1', 0)
+		kwargs.setdefault('number2', 0)
+		kwargs.setdefault('number3', 0)
+		kwargs.setdefault('numstay', 0)
+		kwargs.setdefault('prepaid', 0)
+		kwargs.setdefault('renewal_fee', 0)
+		kwargs.setdefault('rm_compli', 0)
+		kwargs.setdefault('rm_disc', 0)
+		super(Mc_types, self).__init__(*args, **kwargs)

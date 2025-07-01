@@ -111,4 +111,13 @@
   <prgs:resource consumes="application/json" name="_selfOrderAdminCheck" path="/selfOrderAdminCheck" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-selforder-admin-checkbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-selforder-admin-checkbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dashboard_posActiveBill" path="/dashboard/posActiveBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pos-dashboard-active-billbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pos-dashboard-active-billbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dashboard_posAutoRefresh1" path="/dashboard/posAutoRefresh1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pos-dashboard-auto-refresh1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pos-dashboard-auto-refresh1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dashboard_soundLink" path="/dashboard/soundLink" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pos-dashboard-sound-linkbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pos-dashboard-sound-linkbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>
