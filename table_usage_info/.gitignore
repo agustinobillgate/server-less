@@ -1,5 +1,12 @@
-venv
-lenv
-__pycache__
-table_usage_info
-temp_table_and_db_loop.txt
+# Abaikan semua di functions/
+*
+
+# Izinkan folder
+!*/
+
+# Hanya izinkan isi subfolder1 dan semua levelnya
+!__pycache__/
+!__pycache__/**/*
+
+# Optional: jangan-ignore .gitignore
+!.gitignore
