@@ -1,0 +1,5 @@
+venv
+lenv
+__pycache__
+table_usage_info
+temp_table_and_db_loop.txt

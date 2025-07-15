@@ -1,0 +1,66 @@
+program_name,table_name,condition_field_names,condition,insert_before_line,variable_condition_field_names,field_value_list,skip_flag
+TA-nationstat-go-listBL.p,kontplan,"betriebsnr,kontignr,datum",,,,,TRUE
+cr-occfcast1_2-webBL.p,segment,segmentcode,,,,,TRUE
+cr-occfcast1_2-webBL.p,zimmer,zinr,,,,,TRUE
+cr-occfcast1_2-webBL.p,htparam,paramnr,,,,,TRUE
+cr-occfcast1_2-webBL.p,arrangement,arrangement,,,,,TRUE
+nationstatBL.p,nationstat,"nationnr,datum",(Nationstat.datum >= from_date) & (Nationstat.datum <= to_date),nation = Nation(),,,TRUE
+rm-productbyrate-webbl.p,queasy,"key,number1","(Queasy.key.in_([212,211]))",,,,TRUE
+rm-productbyrate-webbl.p,queasy,"key,number3",,,,,TRUE
+foumsz-create-listbl.p,kontplan,"betriebsnr,kontignr,datum",(Kontplan.datum >= first_date) & (Kontplan.datum <= to_date),,,,TRUE
+cr-fproduct_2BL.p,reslin_queasy,"key,char1,number1,number2,number3,resnr,reslinnr",((Reslin_queasy.date1 >= fr_date) & (Reslin_queasy.date1 <= to_date)) | (((Reslin_queasy.date2 >= fr_date) & (Reslin_queasy.date2 <= to_date))),,"date1,date2",,TRUE
+cr-fproduct_2BL.p,reslin_queasy,"key,resnr,reslinnr",,,,,TRUE
+cr-fproduct_2BL.p,arrangement,arrangement,,,,,TRUE
+cr-fproduct_2BL.p,arrangement,argtnr,,,,,TRUE
+cr-fproduct_2BL.p,ratecode,"code,marknr,argtnr,zikatnr,wday,erwachs,kind1,kind2",((Ratecode.startperiode >= fr_date) & (Ratecode.startperiode <= to_date) | (Ratecode.endperiode >= fr_date) & (Ratecode.endperiode <= to_date)),,"startperiode,endperiode",,TRUE
+cr-fproduct_2BL.p,ratecode,"code,marknr,zikatnr,wday,erwachs,kind1,kind2",,,,,TRUE
+cr-fproduct_2BL.p,ratecode,"code,marknr,argtnr,zikatnr,wday,erwachs",,,,,TRUE
+cr-fproduct_2BL.p,ratecode,"code,marknr,zikatnr,wday,erwachs",,,,,TRUE
+cr-fproduct_2BL.p,kontplan,"betriebsnr,kontignr,datum",(Kontplan.datum >= fr_date) & (Kontplan.datum <= to_date),,,,TRUE
+revenue-report_1BL.p,umsatz,"artnr,departement,datum",(Umsatz.datum >= ly_jan1) & (Umsatz.datum <= to_date),if sorttype == 1:,,,TRUE
+revenue-report_1BL.p,kontplan,"betriebsnr,kontignr,datum",(Kontplan.datum >= ly_jan1) & (Kontplan.datum <= to_date),if sorttype == 1:,,,TRUE
+revenue-report_1BL.p,zwkum,"zknr,departement",,,,,TRUE
+revenue-report_1BL.p,ekum,eknr,,,,,TRUE
+revenue-report_1BL.p,budget,"departement,artnr,datum",(Budget.datum >= ly_jan1) & (Budget.datum <= to_date),if sorttype == 1:,,,TRUE
+slow-moving-btn-go_3BL.p,l_bestand,"artnr,lager_nr",(L_bestand.artnr >= main_grp * 1000000) & (L_bestand.artnr <= (main_grp + 1) * 1000000 - 1),,,,TRUE
+slow-moving-btn-go_3BL.p,l_op,"artnr,op_art,lager_nr",(L_op.artnr >= main_grp * 1000000) & (L_op.artnr <= (main_grp + 1) * 1000000 - 1),,datum,,TRUE
+slow-moving-btn-go_3BL.p,l_op,"artnr,lager_nr",,,,,TRUE
+rest-daysalesp2-btn-go_5-cldBL.p,h_bill,"rechnr,departement",((H_bill.flag == 1) & (H_bill.departement == curr_dept)),,,resnr,TRUE
+rest-daysalesp2-btn-go_5-cldBL.p,res_line,"resnr,reslinnr","(Res_line.resnr.in_(get_cache_value_list(H_bill,""resnr"")))",,,,TRUE
+rest-daysalesp2-btn-go_5-cldBL.p,h_bill_line,"rechnr,departement",(H_bill_line.bill_datum >= from_date) & (H_bill_line.bill_datum <= to_date),,bill_datum,,TRUE
+rest-daysalesp2-btn-go_5-cldBL.p,h_bill_line,"rechnr,departement,betriebsnr",,,,,TRUE
+occ-fcast1-ddown-create-browse1BL.p,reslin_queasy,"key,resnr,reslinnr",(Reslin_queasy.date1 <= datum) & (Reslin_queasy.date2 >= datum),,"date1,date2",,TRUE
+occ-fcast1-ddown-create-browse1BL.p,zimmer,zinr,,,,,TRUE
+occ-fcast1-ddown-create-browse1BL.p,queasy,"key,char1",(Queasy.key == 14) & (((Queasy.date1 <= datum) & (Queasy.date2 >= datum)) | (Queasy.date1 <= datum - timedelta(days=1)) & (Queasy.date2 >= datum - timedelta(days=1))),,"date1,date2",,TRUE
+occ-fcast1-ddown-create-browse1BL.p,res_line,"resnr,resstatus",(Res_line.abreise > datum) & (Res_line.resstatus == 8),,"reslinnr,abreise",,TRUE
+rm-productrate-create-umsatz1-webbl.p,ratecode,code,(Ratecode.endperiode > to_date),genstat_obj_list = {},endperiode,,TRUE
+gcf-ATlist-create-listBL.p,guest,,(Guest.karteityp >= 1) & (Guest.gastnr > 0),,,gastnr,TRUE
+gcf-ATlist-create-listBL.p,guestseg,"gastnr,reihenfolge","(Guestseg.gastnr.in_(get_cache_value_list(Guest,""gastnr"")))",,,,TRUE
+gcf-ATlist-create-listBL.p,guestseg,gastnr,,,,,TRUE
+gcf-ATlist-create-listBL.p,akt_kont,gastnr,"(Akt_kont.gastnr.in_(get_cache_value_list(Guest,""gastnr"")))",,,,TRUE
+gcf-ATlist-create-listBL.p,guest_pr,gastnr,"(Guest_pr.gastnr.in_(get_cache_value_list(Guest,""gastnr"")))",,,,TRUE
+pchase-book-btn-go-webbl.p,l_pprice,,(L_pprice.bestelldatum >= f_date) & (L_pprice.bestelldatum <= t_date) & (L_pprice.anzahl != 0) & (L_pprice.warenwert != 0),if not mi_all:,,docu_nr,TRUE
+pchase-book-btn-go-webbl.p,l_order,"docu_nr,lief_nr,artnr","(L_order.docu_nr.in_(get_cache_value_list(L_pprice, ""docu_nr"")))",if not mi_all:,,,TRUE
+pchase-book-btn-go-webbl.p,l_op,"lscheinnr,lief_nr,artnr,datum",(L_op.datum >= f_date) & (L_op.datum <= t_date),if not mi_all:,,,TRUE
+pchase-book-btn-go-webbl.p,l_op,"docu_nr,lief_nr,artnr,datum",,,,,TRUE
+prepare-mk-pr_1BL.p,l_bestand,"artnr,lager_nr",(L_bestand.lager_nr == 0),,,,TRUE
+ar-age1_2-list-webBL.p,artikel,"artnr,departement",((Artikel.artart == 2) | (Artikel.artart == 7)) & (Artikel.artnr >= from_art) & (Artikel.artnr <= to_art) & (Artikel.departement == 0),,,artnr,TRUE
+ar-age1_2-list-webBL.p,debitor,,"(Debitor.rechnr > 0) & (Debitor.rgdatum <= to_date) & (((Debitor.artnr >= from_art) & (Debitor.artnr <= to_art) & (Debitor.opart <= 1)) | (Debitor.artnr.in_(get_cache_value_list(Artikel, ""artnr"")) & ((Debitor.opart == 2) & (Debitor.zahlkonto == 0))))",,,rechnr,TRUE
+ar-age1_2-list-webBL.p,h_bill,rechnr,"(H_bill.rechnr.in_(get_cache_value_list(Debitor,""rechnr"")))",,,,TRUE
+ar-age1_2-list-webBL.p,bill,rechnr,"(Bill.rechnr.in_(get_cache_value_list(Debitor,""rechnr"")))",,,resnr,TRUE
+ar-age1_2-list-webBL.p,res_line,resnr,"(Res_line.resnr.in_(get_cache_value_list(Bill, ""resnr"")))",,,,TRUE
+prepare-ratecode-adm_2BL.p,queasy,key,"((Queasy.key == 2) & (Queasy.number1 == 0)) | Queasy.key.in_([18,264, 289])",,,,TRUE
+prepare-ratecode-adm_2BL.p,queasy,"key,char1",,,,,TRUE
+prepare-ratecode-adm_2BL.p,queasy,"key,number1",,,,,TRUE
+prepare-ratecode-adm_2BL.p,ratecode,code,Ratecode.endperiode >= cidate,queasy_obj_list = {},endperiode,,FALSE
+repeat-glist_1BL.p,res_line,_recid,(Res_line.active_flag <= 2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (((Res_line.ankunft >= from_date) & (Res_line.ankunft <= to_date)) | ((Res_line.abreise >= from_date) & (Res_line.abreise <= to_date)) | ((Res_line.ankunft <= from_date) & (Res_line.abreise >= to_date))),,,"resnr,gastnr",TRUE
+repeat-glist_1BL.p,res_line,"resnr,reslinnr",,,,,TRUE
+repeat-glist_1BL.p,res_line,"active_flag,gastnrmember,resnr",,,,,TRUE
+repeat-glist_1BL.p,reslin_queasy,"key,resnr,reslinnr","(Reslin_queasy.resnr.in_(get_cache_value_list(Res_line,""resnr"")))",,"date1,date2",,TRUE
+repeat-glist_1BL.p,reslin_queasy,"key,char1,resnr,reslinnr,number1,number2,number3",,,,,TRUE
+repeat-glist_1BL.p,ratecode,"code,marknr,argtnr,zikatnr,wday,erwachs,kind1,kind2",((Ratecode.startperiode >= from_date) & (Ratecode.startperiode <= to_date)) | ((Ratecode.endperiode >= from_date) & (Ratecode.endperiode <= to_date)) | ((Ratecode.startperiode <= from_date) & (Ratecode.endperiode >= to_date)),,"startperiode,endperiode",,TRUE
+repeat-glist_1BL.p,ratecode,"code,marknr,zikatnr,wday,erwachs,kind1,kind2",,,,,TRUE
+repeat-glist_1BL.p,ratecode,"code,marknr,argtnr,zikatnr,wday,erwachs",,,,,TRUE
+repeat-glist_1BL.p,ratecode,"code,marknr,zikatnr,wday,erwachs",,,,,TRUE
+repeat-glist_1BL.p,pricecod,"code,marknr,argtnr,zikatnr",(((Pricecod.startperiode >= from_date) & (Pricecod.startperiode <= to_date)) | ((Pricecod.endperiode >= from_date) & (Pricecod.endperiode <= to_date)) | ((Pricecod.startperiode <= from_date) & (Pricecod.endperiode >= to_date))),,"startperiode,endperiode",,TRUE
+repeat-glist_1BL.p,kontplan,"betriebsnr,kontignr,datum",(Kontplan.datum >= from_date) & (Kontplan.datum <= to_date),,,,TRUE
