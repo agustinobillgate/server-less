@@ -1,6 +1,0 @@
-
-DEF INPUT PARAMETER rmNo AS CHAR.
-DEF OUTPUT PARAMETER avail-zimmer AS LOGICAL INIT NO.
-
-FIND FIRST zimmer WHERE zimmer.zinr = rmNo NO-LOCK NO-ERROR.
-IF AVAILABLE zimmer THEN avail-zimmer = YES.

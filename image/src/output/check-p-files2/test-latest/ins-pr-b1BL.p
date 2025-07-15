@@ -1,7 +1,0 @@
-DEFINE INPUT PARAMETER t-recid      AS INT  NO-UNDO.
-DEFINE INPUT PARAMETER quality      AS CHAR NO-UNDO.
-DEFINE INPUT PARAMETER bez          AS CHAR NO-UNDO.
-
-FIND FIRST l-order WHERE RECID(l-order) = t-recid EXCLUSIVE-LOCK. 
-l-order.quality = STRING(SUBSTR(quality,1,11),"x(11)") + bez. 
-FIND CURRENT l-order NO-LOCK. 
