@@ -1,0 +1,12 @@
+# Abaikan semua di functions/
+*
+
+# Izinkan folder
+!*/
+
+# Hanya izinkan isi subfolder1 dan semua levelnya
+!__pycache__/
+!__pycache__/**/*
+
+# Optional: jangan-ignore .gitignore
+!.gitignore
