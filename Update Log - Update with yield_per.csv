@@ -1,0 +1,243 @@
+program_name,target_string
+abf-list1_2BL.p,(Argt_line.argtnr == arrangement.argtnr)).order_by(Argt_line.betrag.desc()).all():
+abf-list3-webBL.p,(Argt_line.argtnr == arrangement.argtnr)).order_by(Argt_line.betrag.desc()).all():
+abf-listBL.p,(Argt_line.argtnr == arrangement.argtnr)).order_by(Argt_line.betrag.desc()).all():
+abf-list_1BL.p,(Argt_line.argtnr == arrangement.argtnr)).order_by(Argt_line.betrag.desc()).all():
+abf-list_2BL.p,(Argt_line.argtnr == arrangement.argtnr)).order_by(Argt_line.betrag.desc()).all():
+abf-list_3BL.p,(Argt_line.argtnr == arrangement.argtnr)).order_by(Argt_line.betrag.desc()).all():
+activities-history-create-output-webbl.p,"(Queasy.key == 280) & (Queasy.char1 == (""System Logfiles"").lower()) & (Queasy.char2 == idflag)).order_by(Queasy.number1).all():"
+additional-custom-programbl.p,(Queasy.key == 268) & (Queasy.char1 == (prog_hotel_code).lower())).order_by(Queasy.number1.desc()).all():
+ar-subledger-create-age-list1ABL.p,(Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.parent_nr) & (Res_line.zipreis > 0)).order_by(Res_line.reslinnr).all():
+ar-subledger-create-age-list1BL.p,(Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.parent_nr) & (Res_line.zipreis > 0)).order_by(Res_line.reslinnr).all():
+arl-list-disp-arlist1-webBL.p,"(Reslin_queasy.key == (""flag"").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.betriebsnr == 0)).order_by(Reslin_queasy._recid).all():"
+arl-list-disp-arlist1-webBL.p,(Res_line.resnr == curr_resnr) & (Res_line.active_flag <= 1)).order_by(Res_line._recid).all():
+arl-list-disp-arlist1BL.p,"(Reslin_queasy.key == (""flag"").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.betriebsnr == 0)).order_by(Reslin_queasy._recid).all():"
+arl-list-disp-arlist1BL.p,(Res_line.resnr == curr_resnr) & (Res_line.active_flag <= 1)).order_by(Res_line._recid).all():
+arl-list-disp-arlist2-webBL.p,"(Reslin_queasy.key == (""flag"").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.betriebsnr == 0)).order_by(Reslin_queasy._recid).all():"
+arl-list-disp-arlist2-webBL.p,(Res_line.resnr == curr_resnr) & (Res_line.active_flag <= 1)).order_by(Res_line._recid).all():
+arl-list-disp-arlist2BL.p,"(Reslin_queasy.key == (""flag"").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.betriebsnr == 0)).order_by(Reslin_queasy._recid).all():"
+arl-list-disp-arlist3-webBL.p,"(Reslin_queasy.key == (""flag"").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.betriebsnr == 0)).order_by(Reslin_queasy._recid).all():"
+arl-list-disp-arlist3-webBL.p,(Res_line.resnr == curr_resnr) & (Res_line.active_flag <= 1)).order_by(Res_line._recid).all():
+artikel-admin-check-btn-exitBL.p,"for artikel, hoteldpt in db_session.query(Artikel, Hoteldpt).join(Hoteldpt,(Hoteldpt.num == Artikel.departement)).order_by(Artikel._recid).all():"
+available-ratesBL.p,(Ratecode.code == (statcode).lower()) & (Ratecode.zikatnr == rate_list.room_type) & (Ratecode.argtnr == rate_list.argtno) & (Ratecode.startperiode <= curr_date) & (Ratecode.endperiode >= curr_date) & (Ratecode.num1[inc_value(0)] > 0)).order_by(Ratecode._recid).all():
+bfast-kcard-parsingroomdatabl.p,(Guestseg.gastnr == res_line.gastnrmember)).order_by(Guestseg._recid).all():
+bfast-kcard-parsingroomdatabl.p,(Argt_line.argtnr == arrangement.argtnr)).order_by(Argt_line._recid).all():
+bill-parserBL.p,(Bill_line.rechnr == bill.rechnr)).order_by(Bill_line.betrag).all():
+black-listBL.p,(History.gastnr == c_list.gastnr) & not_ (History.zi_wechsel)).order_by(History.abreise.desc()).all():
+black-listBL.p,(Res_line.gastnrmember == c_list.gastnr) & (Res_line.active_flag == 0)).order_by(Res_line.ankunft).all():
+check-del-gcfbl.p,(Queasy.key == 147)).order_by(Queasy._recid).all():
+check-outstandBL.p,(Guestseg.gastnr == guest.gastnr)).order_by(Guestseg._recid).all():
+close-inventory-webBL.p,(get_month(Ophis_fnb.datum) == get_month(fb_close_date)) & (get_year(Ophis_fnb.datum) == get_year(fb_close_date))).order_by(Ophis_fnb._recid).all():
+close-inventory-webBL.p,(get_month(Ophis_mat.datum) == get_month(mat_close_date)) & (get_year(Ophis_mat.datum) == get_year(mat_close_date))).order_by(Ophis_mat._recid).all():
+close-inventory1-webBL.p,(get_month(Ophis_fnb.datum) == get_month(fb_close_date)) & (get_year(Ophis_fnb.datum) == get_year(fb_close_date))).order_by(Ophis_fnb._recid).all():
+close-inventory1-webBL.p,(get_month(Ophis_mat.datum) == get_month(mat_close_date)) & (get_year(Ophis_mat.datum) == get_year(mat_close_date))).order_by(Ophis_mat._recid).all():
+create-newbillBL.p,(Res_line.gastnr == resline.gastnr) & (Res_line.resnr == resline.resnr)).order_by(Res_line.reslinnr.desc()).all():
+create-rmsharerBL.p,(Resline.resnr == res_line.resnr)).order_by(Resline.reslinnr.desc()).all():
+cust-turnover-output-list-webBL.p,"(Queasy.key == 280) & (Queasy.char1 == (""Guest Turnover"").lower()) & (Queasy.char3 == idflag)).order_by(Queasy.number1).all():"
+cust-turnover-sorting-detail-output-list-webBL.p,"(Queasy.key == 280) & (Queasy.char1 == (""Guest Turnover Detail"").lower()) & (Queasy.char3 == idflag)).order_by(Queasy.number1).all():"
+delete-image-housekeepingbl.p,"(Queasy.key == 195) & (Queasy.char1 == (case_type + "";"" + record_key).lower())).order_by(Queasy.number2).all():"
+dml-issue-btn-go-webBL.p,"for op_list in query(op_list_list, filters=(lambda op_list: op_list.stornogrund.lower()  != """" and op_list.stornogrund.lower()  != (""00000000"").lower()  and op_list.stornogrund.lower()  != None)):"
+dml-issue-btn-go-web_1BL.p,"for op_list in query(op_list_list, filters=(lambda op_list: op_list.stornogrund.lower()  != """" and op_list.stornogrund.lower()  != (""00000000"").lower()  and op_list.stornogrund.lower()  != None)):"
+edit-rmsetup-btn-exit-webBL.p,for bk_rset in db_session.query(Bk_rset).order_by(Bk_rset._recid.desc()).all():
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.zinr == input_param.rmNo) & (Eg_property.nr > input_param.last_nr)).order_by(Eg_property._recid).all():
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.zinr == input_param.rmNo) & (Eg_property.nr == input_param.item_nr)).order_by(Eg_property._recid).all():
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.zinr == input_param.rmNo) & (Eg_property.maintask == input_param.main_nr) & (Eg_property.nr > input_param.last_nr)).order_by(Eg_property._recid).all():
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.zinr == input_param.rmNo) & (Eg_property.maintask == input_param.main_nr) & (Eg_property.nr == input_param.item_nr)).order_by(Eg_property._recid).all():
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.location == location) & (Eg_property.nr > input_param.last_nr)).order_by(Eg_property._recid).all():
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.location == location) & (Eg_property.nr == input_param.item_nr)).order_by(Eg_property._recid).all():
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.location == location) & (Eg_property.maintask == input_param.main_nr) & (Eg_property.nr > input_param.last_nr)).order_by(Eg_property._recid).all():
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.location == location) & (Eg_property.maintask == input_param.main_nr) & (Eg_property.nr == input_param.item_nr)).order_by(Eg_property._recid).all():
+eg-PropertyList-btn-go1-webBL.p,"for eg_property.nr, eg_property.bezeich, eg_property.zinr, eg_property.datum, eg_property.brand, eg_property.capacity, eg_property.dimension, eg_property.type, eg_property.price, eg_property.spec, eg_property.location, eg_property.activeflag, eg_property._recid, eg_location.bezeich, eg_location.nr, eg_location._recid, queasy.number1, queasy.char1, queasy._recid in db_session.query(Eg_property.nr, Eg_property.bezeich, Eg_property.zinr, Eg_property.datum, Eg_property.brand, Eg_property.capacity, Eg_property.dimension, Eg_property.type, Eg_property.price, Eg_property.spec, Eg_property.location, Eg_property.activeflag, Eg_property._recid, Eg_location.bezeich, Eg_location.nr, Eg_location._recid, Queasy.number1, Queasy.char1, Queasy._recid).join(Eg_location,(Eg_location.nr == Eg_property.location) & (Eg_property.nr > input_param.last_nr)).join(Queasy,(Queasy.key == 133) & (Queasy.number1 == Eg_property.maintask)).order_by(Eg_property._recid).all():"
+eg-PropertyList-btn-go1-webBL.p,"for eg_property.nr, eg_property.bezeich, eg_property.zinr, eg_property.datum, eg_property.brand, eg_property.capacity, eg_property.dimension, eg_property.type, eg_property.price, eg_property.spec, eg_property.location, eg_property.activeflag, eg_property._recid, eg_location.bezeich, eg_location.nr, eg_location._recid, queasy.number1, queasy.char1, queasy._recid in db_session.query(Eg_property.nr, Eg_property.bezeich, Eg_property.zinr, Eg_property.datum, Eg_property.brand, Eg_property.capacity, Eg_property.dimension, Eg_property.type, Eg_property.price, Eg_property.spec, Eg_property.location, Eg_property.activeflag, Eg_property._recid, Eg_location.bezeich, Eg_location.nr, Eg_location._recid, Queasy.number1, Queasy.char1, Queasy._recid).join(Eg_location,(Eg_location.nr == Eg_property.location) & (Eg_property.nr == input_param.item_nr)).join(Queasy,(Queasy.key == 133) & (Queasy.number1 == Eg_property.maintask)).order_by(Eg_property._recid).all():"
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.maintask == input_param.main_nr) & (Eg_property.nr > input_param.last_nr)).order_by(Eg_property._recid).all():
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.maintask == input_param.main_nr) & (Eg_property.nr == input_param.item_nr)).order_by(Eg_property._recid).all():
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.location == location) & (Eg_property.nr > input_param.last_nr)).order_by(Eg_property._recid).all():
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.location == location) & (Eg_property.nr == input_param.item_nr)).order_by(Eg_property._recid).all():
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.location == location) & (Eg_property.maintask == input_param.main_nr) & (Eg_property.nr > input_param.last_nr)).order_by(Eg_property._recid).all():
+eg-PropertyList-btn-go1-webBL.p,(Eg_property.location == location) & (Eg_property.maintask == input_param.main_nr) & (Eg_property.nr == input_param.item_nr)).order_by(Eg_property._recid).all():
+eg-chgreq-btn-go-webbl.p,for buff_property in db_session.query(Buff_property).order_by(Buff_property.nr.desc()).all():
+eg-mkreq-btn-go-webBL.p,for buff_property in db_session.query(Buff_property).order_by(Buff_property.nr.desc()).all():
+eg-propertymeter-btn-go-webbl.p,(Eg_property.nr > input_list.last_propnr) & (Eg_property.location == input_list.location) & (Eg_property.maintask == input_list.task)).order_by(Eg_property.nr).all():
+eg-propertymeter-btn-go-webbl.p,(Eg_property.nr > input_list.last_propnr) & (Eg_property.location == input_list.location)).order_by(Eg_property.nr).all():
+eg-propertymeter-btn-go-webbl.p,(Eg_property.nr > input_list.last_propnr) & (Eg_property.zinr == input_list.zinr) & (Eg_property.maintask == input_list.task)).order_by(Eg_property.nr).all():
+eg-propertymeter-btn-go-webbl.p,(Eg_property.nr > input_list.last_propnr) & (Eg_property.zinr == input_list.zinr)).order_by(Eg_property.nr).all():
+eg-propertymeter-btn-go-webbl.p,(Eg_property.nr > input_list.last_propnr)).order_by(Eg_property.nr).all():
+esign-setup_1bl.p,(Guestbook.gastnr >= -271150) & (Guestbook.gastnr <= -271080)).order_by(Guestbook.gastnr).all():
+exportgcf_3BL.p,for genstat in db_session.query(Genstat).order_by(Genstat.datum.desc()).all():
+fa-budget-listBL.p,"(Fa_order.ActiveReason != (""0"").lower()) & (Fa_order.ActiveReason != """") & (Fa_order.ActiveReason != None)).order_by(Fa_order.activereason, Fa_op.nr, Fa_op.datum).all():"
+fa-move-move-itBL.p,(Mabuff.name == mathis.name) & (Mabuff.location != mathis.location) & (Mabuff.asset == mathis.asset) & (Mabuff.location == (location_str).lower())).order_by(Mabuff._recid).all():
+fo-inv-update-voucher-webBL.p,(Billjournal.rechnr == bill_num) & (Billjournal.artnr == art_num) & (Billjournal.departement == dept_num) & (Billjournal.bill_datum == bill_date) & (Billjournal.zinr == (room_num).lower())).order_by(Billjournal._recid).all():
+fo-inv-update-voucher-webBL.p,(Debitor.rechnr == bill_num) & (Debitor.rgdatum == bill_date) & (Debitor.artnr == art_num) & (Debitor.zinr == (room_num).lower())).order_by(Debitor._recid).all():
+fo-parxls-gsBL.p,(Buff.rechnr == h_bill_line.rechnr) & (Buff.departement == h_bill_line.departement)).order_by(Art_buff.artart).all():
+fo-parxls-gsBL.p,(Bh_bill_line.rechnr == h_bill_line.rechnr) & (Bh_bill_line.departement == h_bill_line.departement)).order_by(Bh_artikel.artart.desc()).all():
+gcf-contact-btn-exitBL.p,(Abuff.gastnr == gastnr)).order_by(Abuff.kontakt_nr.desc()).all():
+gcf-createBL.p,(T_queasy.key == 212) & (T_queasy.number1 == b_queasy.number1)).order_by(T_queasy.number2.desc()).all():
+gcf-list-webbl.p,((Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (Guest.name > (lname).lower()) & ((Guest.vorname1 + Guest.anredefirma) >= (fname).lower()))).order_by(Guest.name).all():
+gcf-list-webbl.p,"((Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (matches((Guest.vorname1 + Guest.anredefirma),""*"" + fname + ""*"")))).order_by(Guest.name).all():"
+gcf-list-webbl.p,(Guest.karteityp == sorttype) & (Guest.gastnr >= from_gastnr)).order_by(Guest.gastnr).all():
+gcf-list-webbl.p,"((Guest.karteityp == sorttype) & (Guest.name >= trim(lname)) & ((Guest.vorname1 + Guest.anredefirma) >= """"))).order_by(Guest.name).all():"
+gcf-list-webbl.p,(Guestseg.gastnr == t_guest.gastnr)).order_by(Guestseg._recid).all():
+gcf-listBL.p,((Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (Guest.name > (lname).lower()) & ((Guest.vorname1 + Guest.anredefirma) >= (fname).lower()))).order_by(Guest.name).all():
+gcf-listBL.p,(Guest.karteityp == sorttype) & (Guest.gastnr >= from_gastnr)).order_by(Guest.gastnr).all():
+gcf-listBL.p,"((Guest.gastnr <= num1) & (Guest.karteityp == sorttype) & (Guest.name >= trim(lname)) & ((Guest.vorname1 + Guest.anredefirma) >= """"))).order_by(Guest.name).all():"
+gcf-listBL.p,(Guestseg.gastnr == t_guest.gastnr)).order_by(Guestseg._recid).all():
+gcf-list_2BL.p,(Guestseg.gastnr == t_guest.gastnr)).order_by(Guestseg._recid).all():
+gcfs-deleteBL.p,(History.gastnr == guest.gastnr)).order_by(History.abreise.desc()).all():
+get-dynarates-bookingBL.p,for res_line in db_session.query(Res_line).order_by(Res_line.resnr.desc()).all():
+get-dynarates-booking_1BL.p,for res_line in db_session.query(Res_line).order_by(Res_line.resnr.desc()).all():
+get-image-housekeepingbl.p,"(Queasy.key == 195) & (Queasy.char1 == (case_type + "";"" + record_key).lower())).order_by(Queasy.number2).all():"
+get-newresnoBL.p,for res_line in db_session.query(Res_line).order_by(Res_line.resnr.desc()).all():
+get-room-breakdown-fadly.p,"(Reslin_queasy.key == (""arrangement"").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).all():"
+gl-joulist2-create-output-webBL.p,"(Queasy.key == 280) & (Queasy.char1 == (""General Ledger"").lower())).order_by(Queasy.number1).all():"
+gl-joulist2-create-output-web_1BL.p,"queasy = get_cache (Queasy, {""key"": [(eq, 280)],""char1"": [(eq, ""general ledger"")],""char3"": [(eq, idflag)]})"
+gl-linkfoBL.p,(Umsatz.datum == curr_date) & (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement) & (Umsatz.betrag != 0)).order_by(Umsatz._recid).all():
+if-custom-pushall-ratebl.p,(Ratecode.code == r_list.rcode) & (Ratecode.zikatnr == t_zimkateg.zikatnr) & (Ratecode.startperiode <= t_qsy171.date1) & (Ratecode.endperiode >= t_qsy171.date1) & (Ratecode.erwachs > 0)).order_by(Ratecode.erwachs.desc()).all():
+industry-type-config-addbl.p,(Queasy.key == 282) & (Queasy.number1 == selected_category)).order_by(Queasy.number2.desc()).all():
+keyaccount-config-addbl.p,(Queasy.key == 212) & (Queasy.number1 == selected_category)).order_by(Queasy.number2.desc()).all():
+link-ratecodeBL.p,(Prtable.prcode == (child_code).lower())).order_by(Prtable._recid).all():
+mkres-gname-btn-nextBL.p,(Guestseg.gastnr == inp_gastnr)).order_by(Guestseg._recid).all():
+mobileweb-res-checkin.p,(Mappingpg.key == 224) & (Mappingpg.number1 == 1) & (Mappingpg.number2 == 0) & (Mappingpg.logi1)).order_by(Mappingpg._recid).all():
+mobileweb-self-cibl.p,(Buff_resline.resnr == arrival_guestlist.resnr)).order_by(Buff_resline._recid).all():
+move-resmemberBL.p,for rline in db_session.query(Rline).order_by(Rline.resnr.desc()).all():
+na-check1BL.p,(Res_line.active_flag == 1) & (Res_line.resstatus == 13) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+na-check1BL.p,(Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+na-check1BL.p,"(Reslin_queasy.key == (""arrangement"").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy.date1).all():"
+next-reslinnrBL.p,(Res_line.resnr == inp_resno)).order_by(Res_line.reslinnr.desc()).all():
+ns-inv-attach-cashless-code-postBL.p,(Buf_bill.flag == 0) & (Buf_bill.resnr == 0) & (Buf_bill.reslinnr == 1) & (Buf_bill.rechnr > 0)).order_by(Buf_bill._recid).all():
+ns-inv-cashless-toolsBL.p,(Queasy248.key == 248)).order_by(Queasy248.number1.desc()).all():
+ns-invoice-attach-cashlesscodeBL.p,(Buf_bill.flag == 0) & (Buf_bill.resnr == 0) & (Buf_bill.reslinnr == 1) & (Buf_bill.rechnr > 0)).order_by(Buf_bill._recid).all():
+pj-inhouse4-create-output-webbl.p,"(Queasy.key == 280) & (Queasy.char1 == (""Inhouse List"").lower()) & (Queasy.number2 == to_int(idflag))).order_by(Queasy.number1).all():"
+pj-inhouse4-create-output_1webbl.p,"(Queasy.key == 280) & (Queasy.char1 == (""Inhouse List"").lower()) & (Queasy.number2 == to_int(idflag))).order_by(Queasy.number1).all():"
+po-issue-btn-stop-web_1bl.p,(L_od.docu_nr == (docu_nr).lower()) & (L_od.artnr > 0) & (L_od.pos > 0) & (L_od.loeschflag == 0)).order_by(L_od._recid).all():
+po-issue-btn-stop-webbl.p,(L_od.docu_nr == (docu_nr).lower()) & (L_od.artnr > 0) & (L_od.pos > 0) & (L_od.loeschflag == 0)).order_by(L_od._recid).all():
+po-stockin-btn-stop-web_1bl.p,(L_od.docu_nr == (docu_nr).lower()) & (L_od.artnr > 0) & (L_od.pos > 0) & (L_od.loeschflag == 0)).order_by(L_od._recid).all():
+po-stockin-btn-stop-webbl.p,(L_od.docu_nr == (docu_nr).lower()) & (L_od.artnr > 0) & (L_od.pos > 0) & (L_od.loeschflag == 0)).order_by(L_od._recid).all():
+pos-dashboard-active-billBL.p,(H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == h_bill.departement)).order_by(H_bill_line._recid).all():
+pr-list-disp-list_11bl.p,(L_pprice.artnr == l_artikel.artnr)).order_by(L_pprice.bestelldatum.desc()).all():
+pr-list-disp-list_2BL.p,(L_pprice.artnr == l_artikel.artnr)).order_by(L_pprice.bestelldatum.desc()).all():
+precheckin-generator-loaddata_1bl.p,(Res_line.resnr == curr_resnr) & (Res_line.active_flag <= 1)).order_by(Res_line._recid).all():
+prepare-TS-tbplan1-webBL.p,"(H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == dept)).order_by(H_bill_line.sysdate.desc(), H_bill_line.zeit.desc()).all():"
+prepare-TS-tbplanBL.p,"(H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == dept)).order_by(H_bill_line.sysdate.desc(), H_bill_line.zeit.desc()).all():"
+prepare-chg-pr-webbl.p,(L_pprice.artnr == l_artikel.artnr)).order_by(L_pprice.bestelldatum.desc()).all()
+prepare-chg-pr_1BL.p,(L_pprice.artnr == l_artikel.artnr)).order_by(L_pprice.bestelldatum.desc()).all():
+prepare-fa-artlist2-webBL.p,"(Mathis.datum >= payload_list.from_date) & (Mathis.datum <= payload_list.to_date) & (matches(Mathis.name,(""*"" + payload_list.asset_name + ""*"")))).order_by(Mathis.name).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.datum >= payload_list.from_date) & (Mathis.datum <= payload_list.to_date) & (Mathis.name >= payload_list.asset_name)).order_by(Mathis.name).all():
+prepare-fa-artlist2-webBL.p,"(Mathis.datum >= payload_list.from_date) & (Mathis.datum <= payload_list.to_date) & (matches(Mathis.remark,(""*"" + payload_list.remark + ""*"")))).order_by(Mathis.remark).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.datum >= payload_list.from_date) & (Mathis.datum <= payload_list.to_date) & (Mathis.remark >= payload_list.remark)).order_by(Mathis.name).all():
+prepare-fa-artlist2-webBL.p,(Mathis.datum >= payload_list.from_date) & (Mathis.datum <= payload_list.to_date)).order_by(Mathis.nr).all():
+prepare-fa-artlist2-webBL.p,"(Mathis.datum >= payload_list.from_date) & (Mathis.datum <= payload_list.to_date) & (matches(Mathis.asset,(""*"" + trim(payload_list.asset_number) + ""*"")))).order_by(Mathis.asset).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.datum >= payload_list.from_date) & (Mathis.datum <= payload_list.to_date) & (Mathis.asset > trim(payload_list.asset_number))).order_by(Mathis.asset).all():
+prepare-fa-artlist2-webBL.p,"(Mathis.datum >= payload_list.from_date) & (Mathis.datum <= payload_list.to_date) & (matches(Mathis.name,(""*"" + payload_list.asset_name + ""*""))) & (Mathis.name > payload_list.last_artname)).order_by(Mathis.name).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.datum >= payload_list.from_date) & (Mathis.datum <= payload_list.to_date) & (Mathis.name > payload_list.last_artname)).order_by(Mathis.name).all():
+prepare-fa-artlist2-webBL.p,(Mathis.remark > payload_list.last_remark)).order_by(Mathis.remark).all():
+prepare-fa-artlist2-webBL.p,(Mathis.datum >= payload_list.from_date) & (Mathis.datum <= payload_list.to_date) & (Mathis.nr > payload_list.last_nr)).order_by(Mathis.nr).all():
+prepare-fa-artlist2-webBL.p,"(Mathis.datum >= payload_list.from_date) & (Mathis.datum <= payload_list.to_date) & (Mathis.asset > payload_list.last_asset_number) & (matches(Mathis.asset,(""*"" + trim(payload_list.asset_number) + ""*"")))).order_by(Mathis.asset).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.datum >= payload_list.from_date) & (Mathis.datum <= payload_list.to_date) & (Mathis.asset > payload_list.last_asset_number)).order_by(Mathis.asset).all():
+prepare-fa-artlist2-webBL.p,"(matches(Mathis.name,(""*"" + payload_list.asset_name + ""*"")))).order_by(Mathis.name).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.name >= payload_list.asset_name)).order_by(Mathis.name).all():
+prepare-fa-artlist2-webBL.p,"(matches(Mathis.remark,(""*"" + payload_list.remark + ""*"")))).order_by(Mathis.remark).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.remark >= payload_list.remark)).order_by(Mathis.name).all():
+prepare-fa-artlist2-webBL.p,"for mathis, fa_artikel, fa_grup in db_session.query(Mathis, Fa_artikel, Fa_grup).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr) & (Fa_artikel.loeschflag == 0)).join(Fa_grup,(Fa_grup.gnr == Fa_artikel.subgrp) & (Fa_grup.flag == 1)).order_by(Mathis.nr).all():"
+prepare-fa-artlist2-webBL.p,"(matches(Mathis.asset,(""*"" + trim(payload_list.asset_number) + ""*"")))).order_by(Mathis.asset).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.asset > trim(payload_list.asset_number))).order_by(Mathis.asset).all():
+prepare-fa-artlist2-webBL.p,"(matches(Mathis.name,(""*"" + payload_list.asset_name + ""*""))) & (Mathis.name > payload_list.last_artname)).order_by(Mathis.name).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.name > payload_list.last_artname)).order_by(Mathis.name).all()
+prepare-fa-artlist2-webBL.p,(Mathis.remark > payload_list.last_remark)).order_by(Mathis.remark).all():
+prepare-fa-artlist2-webBL.p,(Mathis.nr > payload_list.last_nr)).order_by(Mathis.nr).all():
+prepare-fa-artlist2-webBL.p,"(Mathis.asset > payload_list.last_asset_number) & (matches(Mathis.asset,(""*"" + trim(payload_list.asset_number) + ""*"")))).order_by(Mathis.asset).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.asset > payload_list.last_asset_number)).order_by(Mathis.asset).all():
+prepare-fa-artlist2-webBL.p,"(matches(Mathis.name,(""*"" + payload_list.asset_name + ""*"")))).order_by(Mathis.name).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.name >= payload_list.asset_name)).order_by(Mathis.name).all():
+prepare-fa-artlist2-webBL.p,"(matches(Mathis.name,(""*"" + payload_list.asset_name + ""*""))) & (Mathis.name > payload_list.last_artname)).order_by(Mathis.name).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.name > payload_list.last_artname)).order_by(Mathis.name).all():
+prepare-fa-artlist2-webBL.p,"(matches(Mathis.name,(""*"" + payload_list.asset_name + ""*"")))).order_by(Mathis.name).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.name >= payload_list.asset_name)).order_by(Mathis.name).all():
+prepare-fa-artlist2-webBL.p,"(matches(Mathis.name,(""*"" + payload_list.asset_name + ""*""))) & (Mathis.name > payload_list.last_artname)).order_by(Mathis.name).all():"
+prepare-fa-artlist2-webBL.p,(Mathis.name > payload_list.last_artname)).order_by(Mathis.name).all()
+prepare-fa-movelistBL.p,for mathis in db_session.query(Mathis).order_by(Mathis._recid).all():
+prepare-fo-transdetail-webbl.p,"(substring(Billjournal.bezeich, 0, 1) == (""*"").lower()) & (Billjournal.bill_datum == billdate) & (Billjournal.artnr == artno) & (Billjournal.anzahl == 0) & (Billjournal.betrag == amount) & (((Billjournal.sysdate == systdate) & (Billjournal.zeit > systtime)) | ((Billjournal.sysdate > systdate)))).order_by(Billjournal.sysdate, Billjournal.zeit).all():"
+prepare-fo-transdetailBL.p,"(substring(Billjournal.bezeich, 0, 1) == (""*"").lower()) & (Billjournal.bill_datum == billdate) & (Billjournal.artnr == artno) & (Billjournal.anzahl == 0) & (Billjournal.betrag == amount) & (((Billjournal.sysdate == systdate) & (Billjournal.zeit > systtime)) | ((Billjournal.sysdate > systdate)))).order_by(Billjournal.sysdate, Billjournal.zeit).all():"
+prepare-resline_1BL.p,(Zimmer.zikatnr == zimkateg.zikatnr) & (Zimmer.setup != 0)).order_by(Zimmer.setup).all():
+prepare-resline_1BL.p,(Res_line.resnr == inp_resnr)).order_by(Res_line.reslinnr.desc()).all():
+prepare-resline_3BL.p,(Prline.resnr == res_line.resnr) & (Prline.resstatus == 11) & (Prline.kontakt_nr == 1)).order_by(Prline.reslinnr.desc()).all():
+prepare-resline_3BL.p,(Zimmer.zikatnr == zimkateg.zikatnr) & (Zimmer.setup != 0)).order_by(Zimmer.setup).all():
+prepare-resline_3BL.p,(Res_line.resnr == inp_resnr)).order_by(Res_line.reslinnr.desc()).all():
+prepare-resline_4BL.p,(Prline.resnr == res_line.resnr) & (Prline.resstatus == 11) & (Prline.kontakt_nr == 1)).order_by(Prline.reslinnr.desc()).all():
+prepare-resline_4BL.p,(Zimmer.zikatnr == zimkateg.zikatnr) & (Zimmer.setup != 0)).order_by(Zimmer.setup).all():
+prepare-resline_4BL.p,(Res_line.resnr == inp_resnr)).order_by(Res_line.reslinnr.desc()).all():
+prepare-resline_4BL.p,(H_artikel.artart == 6)).order_by(H_artikel._recid).all():
+prepare-rest-daysalesp2_1-cldBL.p,(H_artikel.artart == 6)).order_by(H_artikel._recid).all():
+prepare-sarticle-listBL.p,for l_artikel in db_session.query(L_artikel).order_by(L_artikel.bezeich).all():
+prepare-ts-tbplan2-webbl.p,"(H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == dept)).order_by(H_bill_line.sysdate.desc(), H_bill_line.zeit.desc()).all():"
+prog-file-btn-saveBL.p,"(Progfile.catnr == main_nr) & (matches(Progfile.bezeich,""*;*""))).order_by(Progfile.bezeich.desc()).all():"
+qrcode-generatorbl.p,(Queasy.key == 248)).order_by(Queasy.number1.desc()).all():
+ratecode-admin-dyna-goBL.p,"(Guest_pr.gastnr == cm_gastno)).order_by(Bqueasy.number3.desc(), Bqueasy.deci3.desc()).all():"
+reactivate1_1BL.p,for reservation in db_session.query(Reservation).order_by(Reservation.resnr.desc()).all():
+read-keyaccount-webbl.p,(Q212.key == 212) & (Q212.number1 == keynumber)).order_by(Q212.number2.desc()).all():
+read-onlinetax.p,(Nitehist.datum == curr_date) & (Nitehist.reihenfolge == nightaudit.reihenfolge)).order_by(nitehist.line_nr).all():
+repeat-glist_1BL.p,((Res_line.active_flag == 0) | (Res_line.active_flag == 2)) & (Res_line.gastnrmember == g_list.gastnr) & (Res_line.resnr == g_list.resnr)).order_by(Res_line.ankunft).all():
+res-cancelled1-webBL.p,(Buff_rline.resnr == res_line.resnr) & (Buff_rline.betrieb_gastpay == 1) & (Buff_rline.l_zuordnung[inc_value(2)] == 0) & (Buff_rline.resstatus == res_line.resstatus)).order_by(Buff_rline._recid).all():
+res-cancelled_1BL.p,(Buff_rline.resnr == res_line.resnr) & (Buff_rline.betrieb_gastpay == 1) & (Buff_rline.l_zuordnung[inc_value(2)] == 0) & (Buff_rline.resstatus == res_line.resstatus)).order_by(Buff_rline._recid).all():
+reservation-btn-newBL.p,(Rcbuff.code == guest_pr.code)).order_by(Rcbuff._recid).all():
+reservation-btn-rescancelBL.p,(Resline1.resnr == resno) & (Resline1.active_flag == 0) & (Resline1.resstatus <= 6)).order_by(Resline1._recid).all():
+reservationBL.p,(Res_line.resnr == mainres_list.resnr)).order_by(Res_line.reslinnr.desc()).all():
+rest-billjourn-journal-list1-webBL.p,(Buf_hjournal.rechnr == h_journal.rechnr) & (Buf_hjournal.departement == h_journal.departement) & (Buf_hjournal.bill_datum == h_journal.bill_datum) & (Buf_hjournal.anzahl > 0) & (Buf_hjournal.betrag < 0)).order_by(Buf_hjournal.zeit.desc()).all():
+rest-sumsale-btn-goBL.p,(Bh_bill_line.rechnr == h_bill_line.rechnr) & (Bh_bill_line.departement == h_bill_line.departement)).order_by(Bh_artikel.artart.desc()).all():
+rm-productrate-create-umsatz1-webbl.p,(Ratecode.code == (curr_code).lower()) & (Ratecode.endperiode > to_date)).order_by(Ratecode._recid).all():
+rmcat-segment-create-output-webBL.p,"(Queasy.key == 280) & (Queasy.char1 == (""Guest Segment By Room Type"").lower())).order_by(Queasy.number1).all():"
+rmrev-bdown-create-billbalance1_4a-webBL.p,(Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr)).order_by(Billjournal._recid).all():
+rmrev-bdown-create-billbalance1_4aBL.p,(Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr)).order_by(Billjournal._recid).all():
+rmrev-bdown-create-billbalance4-webBL.p,(Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr)).order_by(Billjournal._recid).all():
+rmrev-bdown-create-billbalance4BL.p,(Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr)).order_by(Billjournal._recid).all():
+rwaiter-admin-copy-waiterBL.p,(B_zwkum.departement == dept2)).order_by(B_zwkum.zknr.desc()).all():
+s-stockout-btn-goBL.p,(L_bestand.artnr == l_artikel.artnr) & (L_bestand.lager_nr > 0)).order_by(L_bestand._recid).all():
+sarticle-list_1BL.p,(L_artikel.artnr >= last_art1)).order_by(L_artikel.artnr).all():
+sarticle-list_1BL.p,for l_artikel in db_session.query(L_artikel).order_by(L_artikel.artnr).all():
+sarticle-list_1BL.p,"(matches(L_artikel.bezeich,last_art))).order_by(L_artikel.bezeich).all():"
+sarticle-list_1BL.p,(L_artikel.bezeich >= ((last_art).lower()))).order_by(L_artikel.bezeich).all():
+sarticle-list_1BL.p,(L_artikel.artnr > last_art1)).order_by(L_artikel.artnr).all():
+sarticle-list_1BL.p,(L_artikel.bezeich > (last_art).lower())).order_by(L_artikel.bezeich).all():
+select-allotment-ktypeBL.p,(Queasy.key == 147)).order_by(Queasy._recid).all():
+select-invclose_1bl.p,(get_month(Ophis_fnb.datum) == get_month(fb_close_date)) & (get_year(Ophis_fnb.datum) == get_year(fb_close_date))).order_by(Ophis_fnb._recid).all():
+select-invclose_1bl.p,(get_month(Ophis_mat.datum) == get_month(mat_close_date)) & (get_year(Ophis_mat.datum) == get_year(mat_close_date))).order_by(Ophis_mat._recid).all():
+selforder-post-itembl.p,(Buff_hbill.tischnr == table_nr) & (Buff_hbill.departement == outlet_number) & (Buff_hbill.flag == 1)).order_by(Buff_hbill.rechnr.desc()).all():
+selforder-post-itembl.p,"(Queasy.key == 225) & (Queasy.number1 == outlet_number) & (Queasy.char1 == (""orderbill"").lower()) & (Queasy.number2 == table_nr) & (Queasy.logi1 == active_order)).order_by(Queasy.number3.desc()).all():"
+selforder-viewordered-itembl.p,"(Orderbill.key == 225) & (Orderbill.number1 == dept) & (Orderbill.char1 == (""orderbill"").lower()) & (Orderbill.char3 == (session_parameter).lower()) & (Orderbill.logi1)).order_by(Orderbill.number2).all():"
+selforder-viewordered-itembl.p,(H_bill_line.departement == dept) & (H_bill_line.rechnr == bill_number)).order_by(H_bill_line._recid).all():
+selforder-viewordered-itembl.p,"(Queasy.key == 225) & (Queasy.number1 == dept) & (Queasy.char1 == (""orderbill"").lower())).order_by(Queasy._recid).all():"
+server-logsrv-login-step2.p,"(Guest_queasy.key == (""userToken"").lower()) & (Guest_queasy.char1 == (userinit).lower())).order_by(Guest_queasy.number3.desc()).all():"
+setup-rmcatBL.p,(Queasy.key == 152)).order_by(Queasy.number1.desc()).all():
+slow-moving-btn-go_3BL.p,(Bl_op.artnr == l_op.artnr) & (Bl_op.loeschflag <= 1) & (Bl_op.op_art == 1) & (Bl_op.lager_nr == storeno) & (Bl_op.datum <= (transdate - timedelta(days=tage)))).order_by(Bl_op.datum.desc()).all():
+slow-moving-btn-go_3BL.p,"(Bl_ophis.artnr == l_ophis.artnr) & (Bl_ophis.op_art == 3) & (Bl_ophis.lager_nr == storeno) & (Bl_ophis.datum <= l_ophis.datum) & (not_(matches(Bl_ophis.fibukonto,""*CANCELLED*"")))).order_by(Bl_ophis.datum.desc()).all():"
+slow-moving-btn-go_3BL.p,"(Bl_ophis.artnr == l_ophis.artnr) & (Bl_ophis.op_art == 1) & (Bl_ophis.lager_nr == storeno) & (Bl_ophis.datum <= (transdate - timedelta(days=tage))) & (not_(matches(Bl_ophis.fibukonto,""CANCELLED"")))).order_by(Bl_ophis.datum.desc()).all():"
+slow-moving-btn-go_3BL.p,"(Bl_ophis.artnr == l_ophis.artnr) & (Bl_ophis.op_art == 3) & (Bl_ophis.lager_nr == storeno) & (Bl_ophis.datum <= l_ophis.datum) & (not_(matches(Bl_ophis.fibukonto,""*CANCELLED*"")))).order_by(Bl_ophis.datum.desc()).all():"
+slow-moving-btn-go_3BL.p,(Bl_op.artnr == l_op.artnr) & (Bl_op.op_art == 3) & (Bl_op.loeschflag <= 1) & (Bl_op.lager_nr == storeno) & (Bl_op.datum <= (transdate - timedelta(days=tage)))).order_by(Bl_op.datum.desc()).all():
+slow-moving-btn-go_3BL.p,"(Bl_ophis.artnr == l_ophis.artnr) & (Bl_ophis.op_art == 3) & (Bl_ophis.lager_nr == storeno) & (Bl_ophis.datum <= (transdate - timedelta(days=tage))) & (not_(matches(Bl_ophis.fibukonto,""*CANCELLED*"")))).order_by(Bl_ophis.datum.desc()).all():"
+slow-moving-btn-go_3BL.p,(Bl_op.artnr == l_op.artnr) & (Bl_op.op_art == 1) & (Bl_op.loeschflag <= 1) & (Bl_op.lager_nr == storeno) & (Bl_op.datum <= l_op.datum)).order_by(Bl_op.datum.desc()).all():
+slow-moving-btn-go_3BL.p,(Bl_op.artnr == l_op.artnr) & (Bl_op.op_art == 3) & (Bl_op.loeschflag <= 1) & (Bl_op.lager_nr == storeno) & (Bl_op.datum <= l_op.datum)).order_by(Bl_op.datum.desc()).all():
+slow-moving-btn-go_3BL.p,"(Bl_ophis.artnr == l_ophis.artnr) & (Bl_ophis.op_art == 1) & (Bl_ophis.lager_nr == storeno) & (Bl_ophis.datum <= l_ophis.datum) & (not_(matches(Bl_ophis.fibukonto,""*CANCELLED*"")))).order_by(Bl_ophis.datum.desc()).all():"
+slow-moving-btn-go_3BL.p,"(Bl_ophis.artnr == l_ophis.artnr) & (Bl_ophis.op_art == 3) & (Bl_ophis.lager_nr == storeno) & (Bl_ophis.datum <= l_ophis.datum) & (not_(matches(Bl_ophis.fibukonto,""*CANCELLED*"")))).order_by(Bl_ophis.datum.desc()).all():"
+splitbill-newbillBL.p,(Res_line.gastnr == resline.gastnr) & (Res_line.resnr == resline.resnr)).order_by(Res_line.reslinnr.desc()).all():
+stock-translist1-btn-go_1BL.p,(Queasy.key == 121) & (Queasy.number1 == l_op.artnr) & (Queasy.date1 <= l_op.datum)).order_by(Queasy.date1.desc()).all():
+supply-inlist-btn-deleteBL.p,"(Gl_jouhdr.datum == str_list_billdate) & (Gl_jouhdr.jtype == 6) & (matches(Gl_jouhdr.refno,""RCV*""))).order_by(Gl_jouhdr._recid).all():"
+supply-inlist-btn-deleteBL.p,"(Gl_jouhdr.datum == str_list_billdate) & (Gl_jouhdr.jtype == 3) & (matches(Gl_jouhdr.refno,""OUT*""))).order_by(Gl_jouhdr._recid).all():"
+tada-dashboard-post-menubl.p,for bguest in db_session.query(Bguest).order_by(Bguest.gastnr.desc()).all():
+tada-post-paymentcityledgerbl.p,for bguest in db_session.query(Bguest).order_by(Bguest.gastnr.desc()).all():
+TS-restinv-disp-bill-line-web_1BL.p,"(H_bill_line.rechnr == rechnr) & (H_bill_line.departement == curr_dept)).order_by(H_bill_line.bill_datum.desc(), H_bill_line.zeit.desc()).all():"
+TS-restinv-move-tableBL.p,"(Orderbill.key == 225) & (Orderbill.char1 == (""orderbill"").lower()) & (Orderbill.number1 == curr_dept) & (Orderbill.number2 == curr_tischnr) & (Orderbill.char3 == sessionid_one) & (Orderbill.logi1) & (Orderbill.logi3)).order_by(Orderbill.number3).all():"
+TS-restinv-move-tableBL.p,"(Orderbill.key == 225) & (Orderbill.char1 == (""orderbill"").lower()) & (Orderbill.number1 == curr_dept) & (Orderbill.number2 == tischnr) & (Orderbill.char3 == sessionid_two) & (Orderbill.logi1) & (Orderbill.logi3)).order_by(Orderbill.number3.desc()).all():"
+TS-restinv-open-stand-tableBL.p,(Tbuff.departement == curr_dept) & (Tbuff.roomcharge) & (Tbuff.kellner_nr == 0)).order_by(Tbuff.tischnr).all():
+TS-restinv-pay-cash2BL.p,"(Searchbill.key == 225) & (Searchbill.number1 == curr_dept) & (Searchbill.char1 == (""orderbill"").lower())).order_by(Searchbill._recid).all():"
+TS-restinv-pay-cash4BL.p,"(Searchbill.key == 225) & (Searchbill.number1 == curr_dept) & (Searchbill.char1 == (""orderbill"").lower())).order_by(Searchbill._recid).all():"
+TS-restinv-pay-cash7BL.p,"(Searchbill.key == 225) & (Searchbill.number1 == curr_dept) & (Searchbill.char1 == (""orderbill"").lower())).order_by(Searchbill._recid).all():"
+TS-restinv-pay-cash7_1BL.p,"(Searchbill.key == 225) & (Searchbill.number1 == curr_dept) & (Searchbill.char1 == (""orderbill"").lower())).order_by(Searchbill._recid).all():"
+TS-restinv-update-bill-cldBL.p,"(Searchbill.key == 225) & (Searchbill.number1 == curr_dept) & (Searchbill.char1 == (""orderbill"").lower())).order_by(Searchbill._recid).all():"
+TS-restinv-update-bill1BL.p,"(Searchbill.key == 225) & (Searchbill.number1 == curr_dept) & (Searchbill.char1 == (""orderbill"").lower())).order_by(Searchbill._recid).all():"
+TS-restinv-update-bill_1BL.p,"(Searchbill.key == 225) & (Searchbill.number1 == curr_dept) & (Searchbill.char1 == (""orderbill"").lower())).order_by(Searchbill._recid).all():"
+TS-splitbill-btn-transfer-paytypeGT1BL.p,(H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == h_bill.departement) & (H_bill_line.waehrungsnr == curr_select)).order_by(H_bill_line._recid).all():
+ts-splitbill-micros-btn-transferBL.p,(H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == h_bill.departement) & (H_bill_line.waehrungsnr == curr_select)).order_by(H_bill_line._recid).all():
+update-dynaratecode2-update-ratecodeBL.p,(Queasy.key == 209) & (Queasy.char1 == (currcode).lower())).order_by(Queasy.deci3.desc()).all():
+update-global-allotment-rmtypeBL.p,(Kontline.kontcode == (currcode).lower()) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+verify-user-loginBL.p,"(Guest_queasy.key == (""userToken"").lower()) & (Guest_queasy.char1 == (userinit).lower())).order_by(Guest_queasy.number3.desc()).all():"
+word-admin-getbriefnrBL.p,for brief1 in db_session.query(Brief1).order_by(Brief1.briefnr.desc()).all():
+write-wgrpdepBL.p,(Wgrpdep.departement == t_wgrpdep.departement)).order_by(Wgrpdep.zknr.desc()).all():

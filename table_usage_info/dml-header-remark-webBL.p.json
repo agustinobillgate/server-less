@@ -1,0 +1,13 @@
+{
+    "Queasy": {
+        "read": [
+            "char1",
+            "number1",
+            "date1",
+            "char2",
+            "key",
+            "_recid"
+        ],
+        "write": []
+    }
+}
