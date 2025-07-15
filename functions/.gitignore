@@ -10,3 +10,12 @@
 
 # Optional: jangan-ignore .gitignore
 !.gitignore
+
+# Unignore file spesifik tambahan di level ini
+!additional_class.py
+!additional_custom_programbl.py
+!additional_functions temp-table.py
+!additional_functions_psycopg3.py
+!additional_functions_pypy.py
+!additional_functions_python.py
+!additional_functions.py
