@@ -1,0 +1,966 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_getOrderTaker" path="/getOrderTaker" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-select-ordertakerbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-select-ordertakerbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getOrderTakerList" path="/getOrderTakerList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ordertaker-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ordertaker-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_complimentReportPrepare" path="/complimentReportPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-hcompli-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-hcompli-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_complimentReportList" path="/complimentReportList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hcompli-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hcompli-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_complimentReportChgName" path="/complimentReportChgName" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hcompli-list-chg-namebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hcompli-list-chg-namebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_complimentReportChgArtnr" path="/complimentReportChgArtnr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hcompli-list-p-artnrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hcompli-list-p-artnrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dailySalesReportP1" path="/dailySalesReportP1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-daysalesp2-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-daysalesp2-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dailySalesReportP1Prepare" path="/dailySalesReportP1Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-rest-daysalesp1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-rest-daysalesp1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restJournalPrepare" path="/restJournalPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-rest-journalbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-rest-journalbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restJournalListDetail" path="/restJournalListDetail1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-journal-btn-sviewbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-journal-btn-sviewbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restJournalListDetail2" path="/restJournalListDetail2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-view-hbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-view-hbillbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restBillJournalPrepare" path="/restBillJournalPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-rest-billjournbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-rest-billjournbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restBillJournalList" path="/restBillJournalList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-billjourn-journal-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-billjourn-journal-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restUsrJournalList" path="/restUsrJournalList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-usrjournal-btn-go1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-usrjournal-btn-go1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restUsrJournalPrepare" path="/restUsrJournalPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-rest-usrjournalbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-rest-usrjournalbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbCostAnalPrepare" path="/fbCostAnalPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-hcost-analbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-hcost-analbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbCostAnalList" path="/fbCostAnalList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hcost-anal-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hcost-anal-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restJournalList" path="/restJournalList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-journal-btn-go2webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-journal-btn-go2webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mealCouponList" path="/mealCouponList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mealcoup-list-create-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mealcoup-list-create-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbSalesReportPrepare" path="/fbSalesReportPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fb-statisticbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fb-statisticbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbSalesReportList" path="/fbSalesReportList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fb-statistic-create-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fb-statistic-create-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_cancelJournPrepare" path="/cancelJournPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-rest-cjournbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-rest-cjournbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_cancelJournList" path="/cancelJournList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-cjourn-journal-list1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-cjourn-journal-list1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_cancelJournDispBill" path="/cancelJournDispBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-cjourn-disp-restbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-cjourn-disp-restbillbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbSalesCostReportPrepare" path="/fbSalesCostReportPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-hums-costbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-hums-costbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbSalesCostReportList" path="/fbSalesCostReportList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hums-cost-btn-go1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hums-cost-btn-go1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbCostSalesAnalPrepare" path="/fbSalesCostsAnalPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-menu-engbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-menu-engbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbSalesCostsAnalList" path="/fbSalesCostsAnalList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-menu-eng-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-menu-eng-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_turnoverByDeptPrepare" path="/turnoverByDeptPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-resumz-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-resumz-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_turnoverByDeptList" path="/turnoverByDeptList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-resumz-list-btn-go2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-resumz-list-btn-go2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_roomTransferReportPrepare" path="/roomTransferReportPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-mbar-reportbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-mbar-reportbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_occupiedTableList" path="/occupiedTableList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-opened-tischbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-opened-tischbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_roomTransferReportList" path="/roomTransferReportList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mbar-report-journal-list_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mbar-report-journal-list_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_roomTransferReportDetail" path="/roomTransferReportDetail" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mbar-report-disp-restbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mbar-report-disp-restbillbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_drugstoreDailyPrepare" path="/drugstoreDailyPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-drstore-reportbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-drstore-reportbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_drugstoreDailyList" path="/drugstoreDailyList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-drstore-report-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-drstore-report-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_loundryCompPrepare" path="/loundryCompPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ldry-complibl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ldry-complibl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_loundryCompBtnGo" path="/loundryCompBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ldry-compli-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ldry-compli-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_loundryCompBtnEdit" path="/loundryCompArtnr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ldry-compli-p-artnrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ldry-compli-p-artnrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_loundryCompName" path="/loundryCompName" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ldry-compli-p-list-namebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ldry-compli-p-list-namebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_loundryCompBtnHelp" path="/loundryCompBtnHelp" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ldry-compli-btn-helpbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ldry-compli-btn-helpbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_summRestList" path="/summRestList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-sumsale-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-sumsale-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_summRestPrepare" path="/summRestPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-rest-sumsalebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-rest-sumsalebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dailySalesReportP2Prepare" path="/dailySalesReportP2Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-rest-daysalesp22bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-rest-daysalesp22bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dailySalesReportP2" path="/dailySalesReportP2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-daysalesp22-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-daysalesp22-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_abfListPrepare" path="/abfListPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-abf-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-abf-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_abfList" path="/abfList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-abf-list_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-abf-list_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbCostPrepare" path="/fbCostPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fb-cost-enable_uibl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fb-cost-enable_uibl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbCostFillGridLust" path="/fbCostFillGridList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fb-cost-fill-grid-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fb-cost-fill-grid-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbCostFillChange" path="/fbCostFillChange" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fb-cost-fill-changebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fb-cost-fill-changebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbCostCountRecipe" path="/fbCostCountRecipe" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fb-cost-count-recipe-costbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fb-cost-count-recipe-costbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbCostConfirm" path="/fbCostConfirm" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fb-cost-confirmbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fb-cost-confirmbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbCostBtnDelete" path="/fbCostBtnDelete" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fb-cost-btn-deletebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fb-cost-btn-deletebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvPrepare" path="/restInvPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-restinvbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-restinvbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvTableNo" path="/restInvCheckTableNo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-tischnrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-tischnrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvCheckParam" path="/restInvCheckParam" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-checkbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-checkbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvUpdateHBillBetriebsnr" path="/restInvUpdateHBillBetriebsnr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-update-hbill-betriebsnrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-update-hbill-betriebsnrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvRoundBillAmount" path="/restInvRoundBillAmount" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-round-billamountbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-round-billamountbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvWaiterTransfer" path="/restInvWaiterTransfer" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-waiter-transfer1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-waiter-transfer1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvWaiterHelpusrGlist" path="/restInvWaiterHelpusrGlist" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-helpusr-build-glistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-helpusr-build-glistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvWaiterHelpusrCheckPwd" path="/restInvWaiterHelpusrCheckPwd" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-helpusr-check-passwdbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-helpusr-check-passwdbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvCreateList" path="/restInvCreateList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-create-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-create-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvWaiterTransfer1" path="/restInvWaiterTransfer1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-waiter-transferbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-waiter-transferbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvPrepareCloseShift" path="/restInvPrepareCloseShift" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-restinv-close-shiftbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-restinv-close-shiftbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlanPrepare" path="/tablePlanPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-tbplanbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-tbplanbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlanCheckTable" path="/tablePlanCheckTable" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-tbplan-check-table-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-tbplan-check-table-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlanBtnGCF" path="/tablePlanBtnGCF" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-tbplan-btn-gcfbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-tbplan-btn-gcfbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlanPGuestPrepare" path="/tablePlanPGuestPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-pguestbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-pguestbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlanBtnRoom" path="/tablePlanBtnRoom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-tbplan-btn-roombl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-tbplan-btn-roombl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlanUpdateHBill" path="/tablePlanUpdateHBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-tbplan-update-hbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-tbplan-update-hbillbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_reservationPlanPrepare" path="/resPlanPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-resplanbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-resplanbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_resPlanResdataLoad" path="/resPlanResdataLoad" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-resplan-disp-resdatabl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-resplan-disp-resdatabl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_resPlanMkresPrepare" path="/resPlanMkresPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-mkresbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-mkresbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_resPlanMkresBtnExit" path="/resPlanMkresBtnExit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-mkres-btn-exitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-mkres-btn-exitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_resPlanBtnChgDel" path="/resPlanBtnChgDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-resplan-btn-chg-delbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-resplan-btn-chg-delbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_resPlanDelRes" path="/resPlanDelRes" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-resplan-del-resbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-resplan-del-resbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvCheckBill" path="/restInvCheckBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-run-help-check-billbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-run-help-check-billbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvRunHelp" path="/restInvRunHelp" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-run-helpbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-run-helpbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvRunHelp3" path="/restInvRunHelp3" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-run-help3bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-run-help3bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvRunHelp2" path="/restInvRunHelp2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-run-help2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-run-help2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblinePrepare" path="/hblinePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-hblinebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-hblinebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvCloseShift" path="/restInvCloseShift" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-close-shift-btn-exitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-close-shift-btn-exitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvCheckSaldo" path="/restInvCheckSaldo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-ceksaldobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-ceksaldobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvGetSaldo" path="/restInvGetSaldo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-getsaldobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-getsaldobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvMoveTable" path="/restInvMoveTable" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-move-tablebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-move-tablebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvFillCover" path="/restInvFillCover" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-fill-coverbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-fill-coverbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvUpdHbillService" path="/restInvUpdHbillService" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-update-hbill-servicebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-update-hbill-servicebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvNotBalanceBill" path="/restInvNotBalanceBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-not-balance-billbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-not-balance-billbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvNewPos" path="/restInvNewPos" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-new-posbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-new-posbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvOpenStandTable" path="/restInvOpenStandTable" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-open-stand-tablebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-open-stand-tablebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvCancelOrder" path="/restInvCancelOrder" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-cancel-orderbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-cancel-orderbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvCancelOrder2" path="/restInvCancelOrder2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-cancel-order2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-cancel-order2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvUpdateBill" path="/restInvUpdateBill1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-update-bill_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-update-bill_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restSaleUpdateHbill" path="/restSaleUpdateHbill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restsale-update-h-billbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restsale-update-h-billbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addKitchenPrinter" path="/addKitchenPrinter" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-add-kitchprbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-add-kitchprbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvOpenTable" path="/restInvOpenTable" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-open-tablebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-open-tablebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvDeleteQueasy" path="/restInvDeleteQueasy" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-del-queasybl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-del-queasybl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvDispBillLine" path="/restInvDispBillLine" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-disp-bill-linebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-disp-bill-linebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblineGetPrice" path="/hblineGetPrice" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-hbline-get-pricebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-hbline-get-pricebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblineSelectItem2" path="/hblineSelectItem2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-hbline-select-item2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-hbline-select-item2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restdayMercurePrepare" path="/restdayMercurePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-rest-daymercurebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-rest-daymercurebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restdayMercureBtnGo" path="/restdayMercureBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-daymercure-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-daymercure-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblineBuildAlist" path="/hblineBuildAlist" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-hbline-build-alistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-hbline-build-alistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblineSelectItem" path="/hblineSelectItem" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-hbline-select-itembl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-hbline-select-itembl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblineSelectItem1" path="/hblineSelectItem1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-hbline-select-item1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-hbline-select-item1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblineBtnExit1" path="/hblineBtnExit1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-hbline-btn-exit1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-hbline-btn-exit1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvPayCash4" path="/restInvPayCash4" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-pay-cash4bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-pay-cash4bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvPayCash5" path="/restInvPayCash5" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-pay-cash5bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-pay-cash5bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvPayCash6" path="/restInvPayCash6" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-pay-cash6bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-pay-cash6bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvPayCash7" path="/restInvPayCash7" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-pay-cash7bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-pay-cash7bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblineVoidItem" path="/hblineVoidItem" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-hbline-void-itembl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-hbline-void-itembl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_cash1Prepare" path="/cash1Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-cash1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-cash1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_artdiscCheck" path="/artdiscCheck" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-check-artdiscbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-check-artdiscbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvBillart" path="/restInvBillart" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-billartbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-billartbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvCalculateAmount" path="/restInvCalculateAmount" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-calculate-amountbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-calculate-amountbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvMicrosBtnTransfer" path="/restInvMicrosBtnTransfer" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-micros-btn-transferbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-micros-btn-transferbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvBtnCcard" path="/restInvBtnCcard" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-btn-ccardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-btn-ccardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvBtnCcard2" path="/restInvBtnCcard2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-btn-ccard2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-btn-ccard2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvBtnTransfer" path="/restInvBtnTransfer" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-btn-transferbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-btn-transferbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvBtnTransferPaytype1" path="/restInvBtnTransferPaytype1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-btn-transfer-paytype1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-btn-transfer-paytype1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvBtnTransferPaytype56" path="/restInvBtnTransferPaytype56" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-btn-transfer-paytype56bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-btn-transfer-paytype56bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvBtnTransferPaytypegt1" path="/restInvBtnTransferPaytypegt1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-btn-transfer-paytypegt1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-btn-transfer-paytypegt1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvBtnTransferPaytypegt12" path="/restInvBtnTransferPaytypegt12" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-btn-transfer-paytypegt1-2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-btn-transfer-paytypegt1-2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvPayCash3" path="/restInvPayCash3" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-pay-cash3bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-pay-cash3bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_helptischPrepare" path="/helptischPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-helptischbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-helptischbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_disc1GetArticle" path="/disc1GetArticle" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-disc1-get-articlebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-disc1-get-articlebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_disc1BtnExit" path="/disc1BtnExit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-disc1-btn-exitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-disc1-btn-exitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_disc1BtnAll" path="/disc1BtnAll" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-disc1-btn-allbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-disc1-btn-allbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_disc1Prepare1" path="/disc1Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-disc1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-disc1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_disc1Prepare11" path="/disc1Prepare1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-disc1-1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-disc1-1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblineBuildAlist1" path="/hblineBuildAlist1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-hbline-build-alist1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-hbline-build-alist1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlanReturnRoom1" path="/tablePlanReturnRoom1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-tbplan-return-room1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-tbplan-return-room1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlanFlCode" path="/tablePlanFlCode" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-tbplan-fl-codebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-tbplan-fl-codebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlanReturnRoom" path="/tablePlanReturnRoom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-tbplan-return-roombl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-tbplan-return-roombl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restE1Main1" path="/restE1Main1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-e1-main1-restbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-e1-main1-restbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_disc1CalAmount" path="/disc1CalAmount" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-disc1-cal-amountbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-disc1-cal-amountbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_calcServtaxes" path="/calcServtaxes" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-calc-servtaxesbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-calc-servtaxesbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_transtischBtnExit" path="/transtischBtnExit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-transtisch-btn-exitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-transtisch-btn-exitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tischnrBuildListSelect" path="/tischnrBuildListSelect" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-select-tischnr-build-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-select-tischnr-build-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_biltransferCheckDiscart" path="/biltransferCheckDiscart" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-biltransfer-check-discartbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-biltransfer-check-discartbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mealcouponBuildCompl" path="/mealcouponBuildCompl" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-mealcoupon-build-complbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-mealcoupon-build-complbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_biltransferPrepare" path="/biltransferPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-biltransferbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-biltransferbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_biltransferCheckCreditlimit" path="/biltransferCheckCreditlimit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-biltransfer-check-creditlimitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-biltransfer-check-creditlimitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rnonstayCheckCreditlimit" path="/rnonstayCheckCreditlimit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-rnonstay-check-creditlimitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-rnonstay-check-creditlimitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_clguestPrepare" path="/clguestPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-clguestbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-clguestbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_guestAroutstand" path="/guestAroutstand" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-guest-aroutstandbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-guest-aroutstandbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_biltransferCheckVAT" path="/biltransferCheckVAT" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-biltransfer-check-vatbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-biltransfer-check-vatbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rnonstayPrepare" path="/rnonstayPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-rnonstaybl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-rnonstaybl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_biltransfer2" path="/biltransfer2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-biltransfer2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-biltransfer2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rzinrPrepare" path="/rzinrPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-rzinrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-rzinrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rzinrReturnZinr1" path="/rzinrReturnZinr1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-rzinr-return-zinr_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-rzinr-return-zinr_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rzinrBtnExit" path="/rzinrBtnExit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-rzinr-btn-exitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-rzinr-btn-exitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_biltransferUpdateHBill" path="/biltransferUpdateHBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-biltransfer-update-h-billbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-biltransfer-update-h-billbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_complimentBuildCompl" path="/complimentBuildCompl" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-compliment-build-complbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-compliment-build-complbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rmaster" path="/rmaster" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-rmasterbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-rmasterbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rmasterCheckCreditlimit" path="/rmasterCheckCreditlimit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-rmaster-check-creditlimitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-rmaster-check-creditlimitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mastmemberPrepare" path="/mastmemberPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-mastmembet_webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-mastmembet_webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillSelectLmenu" path="/splitbillSelectLmenu" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-select-lmenubl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-select-lmenubl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillCalBalance" path="/splitbillCalBalance" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-cal-balance-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-cal-balance-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillBuildRmenu" path="/splitbillBuildRmenu" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-build-rmenubl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-build-rmenubl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillSplitBill" path="/splitbillSplitBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-split-billbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-split-billbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillPrepare" path="/splitbillPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-splitbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-splitbillbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillBtnCcard" path="/splitbillBtnCcard" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-btn-ccardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-btn-ccardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillSelectRmenu" path="/splitbillSelectRmenu" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-select-rmenubl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-select-rmenubl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillBtnTransferPaytype1" path="/splitbillBtnTransferPaytype1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-btn-transfer-paytype1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-btn-transfer-paytype1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillBtnCash" path="/splitbillBtnCash" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-btn-cashbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-btn-cashbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillBtnTransferPaytype5" path="/splitbillBtnTransferPaytype5" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-btn-transfer-paytype5bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-btn-transfer-paytype5bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillBtnTransferPaytype6" path="/splitbillBtnTransferPaytype6" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-btn-transfer-paytype6bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-btn-transfer-paytype6bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillMicrosBtnTransfer" path="/splitbillMicrosBtnTransfer" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-micros-btn-transferbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-micros-btn-transferbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillBtnTransferPaytypegt1" path="/splitbillBtnTransferPaytypegt1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-btn-transfer-paytypegt1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-btn-transfer-paytypegt1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeinv1Prepare" path="/closeinv1Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-closeinv_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-closeinv_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_oldhbillPrepare" path="/oldhbillPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-oldhbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-oldhbillbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_oldhbillBtnExit" path="/oldhbillBtnExit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-oldhbill-btn-exitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-oldhbill-btn-exitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvDispBillLine1" path="/restInvDispBillLine1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-disp-bill-line_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-disp-bill-line_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvPostingMenu" path="/restInvPostingMenu" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-posting-menubl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-posting-menubl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvRunHelp4" path="/restInvRunHelp4" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-run-help4bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-run-help4bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvPayCash2" path="/restInvPayCash2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-pay-cash2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-pay-cash2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hbilllnlPrint" path="/hbilllnlPrint" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-print-hbilllnlbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-print-hbilllnlbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_readKellner1" path="/readKellner1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-read-kellner1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-read-kellner1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tsNeubenutzerPrepare" path="/tsNeubenutzerPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-neubenutzerbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-neubenutzerbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ldry1ReportPrepare" path="/ldry1ReportPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ldry1-reportbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ldry1-reportbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ldry1ReportBtnGo" path="/ldry1ReportBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ldry1-report-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ldry1-report-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ldry1ReportSelectUser" path="/ldry1ReportSelectUser" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ldry1-report-select-userbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ldry1-report-select-userbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hbillPrint" path="/hbillPrint" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-print-hbill-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-print-hbill-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitItemProc" path="/splitItemProc" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-split-item-procbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-split-item-procbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splititemPrepare" path="/splititemPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-splititembl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-splititembl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvSplitItem" path="/restInvSplitItem" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-split-itembl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-split-itembl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvUpdateBill11" path="/restInvUpdateBill11" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-update-bill1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-update-bill1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvUpdateHBill" path="/restInvUpdateHBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-update-h-billbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-update-h-billbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeinvBtnPayCancel" path="/closeinvBtnPayCancel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-closeinv-btn-paycancelbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-closeinv-btn-paycancelbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeinvBtnStop" path="/closeinvBtnStop" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-closeinv-btn-stopbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-closeinv-btn-stopbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeinvPayTypegt1" path="/closeinvPayTypegt1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-closeinv-pay-typegt1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-closeinv-pay-typegt1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeinvReadBillGuest" path="/closeinvReadBillGuest" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-closeinv-read-bill-guestbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-closeinv-read-bill-guestbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeinvTransferBlist" path="/closeinvTransferBlist" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-closeinv-transfer-blistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-closeinv-transfer-blistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeinvUpdateBill1" path="/closeinvUpdateBill1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-closeinv-update-bill1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-closeinv-update-bill1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeinvUpdateBill" path="/closeinvUpdateBill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-closeinv-update-billbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-closeinv-update-billbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeinvAdjustComplito" path="/closeinvAdjustComplito" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-closeinv-adjust-complitobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-closeinv-adjust-complitobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rpaymentCheck" path="/rpaymentCheck" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-check-rpaymentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-check-rpaymentbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_biltransfer" path="/biltransfer" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-biltransferbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-biltransferbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_sphbillPrint" path="/sphbillPrint" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pr-sphbill-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pr-sphbill-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlanReturnGname" path="/tablePlanReturnGname" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-tbplan-return-gnamebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-tbplan-return-gnamebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeinvPayCashPrepare" path="/closeinvPayCashPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-closeinv-prepare-pay-cashbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-closeinv-prepare-pay-cashbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvDispBillLine3" path="/restInvDispBillLine3" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-disp-bill-line-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-disp-bill-line-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillMoveTable" path="/splitbillMoveTable" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-move-tablebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-move-tablebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeinvPrepare" path="/closeinvPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-closeinv_webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-closeinv_webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvBtnKitchen" path="/restInvBtnKitchen" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-btn-kitchenbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-btn-kitchenbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvPrintOrderticket" path="/restInvPrintOrderticket" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-print-orderticket_webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-print-orderticket_webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_disc1CalculateDisc" path="/disc1CalculateDisc" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-disc1-calculate-disc-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-disc1-calculate-disc-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_kitchenPrinterStatus" path="/kitchenPrinterStatus" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-kp-statusbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-kp-statusbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_abfList1" path="/abfList1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-abf-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-abf-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_abfSelectSortingPrepare" path="/abfSelectSortingPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-abf-select-sortingbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-abf-select-sortingbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_abfList2" path="/abfList2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-abf-list_2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-abf-list_2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_abfList12" path="/abfList12" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-abf-list1_2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-abf-list1_2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePrepare" path="/tablePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-tablebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-tablebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tableReturnRoom" path="/tableReturnRoom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-table-return-roombl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-table-return-roombl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tableCheckTable" path="/tableCheckTable" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-table-check-tablebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-table-check-tablebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tableCheckCreditlimit" path="/tableCheckCreditlimit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-table-check-creditlimitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-table-check-creditlimitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tableBtnAsk1" path="/tableBtnAsk1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-table-btn-ask1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-table-btn-ask1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvCheckKprProg" path="/restInvCheckKprProg" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-check-kpr-prog-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-check-kpr-prog-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_bfastCardReport" path="/bfastCardReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-bfast-card-reportbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-bfast-card-reportbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_bfastCardBtnok" path="/bfastCardBtnok" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-bfast-card-btnokbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-bfast-card-btnokbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_bfastKcardParsingroomdata" path="/bfastKcardParsingroomdata" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-bfast-kcard-parsingroomdatabl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-bfast-kcard-parsingroomdatabl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlanPrepareCustom" path="/tablePlanPrepareCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-tbplan-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-tbplan-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbSalesCostReportList1" path="/fbSalesCostReportList1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hums-cost-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hums-cost-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvDispBillLine1Deposit" path="/restInvDispBillLine1Deposit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-disp-bill-line-web_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-disp-bill-line-web_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvPayCash7Deposit" path="/restInvPayCash7Deposit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-pay-cash7_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-pay-cash7_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restRsvplanPrepareDeposit" path="/restRsvplanPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-rest-rsvplanbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-rest-rsvplanbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tsMkresPrepareDeposit" path="/tsMkresPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-mkres_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-mkres_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restdepositPayPrepare" path="/restdepositPayPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-restdeposit-paybl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-restdeposit-paybl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvPrepareDeposit" path="/restInvPrepareDeposit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-restinv_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-restinv_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restRsvplanPrepareBtnGo" path="/restRsvplanBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-rsvplan-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-rsvplan-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tsMkresBtnExit" path="/tsMkresBtnExit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-mkres-btn-exit_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-mkres-btn-exit_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tsMkresBtnGcf" path="/tsMkresBtnGcf" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-mkres-btn-gcfbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-mkres-btn-gcfbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_resplanBtnChgDelDeposit" path="/resplanBtnChgDelDeposit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-resplan-btn-chg-del_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-resplan-btn-chg-del_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_resplanCheckOpenbill" path="/resplanCheckOpenbill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-resplan-check-openbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-resplan-check-openbillbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_resplanOpenbill" path="/resplanOpenbill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-resplan-openbillbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-resplan-openbillbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restdepositPayBtnExit" path="/restdepositPayBtnExit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restdeposit-pay-btn-exitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restdeposit-pay-btn-exitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restdepositPayPrint" path="/restdepositPayPrint" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restdeposit-pay-printbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restdeposit-pay-printbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dailySalesReportP21Prepare" path="/dailySalesReportP21Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-rest-daysalesp2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-rest-daysalesp2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dailySalesReportP21" path="/dailySalesReportP21" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-daysalesp2-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-daysalesp2-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_resplanReprintDeposit" path="/resplanReprintDeposit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-resplan-reprint-depositbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-resplan-reprint-depositbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_cashlessCheckSaldo" path="/cashlessCheckSaldo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gcheck-saldo-cashless-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gcheck-saldo-cashless-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_abfList3" path="/abfList3" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-abf-list_3bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-abf-list_3bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblinePrepare1" path="/hblinePrepare1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-hbline_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-hbline_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rnonstayPrepare1" path="/rnonstayPrepare1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-rnonstay_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-rnonstay_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblineGetCashlessSaldo" path="/hblineGetCashlessSaldo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-hbline-get-cashless-saldobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-hbline-get-cashless-saldobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblineGetTaxservice" path="/hblineGetTaxservice" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-hbline-get-taxservice-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-hbline-get-taxservice-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_resplanDeleteDeposit" path="/resplanDeleteDeposit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-resplan-delete-depositbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-resplan-delete-depositbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dailySalesReportP211" path="/dailySalesReportP211" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-daysalesp2-btn-go1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-daysalesp2-btn-go1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_overCrlimitList" path="/overCrlimitList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-over-crlimit-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-over-crlimit-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_overCrlimitListPrepare" path="/overCrlimitListPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-over-crlimit-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-over-crlimit-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_roomtransferComboPrepare" path="/roomtransferComboPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-prepare-roomtransfer-combobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-prepare-roomtransfer-combobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_roomtransferComboPosting" path="/roomtransferComboPosting" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-posting-roomtransfer-combobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-posting-roomtransfer-combobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addKitchenDisplay" path="/addKitchenDisplay" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-add-kdsbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-add-kdsbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_kdsReportPrepare" path="/kdsReportPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-kitchen-display-reportbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-kitchen-display-reportbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_kdsReportLoad" path="/kdsReportLoad" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-kitchen-display-reportbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-kitchen-display-reportbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvCheckMoveTable" path="/restInvCheckMoveTable" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-check-move-table_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-check-move-table_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tsSeltrans" path="/tsSeltrans" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-seltransbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-seltransbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addKitchenPrinterReprint" path="/addKitchenPrinterReprint" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-add-reprint-kitchprbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-add-reprint-kitchprbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_glLinkPosCombo" path="/glLinkPosCombo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-link-post-combo-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-link-post-combo-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblineGetTaxservice2" path="/hblineGetTaxservice2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-hbline-get-taxservice2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-hbline-get-taxservice2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_kitchenDisplayGetdata" path="/kitchenDisplayGetdata" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-kitchen-displaybl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-kitchen-displaybl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_kitchenDisplayPrepare" path="/kitchenDisplayPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-kitchen-displaybl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-kitchen-displaybl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restJournalV2Prepare" path="/restJournalV2Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-rest-journal-v2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-rest-journal-v2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restJournalV2List" path="/restJournalV2List" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-journal-v2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-journal-v2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dailySalesReportP22" path="/dailySalesReportP22" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-daysalesp2-btn-go2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-daysalesp2-btn-go2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hbillPrintSelection" path="/hbillPrintSelection" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-print-hbill-getsection-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-print-hbill-getsection-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbDetailreportPrepare" path="/fbDetailreportPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fb-detailreportbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fb-detailreportbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbDetailreport" path="/fbDetailreport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fb-detailreportbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fb-detailreportbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvVoidSalesitem" path="/restInvVoidSalesitem" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-closeinv-void-salesitembl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-closeinv-void-salesitembl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeinv2Prepare" path="/closeinv2Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-closeinv_2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-closeinv_2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbSalesCostsAnal2Prepare" path="/fbSalesCostsAnal2Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-menu-eng-v2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-menu-eng-v2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbSalesCostsAnal2List" path="/fbSalesCostsAnal2List" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-menu-eng-v2-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-menu-eng-v2-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hbillPrintPartial" path="/hbillPrintPartial" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-print-hbill-getpartial-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-print-hbill-getpartial-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbSalesCostsAnal2Lists" path="/fbSalesCostsAnal2Lists" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-menu-eng-v2-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-menu-eng-v2-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_biltransfer2Custom" path="/biltransfer2Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-biltransfer2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-biltransfer2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlan1Prepare" path="/tablePlan1Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-tbplan1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-tbplan1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restBillJournalList1" path="/restBillJournalList1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-billjourn-journal-list1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-billjourn-journal-list1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillPrintPartial" path="/splitbillPrintPartial" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-printsplit-hbill-getsection-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-printsplit-hbill-getsection-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restStat1" path="/restStat1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-stat1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-stat1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restStatsegment" path="/restStatsegment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-statsegment-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-statsegment-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_kitchenDisplayUpdateStatus" path="/kitchenDisplayUpdateStatus" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-kitchen-display-update-statusbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-kitchen-display-update-statusbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restStatsegmentCustom" path="/restStatsegmentCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-statsegment-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-statsegment-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvPostingMenuCustom" path="/restInvPostingMenuCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-posting-menu-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-posting-menu-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlanLoadSegment" path="/tablePlanLoadSegment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-tbplan-load-segmentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-tbplan-load-segmentbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlanUpdateHBillCustom" path="/tablePlanUpdateHBillCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-tbplan-update-hbill-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-tbplan-update-hbill-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvGetArtbarcode" path="/restInvGetArtbarcode" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-get-artbarcode-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-get-artbarcode-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvRunHelpCustom" path="/restInvRunHelpCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-run-help-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-run-help-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restTableTurnover" path="/restTableTurnover" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-table-turnoverbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-table-turnoverbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_kitchenDisplayUpdateStatusLine" path="/kitchenDisplayUpdateStatusLine" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-kitchen-display-update-status-linebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-kitchen-display-update-status-linebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_abfList3Custom" path="/abfList3Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-abf-list3-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-abf-list3-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbSalesCostsAnalShowSubmenu" path="/fbSalesCostsAnalShowSubmenu" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-menu-eng-show-submenu-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-menu-eng-show-submenu-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tsGetRequestText" path="/tsGetRequestText" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-get-request-text-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-get-request-text-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tsMkresBtnExit2" path="/tsMkresBtnExit2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-mkres-btn-exit_2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-mkres-btn-exit_2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mealCouponListCustom" path="/mealCouponListCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mealcoup-list-create-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mealcoup-list-create-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restRsvplan2BtnGo" path="/restRsvplan2BtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-rsvplan2-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-rsvplan2-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restRsvplan2Paymentdetail" path="/restRsvplan2Paymentdetail" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-rsvplan2-paymentdetailbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-rsvplan2-paymentdetailbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_abfList12Custom" path="/abfList12Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-abf-list1_2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-abf-list1_2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tsGeneralCheckMenu" path="/tsGeneralCheckMenu" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-general-check-menubl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-general-check-menubl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_resplanCheck" path="/resplanCheck" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-resplan-checkbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-resplan-checkbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_clguestPrepareCustom" path="/clguestPrepareCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-clguest-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-clguest-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_complimentBuildComplCustom" path="/complimentBuildComplCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-compliment-build-compl-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-compliment-build-compl-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tsMulticashPrepare" path="/tsMulticashPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-multicashbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-multicashbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tsMulticashCalPayamount" path="/tsMulticashCalPayamount" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-multicash-cal-payamountbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-multicash-cal-payamountbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tablePlan2Prepare" path="/tablePlan2Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-tbplan2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-tbplan2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_abfList13Custom" path="/abfList13Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-abf-list1_3-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-abf-list1_3-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_abfList4Custom" path="/abfList4Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-abf-list4-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-abf-list4-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_lunchdinnerList" path="/lunchdinnerList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-lunchdinner-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-lunchdinner-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_complimentReportList2" path="/complimentReportList2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hcompli-list_2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hcompli-list_2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvTransferToGuestbill" path="/restInvTransferToGuestbill" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-transfer-to-guestbill-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-transfer-to-guestbill-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rzinrPrepareCustom" path="/rzinrPrepareCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-rzinr-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-rzinr-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvBillartCustom" path="/restInvBillartCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-billart-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-billart-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_bfastCardReportCustom" path="/bfastCardReportCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-bfast-card-report-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-bfast-card-report-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hblineGetTaxservice3" path="/hblineGetTaxservice3" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-hbline-get-taxservice3-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-hbline-get-taxservice3-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restStat2" path="/restStat2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-stat2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-stat2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restStatsegment1Custom" path="/restStatsegment1Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-statsegment-go1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-statsegment-go1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbroomSegmentRevenue" path="/fbroomSegmentRevenue" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fbroom-segment-revenue-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fbroom-segment-revenue-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_helptischPrepareCustom" path="/helptischPrepareCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-helptisch-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-helptisch-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillGetUpdateGuest" path="/splitbillGetUpdateGuest" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-get-update-guestbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-get-update-guestbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvCancelPayment" path="/restInvCancelPayment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-cancel-payment-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-cancel-payment-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fbSalesCostsAnal2Lists1" path="/fbSalesCostsAnal2Lists1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-menu-eng-v2-list1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-menu-eng-v2-list1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+</prgs:model>

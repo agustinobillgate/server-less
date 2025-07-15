@@ -1,0 +1,5 @@
+service,function
+configSetupPrepare,prepare_config_setup_save_horekabl
+configSetupSave,config_setup_save_horekabl
+mappingSupplierPrepare,prepare_mapping_supplier_horekabl
+mappingSupplierSave,mapping_supplier_save_horekabl

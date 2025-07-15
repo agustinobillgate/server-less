@@ -1,0 +1,9 @@
+service,function
+findReservation,mobileweb_self_cibl
+resCI,mobileweb_res_checkin
+loadIDCard,mobileweb_load_idcardbl
+saveIDCard,mobileweb_save_idcardbl
+createInterface,mobileweb_create_interfacebl
+checkValidation,mobileweb_check_flagbl
+storeSignature,selfcheckin_store_signaturebl
+pgCheckSession,payment_gateway_sessionbl

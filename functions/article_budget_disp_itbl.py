@@ -1,0 +1,35 @@
+#using conversion tools version: 1.0.0.117
+
+from functions.additional_functions import *
+from decimal import Decimal
+from datetime import date
+from models import Budget
+
+def article_budget_disp_itbl(departement:int, artnr:int, from_date:date, to_date:date):
+    t_budget_data = []
+    budget = None
+
+    t_budget = None
+
+    t_budget_data, T_budget = create_model_like(Budget)
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal t_budget_data, budget
+        nonlocal departement, artnr, from_date, to_date
+
+
+        nonlocal t_budget
+        nonlocal t_budget_data
+
+        return {"t-budget": t_budget_data}
+
+    for budget in db_session.query(Budget).filter(
+             (Budget.departement == departement) & (Budget.datum >= from_date) & (Budget.datum <= to_date)).order_by(Budget.datum).all():
+        t_budget = T_budget()
+        t_budget_data.append(t_budget)
+
+        buffer_copy(budget, t_budget)
+
+    return generate_output()

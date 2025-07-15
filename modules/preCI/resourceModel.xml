@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_updateData" path="/updateData" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-precheckin-update-databl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-precheckin-update-databl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_saveSetup" path="/saveSetup" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-precheckin-savesetupbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-precheckin-savesetupbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_loadSetup" path="/loadSetup" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-precheckin-loadsetupbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-precheckin-loadsetupbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_storeQRCode" path="/storeQRCode" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-precheckin-store-qrcodebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-precheckin-store-qrcodebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_pciSendemail" path="/pciSendemail" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-precheckin-sendemailbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-precheckin-sendemailbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_pciGeneratorSelectSorting" path="/pciGeneratorSelectSorting" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-precheckin-generator-select-sortingbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-precheckin-generator-select-sortingbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_pciGeneratorLoaddata" path="/pciGeneratorLoaddata" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-precheckin-generator-loaddata_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-precheckin-generator-loaddata_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_pciGeneratorLoaddata1" path="/pciGeneratorLoaddata1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-precheckin-generator-load-data-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-precheckin-generator-load-data-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_pciGetRsv" path="/pciGetRsv" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pci-get-rsvbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pci-get-rsvbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_pciLoadsetup" path="/pciLoadsetup" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pci-loadsetupbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pci-loadsetupbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_pciGeneratorLoaddataV2" path="/pciGeneratorLoaddataV2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-precheckin-generator-load-data-v2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-precheckin-generator-load-data-v2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+</prgs:model>

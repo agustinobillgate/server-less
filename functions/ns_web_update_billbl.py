@@ -1,0 +1,69 @@
+#using conversion tools version: 1.0.0.117
+
+from functions.additional_functions import *
+from decimal import Decimal
+from datetime import date
+from functions.ns_invoice_check_saldobl import ns_invoice_check_saldobl
+from functions.inv_update_billbl import inv_update_billbl
+from functions.read_bill2bl import read_bill2bl
+from models import Bill_line, Bill
+
+def ns_web_update_billbl(pvilanguage:int, bil_flag:int, b_recid:int, t_bill_rechnr:int, bill_line_departement:int, transdate:date, billart:int, qty:int, price:Decimal, amount:Decimal, amount_foreign:Decimal, description:string, voucher_nr:string, cancel_str:string, user_init:string, rechnr:int, balance:Decimal, balance_foreign:Decimal):
+    msg_str = ""
+    success_flag = False
+    t_bill_data = []
+    t_bill_line_data = []
+    lvcarea:string = "ns-web-update-billbl"
+    master_str:string = ""
+    master_rechnr:string = ""
+    master_flag:bool = False
+    msg_answer:bool = False
+    str1:string = "NS"
+    bline_dept:int = 0
+    gname:string = ""
+    bil_recid:int = 0
+    telbill_flag:bool = False
+    babill_flag:bool = False
+    bill_line = bill = None
+
+    t_bill_line = t_blinebuff = t_bill = None
+
+    t_bill_line_data, T_bill_line = create_model_like(Bill_line, {"bl_recid":int, "artart":int, "tool_tip":string})
+    t_blinebuff_data, T_blinebuff = create_model_like(Bill_line, {"bl_recid":int, "artart":int, "tool_tip":string})
+    t_bill_data, T_bill = create_model_like(Bill, {"bl_recid":int})
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal msg_str, success_flag, t_bill_data, t_bill_line_data, lvcarea, master_str, master_rechnr, master_flag, msg_answer, str1, bline_dept, gname, bil_recid, telbill_flag, babill_flag, bill_line, bill
+        nonlocal pvilanguage, bil_flag, b_recid, t_bill_rechnr, bill_line_departement, transdate, billart, qty, price, amount, amount_foreign, description, voucher_nr, cancel_str, user_init, rechnr, balance, balance_foreign
+
+
+        nonlocal t_bill_line, t_blinebuff, t_bill
+        nonlocal t_bill_line_data, t_blinebuff_data, t_bill_data
+
+        return {"rechnr": rechnr, "balance": balance, "balance_foreign": balance_foreign, "msg_str": msg_str, "success_flag": success_flag, "t-bill": t_bill_data, "t-bill-line": t_bill_line_data}
+
+
+    bline_dept = bill_line_departement
+
+    if t_bill_rechnr != 0:
+        t_bill_data, t_bill_line_data = get_output(ns_invoice_check_saldobl(0, t_bill_rechnr))
+
+        t_bill = query(t_bill_data, first=True)
+
+        if t_bill and t_bill.resnr == 0 and t_bill.flag == 0:
+            bil_recid = t_bill.bl_recid
+            gname = t_bill.name
+    rechnr, master_str, master_rechnr, balance, balance_foreign, master_flag, msg_str, success_flag, t_blinebuff_data = get_output(inv_update_billbl(pvilanguage, bil_flag, str1, transdate, b_recid, bline_dept, billart, qty, price, amount, amount_foreign, description, voucher_nr, cancel_str, user_init, rechnr, master_str, master_rechnr, balance, balance_foreign))
+    telbill_flag, babill_flag, t_bill_data = get_output(read_bill2bl(5, b_recid, None, None, None, None, None, None, None, None))
+
+    t_blinebuff = query(t_blinebuff_data, first=True)
+
+    if t_blinebuff:
+        t_bill_line = T_bill_line()
+        t_bill_line_data.append(t_bill_line)
+
+        buffer_copy(t_blinebuff, t_bill_line)
+
+    return generate_output()

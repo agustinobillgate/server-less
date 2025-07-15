@@ -1,0 +1,63 @@
+#version: 1.0.0.3
+
+from sqlalchemy.dialects.postgresql import ARRAY
+import sqlalchemy as sa
+from models.base import Base
+from functions.additional_functions import get_current_date
+
+class Telephone(Base):
+	__tablename__ = 'telephone'
+
+	adresse1 = sa.Column(sa.String, default="")
+	adresse2 = sa.Column(sa.String, default="")
+	anrede = sa.Column(sa.String, default="")
+	bediener_nr = sa.Column(sa.Integer, default=0)
+	betriebsnr = sa.Column(sa.Integer, default=0)
+	departement = sa.Column(sa.Integer, default=0)
+	dept = sa.Column(sa.String, default="")
+	ext = sa.Column(sa.String, default="")
+	fax = sa.Column(sa.String, default="")
+	fax_ext = sa.Column(sa.String, default="")
+	fax_prefix = sa.Column(sa.String, default="")
+	land = sa.Column(sa.String, default="")
+	land_code = sa.Column(sa.String, default="")
+	mobil_prefix = sa.Column(sa.String, default="")
+	mobil_telefon = sa.Column(sa.String, default="")
+	name = sa.Column(sa.String, default="")
+	prefix = sa.Column(sa.String, default="")
+	privat_prefix = sa.Column(sa.String, default="")
+	telefon_privat = sa.Column(sa.String, default="")
+	telephone = sa.Column(sa.String, default="")
+	telex = sa.Column(sa.String, default="")
+	telex_ext = sa.Column(sa.String, default="")
+	telex_prefix = sa.Column(sa.String, default="")
+	vorname = sa.Column(sa.String, default="")
+	wohnort = sa.Column(sa.String, default="")
+	_recid = sa.Column(sa.Integer, primary_key=True)
+	def __init__(self, *args, **kwargs):
+		kwargs.setdefault('adresse1', "")
+		kwargs.setdefault('adresse2', "")
+		kwargs.setdefault('anrede', "")
+		kwargs.setdefault('bediener_nr', 0)
+		kwargs.setdefault('betriebsnr', 0)
+		kwargs.setdefault('departement', 0)
+		kwargs.setdefault('dept', "")
+		kwargs.setdefault('ext', "")
+		kwargs.setdefault('fax', "")
+		kwargs.setdefault('fax_ext', "")
+		kwargs.setdefault('fax_prefix', "")
+		kwargs.setdefault('land', "")
+		kwargs.setdefault('land_code', "")
+		kwargs.setdefault('mobil_prefix', "")
+		kwargs.setdefault('mobil_telefon', "")
+		kwargs.setdefault('name', "")
+		kwargs.setdefault('prefix', "")
+		kwargs.setdefault('privat_prefix', "")
+		kwargs.setdefault('telefon_privat', "")
+		kwargs.setdefault('telephone', "")
+		kwargs.setdefault('telex', "")
+		kwargs.setdefault('telex_ext', "")
+		kwargs.setdefault('telex_prefix', "")
+		kwargs.setdefault('vorname', "")
+		kwargs.setdefault('wohnort', "")
+		super(Telephone, self).__init__(*args, **kwargs)

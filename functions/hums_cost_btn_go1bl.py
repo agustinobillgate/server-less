@@ -1,0 +1,52 @@
+#using conversion tools version: 1.0.0.117
+
+from functions.additional_functions import *
+from decimal import Decimal
+from datetime import date
+from functions.hums_cost_btn_gobl import hums_cost_btn_gobl
+
+def hums_cost_btn_go1bl(language_code:int, sorttype:int, detailed:bool, from_dept:int, to_dept:int, from_date:date, to_date:date, fact1:int, short_flag:bool, mi_compli_checked:bool):
+    fb_cost_report_data = []
+
+    fb_cost_report = output_list = None
+
+    fb_cost_report_data, Fb_cost_report = create_model("Fb_cost_report", {"departement":string, "qty":string, "sales":string, "cost":string, "qty2":string, "compliment":string, "t_cost":string, "ratio":string, "m_qty":string, "m_sales":string, "m_cost":string, "m_qty2":string, "compliment2":string, "t_cost2":string, "ratio2":string})
+    output_list_data, Output_list = create_model("Output_list", {"anz":int, "m_anz":int, "comanz":int, "m_comanz":int, "s":string})
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal fb_cost_report_data
+        nonlocal language_code, sorttype, detailed, from_dept, to_dept, from_date, to_date, fact1, short_flag, mi_compli_checked
+
+
+        nonlocal fb_cost_report, output_list
+        nonlocal fb_cost_report_data, output_list_data
+
+        return {"fb-cost-report": fb_cost_report_data}
+
+    output_list_data = get_output(hums_cost_btn_gobl(language_code, sorttype, detailed, from_dept, to_dept, from_date, to_date, fact1, short_flag, mi_compli_checked))
+    fb_cost_report_data.clear()
+
+    for output_list in query(output_list_data):
+        fb_cost_report = Fb_cost_report()
+        fb_cost_report_data.append(fb_cost_report)
+
+        fb_cost_report.departement = substring(output_list.s, 0, 23)
+        fb_cost_report.qty = to_string(output_list.anz, ">>>>>")
+        fb_cost_report.sales = substring(output_list.s, 23, 20)
+        fb_cost_report.cost = substring(output_list.s, 43, 20)
+        fb_cost_report.qty2 = to_string(output_list.comanz, ">>>>>")
+        fb_cost_report.compliment = substring(output_list.s, 63, 20)
+        fb_cost_report.t_cost = substring(output_list.s, 83, 20)
+        fb_cost_report.ratio = substring(output_list.s, 103, 6)
+        fb_cost_report.m_qty = to_string(output_list.m_anz, ">>>>>")
+        fb_cost_report.m_sales = substring(output_list.s, 109, 20)
+        fb_cost_report.m_cost = substring(output_list.s, 129, 20)
+        fb_cost_report.m_qty2 = to_string(output_list.m_comanz, ">>>>>")
+        fb_cost_report.compliment2 = substring(output_list.s, 149, 20)
+        fb_cost_report.t_cost2 = substring(output_list.s, 169, 20)
+        fb_cost_report.ratio2 = substring(output_list.s, 189, 6)
+
+
+    return generate_output()

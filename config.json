@@ -1,0 +1,29 @@
+{
+    "TXT_WELCOME": "e1-VHP | Cloud.",
+    "use_db": "ec2_qc",
+    "database" : {
+      
+        "ec2_qc" : {
+            "DB_HOST": "psql.staging.e1-vhp.com",
+            "DB_NAME": "qctest",
+            "DB_USER": "postgres",
+            "DB_PASSWORD": "DevPostgreSQL#2024",
+            "DB_PORT": 5432
+        },
+        "localhost" : {
+            "DB_HOST": "localhost",
+            "DB_NAME": "qcserverless",
+            "DB_USER": "postgres",
+            "DB_PASSWORD": "bali2000",
+            "DB_PORT": 5432
+        },
+        "db_rds_dev": {
+            "DB_HOST" : "vhp-qctest.cjxtrsmbui3n.ap-southeast-1.rds.amazonaws.com",
+            "DB_NAME" : "vhpdb",
+            "DB_USER" : "postgres",
+            "DB_PASSWORD" : "bFdq8QsQoxH1vAvO",
+            "DB_PORT": 5432
+        }
+    }
+
+}

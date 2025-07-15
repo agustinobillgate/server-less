@@ -1,0 +1,48 @@
+#using conversion tools version: 1.0.0.117
+
+from functions.additional_functions import *
+from decimal import Decimal
+from models import Akthdr
+
+t_akthdr_data, T_akthdr = create_model_like(Akthdr)
+
+def write_akthdrbl(case_type:int, t_akthdr_data:[T_akthdr]):
+    success_flag = False
+    akthdr = None
+
+    t_akthdr = None
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal success_flag, akthdr
+        nonlocal case_type
+
+
+        nonlocal t_akthdr
+
+        return {"success_flag": success_flag}
+
+    t_akthdr = query(t_akthdr_data, first=True)
+
+    if not t_akthdr:
+
+        return generate_output()
+
+    if case_type == 1:
+        akthdr = Akthdr()
+        db_session.add(akthdr)
+
+        buffer_copy(t_akthdr, akthdr)
+        success_flag = True
+        pass
+    elif case_type == 2:
+
+        akthdr = get_cache (Akthdr, {"aktnr": [(eq, t_akthdr.aktnr)]})
+
+        if akthdr:
+            buffer_copy(t_akthdr, akthdr)
+            success_flag = True
+        pass
+
+    return generate_output()
