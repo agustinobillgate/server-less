@@ -29,7 +29,7 @@ def fa_depreciation_report1_webbl(payload_list_data:[Payload_list]):
 
     depreciation_asset = payload_list = output_list = None
 
-    depreciation_asset_data, Depreciation_asset = create_model("Depreciation_asset", {"coa":string, "order_date":date, "order_number":string, "desc1":string, "qty":string, "price":string, "amount":string, "depn_value":string, "book_value":string, "acc_depn":string, "date_rcv":date, "first_depn":date})
+    depreciation_asset_data, Depreciation_asset = create_model("Depreciation_asset", {"COA":string, "order_date":date, "order_number":string, "desc1":string, "qty":string, "price":string, "amount":string, "depn_value":string, "book_value":string, "acc_depn":string, "date_rcv":date, "first_depn":date})
     output_list_data, Output_list = create_model("Output_list", {"curr_nr":int})
 
     db_session = local_storage.db_session

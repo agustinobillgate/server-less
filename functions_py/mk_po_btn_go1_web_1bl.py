@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 17-July-25
+# change query
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -81,9 +84,18 @@ def mk_po_btn_go1_web_1bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
             return
         new_docu_nr = s + to_string(i, "999")
 
-    t_l_orderhdr = query(t_l_orderhdr_data, first=True)
+    # Rd, 17-July-25
+    # t_l_orderhdr = query(t_l_orderhdr_data, first=True)
+    # l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, t_l_orderhdr.rec_id)]})
+    t_l_orderhdr = db_session.query(L_orderhdr).first()
+    if not t_l_orderhdr:
+        return  # Nothing to do if t-l-orderhdr doesn't exist
 
-    l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, t_l_orderhdr.rec_id)]})
+    # Try to find corresponding l-orderhdr by rec_id
+    l_orderhdr = db_session.query(L_orderhdr).filter(L_orderhdr.id == t_l_orderhdr.rec_id).first()
+
+    if not l_orderhdr:
+        return
 
     if not l_orderhdr:
 

@@ -1,7 +1,4 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd, 17-July-25
-#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
