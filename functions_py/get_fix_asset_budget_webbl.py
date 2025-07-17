@@ -58,7 +58,7 @@ def get_fix_asset_budget_webbl(search_by_desc:string, retrieve_for:string):
                 fix_asset_list.safe_to_del_or_mod = True
 
             for fa_order in db_session.query(Fa_order).filter(
-                     (Fa_order.ActiveReason == to_string(queasy.number1))).order_by(Fa_order._recid).all():
+                     (Fa_order.activereason == to_string(queasy.number1))).order_by(Fa_order._recid).all():
 
                 fa_op = get_cache (Fa_op, {"loeschflag": [(le, 1)],"opart": [(eq, 1)],"anzahl": [(gt, 0)],"docu_nr": [(eq, fa_order.order_nr)]})
 
@@ -96,7 +96,7 @@ def get_fix_asset_budget_webbl(search_by_desc:string, retrieve_for:string):
                 fix_asset_list.safe_to_del_or_mod = True
 
             for fa_order in db_session.query(Fa_order).filter(
-                     (Fa_order.ActiveReason == to_string(queasy.number1))).order_by(Fa_order._recid).all():
+                     (Fa_order.activereason == to_string(queasy.number1))).order_by(Fa_order._recid).all():
 
                 fa_op = get_cache (Fa_op, {"loeschflag": [(le, 1)],"opart": [(eq, 1)],"anzahl": [(gt, 0)],"docu_nr": [(eq, fa_order.order_nr)]})
 
@@ -134,7 +134,7 @@ def get_fix_asset_budget_webbl(search_by_desc:string, retrieve_for:string):
                 fix_asset_list.safe_to_del_or_mod = True
 
             for fa_order in db_session.query(Fa_order).filter(
-                     (Fa_order.ActiveReason == to_string(queasy.number1))).order_by(Fa_order._recid).all():
+                     (Fa_order.activereason == to_string(queasy.number1))).order_by(Fa_order._recid).all():
 
                 fa_op = get_cache (Fa_op, {"loeschflag": [(le, 1)],"opart": [(eq, 1)],"anzahl": [(gt, 0)],"docu_nr": [(eq, fa_order.order_nr)]})
 
@@ -172,7 +172,7 @@ def get_fix_asset_budget_webbl(search_by_desc:string, retrieve_for:string):
                 fix_asset_list.safe_to_del_or_mod = True
 
             for fa_order in db_session.query(Fa_order).filter(
-                     (Fa_order.ActiveReason == to_string(queasy.number1))).order_by(Fa_order._recid).all():
+                     (Fa_order.activereason == to_string(queasy.number1))).order_by(Fa_order._recid).all():
 
                 fa_op = get_cache (Fa_op, {"loeschflag": [(le, 1)],"opart": [(eq, 1)],"anzahl": [(gt, 0)],"docu_nr": [(eq, fa_order.order_nr)]})
 

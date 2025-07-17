@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------
+# Rd, 17-July-25
+# replace jtype -> gl_jouhdr.jtype
+#---------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -279,12 +282,15 @@ def gcjour_list_2_webbl(case_type:int, from_refno:string, sorttype:int, journalt
         gl_jouhdr_list.jnr = gl_jouhdr.jnr
         gl_jouhdr_list.activeflag = gl_jouhdr.activeflag
 
+        # if gl_jouhdr.jtype == 0:
+        #     gl_jouhdr_list.jtype = jtype[5]
+        # else:
+        #     gl_jouhdr_list.jtype = jtype[gl_jouhdr.jtype - 1]
+        # Rd, 17-July-26, jtype -> gl_jouhdr.jtype
         if gl_jouhdr.jtype == 0:
-            gl_jouhdr_list.jtype = jtype[5]
-
-
+            gl_jouhdr_list.jtype = gl_jouhdr.jtype[5]
         else:
-            gl_jouhdr_list.jtype = jtype[gl_jouhdr.jtype - 1]
+            gl_jouhdr_list.jtype = gl_jouhdr.jtype[gl_jouhdr.jtype - 1]
 
     jtype[0] = "From F/O"
     jtype[1] = "From A/R"

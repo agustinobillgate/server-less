@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------
+# Rd, 17-July-25
+# replace TRUE -> True
+#---------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Mathis, Htparam, Fa_artikel
@@ -48,7 +51,7 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
 
                     if length(trim(mathis.asset)) == 9:
                         new_artnr = to_string(endkum, "99") + to_string(zwkum, "999") + to_string(to_int(substring(mathis.asset, 5)) + 1 , "9999")
-                        while TRUE:
+                        while True:
 
                             buff_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
@@ -56,7 +59,7 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
                                 new_artnr = to_string(endkum, "99") + to_string(zwkum, "999") + to_string(to_int(substring(buff_mathis.asset, 5)) + 1 , "9999")
                             else:
                                 new_artnr = to_string(endkum, "999") + to_string(zwkum, "999") + to_string(to_int(substring(new_artnr, 5)) , "999999")
-                                while TRUE:
+                                while True:
 
                                     b_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
@@ -72,7 +75,7 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
 
                         if length(trim(new_artnr)) != length(trim(mathis.asset)) or matches(new_artnr,r"*?*"):
                             new_artnr = to_string(endkum, "999") + to_string(zwkum, "999") + to_string(to_int(substring(mathis.asset, 6)) + 1 , "999999")
-                        while TRUE:
+                        while True:
 
                             buff_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
@@ -84,7 +87,7 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
                                     new_artnr = to_string(endkum, "999") + to_string(zwkum, "999") + to_string(to_int(substring(buff_mathis.asset, 6)) + 1 , "9999")
                             else:
                                 new_artnr = to_string(endkum, "999") + to_string(zwkum, "999") + to_string(to_int(substring(new_artnr, 6)) , "999999")
-                                while TRUE:
+                                while True:
 
                                     b_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
@@ -107,7 +110,7 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
 
                     if length(trim(mathis.asset)) == 9:
                         new_artnr = to_string(endkum, "99") + to_string(zwkum, "999") + to_string(to_int(substring(mathis.asset, 5)) + 1 , "9999")
-                        while TRUE:
+                        while True:
 
                             buff_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
@@ -120,7 +123,7 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
                         return generate_output()
                     else:
                         new_artnr = to_string(endkum, "999") + to_string(zwkum, "999") + to_string(to_int(substring(mathis.asset, 6)) + 1 , "9999")
-                        while TRUE:
+                        while True:
 
                             buff_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
@@ -142,7 +145,7 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
 
                 if length(trim(mathis.asset)) == 9:
                     new_artnr = to_string(endkum, "99") + to_string(zwkum, "999") + to_string(to_int(substring(mathis.asset, 5)) + 1 , "9999")
-                    while TRUE:
+                    while True:
 
                         buff_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
@@ -155,7 +158,7 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
                     return generate_output()
                 else:
                     new_artnr = to_string(endkum, "999") + to_string(zwkum, "999") + to_string(to_int(substring(mathis.asset, 6)) + 1 , "9999")
-                    while TRUE:
+                    while True:
 
                         buff_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
