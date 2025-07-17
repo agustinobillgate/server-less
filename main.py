@@ -367,6 +367,7 @@ update_field_mapping = {
     "engid": "EngId",
     "maintask": "Maintask",
     "copyrequest": "CopyRequest",
+    "copyrequest": "copyRequest",
     "lrate": "lRate",
 
     #updated 1.0.0.24
@@ -690,14 +691,15 @@ update_table_name("vhpSS","dynaratecodeUpdateCreateDynarateList","dynarateList",
 
 update_table_name("vhpAP","getAPListAddItemList","ttstock","ttStock")
 
-#update 1.0.0.42 (11-Juli-2025
+#update 1.0.0.42 (11-Juli-2025)
 update_table_name("vhpINV","chgInvArticlePrepare","ttguestbook","ttGuestBook")
 update_table_name("vhpINV","chgInvArticlePrepareCustom","ttguestbook","ttGuestBook")
 update_table_name("vhpFA","faValuatePrepare","lagerbuff","lagerBuff")
 
 update_table_name("vhpFA","faArtlist2Prepare","tPrepareCreatpo","tPrepareCreatPO")
 
-
+#update 1.0.0.43 (17-Juli-2025)
+update_table_name("vhpENG","egReprequestcancelOpenQuery1","copyrequest","copyRequest")
 
 
 
@@ -748,7 +750,8 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 def update_input_format(obj,input_data):
     # Update the input object if variable has "-"
-    # Update date data from string into data                                      
+    # Update date data from string into data              
+                            
     param_list = parameter_and_inner_types(obj)
     param_name_list = []
     lower_param_names = [param.lower() for param in list(input_data.keys())]
@@ -824,7 +827,7 @@ def update_input_format(obj,input_data):
                 else:
                     input_data[param_name] = None
                 
-
+        # print("Param:", param_name)
         input_value = input_data[param_name]
 
         if param_data_type == date:
@@ -1429,7 +1432,6 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                             try:
                                 print("Calling getAttr:", function_name)   
                                 obj = getattr(module, function_name)
-                                # print("UpdateInputFormat:", function_name)  
                                 update_input_format(obj,input_data)
                                 # print("Start Call:", function_name)  
                                 output_data =  obj(**input_data)

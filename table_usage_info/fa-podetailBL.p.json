@@ -1,0 +1,36 @@
+{
+    "Fa_order": {
+        "read": [
+            "last_id",
+            "order_nr",
+            "fa_nr",
+            "order_qty",
+            "activeflag",
+            "order_price",
+            "order_amount",
+            "activereason",
+            "delivered_qty",
+            "delivered_date",
+            "fa_pos",
+            "discount1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Mathis": {
+        "read": [
+            "nr",
+            "name",
+            "asset",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bediener": {
+        "read": [
+            "username",
+            "_recid"
+        ],
+        "write": []
+    }
+}

@@ -7,7 +7,10 @@ from models import Fa_order, Fa_ordheader, Queasy
 
 s_order_data, S_order = create_model_like(Fa_order, {"nr_budget":int})
 
-def fa_chgpo_save_detail_webbl(s_order_data:[S_order], order_nr:string, credit_term:int, curr:int, dept_nr:int, order_date:date, supplier_nr:int, expected_delivery:date, order_type:string, order_name:string, comments:string, user_init:string, billdate:date, appr_1:bool):
+def fa_chgpo_save_detail_webbl(s_order_data:[S_order], order_nr:string, credit_term:int, curr:int, dept_nr:int, 
+                               order_date:date, supplier_nr:int, expected_delivery:date, order_type:string, 
+                               order_name:string, comments:string, user_init:string, 
+                               billdate:date, appr_1:bool):
 
     prepare_cache ([Fa_ordheader])
 
