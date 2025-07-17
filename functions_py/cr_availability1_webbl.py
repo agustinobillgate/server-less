@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------
+# Rd, 17-July-25
+# replace variable fdate -> ffdate
+#---------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -119,10 +122,10 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         argt_zuordnung:string = ""
         Buff_ratelist = Rate_list
         buff_ratelist_data = rate_list_data
-        htparam.fdate = curr_date
+        ffdate = curr_date
         tdate = curr_date + timedelta(days=num_day)
 
-        if tdate > co_date:
+        if co_date is not None and tdate > co_date:
             tdate = co_date
 
         for room_avail_list in query(room_avail_list_data, sort_by=[("sort_prior",False)]):
@@ -134,7 +137,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
             room_list.i_counter = curr_i * 100
 
 
-            indgastnr, created_list_data, rate_list_data = get_output(available_ratesbl(htparam.fdate, tdate, room_avail_list.zikatnr, curr_i, adult_child_str, indgastnr, created_list_data))
+            indgastnr, created_list_data, rate_list_data = get_output(available_ratesbl(ffdate, tdate, room_avail_list.zikatnr, curr_i, adult_child_str, indgastnr, created_list_data))
 
             for rate_list in query(rate_list_data, sort_by=[("i_counter",False)]):
 
@@ -210,7 +213,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                     if argt_zuordnung != "":
                         room_list.argt_remark = room_list.argt_remark + argt_zuordnung + ";"
                     looprate = 0
-                    for datum in date_range(htparam.fdate,tdate) :
+                    for datum in date_range(ffdate,tdate) :
                         looprate = looprate + 1
                         room_list.datum[looprate - 1] = datum
                         room_list.prcode[looprate - 1] = rate_list.statCode[looprate - 1]
@@ -272,7 +275,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         tmp_extra.qty = qty
 
 
-    def calc_extra(fdate:date):
+    def calc_extra(ffdate:date):
 
         nonlocal room_list_data, sum_list_data, lvcarea, logid, logstr, cdstr, col_label, curr_day, datum, tot_room, i, ci_date, co_date, from_date, to_date, last_option, wlist, dlist, j, dd, mm, yyyy, num_day, htl_name, htl_adr, htl_tel, res_allot, week_list, rpt_title, occ_room, kontline, res_line, zimmer, paramtext, htparam, queasy, arrangement, zimkateg, artikel, fixleist, reslin_queasy, reservation, segment, outorder, resplan
         nonlocal pvilanguage, vhp_limited, op_type, printer_nr, call_from, adult_child_str, statsort, dispsort, curr_date, incl_tentative, mi_inactive, show_rate, indgastnr, qci_zinr
@@ -295,16 +298,16 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         argtnr:int = 0
         bargt = None
         Bargt =  create_buffer("Bargt",Arrangement)
-        tdate = htparam.fdate + timedelta(days=num_day)
+        tdate = ffdate + timedelta(days=num_day)
 
-        if tdate > co_date:
+        if co_date is not None and tdate > co_date:
             tdate = co_date
         tmp_resline_data.clear()
         tmp_extra_data.clear()
         temp_art_data.clear()
 
         for res_line in db_session.query(Res_line).filter(
-                 (not_ (Res_line.abreise < htparam.fdate)) & (not_ (Res_line.ankunft > tdate)) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resnr).all():
+                 (not_ (Res_line.abreise < ffdate)) & (not_ (Res_line.ankunft > tdate)) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resnr).all():
 
             tmp_resline = query(tmp_resline_data, filters=(lambda tmp_resline: tmp_resline.resnr == res_line.resnr and tmp_resline.reslinnr == res_line.reslinnr), first=True)
 
@@ -357,8 +360,8 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
                                     if fixleist.sequenz == 1 or fixleist.sequenz == 2 or fixleist.sequenz == 4 or fixleist.sequenz == 5:
 
-                                        if tmp_resline.ankunft < fdate:
-                                            bdate = htparam.fdate
+                                        if tmp_resline.ankunft < ffdate:
+                                            bdate = ffdate
                                         else:
                                             bdate = tmp_resline.ankunft
 
@@ -393,8 +396,8 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                                     elif fixleist.sequenz == 6:
                                         eposdate = (fixleist.lfakt + timedelta(days=fixleist.dekade))
 
-                                        if fixleist.lfakt < fdate:
-                                            bdate = htparam.fdate
+                                        if fixleist.lfakt < ffdate:
+                                            bdate = ffdate
                                         else:
                                             bdate = fixleist.lfakt
 
@@ -420,8 +423,8 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                             for reslin_queasy in db_session.query(Reslin_queasy).filter(
                                      (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.resnr == tmp_resline.resnr) & (Reslin_queasy.reslinnr == tmp_resline.reslinnr) & (Reslin_queasy.number1 == 0) & (Reslin_queasy.number3 == art_nr) & (Reslin_queasy.number2 == argtnr)).order_by(Reslin_queasy._recid).all():
 
-                                if reslin_queasy.date1 < fdate:
-                                    bdate = htparam.fdate
+                                if reslin_queasy.date1 < ffdate:
+                                    bdate = ffdate
                                 else:
                                     bdate = reslin_queasy.date1
 
@@ -433,7 +436,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                                 while bdate < edate :
                                     create_tmpextra(art_nr, "argt-line", "0", bdate, tmp_resline.zinr, 1)
                                     bdate = bdate + timedelta(days=1)
-        ndate = htparam.fdate
+        ndate = ffdate
 
         if not incl_tentative:
             sum_list = Sum_list()
@@ -455,14 +458,14 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                     sum_list_data.append(sum_list)
 
                     sum_list.bezeich = temp_art.art_nm
-                    ndate = htparam.fdate
+                    ndate = ffdate
                     for i in range(1,30 + 1) :
 
                         for tmp_extra in query(tmp_extra_data, filters=(lambda tmp_extra: tmp_extra.art == temp_art.art_nr and tmp_extra.cdate == ndate and tmp_extra.qty != 0)):
                             tot_used = tot_used + tmp_extra.qty
                         art_rem = art_qty - tot_used
                         sum_list.summe[i - 1] = art_rem
-                        ndate = htparam.fdate + timedelta(days=i)
+                        ndate = ffdate + timedelta(days=i)
                         tot_used = 0
         else:
             sum_list = Sum_list()
@@ -483,14 +486,14 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                     sum_list_data.append(sum_list)
 
                     sum_list.bezeich = temp_art.art_nm
-                    ndate = htparam.fdate
+                    ndate = ffdate
                     for i in range(1,30 + 1) :
 
                         for tmp_extra in query(tmp_extra_data, filters=(lambda tmp_extra: tmp_extra.art == temp_art.art_nr and tmp_extra.cdate == ndate and tmp_extra.qty != 0)):
                             tot_used = tot_used + tmp_extra.qty
                         art_rem = art_qty - tot_used
                         sum_list.summe[i - 1] = art_rem
-                        ndate = htparam.fdate + timedelta(days=i)
+                        ndate = ffdate + timedelta(days=i)
                         tot_used = 0
 
 
@@ -561,7 +564,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
 
         datum:date = None
-        fdate:date = None
+        ffdate:date = None
         tdate:date = None
         i:int = 0
         anz:int = 0
@@ -577,23 +580,23 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         count_rmcateg()
         room_avail_list_data.clear()
         sum_list_data.clear()
-        htparam.fdate = curr_date
+        ffdate = curr_date
         tdate = curr_date + timedelta(days=num_day)
 
-        if tdate > co_date:
+        if co_date is not None and tdate > co_date  :
             tdate = co_date
         for i in range(1,30 + 1) :
             res_allot[i - 1] = 0
 
         for kontline in db_session.query(Kontline).filter(
-                 (Kontline.betriebsnr == 0) & (Kontline.ankunft <= tdate) & (Kontline.abreise >= fdate) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+                 (Kontline.betriebsnr == 0) & (Kontline.ankunft <= tdate) & (Kontline.abreise >= ffdate) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
             t_kontline = T_kontline()
             t_kontline_data.append(t_kontline)
 
             buffer_copy(kontline, t_kontline)
 
         for res_line in db_session.query(Res_line).filter(
-                 (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (Res_line.active_flag <= 1) & (Res_line.kontignr > 0) & not_ (Res_line.ankunft > tdate) & not_ (Res_line.abreise <= fdate) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+                 (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (Res_line.active_flag <= 1) & (Res_line.kontignr > 0) & not_ (Res_line.ankunft > tdate) & not_ (Res_line.abreise <= ffdate) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
 
             if not vhp_limited:
                 do_it = True
@@ -822,7 +825,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                 from_date = curr_date
                 to_date = from_date + timedelta(days=num_day)
 
-                if to_date > co_date:
+                if co_date is not None and to_date > co_date:
                     to_date = co_date
                 i = 1
                 for datum in date_range(from_date,to_date) :
@@ -1099,7 +1102,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
             from_date = curr_date
             to_date = from_date + timedelta(days=num_day)
 
-            if to_date > co_date:
+            if co_date is not None and to_date > co_date:
                 to_date = co_date
             i = 1
             for datum in date_range(from_date,to_date) :
@@ -1252,7 +1255,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                 if zimmer.sleeping:
                     datum1 = curr_date + timedelta(days=num_day)
 
-                    if datum1 > co_date:
+                    if co_date is not None and datum1 > co_date:
                         datum1 = co_date
                     abreise1 = res_line.abreise - timedelta(days=1)
 
@@ -1263,7 +1266,9 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                         room_avail_list.room[i - 1] = room_avail_list.room[i - 1] + 1
                         tmp_list[i - 1] = tmp_list[i - 1] - 1
                         i = i + 1
-                    i = (res_line.abreise - curr_date + 1).days
+                    # i = (res_line.abreise - curr_date + 1).days
+                    # Rd 17-July-25
+                    i = (res_line.abreise - curr_date + timedelta(days=1)).days
 
                     if i >= 1 and i <= 30:
                         avail_list[i - 1] = avail_list[i - 1] + 1
@@ -1435,7 +1440,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         from_date = curr_date
         to_date = from_date + timedelta(days=num_day)
 
-        if to_date > co_date:
+        if co_date is not None and to_date > co_date:
             to_date = co_date
         i = 1
         for datum in date_range(from_date,to_date) :
@@ -1462,7 +1467,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
         for room_avail_list in query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.bezeich != "")):
             for i in range(1,30 + 1) :
-                coom[i - 1] = to_string(room[i - 1], "->>>,>>>,>>9")
+                room_avail_list.coom[i - 1] = to_string(room_avail_list.room[i - 1], "->>>,>>>,>>9")
         datum = curr_date
         sum_list = Sum_list()
         sum_list_data.append(sum_list)
@@ -1561,7 +1566,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
-
+    print("NumDay:", num_day)
     if num_entries(adult_child_str, ",") > 2:
         mm = to_int(substring(entry(2, adult_child_str, ",") , 0, 2))
         dd = to_int(substring(entry(2, adult_child_str, ",") , 2, 2))
@@ -1570,7 +1575,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
         if (curr_date + 29) > co_date:
             num_day = (co_date - curr_date).days
-
+    print("NumDay:", num_day)
     if qci_zinr != "":
 
         qci_zimmer = get_cache (Zimmer, {"zinr": [(eq, qci_zinr)]})
