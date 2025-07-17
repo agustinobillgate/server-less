@@ -367,6 +367,7 @@ update_field_mapping = {
     "engid": "EngId",
     "maintask": "Maintask",
     "copyrequest": "CopyRequest",
+    "copyrequest": "copyRequest",
     "lrate": "lRate",
 
     #updated 1.0.0.24
@@ -690,14 +691,15 @@ update_table_name("vhpSS","dynaratecodeUpdateCreateDynarateList","dynarateList",
 
 update_table_name("vhpAP","getAPListAddItemList","ttstock","ttStock")
 
-#update 1.0.0.42 (11-Juli-2025
+#update 1.0.0.42 (11-Juli-2025)
 update_table_name("vhpINV","chgInvArticlePrepare","ttguestbook","ttGuestBook")
 update_table_name("vhpINV","chgInvArticlePrepareCustom","ttguestbook","ttGuestBook")
 update_table_name("vhpFA","faValuatePrepare","lagerbuff","lagerBuff")
 
 update_table_name("vhpFA","faArtlist2Prepare","tPrepareCreatpo","tPrepareCreatPO")
 
-
+#update 1.0.0.43 (17-Juli-2025)
+update_table_name("vhpENG","egReprequestcancelOpenQuery1","copyrequest","copyRequest")
 
 
 

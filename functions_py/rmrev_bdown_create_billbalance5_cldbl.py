@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+#-----------------------------------------
+# Rd, 18-July-2025,
+# Koreksi, datetime
+#-----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -1315,7 +1320,9 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
             elif argtline.fakt_modus == 6:
 
-                if (res_line.ankunft + (argtline.intervall - 1)) >= genstat.datum:
+                # if (res_line.ankunft + (argtline.intervall - 1)) >= genstat.datum:
+                # Rd, 18-July-25
+                if res_line.ankunft + timedelta(days=(argtline.intervall - 1)) >= genstat.datum:
                     add_it = True
 
         if add_it:
