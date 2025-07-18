@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 18/7/25
+# ooo tidak masuk
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -71,6 +75,8 @@ def hk_statadmin_activate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om_l
             flag = 2
             break
         else:
+            # Rd 18/7/25
+            # blm bisa add
             outorder = Outorder()
             db_session.add(outorder)
 
