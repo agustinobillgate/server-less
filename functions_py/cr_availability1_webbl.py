@@ -2,6 +2,7 @@
 #---------------------------------------------
 # Rd, 17-July-25
 # replace variable fdate -> ffdate
+# #859, overbook -> overbooking
 #---------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -657,7 +658,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                         room_avail_list.i_typ = zimkateg.typ
                         room_avail_list.zikatnr = zimkateg.zikatnr
                         room_avail_list.bezeich = zimkateg.kurzbez +\
-                                " - " + to_string(zimkateg.overbook, ">>9")
+                                " - " + to_string(zimkateg.overbooking, ">>9")
 
                 zimkateg_obj_list = {}
                 for zimkateg in db_session.query(Zimkateg).filter(
@@ -679,7 +680,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                     room_avail_list.i_typ = zimkateg.typ
                     room_avail_list.zikatnr = zimkateg.zikatnr
                     room_avail_list.bezeich = zimkateg.kurzbez +\
-                            " - " + to_string(zimkateg.overbook, ">>9")
+                            " - " + to_string(zimkateg.overbooking, ">>9")
 
 
                     datum = curr_date
@@ -938,7 +939,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                     room_avail_list.i_typ = zimkateg.typ
                     room_avail_list.zikatnr = zimkateg.zikatnr
                     room_avail_list.bezeich = zimkateg.kurzbez +\
-                            " - " + to_string(zimkateg.overbook, ">>9")
+                            " - " + to_string(zimkateg.overbooking, ">>9")
 
             zimkateg_obj_list = {}
             for zimkateg in db_session.query(Zimkateg).filter(
@@ -960,7 +961,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                 room_avail_list.i_typ = zimkateg.typ
                 room_avail_list.zikatnr = zimkateg.zikatnr
                 room_avail_list.bezeich = zimkateg.kurzbez +\
-                        " - " + to_string(zimkateg.overbook, ">>9")
+                        " - " + to_string(zimkateg.overbooking, ">>9")
 
 
                 datum = curr_date
