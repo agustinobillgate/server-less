@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 18/7/25
+# #864
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -1430,7 +1434,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         for cl_list in query(cl_list_data):
             t_cl_list = T_cl_list()
             t_cl_list_data.append(t_cl_list)
-
+            print("CL:", cl_list)
             buffer_copy(cl_list, t_cl_list)
 
             if num_entries(cl_list.company, ";") > 1:

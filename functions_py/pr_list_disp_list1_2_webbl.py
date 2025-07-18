@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 18/7/25
+# _recid -> s_recid
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -298,8 +302,10 @@ def pr_list_disp_list1_2_webbl(char1:string, billdate:date, from_date:date, to_d
 
                 if l_order:
                     s_list.loeschflag = l_order.loeschflag
-
-                sbuff = query(sbuff_data, filters=(lambda sbuff: sbuff._recid == s_list._recid), first=True)
+                
+                # Rd 18/7/25
+                # _recid -> s_recid
+                sbuff = query(sbuff_data, filters=(lambda sbuff: sbuff.s_recid == s_list.s_recid), first=True)
 
                 l_order = get_cache (L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)],"pos": [(gt, 0)],"lief_nr": [(eq, 0)],"artnr": [(eq, artnumber)]})
                 while None != l_order:
