@@ -1,10 +1,16 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 17-July-25
+# add strip()
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_lieferant, Fa_ordheader, Fa_op, Mathis, Fa_artikel, Fa_order
-
+"""
+09/24/2024
+"""
 payload_list_data, Payload_list = create_model("Payload_list", {"from_date":date, "to_date":date, "billdate":date, "stat_order":int, "lnumber":int, "all_supp":bool, "po_number":string})
 cost_list_data, Cost_list = create_model("Cost_list", {"nr":int, "bezeich":string, "sorting":string})
 w_list_data, W_list = create_model("W_list", {"nr":int, "wabkurz":string})
@@ -13,7 +19,7 @@ username_data, Username = create_model("Username", {"order_nr":string, "create_b
 def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cost_list], w_list_data:[W_list], username_data:[Username]):
 
     prepare_cache ([L_lieferant, Fa_ordheader, Fa_op, Mathis, Fa_artikel, Fa_order])
-
+ 
     temp_data = []
     temp_detail_data = []
     min_statorder:int = 0
@@ -25,8 +31,12 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
 
     cost_list = w_list = username = temp = temp_detail = payload_list = None
 
-    temp_data, Temp = create_model("Temp", {"sorting":string, "order_date":date, "order_nr":string, "order_type":string, "bezeich":string, "firma":string, "wabkurz":string, "released_date":date, "create_by":string, "created_date":date, "printed":date, "expected_delivery":date, "modify_by":string, "modified_date":date, "close_by":string, "close_date":date, "close_time":string, "last_arrival":date, "released_flag":bool, "supplier_nr":int, "activeflag":int, "order_desc":string, "order_name":string, "total_amount":Decimal, "devnote_no":string, "arive_amount":Decimal, "order_amount":Decimal})
-    temp_detail_data, Temp_detail = create_model("Temp_detail", {"coa":string, "desc1":string, "qty":int, "price":Decimal, "amount":Decimal, "order_number":string})
+    temp_data, Temp = create_model("Temp", {"sorting":string, "Order_Date":date, "Order_Nr":string, "Order_Type":string, "bezeich":string, "firma":string, "wabkurz":string, 
+                                            "Released_Date":date, "create_by":string, "Created_Date":date, "printed":date, "Expected_Delivery":date, 
+                                            "modify_by":string, "modified_date":date, "close_by":string, "close_date":date, "close_time":string, "last_arrival":date, 
+                                            "Released_Flag":bool, "Supplier_Nr":int, "activeflag":int, "Order_Desc":string, 
+                                            "Order_Name":string, "total_amount":Decimal, "devnote_no":string, "arive_amount":Decimal, "order_amount":Decimal})
+    temp_detail_data, Temp_detail = create_model("Temp_detail", {"COA":string, "desc1":string, "qty":int, "price":Decimal, "amount":Decimal, "order_number":string})
 
     db_session = local_storage.db_session
 
@@ -46,7 +56,8 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
 
         fa_ordheader_obj_list = {}
         for fa_ordheader, l_lieferant in db_session.query(Fa_ordheader, L_lieferant).join(L_lieferant,(L_lieferant.lief_nr == Fa_ordheader.supplier_nr)).filter(
-                 (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == 0) & (Fa_ordheader.Expected_Delivery >= payload_list.billdate)).order_by(Fa_ordheader._recid).all():
+                 (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == 0) & (Fa_ordheader.expected_delivery >= payload_list.billdate)).order_by(Fa_ordheader._recid).all():
+            
             w_list = query(w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)
             if not w_list:
                 continue
@@ -56,6 +67,7 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                 continue
 
             username = query(username_data, (lambda username: username.order_nr == fa_ordheader.order_nr), first=True)
+
             if not username:
                 continue
 
@@ -68,36 +80,40 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
             tot_qty = 0
             tot_price =  to_decimal("0")
             tot_amount =  to_decimal("0")
-
-            if (payload_list.po_number == "" or fa_ordheader.order_nr == payload_list.po_number):
+            print("Masuk create:", payload_list.po_number, ",", fa_ordheader.order_nr)
+            # Rd, 17-July-25,
+            # add strip()
+            # if (payload_list.po_number ==  " " or fa_ordheader.order_nr == payload_list.po_number):
+            if ((payload_list.po_number.strip()) ==  "" or fa_ordheader.order_nr == payload_list.po_number):
+                print("Masuk creating")
                 temp = Temp()
                 temp_data.append(temp)
 
                 temp.sorting = cost_list.sorting
-                temp.order_date = fa_ordheader.Order_Date
-                temp.order_nr = fa_ordheader.Order_Nr
-                temp.order_type = fa_ordheader.Order_Type
+                temp.order_date = fa_ordheader.order_date
+                temp.order_nr = fa_ordheader.order_nr
+                temp.order_type = fa_ordheader.order_type
                 temp.bezeich = cost_list.bezeich
                 temp.firma = l_lieferant.firma
                 temp.wabkurz = w_list.wabkurz
-                temp.released_date = fa_ordheader.Released_Date
+                temp.released_date = fa_ordheader.released_date
                 temp.create_by = username.create_by
-                temp.created_date = fa_ordheader.Created_Date
+                temp.created_date = fa_ordheader.created_date
                 temp.printed = fa_ordheader.printed
-                temp.expected_delivery = fa_ordheader.Expected_Delivery
+                temp.expected_delivery = fa_ordheader.expected_delivery
                 temp.modify_by = username.modify_by
                 temp.modified_date = fa_ordheader.modified_date
                 temp.close_by = username.close_by
                 temp.close_date = username.close_date
                 temp.close_time = username.close_time
                 temp.last_arrival = username.last_arrival
-                temp.released_flag = fa_ordheader.Released_Flag
-                temp.supplier_nr = fa_ordheader.Supplier_Nr
-                temp.activeflag = fa_ordheader.ActiveFlag
-                temp.order_desc = fa_ordheader.Order_Desc
-                temp.order_name = fa_ordheader.Order_Name
+                temp.released_flag = fa_ordheader.released_flag
+                temp.supplier_nr = fa_ordheader.supplier_nr
+                temp.activeflag = fa_ordheader.activeflag
+                temp.order_desc = fa_ordheader.order_desc
+                temp.order_name = fa_ordheader.order_name
                 temp.total_amount =  to_decimal(username.total_amount)
-
+                
                 fa_op = get_cache (Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
 
                 if fa_op:
@@ -143,7 +159,7 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
 
         fa_ordheader_obj_list = {}
         for fa_ordheader, l_lieferant in db_session.query(Fa_ordheader, L_lieferant).join(L_lieferant,(L_lieferant.lief_nr == Fa_ordheader.supplier_nr)).filter(
-                 (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == 0) & (Fa_ordheader.supplier_nr == payload_list.lnumber) & (Fa_ordheader.Expected_Delivery >= payload_list.billdate)).order_by(Fa_ordheader._recid).all():
+                 (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == 0) & (Fa_ordheader.supplier_nr == payload_list.lnumber) & (Fa_ordheader.expected_delivery >= payload_list.billdate)).order_by(Fa_ordheader._recid).all():
             w_list = query(w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)
             if not w_list:
                 continue
@@ -166,28 +182,28 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                 temp_data.append(temp)
 
                 temp.sorting = cost_list.sorting
-                temp.order_date = fa_ordheader.Order_Date
-                temp.order_nr = fa_ordheader.Order_Nr
-                temp.order_type = fa_ordheader.Order_Type
+                temp.order_date = fa_ordheader.order_date
+                temp.order_nr = fa_ordheader.order_nr
+                temp.order_type = fa_ordheader.order_type
                 temp.bezeich = cost_list.bezeich
                 temp.firma = l_lieferant.firma
                 temp.wabkurz = w_list.wabkurz
-                temp.released_date = fa_ordheader.Released_Date
+                temp.released_date = fa_ordheader.released_date
                 temp.create_by = username.create_by
-                temp.created_date = fa_ordheader.Created_Date
+                temp.created_date = fa_ordheader.created_date
                 temp.printed = fa_ordheader.printed
-                temp.expected_delivery = fa_ordheader.Expected_Delivery
+                temp.expected_delivery = fa_ordheader.expected_delivery
                 temp.modify_by = username.modify_by
                 temp.modified_date = fa_ordheader.modified_date
                 temp.close_by = username.close_by
                 temp.close_date = username.close_date
                 temp.close_time = username.close_time
                 temp.last_arrival = username.last_arrival
-                temp.released_flag = fa_ordheader.Released_Flag
-                temp.supplier_nr = fa_ordheader.Supplier_Nr
-                temp.activeflag = fa_ordheader.ActiveFlag
-                temp.order_desc = fa_ordheader.Order_Desc
-                temp.order_name = fa_ordheader.Order_Name
+                temp.released_flag = fa_ordheader.released_flag
+                temp.supplier_nr = fa_ordheader.supplier_nr
+                temp.activeflag = fa_ordheader.activeflag
+                temp.order_desc = fa_ordheader.order_desc
+                temp.order_name = fa_ordheader.order_name
                 temp.total_amount =  to_decimal(username.total_amount)
 
                 fa_op = get_cache (Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
@@ -236,7 +252,7 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
 
         fa_ordheader_obj_list = {}
         for fa_ordheader, l_lieferant in db_session.query(Fa_ordheader, L_lieferant).join(L_lieferant,(L_lieferant.lief_nr == Fa_ordheader.supplier_nr)).filter(
-                 (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == 0) & (Fa_ordheader.Expected_Delivery < payload_list.billdate)).order_by(Fa_ordheader._recid).all():
+                 (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == 0) & (Fa_ordheader.expected_delivery < payload_list.billdate)).order_by(Fa_ordheader._recid).all():
             w_list = query(w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)
             if not w_list:
                 continue
@@ -259,28 +275,28 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                 temp_data.append(temp)
 
                 temp.sorting = cost_list.sorting
-                temp.order_date = fa_ordheader.Order_Date
-                temp.order_nr = fa_ordheader.Order_Nr
-                temp.order_type = fa_ordheader.Order_Type
+                temp.order_date = fa_ordheader.order_date
+                temp.order_nr = fa_ordheader.order_nr
+                temp.order_type = fa_ordheader.order_type
                 temp.bezeich = cost_list.bezeich
                 temp.firma = l_lieferant.firma
                 temp.wabkurz = w_list.wabkurz
-                temp.released_date = fa_ordheader.Released_Date
+                temp.released_date = fa_ordheader.released_date
                 temp.create_by = username.create_by
-                temp.created_date = fa_ordheader.Created_Date
+                temp.created_date = fa_ordheader.created_date
                 temp.printed = fa_ordheader.printed
-                temp.expected_delivery = fa_ordheader.Expected_Delivery
+                temp.expected_delivery = fa_ordheader.expected_delivery
                 temp.modify_by = username.modify_by
                 temp.modified_date = fa_ordheader.modified_date
                 temp.close_by = username.close_by
                 temp.close_date = username.close_date
                 temp.close_time = username.close_time
                 temp.last_arrival = username.last_arrival
-                temp.released_flag = fa_ordheader.Released_Flag
-                temp.supplier_nr = fa_ordheader.Supplier_Nr
-                temp.activeflag = fa_ordheader.ActiveFlag
-                temp.order_desc = fa_ordheader.Order_Desc
-                temp.order_name = fa_ordheader.Order_Name
+                temp.released_flag = fa_ordheader.released_flag
+                temp.supplier_nr = fa_ordheader.supplier_nr
+                temp.activeflag = fa_ordheader.activeflag
+                temp.order_desc = fa_ordheader.order_desc
+                temp.order_name = fa_ordheader.order_name
                 temp.total_amount =  to_decimal(username.total_amount)
 
                 fa_op = get_cache (Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
@@ -329,7 +345,7 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
 
         fa_ordheader_obj_list = {}
         for fa_ordheader, l_lieferant in db_session.query(Fa_ordheader, L_lieferant).join(L_lieferant,(L_lieferant.lief_nr == Fa_ordheader.supplier_nr)).filter(
-                 (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == 0) & (Fa_ordheader.supplier_nr == payload_list.lnumber) & (Fa_ordheader.Expected_Delivery < payload_list.billdate)).order_by(Fa_ordheader._recid).all():
+                 (Fa_ordheader.order_date >= payload_list.from_date) & (Fa_ordheader.order_date <= payload_list.to_date) & (Fa_ordheader.activeflag == 0) & (Fa_ordheader.supplier_nr == payload_list.lnumber) & (Fa_ordheader.expected_delivery < payload_list.billdate)).order_by(Fa_ordheader._recid).all():
             w_list = query(w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)
             if not w_list:
                 continue
@@ -352,28 +368,28 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                 temp_data.append(temp)
 
                 temp.sorting = cost_list.sorting
-                temp.order_date = fa_ordheader.Order_Date
-                temp.order_nr = fa_ordheader.Order_Nr
-                temp.order_type = fa_ordheader.Order_Type
+                temp.order_date = fa_ordheader.order_date
+                temp.order_nr = fa_ordheader.order_nr
+                temp.order_type = fa_ordheader.order_type
                 temp.bezeich = cost_list.bezeich
                 temp.firma = l_lieferant.firma
                 temp.wabkurz = w_list.wabkurz
-                temp.released_date = fa_ordheader.Released_Date
+                temp.released_date = fa_ordheader.released_date
                 temp.create_by = username.create_by
-                temp.created_date = fa_ordheader.Created_Date
+                temp.created_date = fa_ordheader.created_date
                 temp.printed = fa_ordheader.printed
-                temp.expected_delivery = fa_ordheader.Expected_Delivery
+                temp.expected_delivery = fa_ordheader.expected_delivery
                 temp.modify_by = username.modify_by
                 temp.modified_date = fa_ordheader.modified_date
                 temp.close_by = username.close_by
                 temp.close_date = username.close_date
                 temp.close_time = username.close_time
                 temp.last_arrival = username.last_arrival
-                temp.released_flag = fa_ordheader.Released_Flag
-                temp.supplier_nr = fa_ordheader.Supplier_Nr
-                temp.activeflag = fa_ordheader.ActiveFlag
-                temp.order_desc = fa_ordheader.Order_Desc
-                temp.order_name = fa_ordheader.Order_Name
+                temp.released_flag = fa_ordheader.released_flag
+                temp.supplier_nr = fa_ordheader.supplier_nr
+                temp.activeflag = fa_ordheader.activeflag
+                temp.order_desc = fa_ordheader.order_desc
+                temp.order_name = fa_ordheader.order_name
                 temp.total_amount =  to_decimal(username.total_amount)
 
                 fa_op = get_cache (Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
@@ -452,28 +468,28 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                     temp_data.append(temp)
 
                     temp.sorting = cost_list.sorting
-                    temp.order_date = fa_ordheader.Order_Date
-                    temp.order_nr = fa_ordheader.Order_Nr
-                    temp.order_type = fa_ordheader.Order_Type
+                    temp.order_date = fa_ordheader.order_date
+                    temp.order_nr = fa_ordheader.order_nr
+                    temp.order_type = fa_ordheader.order_type
                     temp.bezeich = cost_list.bezeich
                     temp.firma = l_lieferant.firma
                     temp.wabkurz = w_list.wabkurz
-                    temp.released_date = fa_ordheader.Released_Date
+                    temp.released_date = fa_ordheader.released_date
                     temp.create_by = username.create_by
-                    temp.created_date = fa_ordheader.Created_Date
+                    temp.created_date = fa_ordheader.created_date
                     temp.printed = fa_ordheader.printed
-                    temp.expected_delivery = fa_ordheader.Expected_Delivery
+                    temp.expected_delivery = fa_ordheader.expected_delivery
                     temp.modify_by = username.modify_by
                     temp.modified_date = fa_ordheader.modified_date
                     temp.close_by = username.close_by
                     temp.close_date = username.close_date
                     temp.close_time = username.close_time
                     temp.last_arrival = username.last_arrival
-                    temp.released_flag = fa_ordheader.Released_Flag
-                    temp.supplier_nr = fa_ordheader.Supplier_Nr
-                    temp.activeflag = fa_ordheader.ActiveFlag
-                    temp.order_desc = fa_ordheader.Order_Desc
-                    temp.order_name = fa_ordheader.Order_Name
+                    temp.released_flag = fa_ordheader.released_flag
+                    temp.supplier_nr = fa_ordheader.supplier_nr
+                    temp.activeflag = fa_ordheader.activeflag
+                    temp.order_desc = fa_ordheader.order_desc
+                    temp.order_name = fa_ordheader.order_name
                     temp.total_amount =  to_decimal(username.total_amount)
 
                     fa_op = get_cache (Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})
@@ -544,28 +560,28 @@ def fa_polist_btn_go_webbl(payload_list_data:[Payload_list], cost_list_data:[Cos
                     temp_data.append(temp)
 
                     temp.sorting = cost_list.sorting
-                    temp.order_date = fa_ordheader.Order_Date
-                    temp.order_nr = fa_ordheader.Order_Nr
-                    temp.order_type = fa_ordheader.Order_Type
+                    temp.order_date = fa_ordheader.order_date
+                    temp.order_nr = fa_ordheader.order_nr
+                    temp.order_type = fa_ordheader.order_type
                     temp.bezeich = cost_list.bezeich
                     temp.firma = l_lieferant.firma
                     temp.wabkurz = w_list.wabkurz
-                    temp.released_date = fa_ordheader.Released_Date
+                    temp.released_date = fa_ordheader.released_date
                     temp.create_by = username.create_by
-                    temp.created_date = fa_ordheader.Created_Date
+                    temp.created_date = fa_ordheader.created_date
                     temp.printed = fa_ordheader.printed
-                    temp.expected_delivery = fa_ordheader.Expected_Delivery
+                    temp.expected_delivery = fa_ordheader.expected_delivery
                     temp.modify_by = username.modify_by
                     temp.modified_date = fa_ordheader.modified_date
                     temp.close_by = username.close_by
                     temp.close_date = username.close_date
                     temp.close_time = username.close_time
                     temp.last_arrival = username.last_arrival
-                    temp.released_flag = fa_ordheader.Released_Flag
-                    temp.supplier_nr = fa_ordheader.Supplier_Nr
-                    temp.activeflag = fa_ordheader.ActiveFlag
-                    temp.order_desc = fa_ordheader.Order_Desc
-                    temp.order_name = fa_ordheader.Order_Name
+                    temp.released_flag = fa_ordheader.released_flag
+                    temp.supplier_nr = fa_ordheader.supplier_nr
+                    temp.activeflag = fa_ordheader.activeflag
+                    temp.order_desc = fa_ordheader.order_desc
+                    temp.order_name = fa_ordheader.order_name
                     temp.total_amount =  to_decimal(username.total_amount)
 
                     fa_op = get_cache (Fa_op, {"docu_nr": [(eq, fa_ordheader.order_nr)]})

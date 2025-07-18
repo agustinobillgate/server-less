@@ -47,22 +47,39 @@ def gl_jouref_webbl(idflag:string, sorttype:int, from_date:date, to_date:date, f
     pass
     output_list_data = get_output(gl_jourefbl(sorttype, from_date, to_date, from_refno))
 
-    output_list = query(output_list_data, first=True)
-    while None != output_list:
-        counter = counter + 1
+    # output_list = query(output_list_data, first=True)
+    # while None != output_list:
+    #     counter = counter + 1
 
 
-        queasy = Queasy()
-        db_session.add(queasy)
+    #     queasy = Queasy()
+    #     db_session.add(queasy)
 
-        queasy.key = 280
-        queasy.char1 = "Journalist by voucher"
-        queasy.char3 = idflag
-        queasy.char2 = output_list.str + "|" +\
-                output_list.refno
-        queasy.number1 = counter
+    #     queasy.key = 280
+    #     queasy.char1 = "Journalist by voucher"
+    #     queasy.char3 = idflag
+    #     queasy.char2 = output_list.str + "|" +\
+    #             output_list.refno
+    #     queasy.number1 = counter
 
-        output_list = query(output_list_data, next=True)
+    #     output_list = query(output_list_data, next=True)
+    counter = 0
+    queasy_list = []
+
+    if output_list:  # this will skip the loop if output_list is None or empty
+        for output in output_list:
+            counter += 1
+
+            queasy = {
+                "KEY": 280,
+                "char1": "Journalist by voucher",
+                "char3": idflag,
+                "char2": f"{output.str}|{output.refno}",
+                "number1": counter
+            }
+
+            queasy_list.append(queasy)
+
 
     bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "journalist by voucher")],"char2": [(eq, idflag)]})
 

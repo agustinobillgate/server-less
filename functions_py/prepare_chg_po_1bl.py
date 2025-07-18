@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 17-July-25
+# re download gitlab, 
+# update if not available return
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -169,6 +173,9 @@ def prepare_chg_po_1bl(pvilanguage:int, docu_nr:string, lief_nr:int):
     local_nr = waehrung.waehrungsnr
 
     l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, lief_nr)]})
+    # Rd, 17-July-25
+    if l_lieferant is None:
+        return generate_output()
 
     l_orderhdr = get_cache (L_orderhdr, {"docu_nr": [(eq, docu_nr)]})
 
@@ -193,6 +200,10 @@ def prepare_chg_po_1bl(pvilanguage:int, docu_nr:string, lief_nr:int):
         prev_flag = release_flag
 
         l_order = get_cache (L_order, {"docu_nr": [(eq, docu_nr)],"lief_nr": [(eq, lief_nr)],"pos": [(eq, 0)]})
+        # Rd, 17-July-25
+        if l_order is None:
+            return generate_output()
+        
         pr = l_order.lief_fax[0]
         crterm = l_orderhdr.angebot_lief[1]
         lieferdatum = l_orderhdr.lieferdatum
