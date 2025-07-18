@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 18/7/25
+# 
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -144,7 +148,13 @@ def bk_stats_sob_segment_webbl(input_payload_data:[Input_payload]):
 
         for bk_statistic_list in query(bk_statistic_list_data):
             bk_statistic_list.proz1 =  to_decimal(100.0) * to_decimal((bk_statistic_list.dgroom) / to_decimal(tot_dgroom) )
-            bk_statistic_list.proz2 =  to_decimal(100.0) * to_decimal((bk_statistic_list.mgroom) / to_decimal(tot_mgroom) )
+            # bk_statistic_list.proz2 =  to_decimal(100.0) * to_decimal((bk_statistic_list.mgroom) / to_decimal(tot_mgroom) )
+            bk_statistic_list.proz2 = (
+                to_decimal(100.0) * (to_decimal(bk_statistic_list.mgroom) / to_decimal(tot_mgroom))
+                if to_decimal(tot_mgroom) != 0
+                else to_decimal(0)
+            )
+
             bk_statistic_list.proz3 =  to_decimal(100.0) * to_decimal((bk_statistic_list.ygroom) / to_decimal(tot_ygroom) )
 
 
