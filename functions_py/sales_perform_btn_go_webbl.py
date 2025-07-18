@@ -1,4 +1,7 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 18/7/25
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -344,11 +347,35 @@ def sales_perform_btn_go_webbl(from_date:string, to_date:string, usr_init:string
                     sbuff.ytd_otbudget =  to_decimal(usr_tot_ytd_bud_ot)
                     sbuff.ytd_fbbudget =  to_decimal(usr_tot_ytd_bud_fnb)
 
+                    # Rd 18/7/25
+                    # sbuff.ytd_lproz =  to_decimal(sbuff.ytd_lodg) / to_decimal(sbuff.ytd_lbudget) * to_decimal("100")
+                    # sbuff.ytd_rmproz =  to_decimal(sbuff.ytd_rmnight) / to_decimal(sbuff.ytd_rbudget) * to_decimal("100")
+                    # sbuff.ytd_otproz =  to_decimal(sbuff.ytd_otrev) / to_decimal(sbuff.ytd_otbudget) * to_decimal("100")
+                    # sbuff.ytd_fbproz =  to_decimal(sbuff.ytd_fbrev) / to_decimal(sbuff.ytd_fbbudget) * to_decimal("100")
+                    sbuff.ytd_lproz = (
+                        to_decimal(sbuff.ytd_lodg) / to_decimal(sbuff.ytd_lbudget) * to_decimal("100")
+                        if to_decimal(sbuff.ytd_lbudget) != 0
+                        else to_decimal("0")
+                    )
 
-                    sbuff.ytd_lproz =  to_decimal(sbuff.ytd_lodg) / to_decimal(sbuff.ytd_lbudget) * to_decimal("100")
-                    sbuff.ytd_rmproz =  to_decimal(sbuff.ytd_rmnight) / to_decimal(sbuff.ytd_rbudget) * to_decimal("100")
-                    sbuff.ytd_otproz =  to_decimal(sbuff.ytd_otrev) / to_decimal(sbuff.ytd_otbudget) * to_decimal("100")
-                    sbuff.ytd_fbproz =  to_decimal(sbuff.ytd_fbrev) / to_decimal(sbuff.ytd_fbbudget) * to_decimal("100")
+                    sbuff.ytd_rmproz = (
+                        to_decimal(sbuff.ytd_rmnight) / to_decimal(sbuff.ytd_rbudget) * to_decimal("100")
+                        if to_decimal(sbuff.ytd_rbudget) != 0
+                        else to_decimal("0")
+                    )
+
+                    sbuff.ytd_otproz = (
+                        to_decimal(sbuff.ytd_otrev) / to_decimal(sbuff.ytd_otbudget) * to_decimal("100")
+                        if to_decimal(sbuff.ytd_otbudget) != 0
+                        else to_decimal("0")
+                    )
+
+                    sbuff.ytd_fbproz = (
+                        to_decimal(sbuff.ytd_fbrev) / to_decimal(sbuff.ytd_fbbudget) * to_decimal("100")
+                        if to_decimal(sbuff.ytd_fbbudget) != 0
+                        else to_decimal("0")
+                    )
+
 
                     if sbuff.ytd_lproz == None:
                         sbuff.ytd_lproz =  to_decimal(0.00)
@@ -383,10 +410,32 @@ def sales_perform_btn_go_webbl(from_date:string, to_date:string, usr_init:string
 
                 user_tmp = slist.userinit
                 year_tmp = slist.yr
-            slist.lproz =  to_decimal(slist.lodg) / to_decimal(slist.lbudget) * to_decimal("100")
-            slist.rmproz =  to_decimal(slist.rmnight) / to_decimal(slist.rbudget) * to_decimal("100")
-            slist.otproz =  to_decimal(slist.otrev) / to_decimal(slist.otbudget) * to_decimal("100")
-            slist.fbproz =  to_decimal(slist.fbrev) / to_decimal(slist.fbbudget) * to_decimal("100")
+            
+            # Rd 18/7/25
+            # slist.lproz =  to_decimal(slist.lodg) / to_decimal(slist.lbudget) * to_decimal("100")
+            slist.lproz = (
+                to_decimal(slist.lodg) / to_decimal(slist.lbudget) * to_decimal("100")
+                if to_decimal(slist.lbudget) != 0
+                else to_decimal("0")
+            )
+            # slist.rmproz =  to_decimal(slist.rmnight) / to_decimal(slist.rbudget) * to_decimal("100")
+            slist.rmproz = (
+                to_decimal(slist.rmnight) / to_decimal(slist.rbudget) * to_decimal("100")
+                if to_decimal(slist.rbudget) != 0
+                else to_decimal("0")
+            )
+            # slist.otproz =  to_decimal(slist.otrev) / to_decimal(slist.otbudget) * to_decimal("100")
+            slist.otproz = (
+                to_decimal(slist.otrev) / to_decimal(slist.otbudget) * to_decimal("100")
+                if to_decimal(slist.otbudget) != 0
+                else to_decimal("0")
+            )
+            # slist.fbproz =  to_decimal(slist.fbrev) / to_decimal(slist.fbbudget) * to_decimal("100")
+            slist.fbproz = (
+                to_decimal(slist.fbrev) / to_decimal(slist.fbbudget) * to_decimal("100")
+                if to_decimal(slist.fbbudget) != 0
+                else to_decimal("0")
+            )
 
             if slist.lproz == None:
                 slist.lproz =  to_decimal(0.00)
@@ -415,10 +464,36 @@ def sales_perform_btn_go_webbl(from_date:string, to_date:string, usr_init:string
             slist.ytd_rbudget = ytd_bud_rmnight
             slist.ytd_otbudget =  to_decimal(ytd_bud_ot)
             slist.ytd_fbbudget =  to_decimal(ytd_bud_fnb)
-            slist.ytd_lproz =  to_decimal(slist.ytd_lodg) / to_decimal(slist.ytd_lbudget) * to_decimal("100")
-            slist.ytd_rmproz =  to_decimal(slist.ytd_rmnight) / to_decimal(slist.ytd_rbudget) * to_decimal("100")
-            slist.ytd_otproz =  to_decimal(slist.ytd_otrev) / to_decimal(slist.ytd_otbudget) * to_decimal("100")
-            slist.ytd_fbproz =  to_decimal(slist.ytd_fbrev) / to_decimal(slist.ytd_fbbudget) * to_decimal("100")
+
+            # Rd 18/7/25
+            # slist.ytd_lproz =  to_decimal(slist.ytd_lodg) / to_decimal(slist.ytd_lbudget) * to_decimal("100")
+            # slist.ytd_rmproz =  to_decimal(slist.ytd_rmnight) / to_decimal(slist.ytd_rbudget) * to_decimal("100")
+            # slist.ytd_otproz =  to_decimal(slist.ytd_otrev) / to_decimal(slist.ytd_otbudget) * to_decimal("100")
+            # slist.ytd_fbproz =  to_decimal(slist.ytd_fbrev) / to_decimal(slist.ytd_fbbudget) * to_decimal("100")
+            slist.ytd_lproz = (
+                to_decimal(slist.ytd_lodg) / to_decimal(slist.ytd_lbudget) * to_decimal("100")
+                if to_decimal(slist.ytd_lbudget) != 0
+                else to_decimal("0")
+            )
+
+            slist.ytd_rmproz = (
+                to_decimal(slist.ytd_rmnight) / to_decimal(slist.ytd_rbudget) * to_decimal("100")
+                if to_decimal(slist.ytd_rbudget) != 0
+                else to_decimal("0")
+            )
+
+            slist.ytd_otproz = (
+                to_decimal(slist.ytd_otrev) / to_decimal(slist.ytd_otbudget) * to_decimal("100")
+                if to_decimal(slist.ytd_otbudget) != 0
+                else to_decimal("0")
+            )
+
+            slist.ytd_fbproz = (
+                to_decimal(slist.ytd_fbrev) / to_decimal(slist.ytd_fbbudget) * to_decimal("100")
+                if to_decimal(slist.ytd_fbbudget) != 0
+                else to_decimal("0")
+            )
+
 
             if slist.lodg == 0:
                 slist.ytd_lodg =  to_decimal("0")

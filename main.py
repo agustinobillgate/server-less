@@ -483,88 +483,13 @@ update_field_mapping = {
     "totpuri":"totpURI",
     "recoverycode":"recoveryCode",
 
-    # 17-July-25
-    # "pr-nr":"PR-Nr",
-    # "order-nr":"Order-Nr",
-    # # "pr-flag":"PR-Flag",
-    # "PR-Flag":"pr-flag",
-    # "order-date":"Order-Date",
-    # "order-type":"Order-Type",
-    # "order-name":"Order-Name",
-    # "order-desc":"Order-Desc",
-    # "supplier-nr":"Supplier-Nr",
-    # "dept-nr":"Dept-Nr",
-    # "currency":"Currency",
-    # "credit-term":"Credit-Term",
-    # "paymentdate":"PaymentDate",
-    # "expected-delivery":"Expected-Delivery",
-    # "approved-1":"Approved-1",
-    # "approved-1-by":"Approved-1-By",
-    # "approved-1-date": "Approved-1-Date",
+    "Created-By":"created-by",
+    "created-by":"Created-By",
+    "deptname":"deptName",
+    "deptname":"DeptName",
+    "deptname":"DeptNAME",
+    "deptname":"DEPTNAME",
 
-    # "approved-1-time":"Approved-1-time",
-    # "approved-2": "Approved-2",
-    # "approved-2-by":"Approved-2-By",
-    # "approved-2-date":"Approved-2-Date",
-    # "approved-2-time":"Approved-2-time",
-    # "approved-3":"Approved-3",
-    # "approved-3-by":"Approved-3-By",
-    # "approved-3-date":"Approved-3-Date",
-    # "approved-3-time":"Approved-3-Time",
-    # "released-flag":"Released-Flag",
-    # "released-by":"Released-By",
-    # "released-date":"Released-Date",
-    # "released-time":"Released-Time",
-    # "Close-Time":"close-time",
-    # "Close-Date":"close-date",
-    # "Created-By":"created-by",
-    # # "created-by":"Created-By",
-    # "created-date":"Created-Date",
-    # "created-time":"Created-Time",
-    # # "created-by":"Created-By",
-    # "created-date":"Created-Date",
-    # "created-time":"Created-Time",
-    # "cancel-by":"Cancel-By",
-    # "cancel-date":"Cancel-Date",
-    # "cancel-time":"Cancel-Time",
-    # "delete-by":"Delete-By",
-    # "delete-date":"Delete-Date",
-    # "delete-time":"Delete-Time",
-    # "statflag":"statFlag",
-    # "modified-by":"Modified-By",
-    # "modified-date":"Modified-Date",
-    # "modified-time":"Modified-Time",
-    # "total-amount":"Total-Amount",
-    # "printedtime":"PrintedTime",
-    # "fa-nr":"Fa-Nr",
-    # # "pr-flag":"PR-Flag",
-    # "order-qty":"Order-Qty",
-    # "order-price":"Order-Price",
-    # "order-amount":"Order-Amount",
-    # "discount1":"Discount1",
-    # "discount2":"Discount2",
-    # "vat":"VAT",
-    # "exchangerate":"ExchangeRate",
-    # "fa-remarks":"Fa-remarks",
-    # "activeflag":"ActiveFlag",
-    # "activeflag":"Activeflag",
-    
-    # "activereason":"ActiveReason",
-    # "change-by":"Change-By",
-    # "change-date":"Change-Date",
-    # "change-time":"Change-Time",
-    # "closeflag":"CloseFlag",
-    # "close-date":"Close-Date",
-    # "close-timee":"Close-Time",
-    # "statflag":"statFlag",
-    # "Fa-Pos":"fa-pos",
-    # "fa-pos":"Fa-Pos",
-
-    # "Modified-Date":"modified-date",
-    # "Close-Date":"close-date",
-    # "activeflag":"ActiveFlag",
-    # "Total-Amount":"total-amount",
-    # "Order-Amount":"order-amount",
 
     "posteddate":"postedDate",  #vhpGC/gcGiroRead (FA)
     "move-from":"Move-from",
@@ -573,16 +498,6 @@ update_field_mapping = {
     "coa":"COA",
     "arrflag":"arrFlag",
 
-
-      
-
-
-
-
-
-
-
-    
 }
 docker_version += ".r"
 
@@ -1062,7 +977,6 @@ def update_output_format(output_data):
         camelCaseKey = camelCase(key)
 
 
-
         if type(output_data[key]) == list and len(output_data[key]) == 0:
             output_data[camelCaseKey] = {}
             output_data[camelCaseKey][key] = []
@@ -1199,13 +1113,12 @@ def update_output_format(output_data):
 
         #updated 1.0.0.14
         curr_module_function = curr_module + "_" + curr_service
-        # print("curr_module_function:", curr_module_function)
         
         if curr_module_function in update_table_name_list and camelCaseKey in update_table_name_list[curr_module_function]:
-            # print("update_table_name_list[curr_module_function][camelCaseKey]:", update_table_name_list[curr_module_function][camelCaseKey])
             output_data[update_table_name_list[curr_module_function][camelCaseKey]] = output_data[camelCaseKey]
             output_data.pop(camelCaseKey)
-            # print("output_data:", output_data)
+
+
 
 def decimal_converter(obj):
     if isinstance(obj, Decimal):
@@ -1552,6 +1465,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                                 initialize_local_storage()
                                 try:
                                     if db_session:
+                                        db_session.commit()
                                         close_session()
                                 except Exception as e:
                                     pass
