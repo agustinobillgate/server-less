@@ -64,6 +64,7 @@ def hk_statadmin_activate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om_l
         return generate_output()
 
     for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.selected)):
+        print("Zinr:", bline_list.zinr)
 
         zimmer = get_cache (Zimmer, {"zinr": [(eq, bline_list.zinr)]})
 
@@ -73,10 +74,12 @@ def hk_statadmin_activate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om_l
         if res_line:
             msg_str = translateExtended ("Attention: Room Number", lvcarea, "") + " " + to_string(bline_list.zinr) + chr_unicode(10) + translateExtended ("Reservation exists under ResNo", lvcarea, "") + " = " + to_string(res_line.resnr) + chr_unicode(10) + translateExtended ("Guest Name", lvcarea, "") + " = " + res_line.name + chr_unicode(10) + translateExtended ("Arrival :", lvcarea, "") + " " + to_string(res_line.ankunft) + " " + translateExtended ("Departure :", lvcarea, "") + " " + to_string(res_line.abreise)
             flag = 2
+            print("Zinr:", bline_list.zinr, msg_str)
             break
         else:
             # Rd 18/7/25
-            # blm bisa add
+            # add commit()
+            print("Else create.")
             outorder = Outorder()
             db_session.add(outorder)
 
@@ -85,7 +88,7 @@ def hk_statadmin_activate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om_l
             outorder.gespende = to_date
             outorder.betriebsnr = dept
             outorder.gespgrund = reason + "$" + to_string(user_nr)
-
+            # db_session.commit()
             if service_flag:
                 outorder.betriebsnr = outorder.betriebsnr + 3
             pass
