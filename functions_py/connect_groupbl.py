@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 
+# vhpFOR/connectGroup
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -93,7 +97,9 @@ def connect_groupbl(case_type:int, resno:int, reslinno:int, gastno:int, grpname:
                     mainres_list.resnr = reservation.resnr
                     mainres_list.deposit =  to_decimal(reservation.depositgef)
                     mainres_list.until = reservation.limitdate
-                    mainres_list.paid =  to_decimal(depositbez) + to_decimal(depositbez2)
+                    # Rd, 18/7/25
+                    # mainres_list.paid =  to_decimal(depositbez) + to_decimal(depositbez2)
+                    mainres_list.paid =  to_decimal(reservation.depositbez) + to_decimal(reservation.depositbez2)
                     mainres_list.segm = reservation.segmentcode
                     mainres_list.groupname = reservation.groupname
                     mainres_list.bemerk = reservation.bemerk
@@ -136,7 +142,9 @@ def connect_groupbl(case_type:int, resno:int, reslinno:int, gastno:int, grpname:
             if mainres_list.abreise < res_line.abreise:
                 mainres_list.abreise = res_line.abreise
 
-            if (resstatus <= 5 or resstatus == 11):
+            # Rd, 18/7/25
+            # if (resstatus <= 5 or resstatus == 11):
+            if (res_line.resstatus <= 5 or res_line.resstatus == 11):
                 mainres_list.arrival = True
 
             if mainres_list.arrival  and res_line.ankunft == ci_date:

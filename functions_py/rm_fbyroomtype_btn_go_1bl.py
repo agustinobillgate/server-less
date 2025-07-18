@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 
 from functions.additional_functions import *
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from datetime import date
 from functions.get_room_breakdown import get_room_breakdown
 from models import Htparam, Zimkateg, Genstat, Res_line, Reservation, Arrangement, Bill_line, Zimmer, Queasy
@@ -598,7 +598,12 @@ def rm_fbyroomtype_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_yea
 
             counter = counter + 1
             output_list.counter = counter
-            output_list.avrg_rev =  to_decimal(output_list.revenue) / to_decimal(output_list.room)
+            # output_list.avrg_rev =  to_decimal(output_list.revenue) / to_decimal(output_list.room)
+            output_list.avrg_rev = (
+                to_decimal(output_list.revenue) / to_decimal(output_list.room)
+                if to_decimal(output_list.room) not in (0, None)
+                else Decimal("0")
+            )
             output_list.str_room = to_string(output_list.room, ">>>,>>9")
             output_list.str_revenue = to_string(output_list.revenue, "->>>,>>>,>>>,>>9.99")
             output_list.str_avrg = to_string(output_list.avrg_rev, "->>>,>>>,>>>,>>9.99")

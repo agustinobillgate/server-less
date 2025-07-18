@@ -1,11 +1,15 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 18/7/25
+# fix arrFlag -> arrflag
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.repeat_glist_1bl import repeat_glist_1bl
 
 input_list_data, Input_list = create_model("Input_list", {"pvilanguage":int, "from_date":date, "to_date":date, "ci_date":date, "create_inhouse":bool, "sorttype":int, "modetype":int, "min_stay":int})
+
 
 def repeat_glist_webbl(input_list_data:[Input_list]):
     g_list_data = []
@@ -56,7 +60,7 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
 
             for output_rlist in query(output_rlist_data, sort_by=[("stay",True),("name",False)]):
 
-                if (output_rlist.stay >= min_stay) or (output_rlist.stay >= (min_stay - 1) and output_rlist.arrFLag):
+                if (output_rlist.stay >= min_stay) or (output_rlist.stay >= (min_stay - 1) and output_rlist.arrflag):
                     repeat_list = Repeat_list()
                     repeat_list_data.append(repeat_list)
 
@@ -72,7 +76,7 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
                     repeat_list.stay = output_rlist.stay
                     repeat_list.rmnite = output_rlist.rmnite
                     repeat_list.ankunft = output_rlist.ankunft
-                    repeat_list.arrflag = output_rlist.arrFlag
+                    repeat_list.arrflag = output_rlist.arrflag
                     repeat_list.zinr = output_rlist.zinr
                     repeat_list.remark = output_rlist.remark
                     repeat_list.resname = output_rlist.resname
@@ -102,7 +106,7 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
 
                 for output_rlist in query(output_rlist_data, sort_by=[("stay",True),("name",False)]):
 
-                    if output_rlist.flag == sorttype and ((output_rlist.stay >= min_stay) or (output_rlist.stay >= (min_stay - 1) and output_rlist.arrFLag)) and output_rlist.ankunft >= from_date and output_rlist.ankunft <= to_date:
+                    if output_rlist.flag == sorttype and ((output_rlist.stay >= min_stay) or (output_rlist.stay >= (min_stay - 1) and output_rlist.arrflag)) and output_rlist.ankunft >= from_date and output_rlist.ankunft <= to_date:
                         repeat_list = Repeat_list()
                         repeat_list_data.append(repeat_list)
 
@@ -118,7 +122,7 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
                         repeat_list.stay = output_rlist.stay
                         repeat_list.rmnite = output_rlist.rmnite
                         repeat_list.ankunft = output_rlist.ankunft
-                        repeat_list.arrflag = output_rlist.arrFlag
+                        repeat_list.arrflag = output_rlist.arrflag
                         repeat_list.zinr = output_rlist.zinr
                         repeat_list.remark = output_rlist.remark
                         repeat_list.resname = output_rlist.resname
@@ -143,7 +147,7 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
 
                 for output_rlist in query(output_rlist_data, sort_by=[("stay",True),("name",False)]):
 
-                    if output_rlist.flag == sorttype and ((output_rlist.stay >= min_stay) or (output_rlist.stay >= (min_stay - 1) and output_rlist.arrFLag)):
+                    if output_rlist.flag == sorttype and ((output_rlist.stay >= min_stay) or (output_rlist.stay >= (min_stay - 1) and output_rlist.arrflag)):
                         repeat_list = Repeat_list()
                         repeat_list_data.append(repeat_list)
 
@@ -159,7 +163,7 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
                         repeat_list.stay = output_rlist.stay
                         repeat_list.rmnite = output_rlist.rmnite
                         repeat_list.ankunft = output_rlist.ankunft
-                        repeat_list.arrflag = output_rlist.arrFlag
+                        repeat_list.arrflag = output_rlist.arrflag
                         repeat_list.zinr = output_rlist.zinr
                         repeat_list.remark = output_rlist.remark
                         repeat_list.resname = output_rlist.resname
@@ -205,7 +209,7 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
             g_list.erwachs = output_glist.erwachs
             g_list.kind1 = output_glist.kind1
             g_list.gratis = output_glist.gratis
-            g_list.arrflag = output_glist.arrFlag
+            g_list.arrflag = output_glist.arrflag
             g_list.resname = output_glist.resname
             g_list.lodging =  to_decimal(output_glist.lodging)
 

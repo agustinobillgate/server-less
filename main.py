@@ -569,6 +569,8 @@ update_field_mapping = {
     "move-to":"Move-to",
     "Order-Date":"order-date",
     "coa":"COA",
+    "arrflag":"arrFlag",
+
 
       
 

@@ -81,26 +81,13 @@ def mk_po_btn_go1_web_1bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
             return
         new_docu_nr = s + to_string(i, "999")
 
-    # Rd, 17-July-25
-    # t_l_orderhdr = query(t_l_orderhdr_data, first=True)
-    # l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, t_l_orderhdr.rec_id)]})
-    if not t_l_orderhdr_data:
-        return generate_output() 
-    
-    t_l_orderhdr = t_l_orderhdr_data[0]
-    l_orderhdr = db_session.query(L_orderhdr)\
-        .filter(L_orderhdr._recid == t_l_orderhdr.rec_id)\
-        .first()
-    if not t_l_orderhdr:
-        return generate_output()
+    t_l_orderhdr = query(t_l_orderhdr_data, first=True)
 
-    l_orderhdr = db_session.query(L_orderhdr)\
-        .filter(L_orderhdr._recid == t_l_orderhdr.rec_id)\
-        .first()
+    l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, t_l_orderhdr.rec_id)]})
 
     if not l_orderhdr:
+
         return generate_output()
-    
     buffer_copy(t_l_orderhdr, l_orderhdr)
 
     waehrung = get_cache (Waehrung, {"wabkurz": [(eq, currency_screen_value)]})
