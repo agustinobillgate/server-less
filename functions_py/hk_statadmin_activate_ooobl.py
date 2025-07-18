@@ -78,8 +78,7 @@ def hk_statadmin_activate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om_l
             break
         else:
             # Rd 18/7/25
-            # add commit()
-            print("Else create.")
+            # add commit()->dihandle di main.py
             outorder = Outorder()
             db_session.add(outorder)
 
@@ -88,7 +87,6 @@ def hk_statadmin_activate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om_l
             outorder.gespende = to_date
             outorder.betriebsnr = dept
             outorder.gespgrund = reason + "$" + to_string(user_nr)
-            # db_session.commit()
             if service_flag:
                 outorder.betriebsnr = outorder.betriebsnr + 3
             pass
