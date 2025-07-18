@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 18/7/25
+# getpstart -> Outorder.gepstart
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -50,6 +54,10 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
         for s1_list in query(s1_list_data, filters=(lambda s1_list: s1_list.zinr == "" and s1_list.resstatus != 11 and s1_list.zimmeranz == 1)):
 
             rline = get_cache (Res_line, {"_recid": [(eq, s1_list.res_recid)]})
+            # Rd, 18/7/25
+            if rline is None:
+                continue
+
             found = False
 
             if location != "":
@@ -61,13 +69,15 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
             while None != zimmer and not found:
                 do_it = True
 
-                if etage > 0 and (etage != zimmer.etage):
+                # if etage > 0 and (etage != zimmer.etage):
+                if s1_list.eta > 0 and (s1_list.eta != zimmer.etage):
                     do_it = False
 
                 if do_it:
-
+                    # Rd 18/7/25
+                    # gepstart -> outorder.gepstart
                     outorder = db_session.query(Outorder).filter(
-                             (Outorder.zinr == zimmer.zinr) & (Outorder.betriebsnr != rline.resnr) & (((rline.ankunft >= gespstart) & (rline.ankunft <= Outorder.gespende)) | ((rline.abreise > gespstart) & (rline.abreise <= Outorder.gespende)) | ((Outorder.gespstart >= rline.ankunft) & (Outorder.gespstart < rline.abreise)) | ((Outorder.gespende >= rline.ankunft) & (Outorder.gespende <= rline.abreise)))).first()
+                             (Outorder.zinr == zimmer.zinr) & (Outorder.betriebsnr != rline.resnr) & (((rline.ankunft >= Outorder.gespstart) & (rline.ankunft <= Outorder.gespende)) | ((rline.abreise > Outorder.gespstart) & (rline.abreise <= Outorder.gespende)) | ((Outorder.gespstart >= rline.ankunft) & (Outorder.gespstart < rline.abreise)) | ((Outorder.gespende >= rline.ankunft) & (Outorder.gespende <= rline.abreise)))).first()
 
                     if outorder:
                         do_it = False
@@ -101,6 +111,10 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
         for s1_list in query(s1_list_data, filters=(lambda s1_list: s1_list.zinr == "" and s1_list.active_flag == 0 and s1_list.resstatus != 11)):
 
             rline = get_cache (Res_line, {"_recid": [(eq, s1_list.res_recid)]})
+
+            # Rd, 18/7/225
+            if rline is None:
+                continue
             found = False
 
             if location != "":
@@ -112,7 +126,9 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
             while None != zimmer and not found:
                 do_it = True
 
-                if etage > 0 and (etage != zimmer.etage):
+                # Rd, 18/7/225
+                # if etage > 0 and (etage != zimmer.etage):
+                if s1_list.eta > 0 and (s1_list.eta != zimmer.etage):
                     do_it = False
 
                 if do_it:
@@ -179,6 +195,9 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
         for s1_list in query(s1_list_data, filters=(lambda s1_list: s1_list.zinr == "" and s1_list.resstatus != 11 and s1_list.zimmeranz == 1)):
 
             rline = get_cache (Res_line, {"_recid": [(eq, s1_list.res_recid)]})
+            # Rd, 18/7/225
+            if rline is None:
+                continue
             found = False
 
             active_roomlist = query(active_roomlist_data, filters=(lambda active_roomlist: active_roomlist.zikatnr == rline.zikatnr and active_roomlist.room_selected and active_roomlist.setup == rline.setup and active_roomlist.zinr.lower()  > (last_zinr).lower()), first=True)
@@ -188,7 +207,7 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
                 if do_it:
 
                     outorder = db_session.query(Outorder).filter(
-                             (Outorder.zinr == active_roomlist.zinr) & (Outorder.betriebsnr != rline.resnr) & (((rline.ankunft >= gespstart) & (rline.ankunft <= Outorder.gespende)) | ((rline.abreise > gespstart) & (rline.abreise <= Outorder.gespende)) | ((Outorder.gespstart >= rline.ankunft) & (Outorder.gespstart < rline.abreise)) | ((Outorder.gespende >= rline.ankunft) & (Outorder.gespende <= rline.abreise)))).first()
+                             (Outorder.zinr == active_roomlist.zinr) & (Outorder.betriebsnr != rline.resnr) & (((rline.ankunft >= Outorder.gespstart) & (rline.ankunft <= Outorder.gespende)) | ((rline.abreise > Outorder.gespstart) & (rline.abreise <= Outorder.gespende)) | ((Outorder.gespstart >= rline.ankunft) & (Outorder.gespstart < rline.abreise)) | ((Outorder.gespende >= rline.ankunft) & (Outorder.gespende <= rline.abreise)))).first()
 
                     if outorder:
                         do_it = False
@@ -222,7 +241,7 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
                 if do_it:
 
                     outorder = db_session.query(Outorder).filter(
-                             (Outorder.zinr == active_roomlist.zinr) & (Outorder.betriebsnr != rline.resnr) & (((rline.ankunft >= gespstart) & (rline.ankunft <= Outorder.gespende)) | ((rline.abreise > gespstart) & (rline.abreise <= Outorder.gespende)) | ((Outorder.gespstart >= rline.ankunft) & (Outorder.gespstart < rline.abreise)) | ((Outorder.gespende >= rline.ankunft) & (Outorder.gespende <= rline.abreise)))).first()
+                             (Outorder.zinr == active_roomlist.zinr) & (Outorder.betriebsnr != rline.resnr) & (((rline.ankunft >= Outorder.gespstart) & (rline.ankunft <= Outorder.gespende)) | ((rline.abreise > Outorder.gespstart) & (rline.abreise <= Outorder.gespende)) | ((Outorder.gespstart >= rline.ankunft) & (Outorder.gespstart < rline.abreise)) | ((Outorder.gespende >= rline.ankunft) & (Outorder.gespende <= rline.abreise)))).first()
 
                     if outorder:
                         do_it = False
