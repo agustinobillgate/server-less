@@ -1,14 +1,18 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 18/07/25
+# exrate -> eexrate
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from sqlalchemy import func
-from models import Res_line, Reservation, exrate, Waehrung, Arrangement, Zimkateg, Fixleist
+from models import Res_line, Reservation, Exrate, Waehrung, Arrangement, Zimkateg, Fixleist
 
 def deposit_admin_1bl(case_type:int, depo_foreign:bool, lname:string, deposittype:int, sorttype:int, lresnr:int, fdate:date, exrate:Decimal, bill_date:date, depo_curr:int):
 
-    prepare_cache ([Res_line, Reservation, exrate, Waehrung, Arrangement, Zimkateg, Fixleist])
+    prepare_cache ([Res_line, Reservation, Exrate, Waehrung, Arrangement, Zimkateg, Fixleist])
 
     total_saldo = to_decimal("0.0")
     arriv_saldo = to_decimal("0.0")
@@ -262,8 +266,28 @@ def deposit_admin_1bl(case_type:int, depo_foreign:bool, lname:string, deposittyp
                     reservation_obj_list = {}
                     reservation = Reservation()
                     res_line = Res_line()
-                    for reservation.resnr, reservation.grpflag, reservation.name, reservation.groupname, reservation.depositgef, reservation.depositbez, reservation.depositbez2, reservation.limitdate, reservation.zahldatum, reservation.zahldatum2, reservation.zahlkonto, reservation.zahlkonto2, reservation._recid, res_line.resnr, res_line.reslinnr, res_line.name, res_line.ankunft, res_line.abreise, res_line.zimmeranz, res_line.zipreis, res_line.erwachs, res_line.resstatus, res_line.arrangement, res_line.zimmer_wunsch, res_line.zikatnr, res_line._recid in db_session.query(Reservation.resnr, Reservation.grpflag, Reservation.name, Reservation.groupname, Reservation.depositgef, Reservation.depositbez, Reservation.depositbez2, Reservation.limitdate, Reservation.zahldatum, Reservation.zahldatum2, Reservation.zahlkonto, Reservation.zahlkonto2, Reservation._recid, Res_line.resnr, Res_line.reslinnr, Res_line.name, Res_line.ankunft, Res_line.abreise, Res_line.zimmeranz, Res_line.zipreis, Res_line.erwachs, Res_line.resstatus, Res_line.arrangement, Res_line.zimmer_wunsch, Res_line.zikatnr, Res_line._recid).join(Res_line,(Res_line.resnr == Reservation.resnr) & (Res_line.resstatus <= 8) & (Res_line.ankunft >= fdate)).filter(
-                             (Reservation.activeflag == 0) & (Reservation.depositgef != 0) & (Reservation.resnr >= lresnr) & (matches(Reservation.name,("*" + lname + "*")))).order_by(Reservation.name).all():
+                    # for reservation.resnr, reservation.grpflag, reservation.name, reservation.groupname, reservation.depositgef, reservation.depositbez, reservation.depositbez2, reservation.limitdate, reservation.zahldatum, reservation.zahldatum2, reservation.zahlkonto, reservation.zahlkonto2, reservation._recid, res_line.resnr, res_line.reslinnr, res_line.name, res_line.ankunft, res_line.abreise, res_line.zimmeranz, res_line.zipreis, res_line.erwachs, res_line.resstatus, res_line.arrangement, res_line.zimmer_wunsch, res_line.zikatnr, res_line._recid in db_session.query(Reservation.resnr, Reservation.grpflag, Reservation.name, Reservation.groupname, Reservation.depositgef, Reservation.depositbez, Reservation.depositbez2, Reservation.limitdate, Reservation.zahldatum, Reservation.zahldatum2, Reservation.zahlkonto, Reservation.zahlkonto2, Reservation._recid, Res_line.resnr, Res_line.reslinnr, Res_line.name, Res_line.ankunft, Res_line.abreise, Res_line.zimmeranz, Res_line.zipreis, Res_line.erwachs, Res_line.resstatus, Res_line.arrangement, Res_line.zimmer_wunsch, Res_line.zikatnr, Res_line._recid).join(Res_line,(Res_line.resnr == Reservation.resnr) & (Res_line.resstatus <= 8) & (Res_line.ankunft >= fdate)).filter(
+                    #          (Reservation.activeflag == 0) & (Reservation.depositgef != 0) & 
+                    #          (Reservation.resnr >= lresnr) & 
+                    #          (matches(Reservation.name,("*" + lname + "*")))).order_by(Reservation.name).all():
+                    for reservation.resnr, reservation.grpflag, reservation.name, reservation.groupname, reservation.depositgef, reservation.depositbez, \
+                            reservation.depositbez2, reservation.limitdate, reservation.zahldatum, reservation.zahldatum2, reservation.zahlkonto, \
+                                reservation.zahlkonto2, reservation._recid, res_line.resnr, res_line.reslinnr, res_line.name, res_line.ankunft, \
+                                    res_line.abreise, res_line.zimmeranz, res_line.zipreis, res_line.erwachs, res_line.resstatus, res_line.arrangement,\
+                                        res_line.zimmer_wunsch, res_line.zikatnr, res_line._recid in \
+                                db_session.query(Reservation.resnr, Reservation.grpflag, Reservation.name, Reservation.groupname, 
+                                                 Reservation.depositgef, Reservation.depositbez, Reservation.depositbez2, Reservation.limitdate, 
+                                                 Reservation.zahldatum, Reservation.zahldatum2, Reservation.zahlkonto, Reservation.zahlkonto2, 
+                                                 Reservation._recid, Res_line.resnr, Res_line.reslinnr, Res_line.name, Res_line.ankunft, 
+                                                 Res_line.abreise, Res_line.zimmeranz, Res_line.zipreis, Res_line.erwachs, Res_line.resstatus, 
+                                                 Res_line.arrangement, Res_line.zimmer_wunsch, Res_line.zikatnr, Res_line._recid) \
+                                    .join(Res_line,(Res_line.resnr == Reservation.resnr) & 
+                                          (Res_line.resstatus <= 8) & 
+                                          (Res_line.ankunft >= fdate)).filter(
+                             (Reservation.activeflag == 0) & (Reservation.depositgef != 0) & 
+                             (Reservation.resnr >= lresnr) & 
+                             (matches(Reservation.name,("*" + lname + "*")))).order_by(Reservation.name).all():
+
                         if reservation_obj_list.get(reservation._recid):
                             continue
                         else:
@@ -562,7 +586,7 @@ def deposit_admin_1bl(case_type:int, depo_foreign:bool, lname:string, deposittyp
 
         if depo_list.datum1 < bill_date and depo_list.datum1 != None:
 
-            exrate = get_cache (exrate, {"artnr": [(eq, depo_curr)],"datum": [(eq, depo_list.datum1)]})
+            exrate = get_cache (Exrate, {"artnr": [(eq, depo_curr)],"datum": [(eq, depo_list.datum1)]})
 
             if exrate:
                 exchg_rate =  to_decimal(exrate.betrag)
@@ -583,7 +607,7 @@ def deposit_admin_1bl(case_type:int, depo_foreign:bool, lname:string, deposittyp
 
         if depo_list.datum2 < bill_date and depo_list.datum2 != None:
 
-            exrate = get_cache (exrate, {"artnr": [(eq, depo_curr)],"datum": [(eq, depo_list.datum2)]})
+            exrate = get_cache (Exrate, {"artnr": [(eq, depo_curr)],"datum": [(eq, depo_list.datum2)]})
 
             if exrate:
                 exchg_rate =  to_decimal(exrate.betrag)
