@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 19/7/225
+# table name debit -> debitor
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -305,7 +309,9 @@ def gl_linkarbl(merge_flag:bool, from_date:date, to_date:date, user_init:string,
         if debitor.vesrcod == "":
             g_list.bemerk = to_string(debitor.rechnr) + " - " + debitor.name
         else:
-            g_list.bemerk = to_string(debitor.rechnr) + " - " + debit.vesrcod
+            # Rd, 19/7/25, update table name
+            # g_list.bemerk = to_string(debitor.rechnr) + " - " + debit.vesrcod
+            g_list.bemerk = to_string(debitor.rechnr) + " - " + debitor.vesrcod
         g_list.userinit = user_init
         g_list.zeit = get_current_time_in_seconds()
         g_list.duplicate = False
