@@ -497,6 +497,7 @@ update_field_mapping = {
     "Order-Date":"order-date",
     "coa":"COA",
     "arrflag":"arrFlag",
+    "dptno":"dptNo",
 
 }
 docker_version += ".r"
