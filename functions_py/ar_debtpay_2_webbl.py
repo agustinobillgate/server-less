@@ -1,4 +1,15 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 19/7/25
+# payload bill-nr: "" -> error
+# age_list.dptNo -> 
+#-----------------------------------------
+
+# try:
+#     bill_nr = int(input_payload.bill_nr)
+# except (ValueError, TypeError):
+#     bill_nr = None
+
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -22,7 +33,15 @@ def ar_debtpay_2_webbl(input_payload_data:[Input_payload], art_selected:int, fou
     t_debt = age_list = input_payload = abuff = debt = t_pay = age_list1 = None
 
     t_debt_data, T_debt = create_model("T_debt", {"t_debt_recid":int, "rgdatum":date})
-    age_list_data, Age_list = create_model("Age_list", {"selected":bool, "ar_recid":int, "rechnr":int, "refno":int, "counter":int, "gastnr":int, "billname":string, "gastnrmember":int, "gastname":string, "zinr":string, "rgdatum":date, "user_init":string, "debt":Decimal, "debt_foreign":Decimal, "currency":string, "credit":Decimal, "tot_debt":Decimal, "vouc_nr":string, "prevdate":date, "remarks":string, "b_resname":string, "ci_date":date, "co_date":date, "resnr":int, "mbill":string, "dptno":int})
+
+    # dptNo -> Rd 19/7/25
+    age_list_data, Age_list = create_model("Age_list", {"selected":bool, "ar_recid":int, "rechnr":int, "refno":int, 
+                                                        "counter":int, "gastnr":int, "billname":string, "gastnrmember":int, 
+                                                        "gastname":string, "zinr":string, "rgdatum":date, "user_init":string, 
+                                                        "debt":Decimal, "debt_foreign":Decimal, "currency":string, "credit":Decimal, 
+                                                        "tot_debt":Decimal, "vouc_nr":string, "prevdate":date, "remarks":string, 
+                                                        "b_resname":string, "ci_date":date, "co_date":date, "resnr":int, "mbill":string, 
+                                                        "dptNo":int})
 
     Abuff = Age_list
     abuff_data = age_list_data
@@ -30,6 +49,7 @@ def ar_debtpay_2_webbl(input_payload_data:[Input_payload], art_selected:int, fou
     Debt = create_buffer("Debt",Debitor)
     T_pay = create_buffer("T_pay",Debitor)
 
+   
 
     db_session = local_storage.db_session
 
@@ -67,8 +87,17 @@ def ar_debtpay_2_webbl(input_payload_data:[Input_payload], art_selected:int, fou
         curr_rechnr = 0
         outstand =  to_decimal("0")
         foutstand =  to_decimal("0")
+        vbill_nr:int = 0 
 
-        if input_payload.bill_nr != 0:
+         # Rd, 19/7/25
+        # bill-nr bisa kosong?
+        try:
+            vbill_nr = int(input_payload.bill_nr)
+        except (ValueError, TypeError):
+            vbill_nr = 0
+
+        # if input_payload.bill_nr != 0:
+        if vbill_nr != 0:
 
             for debitor in db_session.query(Debitor).filter(
                          (Debitor.artnr == input_payload.temp_art2) & (Debitor.rechnr == input_payload.bill_nr) & (Debitor.rgdatum <= bill_date) & (Debitor.opart < 2)).order_by(Debitor.zahlkonto, Debitor.rgdatum).all():
@@ -89,7 +118,7 @@ def ar_debtpay_2_webbl(input_payload_data:[Input_payload], art_selected:int, fou
                     age_list.gastnr = debitor.gastnr
                     age_list.gastnrmember = debitor.gastnrmember
                     age_list.zinr = debitor.zinr
-                    age_list.dptno = debitor.betriebsnr
+                    age_list.dptNo = debitor.betriebsnr
                     disp_guest_debt()
 
                     guest = get_cache (Guest, {"gastnr": [(eq, debitor.gastnr)]})
@@ -151,7 +180,7 @@ def ar_debtpay_2_webbl(input_payload_data:[Input_payload], art_selected:int, fou
                     age_list.gastnr = debitor.gastnr
                     age_list.gastnrmember = debitor.gastnrmember
                     age_list.zinr = debitor.zinr
-                    age_list.dptno = debitor.betriebsnr
+                    age_list.dptNo = debitor.betriebsnr
                     disp_guest_debt()
 
                     guest = get_cache (Guest, {"gastnr": [(eq, debitor.gastnr)]})
@@ -249,7 +278,7 @@ def ar_debtpay_2_webbl(input_payload_data:[Input_payload], art_selected:int, fou
                     age_list.gastnr = debitor.gastnr
                     age_list.gastnrmember = debitor.gastnrmember
                     age_list.zinr = debitor.zinr
-                    age_list.dptno = debitor.betriebsnr
+                    age_list.dptNo = debitor.betriebsnr
                     disp_guest_debt()
 
                     guest = get_cache (Guest, {"gastnr": [(eq, debitor.gastnr)]})
@@ -347,7 +376,7 @@ def ar_debtpay_2_webbl(input_payload_data:[Input_payload], art_selected:int, fou
                     age_list.gastnr = debitor.gastnr
                     age_list.gastnrmember = debitor.gastnrmember
                     age_list.zinr = debitor.zinr
-                    age_list.dptno = debitor.betriebsnr
+                    age_list.dptNo = debitor.betriebsnr
 
                     guest = get_cache (Guest, {"gastnr": [(eq, debitor.gastnr)]})
                     age_list.billname = guest.name + ", " + guest.vorname1 + guest.anredefirma + " " + guest.anrede1
@@ -480,7 +509,7 @@ def ar_debtpay_2_webbl(input_payload_data:[Input_payload], art_selected:int, fou
                     age_list.gastnr = debitor.gastnr
                     age_list.gastnrmember = debitor.gastnrmember
                     age_list.zinr = debitor.zinr
-                    age_list.dptno = debitor.betriebsnr
+                    age_list.dptNo = debitor.betriebsnr
                     disp_guest_debt()
 
                     guest = get_cache (Guest, {"gastnr": [(eq, debitor.gastnr)]})
@@ -542,7 +571,7 @@ def ar_debtpay_2_webbl(input_payload_data:[Input_payload], art_selected:int, fou
                     age_list.gastnr = debitor.gastnr
                     age_list.gastnrmember = debitor.gastnrmember
                     age_list.zinr = debitor.zinr
-                    age_list.dptno = debitor.betriebsnr
+                    age_list.dptNo = debitor.betriebsnr
                     disp_guest_debt()
 
                     guest = get_cache (Guest, {"gastnr": [(eq, debitor.gastnr)]})
@@ -640,7 +669,7 @@ def ar_debtpay_2_webbl(input_payload_data:[Input_payload], art_selected:int, fou
                     age_list.gastnr = debitor.gastnr
                     age_list.gastnrmember = debitor.gastnrmember
                     age_list.zinr = debitor.zinr
-                    age_list.dptno = debitor.betriebsnr
+                    age_list.dptNo = debitor.betriebsnr
                     disp_guest_debt()
 
                     guest = get_cache (Guest, {"gastnr": [(eq, debitor.gastnr)]})
@@ -738,7 +767,7 @@ def ar_debtpay_2_webbl(input_payload_data:[Input_payload], art_selected:int, fou
                     age_list.gastnr = debitor.gastnr
                     age_list.gastnrmember = debitor.gastnrmember
                     age_list.zinr = debitor.zinr
-                    age_list.dptno = debitor.betriebsnr
+                    age_list.dptNo = debitor.betriebsnr
 
                     guest = get_cache (Guest, {"gastnr": [(eq, debitor.gastnr)]})
                     age_list.billname = guest.name + ", " + guest.vorname1 + guest.anredefirma + " " + guest.anrede1
