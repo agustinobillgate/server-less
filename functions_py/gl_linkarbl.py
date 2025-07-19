@@ -14,8 +14,11 @@ def gl_linkarbl(merge_flag:bool, from_date:date, to_date:date, user_init:string,
     prepare_cache ([Gl_acct, Artikel, Debitor, Guest])
 
     acct_error = 0
-    debits = None
-    credits = None
+    # Rd 19/7/225
+    # debits = None
+    # credits = None
+    debits = 0
+    credits = 0
     remains = to_decimal("0.0")
     buf_g_list_data = []
     s_list_data = []
@@ -328,8 +331,8 @@ def gl_linkarbl(merge_flag:bool, from_date:date, to_date:date, user_init:string,
             s_list.bezeich = gl_acc1.bezeich
         s_list.credit =  to_decimal(s_list.credit) + to_decimal(credit_betrag)
         s_list.debit =  to_decimal(s_list.debit) + to_decimal(debit_betrag)
-        credits = credits + credit_betrag
-        debits = debits + debit_betrag
+        credits = credits + to_decimal(debit_betrag)
+        debits = debits +  to_decimal(debit_betrag)
         remains =  to_decimal(debits) - to_decimal(credits)
         debit_betrag =  to_decimal("0")
         credit_betrag =  to_decimal("0")
