@@ -1,4 +1,7 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 1/7/2025
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -214,7 +217,9 @@ def bil_select1_2bl(bil_flag:int, sorttype:int, gastname:string, dept:int, ba_de
         b1_list.b_recid = bill._recid
         b1_list.adresse1 = guest1.adresse1
         b1_list.wohnort = guest1.wohnort
-        b1_list.bemerk = guest1.bemerk + " " + bill.vesrdepot
+        #Rd, 21/7/20225
+        # b1_list.bemerk = guest1.bemerk + " " + bill.vesrdepot
+        b1_list.bemerk = guest1.bemerkung + " " + bill.vesrdepot
         b1_list.plz = guest1.plz
         b1_list.vesrdepot2 = bill.vesrdepot2
 
