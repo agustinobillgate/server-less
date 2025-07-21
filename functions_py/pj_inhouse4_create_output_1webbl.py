@@ -1,4 +1,12 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 21/7/25
+# quesy: 280, number: 262 (idflag) 
+# inhouse_guest_list.inhousedate = date_mdy(entry(35, queasy.char2, "|"))
+# idFlag = 262, tidak ada date di number2=262
+# pasang try-catch
+#-----------------------------------------
+
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -82,10 +90,13 @@ def pj_inhouse4_create_output_1webbl(idflag:string, inhouse_guest_list_data:[Inh
     if paramtext and paramtext.ptexte != "":
         htl_no = decode_string(paramtext.ptexte)
 
+    # Rd 21/7/25
+    #err ticket 439.
+    # inhouse_guest_list.inhousedate = date_mdy(entry(35, queasy.char2, "|"))
+    # idFlag = 262, tidak ada date di number2=262
     for queasy in db_session.query(Queasy).filter(
              (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List").lower()) & (Queasy.number2 == to_int(idflag))).order_by(Queasy.number1).yield_per(100):
         counter = counter + 1
-
         if counter > 1000:
             break
         inhouse_guest_list = Inhouse_guest_list()
@@ -129,7 +140,13 @@ def pj_inhouse4_create_output_1webbl(idflag:string, inhouse_guest_list_data:[Inh
         inhouse_guest_list.createid = entry(32, queasy.char2, "|")
         inhouse_guest_list.ci_time = entry(33, queasy.char2, "|")
         inhouse_guest_list.curr = entry(34, queasy.char2, "|")
-        inhouse_guest_list.inhousedate = date_mdy(entry(35, queasy.char2, "|"))
+
+        #err ticket 439.
+        # inhouse_guest_list.inhousedate = date_mdy(entry(35, queasy.char2, "|"))
+        try:
+            inhouse_guest_list.inhousedate = date_mdy(entry(35, queasy.char2, "|"))
+        except:
+            pass
         inhouse_guest_list.sob = entry(36, queasy.char2, "|")
         inhouse_guest_list.gastnr = to_int(entry(37, queasy.char2, "|"))
         inhouse_guest_list.lodging =  to_decimal(to_decimal(entry(38 , queasy.char2 , "|")) )
