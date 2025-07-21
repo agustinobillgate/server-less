@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 21/7/2025
 
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -51,28 +54,65 @@ def telop_webbl(sorttype:int, room:string, fdate1:date, fdate2:date, ci_date:dat
         to_name:string = ""
         rmlen = length(room)
 
-        if fdate1 == None:
+        # Rd, 21/7/20225
+        # validate parameter fdate
+        # if fdate1 == None:
 
-            if fdate2 != None:
+        #     if fdate2 != None:
+        #         fdate1 = fdate2
+        #     else:
+        #         fdate1 = ci_date
+        #         fdate2 = ci_date + timedelta(days=30)
+
+        # if fdate2 == None:
+
+        #     if fdate1 != None:
+        #         fdate2 = fdate1
+        #     else:
+        #         fdate1 = ci_date
+        #         fdate2 = ci_date + timedelta(days=30)
+        # Ensure date range is always valid
+        # Rd 21/7/025
+        # validate fdate1, fdate2
+        if fdate1 is None:
+            if fdate2 is not None:
                 fdate1 = fdate2
             else:
                 fdate1 = ci_date
                 fdate2 = ci_date + timedelta(days=30)
 
-        if fdate2 == None:
-
-            if fdate1 != None:
+        if fdate2 is None:
+            if fdate1 is not None:
                 fdate2 = fdate1
             else:
                 fdate1 = ci_date
                 fdate2 = ci_date + timedelta(days=30)
 
-        if lname != "" and substring(lname, 0, 1) != ("*").lower() :
+
+        # add lname validation
+        if lname is None:
+            lname = ""
+        else:
+            lname = lname.lower()
+
+        if to_name is None:
+            to_name = lname  # exact match fallback
+        else:
+            to_name = to_name.lower()
+
+        if lname == " ":
+            lname = ""
+        if room == " ":
+            room = ""
+        if lnat == " ":
+            lnat = ""
+
+        if lname.strip() != "" and substring(lname, 0, 1) != ("*").lower() :
             to_name = chr_unicode(asc(substring(lname, 0, 1)) + 1)
 
         if last_sort == 1:
 
-            if lname == "":
+            if lname.strip() == "":
 
                 res_line_obj_list = {}
                 res_line = Res_line()
@@ -455,6 +495,21 @@ def telop_webbl(sorttype:int, room:string, fdate1:date, fdate2:date, ci_date:dat
 
         nonlocal gmember, telop_list
         nonlocal telop_list_data
+        # Rd 21/7/025
+        # validate fdate1, fdate2
+        if fdate1 is None:
+            if fdate2 is not None:
+                fdate1 = fdate2
+            else:
+                fdate1 = ci_date
+                fdate2 = ci_date + timedelta(days=30)
+
+        if fdate2 is None:
+            if fdate1 is not None:
+                fdate2 = fdate1
+            else:
+                fdate1 = ci_date
+                fdate2 = ci_date + timedelta(days=30)
 
         to_name:string = ""
         rmlen = length(room)
@@ -958,6 +1013,23 @@ def telop_webbl(sorttype:int, room:string, fdate1:date, fdate2:date, ci_date:dat
         nonlocal gmember, telop_list
         nonlocal telop_list_data
 
+        # Rd 21/7/025
+        # validate fdate1, fdate2
+        if fdate1 is None:
+            if fdate2 is not None:
+                fdate1 = fdate2
+            else:
+                fdate1 = ci_date
+                fdate2 = ci_date + timedelta(days=30)
+
+        if fdate2 is None:
+            if fdate1 is not None:
+                fdate2 = fdate1
+            else:
+                fdate1 = ci_date
+                fdate2 = ci_date + timedelta(days=30)
+
+
         to_name:string = ""
         rmlen = length(room)
 
@@ -1460,6 +1532,22 @@ def telop_webbl(sorttype:int, room:string, fdate1:date, fdate2:date, ci_date:dat
         nonlocal gmember, telop_list
         nonlocal telop_list_data
 
+
+        if fdate1 is None:
+            if fdate2 is not None:
+                fdate1 = fdate2
+            else:
+                fdate1 = ci_date
+                fdate2 = ci_date + timedelta(days=30)
+
+        if fdate2 is None:
+            if fdate1 is not None:
+                fdate2 = fdate1
+            else:
+                fdate1 = ci_date
+                fdate2 = ci_date + timedelta(days=30)
+    
+
         to_name:string = "zzz"
         rmlen = length(room)
 
@@ -1532,7 +1620,10 @@ def telop_webbl(sorttype:int, room:string, fdate1:date, fdate2:date, ci_date:dat
                 zimkateg = Zimkateg()
                 gmember = Guest()
                 for res_line.resstatus, res_line.l_zuordnung, res_line.zimmeranz, res_line.erwachs, res_line.wabkurz, res_line.voucher_nr, res_line.zinr, res_line.name, res_line.ankunft, res_line.abreise, res_line.ankzeit, res_line.abreisezeit, res_line.flight_nr, res_line.kind1, res_line.gratis, res_line.resnr, res_line.reslinnr, res_line.betrieb_gast, res_line.cancelled_id, res_line.changed_id, res_line.bemerk, res_line.active_flag, res_line.gastnrmember, res_line.gastnr, res_line.betrieb_gastmem, res_line.pseudofix, res_line.zikatnr, res_line.arrangement, res_line.zipreis, res_line._recid, waehrung.wabkurz, waehrung._recid, reservation.gastnr, reservation.grpflag, reservation.name, reservation.segmentcode, reservation.groupname, reservation.bemerk, reservation._recid, zimkateg.kurzbez, zimkateg._recid, gmember.adresse1, gmember.wohnort, gmember.plz, gmember._recid, gmember.nation1 in db_session.query(Res_line.resstatus, Res_line.l_zuordnung, Res_line.zimmeranz, Res_line.erwachs, Res_line.wabkurz, Res_line.voucher_nr, Res_line.zinr, Res_line.name, Res_line.ankunft, Res_line.abreise, Res_line.ankzeit, Res_line.abreisezeit, Res_line.flight_nr, Res_line.kind1, Res_line.gratis, Res_line.resnr, Res_line.reslinnr, Res_line.betrieb_gast, Res_line.cancelled_id, Res_line.changed_id, Res_line.bemerk, Res_line.active_flag, Res_line.gastnrmember, Res_line.gastnr, Res_line.betrieb_gastmem, Res_line.pseudofix, Res_line.zikatnr, Res_line.arrangement, Res_line.zipreis, Res_line._recid, Waehrung.wabkurz, Waehrung._recid, Reservation.gastnr, Reservation.grpflag, Reservation.name, Reservation.segmentcode, Reservation.groupname, Reservation.bemerk, Reservation._recid, Zimkateg.kurzbez, Zimkateg._recid, Gmember.adresse1, Gmember.wohnort, Gmember.plz, Gmember._recid, Gmember.nation1).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
-                         (Res_line.resstatus == 8) & (Res_line.name >= (lname).lower()) & (Res_line.name <= (to_name).lower()) & (Res_line.abreise >= fdate1) & (Res_line.abreise <= fdate2) & (Res_line.zinr >= (room).lower())).order_by(Res_line.name).all():
+                         (Res_line.resstatus == 8) & (Res_line.name >= (lname).lower()) & 
+                         (Res_line.name <= (to_name).lower()) & 
+                         (Res_line.abreise >= fdate1) & (Res_line.abreise <= fdate2) & 
+                         (Res_line.zinr >= (room).lower())).order_by(Res_line.name).all():
                     if res_line_obj_list.get(res_line._recid):
                         continue
                     else:
@@ -2015,6 +2106,23 @@ def telop_webbl(sorttype:int, room:string, fdate1:date, fdate2:date, ci_date:dat
         nonlocal gmember, telop_list
         nonlocal telop_list_data
 
+        # Rd 21/7/025
+        # validate fdate1, fdate2
+        if fdate1 is None:
+            if fdate2 is not None:
+                fdate1 = fdate2
+            else:
+                fdate1 = ci_date
+                fdate2 = ci_date + timedelta(days=30)
+
+        if fdate2 is None:
+            if fdate1 is not None:
+                fdate2 = fdate1
+            else:
+                fdate1 = ci_date
+                fdate2 = ci_date + timedelta(days=30)
+        
+        
         to_name:string = ""
         rmlen = length(room)
 
