@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 21/7/2025
+# gitlab: 385
+# add if available
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -58,7 +62,13 @@ def rest_usrjournal_btn_go1bl(sumflag:bool, from_date:date, to_date:date, usr_in
             rest_jour_list.artno = to_int(substring(output_list.str, 23, 9))
             rest_jour_list.descr = output_list.bezeich
             rest_jour_list.qty = to_int(substring(output_list.str, 72, 5))
-            rest_jour_list.amount = to_decimal(substring(output_list.str, 77, 17))
+
+            # Rd 21/7/2025
+            try:
+                rest_jour_list.amount = to_decimal(substring(output_list.str, 77, 17))
+            except:
+                rest_jour_list.amount = 0
+                
             rest_jour_list.depart = substring(output_list.str, 60, 12)
             rest_jour_list.zeit = substring(output_list.str, 94, 5)
             rest_jour_list.id = substring(output_list.str, 99, 5)

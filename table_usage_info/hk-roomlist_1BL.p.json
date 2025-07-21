@@ -1,0 +1,119 @@
+{
+    "Guest": {
+        "read": [
+            "name",
+            "vorname1",
+            "anrede1",
+            "nation1",
+            "bemerkung",
+            "gastnr",
+            "karteityp",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "char3",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "finteger",
+            "_recid"
+        ],
+        "write": []
+    },
+    "History": {
+        "read": [
+            "ankunft",
+            "abreise",
+            "zinr",
+            "zi_wechsel",
+            "gastnr",
+            "bemerk",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimmer": {
+        "read": [
+            "zinr",
+            "code",
+            "etage",
+            "kbezeich",
+            "zistatus",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Outorder": {
+        "read": [],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "gastnrmember",
+            "gastnr",
+            "resnr",
+            "zinr",
+            "reslinnr",
+            "active_flag",
+            "ankunft",
+            "abreise",
+            "erwachs",
+            "gratis",
+            "bemerk",
+            "zimmeranz",
+            "zipreis",
+            "arrangement",
+            "kind1",
+            "kind2",
+            "ankzeit",
+            "abreisezeit",
+            "flight_nr",
+            "l_zuordnung",
+            "zikatnr",
+            "name",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "useridanlage",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reslin_queasy": {
+        "read": [
+            "char3",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "kurzbez",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guestseg": {
+        "read": [
+            "segmentcode",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Segment": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    }
+}

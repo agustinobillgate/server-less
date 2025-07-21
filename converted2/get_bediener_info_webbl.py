@@ -1,11 +1,8 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd 21/7/2025
-# name table bediener, sama dengan nama parameter output
-#-----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
-from models import Bediener, Queasy, Paramtext
+from models import bediener, Queasy, Paramtext
 
 def get_bediener_info_webbl(user_name:string, user_init:string):
 
@@ -24,7 +21,7 @@ def get_bediener_info_webbl(user_name:string, user_init:string):
     value_list_data, Value_list = create_model("Value_list", {"var_name":string, "value_str":string})
     signature_list_data, Signature_list = create_model("Signature_list", {"var_name":string, "signature":string})
 
-    Bediener_buff = create_buffer("Bediener_buff",Bediener)
+    Bediener_buff = create_buffer("Bediener_buff",bediener)
     Buff_user = create_buffer("Buff_user",Queasy)
     Bdept = create_buffer("Bdept",Queasy)
     Totpdata = create_buffer("Totpdata",Queasy)

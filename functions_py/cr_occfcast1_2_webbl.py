@@ -2,6 +2,7 @@
 #-----------------------------------------
 # Rd 21/7/2025
 # Gitlab: 252
+# Add safe_divide
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal

@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 21/7/2025
+# gitlab: 996
+# add if available
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -79,6 +84,12 @@ def ts_rzinr_btn_exitbl(pvilanguage:int, fl_code:int, code:string, resnr:int, re
             return generate_output()
 
     bill = get_cache (Bill, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)],"flag": [(eq, 0)]})
+
+    # Rd 21/7/2025
+    # if available
+    if bill is None:
+        return generate_output()
+    
     bilrecid = bill._recid
     check_creditlimit()
     check_discrepancy()
