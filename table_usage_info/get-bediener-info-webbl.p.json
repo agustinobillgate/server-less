@@ -1,0 +1,28 @@
+{
+    "Bediener": {
+        "read": [
+            "user_group",
+            "username",
+            "_recid",
+            "nr",
+            "userinit"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "char2",
+            "char1",
+            "char3",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Paramtext": {
+        "read": [
+            "ptexte",
+            "_recid"
+        ],
+        "write": []
+    }
+}
