@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 21/7/2025
+# Ticket #716
+# validasi sanitize_bill_line, validasi anzhal , int + str
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -7,6 +11,15 @@ from functions.i_inv_ar import *
 from models import Res_line, Bill, Artikel, Counters, Htparam, Bill_line, Umsatz, Billjournal, Master, Mast_art
 
 s_list_data, S_list = create_model("S_list", {"zeit":int, "dept":int, "artnr":int, "bezeich":string, "zinr":string, "anzahl":int, "preis":Decimal, "betrag":Decimal, "l_betrag":Decimal, "f_betrag":Decimal, "resnr":int, "reslinnr":int})
+
+def sanitize_bill_line(b):
+    if isinstance(b.zeit, str) and b.zeit.strip() == "":
+        b.zeit = None
+    if isinstance(b.arrangement, str) and b.arrangement.strip() == "":
+        b.arrangement = None
+    if isinstance(b.origin_id, str) and b.origin_id.strip() == "":
+        b.origin_id = None
+    return b
 
 def quick_post_create_billbl(s_list_data:[S_list], pvilanguage:int, billart:int, curr_dept:int, amount:Decimal, double_currency:bool, foreign_rate:bool, user_init:string, voucher_nr:string):
 
@@ -120,7 +133,7 @@ def quick_post_create_billbl(s_list_data:[S_list], pvilanguage:int, billart:int,
             bill.datum = bill_date
         pass
         bill_line = Bill_line()
-        db_session.add(bill_line)
+        
 
         bill_line.rechnr = bill.rechnr
         bill_line.artnr = s_list.artnr
@@ -135,10 +148,29 @@ def quick_post_create_billbl(s_list_data:[S_list], pvilanguage:int, billart:int,
         bill_line.userinit = user_init
         bill_line.bill_datum = bill_date
 
+        # Rd 221/7/2025
+        # validasi isi data sblm insert
+        sanitize_bill_line(bill_line)
+        db_session.add(bill_line)
+
 
         pass
-
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, s_list.artnr)],"departement": [(eq, s_list.dept)],"datum": [(eq, bill_date)]})
+        # Rd 21/7/2025
+        # possible int err
+        dept = s_list.dept
+        if isinstance(dept, str) and dept.strip() == "":
+            dept = None
+        else:
+            try:
+                dept = int(dept)
+            except ValueError:
+                dept = None
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, s_list.artnr)],"departement": [(eq, s_list.dept)],"datum": [(eq, bill_date)]})
+        umsatz = get_cache(Umsatz, {
+            "artnr": [(eq, s_list.artnr)],
+            "departement": [(eq, dept)],
+            "datum": [(eq, bill_date)]
+        })
 
         if not umsatz:
             umsatz = Umsatz()
@@ -148,7 +180,13 @@ def quick_post_create_billbl(s_list_data:[S_list], pvilanguage:int, billart:int,
             umsatz.datum = bill_date
             umsatz.departement = s_list.dept
         umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(s_list.l_betrag)
-        umsatz.anzahl = umsatz.anzahl + s_list.anzahl
+        # Rd 21/7/2025
+        # validasi err int + str
+        # umsatz.anzahl = umsatz.anzahl + s_list.anzahl
+        try:
+            umsatz.anzahl += int(s_list.anzahl)
+        except (ValueError, TypeError):
+            umsatz.anzahl += 0
         pass
         billjournal = Billjournal()
         db_session.add(billjournal)
