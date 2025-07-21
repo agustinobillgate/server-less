@@ -1,0 +1,234 @@
+{
+    "Res_line": {
+        "read": [
+            "_recid",
+            "abreise",
+            "resstatus",
+            "ankunft",
+            "zinr",
+            "zikatnr",
+            "zimmeranz"
+        ],
+        "write": []
+    },
+    "Guest": {
+        "read": [
+            "\"",
+            "resflag",
+            "_recid",
+            "name"
+        ],
+        "write": []
+    },
+    "Bill": {
+        "read": [
+            "flag",
+            "billnr",
+            "rgdruck",
+            "zinr",
+            "gastnr",
+            "resnr",
+            "reslinnr",
+            "parent_nr",
+            "name",
+            "kontakt_nr",
+            "segmentcode",
+            "datum",
+            "rechnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "flogical",
+            "finteger",
+            "fchar",
+            "fdate",
+            "feldtyp",
+            "paramgruppe",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Outorder": {
+        "read": [],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "depositbez",
+            "depositbez2",
+            "zahldatum",
+            "zahldatum2",
+            "segmentcode",
+            "bestat_datum",
+            "zahlkonto",
+            "resnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [
+            "ankauf",
+            "einheit",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Master": {
+        "read": [
+            "rechnr",
+            "resnr",
+            "gastnr",
+            "gastnrpay",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Counters": {
+        "read": [
+            "counter",
+            "counter_no",
+            "counter_bez",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bediener": {
+        "read": [
+            "nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [],
+        "write": []
+    },
+    "Artikel": {
+        "read": [
+            "betriebsnr",
+            "artnr",
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Billjournal": {
+        "read": [
+            "bezeich",
+            "rechnr",
+            "artnr",
+            "anzahl",
+            "fremdwaehrng",
+            "betrag",
+            "zinr",
+            "epreis",
+            "zeit",
+            "userinit",
+            "bill_datum",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bill_line": {
+        "read": [
+            "bezeich",
+            "rechnr",
+            "artnr",
+            "anzahl",
+            "betrag",
+            "fremdwbetrag",
+            "zeit",
+            "userinit",
+            "zinr",
+            "massnr",
+            "billin_nr",
+            "arrangement",
+            "bill_datum",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Umsatz": {
+        "read": [
+            "anzahl",
+            "betrag",
+            "artnr",
+            "datum",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_history": {
+        "read": [
+            "nr",
+            "resnr",
+            "reslinnr",
+            "datum",
+            "zeit",
+            "aenderung",
+            "action",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reslin_queasy": {
+        "read": [
+            "key",
+            "resnr",
+            "reslinnr",
+            "date2",
+            "number2",
+            "char3",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Exrate": {
+        "read": [
+            "betrag",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Messages": {
+        "read": [
+            "zinr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimplan": {
+        "read": [],
+        "write": []
+    },
+    "Zimmer": {
+        "read": [
+            "zinr",
+            "zikatnr",
+            "setup",
+            "zistatus",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Resplan": {
+        "read": [
+            "anzzim",
+            "_recid",
+            "datum",
+            "zikatnr"
+        ],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "zikatnr",
+            "_recid"
+        ],
+        "write": []
+    }
+}
