@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 21/7/2025
+# Gitlab: 256
+# validate if available
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -50,7 +55,6 @@ def hk_roomlist_1bl(casetype:int, pvilanguage:int, curr_date:date, prog_name:str
         nonlocal def_cotime, pr_opt_str, ci_date, output_list_data, t_history_data, lvcarea, stat_list, vip_nr, resbemerk, his_bemerk, count_i, guest, queasy, htparam, history, zimmer, outorder, res_line, reservation, reslin_queasy, zimkateg, guestseg, segment
         nonlocal casetype, pvilanguage, curr_date, prog_name
         nonlocal gast
-
 
         nonlocal output_list, t_history, gast
         nonlocal output_list_data, t_history_data
@@ -119,10 +123,10 @@ def hk_roomlist_1bl(casetype:int, pvilanguage:int, curr_date:date, prog_name:str
                     anz = res_line.erwachs + res_line.gratis
                     output_list.bemerk = res_line.bemerk
                     output_list.norms = res_line.zimmeranz
-                    output_list.pax = res_line.erwachs
                     output_list.rmrate =  to_decimal(res_line.zipreis)
                     output_list.argt = res_line.arrangement
                     output_list.usr_id = reservation.useridanlage
+                    output_list.pax = res_line.gratis + res_line.erwachs + res_line.kind1 + res_line.kind2
 
                     guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
                     output_list.vip = check_vip_guest()
@@ -211,9 +215,9 @@ def hk_roomlist_1bl(casetype:int, pvilanguage:int, curr_date:date, prog_name:str
                         output_list.abreise = res_line.abreise
                         output_list.active_flag = res_line.active_flag
                         output_list.norms = res_line.zimmeranz
-                        output_list.pax = res_line.erwachs
                         output_list.rmrate =  to_decimal(res_line.zipreis)
                         output_list.argt = res_line.arrangement
+                        output_list.pax = res_line.gratis + res_line.erwachs + res_line.kind1 + res_line.kind2
 
                         guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
                         output_list.vip = check_vip_guest()
@@ -322,6 +326,7 @@ def hk_roomlist_1bl(casetype:int, pvilanguage:int, curr_date:date, prog_name:str
                     output_list.ankunft = res_line.ankunft
                     output_list.abreise = res_line.abreise
                     output_list.arrival = True
+                    output_list.pax = res_line.gratis + res_line.erwachs + res_line.kind1 + res_line.kind2
 
 
                     anz = res_line.erwachs + res_line.gratis
@@ -348,7 +353,10 @@ def hk_roomlist_1bl(casetype:int, pvilanguage:int, curr_date:date, prog_name:str
                         output_list.arrtime = substring(res_line.flight_nr, 6, 2) + ":" + substring(res_line.flight_nr, 8, 2)
 
         for res_line in db_session.query(Res_line).filter(
-                 (Res_line.active_flag == 0) & ((Res_line.resstatus <= 2) | (Res_line.resstatus == 5)) & (Res_line.zinr == "") & (Res_line.ankunft == ci_date)).order_by(Res_line.zikatnr, Res_line.name).all():
+                 (Res_line.active_flag == 0) & 
+                 ((Res_line.resstatus <= 2) | (Res_line.resstatus == 5)) & 
+                 (Res_line.zinr == "") & 
+                 (Res_line.ankunft == ci_date)).order_by(Res_line.zikatnr, Res_line.name).all():
 
             zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
 
@@ -357,63 +365,70 @@ def hk_roomlist_1bl(casetype:int, pvilanguage:int, curr_date:date, prog_name:str
             gast = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
 
             reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-            output_list = Output_list()
-            output_list_data.append(output_list)
+            
+            # Rd, 21/7/2025
+            # validate if available
+            if zimkateg and guest and gast and reservation:
+                output_list = Output_list()
+                output_list_data.append(output_list)
 
-            output_list.resnr = res_line.resnr
-            output_list.reslinnr = res_line.reslinnr
-            output_list.active_flag = res_line.active_flag
-            output_list.ankunft = res_line.ankunft
-            output_list.abreise = res_line.abreise
-            output_list.norms = res_line.zimmeranz
-            output_list.pax = res_line.erwachs
-            output_list.rmrate =  to_decimal(res_line.zipreis)
-            output_list.argt = res_line.arrangement
+                output_list.resnr = res_line.resnr
+                output_list.reslinnr = res_line.reslinnr
+                output_list.active_flag = res_line.active_flag
+                output_list.ankunft = res_line.ankunft
+                output_list.abreise = res_line.abreise
+                output_list.norms = res_line.zimmeranz
+                output_list.rmrate =  to_decimal(res_line.zipreis)
+                output_list.argt = res_line.arrangement
+                output_list.pax = res_line.gratis + res_line.erwachs + res_line.kind1 + res_line.kind2
 
-            if guest.karteityp == 0:
-                output_list.gastnrmember = res_line.gastnrmember
-            output_list.flag = 1
-            output_list.kbezeich = zimkateg.kurzbez
-            output_list.zinr = "#" + trim(to_string(res_line.zimmeranz, ">>9"))
-            output_list.bemerk = res_line.bemerk
-            output_list.gname = res_line.name
-            output_list.company = gast.name
-            output_list.arrival = True
+                if guest.karteityp == 0:
+                    output_list.gastnrmember = res_line.gastnrmember
+                output_list.flag = 1
+                output_list.kbezeich = zimkateg.kurzbez
+                output_list.zinr = "#" + trim(to_string(res_line.zimmeranz, ">>9"))
+                output_list.bemerk = res_line.bemerk
+                output_list.gname = res_line.name
+                output_list.company = gast.name
+                output_list.arrival = True
 
-            guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-            output_list.vip = check_vip_guest()
+                guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+                output_list.vip = check_vip_guest()
 
-            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "specialrequest")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)]})
+                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "specialrequest")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)]})
 
-            if reslin_queasy:
-                output_list.spreq = reslin_queasy.char3 + "," + output_list.spreq
+                if reslin_queasy:
+                    output_list.spreq = reslin_queasy.char3 + "," + output_list.spreq
 
 
-            anz = res_line.erwachs + res_line.gratis
+                anz = res_line.erwachs + res_line.gratis
 
-            if anz <= 2:
-                for i in range(1,anz + 1) :
-                    output_list.gstat = output_list.gstat + "A"
-            else:
-                output_list.gstat = output_list.gstat + to_string(anz) + "A"
-            anz = res_line.kind1 + res_line.l_zuordnung[3]
+                if anz <= 2:
+                    for i in range(1,anz + 1) :
+                        output_list.gstat = output_list.gstat + "A"
+                else:
+                    output_list.gstat = output_list.gstat + to_string(anz) + "A"
+                anz = res_line.kind1 + res_line.l_zuordnung[3]
 
-            if anz <= 2:
-                for i in range(1,anz + 1) :
-                    output_list.gstat = output_list.gstat + "a"
-            else:
-                output_list.gstat = output_list.gstat + to_string(anz) + "a"
-            for i in range(1,res_line.kind2 + 1) :
-                output_list.gstat = output_list.gstat + "C"
+                if anz <= 2:
+                    for i in range(1,anz + 1) :
+                        output_list.gstat = output_list.gstat + "a"
+                else:
+                    output_list.gstat = output_list.gstat + to_string(anz) + "a"
+                for i in range(1,res_line.kind2 + 1) :
+                    output_list.gstat = output_list.gstat + "C"
 
-            if substring(res_line.flight_nr, 6, 4) != ("0000").lower()  and substring(res_line.flight_nr, 6, 4) != " ":
-                output_list.arrtime = substring(res_line.flight_nr, 6, 2) + ":" + substring(res_line.flight_nr, 8, 2)
+                if substring(res_line.flight_nr, 6, 4) != ("0000").lower()  and substring(res_line.flight_nr, 6, 4) != " ":
+                    output_list.arrtime = substring(res_line.flight_nr, 6, 2) + ":" + substring(res_line.flight_nr, 8, 2)
 
         for res_line in db_session.query(Res_line).filter(
-                 (Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.abreise == ci_date)).order_by(Res_line.zikatnr, Res_line.name).all():
+                 (Res_line.active_flag == 2) & 
+                 (Res_line.resstatus == 8) & 
+                 (Res_line.l_zuordnung[inc_value(2)] == 0) & 
+                 (Res_line.abreise == ci_date)).order_by(Res_line.zikatnr, Res_line.name).all():
 
             zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
-
+            
             zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
 
             guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
@@ -421,68 +436,71 @@ def hk_roomlist_1bl(casetype:int, pvilanguage:int, curr_date:date, prog_name:str
             gast = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
 
             reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+            
+            # Rd, 21/7/2025
+            # validate if available
+            if zimmer and zimkateg and guest and gast and reservation:
+                outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)],"betriebsnr": [(eq, 2)],"gespstart": [(le, ci_date)],"gespende": [(ge, ci_date)]})
+                off_market = None != outorder
+                output_list = Output_list()
+                output_list_data.append(output_list)
 
-            outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)],"betriebsnr": [(eq, 2)],"gespstart": [(le, ci_date)],"gespende": [(ge, ci_date)]})
-            off_market = None != outorder
-            output_list = Output_list()
-            output_list_data.append(output_list)
+                output_list.resnr = res_line.resnr
+                output_list.reslinnr = res_line.reslinnr
+                output_list.active_flag = res_line.active_flag
+                output_list.ankunft = res_line.ankunft
+                output_list.abreise = res_line.abreise
+                output_list.arrtime = to_string(res_line.ankzeit, "HH:MM")
+                output_list.deptime = to_string(res_line.abreisezeit, "HH:MM")
+                output_list.flag = 2
+                output_list.kbezeich = zimkateg.kurzbez
+                output_list.zinr = res_line.zinr
+                output_list.location = zimmer.code
+                output_list.zistatus = zimmer.zistatus
+                output_list.bemerk = res_line.bemerk
+                output_list.gname = res_line.name
+                output_list.company = gast.name
+                output_list.arrival = False
+                output_list.norms = res_line.zimmeranz
+                output_list.rmrate =  to_decimal(res_line.zipreis)
+                output_list.argt = res_line.arrangement
+                output_list.pax = res_line.gratis + res_line.erwachs + res_line.kind1 + res_line.kind2
 
-            output_list.resnr = res_line.resnr
-            output_list.reslinnr = res_line.reslinnr
-            output_list.active_flag = res_line.active_flag
-            output_list.ankunft = res_line.ankunft
-            output_list.abreise = res_line.abreise
-            output_list.arrtime = to_string(res_line.ankzeit, "HH:MM")
-            output_list.deptime = to_string(res_line.abreisezeit, "HH:MM")
-            output_list.flag = 2
-            output_list.kbezeich = zimkateg.kurzbez
-            output_list.zinr = res_line.zinr
-            output_list.location = zimmer.code
-            output_list.zistatus = zimmer.zistatus
-            output_list.bemerk = res_line.bemerk
-            output_list.gname = res_line.name
-            output_list.company = gast.name
-            output_list.arrival = False
-            output_list.norms = res_line.zimmeranz
-            output_list.pax = res_line.erwachs
-            output_list.rmrate =  to_decimal(res_line.zipreis)
-            output_list.argt = res_line.arrangement
+                guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+                output_list.vip = check_vip_guest()
 
-            guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-            output_list.vip = check_vip_guest()
+                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "specialrequest")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)]})
 
-            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "specialrequest")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)]})
+                if reslin_queasy:
+                    output_list.spreq = reslin_queasy.char3 + "," + output_list.spreq
 
-            if reslin_queasy:
-                output_list.spreq = reslin_queasy.char3 + "," + output_list.spreq
+                if guest.karteityp == 0:
+                    output_list.gastnrmember = res_line.gastnrmember
+                anz = res_line.erwachs + res_line.gratis
 
-            if guest.karteityp == 0:
-                output_list.gastnrmember = res_line.gastnrmember
-            anz = res_line.erwachs + res_line.gratis
+                if anz <= 2:
+                    for i in range(1,anz + 1) :
+                        output_list.gstat = output_list.gstat + "*"
+                else:
+                    output_list.gstat = output_list.gstat + to_string(anz) + "*"
+                anz = res_line.kind1 + res_line.l_zuordnung[3]
 
-            if anz <= 2:
-                for i in range(1,anz + 1) :
-                    output_list.gstat = output_list.gstat + "*"
-            else:
-                output_list.gstat = output_list.gstat + to_string(anz) + "*"
-            anz = res_line.kind1 + res_line.l_zuordnung[3]
+                if anz <= 2:
+                    for i in range(1,anz + 1) :
+                        output_list.gstat = output_list.gstat + "o"
+                else:
+                    output_list.gstat = output_list.gstat + to_string(anz) + "o"
+                for i in range(1,res_line.kind2 + 1) :
+                    output_list.gstat = output_list.gstat + "C"
 
-            if anz <= 2:
-                for i in range(1,anz + 1) :
-                    output_list.gstat = output_list.gstat + "o"
-            else:
-                output_list.gstat = output_list.gstat + to_string(anz) + "o"
-            for i in range(1,res_line.kind2 + 1) :
-                output_list.gstat = output_list.gstat + "C"
+                if off_market:
+                    output_list.rstat = stat_list[7]
+                    output_list.zistatus = 7
+                else:
+                    output_list.rstat = stat_list[zimmer.zistatus + 1 - 1]
 
-            if off_market:
-                output_list.rstat = stat_list[7]
-                output_list.zistatus = 7
-            else:
-                output_list.rstat = stat_list[zimmer.zistatus + 1 - 1]
-
-            if substring(res_line.flight_nr, 6, 4) != ("0000").lower()  and substring(res_line.flight_nr, 6, 4) != " ":
-                output_list.arrtime = substring(res_line.flight_nr, 6, 2) + ":" + substring(res_line.flight_nr, 8, 2)
+                if substring(res_line.flight_nr, 6, 4) != ("0000").lower()  and substring(res_line.flight_nr, 6, 4) != " ":
+                    output_list.arrtime = substring(res_line.flight_nr, 6, 2) + ":" + substring(res_line.flight_nr, 8, 2)
 
         for output_list in query(output_list_data, filters=(lambda output_list: output_list.gastnrmember > 0)):
 
@@ -527,9 +545,9 @@ def hk_roomlist_1bl(casetype:int, pvilanguage:int, curr_date:date, prog_name:str
             output_list.ankunft = res_line.ankunft
             output_list.abreise = res_line.abreise
             output_list.norms = res_line.zimmeranz
-            output_list.pax = res_line.erwachs
             output_list.rmrate =  to_decimal(res_line.zipreis)
             output_list.argt = res_line.arrangement
+            output_list.pax = res_line.gratis + res_line.erwachs + res_line.kind1 + res_line.kind2
 
             if guest.karteityp == 0:
                 output_list.gastnrmember = res_line.gastnrmember
@@ -659,6 +677,8 @@ def hk_roomlist_1bl(casetype:int, pvilanguage:int, curr_date:date, prog_name:str
     def_cotime = get_output(htpchar(925))
 
     queasy = get_cache (Queasy, {"key": [(eq, 140)],"char1": [(eq, prog_name)]})
+    if queasy is None:
+        return generate_output()
 
     if queasy:
         pr_opt_str = queasy.char3
