@@ -1,6 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------
 # Rd 1/7/2025
+# #469:bemerk -> bemerkung
 #-----------------------------------------
 
 from functions.additional_functions import *

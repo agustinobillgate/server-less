@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 211/7/2025
+# tambah if is None return
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -503,6 +506,10 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
                 pass
 
                 bill1 = get_cache (Bill, {"resnr": [(eq, resnr)],"reslinnr": [(eq, 0)]})
+                 # Rd 221/7/2025
+                # if not available return
+                if bill1 is None:
+                    return generate_output()
 
                 if bill1.rechnr != 0:
 
@@ -660,6 +667,11 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
     co_date = htparam.fdate
 
     reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
+
+    # Rd 221/7/2025
+    # if not available return
+    if reservation is None:
+        return generate_output()
 
     if not reservation:
         msg_str = translateExtended ("No reservation found.", lvcarea, "")
