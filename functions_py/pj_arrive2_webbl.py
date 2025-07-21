@@ -7,6 +7,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
+import datetime
 from models import Guest, Htparam, Reservation, Sourccod, Res_line, Guestseg, Segment, Zimmer, Nation, Mc_guest, Mc_types, Queasy, Reslin_queasy, History, Paramtext
 
 zikat_list_data, Zikat_list = create_model("Zikat_list", {"selected":bool, "zikatnr":int, "kurzbez":string, "bezeich":string})
@@ -1455,7 +1456,14 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
 
             if t_cl_list.stay > 1:
                 t_cl_list.repeat_guest = "*"
-            t_cl_list.night = date_mdy(cl_list.depart) - date_mdy(cl_list.arrival)
+
+            # Rd 21/7/25
+            # err none - none,
+            # t_cl_list.night = date_mdy(cl_list.depart) - date_mdy(cl_list.arrival)
+            try:
+                t_cl_list.night = date_mdy(cl_list.depart) - date_mdy(cl_list.arrival)
+            except:
+                pass
 
 
         t_cl_list = T_cl_list()
@@ -1494,8 +1502,20 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         t_cl_list.rmcat = "100.00"
         t_cl_list.rate_code = to_string(tot_c, " >>>>9")
 
-        for t_cl_list in query(t_cl_list_data, sort_by=[("datum",False),("nr",False)]):
+        # Rd 21/7/25
+        # requery (AI)
+        # for t_cl_list in query(t_cl_list_data, sort_by=[("datum",False),("nr",False)]):
+        # Sort manually, putting None values at the end
+        t_cl_list_data_sorted = sorted(
+            t_cl_list_data,
+            key=lambda x: (
+                x.datum if x.datum is not None else datetime.date.min,
+                x.nr if x.nr is not None else float('-inf')
+            ),
+            reverse=True  # descending sort for both fields
+        )
 
+        for t_cl_list in t_cl_list_data_sorted:
             if total_flag and t_cl_list.gastnr > 0:
 
                 t_list = query(t_list_data, filters=(lambda t_list: t_list.gastnr == t_cl_list.gastnr), first=True)

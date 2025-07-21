@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+#-----------------------------------------
+# Rd, 21/7/225
+# requery
+#-----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -84,8 +89,20 @@ def availability1_1bl(pvilanguage:int, printer_nr:int, call_from:int, txt_file:s
         if rmcat_list:
 
             zkbuff_obj_list = {}
-            for zkbuff in db_session.query(Zkbuff).filter(
-                     ((Zkbuff.zikatnr.in_(list(set([rmcat_list.zikatnr for rmcat_list in rmcat_list_data])))))).order_by(Zkbuff.typ, Zkbuff.zikatnr, rmcat_list.nr).all():
+
+            # Rd, 21/7/25
+            # requery (AI)
+            # for zkbuff in db_session.query(Zkbuff).filter(
+            #          ((Zkbuff.zikatnr.in_(list(set([rmcat_list.zikatnr for rmcat_list in rmcat_list_data])))))).order_by(Zkbuff.typ, Zkbuff.zikatnr, rmcat_list.nr).all():
+            zikatnr_list = list({rmcat.zikatnr for rmcat in rmcat_list_data})
+
+            zkbuff_list = db_session.query(Zkbuff).filter(
+                Zkbuff.zikatnr.in_(zikatnr_list)
+            ).order_by(
+                Zkbuff.typ,
+                Zkbuff.zikatnr
+            ).all()
+            for zkbuff in zkbuff_list:
                 if zkbuff_obj_list.get(zkbuff._recid):
                     continue
                 else:
@@ -233,7 +250,11 @@ def availability1_1bl(pvilanguage:int, printer_nr:int, call_from:int, txt_file:s
                 else:
 
                     room_list = query(room_list_data, filters=(lambda room_list: room_list.zikatnr == kontline.zikatnr), first=True)
-                room_list.room[m - 1] = room_list.room[m - 1] - kontline.zimmeranz
+                
+                # Rd, 21/7/25
+                # add if available
+                if room_list:
+                    room_list.room[m - 1] = room_list.room[m - 1] - kontline.zimmeranz
                 occ_room[m - 1] = occ_room[m - 1] + kontline.zimmeranz
 
             if datum_browse < ci_date:

@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 21/7/25
+# include file: res-zimplan.i, gabung di .p, konversi
+#
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -6,11 +11,11 @@ from datetime import date
 from functions.post_dayuse import post_dayuse
 from functions.intevent_1 import intevent_1
 from functions.mk_mcoupon import mk_mcoupon
-from models import Res_line, Guest, Bill, Htparam, Outorder, Reservation, Waehrung, Master, Counters, Bediener, Queasy, Artikel, Billjournal, Bill_line, Umsatz, Res_history, Reslin_queasy, Exrate, Messages
+from models import Res_line, Guest, Bill, Htparam, Outorder, Reservation, Waehrung, Master, Counters, Bediener, Queasy, Artikel, Billjournal, Bill_line, Umsatz, Res_history, Reslin_queasy, Exrate, Messages, Zimplan, Zimmer, Resplan, Zimkateg
 
 def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, silenzio:bool):
 
-    prepare_cache ([Guest, Bill, Htparam, Reservation, Waehrung, Master, Counters, Bediener, Artikel, Billjournal, Bill_line, Umsatz, Res_history, Reslin_queasy, Exrate])
+    prepare_cache ([Res_line, Guest, Bill, Htparam, Reservation, Waehrung, Master, Counters, Bediener, Artikel, Billjournal, Bill_line, Umsatz, Res_history, Reslin_queasy, Exrate, Messages, Zimmer, Resplan, Zimkateg])
 
     new_resstatus = 0
     checked_in = False
@@ -52,7 +57,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
     bill_no:int = 0
     loopi:int = 0
     lvcarea:string = "res-checkin"
-    res_line = guest = bill = htparam = outorder = reservation = waehrung = master = counters = bediener = queasy = artikel = billjournal = bill_line = umsatz = res_history = reslin_queasy = exrate = messages = None
+    res_line = guest = bill = htparam = outorder = reservation = waehrung = master = counters = bediener = queasy = artikel = billjournal = bill_line = umsatz = res_history = reslin_queasy = exrate = messages = zimplan = zimmer = resplan = zimkateg = None
 
     res_member = receiver = res_sharer = res_line1 = rline = b_receiver = buff_bill = buf_resline = bbill = art1 = None
 
@@ -71,7 +76,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages
+        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages, zimplan, zimmer, resplan, zimkateg
         nonlocal pvilanguage, resnr, reslinnr, user_init, silenzio
         nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
 
@@ -82,7 +87,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
 
     def generate_keycard():
 
-        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages
+        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages, zimplan, zimmer, resplan, zimkateg
         nonlocal pvilanguage, resnr, reslinnr, user_init, silenzio
         nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
 
@@ -95,7 +100,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
 
     def check_masterbill():
 
-        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages
+        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages, zimplan, zimmer, resplan, zimkateg
         nonlocal pvilanguage, resnr, reslinnr, user_init, silenzio
         nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
 
@@ -118,7 +123,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
 
     def update_mastbill():
 
-        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages
+        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages, zimplan, zimmer, resplan, zimkateg
         nonlocal pvilanguage, resnr, reslinnr, user_init, silenzio
         nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
 
@@ -166,7 +171,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
 
     def calculate_deposit_amount():
 
-        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages
+        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages, zimplan, zimmer, resplan, zimkateg
         nonlocal pvilanguage, resnr, reslinnr, user_init, silenzio
         nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
 
@@ -232,7 +237,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
 
     def check_messages():
 
-        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages
+        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages, zimplan, zimmer, resplan, zimkateg
         nonlocal pvilanguage, resnr, reslinnr, user_init, silenzio
         nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
 
@@ -250,7 +255,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
 
     def check_midnite_checkin():
 
-        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages
+        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages, zimplan, zimmer, resplan, zimkateg
         nonlocal pvilanguage, resnr, reslinnr, user_init, silenzio
         nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
 
@@ -265,6 +270,428 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
 
         if htparam.fdate == get_current_date() and not silenzio:
             msg_str = msg_str + chr_unicode(2) + translateExtended ("EARLY CHECKED-IN GUEST! POST DAY-USE FEE IF NEEDED.", lvcarea, "") + chr_unicode(10)
+
+
+    def assign_zinr(resline_recid:int, ankunft:date, abreise:date, zinr:string, resstatus:int, gastnrmember:int, bemerk:string, name:string):
+
+        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages, zimplan, zimmer, resplan, zimkateg
+        nonlocal pvilanguage, resnr, reslinnr, user_init, silenzio
+        nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
+
+
+        nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
+
+        room_blocked = False
+        sharer:bool = False
+        curr_datum:date = None
+        beg_datum:date = None
+        res_recid:int = 0
+        res_line1 = None
+        zimplan1 = None
+        resline = None
+        zbuff = None
+
+        def generate_inner_output():
+            return (room_blocked)
+
+        Res_line1 =  create_buffer("Res_line1",Res_line)
+        Zimplan1 =  create_buffer("Zimplan1",Zimplan)
+        resline =  create_buffer("resline",Res_line)
+        Zbuff =  create_buffer("Zbuff",Zimplan)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+        sharer = (resstatus == 11) or (resstatus == 13)
+
+        if zinr != "" and not sharer:
+
+            if res_mode.lower()  == ("inhouse").lower() :
+                beg_datum = htparam.fdate
+            else:
+                beg_datum = ankunft
+            room_blocked = False
+            for curr_datum in date_range(beg_datum,(abreise - 1)) :
+
+                zimplan1 = db_session.query(Zimplan1).filter(
+                         (Zimplan1.datum == curr_datum) & (Zimplan1.zinr == (zinr).lower())).first()
+
+                if (not zimplan1) and (not room_blocked):
+                    zimplan = Zimplan()
+                    db_session.add(zimplan)
+
+                    zimplan.datum = curr_datum
+                    zimplan.zinr = zinr
+                    zimplan.res_recid = resline_recid
+                    zimplan.gastnrmember = gastnrmember
+                    zimplan.bemerk = bemerk
+                    zimplan.resstatus = resstatus
+                    zimplan.name = name
+                    pass
+                    pass
+                else:
+
+                    if zimplan1 and (zimplan1.res_recid != resline_recid):
+
+                        resline = get_cache (Res_line, {"_recid": [(eq, zimplan1.res_recid)]})
+
+                        if resline and resline.zinr.lower()  == (zinr).lower()  and resline.active_flag < 2 and resline.ankunft <= zimplan1.datum and resline.abreise > zimplan1.datum:
+                            curr_datum = abreise
+                            room_blocked = True
+                        else:
+                            pass
+                            zimplan1.res_recid = resline_recid
+                            zimplan1.gastnrmember = gastnrmember
+                            zimplan1.bemerk = bemerk
+                            zimplan1.resstatus = resstatus
+                            zimplan1.name = name
+                            pass
+                            pass
+
+            if room_blocked:
+                for curr_datum in date_range(beg_datum,(abreise - 1)) :
+
+                    zimplan = get_cache (Zimplan, {"datum": [(eq, curr_datum)],"zinr": [(eq, zinr)],"res_recid": [(eq, resline_recid)]})
+
+                    if zimplan:
+
+                        zbuff = db_session.query(Zbuff).filter(
+                                 (Zbuff._recid == zimplan._recid)).first()
+                        db_session.delete(zbuff)
+                        pass
+            else:
+
+                if resstatus == 6 or resstatus == 13:
+
+                    zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+
+                    if abreise > htparam.fdate and zimmer.zistatus == 0:
+                        zimmer.zistatus = 5
+
+                    elif abreise > htparam.fdate and zimmer.zistatus == 3:
+                        zimmer.zistatus = 4
+
+                    elif abreise == htparam.fdate:
+
+                        res_line1 = db_session.query(Res_line1).filter(
+                                 (Res_line1._recid != resline_recid) & (Res_line1.abreise == abreise) & (Res_line1.zinr == zimmer.zinr) & ((Res_line1.resstatus == 6) | (Res_line1.resstatus == 13))).first()
+
+                        if not res_line1:
+                            zimmer.zistatus = 3
+                    pass
+
+                    queasy = get_cache (Queasy, {"key": [(eq, 162)],"char1": [(eq, zimmer.zinr)]})
+
+                    if queasy:
+                        db_session.delete(queasy)
+                    pass
+
+        return generate_inner_output()
+
+
+    def release_zinr(new_zinr:string):
+
+        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages, zimplan, zimmer, resplan, zimkateg
+        nonlocal pvilanguage, resnr, reslinnr, user_init, silenzio
+        nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
+
+
+        nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
+
+        res_recid1:int = 0
+        beg_datum:date = None
+        answer:bool = False
+        parent_nr:int = 0
+        res_line1 = None
+        res_line2 = None
+        rline = None
+        rline2 = None
+        bbuff = None
+        Res_line1 =  create_buffer("Res_line1",Res_line)
+        Res_line2 =  create_buffer("Res_line2",Res_line)
+        Rline =  create_buffer("Rline",Res_line)
+        Rline2 =  create_buffer("Rline2",Res_line)
+        Bbuff =  create_buffer("Bbuff",Bill)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+
+        rline = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+
+        if rline.zinr != "":
+            beg_datum = rline.ankunft
+            res_recid1 = 0
+
+            if res_mode.lower()  == ("delete").lower()  or res_mode.lower()  == ("cancel").lower()  and rline.resstatus == 1:
+
+                res_line1 = get_cache (Res_line, {"resnr": [(eq, resnr)],"zinr": [(eq, rline.zinr)],"resstatus": [(eq, 11)]})
+
+                if res_line1:
+                    pass
+                    res_line1.resstatus = 1
+                    pass
+                    res_recid1 = res_line1._recid
+
+            if res_mode.lower()  == ("inhouse").lower() :
+                answer = True
+                beg_datum = htparam.fdate
+
+                if rline.resstatus == 6 and (rline.zinr.lower()  != (new_zinr).lower()):
+
+                    res_line1 = get_cache (Res_line, {"resnr": [(eq, resnr)],"zinr": [(eq, rline.zinr)],"resstatus": [(eq, 13)]})
+
+                    if res_line1:
+
+                        for res_line2 in db_session.query(Res_line2).filter(
+                                 (Res_line2.resnr == resnr) & (Res_line2.zinr == rline.zinr) & (Res_line2.resstatus == 13)).order_by(Res_line2._recid).all():
+
+                            bill = get_cache (Bill, {"resnr": [(eq, resnr)],"reslinnr": [(eq, res_line2.reslinnr)],"flag": [(eq, 0)],"zinr": [(eq, res_line2.zinr)]})
+                            bill.zinr = new_zinr
+
+
+                            parent_nr = bill.parent_nr
+                            pass
+
+                            for bill in db_session.query(Bill).filter(
+                                     (Bill.resnr == resnr) & (Bill.parent_nr == parent_nr) & (Bill.flag == 0) & (Bill.zinr == res_line2.zinr)).order_by(Bill._recid).all():
+
+                                bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+                                bbuff.zinr = new_zinr
+                                pass
+                                pass
+
+                            rline2 = get_cache (Res_line, {"_recid": [(eq, res_line2._recid)]})
+                            rline2.zinr = new_zinr
+                            pass
+                            pass
+
+                        zimmer = get_cache (Zimmer, {"zinr": [(eq, rline.zinr)]})
+                        zimmer.zistatus = 2
+                        pass
+
+            for zimplan in db_session.query(Zimplan).filter(
+                         (Zimplan.zinr == rline.zinr) & (Zimplan.datum >= beg_datum) & (Zimplan.datum < rline.abreise)).order_by(Zimplan._recid).all():
+
+                if res_recid1 != 0:
+                    zimplan.res_recid = res_recid1
+                else:
+                    db_session.delete(zimplan)
+                pass
+
+
+    def add_resplan():
+
+        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages, zimplan, zimmer, resplan, zimkateg
+        nonlocal pvilanguage, resnr, reslinnr, user_init, silenzio
+        nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
+
+
+        nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
+
+        curr_date:date = None
+        beg_datum:date = None
+        end_datum:date = None
+        i:int = 0
+        anz:int = 0
+        rline = None
+        rbuff = None
+        Rline =  create_buffer("Rline",Res_line)
+        Rbuff =  create_buffer("Rbuff",Resplan)
+
+        rline = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+
+        zimmer = get_cache (Zimmer, {"zinr": [(eq, rline.zinr)]})
+
+        if zimmer and (not zimmer.sleeping):
+            pass
+        else:
+            i = rline.resstatus
+
+            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, rline.zikatnr)]})
+
+            if res_mode.lower()  == ("inhouse").lower() :
+                beg_datum = get_current_date()
+            else:
+                beg_datum = rline.ankunft
+            end_datum = rline.abreise - timedelta(days=1)
+            curr_date = beg_datum
+            for curr_date in date_range(beg_datum,end_datum) :
+
+                resplan = get_cache (Resplan, {"zikatnr": [(eq, zimkateg.zikatnr)],"datum": [(eq, curr_date)]})
+
+                if not resplan:
+                    resplan = Resplan()
+                    db_session.add(resplan)
+
+                    resplan.datum = curr_date
+                    resplan.zikatnr = zimkateg.zikatnr
+                    anz = resplan.anzzim[i - 1] + rline.zimmeranz
+                    resplan.anzzim[i - 1] = anz
+
+                anz = resplan.anzzim[i - 1] + rline.zimmeranz
+
+                rbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                # Rd, 21/7/25
+                # add if rbuff
+                if rbuff:
+                    rbuff.anzzim[i - 1] = anz
+                pass
+                pass
+
+
+    def min_resplan():
+
+        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages, zimplan, zimmer, resplan, zimkateg
+        nonlocal pvilanguage, resnr, reslinnr, user_init, silenzio
+        nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
+
+
+        nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
+
+        curr_date:date = None
+        beg_datum:date = None
+        i:int = 0
+        rline = None
+        rbuff = None
+        Rline =  create_buffer("Rline",Res_line)
+        Rbuff =  create_buffer("Rbuff",Resplan)
+
+        rline = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+
+        zimmer = get_cache (Zimmer, {"zinr": [(eq, rline.zinr)]})
+
+        if zimmer and (not zimmer.sleeping):
+            pass
+        else:
+            i = rline.resstatus
+
+            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, rline.zikatnr)]})
+
+            if res_mode.lower()  == ("inhouse").lower() :
+                beg_datum = get_current_date()
+            else:
+                beg_datum = rline.ankunft
+            curr_date = beg_datum
+            while curr_date >= beg_datum and curr_date < rline.abreise:
+
+                resplan = get_cache (Resplan, {"zikatnr": [(eq, zimkateg.zikatnr)],"datum": [(eq, curr_date)]})
+
+                if resplan:
+
+                    rbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                    rbuff.anzzim[i - 1] = rbuff.anzzim[i - 1] - rline.zimmeranz
+                    pass
+                    pass
+                curr_date = curr_date + timedelta(days=1)
+
+
+    def rmchg_sharer(act_zinr:string, new_zinr:string):
+
+        nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages, zimplan, zimmer, resplan, zimkateg
+        nonlocal pvilanguage, resnr, reslinnr, user_init, silenzio
+        nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
+
+
+        nonlocal res_member, receiver, res_sharer, res_line1, rline, b_receiver, buff_bill, buf_resline, bbill, art1
+
+        res_recid1:int = 0
+        res_line1 = None
+        res_line2 = None
+        beg_datum:date = None
+        answer:bool = False
+        parent_nr:int = 0
+        curr_datum:date = None
+        end_datum:date = None
+        new_zkat = None
+        bbuff = None
+        rbuff = None
+        Res_line1 =  create_buffer("Res_line1",Res_line)
+        Res_line2 =  create_buffer("Res_line2",Res_line)
+        New_zkat =  create_buffer("New_zkat",Zimkateg)
+        Bbuff =  create_buffer("Bbuff",Bill)
+        Rbuff =  create_buffer("Rbuff",Resplan)
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+        beg_datum = htparam.fdate
+        end_datum = beg_datum
+        res_recid1 = 0
+
+        for messages in db_session.query(Messages).filter(
+                     (Messages.zinr == (act_zinr).lower()) & (Messages.resnr == res_line.resnr) & (Messages.reslinnr >= 1)).order_by(Messages._recid).all():
+            messages.zinr = new_zinr
+
+        for res_line1 in db_session.query(Res_line1).filter(
+                     (Res_line1.resnr == resnr) & (Res_line1.zinr == (act_zinr).lower()) & (Res_line1.resstatus == 13)).order_by(Res_line1._recid).all():
+
+            if end_datum <= res_line1.abreise:
+                res_recid1 = res_line1._recid
+                end_datum = res_line1.abreise
+
+        if res_line.resstatus == 6 and res_recid1 == 0:
+
+            zimmer = get_cache (Zimmer, {"zinr": [(eq, act_zinr)]})
+            zimmer.zistatus = 2
+            pass
+
+        if res_line.resstatus == 6 and res_recid1 != 0:
+
+            res_line1 = get_cache (Res_line, {"_recid": [(eq, res_recid1)]})
+
+            for res_line2 in db_session.query(Res_line2).filter(
+                             (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr).lower()) & (Res_line2.resstatus == 13) & (Res_line2.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line2._recid).all():
+
+                zimmer = get_cache (Zimmer, {"zinr": [(eq, new_zinr)]})
+
+                new_zkat = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+
+                if new_zkat.zikatnr != res_line2.zikatnr:
+                    for curr_datum in date_range(beg_datum,(res_line2.abreise - 1)) :
+
+                        resplan = get_cache (Resplan, {"zikatnr": [(eq, res_line2.zikatnr)],"datum": [(eq, curr_datum)]})
+
+                        if resplan:
+
+                            rbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                            rbuff.anzzim[12] = rbuff.anzzim[12] - 1
+                            pass
+                            pass
+
+                        resplan = get_cache (Resplan, {"zikatnr": [(eq, new_zkat.zikatnr)],"datum": [(eq, curr_datum)]})
+
+                        if not resplan:
+                            resplan = Resplan()
+                            db_session.add(resplan)
+
+                            resplan.datum = curr_datum
+                            resplan.zikatnr = new_zkat.zikatnr
+                            resplan.anzzim[12] = resplan.anzzim[12] + 1
+                        else:
+
+                            rbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                            rbuff.anzzim[12] = rbuff.anzzim[12] + 1
+                            pass
+                            pass
+
+                for bill in db_session.query(Bill).filter(
+                                 (Bill.resnr == resnr) & (Bill.parent_nr == res_line2.reslinnr) & (Bill.flag == 0) & (Bill.zinr == res_line2.zinr)).order_by(Bill._recid).all():
+                    bill.zinr = new_zinr
+                    pass
+                res_line2.zinr = new_zinr
+                res_line2.zikatnr = new_zkat.zikatnr
+                res_line2.setup = zimmer.setup
+
+
+                pass
+
+            for res_line2 in db_session.query(Res_line2).filter(
+                             (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr).lower()) & (Res_line2.resstatus == 12)).order_by(Res_line2._recid).all():
+                res_line2.zinr = new_zinr
+                res_line2.zikatnr = new_zkat.zikatnr
+                res_line2.setup = zimmer.setup
+
+
+                pass
+
+            zimmer = get_cache (Zimmer, {"zinr": [(eq, act_zinr)]})
+            zimmer.zistatus = 2
+            pass
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
     bill_date = htparam.fdate
@@ -304,8 +731,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
                 res_sharer.setup = res_line.setup
 
 
-        res_sharer = db_session.query(Res_sharer).filter(
-                     (Res_sharer.resnr == resnr) & (Res_sharer.kontakt_nr == reslinnr) & (Res_sharer.l_zuordnung[inc_value(2)] == 1)).first()
+        res_sharer = get_cache (Res_line, {"resnr": [(eq, resnr)],"kontakt_nr": [(eq, reslinnr)],"l_zuordnung[2]": [(eq, 1)]})
         while None != res_sharer:
             pass
             res_sharer.active_flag = 1
@@ -617,8 +1043,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
 
                 if htparam.paramgruppe == 6 and htparam.flogical and not silenzio:
 
-                    res_member = db_session.query(Res_member).filter(
-                                 (Res_member.resnr == resnr) & (Res_member.reslinnr != reslinnr) & (Res_member.active_flag == 0) & (Res_member.l_zuordnung[inc_value(2)] == 0)).first()
+                    res_member = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(ne, reslinnr)],"active_flag": [(eq, 0)],"l_zuordnung[2]": [(eq, 0)]})
 
                     if res_member and htparam.paramgruppe == 6 and htparam.flogical and not silenzio:
                         answer = False
@@ -751,8 +1176,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
 
         if not silenzio:
 
-            res_sharer = db_session.query(Res_sharer).filter(
-                         (Res_sharer.resnr == res_line.resnr) & (Res_sharer.reslinnr != res_line.reslinnr) & (Res_sharer.resstatus == 11) & (Res_sharer.zinr == res_line.zinr)).first()
+            res_sharer = get_cache (Res_line, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(ne, res_line.reslinnr)],"resstatus": [(eq, 11)],"zinr": [(eq, res_line.zinr)]})
 
             if res_sharer:
                 msg_str = msg_str + chr_unicode(2) + translateExtended ("NOTE: Room sharer", lvcarea, "") + " " + res_sharer.name + " " + translateExtended ("not yet checked-in.", lvcarea, "") + chr_unicode(10)
