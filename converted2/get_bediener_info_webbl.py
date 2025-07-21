@@ -1,26 +1,30 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 21/7/2025
+# name table bediener, sama dengan nama parameter output
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
-from models import Queasy, bediener, Paramtext
+from models import Bediener, Queasy, Paramtext
 
 def get_bediener_info_webbl(user_name:string, user_init:string):
 
-    prepare_cache ([Queasy, bediener, Paramtext])
+    prepare_cache ([bediener, Queasy, Paramtext])
 
     epoch_signature = 0
     bediener = False
     bediener_info_data = []
     signature_list_data = []
     dept_name:string = ""
-    queasy = bediener = paramtext = None
+    bediener = queasy = paramtext = None
 
-    bediener_info = value_list = signature_list = buff_user = bdept = totpdata = None
+    bediener_info = value_list = signature_list = bediener_buff = buff_user = bdept = totpdata = None
 
     bediener_info_data, Bediener_info = create_model("Bediener_info", {"user_number":int, "user_init":string, "user_name":string, "dept_number":int, "dept_name":string, "email":string, "mobile":string, "pager":string, "totp_flag":bool, "totp_status":string})
     value_list_data, Value_list = create_model("Value_list", {"var_name":string, "value_str":string})
     signature_list_data, Signature_list = create_model("Signature_list", {"var_name":string, "signature":string})
 
+    Bediener_buff = create_buffer("Bediener_buff",Bediener)
     Buff_user = create_buffer("Buff_user",Queasy)
     Bdept = create_buffer("Bdept",Queasy)
     Totpdata = create_buffer("Totpdata",Queasy)
@@ -29,24 +33,24 @@ def get_bediener_info_webbl(user_name:string, user_init:string):
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal epoch_signature, bediener, bediener_info_data, signature_list_data, dept_name, queasy, bediener, paramtext
+        nonlocal epoch_signature, bediener, bediener_info_data, signature_list_data, dept_name, bediener, queasy, paramtext
         nonlocal user_name, user_init
-        nonlocal buff_user, bdept, totpdata
+        nonlocal bediener_buff, buff_user, bdept, totpdata
 
 
-        nonlocal bediener_info, value_list, signature_list, buff_user, bdept, totpdata
+        nonlocal bediener_info, value_list, signature_list, bediener_buff, buff_user, bdept, totpdata
         nonlocal bediener_info_data, value_list_data, signature_list_data
 
         return {"epoch_signature": epoch_signature, "bediener": bediener, "bediener-info": bediener_info_data, "signature-list": signature_list_data}
 
     def create_signature(user_name:string, value_list_data:[Value_list]):
 
-        nonlocal epoch_signature, bediener, bediener_info_data, signature_list_data, dept_name, queasy, bediener, paramtext
+        nonlocal epoch_signature, bediener, bediener_info_data, signature_list_data, dept_name, bediener, queasy, paramtext
         nonlocal user_init
-        nonlocal buff_user, bdept, totpdata
+        nonlocal bediener_buff, buff_user, bdept, totpdata
 
 
-        nonlocal bediener_info, value_list, signature_list, buff_user, bdept, totpdata
+        nonlocal bediener_info, value_list, signature_list, bediener_buff, buff_user, bdept, totpdata
         nonlocal bediener_info_data, signature_list_data
 
         epoch = 0
@@ -87,12 +91,12 @@ def get_bediener_info_webbl(user_name:string, user_init:string):
 
     def decode_string(in_str:string):
 
-        nonlocal epoch_signature, bediener, bediener_info_data, signature_list_data, dept_name, queasy, bediener, paramtext
+        nonlocal epoch_signature, bediener, bediener_info_data, signature_list_data, dept_name, bediener, queasy, paramtext
         nonlocal user_name, user_init
-        nonlocal buff_user, bdept, totpdata
+        nonlocal bediener_buff, buff_user, bdept, totpdata
 
 
-        nonlocal bediener_info, value_list, signature_list, buff_user, bdept, totpdata
+        nonlocal bediener_info, value_list, signature_list, bediener_buff, buff_user, bdept, totpdata
         nonlocal bediener_info_data, value_list_data, signature_list_data
 
         out_str = ""
@@ -113,11 +117,11 @@ def get_bediener_info_webbl(user_name:string, user_init:string):
         return generate_inner_output()
 
 
-    bediener = get_cache (bediener, {"userinit": [(eq, user_init)],"username": [(eq, user_name)]})
+    bediener_buff = get_cache (bediener, {"userinit": [(eq, user_init)],"username": [(eq, user_name)]})
 
-    if bediener:
+    if bediener_buff:
 
-        buff_user = get_cache (Queasy, {"key": [(eq, 134)],"number1": [(eq, bediener.nr)],"betriebsnr": [(eq, 0)],"deci1": [(eq, 0)],"logi1": [(eq, False)]})
+        buff_user = get_cache (Queasy, {"key": [(eq, 134)],"number1": [(eq, bediener_buff.nr)],"betriebsnr": [(eq, 0)],"deci1": [(eq, 0)],"logi1": [(eq, False)]})
 
         bdept = get_cache (Queasy, {"key": [(eq, 19)],"number1": [(eq, bediener.user_group)]})
 
@@ -128,10 +132,10 @@ def get_bediener_info_webbl(user_name:string, user_init:string):
         bediener_info = Bediener_info()
         bediener_info_data.append(bediener_info)
 
-        bediener_info.user_number = bediener.nr
-        bediener_info.user_init = bediener.userinit
-        bediener_info.user_name = bediener.username
-        bediener_info.dept_number = bediener.user_group
+        bediener_info.user_number = bediener_buff.nr
+        bediener_info.user_init = bediener_buff.userinit
+        bediener_info.user_name = bediener_buff.username
+        bediener_info.dept_number = bediener_buff.user_group
         bediener_info.dept_name = dept_name
         bediener_info.email = buff_user.char2
         bediener_info.mobile = buff_user.char1
@@ -162,6 +166,6 @@ def get_bediener_info_webbl(user_name:string, user_init:string):
         value_list.value_str = bediener_info.totp_status
 
 
-        epoch_signature, signature_list_data = create_signature(bediener.username, value_list_data)
+        epoch_signature, signature_list_data = create_signature(bediener_buff.username, value_list_data)
 
     return generate_output()

@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------
 # Rd 21/7/2025
-
+# add date validateion fdate1, fdate2
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
