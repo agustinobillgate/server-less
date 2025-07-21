@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 21/7/2025
+# Gitlab: 252
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -11,6 +14,10 @@ segm_list_data, Segm_list = create_model("Segm_list", {"selected":bool, "segm":i
 argt_list_data, Argt_list = create_model("Argt_list", {"selected":bool, "argtnr":int, "argt":string, "bezeich":string})
 zikat_list_data, Zikat_list = create_model("Zikat_list", {"selected":bool, "zikatnr":int, "bezeich":string})
 outlook_list_data, Outlook_list = create_model("Outlook_list", {"selected":bool, "outlook_nr":int, "bezeich":string})
+
+def safe_divide(numerator, denominator):
+    numerator, denominator = to_decimal(numerator), to_decimal(denominator)
+    return (numerator / denominator) if denominator not in (0, None) else to_decimal("0")
 
 def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list], zikat_list_data:[Zikat_list], outlook_list_data:[Outlook_list], pvilanguage:int, op_type:int, flag_i:int, curr_date:date, to_date:date, all_segm:bool, all_argt:bool, all_zikat:bool, exclooo:bool, incl_tent:bool, show_rev:int, vhp_limited:bool, excl_compl:bool, all_outlook:bool, incl_oth:bool):
 
@@ -1256,13 +1263,25 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                 room_list.revpar2 =  to_decimal(room_list.revpar) / to_decimal(exchg_rate)
 
 
-            room_list.avrglodg_inclcomp =  to_decimal(room_list.lodg[4]) / to_decimal(room_list.room[6])
-            room_list.avrglodg_exclcomp =  to_decimal(room_list.lodg[4]) / to_decimal((room_list.room[6]) - to_decimal(room_list.room_comp))
-        tavg_rmrev =  to_decimal(t_lodg[4]) / to_decimal(troom_exccomp)
+            # Rd, error division
+            # room_list.avrglodg_inclcomp =  to_decimal(room_list.lodg[4]) / to_decimal(room_list.room[6])
+            room_list.avrglodg_inclcomp = safe_divide(room_list.lodg[4], room_list.room[6])
+
+            # room_list.avrglodg_exclcomp =  to_decimal(room_list.lodg[4]) / to_decimal((room_list.room[6]) - to_decimal(room_list.room_comp))
+            room_list.avrglodg_exclcomp = safe_divide(room_list.lodg[4], to_decimal(room_list.room[6]) - to_decimal(room_list.room_comp))
+
+        
+        # tavg_rmrev =  to_decimal(t_lodg[4]) / to_decimal(troom_exccomp)
+        tavg_rmrev =  safe_divide(t_lodg[4] , troom_exccomp)
+
         tavg_rmrev2 =  to_decimal(tavg_rmrev) / to_decimal(exchg_rate)
-        t_avrglodg_inclcomp =  to_decimal(t_lodg[4]) / to_decimal(rm_array[6])
-        t_avrglodg_exclcomp =  to_decimal(t_lodg[4]) / to_decimal((rm_array[6]) - to_decimal(t_room_comp))
-        avrg_rate =  to_decimal(tot_avrg) / to_decimal(jml_date)
+        # t_avrglodg_inclcomp =  to_decimal(t_lodg[4]) / to_decimal(rm_array[6])
+        t_avrglodg_inclcomp =  safe_divide(t_lodg[4] , rm_array[6])
+
+
+        # t_avrglodg_exclcomp =  to_decimal(t_lodg[4]) / to_decimal((rm_array[6]) - to_decimal(t_room_comp))
+        t_avrglodg_exclcomp =  safe_divide(t_lodg[4], to_decimal((rm_array[6]) - to_decimal(t_room_comp)))
+        avrg_rate =  safe_divide(tot_avrg, jml_date)
         mtd_tot_room = get_mtd_active_room()
         mtd_occ =  to_decimal("0")
 
