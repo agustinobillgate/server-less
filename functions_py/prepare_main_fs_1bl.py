@@ -2,6 +2,7 @@
 #-----------------------------------------
 # Rd 22/7/2025
 # gitlab: 606
+# Quick&Dirdy function Query (need to fix later)
 #-----------------------------------------
 
 from functions.additional_functions import *
