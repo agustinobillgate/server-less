@@ -1,8 +1,9 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------
-# Rd, 18/7/25
-# filx arrFlag -> arrflag
+# Fitria, 22/7/2025
+# arFlag -> arflag 
 #-----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -217,7 +218,8 @@ def repeat_glist_1bl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                         curr_i = curr_i + 1
 
 
-                        fnet_lodg, net_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, tot_vat, tot_service = get_output(get_room_breakdown(res_line._recid, datum, curr_i, datum))
+                        fnet_lodg, net_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, 
+                        tot_vat, tot_service = get_output(get_room_breakdown(res_line._recid, datum, curr_i, datum))
                         g_list.lodging =  to_decimal(g_list.lodging) + to_decimal(net_lodg)
 
                     if waehrung:
@@ -225,96 +227,100 @@ def repeat_glist_1bl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         curr_gastnr = 0
         curr_resnr = 0
 
-        for g_list in query(g_list_data, sort_by=[("gastnr",False),("resnr",False)]):
+        guest_obj_list = {}
+        for guest in db_session.query(Guest).filter(
+                 ((Guest.gastnr.in_(list(set([g_list.gastnr for g_list in g_list_data])))))).order_by(g_list.gastnr, g_list.resnr).all():
+            if guest_obj_list.get(guest._recid):
+                continue
+            else:
+                guest_obj_list[guest._recid] = True
 
-            guest = get_cache (Guest, {"gastnr": [(eq, g_list.gastnr)]})
+            g_list = query(g_list_data, (lambda g_list: (guest.gastnr == g_list.gastnr)), first=True)
 
-            if guest:
+            if curr_gastnr != g_list.gastnr:
+                repeat_list = Repeat_list()
+                repeat_list_data.append(repeat_list)
 
-                if curr_gastnr != g_list.gastnr:
-                    repeat_list = Repeat_list()
-                    repeat_list_data.append(repeat_list)
-
-                    curr_gastnr = g_list.gastnr
-                    curr_resnr = g_list.resnr
-                    repeat_list.gastnr = g_list.gastnr
-                    repeat_list.zinr = g_list.zinr
-                    repeat_list.ankunft = g_list.ankunft
-                    repeat_list.pax = g_list.erwachs + g_list.kind1 + g_list.gratis
-
-                    if not g_list.arrflag:
-                        repeat_list.stay = 1
-                    else:
-                        repeat_list.arrflag = True
-                    vip_flag = ""
-
-                    guestseg = db_session.query(Guestseg).filter(
-                             (Guestseg.gastnr == guest.gastnr) & ((Guestseg.segmentcode == vipnr1) | (Guestseg.segmentcode == vipnr2) | (Guestseg.segmentcode == vipnr3) | (Guestseg.segmentcode == vipnr4) | (Guestseg.segmentcode == vipnr5) | (Guestseg.segmentcode == vipnr6) | (Guestseg.segmentcode == vipnr7) | (Guestseg.segmentcode == vipnr8) | (Guestseg.segmentcode == vipnr9))).first()
-
-                    if guestseg:
-
-                        segment = get_cache (Segment, {"segmentcode": [(eq, guestseg.segmentcode)]})
-
-                        if segment:
-                            vip_flag = segment.bezeich
-
-
-                    repeat_list.vip = vip_flag
-                    repeat_list.name = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                    repeat_list.birthdate = guest.geburtdatum1
-                    repeat_list.email = guest.email_adr
-                    repeat_list.telefon = guest.telefon
-                    repeat_list.city = guest.wohnort
-                    repeat_list.remark = guest.bemerkung
-                    repeat_list.mobil_telefon = guest.mobil_telefon
-
-                    nation = get_cache (Nation, {"kurzbez": [(eq, guest.nation1)]})
-
-                    if nation:
-                        repeat_list.nation = nation.bezeich
-
-                    res_line = get_cache (Res_line, {"active_flag": [(eq, 1)],"gastnrmember": [(eq, g_list.gastnr)],"resnr": [(eq, g_list.resnr)]})
-
-                    if res_line:
-                        repeat_list.flag = 2
-                        repeat_list.zinr = res_line.zinr
-                        repeat_list.ankunft = res_line.ankunft
-                        repeat_list.resname = res_line.resname
-
-
-                    else:
-
-                        for res_line in db_session.query(Res_line).filter(
-                                 ((Res_line.active_flag == 0) | (Res_line.active_flag == 2)) & (Res_line.gastnrmember == g_list.gastnr) & (Res_line.resnr == g_list.resnr)).order_by(Res_line.ankunft).yield_per(100):
-
-                            if res_line.active_flag == 2:
-                                repeat_list.resname = res_line.resname
-                            else:
-                                repeat_list.flag = 1
-                                repeat_list.ankunft = res_line.ankunft
-                                repeat_list.resname = res_line.resname
-
-
-                            break
-                else:
-
-                    if g_list.resnr != curr_resnr:
-                        curr_resnr = g_list.resnr
-
-                        if not g_list.arrflag:
-                            repeat_list.stay = repeat_list.stay + 1
-                        else:
-                            repeat_list.arrflag = True
+                curr_gastnr = g_list.gastnr
+                curr_resnr = g_list.resnr
+                repeat_list.gastnr = g_list.gastnr
+                repeat_list.zinr = g_list.zinr
+                repeat_list.ankunft = g_list.ankunft
+                repeat_list.pax = g_list.erwachs + g_list.kind1 + g_list.gratis
 
                 if not g_list.arrflag:
-                    repeat_list.rmnite = repeat_list.rmnite + (g_list.abreise - g_list.ankunft).days
+                    repeat_list.stay = 1
+                else:
+                    repeat_list.arrflag = True
+                vip_flag = ""
+
+                guestseg = db_session.query(Guestseg).filter(
+                         (Guestseg.gastnr == guest.gastnr) & ((Guestseg.segmentcode == vipnr1) | (Guestseg.segmentcode == vipnr2) | (Guestseg.segmentcode == vipnr3) | (Guestseg.segmentcode == vipnr4) | (Guestseg.segmentcode == vipnr5) | (Guestseg.segmentcode == vipnr6) | (Guestseg.segmentcode == vipnr7) | (Guestseg.segmentcode == vipnr8) | (Guestseg.segmentcode == vipnr9))).first()
+
+                if guestseg:
+
+                    segment = get_cache (Segment, {"segmentcode": [(eq, guestseg.segmentcode)]})
+
+                    if segment:
+                        vip_flag = segment.bezeich
 
 
-                repeat_list.lodging =  to_decimal(g_list.lodging)
+                repeat_list.vip = vip_flag
+                repeat_list.name = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                repeat_list.birthdate = guest.geburtdatum1
+                repeat_list.email = guest.email_adr
+                repeat_list.telefon = guest.telefon
+                repeat_list.city = guest.wohnort
+                repeat_list.remark = guest.bemerkung
+                repeat_list.mobil_telefon = guest.mobil_telefon
+
+                nation = get_cache (Nation, {"kurzbez": [(eq, guest.nation1)]})
+
+                if nation:
+                    repeat_list.nation = nation.bezeich
+
+                res_line = get_cache (Res_line, {"active_flag": [(eq, 1)],"gastnrmember": [(eq, g_list.gastnr)],"resnr": [(eq, g_list.resnr)]})
+
+                if res_line:
+                    repeat_list.flag = 2
+                    repeat_list.zinr = res_line.zinr
+                    repeat_list.ankunft = res_line.ankunft
+                    repeat_list.resname = res_line.resname
+
+
+                else:
+
+                    for res_line in db_session.query(Res_line).filter(
+                             ((Res_line.active_flag == 0) | (Res_line.active_flag == 2)) & (Res_line.gastnrmember == g_list.gastnr) & (Res_line.resnr == g_list.resnr)).order_by(Res_line.ankunft).yield_per(100):
+
+                        if res_line.active_flag == 2:
+                            repeat_list.resname = res_line.resname
+                        else:
+                            repeat_list.flag = 1
+                            repeat_list.ankunft = res_line.ankunft
+                            repeat_list.resname = res_line.resname
+
+
+                        break
+            else:
+
+                if g_list.resnr != curr_resnr:
+                    curr_resnr = g_list.resnr
+
+                    if not g_list.arrflag:
+                        repeat_list.stay = repeat_list.stay + 1
+                    else:
+                        repeat_list.arrflag = True
+
+            if not g_list.arrflag:
+                repeat_list.rmnite = repeat_list.rmnite + g_list.abreise - g_list.ankunft
+
+
+            repeat_list.lodging =  to_decimal(g_list.lodging)
 
         for repeat_list in query(repeat_list_data):
 
-            if repeat_list.stay < 2 and not repeat_list.arrflag:
+            if repeat_list.stay < 2 and not repeat_list.arrfLag:
                 repeat_list_data.remove(repeat_list)
 
 
