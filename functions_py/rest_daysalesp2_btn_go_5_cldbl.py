@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 21/7/2025
+# gitlab: 378
+# recid -> bl_recid
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -118,7 +122,13 @@ def rest_daysalesp2_btn_go_5_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
         nonlocal other_art, temp, t_tot_betrag, t_nt_betrag, bline_list, outstand_list, pay_list, pay_listbuff, turnover, summ_list, buf_art, t_artnr, tlist
         nonlocal other_art_data, temp_data, t_tot_betrag_data, t_nt_betrag_data, outstand_list_data, pay_list_data, turnover_data, summ_list_data, t_artnr_data
 
-        return {"t_betrag": t_betrag, "t_foreign": t_foreign, "exchg_rate": exchg_rate, "tot_serv": tot_serv, "tot_tax": tot_tax, "tot_debit": tot_debit, "tot_cash": tot_cash, "tot_cash1": tot_cash1, "tot_trans": tot_trans, "tot_ledger": tot_ledger, "tot_cover": tot_cover, "nt_cover": nt_cover, "tot_other": tot_other, "nt_other": nt_other, "nt_serv": nt_serv, "nt_tax": nt_tax, "nt_debit": nt_debit, "nt_cash": nt_cash, "nt_cash1": nt_cash1, "nt_trans": nt_trans, "nt_ledger": nt_ledger, "tot_vat": tot_vat, "nt_vat": nt_vat, "avail_outstand_list": avail_outstand_list, "turnover": turnover_data, "t-tot-betrag": t_tot_betrag_data, "t-nt-betrag": t_nt_betrag_data, "outstand-list": outstand_list_data, "pay-list": pay_list_data, "summ-list": summ_list_data}
+        return {"t_betrag": t_betrag, "t_foreign": t_foreign, "exchg_rate": exchg_rate, "tot_serv": tot_serv, 
+                "tot_tax": tot_tax, "tot_debit": tot_debit, "tot_cash": tot_cash, "tot_cash1": tot_cash1, "tot_trans": tot_trans, 
+                "tot_ledger": tot_ledger, "tot_cover": tot_cover, "nt_cover": nt_cover, "tot_other": tot_other, "nt_other": nt_other, 
+                "nt_serv": nt_serv, "nt_tax": nt_tax, "nt_debit": nt_debit, "nt_cash": nt_cash, "nt_cash1": nt_cash1, "nt_trans": nt_trans, 
+                "nt_ledger": nt_ledger, "tot_vat": tot_vat, "nt_vat": nt_vat, "avail_outstand_list": avail_outstand_list, "turnover": turnover_data, 
+                "t-tot-betrag": t_tot_betrag_data, "t-nt-betrag": t_nt_betrag_data, "outstand-list": outstand_list_data, 
+                "pay-list": pay_list_data, "summ-list": summ_list_data}
 
     def calculate_disc():
 
@@ -652,8 +662,9 @@ def rest_daysalesp2_btn_go_5_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
         nt_vat =  to_decimal("0")
         nt_pvoucher =  to_decimal("0")
 
-        for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.recid (kellner) == bline_list.bl_recid and kellner.departement == curr_dept)):
-
+        # Rd, 21/7/2025
+        # for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.recid (kellner) == bline_list.bl_recid and kellner.departement == curr_dept)):
+        for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.bl_recid (kellner) == bline_list.bl_recid and kellner.departement == curr_dept)):
             for h_bill in db_session.query(H_bill).filter(
                      (H_bill.flag == 0) & (H_bill.saldo != 0) & (H_bill.departement == bline_list.dept)).order_by(H_bill._recid).all():
 
