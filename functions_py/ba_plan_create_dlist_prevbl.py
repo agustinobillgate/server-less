@@ -1,6 +1,8 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------
 # Rd, 22/7/2025
+# gitlab: 586
+# kk=int(k)
 #-----------------------------------------
 
 from functions.additional_functions import *
