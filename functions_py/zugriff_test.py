@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+# ----------------------------------------
+# Rd, 22/7/2025
+# Add eliminate None
+# ----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -50,11 +54,28 @@ def zugriff_test(user_init:string, array_nr:int, expected_nr:int):
             tp_bediener_data.append(tp_bediener)
 
             buffer_copy(bediener, tp_bediener)
+
+            # Rd 22/7/2025 (AI)
+            # eliminate None
+            if tp_bediener.permissions is None:
+                zugriff = False
+                mess_str = "User has no permissions assigned."
+                return generate_output()
+            perm = []
+            for n in range(1, length(tp_bediener.permissions) + 1):
+                perm.append(to_int(substring(tp_bediener.permissions, n - 1, 1)))
+
+            if perm[array_nr - 1] < expected_nr:
+                zugriff = False
+                s1 = to_string(array_nr, "99")
+                s2 = to_string(expected_nr)
+                mess_str = "Sorry, No Access Right, Access Code = " + s1 + s2
         else:
             zugriff = False
             mess_str = "User not found."
 
             return generate_output()
+        
         for n in range(1,length(tp_bediener.permissions)  + 1) :
             perm[n - 1] = to_int(substring(tp_bediener.permissions, n - 1, 1))
 

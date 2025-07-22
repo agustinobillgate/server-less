@@ -495,21 +495,6 @@ def telop_webbl(sorttype:int, room:string, fdate1:date, fdate2:date, ci_date:dat
 
         nonlocal gmember, telop_list
         nonlocal telop_list_data
-        # Rd 21/7/025
-        # validate fdate1, fdate2
-        if fdate1 is None:
-            if fdate2 is not None:
-                fdate1 = fdate2
-            else:
-                fdate1 = ci_date
-                fdate2 = ci_date + timedelta(days=30)
-
-        if fdate2 is None:
-            if fdate1 is not None:
-                fdate2 = fdate1
-            else:
-                fdate1 = ci_date
-                fdate2 = ci_date + timedelta(days=30)
 
         to_name:string = ""
         rmlen = length(room)
