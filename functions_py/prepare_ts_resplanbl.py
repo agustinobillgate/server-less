@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 22/7/2025
+# gitlab: 487
+#-----------------------------------------
+
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -79,17 +84,22 @@ def prepare_ts_resplanbl(curr_dept:int):
             buf_queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, curr_dept)],"number2": [(eq, tisch.tischnr)],"betriebsnr": [(eq, 0)]})
 
             if buf_queasy:
-                zeit = ((get_current_date() - buf_queasy.date1).days) * 86400 + get_current_time_in_seconds() - buf_queasy.number3
+                # Rd22/7/2025
+                # zeit = ((get_current_date() - buf_queasy.date1).days) * 86400 + get_current_time_in_seconds() - buf_queasy.number3
+                if buf_queasy.date1 is not None:
+                    zeit = ((get_current_date() - buf_queasy.date1).days) * 86400 + get_current_time_in_seconds() - buf_queasy.number3
+                else:
+                    zeit = None  # Or use a default like 0 if you prefer
 
-                if zeit > 0 and zeit <= 1800:
-                    bcol = 14
-                    fcol = 0
-
-                elif zeit > 1800 and zeit <= 3600:
-                    bcol = 4
-
-                elif zeit > 3600:
-                    bcol = 12
+                # Only continue if zeit is a valid number
+                if zeit is not None:
+                    if 0 < zeit <= 1800:
+                        bcol = 14
+                        fcol = 0
+                    elif zeit <= 3600:
+                        bcol = 4
+                    else:  # zeit > 3600
+                        bcol = 12
 
 
             table_list.bcol = bcol

@@ -1,14 +1,19 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 22/7/2025
+# gitlab: 860
+# exrate -> eexrate
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from sqlalchemy import func
-from models import Res_line, Reservation, exrate, Waehrung, Arrangement, Zimkateg, Fixleist
+from models import Res_line, Reservation, Exrate, Waehrung, Arrangement, Zimkateg, Fixleist
 
 def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposittype:int, sorttype:int, lresnr:int, fdate:date, exrate:Decimal, bill_date:date, depo_curr:int, flag:int, tdate:date):
 
-    prepare_cache ([Res_line, Reservation, exrate, Waehrung, Arrangement, Zimkateg, Fixleist])
+    prepare_cache ([Res_line, Reservation, Exrate, Waehrung, Arrangement, Zimkateg, Fixleist])
 
     total_saldo = to_decimal("0.0")
     arriv_saldo = to_decimal("0.0")
@@ -32,7 +37,7 @@ def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
 
     def generate_output():
         nonlocal total_saldo, arriv_saldo, depo_list_data, b1_list_data, b1_print_data, grpstr, xrate_change, res_line, reservation, exrate, waehrung, arrangement, zimkateg, fixleist
-        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, exrate, bill_date, depo_curr, flag, tdate
+        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, eexrate, bill_date, depo_curr, flag, tdate
         nonlocal bresline
 
 
@@ -44,7 +49,7 @@ def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
     def create_itlist():
 
         nonlocal total_saldo, arriv_saldo, depo_list_data, b1_list_data, b1_print_data, grpstr, xrate_change, res_line, reservation, exrate, waehrung, arrangement, zimkateg, fixleist
-        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, exrate, bill_date, depo_curr, flag, tdate
+        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, eexrate, bill_date, depo_curr, flag, tdate
         nonlocal bresline
 
 
@@ -561,7 +566,7 @@ def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
     def create_itlist2():
 
         nonlocal total_saldo, arriv_saldo, depo_list_data, b1_list_data, b1_print_data, grpstr, xrate_change, res_line, reservation, exrate, waehrung, arrangement, zimkateg, fixleist
-        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, exrate, bill_date, depo_curr, flag, tdate
+        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, eexrate, bill_date, depo_curr, flag, tdate
         nonlocal bresline
 
 
@@ -1078,7 +1083,7 @@ def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
     def create_it():
 
         nonlocal total_saldo, arriv_saldo, depo_list_data, b1_list_data, b1_print_data, grpstr, xrate_change, res_line, reservation, exrate, waehrung, arrangement, zimkateg, fixleist
-        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, exrate, bill_date, depo_curr, flag, tdate
+        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, eexrate, bill_date, depo_curr, flag, tdate
         nonlocal bresline
 
 
@@ -1098,7 +1103,7 @@ def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
     def create_depo():
 
         nonlocal total_saldo, arriv_saldo, depo_list_data, b1_list_data, b1_print_data, grpstr, xrate_change, res_line, reservation, exrate, waehrung, arrangement, zimkateg, fixleist
-        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, exrate, bill_date, depo_curr, flag, tdate
+        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, eexrate, bill_date, depo_curr, flag, tdate
         nonlocal bresline
 
 
@@ -1135,10 +1140,10 @@ def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
 
         if depo_list.datum1 < bill_date and depo_list.datum1 != None:
 
-            exrate = get_cache (exrate, {"artnr": [(eq, depo_curr)],"datum": [(eq, depo_list.datum1)]})
+            eexrate = get_cache (Exrate, {"artnr": [(eq, depo_curr)],"datum": [(eq, depo_list.datum1)]})
 
-            if exrate:
-                exchg_rate =  to_decimal(exrate.betrag)
+            if eexrate:
+                exchg_rate =  to_decimal(eexrate.betrag)
             else:
                 found_it = False
 
@@ -1156,10 +1161,10 @@ def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
 
         if depo_list.datum2 < bill_date and depo_list.datum2 != None:
 
-            exrate = get_cache (exrate, {"artnr": [(eq, depo_curr)],"datum": [(eq, depo_list.datum2)]})
+            eexrate = get_cache (Exrate, {"artnr": [(eq, depo_curr)],"datum": [(eq, depo_list.datum2)]})
 
-            if exrate:
-                exchg_rate =  to_decimal(exrate.betrag)
+            if eexrate:
+                exchg_rate =  to_decimal(eexrate.betrag)
             else:
                 found_it = False
 
@@ -1202,7 +1207,7 @@ def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
     def create_b1():
 
         nonlocal total_saldo, arriv_saldo, depo_list_data, b1_list_data, b1_print_data, grpstr, xrate_change, res_line, reservation, exrate, waehrung, arrangement, zimkateg, fixleist
-        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, exrate, bill_date, depo_curr, flag, tdate
+        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, eexrate, bill_date, depo_curr, flag, tdate
         nonlocal bresline
 
 
@@ -1275,7 +1280,7 @@ def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
     def create_b1_print():
 
         nonlocal total_saldo, arriv_saldo, depo_list_data, b1_list_data, b1_print_data, grpstr, xrate_change, res_line, reservation, exrate, waehrung, arrangement, zimkateg, fixleist
-        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, exrate, bill_date, depo_curr, flag, tdate
+        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, eexrate, bill_date, depo_curr, flag, tdate
         nonlocal bresline
 
 
@@ -1348,7 +1353,7 @@ def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
     def check_fixleist_posted(curr_date:date, artnr:int, dept:int, fakt_modus:int, intervall:int, lfakt:date):
 
         nonlocal total_saldo, arriv_saldo, depo_list_data, b1_list_data, b1_print_data, grpstr, xrate_change, res_line, reservation, exrate, waehrung, arrangement, zimkateg, fixleist
-        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, exrate, bill_date, depo_curr, flag, tdate
+        nonlocal case_type, depo_foreign, lname, deposittype, sorttype, lresnr, fdate, eexrate, bill_date, depo_curr, flag, tdate
         nonlocal bresline
 
 
@@ -1408,7 +1413,7 @@ def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
 
         return generate_inner_output()
 
-    xrate_change =  to_decimal(exrate)
+    xrate_change =  to_decimal(eexrate)
 
     if flag == 1:
         create_itlist()

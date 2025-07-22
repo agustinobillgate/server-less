@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 22/7/2025
+# parameters-> lowercase
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -2104,9 +2108,12 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
 
 
         parameters = get_cache (Parameters, {"progname": [(eq, "costcenter")],"section": [(eq, "alloc")],"varname": [(gt, "")],"vstring": [(eq, fibukonto)]})
-
-        if PARAMETERs:
-            cc_code = to_int(PARAMETERs.varname)
+        # Rd, 22/7/2025
+        # parameter -> lower case
+        # if PARAMETERs:
+        #     cc_code = to_int(PARAMETERs.varname)
+        if parameters:
+            cc_code = to_int(parameters.varname)
 
         return generate_inner_output()
 
