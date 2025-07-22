@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------
+# Rd 22/7/2025
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -111,7 +113,12 @@ def copy_bares_btn_exitbl(s_list_data:[S_list], resnr:int, reslinnr:int, res_fla
             bk_func1.veran_nr = curr_resnr
             bk_func1.veran_seite = reslin_nr
             bk_func1.resstatus = s_list.resstatus
-            bk_func1.wochentag = week_list[get_weekday(s_list.datum - 1) - 1]
+            
+            #Rd 22/7/2025
+            # bk_func1.wochentag = week_list[get_weekday(s_list.datum - 1) - 1]
+            adjusted_date = s_list.datum - timedelta(days=1)
+            bk_func1.wochentag = week_list[get_weekday(adjusted_date) - 1]
+            
             bk_func1.resnr[0] = reslin_nr
             bk_func1.vgeschrieben = user_init
             bk_func1.vkontrolliert = user_init
