@@ -2,6 +2,7 @@
 #-----------------------------------------
 # Rd, 17-July-add strip()
 #-----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -109,13 +110,8 @@ def prepare_fa_modifypobl(docu_nr:string):
             tfa_order.discount2 =  to_decimal(fa_order.discount2)
             tfa_order.vat =  to_decimal(fa_order.vat)
 
-            # Rd, 17-July-25
-            # budget_fix_asset_list = query(budget_fix_asset_list_data, filters=(lambda budget_fix_asset_list: budget_fix_asset_list.to_string(budget_fix_asset_list.nr_budget) == fa_order.activereason), first=True)
-            budget_fix_asset_list = query(
-                budget_fix_asset_list_data,
-                filters=(lambda budget_fix_asset_list: str(budget_fix_asset_list.nr_budget) == fa_order.activereason),
-                first=True
-            )
+            budget_fix_asset_list = query(budget_fix_asset_list_data, filters=(lambda budget_fix_asset_list: budget_fix_asset_list.to_string(budget_fix_asset_list.nr_budget) == fa_order.activereason), first=True)
+
             if budget_fix_asset_list:
                 tfa_order.desc_budget = budget_fix_asset_list.desc_budget
                 tfa_order.date_budget = budget_fix_asset_list.date_budget
@@ -257,10 +253,6 @@ def prepare_fa_modifypobl(docu_nr:string):
             t_mathis.asset_name = mathis.name
             t_mathis.asset_number = mathis.asset
 
-        # for parameters in db_session.query(Parameters).filter(
-        #          (Parameters.progname == ("CostCenter").lower()) & (Parameters.SECTION == ("Name").lower())).order_by(Parameters._recid).all():
-        # Rd, 17-July-25
-        
         for parameters in db_session.query(Parameters).filter(
                  (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Name").lower())).order_by(Parameters._recid).all():
             t_dept_list = T_dept_list()

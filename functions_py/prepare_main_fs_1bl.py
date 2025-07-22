@@ -1,9 +1,62 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 22/7/2025
+# gitlab: 606
+# Quick&Dirdy function Query (need to fix later)
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Bk_reser, Bk_func, Bk_veran, Guest, Akt_kont
+
+def filter_query(
+    data_list: List[Type], 
+    filters: Callable[[Type], bool] = None, 
+    sort_by: Optional[List[Tuple[str, bool]]] = None,
+    first: bool = False,
+    last: bool = False,
+    curr_data: Type = None
+) -> Union[Type, List[Type], None]:
+    if not data_list:
+        return None if first or last else []
+
+    if first or last and not filters:
+        return data_list[0] if first else data_list[-1]
+
+    if filters:
+        data_list = list(filter(filters, data_list))
+    
+    if not data_list:
+        return None if first or last else []
+
+    if sort_by:
+        class SortWrapper:
+            def __init__(self, value):
+                self.value = value
+            def __lt__(self, other):
+                return self.value > other.value
+            def __eq__(self, other):
+                return self.value == other.value
+
+        def sort_key(obj):
+            key = []
+            for field, descending in sort_by:
+                val = getattr(obj, field, None)
+                if isinstance(val, str):
+                    val = val.lower()
+                key.append(val if not descending else SortWrapper(val))
+            return tuple(key)
+
+        data_list.sort(key=sort_key)
+
+    if first:
+        return data_list[0]
+    if last:
+        return data_list[-1]
+
+    return data_list
+
 
 def prepare_main_fs_1bl(b1_resnr:int, b1_resline:int, to_date:date):
 
@@ -114,61 +167,37 @@ def prepare_main_fs_1bl(b1_resnr:int, b1_resline:int, to_date:date):
         bk_veran = Bk_veran()
         guest = Guest()
         bk_reser = Bk_reser()
+
+        # Rd, 22/7/2025
+        # make simpler/readable query
         # for bk_veran.gastnr, bk_veran.resstatus, bk_veran.veran_nr, bk_veran._recid, guest.name, guest.karteityp, guest.gastnr, guest.vorname1, guest.anrede1, guest.anredefirma, guest.adresse1, guest.adresse2, guest.adresse3, guest.telefon, guest.land, guest.plz, guest.wohnort, guest.fax, guest.firmen_nr, guest._recid, bk_reser.veran_seite, bk_reser.datum, bk_reser._recid in db_session.query(Bk_veran.gastnr, Bk_veran.resstatus, Bk_veran.veran_nr, Bk_veran._recid, Guest.name, Guest.karteityp, Guest.gastnr, Guest.vorname1, Guest.anrede1, Guest.anredefirma, Guest.adresse1, Guest.adresse2, Guest.adresse3, Guest.telefon, Guest.land, Guest.plz, Guest.wohnort, Guest.fax, Guest.firmen_nr, Guest._recid, Bk_reser.veran_seite, Bk_reser.datum, Bk_reser._recid).join(Guest,(Guest.gastnr == Bk_veran.gastnr)).join(Bk_reser,(Bk_reser.veran_nr == Bk_veran.veran_nr) & (Bk_reser.resstatus <= 3)).filter(
         #          (Bk_veran.limit_date <= to_date) & (Bk_veran.activeflag == 0)).order_by(Guest.karteityp, Guest.name).all():
+        # Build initial query with joins
+        query = db_session.query(
+            Bk_veran.gastnr, Bk_veran.resstatus, Bk_veran.veran_nr, Bk_veran._recid,
+            Guest.name, Guest.karteityp, Guest.gastnr, Guest.vorname1, Guest.anrede1, 
+            Guest.anredefirma, Guest.adresse1, Guest.adresse2, Guest.adresse3, 
+            Guest.telefon, Guest.land, Guest.plz, Guest.wohnort, Guest.fax, 
+            Guest.firmen_nr, Guest._recid,
+            Bk_reser.veran_seite, Bk_reser.datum, Bk_reser._recid
+        ).join(Guest, Guest.gastnr == Bk_veran.gastnr
+        ).join(Bk_reser, (Bk_reser.veran_nr == Bk_veran.veran_nr) & (Bk_reser.resstatus <= 3)
+        ).filter(Bk_veran.activeflag == 0)
 
-        # Build the base query
-        query = (
-            db_session.query(
-                Bk_veran.gastnr,
-                Bk_veran.resstatus,
-                Bk_veran.veran_nr,
-                Bk_veran._recid,
-                Guest.name,
-                Guest.karteityp,
-                Guest.gastnr,
-                Guest.vorname1,
-                Guest.anrede1,
-                Guest.anredefirma,
-                Guest.adresse1,
-                Guest.adresse2,
-                Guest.adresse3,
-                Guest.telefon,
-                Guest.land,
-                Guest.plz,
-                Guest.wohnort,
-                Guest.fax,
-                Guest.firmen_nr,
-                Guest._recid,
-                Bk_reser.veran_seite,
-                Bk_reser.datum,
-                Bk_reser._recid,
-            )
-            .join(Guest, Guest.gastnr == Bk_veran.gastnr)
-            .join(
-                Bk_reser,
-                (Bk_reser.veran_nr == Bk_veran.veran_nr) &
-                (Bk_reser.resstatus <= 3)
-            )
-            .filter(Bk_veran.activeflag == 0)
-        )
-
-        # Only apply this filter if to_date is not None
-        if to_date is not None:
+        # Add conditional filter if to_date is provided
+        if to_date:
             query = query.filter(Bk_veran.limit_date <= to_date)
 
-        # Add ordering
-        results = query.order_by(Guest.karteityp, Guest.name).all()
+        # Execute ordered query
+        for record in query.order_by(Guest.karteityp, Guest.name).all():
+            # unpack record clearly
+            (veran_gastnr, veran_resstatus, veran_veran_nr, veran_recid,
+            guest_name, guest_karteityp, guest_gastnr, guest_vorname1, guest_anrede1,
+            guest_anredefirma, guest_adresse1, guest_adresse2, guest_adresse3, guest_telefon,
+            guest_land, guest_plz, guest_wohnort, guest_fax, guest_firmen_nr, guest_recid,
+            reser_veran_seite, reser_datum, reser_recid) = record
 
-        # Iterate through results
-        for (
-            gastnr, resstatus, veran_nr, veran_recid,
-            name, karteityp, guestnr, vorname1, anrede1,
-            anredefirma, adresse1, adresse2, adresse3,
-            telefon, land, plz, wohnort, fax, firmen_nr,
-            guest_recid, veran_seite, datum, reser_recid
-        ) in results:
-                    
+
             if bk_veran_obj_list.get(bk_veran._recid):
                 continue
             else:
@@ -188,7 +217,12 @@ def prepare_main_fs_1bl(b1_resnr:int, b1_resline:int, to_date:date):
             else:
                 name_contact = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-            glist = query(glist_data, filters=(lambda glist: glist.gastnr == bk_veran.gastnr), first=True)
+            # glist = query(glist_data, filters=(lambda glist: glist.gastnr == bk_veran.gastnr), first=True)
+            glist = filter_query(
+                glist_data, 
+                filters=lambda g: g.gastnr == bk_veran.gastnr, 
+                first=True
+            )
 
             if not glist:
                 guestsort = guest.karteityp
@@ -259,30 +293,28 @@ def prepare_main_fs_1bl(b1_resnr:int, b1_resline:int, to_date:date):
         bk_reser_obj_list = {}
         bk_reser = Bk_reser()
         bk_func = Bk_func()
+
+        # Rd 22/7/2025
+        # make readable query
         # for bk_reser.veran_seite, bk_reser.datum, bk_reser._recid, bk_func.resstatus, bk_func._recid in db_session.query(Bk_reser.veran_seite, Bk_reser.datum, Bk_reser._recid, Bk_func.resstatus, Bk_func._recid).join(Bk_func,(Bk_func.veran_nr == Bk_reser.veran_nr) & (Bk_func.veran_seite == Bk_reser.veran_resnr)).filter(
         #          (Bk_reser.veran_nr == b1_resnr) & (Bk_reser.veran_resnr == b1_resline)).order_by(Bk_reser._recid).all():
-        results = (
-            db_session.query(
-                Bk_reser.veran_seite,
-                Bk_reser.datum,
-                Bk_reser._recid,
-                Bk_func.resstatus,
-                Bk_func._recid
-            )
-            .join(
-                Bk_func,
-                (Bk_func.veran_nr == Bk_reser.veran_nr) &
-                (Bk_func.veran_seite == Bk_reser.veran_resnr)
-            )
-            .filter(
-                Bk_reser.veran_nr == b1_resnr,
-                Bk_reser.veran_resnr == b1_resline
-            )
-            .order_by(Bk_reser._recid)
-            .all()
-        )
+        query = db_session.query(
+            Bk_reser.veran_seite, 
+            Bk_reser.datum, 
+            Bk_reser._recid, 
+            Bk_func.resstatus, 
+            Bk_func._recid
+        ).join(
+            Bk_func,
+            (Bk_func.veran_nr == Bk_reser.veran_nr) &
+            (Bk_func.veran_seite == Bk_reser.veran_resnr)
+        ).filter(
+            Bk_reser.veran_nr == b1_resnr,
+            Bk_reser.veran_resnr == b1_resline
+        ).order_by(Bk_reser._recid)
 
-        for veran_seite, datum, reser_recid, resstatus, func_recid in results:
+        # iterate through results
+        for reser_veran_seite, reser_datum, reser_recid, func_resstatus, func_recid in query.all():
             if bk_reser_obj_list.get(bk_reser._recid):
                 continue
             else:

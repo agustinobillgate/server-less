@@ -3,11 +3,11 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from models import Htparam, Queasy, Hoteldpt, H_journal, H_bill, Res_line, Guest, H_artikel
+from models import Htparam, H_artikel, Queasy, Hoteldpt, H_journal, H_bill, Res_line, Guest, Artikel
 
 def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_dept:int, to_dept:int, from_date:date, to_date:date, sorttype:int, long_digit:bool):
 
-    prepare_cache ([Htparam, Queasy, Hoteldpt, H_journal, Res_line, Guest, H_artikel])
+    prepare_cache ([Htparam, H_artikel, Queasy, Hoteldpt, H_journal, Res_line, Guest, Artikel])
 
     output_list_data = []
     disc_art1:int = 0
@@ -16,16 +16,16 @@ def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_de
     curr_time:int = 0
     counter:int = 0
     counter2:int = 0
-    htparam = queasy = hoteldpt = h_journal = h_bill = res_line = guest = h_artikel = None
+    htparam = h_artikel = queasy = hoteldpt = h_journal = h_bill = res_line = guest = artikel = None
 
     output_list = None
 
-    output_list_data, Output_list = create_model("Output_list", {"date1":date, "tableno":int, "billno":int, "artno":int, "bezeich":string, "depart":string, "qty":int, "amount":string, "zeit":int, "id":string, "guestname":string, "h_recid":int, "order_taker":string})
+    output_list_data, Output_list = create_model("Output_list", {"date1":date, "tableno":int, "billno":int, "artno":int, "bezeich":string, "depart":string, "qty":int, "amount":string, "zeit":int, "id":string, "guestname":string, "h_recid":int, "order_taker":string, "fart_bez":string})
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal output_list_data, disc_art1, disc_art2, disc_art3, curr_time, counter, counter2, htparam, queasy, hoteldpt, h_journal, h_bill, res_line, guest, h_artikel
+        nonlocal output_list_data, disc_art1, disc_art2, disc_art3, curr_time, counter, counter2, htparam, h_artikel, queasy, hoteldpt, h_journal, h_bill, res_line, guest, artikel
         nonlocal od_taker, from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, long_digit
 
 
@@ -36,7 +36,7 @@ def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_de
 
     def journal_list():
 
-        nonlocal output_list_data, disc_art1, disc_art2, disc_art3, counter, counter2, htparam, queasy, hoteldpt, h_journal, h_bill, res_line, guest, h_artikel
+        nonlocal output_list_data, disc_art1, disc_art2, disc_art3, counter, counter2, htparam, h_artikel, queasy, hoteldpt, h_journal, h_bill, res_line, guest, artikel
         nonlocal od_taker, from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, long_digit
 
 
@@ -57,6 +57,9 @@ def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_de
         hotel_num:int = 0
         curr_time:int = 0
         curr_artikel:int = 0
+        temp_dept:int = 0
+        buf_h_artikel = None
+        Buf_h_artikel =  create_buffer("Buf_h_artikel",H_artikel)
         output_list_data.clear()
 
         if od_taker != "":
@@ -147,6 +150,20 @@ def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_de
 
                         output_list.guestname = curr_guest
                         output_list.h_recid = h_journal._recid
+
+                        h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_journal.artnr)],"departement": [(eq, h_journal.departement)]})
+
+                        if h_artikel:
+
+                            if h_artikel.artart <= 1:
+                                temp_dept = h_artikel.departement
+                            else:
+                                temp_dept = 0
+
+                            artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, temp_dept)]})
+
+                            if artikel:
+                                output_list.fart_bez = artikel.bezeich
 
                         if not long_digit:
                             output_list.date1 = h_journal.bill_datum
@@ -254,6 +271,20 @@ def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_de
                         output_list.guestname = curr_guest
                         output_list.h_recid = h_journal._recid
 
+                        h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_journal.artnr)],"departement": [(eq, h_journal.departement)]})
+
+                        if h_artikel:
+
+                            if h_artikel.artart <= 1:
+                                temp_dept = h_artikel.departement
+                            else:
+                                temp_dept = 0
+
+                            artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, temp_dept)]})
+
+                            if artikel:
+                                output_list.fart_bez = artikel.bezeich
+
                         if long_digit == False:
                             output_list.date1 = h_journal.bill_datum
                             output_list.tableno = h_journal.tischnr
@@ -360,6 +391,20 @@ def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_de
                         output_list.guestname = curr_guest
                         output_list.h_recid = h_journal._recid
 
+                        h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_journal.artnr)],"departement": [(eq, h_journal.departement)]})
+
+                        if h_artikel:
+
+                            if h_artikel.artart <= 1:
+                                temp_dept = h_artikel.departement
+                            else:
+                                temp_dept = 0
+
+                            artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, temp_dept)]})
+
+                            if artikel:
+                                output_list.fart_bez = artikel.bezeich
+
                         if long_digit == False:
                             output_list.date1 = h_journal.bill_datum
                             output_list.tableno = h_journal.tischnr
@@ -413,8 +458,8 @@ def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_de
         if sorttype == 0:
 
             h_journal_obj_list = {}
-            for h_journal, h_artikel, h_bill, hoteldpt in db_session.query(H_journal, H_artikel, H_bill, Hoteldpt).join(H_artikel,(H_artikel.artnr == H_journal.artnr) & (H_artikel.departement == H_journal.departement) & (H_artikel.artnr >= from_art) & (H_artikel.artnr <= to_art) & (H_artikel.departement >= from_dept) & (H_artikel.departement <= to_dept)).join(H_bill,(H_bill.rechnr == H_journal.rechnr) & (H_bill.tischnr == H_journal.tischnr) & (H_bill.departement == H_journal.departement)).join(Hoteldpt,(Hoteldpt.num == H_artikel.departement)).filter(
-                     (H_journal.bill_datum >= from_date) & (H_journal.bill_datum <= to_date) & (H_journal.artnr > 0) & (H_journal.anzahl != 0)).order_by(H_artikel.departement, H_artikel.artnr).all():
+            for h_journal, h_artikel, h_bill, hoteldpt in db_session.query(H_journal, H_artikel, H_bill, Hoteldpt).join(H_artikel,(H_artikel.artnr == H_journal.artnr) & (H_artikel.departement == H_journal.departement) & (H_artikel.artnr >= from_art) & (H_artikel.artnr <= to_art) & (H_artikel.departement >= from_dept) & (H_artikel.departement <= to_dept)).join(H_bill,(H_bill.rechnr == H_journal.rechnr) & (H_bill.departement == H_journal.departement)).join(Hoteldpt,(Hoteldpt.num == H_artikel.departement)).filter(
+                     (H_journal.bill_datum >= from_date) & (H_journal.bill_datum <= to_date) & (H_journal.artnr > 0) & (H_journal.anzahl != 0)).order_by(H_journal.departement, H_journal.artnr, H_journal.bill_datum, H_journal.zeit).all():
                 if h_journal_obj_list.get(h_journal._recid):
                     continue
                 else:
@@ -486,6 +531,20 @@ def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_de
 
                     output_list.guestname = curr_guest
                     output_list.h_recid = h_journal._recid
+
+                    buf_h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_journal.artnr)],"departement": [(eq, h_journal.departement)]})
+
+                    if buf_h_artikel:
+
+                        if buf_h_artikel.artart <= 1:
+                            temp_dept = buf_h_artikel.departement
+                        else:
+                            temp_dept = 0
+
+                        artikel = get_cache (Artikel, {"artnr": [(eq, buf_h_artikel.artnrfront)],"departement": [(eq, temp_dept)]})
+
+                        if artikel:
+                            output_list.fart_bez = artikel.bezeich
 
                     if long_digit == False:
                         output_list.date1 = h_journal.bill_datum
@@ -518,8 +577,8 @@ def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_de
         elif sorttype == 1:
 
             h_journal_obj_list = {}
-            for h_journal, h_artikel, h_bill, hoteldpt in db_session.query(H_journal, H_artikel, H_bill, Hoteldpt).join(H_artikel,(H_artikel.artnr == H_journal.artnr) & (H_artikel.departement == H_journal.departement) & (H_artikel.artnr >= from_art) & (H_artikel.artnr <= to_art) & (H_artikel.departement >= from_dept) & (H_artikel.departement <= to_dept)).join(H_bill,(H_bill.rechnr == H_journal.rechnr) & (H_bill.tischnr == H_journal.tischnr) & (H_bill.departement == H_journal.departement)).join(Hoteldpt,(Hoteldpt.num == H_artikel.departement)).filter(
-                     (H_journal.bill_datum >= from_date) & (H_journal.bill_datum <= to_date)).order_by(H_artikel.departement, H_artikel.artnr).all():
+            for h_journal, h_artikel, h_bill, hoteldpt in db_session.query(H_journal, H_artikel, H_bill, Hoteldpt).join(H_artikel,(H_artikel.artnr == H_journal.artnr) & (H_artikel.departement == H_journal.departement) & (H_artikel.artnr >= from_art) & (H_artikel.artnr <= to_art) & (H_artikel.departement >= from_dept) & (H_artikel.departement <= to_dept)).join(H_bill,(H_bill.rechnr == H_journal.rechnr) & (H_bill.departement == H_journal.departement)).join(Hoteldpt,(Hoteldpt.num == H_artikel.departement)).filter(
+                     (H_journal.bill_datum >= from_date) & (H_journal.bill_datum <= to_date) & (H_journal.anzahl != 0)).order_by(H_journal.departement, H_journal.artnr, H_journal.bill_datum, H_journal.zeit).all():
                 if h_journal_obj_list.get(h_journal._recid):
                     continue
                 else:
@@ -591,6 +650,20 @@ def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_de
 
                     output_list.guestname = curr_guest
                     output_list.h_recid = h_journal._recid
+
+                    buf_h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_journal.artnr)],"departement": [(eq, h_journal.departement)]})
+
+                    if buf_h_artikel:
+
+                        if buf_h_artikel.artart <= 1:
+                            temp_dept = buf_h_artikel.departement
+                        else:
+                            temp_dept = 0
+
+                        artikel = get_cache (Artikel, {"artnr": [(eq, buf_h_artikel.artnrfront)],"departement": [(eq, temp_dept)]})
+
+                        if artikel:
+                            output_list.fart_bez = artikel.bezeich
 
                     if long_digit == False:
                         output_list.date1 = h_journal.bill_datum
@@ -622,8 +695,8 @@ def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_de
         else:
 
             h_journal_obj_list = {}
-            for h_journal, h_artikel, h_bill, hoteldpt in db_session.query(H_journal, H_artikel, H_bill, Hoteldpt).join(H_artikel,(H_artikel.artnr == H_journal.artnr) & (H_artikel.departement == H_journal.departement) & (H_artikel.artnr >= from_art) & (H_artikel.artnr <= to_art) & (H_artikel.departement >= from_dept) & (H_artikel.departement <= to_dept)).join(H_bill,(H_bill.rechnr == H_journal.rechnr) & (H_bill.tischnr == H_journal.tischnr) & (H_bill.departement == H_journal.departement)).join(Hoteldpt,(Hoteldpt.num == H_artikel.departement)).filter(
-                     (H_journal.bill_datum >= from_date) & (H_journal.bill_datum <= to_date) & (H_journal.artnr == 0)).order_by(H_artikel.departement, H_artikel.artnr).all():
+            for h_journal, h_artikel, h_bill, hoteldpt in db_session.query(H_journal, H_artikel, H_bill, Hoteldpt).join(H_artikel,(H_artikel.artnr == H_journal.artnr) & (H_artikel.departement == H_journal.departement) & (H_artikel.artnr >= from_art) & (H_artikel.artnr <= to_art) & (H_artikel.departement >= from_dept) & (H_artikel.departement <= to_dept)).join(H_bill,(H_bill.rechnr == H_journal.rechnr) & (H_bill.departement == H_journal.departement)).join(Hoteldpt,(Hoteldpt.num == H_artikel.departement)).filter(
+                     (H_journal.bill_datum >= from_date) & (H_journal.bill_datum <= to_date) & (H_journal.artnr == 0)).order_by(H_journal.departement, H_journal.artnr, H_journal.bill_datum, H_journal.zeit).all():
                 if h_journal_obj_list.get(h_journal._recid):
                     continue
                 else:
@@ -695,6 +768,20 @@ def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_de
 
                     output_list.guestname = curr_guest
                     output_list.h_recid = h_journal._recid
+
+                    buf_h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_journal.artnr)],"departement": [(eq, h_journal.departement)]})
+
+                    if buf_h_artikel:
+
+                        if buf_h_artikel.artart <= 1:
+                            temp_dept = buf_h_artikel.departement
+                        else:
+                            temp_dept = 0
+
+                        artikel = get_cache (Artikel, {"artnr": [(eq, buf_h_artikel.artnrfront)],"departement": [(eq, temp_dept)]})
+
+                        if artikel:
+                            output_list.fart_bez = artikel.bezeich
 
                     if long_digit == False:
                         output_list.date1 = h_journal.bill_datum
@@ -754,7 +841,7 @@ def rest_journal_btn_go2webbl(od_taker:string, from_art:int, to_art:int, from_de
 
     def search_ot(r_nr:int, t_nr:int):
 
-        nonlocal output_list_data, disc_art1, disc_art2, disc_art3, curr_time, counter, counter2, htparam, queasy, hoteldpt, h_journal, h_bill, res_line, guest, h_artikel
+        nonlocal output_list_data, disc_art1, disc_art2, disc_art3, curr_time, counter, counter2, htparam, h_artikel, queasy, hoteldpt, h_journal, h_bill, res_line, guest, artikel
         nonlocal od_taker, from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, long_digit
 
 

@@ -1,5 +1,6 @@
 docker_version = "1.0.0.24.689"
-#Version 1.0.0.17
+
+#Version 1.0.0.22
 
 print("Start:", docker_version)
 
@@ -56,6 +57,9 @@ from functions.additional_functions import *
 from functions.check_userkeybl import *
 from decimal import Decimal
 import asyncio
+from models.base import get_database_session
+from contextlib import asynccontextmanager
+
 
 # from flask import Flask, request, abort, Response
 # from flask_cors import CORS
@@ -66,6 +70,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette import status
 from typing import Dict, Any
 
+import typing
 from _demo_config import * 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -193,7 +198,7 @@ update_field_mapping = {
     "base64Imagefile": "base64ImageFile",
     "rmno": "rmNo",
     "errcode": "errCode",
-    "menu": "MENU",
+    "menu": ["MENU"],
 
     #updated 1.0.0.15
     "refno": "refNo",
@@ -228,7 +233,7 @@ update_field_mapping = {
     "gresanz": "gresAnz",
     "resanz": "resAnz",
     "resnrstr": "resnrStr",
-    "deptno": "deptNo",
+    
     "deptname": "deptName",
     "appstr": "appStr",
     "appflag": "appFlag",
@@ -238,18 +243,17 @@ update_field_mapping = {
     "usefor": "Usefor",
     "groupid": "GroupID",
     "duration-nr": "Duration-nr",
-    "activeflag": "activeFlag",
+    
     "skill": "Skill",
     "plz": "PLZ",
     "rcvid": "rcvID",
     "rcvname": "rcvName",
     "pi-type":"PI-type",
-    "pi-status":"PI-status",
+    
     "chequeno":"chequeNo",
     "bankname":"bankName",
     "duedate": "dueDate",
-    "postdate": "PostDate",
-    "postDate": "PostDate",
+    
     
     "cid": "CID",
     "mid": "MID",
@@ -265,7 +269,7 @@ update_field_mapping = {
     "todate": "toDate",
 
     #updated 1.0.0.17
-    "engid": "EngID",
+    
 
     #updated 1.0.0.18
     "description": "DESCRIPTION",
@@ -301,12 +305,11 @@ update_field_mapping = {
     "tkellner": "tKellner",
     "indgastnr":"indGastnr",
     "piDocuno":"piDocuNo",
-    "postdate": "postDate",
+    
 
     "tLorderhdr": "tLOrderhdr",
     "addvat": "addVAT",
-    "availaddvat": "availAddVat",
-    "availAddvat": "availAddVat",
+
     "tpushlist":"tPushList",
     "rcodevhp": "rcodeVHP",
     "rcodebe": "rcodeBE",
@@ -316,7 +319,7 @@ update_field_mapping = {
     "b1list":"b1List",
 
     #updated 1.0.0.22
-    "deptno": "DeptNo",
+   
     "dept": "Dept",
     "tb3buff": "tb3Buff",
 
@@ -324,8 +327,7 @@ update_field_mapping = {
     # "categ-nr":"Categ-nr",
     # "categ-nm":"Categ-nm",
     "categ-sel":"Categ-sel",
-    "avail-addvat":"avail-addVAT",
-    "availAddvat": "availAddVAT",
+
     "pic-dept":"pic-Dept",
     "guestflag": "GuestFlag",
     "hourmax":"HourMax",
@@ -364,7 +366,7 @@ update_field_mapping = {
     "tlocation": "tLocation",
     "tfstat":"tFStat",
     "svendor": "sVendor",
-    "engid": "EngId",
+    
     "maintask": "Maintask",
     "copyrequest": "CopyRequest",
     "copyrequest": "copyRequest",
@@ -446,19 +448,17 @@ update_field_mapping = {
     "urlws": "urlWS",
     "licensenr": "licenseNr",
     
-    "engid": "EngID",
-    "engid": "EngId",
+    
     "location": "Location",
     "maintask": "Maintask",
     "tstatus": "tStatus",
-    "main-nr": "Main-nr",
-    "Main-nr": "main-nr",
+    
     "main-nm": "Main-nm",
-    "activeflag": "ActiveFlag",
+    
 
     #updated 1.0.0.42r (4-Juli-2025) egRepdurationDisp
     "email": "Email",
-    "PI-status":"pi-status",
+    
 
     #updated 11-Juli-2025
     "outchar": "outChar",
@@ -486,10 +486,6 @@ update_field_mapping = {
     "Created-By":"created-by",
     "created-by":"Created-By",
     "deptname":"deptName",
-    "deptname":"DeptName",
-    "deptname":"DeptNAME",
-    "deptname":"DEPTNAME",
-
 
     "posteddate":"postedDate",  #vhpGC/gcGiroRead (FA)
     "move-from":"Move-from",
@@ -498,6 +494,41 @@ update_field_mapping = {
     "coa":"COA",
     "arrflag":"arrFlag",
     "dptno":"dptNo",
+
+    #updated 1.0.0.22
+    "create_by": ["Create_by", "Create_By"],
+    "created_by": ["Created_by", "Created_By", "created-by"],
+    "deptname": ["deptName","DeptName","DeptNAME","DEPTNAME"],
+    "main_nr": ["Main-nr", "main-nr"],
+    "engid": ["engId","EngId","EngID"],
+    # "PI-status":["pi-status", "pi-Status"],
+    # "pi-status":["pi-status", "PI-status"],
+    "deptno": ["DeptNo","deptNo"],
+    "postdate": ["postDate", "PostDate"],
+        "avail-addvat":"avail-addVAT",
+    "availAddvat": ["availAddVat","availAddVat","availAddVAT"],
+    "readequipment":"readEquipment",
+    "datum":"Datum",
+    "gruppenname":"Gruppenname",
+    "bemerkung":"Bemerkung",
+    "dekoration":"Dekoration",
+    "vorbereitungszeit":"Vorbereitungszeit",
+    "nachlaufzeit":"Nachlaufzeit",
+
+    # "mtd-room": "mtd-Room",
+    # "ytd-room": "ytd-Room",
+    # "activeflag": ["ActiveFlag","activeFlag"],    
+    # "max_lapos": ["maxLapos"],
+    # "must_print":["mustPrint"],
+    # "fl_warn":["flWarn"],
+    # "cashless_flag":["cashlessFlag"],
+    # "output_Ok_Flag":["outputOkFlag"],
+
+  
+   
+
+
+
 
 }
 docker_version += ".r"
@@ -516,68 +547,22 @@ update_table_name("vhpSS","ratecodeAdmWrite","tb3buff","tb3Buff")
 
 #updated 1.0.0.16
 update_table_name("vhpSS","egStaffPrepare","dept","Dept")
-# update_table_name("vhpSS","egStaffPrepare","userskill","Userskill")
+update_table_name("vhpSS","egStaffPrepare","userskill","Userskill")
 
 #updated 1.0.0.17
 update_table_name("vhpSS","egStaffPrepare","userskill","UserSkill")
+update_table_name("vhpSS","egStaffPrepare","userSkill","UserSkill")
 
 #updated 1.0.0.21
 update_table_name("vhpSC","rmAtproductCreateUmsatz1","b1list","b1List")
 update_table_name("vhpSC","rmAtproductCreateUmsatz1","rmatproduct","rmAtproduct")
-update_table_name("vhpSC","rmAtproductCreateUmsatz1","mtd-room","mtd-Room")
-update_table_name("vhpSC","rmAtproductCreateUmsatz1","ytd-room","ytd-Room")
 
 
 
 #updated 1.0.0.22
 update_table_name("HouseKeeping","getStoreRoomDiscrepancyList","hkdiscrepancy-list","hk-discrepancy-list")
 update_table_name("vhpOU","splitbillPrepare","menu","MENU")
-update_table_name("vhpGC","addGCPi1","postDate","PostDate")
-update_table_name("vhpGC","addGCPi1","postdate","PostDate")
 
-update_table_name("vhpGC","gcPilist","PI-status","pi-status")
-update_table_name("vhpGC","gcPilist","PostDate","postDate")
-update_table_name("vhpGC","gcPilist","postdate","postDate")
-
-update_table_name("vhpENG","egRephistorypropPrepare","activeflag","ActiveFlag")
-
-update_table_name("vhpENG","egChgReqPrepare","activeflag","ActiveFlag")
-update_table_name("vhpENG","egPropertymeterPrepare","activeflag","ActiveFlag")
-
-update_table_name("vhpENG","egPropertyPrepare","activeflag","ActiveFlag")
-update_table_name("vhpENG","egReceivedPrepare","activeflag","ActiveFlag")
-update_table_name("vhpENG","egReceivedPrepare","EngId","EngID")
-update_table_name("vhpENG","egReceivedPrepare","engid","EngID")
-
-update_table_name("vhpENG","egMkreqPrepare","EngId","EngID")
-update_table_name("vhpENG","egMkreqPrepare","engid","EngID")
-
-update_table_name("vhpENG","egRephistoryroomPrepare","EngId","EngID")
-update_table_name("vhpENG","egRephistoryroomPrepare","engid","EngID")
-
-update_table_name("vhpENG","egReqlistPrepare","EngId","EngID")
-update_table_name("vhpENG","egReqlistPrepare","engid","EngID")
-#---
-update_table_name("vhpENG","egRephistorypropPrepare","EngId","EngID")
-update_table_name("vhpENG","egRephistorypropPrepare","engid","EngID")
-
-update_table_name("vhpENG","egRephistorymovePrepare","EngId","EngID")
-update_table_name("vhpENG","egRephistorymovePrepare","engid","EngID")
-
-update_table_name("vhpENG","egActionPrepare","EngId","EngID")
-update_table_name("vhpENG","egActionPrepare","engid","EngID")
-
-update_table_name("vhpENG","egMaincalendarPrepare","EngId","EngID")
-update_table_name("vhpENG","egMaincalendarPrepare","engid","EngID")
-
-update_table_name("vhpENG","egMaincalendardelDisp","EngId","EngID")
-update_table_name("vhpENG","egMaincalendardelDisp","engid","EngID")
-
-
-
-update_table_name("vhpENG","egMainschedulePrepare","activeflag","ActiveFlag")
-update_table_name("vhpENG","egMainschedulePrepare","EngId","EngID")
-update_table_name("vhpENG","egMainschedulePrepare","engid","EngID")
 update_table_name("vhpENG","egMainschedulePrepare","Delete-Flag","delete-flag")
 
 update_table_name("vhpENG","egRephistorymoveCreateBrowse","smove","sMove")
@@ -585,13 +570,10 @@ update_table_name("vhpENG","egRephistorymoveBtnGo","smove","sMove")
 
 
 #updated 1.0.0.23
-update_table_name("vhpSS","egStaffPrepare","EngId","EngID")
-update_table_name("vhpSS","egStaffPrepare","engid","EngID")
+
 update_table_name("vhpSS","egStaffPrepare","dept","Dept")
 update_table_name("vhpSS","egStaffPrepare","userskill","userSkill")
 
-
-update_table_name("vhpENG","egDurationPrepare","engid","EngID")
 
 update_table_name("vhpSS","ratecodeAdmWrite","tb3buff","tb3Buff")
 update_table_name("vhpAR","soaRelease","deptno","deptNo")
@@ -619,16 +601,11 @@ update_table_name("vhpENG","egRepdurationPrepare","Categ-nm","categ-nm")
 
 
 #updated 1.0.0.32, 16-4-2025
-update_table_name("vhpSS","egResourcePrepare","engid","EngID")
-update_table_name("vhpSS","egLocationPrepare","engid","EngID")
-update_table_name("vhpSS","egCategoryPrepare","engid","EngID")
-update_table_name("vhpSS","egBuildingPrepare","engid","EngID")
-update_table_name("vhpENG","egChgReqPrepare","engid","EngID")
+
 update_table_name("vhpENG","egChgReqPrepare","tFstat","tFStat")
 update_table_name("vhpENG","egChgReqPrepare","svendor","sVendor")
 update_table_name("vhpENG","egPropertyLoad","svendor","tEgProperty")
-update_table_name("vhpENG","egPropertymeterPrepare","outputOkFlag","ActiveFlag")
-update_table_name("vhpENG","egPropertyPrepare","outputOkFlag","ActiveFlag")
+
 update_table_name("vhpENG","egPropertyPrepare","Categ-nr","categ-nr")
 update_table_name("vhpENG","egPropertyPrepare","Categ-nm","categ-nm")
 update_table_name("vhpENG","egReprequestcancelPrepare","Categ-nr","categ-nr")
@@ -648,9 +625,8 @@ update_table_name("vhpGC","prepareAddGCPi","tGcPibline","tGcPIbline")
 update_table_name("vhpEG","egSelLookmaintainPrepare","tmaintain","tMaintain")
 update_table_name("vhpEG","egSelLookmaintainPrepare","mainaction","MainAction")
 
-
-
-
+update_table_name("vhpEG","egSelLookmaintainPrepare","tmaintain","tMaintain")
+update_table_name("vhpEG","egSelLookmaintainPrepare","mainaction","MainAction")
 
 #updated 1.0.0.33 2025-05-14
 # update_table_name("vhpINV","storeReqInsPrepare","deptno","deptNo")
@@ -659,7 +635,6 @@ update_table_name("vhpEG","egSelLookmaintainPrepare","mainaction","MainAction")
 # update_table_name("vhpINV","storeReqInsPrepare","appflag","appFlag")
 
 #updated 1.0.0.36r (19-Mei-2025) egSubTaskPrepare
-update_table_name("vhpENG","egSubTaskPrepare","engid","EngID")
 
 #updated 1.0.0.37r (22-Mei-2025) egRepmaintainPrepare
 update_table_name("vhpENG","egRepmaintainPrepare","Categ-nr","categ-nr")
@@ -678,8 +653,6 @@ update_table_name("vhpENG","egReqlistLoad","action","Action")
 update_table_name("vhpENG","egReqlistLoad","smaintain","sMaintain")
 
 #updated 1.0.0.39r (27-Mei-2025) fb_flashbl
-update_table_name("vhpENG","egMainscheduleedPrepare","EngId","EngID")
-update_table_name("vhpENG","egMainscheduleedPrepare","engid","EngID")
 
 
 #updated 1.0.0.40r (3-Juli-2025) egRepdurationDisp
@@ -763,8 +736,7 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 def update_input_format(obj,input_data):
     # Update the input object if variable has "-"
-    # Update date data from string into data              
-                            
+    # Update date data from string into data                                      
     param_list = parameter_and_inner_types(obj)
     param_name_list = []
     lower_param_names = [param.lower() for param in list(input_data.keys())]
@@ -788,10 +760,12 @@ def update_input_format(obj,input_data):
                 input_data.pop(curr_input_param_name)
 
             elif isinstance(param_data_type, list):
-                # outer_input_param_name = camelCase(param_name.removesuffix("_list"))
-                # inner_input_param_name = param_name.removesuffix("_list").replace("_","-")
+                #updated 1.0.0.21
                 outer_input_param_name = camelCase(param_name.removesuffix("_data"))
                 inner_input_param_name = param_name.removesuffix("_data").replace("_","-")
+                # outer_input_param_name = camelCase(param_name.removesuffix("_list"))
+                # inner_input_param_name = param_name.removesuffix("_list").replace("_","-")
+
                 tmp_input_data = input_data
 
                 #updated 1.0.0.4
@@ -835,12 +809,14 @@ def update_input_format(obj,input_data):
                     input_data[param_name] = 0
                 elif param_data_type == float:
                     input_data[param_name] = 0.0
+            #updated 1.0.0.19
+                # elif param_data_type == decimal:
                 elif param_data_type == Decimal:
                     input_data[param_name] = 0.0
                 else:
                     input_data[param_name] = None
                 
-        # print("Param:", param_name)
+
         input_value = input_data[param_name]
 
         if param_data_type == date:
@@ -852,6 +828,8 @@ def update_input_format(obj,input_data):
         elif param_data_type == str and type(input_value) == int:
             input_data[param_name] = to_string(input_value)
         #updated 1.0.0.1
+        #updated 1.0.0.19
+        # elif param_data_type == decimal:
         elif param_data_type == Decimal:
             input_data[param_name] = to_decimal(input_value)
 
@@ -869,7 +847,12 @@ def update_input_format(obj,input_data):
 
 
             #updated 1.0.0.1
-            elif not type(param_data_type[0]) in {int, Decimal, float, complex, str, list, tuple, range, dict, set, 
+            #updated 1.0.0.19
+            # elif not type(param_data_type[0]) in {int, decimal, float, complex, str, list, tuple, range, dict, set, 
+            #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
+            #     not param_data_type[0] in {int, decimal, float, complex, str, list, tuple, range, dict, set, 
+            #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)}:
+            elif not type(param_data_type[0]) in {int,  Decimal, float, complex, str, list, tuple, range, dict, set, 
                                                   frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
                 not param_data_type[0] in {int, Decimal, float, complex, str, list, tuple, range, dict, set, 
                                                   frozenset, bool, bytes, bytearray, memoryview, type(None)}:
@@ -964,6 +947,8 @@ def update_input_format(obj,input_data):
 
     # for param_name in input_data.keys():
     #     if not param_name in param_list(obj)
+
+
 
 def update_output_format(output_data):
     key_list = list(output_data.keys())
@@ -1063,7 +1048,15 @@ def update_output_format(output_data):
                             #updated 1.0.0.15
                             for updateFieldName in fieldNameList:
                                 if updateFieldName in update_field_mapping.keys():
-                                    data[update_field_mapping[updateFieldName]] = data[updateFieldName]
+
+                                    #updated 1.0.0.22
+                                    if type(update_field_mapping[updateFieldName]) == list:
+                                        for i in range(0,len(update_field_mapping[updateFieldName])):
+                                            data[update_field_mapping[updateFieldName][i]] = data[updateFieldName]
+                                    else:                                            
+                                        data[update_field_mapping[updateFieldName]] = data[updateFieldName]
+                                    # data[update_field_mapping[updateFieldName]] = data[updateFieldName]
+
                                 else:
                                     new_field_name = updateFieldName.replace("_","-").replace("--","_")
 
@@ -1118,7 +1111,6 @@ def update_output_format(output_data):
         if curr_module_function in update_table_name_list and camelCaseKey in update_table_name_list[curr_module_function]:
             output_data[update_table_name_list[curr_module_function][camelCaseKey]] = output_data[camelCaseKey]
             output_data.pop(camelCaseKey)
-
 
 
 def decimal_converter(obj):
