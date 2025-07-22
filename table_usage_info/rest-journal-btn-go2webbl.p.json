@@ -1,0 +1,77 @@
+{
+    "Htparam": {
+        "read": [
+            "finteger",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_artikel": {
+        "read": [
+            "departement",
+            "artnrfront",
+            "artnr",
+            "artart",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "number1",
+            "char2",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Hoteldpt": {
+        "read": [
+            "num",
+            "depart",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_journal": {
+        "read": [
+            "rechnr",
+            "tischnr",
+            "departement",
+            "artnr",
+            "betrag",
+            "_recid",
+            "bill_datum",
+            "bezeich",
+            "anzahl",
+            "zeit",
+            "kellner_nr"
+        ],
+        "write": []
+    },
+    "H_bill": {
+        "read": [],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "name",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest": {
+        "read": [
+            "name",
+            "vorname1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Artikel": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    }
+}

@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 22/7/2025
+# add if available
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -45,6 +49,11 @@ def ba_plan_btn_stat2_1bl(answer2:bool, t_resnr:int, t_reslinnr:int, c_status:st
         new_status = "Tentative"
 
     rl = get_cache (Bk_reser, {"_recid": [(eq, recid_rl)]})
+
+    # Rd 22/7/2025
+    # add if available
+    if rl is None:
+        return generate_output()
 
     if answer2:
 

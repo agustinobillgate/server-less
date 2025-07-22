@@ -1,7 +1,4 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd, 17-July-add strip()
-#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -254,7 +251,7 @@ def prepare_fa_modifypobl(docu_nr:string):
             t_mathis.asset_number = mathis.asset
 
         for parameters in db_session.query(Parameters).filter(
-                 (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Name").lower())).order_by(Parameters._recid).all():
+                 (Parameters.progname == ("CostCenter").lower()) & (Parameters.SECTION == ("Name").lower())).order_by(Parameters._recid).all():
             t_dept_list = T_dept_list()
             t_dept_list_data.append(t_dept_list)
 
