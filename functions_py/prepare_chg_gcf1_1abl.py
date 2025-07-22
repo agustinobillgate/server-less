@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 22/7/2025
+# Gitlab: 416
+# add if available gastnr
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -83,6 +87,8 @@ def prepare_chg_gcf1_1abl(gastnr:int, chg_gcf:bool):
             return generate_output()
 
     guest = get_cache (Guest, {"gastnr": [(eq, gastnr)]})
+    if guest is None:
+        return generate_output()
     t_guest = T_guest()
     t_guest_data.append(t_guest)
 

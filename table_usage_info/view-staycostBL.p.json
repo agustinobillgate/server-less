@@ -1,0 +1,136 @@
+{
+    "Reservation": {
+        "read": [
+            "resdat",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "fdate",
+            "flogical",
+            "feldtyp",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "zimmer_wunsch",
+            "l_zuordnung",
+            "zikatnr",
+            "abreise",
+            "zipreis",
+            "erwachs",
+            "resnr",
+            "reslinnr",
+            "arrangement",
+            "reserve_int",
+            "ankunft",
+            "kind1",
+            "kind2",
+            "reserve_dec",
+            "betriebsnr",
+            "gastnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Arrangement": {
+        "read": [
+            "options",
+            "argtnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest_pr": {
+        "read": [
+            "code",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [],
+        "write": []
+    },
+    "Genstat": {
+        "read": [
+            "zipreis",
+            "erwachs",
+            "resnr",
+            "res_int",
+            "argt",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reslin_queasy": {
+        "read": [
+            "char2",
+            "deci1",
+            "number3",
+            "char1",
+            "date2",
+            "date1",
+            "deci2",
+            "deci3",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [],
+        "write": []
+    },
+    "Katpreis": {
+        "read": [
+            "perspreis",
+            "kindpreis",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Argt_line": {
+        "read": [
+            "betriebsnr",
+            "argtnr",
+            "departement",
+            "argt_artnr",
+            "vt_percnt",
+            "intervall",
+            "betrag",
+            "fakt_modus",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Artikel": {
+        "read": [
+            "zwkum",
+            "departement",
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zwkum": {
+        "read": [],
+        "write": []
+    },
+    "Fixleist": {
+        "read": [
+            "sequenz",
+            "lfakt",
+            "dekade",
+            "artnr",
+            "departement",
+            "betrag",
+            "number",
+            "_recid"
+        ],
+        "write": []
+    }
+}
