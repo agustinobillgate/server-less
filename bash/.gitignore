@@ -1,0 +1,3 @@
+# Ignore .pem in this folder
+*.pem
+
