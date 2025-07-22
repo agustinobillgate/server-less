@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------
+# Rd 22/7/2025
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -83,8 +85,11 @@ def prepare_mk_gcpi_webbl(pvilanguage:int, pi_number:string, user_init:string):
         nonlocal t_gc_pibline, pbuff, t_gc_pitype, s_list
         nonlocal t_gc_pibline_data, pbuff_data, t_gc_pitype_data, s_list_data
 
+        # Rd 22/7/2025
+        # for gc_pibline in db_session.query(Gc_pibline).filter(
+        #          (gc_pibline.docu_nr == pbuff.docu_nr)).order_by(Gc_pibline._recid).all():
         for gc_pibline in db_session.query(Gc_pibline).filter(
-                 (gc_pibline.docu_nr == pbuff.docu_nr)).order_by(Gc_pibline._recid).all():
+                 (Gc_pibline.docu_nr == pbuff.docu_nr)).order_by(Gc_pibline._recid).all():
             t_gc_pibline = T_gc_pibline()
             t_gc_pibline_data.append(t_gc_pibline)
 
@@ -159,6 +164,8 @@ def prepare_mk_gcpi_webbl(pvilanguage:int, pi_number:string, user_init:string):
 
     pbuff = Pbuff()
     pbuff_data.append(pbuff)
+    # Rd 22/7/2025
+    pi_number = pi_number.strip()
 
     for i in range(1,10 + 1) :
         s_list = S_list()
@@ -166,10 +173,10 @@ def prepare_mk_gcpi_webbl(pvilanguage:int, pi_number:string, user_init:string):
 
         s_list.reihe = i
 
-    if pi_number == "":
+    if pi_number.strip() == "":
         pi_mode = "new"
     else:
-
+        
         gc_pi = get_cache (Gc_pi, {"docu_nr": [(eq, pi_number)]})
 
         if gc_pi:
