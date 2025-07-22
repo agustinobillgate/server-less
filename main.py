@@ -507,8 +507,7 @@ update_field_mapping = {
     "postdate": ["postDate", "PostDate"],
         "avail-addvat":"avail-addVAT",
     "availAddvat": ["availAddVat","availAddVat","availAddVAT"],
-    #     "availaddvat": 
-    # "availAddvat": 
+    "readequipment":"readEquipment",
 
 
     # "mtd-room": "mtd-Room",
@@ -732,8 +731,7 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 def update_input_format(obj,input_data):
     # Update the input object if variable has "-"
-    # Update date data from string into data              
-                            
+    # Update date data from string into data                                      
     param_list = parameter_and_inner_types(obj)
     param_name_list = []
     lower_param_names = [param.lower() for param in list(input_data.keys())]
@@ -757,10 +755,12 @@ def update_input_format(obj,input_data):
                 input_data.pop(curr_input_param_name)
 
             elif isinstance(param_data_type, list):
-                # outer_input_param_name = camelCase(param_name.removesuffix("_list"))
-                # inner_input_param_name = param_name.removesuffix("_list").replace("_","-")
+                #updated 1.0.0.21
                 outer_input_param_name = camelCase(param_name.removesuffix("_data"))
                 inner_input_param_name = param_name.removesuffix("_data").replace("_","-")
+                # outer_input_param_name = camelCase(param_name.removesuffix("_list"))
+                # inner_input_param_name = param_name.removesuffix("_list").replace("_","-")
+
                 tmp_input_data = input_data
 
                 #updated 1.0.0.4
@@ -804,12 +804,14 @@ def update_input_format(obj,input_data):
                     input_data[param_name] = 0
                 elif param_data_type == float:
                     input_data[param_name] = 0.0
+            #updated 1.0.0.19
+                # elif param_data_type == decimal:
                 elif param_data_type == Decimal:
                     input_data[param_name] = 0.0
                 else:
                     input_data[param_name] = None
                 
-        # print("Param:", param_name)
+
         input_value = input_data[param_name]
 
         if param_data_type == date:
@@ -821,6 +823,8 @@ def update_input_format(obj,input_data):
         elif param_data_type == str and type(input_value) == int:
             input_data[param_name] = to_string(input_value)
         #updated 1.0.0.1
+        #updated 1.0.0.19
+        # elif param_data_type == decimal:
         elif param_data_type == Decimal:
             input_data[param_name] = to_decimal(input_value)
 
@@ -838,7 +842,12 @@ def update_input_format(obj,input_data):
 
 
             #updated 1.0.0.1
-            elif not type(param_data_type[0]) in {int, Decimal, float, complex, str, list, tuple, range, dict, set, 
+            #updated 1.0.0.19
+            # elif not type(param_data_type[0]) in {int, decimal, float, complex, str, list, tuple, range, dict, set, 
+            #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
+            #     not param_data_type[0] in {int, decimal, float, complex, str, list, tuple, range, dict, set, 
+            #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)}:
+            elif not type(param_data_type[0]) in {int,  Decimal, float, complex, str, list, tuple, range, dict, set, 
                                                   frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
                 not param_data_type[0] in {int, Decimal, float, complex, str, list, tuple, range, dict, set, 
                                                   frozenset, bool, bytes, bytearray, memoryview, type(None)}:
@@ -933,6 +942,7 @@ def update_input_format(obj,input_data):
 
     # for param_name in input_data.keys():
     #     if not param_name in param_list(obj)
+
 
 
 def update_output_format(output_data):

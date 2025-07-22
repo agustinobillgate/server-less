@@ -1,0 +1,60 @@
+{
+    "Htparam": {
+        "read": [],
+        "write": []
+    },
+    "Bk_reser": {
+        "read": [
+            "veran_seite",
+            "datum",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bk_func": {
+        "read": [
+            "resstatus",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bk_veran": {
+        "read": [
+            "gastnr",
+            "resstatus",
+            "veran_nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest": {
+        "read": [
+            "name",
+            "karteityp",
+            "gastnr",
+            "vorname1",
+            "anrede1",
+            "anredefirma",
+            "adresse1",
+            "adresse2",
+            "adresse3",
+            "telefon",
+            "land",
+            "plz",
+            "wohnort",
+            "fax",
+            "firmen_nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Akt_kont": {
+        "read": [
+            "name",
+            "vorname",
+            "anrede",
+            "_recid"
+        ],
+        "write": []
+    }
+}
