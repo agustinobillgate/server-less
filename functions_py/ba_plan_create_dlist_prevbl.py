@@ -1,4 +1,7 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 22/7/2025
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -118,7 +121,10 @@ def ba_plan_create_dlist_prevbl(rml_data:[Rml], from_date:date):
                 l = start
 
                 if l - 1 > 0:
-                    for m in range(l - k,l - 1 + 1) :
+                    # Rd, 22/7/2025
+                    # int(k)
+                    kk = int(k)
+                    for m in range(l - kk,l - 1 + 1) :
 
                         if m > 0:
 
