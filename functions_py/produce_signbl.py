@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 21/7/2025
+# Gitlab: 442
+# char -> char
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.checkin_gdprbl import checkin_gdprbl
@@ -67,8 +71,10 @@ def produce_signbl(pvilanguage:int, resno:int, reslino:int, gastno:int):
 
     archieve = get_cache (Archieve, {"key": [(eq, "send-sign-rc")],"num1": [(eq, resno)],"num2": [(eq, reslino)],"num3": [(eq, gastno)]})
 
-    if archieve and archieve.CHAR[1] != "":
-        image_data = archieve.CHAR[1]
+    # Rd 22/7/2025
+    # CHAR -> char
+    if archieve and archieve.char[1] != "":
+        image_data = archieve.char[1]
 
     if length(image_data) > 0:
         bb = image_data.encode('utf-8')

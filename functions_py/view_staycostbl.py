@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 21/7/2025
+# Gitlab: 
+# konversi ulang, update Ticket 3DC423
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal

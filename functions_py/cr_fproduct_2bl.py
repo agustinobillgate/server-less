@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+# ----------------------------------------
+# Rd, 222/7/2025
+# gitlab: 745
+# add: safe_divide
+# ----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -7,6 +12,10 @@ from functions.create_forecast_history_2bl import create_forecast_history_2bl
 import re
 from sqlalchemy import func
 from models import Nation, Sourccod, Segment, Arrangement, Reslin_queasy, Ratecode, Kontplan
+
+def safe_divide(numerator, denominator):
+    numerator, denominator = to_decimal(numerator), to_decimal(denominator)
+    return (numerator / denominator) if denominator not in (0, None) else to_decimal("0")
 
 def cr_fproduct_2bl(pvilanguage:int, op_type:int, printer_nr:int, call_from:int, txt_file:string, fr_date:date, to_date:date, disptype:int, cardtype:int, stattype:int, rev_calc:int, exc_oral6pm:bool, excl_comp:bool, vhp_limited:bool, scin:bool, argt_code:string):
 
@@ -525,7 +534,10 @@ def cr_fproduct_2bl(pvilanguage:int, op_type:int, printer_nr:int, call_from:int,
             output_list1 = Output_list1()
             output_list1_data.append(output_list1)
 
-            output_list1.avrg_amount = to_string(tot_rmonly / tot_room, "->>>,>>>,>>9.99")
+            # Rd, 22/7/2025
+            # safe divide
+            # output_list1.avrg_amount = to_string(tot_rmonly / tot_room, "->>>,>>>,>>9.99")
+            output_list1.avrg_amount = to_string(safe_divide(tot_rmonly , tot_room), "->>>,>>>,>>9.99")
             output_list1.fcost = to_string(tot_fcost, "->>>,>>>,>>9.99")
             output_list1.name1 = to_string("T o t a l", "x(32)")
             output_list1.zinr = to_string(tot_room, ">>,>>9")
@@ -550,7 +562,9 @@ def cr_fproduct_2bl(pvilanguage:int, op_type:int, printer_nr:int, call_from:int,
 
                     output_list2.firmen_nr = to_list.firmen_nr
                     output_list2.refno = to_list.refno
-                    output_list2.avrg_amount = to_string(to_list.rmonly / to_list.room, "->>>,>>>,>>9.99")
+                    # Rd 22/7/2025
+                    # output_list2.avrg_amount = to_string(to_list.rmonly / to_list.room, "->>>,>>>,>>9.99")
+                    output_list2.avrg_amount = to_string(safe_divide(to_list.rmonly , to_list.room), "->>>,>>>,>>9.99")
                     output_list2.fcost = to_string(to_list.fcost, "->>>,>>>,>>9.99")
                     output_list2.name1 = to_string(to_list.name, "x(32)")
                     output_list2.zinr = to_string(to_list.room, ">>,>>9")
@@ -569,7 +583,9 @@ def cr_fproduct_2bl(pvilanguage:int, op_type:int, printer_nr:int, call_from:int,
 
                     output_list2.firmen_nr = to_list.firmen_nr
                     output_list2.refno = to_list.refno
-                    output_list2.avrg_amount = to_string(to_list.rmonly / to_list.room, "->>>,>>>,>>9.99")
+                    # Rd 22/7/2025
+                    # output_list2.avrg_amount = to_string(to_list.rmonly / to_list.room, "->>>,>>>,>>9.99")
+                    output_list2.avrg_amount = to_string(safe_divide(to_list.rmonly , to_list.room), "->>>,>>>,>>9.99")
                     output_list2.fcost = to_string(to_list.fcost, "->>>,>>>,>>9.99")
                     output_list2.name1 = to_string(to_list.name, "x(32)")
                     output_list2.zinr = to_string(to_list.room, ">>,>>9")
@@ -597,7 +613,9 @@ def cr_fproduct_2bl(pvilanguage:int, op_type:int, printer_nr:int, call_from:int,
                 output_list2 = Output_list2()
                 output_list2_data.append(output_list2)
 
-                output_list2.avrg_amount = to_string(tot_list.rmonly / tot_list.room, "->>>,>>>,>>9.99")
+                # Rd 22/7/2025
+                # output_list2.avrg_amount = to_string(tot_list.rmonly / tot_list.room, "->>>,>>>,>>9.99")
+                output_list2.avrg_amount = to_string(safe_divide(tot_list.rmonly , tot_list.room), "->>>,>>>,>>9.99")
                 output_list2.fcost = to_string(tot_list.fcost, "->>>,>>>,>>9.99")
                 output_list2.name1 = to_string("T o t a l " + tot_list.curr, "x(32)")
                 output_list2.zinr = to_string(tot_list.room, ">>,>>9")
@@ -623,7 +641,9 @@ def cr_fproduct_2bl(pvilanguage:int, op_type:int, printer_nr:int, call_from:int,
             output_list2 = Output_list2()
             output_list2_data.append(output_list2)
 
-            output_list2.avrg_amount = to_string(tot_rmonly / tot_room, "->>>,>>>,>>9.99")
+            # Rd 22/7/2025
+            # output_list2.avrg_amount = to_string(tot_rmonly / tot_room, "->>>,>>>,>>9.99")
+            output_list2.avrg_amount = to_string(safe_divide(tot_rmonly , tot_room), "->>>,>>>,>>9.99")
             output_list2.fcost = to_string(tot_fcost, "->>>,>>>,>>9.99")
             output_list2.name1 = to_string("T o t a l", "x(32)")
             output_list2.zinr = to_string(tot_room, ">>,>>9")
@@ -646,7 +666,9 @@ def cr_fproduct_2bl(pvilanguage:int, op_type:int, printer_nr:int, call_from:int,
         for to_list in query(to_list_data):
 
             if to_list.room != 0:
-                to_list.avrgrate =  to_decimal(to_list.logis) / to_decimal(to_list.room)
+                # Rd 222/7/2025
+                # to_list.avrgrate =  to_decimal(to_list.logis) / to_decimal(to_list.room)
+                to_list.avrgrate =  safe_divide(to_list.logis, to_list.room)
 
             if tot_logis != 0:
                 to_list.proz =  to_decimal(to_list.logis) / to_decimal(tot_logis) * to_decimal("100")
