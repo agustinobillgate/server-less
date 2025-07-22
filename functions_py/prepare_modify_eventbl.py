@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 22/7/2025
+# gitlab: 998
+# bezeich-> bezichnung
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -65,6 +69,9 @@ def prepare_modify_eventbl(rml_resnr:int, rml_reslinnr:int, curr_date:date):
 
     rl = get_cache (Bk_reser, {"veran_nr": [(eq, rml_resnr)],"veran_seite": [(eq, rml_reslinnr)]})
 
+    # Rd 22/7/2025
+    if rl is None:
+        return generate_output()
     if rl:
         r_recid = rl._recid
     chg_date, ci_date, update_ok, begin_i2, ending_i2, begin_time, begin_i, ending_time, ending_i, msg, rsv_table_data, t_bk_reser_data = get_output(prepare_chg_start_end_cldbl(rml_resnr, rml_reslinnr, curr_date))
@@ -82,7 +89,11 @@ def prepare_modify_eventbl(rml_resnr:int, rml_reslinnr:int, curr_date:date):
         table_setup_data.append(table_setup)
 
         table_setup.room_id = braum.raum
-        table_setup.seating = bsetup.bezeich
+
+        # Rd 22/7/2025
+        # table_setup.seating = bsetup.bezeich
+        table_setup.seating = bsetup.bezeichnung
+
         table_setup.max_person = bset.personen
         table_setup.assign_person = bfunc.rpersonen[0]
 

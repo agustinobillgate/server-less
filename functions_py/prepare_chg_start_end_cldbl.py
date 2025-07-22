@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 22/7/2025
+# gitlab: 
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -58,40 +61,43 @@ def prepare_chg_start_end_cldbl(resnr:int, reslinnr:int, curr_date:date):
 
         bk_raum = get_cache (Bk_raum, {"raum": [(eq, bk_reser.raum)]})
 
-        if bk_reser.datum == chg_date and bk_reser.bis_datum == chg_date:
-            i = (((bk_raum.vorbereit + 0.1) * 2) + 1) / 60
-            begin_i2 = bk_reser.von_i - i
-            begin_time = bk_reser.von_zeit
-            begin_i = bk_reser.von_i
-            ending_time = bk_reser.bis_zeit
-            ending_i = bk_reser.bis_i
-            s = (((bk_raum.vorbereit + 0.1) * 2) + 1) / 60
-            ending_i2 = bk_reser.bis_i + s
-            msg = 1
+        # Rd 22/7/2025
+        # Add if is not None
+        if bk_raum is not None:
+            if bk_reser.datum == chg_date and bk_reser.bis_datum == chg_date:
+                i = (((bk_raum.vorbereit + 0.1) * 2) + 1) / 60
+                begin_i2 = bk_reser.von_i - i
+                begin_time = bk_reser.von_zeit
+                begin_i = bk_reser.von_i
+                ending_time = bk_reser.bis_zeit
+                ending_i = bk_reser.bis_i
+                s = (((bk_raum.vorbereit + 0.1) * 2) + 1) / 60
+                ending_i2 = bk_reser.bis_i + s
+                msg = 1
 
-        elif bk_reser.datum == chg_date and bk_reser.bis_datum > chg_date:
-            begin_time = bk_reser.von_zeit
-            i = (((bk_raum.vorbereit + 0.1) * 2) + 1) / 60
-            begin_i = bk_reser.von_i
-            begin_i2 = bk_reser.von_i - i
-            ending_time = "24:00"
-            ending_i = 48
-            msg = 2
+            elif bk_reser.datum == chg_date and bk_reser.bis_datum > chg_date:
+                begin_time = bk_reser.von_zeit
+                i = (((bk_raum.vorbereit + 0.1) * 2) + 1) / 60
+                begin_i = bk_reser.von_i
+                begin_i2 = bk_reser.von_i - i
+                ending_time = "24:00"
+                ending_i = 48
+                msg = 2
 
-        elif bk_reser.datum < chg_date and bk_reser.bis_datum == chg_date:
-            begin_time = "00:00"
-            begin_i = 1
-            ending_time = bk_reser.bis_zeit
-            s = (((bk_raum.vorbereit + 0.1) * 2) + 1) / 60
-            ending_i2 = bk_reser.bis_i + s
-            ending_i = bk_reser.bis_i
-            msg = 3
+            elif bk_reser.datum < chg_date and bk_reser.bis_datum == chg_date:
+                begin_time = "00:00"
+                begin_i = 1
+                ending_time = bk_reser.bis_zeit
+                s = (((bk_raum.vorbereit + 0.1) * 2) + 1) / 60
+                ending_i2 = bk_reser.bis_i + s
+                ending_i = bk_reser.bis_i
+                msg = 3
 
-        elif bk_reser.datum < chg_date and bk_reser.bis_datum > chg_date:
-            begin_time = "00:00"
-            begin_i = 1
-            ending_time = "24:00"
-            ending_i = 48
+            elif bk_reser.datum < chg_date and bk_reser.bis_datum > chg_date:
+                begin_time = "00:00"
+                begin_i = 1
+                ending_time = "24:00"
+                ending_i = 48
     else:
         msg = 4
 

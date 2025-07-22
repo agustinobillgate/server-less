@@ -508,7 +508,12 @@ update_field_mapping = {
         "avail-addvat":"avail-addVAT",
     "availAddvat": ["availAddVat","availAddVat","availAddVAT"],
     "readequipment":"readEquipment",
-
+    "datum":"Datum",
+    "gruppenname":"Gruppenname",
+    "bemerkung":"Bemerkung",
+    "dekoration":"Dekoration",
+    "vorbereitungszeit":"Vorbereitungszeit",
+    "nachlaufzeit":"Nachlaufzeit",
 
     # "mtd-room": "mtd-Room",
     # "ytd-room": "ytd-Room",
