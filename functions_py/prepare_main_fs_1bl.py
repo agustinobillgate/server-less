@@ -139,7 +139,8 @@ def prepare_main_fs_1bl(b1_resnr:int, b1_resline:int, to_date:date):
                 else:
                     name_contact = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-                glist = query(glist_data, filters=(lambda glist: glist.gastnr == bk_veran.gastnr), first=True)
+                # glist = query(glist_data, filters=(lambda glist: glist.gastnr == bk_veran.gastnr), first=True)
+                glist = filter_query(glist_data, filters=(lambda glist: glist.gastnr == bk_veran.gastnr), first=True)
 
                 if not glist:
                     glist = Glist()

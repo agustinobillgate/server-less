@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------
+# Rd 22/7/2025
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -125,15 +127,20 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
             else:
                 genstat_obj_list[genstat._recid] = True
 
+            # Rd 22/7/2025
+            # res_char ->genstat.res_char
             if matches(genstat.res_char[1],r"*$CODE$*"):
-                s = substring(genstat.res_char[1], (get_index(res_char[1], "$CODE$") + 6) - 1)
+                # s = substring(genstat.res_char[1], (get_index(res_char[1], "$CODE$") + 6) - 1)
+                s = substring(genstat.res_char[1], (get_index(genstat.res_char[1], "$CODE$") + 6) - 1)
                 curr_code = trim(entry(0, s, ";"))
             else:
 
                 res_line = get_cache (Res_line, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
 
                 if res_line:
-                    s = substring(zimmer_wunsch, (get_index(zimmer_wunsch, "$CODE$") + 6) - 1)
+                    # Rd 22/7/2025
+                    # s = substring(zimmer_wunsch, (get_index(zimmer_wunsch, "$CODE$") + 6) - 1)
+                    s = substring(res_line.zimmer_wunsch, (get_index(res_line.zimmer_wunsch, "$CODE$") + 6) - 1)
                     curr_code = trim(entry(0, s, ";"))
                 else:
                     curr_code = "UNKNOWN"
@@ -431,7 +438,10 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
                 proz =  to_decimal(proz) + to_decimal(to_list.proz)
                 m_proz =  to_decimal(m_proz) + to_decimal(to_list.m_proz)
                 y_proz =  to_decimal(y_proz) + to_decimal(to_list.y_proz)
-                st_room = st_room + TO_list.room
+
+                # Rd 22/7/2025
+                # st_room = st_room + TO_list.room
+                st_room = st_room + to_list.room
                 st_pax = st_pax + to_list.pax
                 st_proz =  to_decimal(st_proz) + to_decimal(to_list.proz)
                 st_logis =  to_decimal(st_logis) + to_decimal(to_list.logis)

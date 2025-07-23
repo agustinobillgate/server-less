@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 23/7/2025
+# gitlab: 
+# change while -> foreach -> konversi
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 import random
@@ -85,22 +89,25 @@ def prepare_benutzer_adminbl():
         Usrbuff =  create_buffer("Usrbuff",Bediener)
 
         usr_list = query(usr_list_data, filters=(lambda usr_list: usr_list.betriebsnr == 0 and usr_list.flag == 0), first=True)
-        while None != usr_list:
+
+        for usr_list in query(usr_list_data, filters=(lambda usr_list: usr_list.betriebsnr == 0 and usr_list.flag == 0)):
             usr_code = encode_string(usr_list.usercode)
             pass
             usr_list.usercode = usr_code
             usr_list.betriebsnr = 1
+
+
             pass
 
             usrbuff = db_session.query(Usrbuff).filter(
                      (Usrbuff.nr == usr_list.nr)).first()
-            usrbuff.usercode = usr_code
-            usrbuff.betriebsnr = 1
+
+            if usrbuff:
+                usrbuff.usercode = usr_code
+                usrbuff.betriebsnr = 1
 
 
-            pass
-
-            usr_list = query(usr_list_data, filters=(lambda usr_list: usr_list.betriebsnr == 0 and usr_list.flag == 0), next=True)
+                pass
 
 
     def encode_string(in_str:string):

@@ -1,0 +1,15 @@
+{
+    "Bediener": {
+        "read": [],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "char2",
+            "char1",
+            "char3",
+            "_recid"
+        ],
+        "write": []
+    }
+}
