@@ -1475,6 +1475,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                                 orig_infostr = "end"
                                 if output_data is None:
                                     output_data = {}
+                                    output_data["output_Ok_Flag"] = str(ok_flag)
                                 else:
                                     output_data["output_Ok_Flag"] = str(ok_flag)
 
