@@ -514,10 +514,11 @@ update_field_mapping = {
     "dekoration":"Dekoration",
     "vorbereitungszeit":"Vorbereitungszeit",
     "nachlaufzeit":"Nachlaufzeit",
+    # "output_Ok_Flag":"outputOkFlag",
 
     # "mtd-room": "mtd-Room",
     # "ytd-room": "ytd-Room",
-    # "activeflag": ["ActiveFlag","activeFlag"],    
+    "activeflag": ["ActiveFlag","activeFlag"],    
     # "max_lapos": ["maxLapos"],
     # "must_print":["mustPrint"],
     # "fl_warn":["flWarn"],
