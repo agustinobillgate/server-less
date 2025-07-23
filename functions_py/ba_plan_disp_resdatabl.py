@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 22/7/2025
+# gitlab: 586
+# bezeich -> bezeichnung
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -49,8 +53,9 @@ def ba_plan_disp_resdatabl(rml_raum:string, t_resnr:int, t_reslinnr:int):
         else:
             bk_rset_obj_list[bk_rset._recid] = True
 
-
-        info1 = info1 + bk_setup.bezeich + ": Sz: " + to_string(bk_rset.groesse) + " Cp: " + to_string(bk_rset.personen) + " P:" + to_string(bk_rset.preis, ">>>,>>>,>>9.99") + chr_unicode(10)
+        # Rd 23/7/2025
+        # bezeich -> bezeichnung
+        info1 = info1 + bk_setup.bezeichnung + ": Sz: " + to_string(bk_rset.groesse) + " Cp: " + to_string(bk_rset.personen) + " P:" + to_string(bk_rset.preis, ">>>,>>>,>>9.99") + chr_unicode(10)
 
     mainres = get_cache (Bk_veran, {"veran_nr": [(eq, t_resnr)]})
 

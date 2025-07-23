@@ -1,5 +1,11 @@
 #using conversion tools version: 1.0.0.117
 
+#-----------------------------------------
+# Rd, 23/7/20225
+# gitlab:656
+# requery for each, close_date dikeluarkan
+#-----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -69,7 +75,6 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
         Buf_ophdr =  create_buffer("Buf_ophdr",L_ophdr)
 
         if l_artikel.endkum <= 2:
-
             htparam = get_cache (Htparam, {"paramnr": [(eq, 221)]})
 
             if htparam:
@@ -143,8 +148,19 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
                         str_list2.init_qty = to_string(l_bestand.anz_anf_best)
                         str_list2.init_val = to_string(0)
 
-            for l_op in db_session.query(L_op).filter(
-                     (L_op.lager_nr == l_lager.lager_nr) & (L_op.artnr == s_artnr) & (L_op.loeschflag <= 1) & (L_op.datum <= close_date)).order_by(L_op.datum, L_op.op_art).all():
+            # Rd
+            # add validation close_date is none
+            # for l_op in db_session.query(L_op).filter(
+            #          (L_op.lager_nr == l_lager.lager_nr) & (L_op.artnr == s_artnr) & (L_op.loeschflag <= 1) & (L_op.datum <= close_date)).order_by(L_op.datum, L_op.op_art).all():
+            query = db_session.query(L_op).filter(
+                        (L_op.lager_nr == l_lager.lager_nr) &
+                        (L_op.artnr == s_artnr) &
+                        (L_op.loeschflag <= 1)
+                    )
+            if close_date is not None:
+                query = query.filter(L_op.datum <= close_date)
+            l_op_list = query.order_by(L_op.datum, L_op.op_art).all()
+            for l_op in l_op_list:
                 it_exist = True
 
                 if show_price:
@@ -425,8 +441,8 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
     l_artikel = get_cache (L_artikel, {"artnr": [(eq, s_artnr)]})
 
     if not l_artikel:
-
         return generate_output()
+    
     str_list2_data = create_list(pvilanguage, s_artnr, show_price, from_lager, to_lager)
     stock_movelist_data.clear()
 

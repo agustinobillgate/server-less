@@ -60,6 +60,11 @@ def ba_plan_create_dlist_prevbl(rml_data:[Rml], from_date:date):
         Childrm =  create_buffer("Childrm",Bk_raum)
 
         rml = query(rml_data, filters=(lambda rml: rml.raum.lower()  == (curr_rm).lower()  and rml.nr == 1), first=True)
+        
+        # Rd 23/7/2025
+        if rml is None:
+            return generate_output()
+        
         gastname = gast.name
 
         if bk_veran.bemerkung != "":

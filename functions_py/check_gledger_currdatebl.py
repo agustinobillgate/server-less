@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 23/7/2025
+# gitlab: 625
+# add table name -> betrag
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -216,7 +221,7 @@ def check_gledger_currdatebl(currdate:date):
                 balance =  to_decimal("0")
                 pos_billno = h_bill_line.rechnr
                 dept = h_bill_line.departement
-            balance =  to_decimal(balance) + to_decimal(betrag)
+            balance =  to_decimal(balance) + to_decimal(h_bill_line.betrag)
 
             if h_bill_line.artnr == 0:
 
