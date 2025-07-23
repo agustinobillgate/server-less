@@ -539,6 +539,14 @@ update_field_mapping = {
     "totp_status":"totp-status",
     "var_name":"var-name",
 
+    "item_prof":"item-prof",
+    "t_sales":"t-sales",
+    "t_cost":"t-cost",
+    "t_margin":"t-margin",
+    "profit_cat":"profit-cat",
+    "popularity_cat":"popularity-cat",
+    "menu_item_class":"menu-item-class",
+
     # "activeflag": ["ActiveFlag","activeFlag"], 
 
     # "mtd-room": "mtd-Room",
