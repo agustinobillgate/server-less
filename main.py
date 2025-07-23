@@ -578,7 +578,7 @@ update_field_mapping = {
     "mwst_code":"mwst-code",
     "service":"service-code",
     "s_gueltig":"s-gueltig",
-    "s_gueltig":"e-gueltig",
+    "e_gueltig":"e-gueltig",
 
     "guest_name":"guest-name",
     "art_desc":"art-desc",
@@ -597,6 +597,12 @@ update_field_mapping = {
     "l_amount":"l-amount",
     "f_amount":"f-amount",
     "i_counter":"i-counter",
+    "curr_waiter":"currWaiter",
+    "fl_code":"flCode",
+    "cashless_flag":"cashlessFlag",
+    "activate_deposit":"activateDeposit",
+    "c_param870":"cParam870",
+    "p_223":"p223",
 
 
     # "activeflag": ["ActiveFlag","activeFlag"], 

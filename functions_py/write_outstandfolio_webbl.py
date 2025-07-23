@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 23/7/2025
+# gitlab: 949
+# validate rechnr
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -131,10 +136,16 @@ def write_outstandfolio_webbl(payload_list_data:[Payload_list]):
                             queasy.char1 = buff_queasy.char1
 
         if payload_list.rechnr_remark != None:
-
+            # Rd 23/7/2025
+            try:
+                rechnr = int(payload_list.rechnr_remark)
+            except ValueError:
+                rechnr = 0
             if payload_list.bill_type.lower()  == ("NS").lower() :
+                
+               
 
-                bill = get_cache (Bill, {"rechnr": [(eq, payload_list.rechnr_remark)],"flag": [(eq, 0)],"saldo": [(ne, 0)]})
+                bill = get_cache (Bill, {"rechnr": [(eq, rechnr)],"flag": [(eq, 0)],"saldo": [(ne, 0)]})
 
                 if bill:
 
@@ -161,8 +172,8 @@ def write_outstandfolio_webbl(payload_list_data:[Payload_list]):
                         pass
 
             elif payload_list.bill_type.lower()  == ("M").lower() :
-
-                bill = get_cache (Bill, {"rechnr": [(eq, payload_list.rechnr_remark)],"flag": [(eq, 0)],"saldo": [(ne, 0)]})
+               
+                bill = get_cache (Bill, {"rechnr": [(eq, rechnr)],"flag": [(eq, 0)],"saldo": [(ne, 0)]})
 
                 if bill:
 
@@ -189,7 +200,7 @@ def write_outstandfolio_webbl(payload_list_data:[Payload_list]):
                         pass
             else:
 
-                bill = get_cache (Bill, {"rechnr": [(eq, payload_list.rechnr_remark)],"flag": [(eq, 0)],"saldo": [(ne, 0)]})
+                bill = get_cache (Bill, {"rechnr": [(eq, rechnr)],"flag": [(eq, 0)],"saldo": [(ne, 0)]})
 
                 if bill:
 

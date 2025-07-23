@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 23/7/2025
+# gitlab: 655
+# 
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -116,9 +120,11 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 272)]})
         bev_food = htparam.fchar
+        print("Bev 272:", bev_food)
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 275)]})
         food_bev = htparam.fchar
+        print("Food 275:", food_bev)
         create_output_list()
         output_list.s = to_string("", "x(24)") + to_string(translateExtended ("** food **", lvcarea, "") , "x(33)")
         flag = 1
