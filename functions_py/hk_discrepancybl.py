@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 23/7/2025
+# edit hkdiscrepancy-list -> hk-discrepancy-list (not recommend)
+#-----------------------------------------
+
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -39,7 +44,10 @@ def hk_discrepancybl(pvilanguage:int, case_type:string, zinno:string, housestat:
         nonlocal hkdiscrepancy_list, rmplan, room, usr
         nonlocal hkdiscrepancy_list_data, rmplan_data
 
-        return {"msg_str": msg_str, "fo_stat": fo_stat, "hk_stat": hk_stat, "fo_pax": fo_pax, "fo_ch1": fo_ch1, "hkdiscrepancy-list": hkdiscrepancy_list_data, "rmplan": rmplan_data}
+        # Rd 23/7/22025
+        # return {"msg_str": msg_str, "fo_stat": fo_stat, "hk_stat": hk_stat, "fo_pax": fo_pax, "fo_ch1": fo_ch1, "hkdiscrepancy-list": hkdiscrepancy_list_data, "rmplan": rmplan_data}
+
+        return {"msg_str": msg_str, "fo_stat": fo_stat, "hk_stat": hk_stat, "fo_pax": fo_pax, "fo_ch1": fo_ch1, "hk-discrepancy-list": hkdiscrepancy_list_data, "rmplan": rmplan_data}
 
     def disp_it():
 

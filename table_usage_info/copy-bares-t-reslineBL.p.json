@@ -1,13 +1,11 @@
 {
-    "Bediener": {
+    "Bk_reser": {
         "read": [],
         "write": []
     },
-    "Queasy": {
+    "Bk_raum": {
         "read": [
-            "char2",
-            "char1",
-            "char3",
+            "vorbereit",
             "_recid"
         ],
         "write": []

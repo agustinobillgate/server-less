@@ -51,13 +51,15 @@ def prepare_mk_gcpi_webbl(pvilanguage:int, pi_number:string, user_init:string):
         nonlocal t_gc_pibline, pbuff, t_gc_pitype, s_list
         nonlocal t_gc_pibline_data, pbuff_data, t_gc_pitype_data, s_list_data
 
-        return {"pi_acctno": pi_acctno, "giro_tempacct": giro_tempacct, "pi_mode": pi_mode, "pi_status": pi_status, "pi_type1": pi_type1, "fl_temp": fl_temp, "fl_err": fl_err, "p_110": p_110, "bemerk": bemerk, "rcvname": rcvname, "pay_acctno": pay_acctno, "department": department, "pay_amount": pay_amount, "pbuff": pbuff_data, "t-gc-pitype": t_gc_pitype_data, "t-gc-PIbline": t_gc_pibline_data, "s-list": s_list_data, "bankname": bankname}
+        return {"pi_acctno": pi_acctno, "giro_tempacct": giro_tempacct, "pi_mode": pi_mode, "pi_status": pi_status, "pi_type1": pi_type1, 
+                "fl_temp": fl_temp, "fl_err": fl_err, "p_110": p_110, "bemerk": bemerk, "rcvname": rcvname, "pay_acctno": pay_acctno, 
+                "department": department, "pay_amount": pay_amount, "pbuff": pbuff_data, "t-gc-pitype": t_gc_pitype_data, 
+                "t-gc-PIbline": t_gc_pibline_data, "s-list": s_list_data, "bankname": bankname}
 
     def enable1a():
 
         nonlocal pi_acctno, giro_tempacct, pi_mode, pi_status, pi_type1, fl_temp, fl_err, p_110, bemerk, rcvname, pay_acctno, department, pay_amount, pbuff_data, t_gc_pitype_data, t_gc_pibline_data, s_list_data, bankname, i, lvcarea, gc_pibline, gc_pi, gc_pitype, htparam, gl_acct, gc_giro, bediener, gc_piacct, queasy
         nonlocal pvilanguage, pi_number, user_init
-
 
         nonlocal t_gc_pibline, pbuff, t_gc_pitype, s_list
         nonlocal t_gc_pibline_data, pbuff_data, t_gc_pitype_data, s_list_data

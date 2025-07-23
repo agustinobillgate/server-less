@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 23/7/2025
+# add if available
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -107,10 +111,12 @@ def update_global_allotment_browsebl(pvilanguage:int, input_date:date, currcode:
         for i in range(get_day(from_date),get_day(to_date)  + 1) :
 
             allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == curr_date), first=True)
-            allot_list.tot_rm = anz_room
 
-
-            tmp_list[i - 1] = anz_room
+            # Rd, 23/7/2025
+            # add if available
+            if allot_list is not None:
+                allot_list.tot_rm = anz_room
+                tmp_list[i - 1] = anz_room
             curr_date = curr_date + timedelta(days=1)
 
         outorder_obj_list = {}
@@ -162,7 +168,11 @@ def update_global_allotment_browsebl(pvilanguage:int, input_date:date, currcode:
         for i in range(get_day(from_date),get_day(to_date)  + 1) :
 
             allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == curr_date), first=True)
-            allot_list.avl_rm = tmp_list[i - 1]
+
+            # Rd 23/7/2025
+            # add if available
+            if allot_list is not None:
+                allot_list.avl_rm = tmp_list[i - 1]
             curr_date = curr_date + timedelta(days=1)
 
         for res_line in db_session.query(Res_line).filter(
@@ -179,8 +189,9 @@ def update_global_allotment_browsebl(pvilanguage:int, input_date:date, currcode:
                 for i in range(get_day(from_date),get_day(to_date)  + 1) :
 
                     allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == curr_date), first=True)
-
-                    if curr_date >= res_line.ankunft and curr_date < res_line.abreise:
+                    # Rd 23/7/2025
+                    # add if available
+                    if allot_list and curr_date >= res_line.ankunft and curr_date < res_line.abreise:
                         allot_list.stat1 = allot_list.stat1 + res_line.zimmeranz
                         tmp_list[i - 1] = tmp_list[i - 1] - res_line.zimmeranz
 
@@ -201,8 +212,9 @@ def update_global_allotment_browsebl(pvilanguage:int, input_date:date, currcode:
                 for i in range(get_day(from_date),get_day(to_date)  + 1) :
 
                     allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == curr_date), first=True)
-
-                    if curr_date >= res_line.ankunft and curr_date < res_line.abreise:
+                    # Rd 23/7/2025
+                    # add if available
+                    if allot_list and curr_date >= res_line.ankunft and curr_date < res_line.abreise:
                         allot_list.stat2 = allot_list.stat2 + res_line.zimmeranz
                         tmp_list[i - 1] = tmp_list[i - 1] - res_line.zimmeranz
 
@@ -223,8 +235,9 @@ def update_global_allotment_browsebl(pvilanguage:int, input_date:date, currcode:
                 for i in range(get_day(from_date),get_day(to_date)  + 1) :
 
                     allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == curr_date), first=True)
-
-                    if curr_date >= res_line.ankunft and curr_date < res_line.abreise:
+                    # Rd 23/7/2025
+                    # add if available
+                    if allot_list and curr_date >= res_line.ankunft and curr_date < res_line.abreise:
                         allot_list.stat5 = allot_list.stat5 + res_line.zimmeranz
                         tmp_list[i - 1] = tmp_list[i - 1] - res_line.zimmeranz
 
@@ -237,8 +250,9 @@ def update_global_allotment_browsebl(pvilanguage:int, input_date:date, currcode:
             for i in range(get_day(from_date),get_day(to_date)  + 1) :
 
                 allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == curr_date), first=True)
-
-                if curr_date >= kontline.ankunft and curr_date <= kontline.abreise:
+                # Rd 23/7/2025
+                # add if available
+                if allot_list and curr_date >= kontline.ankunft and curr_date <= kontline.abreise:
                     allot_list.glres = allot_list.glres + kontline.zimmeranz
                     tmp_list[i - 1] = tmp_list[i - 1] - kontline.zimmeranz
 
@@ -259,8 +273,9 @@ def update_global_allotment_browsebl(pvilanguage:int, input_date:date, currcode:
                 for i in range(get_day(from_date),get_day(to_date)  + 1) :
 
                     allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == curr_date), first=True)
-
-                    if curr_date >= res_line.ankunft and curr_date < res_line.abreise:
+                    # Rd 23/7/2025
+                    # add if available
+                    if allot_list and curr_date >= res_line.ankunft and curr_date < res_line.abreise:
                         allot_list.glres = allot_list.glres - res_line.zimmeranz
                         tmp_list[i - 1] = tmp_list[i - 1] + res_line.zimmeranz
 
@@ -270,16 +285,18 @@ def update_global_allotment_browsebl(pvilanguage:int, input_date:date, currcode:
         for i in range(get_day(from_date),get_day(to_date)  + 1) :
 
             allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == curr_date), first=True)
-
-            if tmp_list[i - 1] > 0:
+            # Rd 23/7/2025
+            # add if available
+            if allot_list and tmp_list[i - 1] > 0:
                 allot_list.avail1 = tmp_list[i - 1]
             curr_date = curr_date + timedelta(days=1)
         curr_date = from_date
         for i in range(get_day(from_date),get_day(to_date)  + 1) :
 
             allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == curr_date), first=True)
-
-            if tmp_list[i - 1] < 0:
+            # Rd 23/7/2025
+            # add if available
+            if allot_list and tmp_list[i - 1] < 0:
                 allot_list.ovb1 = - tmp_list[i - 1]
             curr_date = curr_date + timedelta(days=1)
 
@@ -289,8 +306,9 @@ def update_global_allotment_browsebl(pvilanguage:int, input_date:date, currcode:
             for i in range(get_day(from_date),get_day(to_date)  + 1) :
 
                 allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == curr_date), first=True)
-
-                if curr_date >= kontline.ankunft and curr_date <= kontline.abreise:
+                # Rd 23/7/2025
+                # add if available
+                if allot_list and curr_date >= kontline.ankunft and curr_date <= kontline.abreise:
 
                     if (curr_date >= ci_date + timedelta(days=kontline.ruecktage)):
                         tmp_list[i - 1] = tmp_list[i - 1] - kontline.zimmeranz
@@ -323,8 +341,9 @@ def update_global_allotment_browsebl(pvilanguage:int, input_date:date, currcode:
                 for i in range(get_day(from_date),get_day(to_date)  + 1) :
 
                     allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == curr_date), first=True)
-
-                    if (curr_date >= ci_date + timedelta(days=kontline.ruecktage)) and curr_date >= res_line.ankunft and curr_date < res_line.abreise:
+                    # Rd 23/7/2025
+                    # add if available
+                    if allot_list and (curr_date >= ci_date + timedelta(days=kontline.ruecktage)) and curr_date >= res_line.ankunft and curr_date < res_line.abreise:
                         tmp_list[i - 1] = tmp_list[i - 1] + res_line.zimmeranz
 
                         if kontline.kontcode.lower()  == (currcode).lower() :
@@ -336,16 +355,18 @@ def update_global_allotment_browsebl(pvilanguage:int, input_date:date, currcode:
         for i in range(get_day(from_date),get_day(to_date)  + 1) :
 
             allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == curr_date), first=True)
-
-            if tmp_list[i - 1] > 0:
+            # Rd 23/7/2025
+            # add if available
+            if allot_list and tmp_list[i - 1] > 0:
                 allot_list.avail2 = tmp_list[i - 1]
             curr_date = curr_date + timedelta(days=1)
         curr_date = from_date
         for i in range(get_day(from_date),get_day(to_date)  + 1) :
 
             allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == curr_date), first=True)
-
-            if tmp_list[i - 1] < 0:
+            # Rd 23/7/2025
+            # add if available
+            if allot_list and tmp_list[i - 1] < 0:
                 allot_list.ovb2 = - tmp_list[i - 1]
             curr_date = curr_date + timedelta(days=1)
 
