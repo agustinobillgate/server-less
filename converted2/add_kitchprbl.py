@@ -4,11 +4,11 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpdate import htpdate
-from models import Queasy, H_artikel, H_bill_line, Htparam, Hoteldpt, H_bill, Wgrpdep, Printer, Bediener, Kellner, H_journal, H_mjourn, Printcod
+from models import Queasy, H_bill_line, H_artikel, Htparam, Hoteldpt, H_bill, Wgrpdep, Printer, Bediener, Kellner, H_journal, H_mjourn, Printcod
 
 def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:int, billdate:date, user_init:string):
 
-    prepare_cache ([Queasy, H_bill_line, Htparam, Hoteldpt, H_bill, Wgrpdep, Printer, Bediener, Kellner, H_journal, H_mjourn, Printcod])
+    prepare_cache ([Queasy, H_bill_line, H_artikel, Htparam, Hoteldpt, H_bill, Wgrpdep, Printer, Bediener, Kellner, H_journal, H_mjourn, Printcod])
 
     error_str = ""
     lvcarea:string = "add-kitchpr"
@@ -32,48 +32,48 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
     printer_loc:string = ""
     create_queasy:bool = False
     count_k:int = 0
-    queasy = h_artikel = h_bill_line = htparam = hoteldpt = h_bill = wgrpdep = printer = bediener = kellner = h_journal = h_mjourn = printcod = None
+    queasy = h_bill_line = h_artikel = htparam = hoteldpt = h_bill = wgrpdep = printer = bediener = kellner = h_journal = h_mjourn = printcod = None
 
-    t_queasy = submenu_list = t_h_artikel = hbline = qsy = qbuff = None
+    t_queasy = submenu_list = hbline = buf_h_artikel = qsy = qbuff = None
 
     t_queasy_data, T_queasy = create_model_like(Queasy)
     submenu_list_data, Submenu_list = create_model("Submenu_list", {"menurecid":int, "zeit":int, "nr":int, "artnr":int, "bezeich":string, "anzahl":int, "zknr":int, "request":string})
-    t_h_artikel_data, T_h_artikel = create_model_like(H_artikel)
 
     Hbline = create_buffer("Hbline",H_bill_line)
+    Buf_h_artikel = create_buffer("Buf_h_artikel",H_artikel)
 
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_artikel, h_bill_line, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
+        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_bill_line, h_artikel, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
         nonlocal pvilanguage, session_parameter, dept, rechnr, billdate, user_init
-        nonlocal hbline
+        nonlocal hbline, buf_h_artikel
 
 
-        nonlocal t_queasy, submenu_list, t_h_artikel, hbline, qsy, qbuff
-        nonlocal t_queasy_data, submenu_list_data, t_h_artikel_data
+        nonlocal t_queasy, submenu_list, hbline, buf_h_artikel, qsy, qbuff
+        nonlocal t_queasy_data, submenu_list_data
 
         return {"error_str": error_str}
 
     def create_bon_output():
 
-        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_artikel, h_bill_line, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
+        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_bill_line, h_artikel, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
         nonlocal pvilanguage, session_parameter, dept, rechnr, billdate, user_init
-        nonlocal hbline
+        nonlocal hbline, buf_h_artikel
 
 
-        nonlocal t_queasy, submenu_list, t_h_artikel, hbline, qsy, qbuff
-        nonlocal t_queasy_data, submenu_list_data, t_h_artikel_data
+        nonlocal t_queasy, submenu_list, hbline, buf_h_artikel, qsy, qbuff
+        nonlocal t_queasy_data, submenu_list_data
 
         tableno:int = 0
         Qsy = T_queasy
         qsy_data = t_queasy_data
 
-        printer = get_cache (Printer, {"nr": [(eq, t_h_artikel.bondruckernr[0])]})
+        printer = get_cache (Printer, {"nr": [(eq, buf_h_artikel.bondruckernr[0])]})
 
         if not printer:
-            error_str = error_str + translateExtended ("The kitchen vhp.printer number", lvcarea, "") + " " + to_string(t_h_artikel.bondrucker[0]) + chr_unicode(10) + translateExtended ("in Article", lvcarea, "") + " " + to_string(t_h_artikel.artnr) + " - " + t_h_artikel.bezeich + chr_unicode(10) + translateExtended ("not defined in the vhp.printer Administration!", lvcarea, "") + chr_unicode(10)
+            error_str = error_str + translateExtended ("The kitchen vhp.printer number", lvcarea, "") + " " + to_string(buf_h_artikel.bondrucker[0]) + chr_unicode(10) + translateExtended ("in Article", lvcarea, "") + " " + to_string(buf_h_artikel.artnr) + " - " + buf_h_artikel.bezeich + chr_unicode(10) + translateExtended ("not defined in the vhp.printer Administration!", lvcarea, "") + chr_unicode(10)
             t_queasy = T_queasy()
             t_queasy_data.append(t_queasy)
 
@@ -83,14 +83,14 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
         else:
             get_printer_number()
 
-            queasy = get_cache (Queasy, {"key": [(eq, 208)],"number1": [(eq, t_h_artikel.endkum)]})
+            queasy = get_cache (Queasy, {"key": [(eq, 208)],"number1": [(eq, buf_h_artikel.endkum)]})
 
             if not queasy:
                 queasy = Queasy()
                 db_session.add(queasy)
 
                 queasy.key = 208
-                queasy.number1 = t_h_artikel.endkum
+                queasy.number1 = buf_h_artikel.endkum
                 queasy.number2 = 1
 
 
@@ -140,13 +140,13 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
 
     def write_article():
 
-        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_artikel, h_bill_line, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
+        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_bill_line, h_artikel, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
         nonlocal pvilanguage, session_parameter, dept, rechnr, billdate, user_init
-        nonlocal hbline
+        nonlocal hbline, buf_h_artikel
 
 
-        nonlocal t_queasy, submenu_list, t_h_artikel, hbline, qsy, qbuff
-        nonlocal t_queasy_data, submenu_list_data, t_h_artikel_data
+        nonlocal t_queasy, submenu_list, hbline, buf_h_artikel, qsy, qbuff
+        nonlocal t_queasy_data, submenu_list_data
 
         curr_recid:int = 0
         created:bool = False
@@ -187,9 +187,9 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
             if h_journal and h_journal.stornogrund != "":
                 t_queasy.char3 = t_queasy.char3 + " >>> " + to_string(h_journal.stornogrund, "x(20)") + chr_unicode(10)
 
-        if t_h_artikel.betriebsnr > 0:
+        if buf_h_artikel.betriebsnr > 0:
 
-            for submenu_list in query(submenu_list_data, filters=(lambda submenu_list: submenu_list.nr == t_h_artikel.betriebsnr and submenu_list.zeit == h_bill_line.zeit)):
+            for submenu_list in query(submenu_list_data, filters=(lambda submenu_list: submenu_list.nr == buf_h_artikel.betriebsnr and submenu_list.zeit == h_bill_line.zeit)):
                 created = True
                 t_queasy.char3 = t_queasy.char3 + " -> " + to_string(submenu_list.bezeich) + chr_unicode(10)
 
@@ -206,8 +206,7 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
                     for h_mjourn in db_session.query(H_mjourn).filter(
                              (H_mjourn.departement == dept) & (H_mjourn.h_artnr == h_journal.artnr) & (H_mjourn.rechnr == h_journal.rechnr) & (H_mjourn.bill_datum == h_journal.bill_datum) & (H_mjourn.sysdate == h_journal.sysdate) & (H_mjourn.zeit == h_journal.zeit) & (num_entries(H_mjourn.request, "|") > 1) & (to_int(entry(0, H_mjourn.request, "|")) == recid_h_bill_line)).order_by(H_mjourn._recid).all():
 
-                        h_art = db_session.query(H_art).filter(
-                                 (H_art.artnr == h_mjourn.artnr) & (H_art.departement == dept)).first()
+                        h_art = get_cache (H_artikel, {"artnr": [(eq, h_mjourn.artnr)],"departement": [(eq, dept)]})
 
                         if h_art:
                             created = True
@@ -223,13 +222,13 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
 
     def write_descript(str1:string, str2:string):
 
-        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_artikel, h_bill_line, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
+        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_bill_line, h_artikel, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
         nonlocal pvilanguage, session_parameter, dept, rechnr, billdate, user_init
-        nonlocal hbline
+        nonlocal hbline, buf_h_artikel
 
 
-        nonlocal t_queasy, submenu_list, t_h_artikel, hbline, qsy, qbuff
-        nonlocal t_queasy_data, submenu_list_data, t_h_artikel_data
+        nonlocal t_queasy, submenu_list, hbline, buf_h_artikel, qsy, qbuff
+        nonlocal t_queasy_data, submenu_list_data
 
         s1:string = ""
         s2:string = ""
@@ -272,13 +271,13 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
 
     def cut_it():
 
-        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_artikel, h_bill_line, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
+        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_bill_line, h_artikel, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
         nonlocal pvilanguage, session_parameter, dept, rechnr, billdate, user_init
-        nonlocal hbline
+        nonlocal hbline, buf_h_artikel
 
 
-        nonlocal t_queasy, submenu_list, t_h_artikel, hbline, qsy, qbuff
-        nonlocal t_queasy_data, submenu_list_data, t_h_artikel_data
+        nonlocal t_queasy, submenu_list, hbline, buf_h_artikel, qsy, qbuff
+        nonlocal t_queasy_data, submenu_list_data
 
         i:int = 0
 
@@ -303,13 +302,13 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
 
     def readsession():
 
-        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_artikel, h_bill_line, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
+        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_bill_line, h_artikel, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
         nonlocal pvilanguage, session_parameter, dept, rechnr, billdate, user_init
-        nonlocal hbline
+        nonlocal hbline, buf_h_artikel
 
 
-        nonlocal t_queasy, submenu_list, t_h_artikel, hbline, qsy, qbuff
-        nonlocal t_queasy_data, submenu_list_data, t_h_artikel_data
+        nonlocal t_queasy, submenu_list, hbline, buf_h_artikel, qsy, qbuff
+        nonlocal t_queasy_data, submenu_list_data
 
         lvctmp:string = ""
         lvcleft:string = ""
@@ -383,13 +382,13 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
 
     def get_printer_number():
 
-        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_artikel, h_bill_line, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
+        nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_bill_line, h_artikel, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
         nonlocal pvilanguage, session_parameter, dept, rechnr, billdate, user_init
-        nonlocal hbline
+        nonlocal hbline, buf_h_artikel
 
 
-        nonlocal t_queasy, submenu_list, t_h_artikel, hbline, qsy, qbuff
-        nonlocal t_queasy_data, submenu_list_data, t_h_artikel_data
+        nonlocal t_queasy, submenu_list, hbline, buf_h_artikel, qsy, qbuff
+        nonlocal t_queasy_data, submenu_list_data
 
         if printer.path == "KPR1":
 
@@ -437,7 +436,6 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
 
             return
 
-
     htparam = get_cache (Htparam, {"paramnr": [(eq, 252)]})
     numcat1 = htparam.finteger
 
@@ -468,22 +466,14 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
 
     h_bill = get_cache (H_bill, {"departement": [(eq, dept)],"rechnr": [(eq, rechnr)]})
 
-    for h_artikel in db_session.query(H_artikel).filter(
-             (H_artikel.departement == dept)).order_by(H_artikel._recid).all():
-        t_h_artikel = T_h_artikel()
-        t_h_artikel_data.append(t_h_artikel)
-
-        buffer_copy(h_artikel, t_h_artikel)
-
     if sort_subgrp :
 
         h_bill_line_obj_list = {}
-        for h_bill_line, wgrpdep in db_session.query(H_bill_line, Wgrpdep).join(Wgrpdep,(Wgrpdep.departement == dept) & (Wgrpdep.zknr == t_h_artikel.zwkum)).filter(
-                 (H_bill_line.rechnr == rechnr) & (H_bill_line.departement == dept) & (H_bill_line.steuercode <= 0)).order_by(t_h_artikel.bondruckernr[0], t_h_artikel.zwkum, H_bill_line.sysdate, H_bill_line.zeit, H_bill_line._recid).all():
-            t_h_artikel = query(t_h_artikel_data, (lambda t_h_artikel: t_h_artikel.artnr == h_bill_line.artnr and t_h_artikel.departement == dept and t_h_artikel.artart == 0), first=True)
-            if not t_h_artikel:
-                continue
-
+        h_bill_line = H_bill_line()
+        buf_h_artikel = H_artikel()
+        wgrpdep = Wgrpdep()
+        for h_bill_line.tischnr, h_bill_line.bill_datum, h_bill_line.sysdate, h_bill_line.zeit, h_bill_line.artnr, h_bill_line.departement, h_bill_line.bezeich, h_bill_line.anzahl, h_bill_line._recid, h_bill_line.steuercode, buf_h_artikel.bondruckernr, buf_h_artikel.artnr, buf_h_artikel.bezeich, buf_h_artikel.endkum, buf_h_artikel.betriebsnr, buf_h_artikel._recid, wgrpdep.zknr, wgrpdep.bezeich, wgrpdep._recid in db_session.query(H_bill_line.tischnr, H_bill_line.bill_datum, H_bill_line.sysdate, H_bill_line.zeit, H_bill_line.artnr, H_bill_line.departement, H_bill_line.bezeich, H_bill_line.anzahl, H_bill_line._recid, H_bill_line.steuercode, Buf_h_artikel.bondruckernr, Buf_h_artikel.artnr, Buf_h_artikel.bezeich, Buf_h_artikel.endkum, Buf_h_artikel.betriebsnr, Buf_h_artikel._recid, Wgrpdep.zknr, Wgrpdep.bezeich, Wgrpdep._recid).join(Buf_h_artikel,(Buf_h_artikel.artnr == H_bill_line.artnr) & (Buf_h_artikel.departement == dept) & (Buf_h_artikel.artart == 0)).join(Wgrpdep,(Wgrpdep.departement == dept) & (Wgrpdep.zknr == Buf_h_artikel.zwkum)).filter(
+                 (H_bill_line.rechnr == rechnr) & (H_bill_line.departement == dept) & (H_bill_line.steuercode <= 0)).order_by(Buf_h_artikel.bondruckernr[inc_value(0)], Buf_h_artikel.zwkum, H_bill_line.sysdate, H_bill_line.zeit, H_bill_line._recid).all():
             if h_bill_line_obj_list.get(h_bill_line._recid):
                 continue
             else:
@@ -495,29 +485,29 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
 
             htparam = get_cache (Htparam, {"paramnr": [(eq, 865)]})
 
-            if htparam.flogical and t_h_artikel.bondruckernr[0] > 0:
+            if htparam.flogical and buf_h_artikel.bondruckernr[0] > 0:
 
                 if not print_single:
 
-                    if (k != t_h_artikel.bondruckernr[0]):
+                    if (k != buf_h_artikel.bondruckernr[0]):
 
                         if k > 0:
                             cut_it()
                         create_bon_output()
-                        k = t_h_artikel.bondruckernr[0]
+                        k = buf_h_artikel.bondruckernr[0]
                     write_article()
                 else:
                     create_bon_output()
-                    k = t_h_artikel.bondruckernr[0]
+                    k = buf_h_artikel.bondruckernr[0]
                     write_article()
                     cut_it()
 
             hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
 
-            if t_h_artikel.bondruckernr[0] != 0:
+            if buf_h_artikel.bondruckernr[0] != 0:
 
                 if hbline.steuercode == 0:
-                    hbline.steuercode = t_h_artikel.bondruckernr[0]
+                    hbline.steuercode = buf_h_artikel.bondruckernr[0]
                 else:
                     hbline.steuercode = 9999
             else:
@@ -533,12 +523,11 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
     elif sort_subgrp_prior :
 
         h_bill_line_obj_list = {}
-        for h_bill_line, wgrpdep in db_session.query(H_bill_line, Wgrpdep).join(Wgrpdep,(Wgrpdep.departement == dept) & (Wgrpdep.zknr == t_h_artikel.zwkum)).filter(
-                 (H_bill_line.rechnr == rechnr) & (H_bill_line.departement == dept) & (H_bill_line.steuercode <= 0)).order_by(t_h_artikel.bondruckernr[0], Wgrpdep.betriebsnr.desc(), H_bill_line.sysdate, H_bill_line.zeit, H_bill_line._recid).all():
-            t_h_artikel = query(t_h_artikel_data, (lambda t_h_artikel: t_h_artikel.artnr == h_bill_line.artnr and t_h_artikel.departement == dept and t_h_artikel.artart == 0), first=True)
-            if not t_h_artikel:
-                continue
-
+        h_bill_line = H_bill_line()
+        buf_h_artikel = H_artikel()
+        wgrpdep = Wgrpdep()
+        for h_bill_line.tischnr, h_bill_line.bill_datum, h_bill_line.sysdate, h_bill_line.zeit, h_bill_line.artnr, h_bill_line.departement, h_bill_line.bezeich, h_bill_line.anzahl, h_bill_line._recid, h_bill_line.steuercode, buf_h_artikel.bondruckernr, buf_h_artikel.artnr, buf_h_artikel.bezeich, buf_h_artikel.endkum, buf_h_artikel.betriebsnr, buf_h_artikel._recid, wgrpdep.zknr, wgrpdep.bezeich, wgrpdep._recid in db_session.query(H_bill_line.tischnr, H_bill_line.bill_datum, H_bill_line.sysdate, H_bill_line.zeit, H_bill_line.artnr, H_bill_line.departement, H_bill_line.bezeich, H_bill_line.anzahl, H_bill_line._recid, H_bill_line.steuercode, Buf_h_artikel.bondruckernr, Buf_h_artikel.artnr, Buf_h_artikel.bezeich, Buf_h_artikel.endkum, Buf_h_artikel.betriebsnr, Buf_h_artikel._recid, Wgrpdep.zknr, Wgrpdep.bezeich, Wgrpdep._recid).join(Buf_h_artikel,(Buf_h_artikel.artnr == H_bill_line.artnr) & (Buf_h_artikel.departement == dept) & (Buf_h_artikel.artart == 0)).join(Wgrpdep,(Wgrpdep.departement == dept) & (Wgrpdep.zknr == Buf_h_artikel.zwkum)).filter(
+                 (H_bill_line.rechnr == rechnr) & (H_bill_line.departement == dept) & (H_bill_line.steuercode <= 0)).order_by(Buf_h_artikel.bondruckernr[inc_value(0)], Wgrpdep.betriebsnr.desc(), H_bill_line.sysdate, H_bill_line.zeit, H_bill_line._recid).all():
             if h_bill_line_obj_list.get(h_bill_line._recid):
                 continue
             else:
@@ -550,29 +539,29 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
 
             htparam = get_cache (Htparam, {"paramnr": [(eq, 865)]})
 
-            if htparam.flogical and t_h_artikel.bondruckernr[0] > 0:
+            if htparam.flogical and buf_h_artikel.bondruckernr[0] > 0:
 
                 if not print_single:
 
-                    if (k != t_h_artikel.bondruckernr[0]):
+                    if (k != buf_h_artikel.bondruckernr[0]):
 
                         if k > 0:
                             cut_it()
                         create_bon_output()
-                        k = t_h_artikel.bondruckernr[0]
+                        k = buf_h_artikel.bondruckernr[0]
                     write_article()
                 else:
                     create_bon_output()
-                    k = t_h_artikel.bondruckernr[0]
+                    k = buf_h_artikel.bondruckernr[0]
                     write_article()
                     cut_it()
 
             hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
 
-            if t_h_artikel.bondruckernr[0] != 0:
+            if buf_h_artikel.bondruckernr[0] != 0:
 
                 if hbline.steuercode == 0:
-                    hbline.steuercode = t_h_artikel.bondruckernr[0]
+                    hbline.steuercode = buf_h_artikel.bondruckernr[0]
                 else:
                     hbline.steuercode = 9999
             else:
@@ -587,12 +576,11 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
     else:
 
         h_bill_line_obj_list = {}
-        for h_bill_line, wgrpdep in db_session.query(H_bill_line, Wgrpdep).join(Wgrpdep,(Wgrpdep.departement == dept) & (Wgrpdep.zknr == t_h_artikel.zwkum)).filter(
-                 (H_bill_line.rechnr == rechnr) & (H_bill_line.departement == dept) & (H_bill_line.steuercode <= 0)).order_by(t_h_artikel.bondruckernr[0], H_bill_line.sysdate, H_bill_line.zeit, H_bill_line._recid).all():
-            t_h_artikel = query(t_h_artikel_data, (lambda t_h_artikel: t_h_artikel.artnr == h_bill_line.artnr and t_h_artikel.departement == dept and t_h_artikel.artart == 0), first=True)
-            if not t_h_artikel:
-                continue
-
+        h_bill_line = H_bill_line()
+        buf_h_artikel = H_artikel()
+        wgrpdep = Wgrpdep()
+        for h_bill_line.tischnr, h_bill_line.bill_datum, h_bill_line.sysdate, h_bill_line.zeit, h_bill_line.artnr, h_bill_line.departement, h_bill_line.bezeich, h_bill_line.anzahl, h_bill_line._recid, h_bill_line.steuercode, buf_h_artikel.bondruckernr, buf_h_artikel.artnr, buf_h_artikel.bezeich, buf_h_artikel.endkum, buf_h_artikel.betriebsnr, buf_h_artikel._recid, wgrpdep.zknr, wgrpdep.bezeich, wgrpdep._recid in db_session.query(H_bill_line.tischnr, H_bill_line.bill_datum, H_bill_line.sysdate, H_bill_line.zeit, H_bill_line.artnr, H_bill_line.departement, H_bill_line.bezeich, H_bill_line.anzahl, H_bill_line._recid, H_bill_line.steuercode, Buf_h_artikel.bondruckernr, Buf_h_artikel.artnr, Buf_h_artikel.bezeich, Buf_h_artikel.endkum, Buf_h_artikel.betriebsnr, Buf_h_artikel._recid, Wgrpdep.zknr, Wgrpdep.bezeich, Wgrpdep._recid).join(Buf_h_artikel,(Buf_h_artikel.artnr == H_bill_line.artnr) & (Buf_h_artikel.departement == dept) & (Buf_h_artikel.artart == 0)).join(Wgrpdep,(Wgrpdep.departement == dept) & (Wgrpdep.zknr == Buf_h_artikel.zwkum)).filter(
+                 (H_bill_line.rechnr == rechnr) & (H_bill_line.departement == dept) & (H_bill_line.steuercode <= 0)).order_by(Buf_h_artikel.bondruckernr[inc_value(0)], H_bill_line.sysdate, H_bill_line.zeit, H_bill_line._recid).all():
             if h_bill_line_obj_list.get(h_bill_line._recid):
                 continue
             else:
@@ -605,29 +593,29 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
 
             htparam = get_cache (Htparam, {"paramnr": [(eq, 865)]})
 
-            if htparam.flogical and t_h_artikel.bondruckernr[0] > 0:
+            if htparam.flogical and buf_h_artikel.bondruckernr[0] > 0:
 
                 if not print_single:
 
-                    if (k != t_h_artikel.bondruckernr[0]):
+                    if (k != buf_h_artikel.bondruckernr[0]):
 
                         if k > 0:
                             cut_it()
                         create_bon_output()
-                        k = t_h_artikel.bondruckernr[0]
+                        k = buf_h_artikel.bondruckernr[0]
                     write_article()
                 else:
                     create_bon_output()
-                    k = t_h_artikel.bondruckernr[0]
+                    k = buf_h_artikel.bondruckernr[0]
                     write_article()
                     cut_it()
 
             hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
 
-            if t_h_artikel.bondruckernr[0] != 0:
+            if buf_h_artikel.bondruckernr[0] != 0:
 
                 if hbline.steuercode == 0:
-                    hbline.steuercode = t_h_artikel.bondruckernr[0]
+                    hbline.steuercode = buf_h_artikel.bondruckernr[0]
                 else:
                     hbline.steuercode = 9999
             else:
