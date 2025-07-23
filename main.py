@@ -593,6 +593,11 @@ update_field_mapping = {
     "order_taker":"order-taker",
     "fart_bez":"fart-bez",
 
+    "bl_recid":"bl-recid",
+    "l_amount":"l-amount",
+    "f_amount":"f-amount",
+
+
     # "activeflag": ["ActiveFlag","activeFlag"], 
 
     # "mtd-room": "mtd-Room",

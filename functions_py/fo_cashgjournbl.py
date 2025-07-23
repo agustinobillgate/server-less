@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 23/7/2025
+# gitlab: 
+# 
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -277,7 +281,12 @@ def fo_cashgjournbl(pvilanguage:int, case_type:int, curr_shift:int, summary_flag
                     tot =  to_decimal(tot) + to_decimal(sub_tot)
 
                 elif not it_exist and not summary_flag:
-                    output_list_data.remove(output_list)
+                    # Rd 23/7/2025
+                    # output_list_data.remove(output_list)
+                    try:
+                        output_list_data.remove(output_list)
+                    except ValueError:
+                        pass  
 
         if not summary_flag:
             output_list = Output_list()
@@ -564,7 +573,11 @@ def fo_cashgjournbl(pvilanguage:int, case_type:int, curr_shift:int, summary_flag
                 tot =  to_decimal(tot) + to_decimal(sub_tot)
 
             elif not it_exist and not summary_flag:
-                output_list_data.remove(output_list)
+                # output_list_data.remove(output_list)
+                try:
+                    output_list_data.remove(output_list)
+                except ValueError:
+                    pass 
 
         if not summary_flag:
             output_list = Output_list()
