@@ -2,7 +2,7 @@
 #-----------------------------------------
 # Rd 23/7/2025
 # gitlab: 
-# 
+# if available s_list
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
