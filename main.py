@@ -529,7 +529,16 @@ update_field_mapping = {
     "bez_array":"bez-array",
     "amount_array":"amount-array",
     "output_Ok_Flag":"outputOkFlag",
-    "hkdiscrepancy-list":"hk-discrepancy-list"
+    "htp_help":"htp-help",
+    "user_number": "user-number",
+    "user_init": "user-init",
+    "user_name": "user-name",
+    "dept_number": "dept-number",
+    "dept_name":"dept-name",
+    "totp_flag":"totp-flag",
+    "totp_status":"totp-status",
+    "var_name":"var-name",
+
     # "activeflag": ["ActiveFlag","activeFlag"], 
 
     # "mtd-room": "mtd-Room",
@@ -1475,6 +1484,9 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                                 orig_infostr = "end"
                                 if output_data is None:
                                     output_data = {}
+                                    # Rd 23/7/2025
+                                    # case: vhpSS/updVHPPrint, no output dari .p, outputOK true
+                                    # 
                                     output_data["output_Ok_Flag"] = str(ok_flag)
                                 else:
                                     output_data["output_Ok_Flag"] = str(ok_flag)
