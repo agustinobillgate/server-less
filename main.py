@@ -1,6 +1,6 @@
 docker_version = "1.0.0.24.689"
 
-#Version 1.0.0.22
+#Version 1.0.0.24
 
 print("Start:", docker_version)
 
@@ -596,6 +596,7 @@ update_field_mapping = {
     "bl_recid":"bl-recid",
     "l_amount":"l-amount",
     "f_amount":"f-amount",
+    "i_counter":"i-counter",
 
 
     # "activeflag": ["ActiveFlag","activeFlag"], 
@@ -1150,6 +1151,10 @@ def update_output_format(output_data):
                                         new_field_name = update_field_mapping[new_field_name]
                                         data[new_field_name] = data[updateFieldName]
                                         data[new_field_name.lower()] = data.pop(updateFieldName)
+
+                                    #updated 1.0.0.24
+                                    elif new_field_name != updateFieldName:
+                                            data[new_field_name.lower()] =  data.pop(updateFieldName)
 
                                     # data[new_field_name] = data.pop(updateFieldName)
 
