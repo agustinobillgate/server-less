@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 23/7/2025
+# get_current_time_in_seconds -> get_current_time_in_seconds()
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -120,7 +124,10 @@ def ts_restinv_add_kdsbl(menu_list_data:[Menu_list], tischnr:int, curr_dept:int,
     queasy.char2 = user_init
     queasy.date1 = bill_date
     queasy.logi1 = False
-    queasy.deci1 =  to_decimal(get_current_time_in_seconds)()
+
+    # Rd, 23/7/2025
+    # queasy.deci1 =  to_decimal(get_current_time_in_seconds)()
+    queasy.deci1 = to_decimal(get_current_time_in_seconds())
 
 
     pass

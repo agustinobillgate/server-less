@@ -59,7 +59,7 @@ from decimal import Decimal
 import asyncio
 from models.base import get_database_session
 from contextlib import asynccontextmanager
-
+from pathlib import Path
 
 # from flask import Flask, request, abort, Response
 # from flask_cors import CORS
@@ -248,7 +248,7 @@ update_field_mapping = {
     "plz": "PLZ",
     "rcvid": "rcvID",
     "rcvname": "rcvName",
-    "pi-type":"PI-type",
+    # "pi-type":"PI-type",
     
     "chequeno":"chequeNo",
     "bankname":"bankName",
@@ -270,7 +270,6 @@ update_field_mapping = {
 
     #updated 1.0.0.17
     
-
     #updated 1.0.0.18
     "description": "DESCRIPTION",
 
@@ -305,7 +304,6 @@ update_field_mapping = {
     "tkellner": "tKellner",
     "indgastnr":"indGastnr",
     "piDocuno":"piDocuNo",
-    
 
     "tLorderhdr": "tLOrderhdr",
     "addvat": "addVAT",
@@ -502,10 +500,11 @@ update_field_mapping = {
     "main_nr": ["Main-nr", "main-nr"],
     "engid": ["engId","EngId","EngID"],
     # "PI-status":["pi-status", "pi-Status"],
-    # "pi-status":["pi-status", "PI-status"],
+    "pi_status":["pi-status", "PI-status"],
+    "pi_type":["pi-type", "PI-type"],
     "deptno": ["DeptNo","deptNo"],
     "postdate": ["postDate", "PostDate"],
-        "avail-addvat":"avail-addVAT",
+    "avail-addvat":"avail-addVAT",
     "availAddvat": ["availAddVat","availAddVat","availAddVAT"],
     "readequipment":"readEquipment",
     "datum":"Datum",
@@ -514,11 +513,45 @@ update_field_mapping = {
     "dekoration":"Dekoration",
     "vorbereitungszeit":"Vorbereitungszeit",
     "nachlaufzeit":"Nachlaufzeit",
-    # "output_Ok_Flag":"outputOkFlag",
+   
+    "docu_nr":"docu-nr",
+    "docu_nr2":"docu-nr2",
+    "return_fibu":"return-fibu",
+    "add_amt_flag":"add-amt-flag",
+    "debit_fibu":"debit-fibu",
+    "credit_fibu":"credit-fibu",
+    "pay_type":"pay-type",
+    "pay_datum":"pay-datum",
+    "res_int":"res-int",
+    "res_deci":"res-deci",
+    "res_char":"res-char",
+    "res_logi":"res-logi",
+    "bez_array":"bez-array",
+    "amount_array":"amount-array",
+    "output_Ok_Flag":"outputOkFlag",
+    "htp_help":"htp-help",
+    "user_number": "user-number",
+    "user_init": "user-init",
+    "user_name": "user-name",
+    "dept_number": "dept-number",
+    "dept_name":"dept-name",
+    "totp_flag":"totp-flag",
+    "totp_status":"totp-status",
+    "var_name":"var-name",
+
+    "item_prof":"item-prof",
+    "t_sales":"t-sales",
+    "t_cost":"t-cost",
+    "t_margin":"t-margin",
+    "profit_cat":"profit-cat",
+    "popularity_cat":"popularity-cat",
+    "menu_item_class":"menu-item-class",
+
+    # "activeflag": ["ActiveFlag","activeFlag"], 
 
     # "mtd-room": "mtd-Room",
     # "ytd-room": "ytd-Room",
-    "activeflag": ["ActiveFlag","activeFlag"],    
+       
     # "max_lapos": ["maxLapos"],
     # "must_print":["mustPrint"],
     # "fl_warn":["flWarn"],
@@ -688,7 +721,8 @@ update_table_name("vhpFA","faArtlist2Prepare","tPrepareCreatpo","tPrepareCreatPO
 #update 1.0.0.43 (17-Juli-2025)
 update_table_name("vhpENG","egReprequestcancelOpenQuery1","copyrequest","copyRequest")
 
-
+#update 1.0.0.44 (23-Juli-2025)
+update_table_name("vhpPC","prInsPrepare","ins-list","insList")
 
 def get_function_version(module_name, function_name, file_path):
     # file_path  = "/var/task/functions/" + function_name + ".py"
@@ -734,6 +768,7 @@ class CustomJSONEncoder(json.JSONEncoder):
             return obj.days
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
+
 
 def update_input_format(obj,input_data):
     # Update the input object if variable has "-"
@@ -949,8 +984,6 @@ def update_input_format(obj,input_data):
     # for param_name in input_data.keys():
     #     if not param_name in param_list(obj)
 
-
-
 def update_output_format(output_data):
     key_list = list(output_data.keys())
 
@@ -1061,11 +1094,13 @@ def update_output_format(output_data):
                                 else:
                                     new_field_name = updateFieldName.replace("_","-").replace("--","_")
 
+                                    #updated 1.0.0.23
                                     if new_field_name in update_field_mapping:
                                         new_field_name = update_field_mapping[new_field_name]
+                                        data[new_field_name] = data[updateFieldName]
+                                        data[new_field_name.lower()] = data.pop(updateFieldName)
 
-                                    data[new_field_name] = data.pop(updateFieldName)
-   
+                                    # data[new_field_name] = data.pop(updateFieldName)
 
                             # #updated 1.0.0.2
                             # for updateFieldName in fieldNameList:
@@ -1112,6 +1147,7 @@ def update_output_format(output_data):
         if curr_module_function in update_table_name_list and camelCaseKey in update_table_name_list[curr_module_function]:
             output_data[update_table_name_list[curr_module_function][camelCaseKey]] = output_data[camelCaseKey]
             output_data.pop(camelCaseKey)
+
 
 
 def decimal_converter(obj):
@@ -1342,9 +1378,20 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                             function_name = mapping["function"]
                             break
                     
+
                     if function_name == "":
                         # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
                         return JSONResponse(status_code=404, content={"error": f"Function not found, ({vhp_module}/{service_name})" })
+                    # check file exists
+                    file_name = f"{function_name}.py"
+                    file_path = Path("functions") / file_name
+
+                    if file_path.exists():
+                        # print(f"File '{file_name}' exists.")
+                        pass
+                    else:
+                        print(f"File '{file_name}' does NOT exist.")
+                        return JSONResponse(status_code=404, content={"error": str(f"{file_name} not exists.")})
             except Exception as e:
                 print("Error:", e)
                 # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
@@ -1362,7 +1409,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
             else:
                 # version = "localhost, " + get_function_version(module_name, function_name, "/usr1/serverless/src/functions/")     
                 version = "localhost"
-            print("Main.py, running on:", version)
+            print(f"Main.py {function_name} running on: {version}")
             ok_flag = "true"
             local_storage.debugging = f"{local_storage.debugging},Skip OK:{ok_flag}, {function_name} Ver:{version}"
             
@@ -1431,6 +1478,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                         local_storage.debugging = local_storage.debugging + ',Run'
                         db_session.commit()
                     if importlib.util.find_spec(module_name):
+                        print("Masuk Module:", module_name)
                         module = importlib.import_module(module_name)
                         if hasattr(module, function_name):
                             try:
@@ -1444,6 +1492,10 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                                 orig_infostr = "end"
                                 if output_data is None:
                                     output_data = {}
+                                    # Rd 23/7/2025
+                                    # case: vhpSS/updVHPPrint, no output dari .p, outputOK true
+                                    # 
+                                    output_data["output_Ok_Flag"] = str(ok_flag)
                                 else:
                                     output_data["output_Ok_Flag"] = str(ok_flag)
 

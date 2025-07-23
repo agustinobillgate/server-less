@@ -1,14 +1,22 @@
 #using conversion tools version: 1.0.0.117
-
+# ----------------------------------------
+# Rd, 23/7/2025
+# gitlab: 745
+# add: safe_divide
+# ----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Bediener, Salesbud, Salestat, Genstat, Guest, H_bill, H_artikel, Artikel, H_bill_line
 
+def safe_divide(numerator, denominator):
+    numerator, denominator = to_decimal(numerator), to_decimal(denominator)
+    return (numerator / denominator) if denominator not in (0, None) else to_decimal("0")
+
 def sales_perform_btn_gobl(from_date:string, to_date:string, usr_init:string):
 
     prepare_cache ([Htparam, Bediener, Salesbud, Salestat, Genstat, Guest, Artikel, H_bill_line])
-
+   
     its_ok = True
     slist_data = []
     m1:int = 0
@@ -59,6 +67,7 @@ def sales_perform_btn_gobl(from_date:string, to_date:string, usr_init:string):
         m1 = to_int(substring(from_date, 0, 2))
         m2 = to_int(substring(to_date, 0, 2)) + (12 * (y2 - y1))
         jahr = y1
+       
         for monat in range(m1,m2 + 1) :
 
             if monat > 12:
@@ -116,13 +125,26 @@ def sales_perform_btn_gobl(from_date:string, to_date:string, usr_init:string):
         Stat_buff =  create_buffer("Stat_buff",Salestat)
         Bud_buff =  create_buffer("Bud_buff",Salesbud)
         Bgenstat =  create_buffer("Bgenstat",Genstat)
-        htparam.fdate = date_mdy(to_int(substring(from_date, 0, 2)) , 1, to_int(substring(from_date, 2, 4)))
+        # htparam.fdate = date_mdy(to_int(substring(from_date, 0, 2)) , 1, to_int(substring(from_date, 2, 4)))
+        month = int(from_date[0:2])  # "07" → 7
+        year = int(from_date[2:6])   # "2025" → 2025
+        htparam.fdate = date(year, month, 1)
 
-        if to_int(substring(to_date, 0, 2)) == 12:
-            tdate = date_mdy(1, 1, to_int(substring(to_date, 2, 4)) + timedelta(days=1) - 1)
+        # if to_int(substring(to_date, 0, 2)) == 12:
+        #     tdate = date_mdy(1, 1, to_int(substring(to_date, 2, 4)) + timedelta(days=1) - 1)
+        # else:
+        #     tdate = date_mdy(to_int(substring(to_date, 0, 2)) + timedelta(days=1, 1, to_int(substring(to_date, 2, 4))) - 1)
+
+        month = int(to_date[0:2])
+        year = int(to_date[2:6])
+
+        if month == 12:
+            # If December, go to Jan 1 of next year and subtract 1 day
+            tdate = datetime(year + 1, 1, 1) - timedelta(days=1)
         else:
-            tdate = date_mdy(to_int(substring(to_date, 0, 2)) + timedelta(days=1, 1, to_int(substring(to_date, 2, 4))) - 1)
-
+            # Go to 1st of next month, same year, and subtract 1 day
+            tdate = datetime(year, month + 1, 1) - timedelta(days=1)
+        tdate = tdate.date()
         if slist_generated == False:
             for loopi in date_range(htparam.fdate,tdate) :
 
@@ -182,7 +204,7 @@ def sales_perform_btn_gobl(from_date:string, to_date:string, usr_init:string):
             else:
                 salestat_obj_list[salestat._recid] = True
 
-            slist = query(slist_data, filters=(lambda slist:(slist.mnth == salestat.monat) and (slist.Yr == salestat.jahr)), first=True)
+            slist = query(slist_data, filters=(lambda slist:(slist.mnth == salestat.monat) and (slist.yr == salestat.jahr)), first=True)
 
             if slist:
                 slist.otrev =  to_decimal(slist.otrev) + to_decimal(salestat.sonst_umsatz)
@@ -214,7 +236,7 @@ def sales_perform_btn_gobl(from_date:string, to_date:string, usr_init:string):
 
         for slist in query(slist_data):
 
-            if year_tmp != slist.Yr:
+            if year_tmp != slist.yr:
                 ytd_lodging =  to_decimal("0")
                 ytd_rmnight =  to_decimal("0")
                 ytd_fnb =  to_decimal("0")
@@ -225,11 +247,17 @@ def sales_perform_btn_gobl(from_date:string, to_date:string, usr_init:string):
                 ytd_bud_ot =  to_decimal("0")
 
 
-                year_tmp = slist.Yr
-            slist.lproz =  to_decimal(slist.lodg) / to_decimal(slist.lbudget) * to_decimal("100")
-            slist.rmproz =  to_decimal(slist.rmnight) / to_decimal(slist.rbudget) * to_decimal("100")
-            slist.otproz =  to_decimal(slist.otrev) / to_decimal(slist.otbudget) * to_decimal("100")
-            slist.fbproz =  to_decimal(slist.fbrev) / to_decimal(slist.fbbudget) * to_decimal("100")
+                year_tmp = slist.yr
+            # Rd 23/7/2025
+            # slist.lproz =  to_decimal(slist.lodg) / to_decimal(slist.lbudget) * to_decimal("100")
+            # slist.rmproz =  to_decimal(slist.rmnight) / to_decimal(slist.rbudget) * to_decimal("100")
+            # slist.otproz =  to_decimal(slist.otrev) / to_decimal(slist.otbudget) * to_decimal("100")
+            # slist.fbproz =  to_decimal(slist.fbrev) / to_decimal(slist.fbbudget) * to_decimal("100")
+            slist.lproz =  safe_divide(slist.lodg, slist.lbudget) * to_decimal("100")
+            slist.rmproz =  safe_divide(slist.rmnight, slist.rbudget) * to_decimal("100")
+            slist.otproz =  safe_divide(slist.otrev, slist.otbudget) * to_decimal("100")
+            slist.fbproz =  safe_divide(slist.fbrev, slist.fbbudget) * to_decimal("100")
+
 
             if slist.lproz == None:
                 slist.lproz =  to_decimal(0.00)
@@ -258,10 +286,15 @@ def sales_perform_btn_gobl(from_date:string, to_date:string, usr_init:string):
             slist.ytd_rbudget = ytd_bud_rmnight
             slist.ytd_otbudget =  to_decimal(ytd_bud_fnb)
             slist.ytd_fbbudget =  to_decimal(ytd_bud_ot)
-            slist.ytd_lproz =  to_decimal(slist.ytd_lodg) / to_decimal(slist.ytd_lbudget) * to_decimal("100")
-            slist.ytd_rmproz =  to_decimal(slist.ytd_rmnight) / to_decimal(slist.ytd_rbudget) * to_decimal("100")
-            slist.ytd_otproz =  to_decimal(slist.ytd_otrev) / to_decimal(slist.ytd_otbudget) * to_decimal("100")
-            slist.ytd_fbproz =  to_decimal(slist.ytd_fbrev) / to_decimal(slist.ytd_fbbudget) * to_decimal("100")
+            # slist.ytd_lproz =  to_decimal(slist.ytd_lodg) / to_decimal(slist.ytd_lbudget) * to_decimal("100")
+            # slist.ytd_rmproz =  to_decimal(slist.ytd_rmnight) / to_decimal(slist.ytd_rbudget) * to_decimal("100")
+            # slist.ytd_otproz =  to_decimal(slist.ytd_otrev) / to_decimal(slist.ytd_otbudget) * to_decimal("100")
+            # slist.ytd_fbproz =  to_decimal(slist.ytd_fbrev) / to_decimal(slist.ytd_fbbudget) * to_decimal("100")
+            slist.ytd_lproz =  safe_divide(slist.ytd_lodg, slist.ytd_lbudget) * to_decimal("100")
+            slist.ytd_rmproz =  safe_divide(slist.ytd_rmnight, slist.ytd_rbudget) * to_decimal("100")
+            slist.ytd_otproz =  safe_divide(slist.ytd_otrev, slist.ytd_otbudget) * to_decimal("100")
+            slist.ytd_fbproz =  safe_divide(slist.ytd_fbrev, slist.ytd_fbbudget) * to_decimal("100")
+
 
             if slist.lodg == 0:
                 slist.ytd_lodg =  to_decimal("0")
@@ -309,7 +342,7 @@ def sales_perform_btn_gobl(from_date:string, to_date:string, usr_init:string):
         slist.mnth = -1
         slist.yr = -1
 
-        for buff_slist in query(buff_slist_data, filters=(lambda buff_slist: buff_slist.Yr >= 1 and buff_slist.mnth >= 1)):
+        for buff_slist in query(buff_slist_data, filters=(lambda buff_slist: buff_slist.yr >= 1 and buff_slist.mnth >= 1)):
             slist.lodg =  to_decimal(slist.lodg) + to_decimal(buff_slist.lodg)
             slist.lbudget =  to_decimal(slist.lbudget) + to_decimal(buff_slist.lbudget)
             slist.fbrev =  to_decimal(slist.fbrev) + to_decimal(buff_slist.fbrev)
@@ -328,14 +361,23 @@ def sales_perform_btn_gobl(from_date:string, to_date:string, usr_init:string):
             slist.ytd_otbudget =  to_decimal(slist.ytd_otbudget) + to_decimal(buff_slist.ytd_otbudget)
 
 
-        slist.lproz =  to_decimal(slist.lodg) / to_decimal(slist.lbudget) * to_decimal("100")
-        slist.rmproz =  to_decimal(slist.rmnight) / to_decimal(slist.rbudget) * to_decimal("100")
-        slist.fbproz =  to_decimal(slist.fbrev) / to_decimal(slist.fbbudget) * to_decimal("100")
-        slist.otproz =  to_decimal(slist.otrev) / to_decimal(slist.otbudget) * to_decimal("100")
-        slist.ytd_lproz =  to_decimal(slist.ytd_lodg) / to_decimal(slist.ytd_lbudget) * to_decimal("100")
-        slist.ytd_rmproz =  to_decimal(slist.ytd_rmnight) / to_decimal(slist.ytd_rbudget) * to_decimal("100")
-        slist.ytd_fbproz =  to_decimal(slist.ytd_fbrev) / to_decimal(slist.ytd_fbbudget) * to_decimal("100")
-        slist.ytd_otproz =  to_decimal(slist.ytd_otrev) / to_decimal(slist.ytd_otbudget) * to_decimal("100")
+        # slist.lproz =  to_decimal(slist.lodg) / to_decimal(slist.lbudget) * to_decimal("100")
+        # slist.rmproz =  to_decimal(slist.rmnight) / to_decimal(slist.rbudget) * to_decimal("100")
+        # slist.fbproz =  to_decimal(slist.fbrev) / to_decimal(slist.fbbudget) * to_decimal("100")
+        # slist.otproz =  to_decimal(slist.otrev) / to_decimal(slist.otbudget) * to_decimal("100")
+        # slist.ytd_lproz =  to_decimal(slist.ytd_lodg) / to_decimal(slist.ytd_lbudget) * to_decimal("100")
+        # slist.ytd_rmproz =  to_decimal(slist.ytd_rmnight) / to_decimal(slist.ytd_rbudget) * to_decimal("100")
+        # slist.ytd_fbproz =  to_decimal(slist.ytd_fbrev) / to_decimal(slist.ytd_fbbudget) * to_decimal("100")
+        # slist.ytd_otproz =  to_decimal(slist.ytd_otrev) / to_decimal(slist.ytd_otbudget) * to_decimal("100")
+
+        slist.lproz =  safe_divide(slist.lodg, slist.lbudget) * to_decimal("100")
+        slist.rmproz =  safe_divide(slist.rmnight, slist.rbudget) * to_decimal("100")
+        slist.fbproz =  safe_divide(slist.fbrev, slist.fbbudget) * to_decimal("100")
+        slist.otproz =  safe_divide(slist.otrev, slist.otbudget) * to_decimal("100")
+        slist.ytd_lproz =  safe_divide(slist.ytd_lodg, slist.ytd_lbudget) * to_decimal("100")
+        slist.ytd_rmproz =  safe_divide(slist.ytd_rmnight, slist.ytd_rbudget) * to_decimal("100")
+        slist.ytd_fbproz =  safe_divide(slist.ytd_fbrev, slist.ytd_fbbudget) * to_decimal("100")
+        slist.ytd_otproz =  safe_divide(slist.ytd_otrev, slist.ytd_otbudget) * to_decimal("100")
 
         if slist.lproz == None:
             slist.lproz =  to_decimal(0.00)
@@ -375,12 +417,12 @@ def sales_perform_btn_gobl(from_date:string, to_date:string, usr_init:string):
         to_date:date = None
 
         for slist in query(slist_data, sort_by=[("yr",False),("mnth",False)]):
-            from_date = date_mdy(slist.mnth, 1, slist.Yr)
+            from_date = date_mdy(slist.mnth, 1, slist.yr)
 
             if slist.mnth == 12:
-                to_date = date_mdy(1, 1, slist.Yr + timedelta(days=1)) - timedelta(days=1)
+                to_date = date_mdy(1, 1, slist.yr + timedelta(days=1)) - timedelta(days=1)
             else:
-                to_date = date_mdy(slist.mnth + 1, 1, slist.Yr) - timedelta(days=1)
+                to_date = date_mdy(slist.mnth + 1, 1, slist.yr) - timedelta(days=1)
 
             h_bill_line_obj_list = {}
             for h_bill_line, h_bill, guest, h_artikel, artikel in db_session.query(H_bill_line, H_bill, Guest, H_artikel, Artikel).join(H_bill,(H_bill.rechnr == H_bill_line.rechnr) & (H_bill.departement == H_bill_line.departement) & (H_bill.flag == 1)).join(Guest,(Guest.gastnr == H_bill.resnr) & (Guest.phonetik3 == trim(bediener.userinit))).join(H_artikel,(H_artikel.artnr == H_bill_line.artnr) & (H_artikel.departement == H_bill_line.departement)).join(Artikel,(Artikel.artnr == H_artikel.artnrfront) & (Artikel.departement == H_artikel.departement) & (Artikel.artart == 0)).filter(
@@ -400,10 +442,12 @@ def sales_perform_btn_gobl(from_date:string, to_date:string, usr_init:string):
     y1 = to_int(substring(from_date, 2, 4))
     y2 = to_int(substring(to_date, 2, 4))
     m2 = to_int(substring(to_date, 0, 2))
+    print("y, m:", y1, m1, y2, m2)
 
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 547)]})
     if usr_init.lower()  == ("ALL").lower()  or usr_init.lower()  == None:
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 547)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 547)]})
 
         if htparam:
             usr_grp = htparam.finteger
@@ -418,7 +462,6 @@ def sales_perform_btn_gobl(from_date:string, to_date:string, usr_init:string):
         count_ytd()
         count_total()
     else:
-
         bediener = get_cache (Bediener, {"userinit": [(eq, usr_init)]})
         check_budget()
 
@@ -426,6 +469,6 @@ def sales_perform_btn_gobl(from_date:string, to_date:string, usr_init:string):
             create_list()
             include_outlet_fnb()
             count_ytd()
-        count_total()
 
+        count_total()
     return generate_output()

@@ -277,9 +277,11 @@ def menu_eng_v2_list_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept
                     h_list.zknr = h_artikel.zwkum
 
                     if vat_included:
-                        h_list.epreis =  to_decimal(h_artikel.epreis1) * to_decimal(exchg_rate) / to_decimal(fact)
+                        # h_list.epreis =  to_decimal(h_artikel.epreis1) * to_decimal(exchg_rate) / to_decimal(fact)
+                        h_list.epreis =  safe_divide(h_artikel.epreis1, exchg_rate) / to_decimal(fact)
                     else:
-                        h_list.epreis =  to_decimal(h_artikel.epreis1) * to_decimal(exchg_rate) / to_decimal(fact1)
+                        # h_list.epreis =  to_decimal(h_artikel.epreis1) * to_decimal(exchg_rate) / to_decimal(fact1)
+                        h_list.epreis =  safe_divide(h_artikel.epreis1, exchg_rate) / to_decimal(fact1)
 
                     h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, h_artikel.artnr)],"departement": [(eq, h_artikel.departement)],"datum": [(ge, from_date),(le, to_date)]})
                     while None != h_umsatz:
@@ -312,16 +314,18 @@ def menu_eng_v2_list_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept
                         t_sales =  to_decimal(t_sales) + to_decimal(h_umsatz.betrag) / to_decimal(fact)
 
                         if vat_included:
-                            h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                            # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                            h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
                         else:
-                            h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                            # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                            h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
 
                         curr_recid = h_umsatz._recid
                         h_umsatz = db_session.query(H_umsatz).filter(
                                  (H_umsatz.artnr == h_artikel.artnr) & (H_umsatz.departement == h_artikel.departement) & (H_umsatz.datum >= from_date) & (H_umsatz.datum <= to_date) & (H_umsatz._recid > curr_recid)).first()
 
                     if h_list.epreis != 0:
-                        h_list.margin =  to_decimal(h_list.cost) / to_decimal(h_list.epreis) * to_decimal("100")
+                        h_list.margin =  safe_divide(h_list.cost, h_list.epreis) * to_decimal("100")
             create_list(pos)
             t_anz = 0
             t_sales =  to_decimal("0")
@@ -445,16 +449,19 @@ def menu_eng_v2_list_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept
                         t_sales =  to_decimal(t_sales) + to_decimal(h_umsatz.betrag) / to_decimal(fact)
 
                         if vat_included:
-                            h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                            # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                            h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
                         else:
-                            h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                            # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                            h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
 
                         curr_recid = h_umsatz._recid
                         h_umsatz = db_session.query(H_umsatz).filter(
                                  (H_umsatz.artnr == h_artikel.artnr) & (H_umsatz.departement == h_artikel.departement) & (H_umsatz.datum >= from_date) & (H_umsatz.datum <= to_date) & (H_umsatz._recid > curr_recid)).first()
 
                     if h_list.epreis != 0:
-                        h_list.margin =  to_decimal(h_list.cost) / to_decimal(h_list.epreis) * to_decimal("100")
+                        # h_list.margin =  to_decimal(h_list.cost) / to_decimal(h_list.epreis) * to_decimal("100")
+                        h_list.margin =  safe_divide(h_list.cost, h_list.epreis) * to_decimal("100")
             create_list(pos)
             t_anz = 0
             t_sales =  to_decimal("0")

@@ -13,6 +13,60 @@ from models import Htparam, Waehrung, H_bill, H_bill_line, Artikel, H_artikel, H
 bline_list_data, Bline_list = create_model("Bline_list", {"selected":bool, "depart":string, "dept":int, "knr":int, "bl_recid":int}, {"selected": True})
 buf_art_data, Buf_art = create_model("Buf_art", {"artnr":int, "bezeich":string, "departement":int})
 
+
+
+from functions.additional_functions import *
+from decimal import Decimal
+from datetime import date
+from models import Htparam, Bk_reser, Bk_func, Bk_veran, Guest, Akt_kont
+
+def filter_query(
+    data_list: List[Type], 
+    filters: Callable[[Type], bool] = None, 
+    sort_by: Optional[List[Tuple[str, bool]]] = None,
+    first: bool = False,
+    last: bool = False,
+    curr_data: Type = None
+) -> Union[Type, List[Type], None]:
+    if not data_list:
+        return None if first or last else []
+
+    if first or last and not filters:
+        return data_list[0] if first else data_list[-1]
+
+    if filters:
+        data_list = list(filter(filters, data_list))
+    
+    if not data_list:
+        return None if first or last else []
+
+    if sort_by:
+        class SortWrapper:
+            def __init__(self, value):
+                self.value = value
+            def __lt__(self, other):
+                return self.value > other.value
+            def __eq__(self, other):
+                return self.value == other.value
+
+        def sort_key(obj):
+            key = []
+            for field, descending in sort_by:
+                val = getattr(obj, field, None)
+                if isinstance(val, str):
+                    val = val.lower()
+                key.append(val if not descending else SortWrapper(val))
+            return tuple(key)
+
+        data_list.sort(key=sort_key)
+
+    if first:
+        return data_list[0]
+    if last:
+        return data_list[-1]
+
+    return data_list
+
 def rest_daysalesp2_btn_go_5_cldbl(bline_list_data:[Bline_list], buf_art_data:[Buf_art], disc_art1:int, disc_art2:int, disc_art3:int, curr_dept:int, all_user:bool, shift:int, from_date:date, to_date:date, art_str:string, voucher_art:int, zero_vat_compli:bool, exclude_compli:bool, show_fbodisc:bool, htl_dept_dptnr:int, incl_move_table:bool, wig:bool, inhouse:bool):
 
     prepare_cache ([Htparam, Waehrung, Artikel, H_artikel, H_journal, Res_line, Kellner, Bill])
@@ -664,7 +718,18 @@ def rest_daysalesp2_btn_go_5_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
         # Rd, 21/7/2025
         # for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.recid (kellner) == bline_list.bl_recid and kellner.departement == curr_dept)):
-        for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.bl_recid (kellner) == bline_list.bl_recid and kellner.departement == curr_dept)):
+        kellner_map = {
+            k._recid: k
+            for k in kellner_list  # or query if kellner_list comes from DB
+            if k.departement == curr_dept
+        }
+
+        # Step 2: Iterate over bline_list with matched kellner
+        for bline_list in bline_list_data:
+            kellner = kellner_map.get(bline_list.bl_recid)
+            if kellner is None:
+                continue
+            
             for h_bill in db_session.query(H_bill).filter(
                      (H_bill.flag == 0) & (H_bill.saldo != 0) & (H_bill.departement == bline_list.dept)).order_by(H_bill._recid).all():
 
