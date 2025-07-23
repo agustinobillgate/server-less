@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 23/7/2025
+# gitlab: 642
+# if available s_list
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -555,32 +559,38 @@ def fb_flashbl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, dat
             if l_op.stornogrund.lower()  == (food_bev).lower() :
 
                 s_list = query(s_list_data, filters=(lambda s_list: s_list.reihenfolge == 3 and s_list.flag == 2), first=True)
+                # Rd 23/7/2025
+                # if available
+                if s_list:
 
-                if l_op.lager_nr >= 1:
-                    s_list.t_betrag =  to_decimal(s_list.t_betrag) + to_decimal(l_op.warenwert)
+                    if l_op.lager_nr >= 1:
+                        s_list.t_betrag =  to_decimal(s_list.t_betrag) + to_decimal(l_op.warenwert)
 
-                    if l_op.datum == date2:
-                        s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_op.warenwert)
-                else:
-                    s_list.t_betrag1 =  to_decimal(s_list.t_betrag1) + to_decimal(l_op.warenwert)
+                        if l_op.datum == date2:
+                            s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_op.warenwert)
+                    else:
+                        s_list.t_betrag1 =  to_decimal(s_list.t_betrag1) + to_decimal(l_op.warenwert)
 
-                    if l_op.datum == date2:
-                        s_list.betrag1 =  to_decimal(s_list.betrag1) + to_decimal(l_op.warenwert)
+                        if l_op.datum == date2:
+                            s_list.betrag1 =  to_decimal(s_list.betrag1) + to_decimal(l_op.warenwert)
 
             elif l_op.stornogrund.lower()  == (bev_food).lower() :
 
                 s_list = query(s_list_data, filters=(lambda s_list: s_list.reihenfolge == 3 and s_list.flag == 1), first=True)
+                # Rd 23/7/2025
+                # if available
+                if s_list:
 
-                if l_op.lager_nr >= 1:
-                    s_list.t_betrag =  to_decimal(s_list.t_betrag) + to_decimal(l_op.warenwert)
+                    if l_op.lager_nr >= 1:
+                        s_list.t_betrag =  to_decimal(s_list.t_betrag) + to_decimal(l_op.warenwert)
 
-                    if l_op.datum == date2:
-                        s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_op.warenwert)
-                else:
-                    s_list.t_betrag1 =  to_decimal(s_list.t_betrag1) + to_decimal(l_op.warenwert)
+                        if l_op.datum == date2:
+                            s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_op.warenwert)
+                    else:
+                        s_list.t_betrag1 =  to_decimal(s_list.t_betrag1) + to_decimal(l_op.warenwert)
 
-                    if l_op.datum == date2:
-                        s_list.betrag1 =  to_decimal(s_list.betrag1) + to_decimal(l_op.warenwert)
+                        if l_op.datum == date2:
+                            s_list.betrag1 =  to_decimal(s_list.betrag1) + to_decimal(l_op.warenwert)
 
 
     def step_four(f_eknr:int, b_eknr:int):
@@ -875,24 +885,27 @@ def fb_flashbl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, dat
 
 
         s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 1 and s_list.reihenfolge == 3), first=True)
-        d_betrag =  to_decimal(d_betrag) + to_decimal(s_list.betrag) + to_decimal(s_list.betrag1)
-        m_betrag =  to_decimal(m_betrag) + to_decimal(s_list.t_betrag) + to_decimal(s_list.t_betrag1)
+        # Rd 23/7/2025
+        # if available
+        if s_list:
+            d_betrag =  to_decimal(d_betrag) + to_decimal(s_list.betrag) + to_decimal(s_list.betrag1)
+            m_betrag =  to_decimal(m_betrag) + to_decimal(s_list.t_betrag) + to_decimal(s_list.t_betrag1)
 
 
-        fbflash_list = Fbflash_list()
-        fbflash_list_data.append(fbflash_list)
+            fbflash_list = Fbflash_list()
+            fbflash_list_data.append(fbflash_list)
 
 
-        if not long_digit:
-            fbflash_list.cost_alloc = s_list.bezeich
-            fbflash_list.day_cons = to_string((s_list.betrag + s_list.betrag1) , "->,>>>,>>>,>>9.99")
-            fbflash_list.mtd_cons = to_string((s_list.t_betrag + s_list.t_betrag1) , "->,>>>,>>>,>>9.99")
+            if not long_digit:
+                fbflash_list.cost_alloc = s_list.bezeich
+                fbflash_list.day_cons = to_string((s_list.betrag + s_list.betrag1) , "->,>>>,>>>,>>9.99")
+                fbflash_list.mtd_cons = to_string((s_list.t_betrag + s_list.t_betrag1) , "->,>>>,>>>,>>9.99")
 
 
-        else:
-            fbflash_list.cost_alloc = s_list.bezeich
-            fbflash_list.day_cons = to_string((s_list.betrag + s_list.betrag1) , " ->>>,>>>,>>>,>>9")
-            fbflash_list.mtd_cons = to_string((s_list.t_betrag + s_list.t_betrag1) , " ->>>,>>>,>>>,>>9")
+            else:
+                fbflash_list.cost_alloc = s_list.bezeich
+                fbflash_list.day_cons = to_string((s_list.betrag + s_list.betrag1) , " ->>>,>>>,>>>,>>9")
+                fbflash_list.mtd_cons = to_string((s_list.t_betrag + s_list.t_betrag1) , " ->>>,>>>,>>>,>>9")
 
 
         fbflash_list = Fbflash_list()
@@ -1005,28 +1018,31 @@ def fb_flashbl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, dat
                 fbflash_list.mtd_cons = to_string(s_list.t_betrag, " ->>>,>>>,>>>,>>9")
 
         s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 2 and s_list.reihenfolge == 3), first=True)
-        betrag =  to_decimal(betrag) + to_decimal(s_list.betrag)
-        t_betrag1 =  to_decimal(t_betrag1) + to_decimal(s_list.t_betrag)
-        d1_betrag =  to_decimal(d1_betrag) + to_decimal(s_list.betrag)
-        m1_betrag =  to_decimal(m1_betrag) + to_decimal(s_list.t_betrag)
-        d_betrag =  to_decimal(d_betrag) - to_decimal(s_list.betrag)
-        m_betrag =  to_decimal(m_betrag) - to_decimal(s_list.t_betrag)
+        # Rd 23/7/2025
+        # if available
+        if s_list:
+            betrag =  to_decimal(betrag) + to_decimal(s_list.betrag)
+            t_betrag1 =  to_decimal(t_betrag1) + to_decimal(s_list.t_betrag)
+            d1_betrag =  to_decimal(d1_betrag) + to_decimal(s_list.betrag)
+            m1_betrag =  to_decimal(m1_betrag) + to_decimal(s_list.t_betrag)
+            d_betrag =  to_decimal(d_betrag) - to_decimal(s_list.betrag)
+            m_betrag =  to_decimal(m_betrag) - to_decimal(s_list.t_betrag)
 
-        if s_list.t_betrag != 0:
-            fbflash_list = Fbflash_list()
-            fbflash_list_data.append(fbflash_list)
-
-
-            if not long_digit:
-                fbflash_list.cost_alloc = s_list.bezeich
-                fbflash_list.day_cons = to_string((s_list.betrag) , "->,>>>,>>>,>>9.99")
-                fbflash_list.mtd_cons = to_string((s_list.t_betrag) , "->,>>>,>>>,>>9.99")
+            if s_list.t_betrag != 0:
+                fbflash_list = Fbflash_list()
+                fbflash_list_data.append(fbflash_list)
 
 
-            else:
-                fbflash_list.cost_alloc = s_list.bezeich
-                fbflash_list.day_cons = to_string((s_list.betrag) , " ->>>,>>>,>>>,>>9")
-                fbflash_list.mtd_cons = to_string((s_list.t_betrag) , " ->>>,>>>,>>>,>>9")
+                if not long_digit:
+                    fbflash_list.cost_alloc = s_list.bezeich
+                    fbflash_list.day_cons = to_string((s_list.betrag) , "->,>>>,>>>,>>9.99")
+                    fbflash_list.mtd_cons = to_string((s_list.t_betrag) , "->,>>>,>>>,>>9.99")
+
+
+                else:
+                    fbflash_list.cost_alloc = s_list.bezeich
+                    fbflash_list.day_cons = to_string((s_list.betrag) , " ->>>,>>>,>>>,>>9")
+                    fbflash_list.mtd_cons = to_string((s_list.t_betrag) , " ->>>,>>>,>>>,>>9")
 
 
         fbflash_list = Fbflash_list()
@@ -1306,24 +1322,27 @@ def fb_flashbl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, dat
 
 
         s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 2 and s_list.reihenfolge == 3), first=True)
-        d_betrag =  to_decimal(d_betrag) + to_decimal(s_list.betrag) + to_decimal(s_list.betrag1)
-        m_betrag =  to_decimal(m_betrag) + to_decimal(s_list.t_betrag) + to_decimal(s_list.t_betrag1)
+        # Rd 23/7/2025
+        # if available
+        if s_list:
+            d_betrag =  to_decimal(d_betrag) + to_decimal(s_list.betrag) + to_decimal(s_list.betrag1)
+            m_betrag =  to_decimal(m_betrag) + to_decimal(s_list.t_betrag) + to_decimal(s_list.t_betrag1)
 
 
-        fbflash_list = Fbflash_list()
-        fbflash_list_data.append(fbflash_list)
+            fbflash_list = Fbflash_list()
+            fbflash_list_data.append(fbflash_list)
 
 
-        if not long_digit:
-            fbflash_list.cost_alloc = s_list.bezeich
-            fbflash_list.day_cons = to_string((s_list.betrag + s_list.betrag1) , "->,>>>,>>>,>>9.99")
-            fbflash_list.mtd_cons = to_string((s_list.t_betrag + s_list.t_betrag1) , "->,>>>,>>>,>>9.99")
+            if not long_digit:
+                fbflash_list.cost_alloc = s_list.bezeich
+                fbflash_list.day_cons = to_string((s_list.betrag + s_list.betrag1) , "->,>>>,>>>,>>9.99")
+                fbflash_list.mtd_cons = to_string((s_list.t_betrag + s_list.t_betrag1) , "->,>>>,>>>,>>9.99")
 
 
-        else:
-            fbflash_list.cost_alloc = s_list.bezeich
-            fbflash_list.day_cons = to_string((s_list.betrag + s_list.betrag1) , " ->>>,>>>,>>>,>>9")
-            fbflash_list.mtd_cons = to_string((s_list.t_betrag + s_list.t_betrag1) , " ->>>,>>>,>>>,>>9")
+            else:
+                fbflash_list.cost_alloc = s_list.bezeich
+                fbflash_list.day_cons = to_string((s_list.betrag + s_list.betrag1) , " ->>>,>>>,>>>,>>9")
+                fbflash_list.mtd_cons = to_string((s_list.t_betrag + s_list.t_betrag1) , " ->>>,>>>,>>>,>>9")
 
 
         fbflash_list = Fbflash_list()
@@ -1435,28 +1454,31 @@ def fb_flashbl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, dat
                 fbflash_list.mtd_cons = to_string(s_list.t_betrag, " ->>>,>>>,>>>,>>9")
 
         s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 1 and s_list.reihenfolge == 3), first=True)
-        betrag =  to_decimal(betrag) + to_decimal(s_list.betrag) + to_decimal(s_list.betrag1)
-        t_betrag1 =  to_decimal(t_betrag1) + to_decimal(s_list.t_betrag) + to_decimal(s_list.t_betrag1)
-        d1_betrag =  to_decimal(d1_betrag) + to_decimal(s_list.betrag) + to_decimal(s_list.betrag1)
-        m1_betrag =  to_decimal(m1_betrag) + to_decimal(s_list.t_betrag) + to_decimal(s_list.t_betrag1)
-        d_betrag =  to_decimal(d_betrag) - to_decimal(s_list.betrag) - to_decimal(s_list.betrag1)
-        m_betrag =  to_decimal(m_betrag) - to_decimal(s_list.t_betrag) - to_decimal(s_list.t_betrag1)
+        # Rd 23/7/2025
+        # if available
+        if s_list:
+            betrag =  to_decimal(betrag) + to_decimal(s_list.betrag) + to_decimal(s_list.betrag1)
+            t_betrag1 =  to_decimal(t_betrag1) + to_decimal(s_list.t_betrag) + to_decimal(s_list.t_betrag1)
+            d1_betrag =  to_decimal(d1_betrag) + to_decimal(s_list.betrag) + to_decimal(s_list.betrag1)
+            m1_betrag =  to_decimal(m1_betrag) + to_decimal(s_list.t_betrag) + to_decimal(s_list.t_betrag1)
+            d_betrag =  to_decimal(d_betrag) - to_decimal(s_list.betrag) - to_decimal(s_list.betrag1)
+            m_betrag =  to_decimal(m_betrag) - to_decimal(s_list.t_betrag) - to_decimal(s_list.t_betrag1)
 
-        if s_list.t_betrag != 0:
-            fbflash_list = Fbflash_list()
-            fbflash_list_data.append(fbflash_list)
-
-
-            if not long_digit:
-                fbflash_list.cost_alloc = s_list.bezeich
-                fbflash_list.day_cons = to_string((s_list.betrag) , "->,>>>,>>>,>>9.99")
-                fbflash_list.mtd_cons = to_string((s_list.t_betrag) , "->,>>>,>>>,>>9.99")
+            if s_list.t_betrag != 0:
+                fbflash_list = Fbflash_list()
+                fbflash_list_data.append(fbflash_list)
 
 
-            else:
-                fbflash_list.cost_alloc = s_list.bezeich
-                fbflash_list.day_cons = to_string((s_list.betrag) , " ->>>,>>>,>>>,>>9")
-                fbflash_list.mtd_cons = to_string((s_list.t_betrag) , " ->>>,>>>,>>>,>>9")
+                if not long_digit:
+                    fbflash_list.cost_alloc = s_list.bezeich
+                    fbflash_list.day_cons = to_string((s_list.betrag) , "->,>>>,>>>,>>9.99")
+                    fbflash_list.mtd_cons = to_string((s_list.t_betrag) , "->,>>>,>>>,>>9.99")
+
+
+                else:
+                    fbflash_list.cost_alloc = s_list.bezeich
+                    fbflash_list.day_cons = to_string((s_list.betrag) , " ->>>,>>>,>>>,>>9")
+                    fbflash_list.mtd_cons = to_string((s_list.t_betrag) , " ->>>,>>>,>>>,>>9")
 
 
         fbflash_list = Fbflash_list()
