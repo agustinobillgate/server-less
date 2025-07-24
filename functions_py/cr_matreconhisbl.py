@@ -1,10 +1,64 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 23/7/2025
+# gitlab: 659
+# 
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from sqlalchemy import func
 from models import Gl_acct, L_artikel, L_untergrup, L_besthis, L_lager, L_ophis
+from sqlalchemy import and_, not_, func
+
+
+def filter_query(
+    data_list: List[Type], 
+    filters: Callable[[Type], bool] = None, 
+    sort_by: Optional[List[Tuple[str, bool]]] = None,
+    first: bool = False,
+    last: bool = False,
+    curr_data: Type = None
+) -> Union[Type, List[Type], None]:
+    if not data_list:
+        return None if first or last else []
+
+    if first or last and not filters:
+        return data_list[0] if first else data_list[-1]
+
+    if filters:
+        data_list = list(filter(filters, data_list))
+    
+    if not data_list:
+        return None if first or last else []
+
+    if sort_by:
+        class SortWrapper:
+            def __init__(self, value):
+                self.value = value
+            def __lt__(self, other):
+                return self.value > other.value
+            def __eq__(self, other):
+                return self.value == other.value
+
+        def sort_key(obj):
+            key = []
+            for field, descending in sort_by:
+                val = getattr(obj, field, None)
+                if isinstance(val, str):
+                    val = val.lower()
+                key.append(val if not descending else SortWrapper(val))
+            return tuple(key)
+
+        data_list.sort(key=sort_key)
+
+    if first:
+        return data_list[0]
+    if last:
+        return data_list[-1]
+
+    return data_list
+
 
 def cr_matreconhisbl(to_date:date, lager_no:int, from_main:int, to_main:int, sort_type:int):
 
@@ -68,7 +122,7 @@ def cr_matreconhisbl(to_date:date, lager_no:int, from_main:int, to_main:int, sor
             else:
                 l_besthis_obj_list[l_besthis._recid] = True
 
-            art_bestand = query(art_bestand_data, filters=(lambda art_bestand: art_bestand.zwkum == l_untergrup.zwkum), first=True)
+            art_bestand = filter_query(art_bestand_data, filters=(lambda art_bestand: art_bestand.zwkum == l_untergrup.zwkum), first=True)
 
             if not art_bestand:
                 art_bestand = Art_bestand()
@@ -96,8 +150,30 @@ def cr_matreconhisbl(to_date:date, lager_no:int, from_main:int, to_main:int, sor
                     art_bestand.actval =  to_decimal(art_bestand.actval) + to_decimal(l_ophis.warenwert)
                     testa =  to_decimal(testa) + to_decimal(l_ophis.warenwert)
 
-                for l_ophis in db_session.query(L_ophis).filter(
-                         (L_ophis.lager_nr == l_lager.lager_nr) & (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.artnr >= 1000000) & (L_ophis.artnr <= 9999999) & (L_ophis.anzahl != 0) & (L_ophis.op_art >= 3) & (L_ophis.op_art <= 4) & (L_ophis.artnr == l_artikel.artnr) & (not_(matches(L_ophis.fibukonto,"*CANCELLED*")))).order_by(func.substring(L_ophis.lscheinnr, 3, 12), l_artikel.bezeich).all():
+                # for l_ophis in db_session.query(L_ophis).filter(
+                #          (L_ophis.lager_nr == l_lager.lager_nr) & (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.artnr >= 1000000) & (L_ophis.artnr <= 9999999) & (L_ophis.anzahl != 0) & (L_ophis.op_art >= 3) & (L_ophis.op_art <= 4) & (L_ophis.artnr == l_artikel.artnr) & (not_(matches(L_ophis.fibukonto,"*CANCELLED*")))).order_by(func.substring(L_ophis.lscheinnr, 3, 12), l_artikel.bezeich).all():
+                qquery = (
+                    db_session.query(L_ophis)
+                    .join(L_artikel, L_ophis.artnr == L_artikel.artnr)
+                    .filter(
+                        L_ophis.lager_nr == l_lager.lager_nr,
+                        L_ophis.datum >= from_date,
+                        L_ophis.datum <= to_date,
+                        L_ophis.artnr >= 1000000,
+                        L_ophis.artnr <= 9999999,
+                        L_ophis.anzahl != 0,
+                        L_ophis.op_art >= 3,
+                        L_ophis.op_art <= 4,
+                        not_(L_ophis.fibukonto.like('%CANCELLED%'))
+                    )
+                    .order_by(
+                        func.substring(L_ophis.lscheinnr, 4, 12),
+                        L_artikel.bezeich
+                    )
+                )
+
+                result_list = qquery.all()
+                for l_ophis in result_list:
                     it_exist = True
                     other_fibu = False
 

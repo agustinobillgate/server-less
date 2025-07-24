@@ -1,10 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 18/07/25
-# exrate -> eexrate#using conversion tools version: 1.0.0.117
-#------------------------------------------
-# Rd, 18/07/25
-# exrate -> ex_rate
+# exrate -> eexrate
 #------------------------------------------
 
 

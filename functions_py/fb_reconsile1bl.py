@@ -2,7 +2,9 @@
 #-----------------------------------------
 # Rd 23/7/2025
 # gitlab: 655
-# 
+# kemungkinan beda DB, COA tidak ada
+# add if gl_acct is None:
+#         return generate_output()
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -120,11 +122,10 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 272)]})
         bev_food = htparam.fchar
-        print("Bev 272:", bev_food)
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 275)]})
         food_bev = htparam.fchar
-        print("Food 275:", food_bev)
+
         create_output_list()
         output_list.s = to_string("", "x(24)") + to_string(translateExtended ("** food **", lvcarea, "") , "x(33)")
         flag = 1
@@ -141,16 +142,20 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             net_cost =  to_decimal("0")
 
             gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, bev_food)]})
+            if gl_acct is None:
+                return generate_output()
             s_list = S_list()
             s_list_data.append(s_list)
 
             s_list.reihenfolge = 1
             s_list.lager_nr = 9999
-            s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
-                    gl_acct.bezeich.upper()
+            s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+            
             s_list.flag = 0
 
             gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, food_bev)]})
+            if gl_acct is None:
+                return generate_output()
             s_list = S_list()
             s_list_data.append(s_list)
 
@@ -414,7 +419,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                     artikel = get_cache (Artikel, {"artnr": [(eq, h_art.artnrfront)],"departement": [(eq, 0)]})
 
                     gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, artikel.fibukonto)]})
-
+                    if gl_acct is None:
+                        return generate_output()
                     gl_main = get_cache (Gl_main, {"nr": [(eq, gl_acct.main_nr)]})
 
                     h_artikel = get_cache (H_artikel, {"departement": [(eq, h_compli.departement)],"artnr": [(eq, h_compli.artnr)]})
@@ -798,6 +804,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             net_cost =  to_decimal("0")
 
             gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, bev_food)]})
+            if gl_acct is None:
+                return generate_output()
             s_list = S_list()
             s_list_data.append(s_list)
 
@@ -808,6 +816,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             s_list.flag = 0
 
             gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, food_bev)]})
+            if gl_acct is None:
+                return generate_output()
             s_list = S_list()
             s_list_data.append(s_list)
 
@@ -1072,7 +1082,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                     artikel = get_cache (Artikel, {"artnr": [(eq, h_art.artnrfront)],"departement": [(eq, 0)]})
 
                     gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, artikel.fibukonto)]})
-
+                    if gl_acct is None:
+                        return generate_output()
                     gl_main = get_cache (Gl_main, {"nr": [(eq, gl_acct.main_nr)]})
 
                     h_artikel = get_cache (H_artikel, {"departement": [(eq, h_compli.departement)],"artnr": [(eq, h_compli.artnr)]})
