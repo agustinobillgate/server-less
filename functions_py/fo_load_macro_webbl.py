@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd 24/7/2025
 # gitlab: 354
+# add table name brief_list
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal

@@ -1,8 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd 24/7/2025
+# gitlab: 772
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Res_line, Queasy
+from sqlalchemy import func
 
 def rsvpurpose_admin_btn_delbl(pvilanguage:int, number1:int):
     msg_str = ""
@@ -21,8 +25,17 @@ def rsvpurpose_admin_btn_delbl(pvilanguage:int, number1:int):
 
     search_str = "segm_pur" + to_string(number1) + ";"
 
-    res_line = db_session.query(Res_line).filter(
-             (Res_line.active_flag <= 1) & (get_index(Res_line.zimmer_wunsch, search_str) > 0)).first()
+    # Rd, 24/7/2025
+    # res_line = db_session.query(Res_line).filter(
+    #          (Res_line.active_flag <= 1) & (get_index(Res_line.zimmer_wunsch, search_str) > 0)).first()
+    sql_query = text("""
+           SELECT *
+            FROM res_line
+            WHERE active_flag <= 1
+            AND res_line.zimmer_wunsch ILIKE :search_str
+            LIMIT 1;
+        """)
+    res_line = db_session.execute(sql_query, {"search_str": search_str}).fetchone()
 
     if res_line:
         msg_str = msg_str + chr_unicode(2) + translateExtended ("Reservation exists, deleting not possible.", lvcarea, "")
