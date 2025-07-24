@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd 24/7/2025
+# gitlab: 354
+# add table name brief_list
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Parameters, Briefzei
@@ -101,20 +105,30 @@ def fo_load_macro_webbl(briefnr:int, excel_list_data:[Excel_list]):
             brief_list = Brief_list()
             brief_list_data.append(brief_list)
 
-        b_text = b_text + c
+        # Rd, 24/7/2025
+        # add table name
+        # b_text = b_text + c
+        brief_list.b_text = brief_list.b_text + c
 
     for brief_list in query(brief_list_data):
-
-        if b_text == "" or substring(b_text, 0, 1) == ("#").lower() :
+        # Rd, 24/7/2025
+        # add table name brief_list
+        # if b_text == "" or substring(b_text, 0, 1) == ("#").lower() :
+        if brief_list.b_text == "" or substring(brief_list.b_text, 0, 1) == ("#").lower() :
             pass
         else:
             art_list = Art_list()
             art_list_data.append(art_list)
 
-            for i in range(1,num_entries(b_text, " ")  + 1) :
-
-                if substring(entry(i - 1, b_text, " ") , 0, 1) == ("^").lower() :
-                    art_list.str_art = entry(i - 1, b_text, " ")
+            # Rd, 24/7/2025
+            # add table name brief_list
+            # for i in range(1,num_entries(b_text, " ")  + 1) :
+            #     if substring(entry(i - 1, b_text, " ") , 0, 1) == ("^").lower() :
+            #         art_list.str_art = entry(i - 1, b_text, " ")
+            #         art_list.anzahl = 0
+            for i in range(1,num_entries(brief_list.b_text, " ")  + 1) :
+                if substring(entry(i - 1, brief_list.b_text, " ") , 0, 1) == ("^").lower() :
+                    art_list.str_art = entry(i - 1, brief_list.b_text, " ")
                     art_list.anzahl = 0
 
     for excel_list in query(excel_list_data, sort_by=[("curr_xlsrow",False),("curr_xlscol",False)]):

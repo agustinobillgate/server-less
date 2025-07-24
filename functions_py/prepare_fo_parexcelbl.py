@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd 24/7/2025
+# gitlab: 350
+# b_text -> brief_list_data.b_text
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -473,7 +477,10 @@ def prepare_fo_parexcelbl(briefnr:int):
                 brief_list = Brief_list()
                 brief_list_data.append(brief_list)
 
-            b_text = b_text + c
+            # Rd 24/7/2025
+            # tambah table name brief_list.
+            # b_text = b_text + c
+            brief_list.b_text = brief_list.b_text + c
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 479)]})
     serv_vat = htparam.flogical

@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd 24/7/2025
+# gitlab: 350
+# add table brief_list 
+# change query while -> for
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -380,13 +385,24 @@ def fo_parexcel_listbl(pvilanguage:int, briefnr:int, to_date:date, check_only:bo
         found:bool = False
 
         htp_list = query(htp_list_data, first=True)
-        while None != htp_list and not found:
+        # Rd 24/7/2025
+        # while -> for
+        #------------------------------------------
+        # while None != htp_list and not found:
 
-            if htp_list.fchar.lower()  == (subtext).lower() :
+        #     if htp_list.fchar.lower()  == (subtext).lower() :
+        #         found = True
+        #         curr_cmd = htp_list.paramnr
+
+        #     htp_list = query(htp_list_data, next=True)
+        found = False
+        curr_cmd = None
+
+        for htp_list in htp_list_data:
+            if htp_list.fchar.lower() == subtext.lower():
                 found = True
                 curr_cmd = htp_list.paramnr
-
-            htp_list = query(htp_list_data, next=True)
+                break 
 
         if not found:
             msg_str = translateExtended ("Can not understand line", lvcarea, "") + " " + to_string(curr_row) + chr_unicode(10) + substring(curr_texte, 0, length(curr_texte))
@@ -557,7 +573,11 @@ def fo_parexcel_listbl(pvilanguage:int, briefnr:int, to_date:date, check_only:bo
     batch_list = query(batch_list_data, first=True)
 
     for brief_list in query(brief_list_data):
-        curr_texte = trim(b_text)
+
+        # Rd, 224/7/2025
+        # add brief_list
+        # curr_texte = trim(b_text)
+        curr_texte = trim(brief_list.b_text)
         curr_pos = 1
         curr_column = 1
         curr_row = curr_row + 1

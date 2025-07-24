@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 24/7/2025
+# gitlab: 972
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal

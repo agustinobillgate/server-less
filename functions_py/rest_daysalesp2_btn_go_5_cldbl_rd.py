@@ -13,6 +13,60 @@ from models import Htparam, Waehrung, H_bill, H_bill_line, Artikel, H_artikel, H
 bline_list_data, Bline_list = create_model("Bline_list", {"selected":bool, "depart":string, "dept":int, "knr":int, "bl_recid":int}, {"selected": True})
 buf_art_data, Buf_art = create_model("Buf_art", {"artnr":int, "bezeich":string, "departement":int})
 
+
+
+from functions.additional_functions import *
+from decimal import Decimal
+from datetime import date
+from models import Htparam, Bk_reser, Bk_func, Bk_veran, Guest, Akt_kont
+
+def filter_query(
+    data_list: List[Type], 
+    filters: Callable[[Type], bool] = None, 
+    sort_by: Optional[List[Tuple[str, bool]]] = None,
+    first: bool = False,
+    last: bool = False,
+    curr_data: Type = None
+) -> Union[Type, List[Type], None]:
+    if not data_list:
+        return None if first or last else []
+
+    if first or last and not filters:
+        return data_list[0] if first else data_list[-1]
+
+    if filters:
+        data_list = list(filter(filters, data_list))
+    
+    if not data_list:
+        return None if first or last else []
+
+    if sort_by:
+        class SortWrapper:
+            def __init__(self, value):
+                self.value = value
+            def __lt__(self, other):
+                return self.value > other.value
+            def __eq__(self, other):
+                return self.value == other.value
+
+        def sort_key(obj):
+            key = []
+            for field, descending in sort_by:
+                val = getattr(obj, field, None)
+                if isinstance(val, str):
+                    val = val.lower()
+                key.append(val if not descending else SortWrapper(val))
+            return tuple(key)
+
+        data_list.sort(key=sort_key)
+
+    if first:
+        return data_list[0]
+    if last:
+        return data_list[-1]
+
+    return data_list
+
 def rest_daysalesp2_btn_go_5_cldbl(bline_list_data:[Bline_list], buf_art_data:[Buf_art], disc_art1:int, disc_art2:int, disc_art3:int, curr_dept:int, all_user:bool, shift:int, from_date:date, to_date:date, art_str:string, voucher_art:int, zero_vat_compli:bool, exclude_compli:bool, show_fbodisc:bool, htl_dept_dptnr:int, incl_move_table:bool, wig:bool, inhouse:bool):
 
     prepare_cache ([Htparam, Waehrung, Artikel, H_artikel, H_journal, Res_line, Kellner, Bill])
@@ -122,7 +176,13 @@ def rest_daysalesp2_btn_go_5_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
         nonlocal other_art, temp, t_tot_betrag, t_nt_betrag, bline_list, outstand_list, pay_list, pay_listbuff, turnover, summ_list, buf_art, t_artnr, tlist
         nonlocal other_art_data, temp_data, t_tot_betrag_data, t_nt_betrag_data, outstand_list_data, pay_list_data, turnover_data, summ_list_data, t_artnr_data
 
-        return {"t_betrag": t_betrag, "t_foreign": t_foreign, "exchg_rate": exchg_rate, "tot_serv": tot_serv, "tot_tax": tot_tax, "tot_debit": tot_debit, "tot_cash": tot_cash, "tot_cash1": tot_cash1, "tot_trans": tot_trans, "tot_ledger": tot_ledger, "tot_cover": tot_cover, "nt_cover": nt_cover, "tot_other": tot_other, "nt_other": nt_other, "nt_serv": nt_serv, "nt_tax": nt_tax, "nt_debit": nt_debit, "nt_cash": nt_cash, "nt_cash1": nt_cash1, "nt_trans": nt_trans, "nt_ledger": nt_ledger, "tot_vat": tot_vat, "nt_vat": nt_vat, "avail_outstand_list": avail_outstand_list, "turnover": turnover_data, "t-tot-betrag": t_tot_betrag_data, "t-nt-betrag": t_nt_betrag_data, "outstand-list": outstand_list_data, "pay-list": pay_list_data, "summ-list": summ_list_data}
+        return {"t_betrag": t_betrag, "t_foreign": t_foreign, "exchg_rate": exchg_rate, "tot_serv": tot_serv, 
+                "tot_tax": tot_tax, "tot_debit": tot_debit, "tot_cash": tot_cash, "tot_cash1": tot_cash1, "tot_trans": tot_trans, 
+                "tot_ledger": tot_ledger, "tot_cover": tot_cover, "nt_cover": nt_cover, "tot_other": tot_other, "nt_other": nt_other, 
+                "nt_serv": nt_serv, "nt_tax": nt_tax, "nt_debit": nt_debit, "nt_cash": nt_cash, "nt_cash1": nt_cash1, "nt_trans": nt_trans, 
+                "nt_ledger": nt_ledger, "tot_vat": tot_vat, "nt_vat": nt_vat, "avail_outstand_list": avail_outstand_list, "turnover": turnover_data, 
+                "t-tot-betrag": t_tot_betrag_data, "t-nt-betrag": t_nt_betrag_data, "outstand-list": outstand_list_data, 
+                "pay-list": pay_list_data, "summ-list": summ_list_data}
 
     def calculate_disc():
 
@@ -299,7 +359,6 @@ def rest_daysalesp2_btn_go_5_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
                     if kellner:
                         outstand_list.name = kellner.kellnername
-
 
                     for h_bill_line in db_session.query(H_bill_line).filter(
                              (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == curr_dept)).order_by(H_bill_line._recid).all():
@@ -657,15 +716,20 @@ def rest_daysalesp2_btn_go_5_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
         nt_vat =  to_decimal("0")
         nt_pvoucher =  to_decimal("0")
 
-        # for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.bl_recid (kellner) == bline_list.bl_recid and kellner.departement == curr_dept)):
-        for bline__list in query(bline_list_data, filters=(lambda bline__list: bline__list.selected.lower()  == ("YES").lower())):
-            kellner = get_cache (Kellner, {"rec__id": [(eq, bline__list.bl__recid)],"departement": [(eq, curr_dept)]})
+        # Rd, 21/7/2025
+        # for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.recid (kellner) == bline_list.bl_recid and kellner.departement == curr_dept)):
+        kellner_map = {
+            k._recid: k
+            for k in kellner_list  # or query if kellner_list comes from DB
+            if k.departement == curr_dept
+        }
 
-
+        # Step 2: Iterate over bline_list with matched kellner
+        for bline_list in bline_list_data:
+            kellner = kellner_map.get(bline_list.bl_recid)
             if kellner is None:
                 continue
-
-
+            
             for h_bill in db_session.query(H_bill).filter(
                      (H_bill.flag == 0) & (H_bill.saldo != 0) & (H_bill.departement == bline_list.dept)).order_by(H_bill._recid).all():
 

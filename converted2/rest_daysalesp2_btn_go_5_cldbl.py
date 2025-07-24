@@ -1,9 +1,5 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd 21/7/2025
-# gitlab: 378
-# recid -> bl_recid
-#-----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -299,7 +295,6 @@ def rest_daysalesp2_btn_go_5_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
                     if kellner:
                         outstand_list.name = kellner.kellnername
-
 
                     for h_bill_line in db_session.query(H_bill_line).filter(
                              (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == curr_dept)).order_by(H_bill_line._recid).all():
@@ -657,14 +652,12 @@ def rest_daysalesp2_btn_go_5_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
         nt_vat =  to_decimal("0")
         nt_pvoucher =  to_decimal("0")
 
-        # for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.bl_recid (kellner) == bline_list.bl_recid and kellner.departement == curr_dept)):
-        for bline__list in query(bline_list_data, filters=(lambda bline__list: bline__list.selected.lower()  == ("YES").lower())):
-            kellner = get_cache (Kellner, {"rec__id": [(eq, bline__list.bl__recid)],"departement": [(eq, curr_dept)]})
+        for bline__list in query(bline__list_data, filters=(lambda bline__list: bline__list.selected.lower()  == ("YES").lower())):
 
+            kellner = get_cache (Kellner, {"rec__id": [(eq, bline__list.bl__recid)],"departement": [(eq, curr__dept)]})
 
-            if kellner is None:
-                continue
-
+            if not kellner:
+                CONTINUE
 
             for h_bill in db_session.query(H_bill).filter(
                      (H_bill.flag == 0) & (H_bill.saldo != 0) & (H_bill.departement == bline_list.dept)).order_by(H_bill._recid).all():
