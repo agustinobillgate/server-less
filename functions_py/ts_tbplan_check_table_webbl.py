@@ -9,7 +9,9 @@ from models import H_bill, Tisch, Queasy, Htparam, Res_line, Mc_guest, Guest, Bi
 t_h_bill_data, T_h_bill = create_model_like(H_bill, {"rec_id":int})
 t_tisch_data, T_tisch = create_model_like(Tisch)
 
-def ts_tbplan_check_table_webbl(pvilanguage:int, resnr:int, reslinnr:int, tischnr:int, curr_waiter:int, tkellner_masterkey:bool, dept_no:int, t_h_bill_data:[T_h_bill], t_tisch_data:[T_tisch]):
+def ts_tbplan_check_table_webbl(pvilanguage:int, resnr:int, reslinnr:int, tischnr:int, 
+                                curr_waiter:int, tkellner_masterkey:bool, dept_no:int, 
+                                t_h_bill_data:[T_h_bill], t_tisch_data:[T_tisch]):
 
     prepare_cache ([Htparam, Res_line, Guest, Bill])
 

@@ -604,6 +604,16 @@ update_field_mapping = {
     "c_param870":"cParam870",
     "p_223":"p223",
 
+    "vhpwebbased1":"VHPWebBased1",
+    "vhpwebbased2":"VHPWebBased2",
+    "vhpwebbased3":"VHPWebBased3",
+    "vhpwebbased4":"VHPWebBased4",
+    "vhpwebbased5":"VHPWebBased5",
+    "vhpwebbased1-appservicename":"VHPWebBased1-AppServiceName",
+    "vhpwebbased2-appservicename":"VHPWebBased2-AppServiceName",
+    "vhpwebbased3-appservicename":"VHPWebBased3-AppServiceName",
+    "vhpwebbased4-appservicename":"VHPWebBased4-AppServiceName",
+    "vhpwebbased5-appservicename":"VHPWebBased5-AppServiceName",
 
     # "activeflag": ["ActiveFlag","activeFlag"], 
 
