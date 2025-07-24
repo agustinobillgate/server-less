@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd 24/7/2025
+# gitlab: 853
+# add sprachcode if "" -> None
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -41,6 +46,10 @@ def rwaiter_admin_btn_exitbl(t_list_data:[T_list], case_type:int, dept:int, curr
         nonlocal t_kellner, q1_list, t_list
         nonlocal t_kellner_data, q1_list_data
 
+        # Rd 24/7/2025
+        if t_list.sprachcode == "":
+            t_list.sprachcode = None  
+
         waiter1 = None
         Waiter1 =  create_buffer("Waiter1",Kellne1)
         kellner.departement = dept
@@ -65,6 +74,7 @@ def rwaiter_admin_btn_exitbl(t_list_data:[T_list], case_type:int, dept:int, curr
             waiter1.kzahl_nr = kzahl_nr1
             waiter1.kumsatz_nr = kumsatz_nr1
 
+    
 
     t_list = query(t_list_data, first=True)
 
