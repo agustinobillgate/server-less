@@ -503,8 +503,6 @@ def rm_fbyroomtype_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_yea
 
 
     #                             output_list.room = output_list.room + res_line.zimmeranz
-
-
     #                             output_list.revenue =  to_decimal(output_list.revenue) + to_decimal(net_lodg)
 
     
@@ -730,8 +728,10 @@ def rm_fbyroomtype_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_yea
     if sum_month == False:
 
         if fr_date < ci_date:
+            print("create_browse")
             create_browse()
         else:
+            print("create_browse111")
             create_browse1()
 
         for output_list in query(output_list_data, sort_by=[("datum",False),("zikatnr",False)]):
