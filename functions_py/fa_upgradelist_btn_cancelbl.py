@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 25/7/2025
+#
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -67,12 +71,26 @@ def fa_upgradelist_btn_cancelbl(mat_buff_nr:int, recid_fa_artikel:int, user_init
 
     fa_artikel = get_cache (Fa_artikel, {"_recid": [(eq, recid_fa_artikel)]})
 
-    fa_op = get_cache (Fa_op, {"opart": [(eq, 4)],"nr": [(eq, mat_buff_nr)],"datum": [(eq, fa_artikel.deleted)]})
+    # Rd, 25/7/2025
+    # fa_op = get_cache (Fa_op, {"opart": [(eq, 4)],"nr": [(eq, mat_buff_nr)],"datum": [(eq, fa_artikel.deleted)]})
 
-    if fa_op.datum < last_depn:
+    # if fa_op.datum < last_depn:
+    #     err_no = 1
+
+    #     return generate_output()
+    # cancel_upgrade()
+    deleted_date = fa_artikel.deleted if fa_artikel else recid_fa_artikel
+    if isinstance(deleted_date, int):
+        deleted_date = date(1900, 1, 1) + timedelta(days=deleted_date)
+    fa_op = get_cache (Fa_op, {"opart": [(eq, 4)],"nr": [(eq, mat_buff_nr)],"datum": [(eq, deleted_date)]})
+
+    if fa_op and fa_op.datum < last_depn:
         err_no = 1
 
         return generate_output()
-    cancel_upgrade()
+    
+    if fa_op:
+        cancel_upgrade()
+
 
     return generate_output()
