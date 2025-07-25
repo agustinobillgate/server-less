@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------
+# Rd, 25-July-25
+# add jtype 7 : Fix Asset
+#---------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -13,7 +16,7 @@ def gcjour_list_2bl(case_type:int, from_refno:string, sorttype:int, journaltype:
     gl_jouhdr_list_data = []
     b2_list_data = []
     yy:int = 0
-    jtype:List[string] = create_empty_list(6,"")
+    jtype:List[string] = create_empty_list(7,"")
     gl_jouhdr = gl_journal = gl_acct = None
 
     note_list = gl_jouhdr_list = b2_list = None
@@ -268,6 +271,7 @@ def gcjour_list_2bl(case_type:int, from_refno:string, sorttype:int, journaltype:
     jtype[3] = "From A/P"
     jtype[4] = "From General Cashier"
     jtype[5] = "No Transfer"
+    jtype[6] = "Fix Asset"
 
     if case_type == 1:
         display_it()
