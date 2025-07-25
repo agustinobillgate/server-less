@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 25/7/2025
+# 
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -566,11 +569,14 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
         tot_val2 =  to_decimal("0")
         max_lager = to_lager
 
-        for lagerbuff in query(lagerbuff_data, filters=(lambda lagerbuff: lagerbuff.lagerBuff.lager_nr >= from_lager and lagerBuff.lager_nr <= to_lager)):
+
+        # Rd, 25/7/2025
+        # fix lagerbuff
+        for lagerbuff in query(lagerbuff_data, filters=(lambda lagerbuff: lagerbuff.lager_nr >= from_lager and lagerbuff.lager_nr <= to_lager)):
             out_list = Out_list()
             out_list_data.append(out_list)
 
-            out_list.bezeich = to_string(lagerBuff.lager_nr, ">>99") + "-" + lagerBuff.bezeich
+            out_list.bezeich = to_string(lagerbuff.lager_nr, ">>99") + "-" + lagerbuff.bezeich
             i = 0
             zwkum = 0
             t_anz =  to_decimal("0")
@@ -591,7 +597,7 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
                     fa_artikel = Fa_artikel()
                     fa_grup = Fa_grup()
                     for mathis.asset, mathis.name, mathis.datum, mathis.location, mathis._recid, fa_artikel.book_wert, fa_artikel.gnr, fa_artikel.anzahl, fa_artikel.depn_wert, fa_artikel.anz_depn, fa_artikel.first_depn, fa_artikel.last_depn, fa_artikel.warenwert, fa_artikel.katnr, fa_artikel.next_depn, fa_artikel.subgrp, fa_artikel.fibukonto, fa_artikel._recid, fa_grup.bezeich, fa_grup._recid in db_session.query(Mathis.asset, Mathis.name, Mathis.datum, Mathis.location, Mathis._recid, Fa_artikel.book_wert, Fa_artikel.gnr, Fa_artikel.anzahl, Fa_artikel.depn_wert, Fa_artikel.anz_depn, Fa_artikel.first_depn, Fa_artikel.last_depn, Fa_artikel.warenwert, Fa_artikel.katnr, Fa_artikel.next_depn, Fa_artikel.subgrp, Fa_artikel.fibukonto, Fa_artikel._recid, Fa_grup.bezeich, Fa_grup._recid).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr) & (Fa_artikel.loeschflag == 0)).join(Fa_grup,(Fa_grup.gnr == Fa_artikel.gnr) & (Fa_grup.flag == 0)).filter(
-                             (Mathis.location == lagerBuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Fa_grup.gnr, Mathis.name).all():
+                             (Mathis.location == lagerbuff_data.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Fa_grup.gnr, Mathis.name).all():
                         if mathis_obj_list.get(mathis._recid):
                             continue
                         else:
