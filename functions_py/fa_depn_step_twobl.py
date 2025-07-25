@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+# ----------------------------------------
+# Rd, 25/7/2025
+# requery for each find, sysdate.desc issue
+# ----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -157,19 +161,34 @@ def fa_depn_step_twobl(datum:date, user_init:string, curr_anz:int, debits:Decima
                 pass
 
     gl_acct1_obj_list = {}
-    for gl_acct1 in db_session.query(Gl_acct1).filter(
-             ((Gl_acct1.fibukonto.in_(list(set([g_list.fibukonto for g_list in g_list_data])))))).order_by(g_list.sysdate.desc(), g_list.zeit.desc()).all():
-        if gl_acct1_obj_list.get(gl_acct1._recid):
-            continue
+
+    # Rd, 25/7/2025
+    # for gl_acct1 in db_session.query(Gl_acct1).filter(
+    #          ((Gl_acct1.fibukonto.in_(list(set([g_list.fibukonto for g_list in g_list_data])))))).order_by(g_list.sysdate.desc(), g_list.zeit.desc()).all():
+    sorted_g_list_data = sorted(
+        g_list_data,
+        key=lambda g: (g.sysdate or datetime.min, g.zeit or time.min),
+        reverse=True
+    )
+
+    buff_g_list_data = []
+
+    for g_list in sorted_g_list_data:
+        # FIRST gl-acct1 WHERE gl-acct1.fibukonto = g-list.fibukonto NO-LOCK
+        gl_acct1 = (
+            db_session.query(Gl_acct1)
+            .filter(Gl_acct1.fibukonto == g_list.fibukonto)
+            .first()
+        )
+
+        buff_g_list = buffer_copy(g_list)
+        if gl_acct1:
+            buff_g_list.gl_acct1_fibukonto = gl_acct1.fibukonto
+            buff_g_list.gl_acct1_bezeich = gl_acct1.bezeich
         else:
-            gl_acct1_obj_list[gl_acct1._recid] = True
+            buff_g_list.gl_acct1_fibukonto = None
+            buff_g_list.gl_acct1_bezeich = None
 
-
-        buff_g_list = Buff_g_list()
         buff_g_list_data.append(buff_g_list)
-
-        buffer_copy(g_list, buff_g_list)
-        buff_g_list.gl_acct1_fibukonto = gl_acct1.fibukonto
-        buff_g_list.gl_acct1_bezeich = gl_acct1.bezeich
 
     return generate_output()
