@@ -1,9 +1,17 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 25/7/2025
+# gitlab:817
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_lager, L_artikel, L_op, L_untergrup, L_hauptgrp, Queasy, Bediener
+
+# Rd 25/7/2025
+def extract_value(val):
+    return val["value"] if isinstance(val, dict) and "value" in val else val
 
 def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_str:int, mattype:int, from_art:int, to_art:int, from_date:date, to_date:date, show_price:bool, expense_amt:bool):
 
@@ -273,8 +281,33 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lager_nr, l_op.pos, l_op.lscheinnr, l_op.op_art, l_op.datum, l_op.artnr, l_op.warenwert, l_op.anzahl, l_op.fuellflag, l_op._recid, l_artikel.zwkum, l_artikel.endkum, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.inhalt, l_artikel._recid in db_session.query(L_op.lager_nr, L_op.pos, L_op.lscheinnr, L_op.op_art, L_op.datum, L_op.artnr, L_op.warenwert, L_op.anzahl, L_op.fuellflag, L_op._recid, L_artikel.zwkum, L_artikel.endkum, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.inhalt, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
-                     (L_op.lager_nr == m_str) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & ((L_op.op_art == 2) | (L_op.op_art == 4)) & (L_op.herkunftflag == 1) & (L_op.lscheinnr == (trans_code).lower())).order_by(L_op.op_art, L_op.lscheinnr, L_op.zeit).all():
+
+            # Rd 25/7/2025
+            # for l_op.lager_nr, l_op.pos, l_op.lscheinnr, l_op.op_art, l_op.datum, l_op.artnr, l_op.warenwert, l_op.anzahl, l_op.fuellflag, l_op._recid, l_artikel.zwkum, l_artikel.endkum, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.inhalt, l_artikel._recid in db_session.query(L_op.lager_nr, L_op.pos, L_op.lscheinnr, L_op.op_art, L_op.datum, L_op.artnr, L_op.warenwert, L_op.anzahl, L_op.fuellflag, L_op._recid, L_artikel.zwkum, L_artikel.endkum, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.inhalt, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
+            #          (L_op.lager_nr == m_str) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & ((L_op.op_art == 2) | (L_op.op_art == 4)) & (L_op.herkunftflag == 1) & (L_op.lscheinnr == (trans_code).lower())).order_by(L_op.op_art, L_op.lscheinnr, L_op.zeit).all():
+             
+            for (
+                    lager_nr, pos, lscheinnr, op_art, datum, artnr, warenwert, anzahl, fuellflag, l_op_recid,
+                    zwkum, endkum, bezeich, masseinheit, inhalt, l_artikel_recid
+                ) in db_session.query(
+                    L_op.lager_nr, L_op.pos, L_op.lscheinnr, L_op.op_art, L_op.datum, L_op.artnr,
+                    L_op.warenwert, L_op.anzahl, L_op.fuellflag, L_op._recid,
+                    L_artikel.zwkum, L_artikel.endkum, L_artikel.bezeich,
+                    L_artikel.masseinheit, L_artikel.inhalt, L_artikel._recid
+                ).join(
+                    L_artikel, L_artikel.artnr == L_op.artnr
+                ).filter(
+                    (L_op.lager_nr == extract_value(m_str)) &
+                    (L_op.datum >= from_date) &
+                    (L_op.datum <= to_date) &
+                    (L_op.artnr >= from_art) &
+                    (L_op.artnr <= to_art) &
+                    ((L_op.op_art == 2) | (L_op.op_art == 4)) &
+                    (L_op.herkunftflag == 1) &
+                    (L_op.lscheinnr == trans_code.lower())
+                ).order_by(
+                    L_op.op_art, L_op.lscheinnr, L_op.zeit
+                ).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
                 else:

@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 25/7/2025
+# gitlab: 667
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -7,6 +11,17 @@ from models import L_lieferant, L_kredit, L_artikel, L_op, L_ophdr, Queasy, L_un
 
 taxcode_list_data, Taxcode_list = create_model("Taxcode_list", {"taxcode":string, "taxamount":Decimal})
 
+#---- Quick& Dirty-----
+# perlu update di additional_functions later
+def to_decimal(input_value):
+    # Only use this for Python values, NOT SQLAlchemy expressions
+    if isinstance(input_value, str) and input_value == "?":
+        return Decimal("0")
+    try:
+        return Decimal(input_value)
+    except:
+        return Decimal("0")
+    
 def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:int, l_kredit_recid:int, ap_recid:int, long_digit:bool, show_price:bool, store:int, all_supp:bool, sorttype:int, from_grp:int, to_grp:int, from_date:date, to_date:date, taxcode_list_data:[Taxcode_list]):
 
     prepare_cache ([L_lieferant, L_kredit, L_artikel, L_op, L_ophdr, Queasy, L_untergrup, Htparam, L_ophis, L_ophhis, Gl_acct])
@@ -76,12 +91,41 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             l_op = L_op()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
-                     (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.anzahl != 0)).order_by(L_lieferant.firma, L_op.datum, L_artikel.bezeich).all():
-                if l_op_obj_list.get(l_op._recid):
+
+            # Rd 25/7/2025
+            # for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
+            #          (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.anzahl != 0)).order_by(L_lieferant.firma, L_op.datum, L_artikel.bezeich).all():
+
+            for (
+                    lscheinnr, datum, anzahl, artnr_lop, warenwert, einzelpreis, docu_nr, lager_nr, recid_lop,
+                    lief_nr, pos, stornogrund, fuellflag,
+                    artnr_artikel, bezeich, traubensorte, lief_artnr, recid_artikel,
+                    lief_nr_lieferant, firma, plz, recid_lieferant
+                ) in db_session.query(
+                    L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis,
+                    L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag,
+                    L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid,
+                    L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid
+                ).join(
+                    L_artikel, (L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)
+                ).join(
+                    L_lieferant, L_lieferant.lief_nr == L_op.lief_nr
+                ).filter(
+                    (L_op.datum >= from_date) &
+                    (L_op.datum <= to_date) &
+                    (L_op.lief_nr > 0) &
+                    (L_op.loeschflag <= 1) &
+                    (L_op.op_art == 1) &
+                    (L_op.anzahl != 0)
+                ).order_by(
+                    L_lieferant.firma,
+                    L_op.datum,
+                    L_artikel.bezeich
+                ).all():
+                if l_op_obj_list.get(recid_lop):
                     continue
                 else:
-                    l_op_obj_list[l_op._recid] = True
+                    l_op_obj_list[recid_lop] = True
 
 
                 t_anz, t_amt, t_amountexcl, t_tax, t_inv, lief_nr = assign_create_list11(t_anz, t_amt, t_amountexcl, t_tax, t_inv, lief_nr)
