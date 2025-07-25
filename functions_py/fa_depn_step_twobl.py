@@ -134,31 +134,64 @@ def fa_depn_step_twobl(datum:date, user_init:string, curr_anz:int, debits:Decima
 
         if depn_value > 0:
 
-            gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, fa_grup.credit_fibu)]})
+            if num_entries(fa_grup.credit_fibu, ".") > 1:
 
-            if not gl_acc1:
+                gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, entry(0, fa_grup.credit_fibu, "."))]})
 
-                gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, fa_artikel.credit_fibu)]})
+                if not gl_acc1:
 
-            if gl_acc1:
-                credit_betrag =  to_decimal(depn_value)
-                debit_betrag =  to_decimal("0")
-                add_list(True)
+                    gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, fa_artikel.credit_fibu)]})
+
+                if gl_acc1:
+                    credit_betrag =  to_decimal(depn_value)
+                    debit_betrag =  to_decimal("0")
+                    add_list(True)
+                else:
+                    pass
             else:
-                pass
 
-            gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, fa_grup.debit_fibu)]})
+                gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, fa_grup.credit_fibu)]})
 
-            if not gl_acc1:
+                if not gl_acc1:
 
-                gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, fa_artikel.debit_fibu)]})
+                    gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, fa_artikel.credit_fibu)]})
 
-            if gl_acc1:
-                debit_betrag =  to_decimal(depn_value)
-                credit_betrag =  to_decimal("0")
-                add_list(True)
+                if gl_acc1:
+                    credit_betrag =  to_decimal(depn_value)
+                    debit_betrag =  to_decimal("0")
+                    add_list(True)
+                else:
+                    pass
+
+            if num_entries(fa_grup.debit_fibu, ".") > 1:
+
+                gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, entry(0, fa_grup.debit_fibu, "."))]})
+
+                if not gl_acc1:
+
+                    gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, fa_artikel.debit_fibu)]})
+
+                if gl_acc1:
+                    debit_betrag =  to_decimal(depn_value)
+                    credit_betrag =  to_decimal("0")
+                    add_list(True)
+                else:
+                    pass
             else:
-                pass
+
+                gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, fa_grup.debit_fibu)]})
+
+                if not gl_acc1:
+
+                    gl_acc1 = get_cache (Gl_acct, {"fibukonto": [(eq, fa_artikel.debit_fibu)]})
+
+                if gl_acc1:
+                    debit_betrag =  to_decimal(depn_value)
+                    credit_betrag =  to_decimal("0")
+                    add_list(True)
+                else:
+                    pass
+
 
     gl_acct1_obj_list = {}
 
