@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 25/7/2025
+# gitlab: 653
+# if availabe s_list
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -158,14 +163,17 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
                 fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 1 and s_list.reihenfolge == 3), first=True)
-            d_betrag =  to_decimal(d_betrag) + to_decimal(s_list.betrag)
-            m_betrag =  to_decimal(m_betrag) + to_decimal(s_list.t_betrag)
-            fb_flash = Fb_flash()
-            fb_flash_data.append(fb_flash)
+            # Rd, 25/7/2025
+            # if available
+            if s_list:
+                d_betrag =  to_decimal(d_betrag) + to_decimal(s_list.betrag)
+                m_betrag =  to_decimal(m_betrag) + to_decimal(s_list.t_betrag)
+                fb_flash = Fb_flash()
+                fb_flash_data.append(fb_flash)
 
-            fb_flash.c_alloc = s_list.bezeich
-            fb_flash.t_consumed =  to_decimal(betrag)
-            fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
+                fb_flash.c_alloc = s_list.bezeich
+                fb_flash.t_consumed =  to_decimal(betrag)
+                fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
 
 
             fb_flash = Fb_flash()
@@ -233,18 +241,21 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
                 fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 2 and s_list.reihenfolge == 3), first=True)
-            betrag =  to_decimal(betrag) + to_decimal(s_list.betrag)
-            t_betrag1 =  to_decimal(t_betrag1) + to_decimal(s_list.t_betrag)
-            d1_betrag =  to_decimal(d1_betrag) + to_decimal(s_list.betrag)
-            m1_betrag =  to_decimal(m1_betrag) + to_decimal(s_list.t_betrag)
-            d_betrag =  to_decimal(d_betrag) - to_decimal(s_list.betrag)
-            m_betrag =  to_decimal(m_betrag) - to_decimal(s_list.t_betrag)
-            fb_flash = Fb_flash()
-            fb_flash_data.append(fb_flash)
+            # Rd, 25/7/2025
+            # if available
+            if s_list:
+                betrag =  to_decimal(betrag) + to_decimal(s_list.betrag)
+                t_betrag1 =  to_decimal(t_betrag1) + to_decimal(s_list.t_betrag)
+                d1_betrag =  to_decimal(d1_betrag) + to_decimal(s_list.betrag)
+                m1_betrag =  to_decimal(m1_betrag) + to_decimal(s_list.t_betrag)
+                d_betrag =  to_decimal(d_betrag) - to_decimal(s_list.betrag)
+                m_betrag =  to_decimal(m_betrag) - to_decimal(s_list.t_betrag)
+                fb_flash = Fb_flash()
+                fb_flash_data.append(fb_flash)
 
-            fb_flash.c_alloc = s_list.bezeich
-            fb_flash.t_consumed =  to_decimal(s_list.betrag)
-            fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
+                fb_flash.c_alloc = s_list.bezeich
+                fb_flash.t_consumed =  to_decimal(s_list.betrag)
+                fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
 
 
             fb_flash = Fb_flash()
@@ -405,14 +416,17 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
                 fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 2 and s_list.reihenfolge == 3), first=True)
-            d_betrag =  to_decimal(d_betrag) + to_decimal(s_list.betrag)
-            m_betrag =  to_decimal(m_betrag) + to_decimal(s_list.t_betrag)
-            fb_flash = Fb_flash()
-            fb_flash_data.append(fb_flash)
+            # Rd, 25/7/2025
+            # if available
+            if s_list:
+                d_betrag =  to_decimal(d_betrag) + to_decimal(s_list.betrag)
+                m_betrag =  to_decimal(m_betrag) + to_decimal(s_list.t_betrag)
+                fb_flash = Fb_flash()
+                fb_flash_data.append(fb_flash)
 
-            fb_flash.c_alloc = s_list.bezeich
-            fb_flash.t_consumed =  to_decimal(s_list.betrag)
-            fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
+                fb_flash.c_alloc = s_list.bezeich
+                fb_flash.t_consumed =  to_decimal(s_list.betrag)
+                fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
 
 
             fb_flash = Fb_flash()
@@ -483,18 +497,21 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
                 fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 1 and s_list.reihenfolge == 3), first=True)
-            betrag =  to_decimal(betrag) + to_decimal(s_list.betrag)
-            t_betrag1 =  to_decimal(t_betrag1) + to_decimal(s_list.t_betrag)
-            d1_betrag =  to_decimal(d1_betrag) + to_decimal(s_list.betrag)
-            m1_betrag =  to_decimal(m1_betrag) + to_decimal(s_list.t_betrag)
-            d_betrag =  to_decimal(d_betrag) - to_decimal(s_list.betrag)
-            m_betrag =  to_decimal(m_betrag) - to_decimal(s_list.t_betrag)
-            fb_flash = Fb_flash()
-            fb_flash_data.append(fb_flash)
+            # Rd, 25/7/2025
+            # if available
+            if s_list:
+                betrag =  to_decimal(betrag) + to_decimal(s_list.betrag)
+                t_betrag1 =  to_decimal(t_betrag1) + to_decimal(s_list.t_betrag)
+                d1_betrag =  to_decimal(d1_betrag) + to_decimal(s_list.betrag)
+                m1_betrag =  to_decimal(m1_betrag) + to_decimal(s_list.t_betrag)
+                d_betrag =  to_decimal(d_betrag) - to_decimal(s_list.betrag)
+                m_betrag =  to_decimal(m_betrag) - to_decimal(s_list.t_betrag)
+                fb_flash = Fb_flash()
+                fb_flash_data.append(fb_flash)
 
-            fb_flash.c_alloc = s_list.bezeich
-            fb_flash.t_consumed =  to_decimal(s_list.betrag)
-            fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
+                fb_flash.c_alloc = s_list.bezeich
+                fb_flash.t_consumed =  to_decimal(s_list.betrag)
+                fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
 
 
             fb_flash = Fb_flash()

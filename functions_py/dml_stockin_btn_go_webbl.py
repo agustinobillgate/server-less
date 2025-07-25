@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 25/7/2025
+# gitlab: 648
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -415,8 +418,21 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
         create_ap()
 
     l_art_obj_list = {}
-    for l_art, sys_user in db_session.query(L_art, Sys_user).join(Sys_user,(Sys_user.nr == op_list.fuellflag)).filter(
-             ((L_art.artnr.in_(list(set([op_list.artnr for op_list in op_list_data])))))).order_by(op_list.pos).all():
+
+    # Rd 25/7/2025
+    # for l_art, sys_user in db_session.query(L_art, Sys_user).join(Sys_user,(Sys_user.nr == op_list.fuellflag)).filter(
+    #         ((L_art.artnr.in_(list(set([op_list.artnr for op_list in op_list_data])))))).order_by(op_list.pos).all():
+
+    artnr_set = {op.artnr for op in op_list_data if op.artnr is not None}
+
+    for l_art, sys_user in (
+                db_session.query(L_art, Sys_user)
+                .join(Sys_user, Sys_user.nr == op_list.fuellflag)
+                .filter(L_art.artnr.in_(artnr_set))
+                .order_by(L_art.pos)  # Only if pos is a column of L_art
+                .all()
+            ):
+
         if l_art_obj_list.get(l_art._recid):
             continue
         else:
