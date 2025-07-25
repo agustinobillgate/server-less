@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 25/7/2025
+# fix lagerbuff
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -318,8 +321,16 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
                     mathis = Mathis()
                     fa_artikel = Fa_artikel()
                     fa_grup = Fa_grup()
-                    for mathis.asset, mathis.name, mathis.datum, mathis.location, mathis._recid, fa_artikel.book_wert, fa_artikel.gnr, fa_artikel.anzahl, fa_artikel.depn_wert, fa_artikel.anz_depn, fa_artikel.first_depn, fa_artikel.last_depn, fa_artikel.warenwert, fa_artikel.katnr, fa_artikel.next_depn, fa_artikel.subgrp, fa_artikel.fibukonto, fa_artikel._recid, fa_grup.bezeich, fa_grup._recid in db_session.query(Mathis.asset, Mathis.name, Mathis.datum, Mathis.location, Mathis._recid, Fa_artikel.book_wert, Fa_artikel.gnr, Fa_artikel.anzahl, Fa_artikel.depn_wert, Fa_artikel.anz_depn, Fa_artikel.first_depn, Fa_artikel.last_depn, Fa_artikel.warenwert, Fa_artikel.katnr, Fa_artikel.next_depn, Fa_artikel.subgrp, Fa_artikel.fibukonto, Fa_artikel._recid, Fa_grup.bezeich, Fa_grup._recid).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr)).join(Fa_grup,(Fa_grup.gnr == Fa_artikel.gnr) & (Fa_grup.flag == 0)).filter(
-                             (Mathis.location == lagerBuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Fa_grup.gnr, Mathis.name).all():
+
+                    # Rd, 25/7/2025
+                    # lagerbuff
+                    # for mathis.asset, mathis.name, mathis.datum, mathis.location, mathis._recid, fa_artikel.book_wert, fa_artikel.gnr, fa_artikel.anzahl, fa_artikel.depn_wert, fa_artikel.anz_depn, fa_artikel.first_depn, fa_artikel.last_depn, fa_artikel.warenwert, fa_artikel.katnr, fa_artikel.next_depn, fa_artikel.subgrp, fa_artikel.fibukonto, fa_artikel._recid, fa_grup.bezeich, fa_grup._recid in db_session.query(Mathis.asset, Mathis.name, Mathis.datum, Mathis.location, Mathis._recid, Fa_artikel.book_wert, Fa_artikel.gnr, Fa_artikel.anzahl, Fa_artikel.depn_wert, Fa_artikel.anz_depn, Fa_artikel.first_depn, Fa_artikel.last_depn, Fa_artikel.warenwert, Fa_artikel.katnr, Fa_artikel.next_depn, Fa_artikel.subgrp, Fa_artikel.fibukonto, Fa_artikel._recid, Fa_grup.bezeich, Fa_grup._recid).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr)).join(Fa_grup,(Fa_grup.gnr == Fa_artikel.gnr) & (Fa_grup.flag == 0)).filter(
+                    #          (Mathis.location == lagerBuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Fa_grup.gnr, Mathis.name).all():
+                    for mathis.asset, mathis.name, mathis.datum, mathis.location, mathis._recid, fa_artikel.book_wert, fa_artikel.gnr, fa_artikel.anzahl, fa_artikel.depn_wert, \
+                        fa_artikel.anz_depn, fa_artikel.first_depn, fa_artikel.last_depn, fa_artikel.warenwert, fa_artikel.katnr, fa_artikel.next_depn, fa_artikel.subgrp, \
+                            fa_artikel.fibukonto, fa_artikel._recid, fa_grup.bezeich, fa_grup._recid in db_session.query(Mathis.asset, Mathis.name, Mathis.datum, Mathis.location, \
+                            Mathis._recid, Fa_artikel.book_wert, Fa_artikel.gnr, Fa_artikel.anzahl, Fa_artikel.depn_wert, Fa_artikel.anz_depn, Fa_artikel.first_depn, Fa_artikel.last_depn, Fa_artikel.warenwert, Fa_artikel.katnr, Fa_artikel.next_depn, Fa_artikel.subgrp, Fa_artikel.fibukonto, Fa_artikel._recid, Fa_grup.bezeich, Fa_grup._recid).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr)).join(Fa_grup,(Fa_grup.gnr == Fa_artikel.gnr) & (Fa_grup.flag == 0)).filter(
+                             (Mathis.location == lagerbuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Fa_grup.gnr, Mathis.name).all():
                         if mathis_obj_list.get(mathis._recid):
                             continue
                         else:
@@ -384,8 +395,11 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
                             out_list.received = mathis.datum
                             out_list.qty =  to_decimal(fa_artikel.anzahl)
                             out_list.init_val =  to_decimal(fa_artikel.warenwert)
-                            out_list.depn_val =  to_decimal(depn_wert)
-                            out_list.book_val =  to_decimal(book_wert)
+
+                            # Rd 25/7/2025
+                            # add fa_artikel.
+                            out_list.depn_val =  to_decimal(fa_artikel.depn_wert)
+                            out_list.book_val =  to_decimal(fa_artikel.book_wert)
 
                             fa_kateg = get_cache (Fa_kateg, {"katnr": [(eq, fa_artikel.katnr)]})
 
@@ -409,8 +423,11 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
                     mathis = Mathis()
                     fa_artikel = Fa_artikel()
                     fa_grup = Fa_grup()
+
+                    # Rd 25/7/2025
+                    # lagerbuff
                     for mathis.asset, mathis.name, mathis.datum, mathis.location, mathis._recid, fa_artikel.book_wert, fa_artikel.gnr, fa_artikel.anzahl, fa_artikel.depn_wert, fa_artikel.anz_depn, fa_artikel.first_depn, fa_artikel.last_depn, fa_artikel.warenwert, fa_artikel.katnr, fa_artikel.next_depn, fa_artikel.subgrp, fa_artikel.fibukonto, fa_artikel._recid, fa_grup.bezeich, fa_grup._recid in db_session.query(Mathis.asset, Mathis.name, Mathis.datum, Mathis.location, Mathis._recid, Fa_artikel.book_wert, Fa_artikel.gnr, Fa_artikel.anzahl, Fa_artikel.depn_wert, Fa_artikel.anz_depn, Fa_artikel.first_depn, Fa_artikel.last_depn, Fa_artikel.warenwert, Fa_artikel.katnr, Fa_artikel.next_depn, Fa_artikel.subgrp, Fa_artikel.fibukonto, Fa_artikel._recid, Fa_grup.bezeich, Fa_grup._recid).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr) & (Fa_artikel.posted)).join(Fa_grup,(Fa_grup.gnr == Fa_artikel.gnr) & (Fa_grup.flag == 0)).filter(
-                             (Mathis.location == lagerBuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Fa_grup.gnr, Mathis.name).all():
+                             (Mathis.location == lagerbuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Fa_grup.gnr, Mathis.name).all():
                         if mathis_obj_list.get(mathis._recid):
                             continue
                         else:
@@ -475,8 +492,13 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
                             out_list.received = mathis.datum
                             out_list.qty =  to_decimal(fa_artikel.anzahl)
                             out_list.init_val =  to_decimal(fa_artikel.warenwert)
-                            out_list.depn_val =  to_decimal(depn_wert)
-                            out_list.book_val =  to_decimal(book_wert)
+
+                            # Rd 25/7/2025
+                            # add fa_artikel.
+                            # out_list.depn_val =  to_decimal(depn_wert)
+                            # out_list.book_val =  to_decimal(book_wert)
+                            out_list.depn_val =  to_decimal(fa_artikel.depn_wert)
+                            out_list.book_val =  to_decimal(fa_artikel.book_wert)
 
                             fa_kateg = get_cache (Fa_kateg, {"katnr": [(eq, fa_artikel.katnr)]})
 
@@ -566,11 +588,14 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
         tot_val2 =  to_decimal("0")
         max_lager = to_lager
 
-        for lagerbuff in query(lagerbuff_data, filters=(lambda lagerbuff: lagerbuff.lagerBuff.lager_nr >= from_lager and lagerBuff.lager_nr <= to_lager)):
+
+        # Rd, 25/7/2025
+        # fix lagerbuff
+        for lagerbuff in query(lagerbuff_data, filters=(lambda lagerbuff: lagerbuff.lager_nr >= from_lager and lagerbuff.lager_nr <= to_lager)):
             out_list = Out_list()
             out_list_data.append(out_list)
 
-            out_list.bezeich = to_string(lagerBuff.lager_nr, ">>99") + "-" + lagerBuff.bezeich
+            out_list.bezeich = to_string(lagerbuff.lager_nr, ">>99") + "-" + lagerbuff.bezeich
             i = 0
             zwkum = 0
             t_anz =  to_decimal("0")
@@ -591,7 +616,7 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
                     fa_artikel = Fa_artikel()
                     fa_grup = Fa_grup()
                     for mathis.asset, mathis.name, mathis.datum, mathis.location, mathis._recid, fa_artikel.book_wert, fa_artikel.gnr, fa_artikel.anzahl, fa_artikel.depn_wert, fa_artikel.anz_depn, fa_artikel.first_depn, fa_artikel.last_depn, fa_artikel.warenwert, fa_artikel.katnr, fa_artikel.next_depn, fa_artikel.subgrp, fa_artikel.fibukonto, fa_artikel._recid, fa_grup.bezeich, fa_grup._recid in db_session.query(Mathis.asset, Mathis.name, Mathis.datum, Mathis.location, Mathis._recid, Fa_artikel.book_wert, Fa_artikel.gnr, Fa_artikel.anzahl, Fa_artikel.depn_wert, Fa_artikel.anz_depn, Fa_artikel.first_depn, Fa_artikel.last_depn, Fa_artikel.warenwert, Fa_artikel.katnr, Fa_artikel.next_depn, Fa_artikel.subgrp, Fa_artikel.fibukonto, Fa_artikel._recid, Fa_grup.bezeich, Fa_grup._recid).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr) & (Fa_artikel.loeschflag == 0)).join(Fa_grup,(Fa_grup.gnr == Fa_artikel.gnr) & (Fa_grup.flag == 0)).filter(
-                             (Mathis.location == lagerBuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Fa_grup.gnr, Mathis.name).all():
+                             (Mathis.location == lagerbuff_data.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Fa_grup.gnr, Mathis.name).all():
                         if mathis_obj_list.get(mathis._recid):
                             continue
                         else:
@@ -700,8 +725,10 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
                     mathis = Mathis()
                     fa_artikel = Fa_artikel()
                     fa_grup = Fa_grup()
+                    # Rd 25/7/2025
+                    # lagerbuff
                     for mathis.asset, mathis.name, mathis.datum, mathis.location, mathis._recid, fa_artikel.book_wert, fa_artikel.gnr, fa_artikel.anzahl, fa_artikel.depn_wert, fa_artikel.anz_depn, fa_artikel.first_depn, fa_artikel.last_depn, fa_artikel.warenwert, fa_artikel.katnr, fa_artikel.next_depn, fa_artikel.subgrp, fa_artikel.fibukonto, fa_artikel._recid, fa_grup.bezeich, fa_grup._recid in db_session.query(Mathis.asset, Mathis.name, Mathis.datum, Mathis.location, Mathis._recid, Fa_artikel.book_wert, Fa_artikel.gnr, Fa_artikel.anzahl, Fa_artikel.depn_wert, Fa_artikel.anz_depn, Fa_artikel.first_depn, Fa_artikel.last_depn, Fa_artikel.warenwert, Fa_artikel.katnr, Fa_artikel.next_depn, Fa_artikel.subgrp, Fa_artikel.fibukonto, Fa_artikel._recid, Fa_grup.bezeich, Fa_grup._recid).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr) & (Fa_artikel.loeschflag == 0) & (Fa_artikel.posted)).join(Fa_grup,(Fa_grup.gnr == Fa_artikel.gnr) & (Fa_grup.flag == 0)).filter(
-                             (Mathis.location == lagerBuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Fa_grup.gnr, Mathis.name).all():
+                             (Mathis.location == lagerbuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Fa_grup.gnr, Mathis.name).all():
                         if mathis_obj_list.get(mathis._recid):
                             continue
                         else:
@@ -810,8 +837,10 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
                 mathis = Mathis()
                 fa_artikel = Fa_artikel()
                 fa_grup = Fa_grup()
+                # Rd 25/7/2025
+                # lagerbuff
                 for mathis.asset, mathis.name, mathis.datum, mathis.location, mathis._recid, fa_artikel.book_wert, fa_artikel.gnr, fa_artikel.anzahl, fa_artikel.depn_wert, fa_artikel.anz_depn, fa_artikel.first_depn, fa_artikel.last_depn, fa_artikel.warenwert, fa_artikel.katnr, fa_artikel.next_depn, fa_artikel.subgrp, fa_artikel.fibukonto, fa_artikel._recid, fa_grup.bezeich, fa_grup._recid in db_session.query(Mathis.asset, Mathis.name, Mathis.datum, Mathis.location, Mathis._recid, Fa_artikel.book_wert, Fa_artikel.gnr, Fa_artikel.anzahl, Fa_artikel.depn_wert, Fa_artikel.anz_depn, Fa_artikel.first_depn, Fa_artikel.last_depn, Fa_artikel.warenwert, Fa_artikel.katnr, Fa_artikel.next_depn, Fa_artikel.subgrp, Fa_artikel.fibukonto, Fa_artikel._recid, Fa_grup.bezeich, Fa_grup._recid).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr) & (Fa_artikel.loeschflag == 0) & (Fa_artikel.posted)).join(Fa_grup,(Fa_grup.gnr == Fa_artikel.gnr) & (Fa_grup.flag == 0)).filter(
-                         (Mathis.location == lagerBuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Fa_grup.gnr, Mathis.name).all():
+                         (Mathis.location == lagerbuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Fa_grup.gnr, Mathis.name).all():
                     if mathis_obj_list.get(mathis._recid):
                         continue
                     else:
@@ -966,12 +995,13 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
         tot_val2 =  to_decimal("0")
 
         fa_grup = get_cache (Fa_grup, {"gnr": [(eq, from_grp)],"flag": [(eq, 0)]})
-
-        for lagerbuff in query(lagerbuff_data, filters=(lambda lagerbuff: lagerbuff.lagerBuff.lager_nr >= from_lager and lagerBuff.lager_nr <= to_lager)):
+        # Rd 25/7/2025
+        # lagerbuff
+        for lagerbuff in query(lagerbuff_data, filters=(lambda lagerbuff: lagerbuff.lagerbuff.lager_nr >= from_lager and lagerbuff.lager_nr <= to_lager)):
             out_list = Out_list()
             out_list_data.append(out_list)
 
-            out_list.bezeich = to_string(lagerBuff.lager_nr, ">>99") + "-" + lagerBuff.bezeich
+            out_list.bezeich = to_string(lagerbuff.lager_nr, ">>99") + "-" + lagerbuff.bezeich
 
 
             i = 0
@@ -990,8 +1020,10 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
                 mathis_obj_list = {}
                 mathis = Mathis()
                 fa_artikel = Fa_artikel()
+                # Rd 25/7/2025
+                # lagerbuff
                 for mathis.asset, mathis.name, mathis.datum, mathis.location, mathis._recid, fa_artikel.book_wert, fa_artikel.gnr, fa_artikel.anzahl, fa_artikel.depn_wert, fa_artikel.anz_depn, fa_artikel.first_depn, fa_artikel.last_depn, fa_artikel.warenwert, fa_artikel.katnr, fa_artikel.next_depn, fa_artikel.subgrp, fa_artikel.fibukonto, fa_artikel._recid in db_session.query(Mathis.asset, Mathis.name, Mathis.datum, Mathis.location, Mathis._recid, Fa_artikel.book_wert, Fa_artikel.gnr, Fa_artikel.anzahl, Fa_artikel.depn_wert, Fa_artikel.anz_depn, Fa_artikel.first_depn, Fa_artikel.last_depn, Fa_artikel.warenwert, Fa_artikel.katnr, Fa_artikel.next_depn, Fa_artikel.subgrp, Fa_artikel.fibukonto, Fa_artikel._recid).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr) & (Fa_artikel.loeschflag == 0) & (Fa_artikel.gnr == from_grp)).filter(
-                         (Mathis.location == lagerBuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Mathis.name).all():
+                         (Mathis.location == lagerbuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Mathis.name).all():
                     if mathis_obj_list.get(mathis._recid):
                         continue
                     else:
@@ -1097,8 +1129,10 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
                 mathis_obj_list = {}
                 mathis = Mathis()
                 fa_artikel = Fa_artikel()
+                # Rd 25/7/2025
+                # lagerbuff
                 for mathis.asset, mathis.name, mathis.datum, mathis.location, mathis._recid, fa_artikel.book_wert, fa_artikel.gnr, fa_artikel.anzahl, fa_artikel.depn_wert, fa_artikel.anz_depn, fa_artikel.first_depn, fa_artikel.last_depn, fa_artikel.warenwert, fa_artikel.katnr, fa_artikel.next_depn, fa_artikel.subgrp, fa_artikel.fibukonto, fa_artikel._recid in db_session.query(Mathis.asset, Mathis.name, Mathis.datum, Mathis.location, Mathis._recid, Fa_artikel.book_wert, Fa_artikel.gnr, Fa_artikel.anzahl, Fa_artikel.depn_wert, Fa_artikel.anz_depn, Fa_artikel.first_depn, Fa_artikel.last_depn, Fa_artikel.warenwert, Fa_artikel.katnr, Fa_artikel.next_depn, Fa_artikel.subgrp, Fa_artikel.fibukonto, Fa_artikel._recid).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr) & (Fa_artikel.loeschflag == 0) & (Fa_artikel.gnr == from_grp)).filter(
-                         (Mathis.location == lagerBuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Mathis.name).all():
+                         (Mathis.location == lagerbuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Mathis.name).all():
                     if mathis_obj_list.get(mathis._recid):
                         continue
                     else:
@@ -1181,7 +1215,10 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
                             out_list.last_depn = fa_artikel.last_depn
 
                         if fa_artikel.anz_depn != None:
-                            out_list.depn_no = anz_depn
+                            # Rd 25/7/2025
+                            # fa_artikel
+                            # out_list.depn_no = anz_depn
+                            out_list.depn_no = fa_artikel.anz_depn
             out_list = Out_list()
             out_list_data.append(out_list)
 
@@ -1253,8 +1290,9 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
         tot_val2 =  to_decimal("0")
 
         fa_grup = get_cache (Fa_grup, {"gnr": [(eq, from_grp)],"flag": [(eq, 0)]})
-
-        for lagerbuff in query(lagerbuff_data, filters=(lambda lagerbuff: lagerbuff.lagerBuff.lager_nr >= from_lager and lagerBuff.lager_nr <= to_lager)):
+        # Rd 25/7/2025
+        # lagerbuff
+        for lagerbuff in query(lagerbuff_data, filters=(lambda lagerbuff: lagerbuff.lagerBuff.lager_nr >= from_lager and lagerbuff.lager_nr <= to_lager)):
             i = 0
             zwkum = 0
             t_anz =  to_decimal("0")
@@ -1270,15 +1308,17 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
             out_list = Out_list()
             out_list_data.append(out_list)
 
-            out_list.bezeich = to_string(lagerBuff.lager_nr, ">>99") + "-" + lagerBuff.bezeich
+            out_list.bezeich = to_string(lagerbuff.lager_nr, ">>99") + "-" + lagerbuff.bezeich
 
             if mi_bookvalue_chk :
 
                 mathis_obj_list = {}
                 mathis = Mathis()
                 fa_artikel = Fa_artikel()
+                # Rd 25/7/2025
+                # lagerbuff
                 for mathis.asset, mathis.name, mathis.datum, mathis.location, mathis._recid, fa_artikel.book_wert, fa_artikel.gnr, fa_artikel.anzahl, fa_artikel.depn_wert, fa_artikel.anz_depn, fa_artikel.first_depn, fa_artikel.last_depn, fa_artikel.warenwert, fa_artikel.katnr, fa_artikel.next_depn, fa_artikel.subgrp, fa_artikel.fibukonto, fa_artikel._recid in db_session.query(Mathis.asset, Mathis.name, Mathis.datum, Mathis.location, Mathis._recid, Fa_artikel.book_wert, Fa_artikel.gnr, Fa_artikel.anzahl, Fa_artikel.depn_wert, Fa_artikel.anz_depn, Fa_artikel.first_depn, Fa_artikel.last_depn, Fa_artikel.warenwert, Fa_artikel.katnr, Fa_artikel.next_depn, Fa_artikel.subgrp, Fa_artikel.fibukonto, Fa_artikel._recid).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr) & (Fa_artikel.loeschflag == 0) & (Fa_artikel.gnr == from_grp)).filter(
-                         (Mathis.location == lagerBuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Mathis.name).all():
+                         (Mathis.location == lagerbuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Mathis.name).all():
                     if mathis_obj_list.get(mathis._recid):
                         continue
                     else:
@@ -1384,8 +1424,10 @@ def fa_valuate_btn_go1_webbl(pvilanguage:int, lagerbuff_data:[Lagerbuff], mi_lag
                 mathis_obj_list = {}
                 mathis = Mathis()
                 fa_artikel = Fa_artikel()
+                # Rd 25/7/2025
+                # lagerbuff
                 for mathis.asset, mathis.name, mathis.datum, mathis.location, mathis._recid, fa_artikel.book_wert, fa_artikel.gnr, fa_artikel.anzahl, fa_artikel.depn_wert, fa_artikel.anz_depn, fa_artikel.first_depn, fa_artikel.last_depn, fa_artikel.warenwert, fa_artikel.katnr, fa_artikel.next_depn, fa_artikel.subgrp, fa_artikel.fibukonto, fa_artikel._recid in db_session.query(Mathis.asset, Mathis.name, Mathis.datum, Mathis.location, Mathis._recid, Fa_artikel.book_wert, Fa_artikel.gnr, Fa_artikel.anzahl, Fa_artikel.depn_wert, Fa_artikel.anz_depn, Fa_artikel.first_depn, Fa_artikel.last_depn, Fa_artikel.warenwert, Fa_artikel.katnr, Fa_artikel.next_depn, Fa_artikel.subgrp, Fa_artikel.fibukonto, Fa_artikel._recid).join(Fa_artikel,(Fa_artikel.nr == Mathis.nr) & (Fa_artikel.loeschflag == 0) & (Fa_artikel.gnr == from_grp)).filter(
-                         (Mathis.location == lagerBuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Mathis.name).all():
+                         (Mathis.location == lagerbuff.bezeich) & (Mathis.datum >= from_date) & (Mathis.datum <= to_date)).order_by(Mathis.name).all():
                     if mathis_obj_list.get(mathis._recid):
                         continue
                     else:

@@ -2,6 +2,7 @@
 #---------------------------------------------
 # Rd, 17-July-25
 # replace jtype -> gl_jouhdr.jtype
+# add jtype 7 : Fix Asset
 #---------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -16,7 +17,7 @@ def gcjour_list_2_webbl(case_type:int, from_refno:string, sorttype:int, journalt
     gl_jouhdr_list_data = []
     b2_list_data = []
     yy:int = 0
-    jtype:List[string] = create_empty_list(6,"")
+    jtype:List[string] = create_empty_list(7,"")
     gl_jouhdr = gl_journal = gl_acct = None
 
     note_list = gl_jouhdr_list = b2_list = None
@@ -290,7 +291,13 @@ def gcjour_list_2_webbl(case_type:int, from_refno:string, sorttype:int, journalt
         if gl_jouhdr.jtype == 0:
             gl_jouhdr_list.jtype = gl_jouhdr.jtype[5]
         else:
-            gl_jouhdr_list.jtype = gl_jouhdr.jtype[gl_jouhdr.jtype - 1]
+            # gl_jouhdr_list.jtype = gl_jouhdr.jtype[gl_jouhdr.jtype - 1]
+            jtype_index = gl_jouhdr.jtype - 1  # convert 1-based to 0-based
+            print("Jtype:", jtype_index, gl_jouhdr.jtype)
+            if 0 <= jtype_index < len(jtype):
+                gl_jouhdr_list.jtype = jtype[jtype_index]
+            else:
+                raise IndexError(f"Invalid jtype index: {jtype_index}")
 
     jtype[0] = "From F/O"
     jtype[1] = "From A/R"
@@ -298,6 +305,8 @@ def gcjour_list_2_webbl(case_type:int, from_refno:string, sorttype:int, journalt
     jtype[3] = "From A/P"
     jtype[4] = "From General Cashier"
     jtype[5] = "No Transfer"
+    jtype[6] = "Fix Asset"
+    
 
     if case_type == 1:
         display_it()

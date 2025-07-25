@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 25/7/2025
+# po_nr -> op_list.po_nr
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -659,7 +662,18 @@ def print_pchase_lnl_webbl(pvilanguage:int, lnldelimeter:string, docunr:string, 
         str3_list = Str3_list()
         str3_list_data.append(str3_list)
 
-        str3_list.str = bl_descript + lnldelimeter + arr_date + lnldelimeter + bl_qty + lnldelimeter + d_unit + lnldelimeter + bl_price + lnldelimeter + bl_amount + lnldelimeter + c_exrate + lnldelimeter + bl_balance + lnldelimeter + op_list.remark + lnldelimeter + op_list.konto + lnldelimeter + to_string(op_list.disc, "->>9.99") + lnldelimeter + to_string(op_list.disc2, "->>9.99") + lnldelimeter + to_string(op_list.vat, "->>9.99") + lnldelimeter + to_string(op_list.disc_value, "->>>,>>>,>>>,>>9") + lnldelimeter + to_string(op_list.disc2_value, "->>>,>>>,>>>,>>9") + lnldelimeter + to_string(op_list.epreis0, ">>,>>>,>>>,>>>,>>9") + lnldelimeter + bl_vat + lnldelimeter + to_string(op_list.artnr, ">>>>>>>9") + lnldelimeter + to_string(op_list.brutto, ">>>,>>>,>>>,>>9") + lnldelimeter + po_nr + lnldelimeter + po_source + lnldelimeter + to_string(vat1, "->,>>>,>>>,>>>,>>9.99") + lnldelimeter + to_string(vat2, "->,>>>,>>>,>>>,>>9.99") + lnldelimeter + to_string(((op_list.add_vat - 1) * 100) , "->>9.99") + lnldelimeter + bl_amount_add_vat
+
+        # Rd, 25/7/2025
+        # po_nr -> op_list.po_nr
+        str3_list.str = bl_descript + lnldelimeter + arr_date + lnldelimeter + bl_qty + lnldelimeter + d_unit + lnldelimeter + \
+                            bl_price + lnldelimeter + bl_amount + lnldelimeter + c_exrate + lnldelimeter + bl_balance + lnldelimeter + \
+                            op_list.remark + lnldelimeter + op_list.konto + lnldelimeter + to_string(op_list.disc, "->>9.99") + lnldelimeter + \
+                            to_string(op_list.disc2, "->>9.99") + lnldelimeter + to_string(op_list.vat, "->>9.99") + lnldelimeter + \
+                            to_string(op_list.disc_value, "->>>,>>>,>>>,>>9") + lnldelimeter + to_string(op_list.disc2_value, "->>>,>>>,>>>,>>9") + \
+                            lnldelimeter + to_string(op_list.epreis0, ">>,>>>,>>>,>>>,>>9") + lnldelimeter + bl_vat + lnldelimeter + \
+                            to_string(op_list.artnr, ">>>>>>>9") + lnldelimeter + to_string(op_list.brutto, ">>>,>>>,>>>,>>9") + lnldelimeter + \
+                            op_list.po_nr + lnldelimeter + po_source + lnldelimeter + to_string(vat1, "->,>>>,>>>,>>>,>>9.99") + lnldelimeter + \
+                            to_string(vat2, "->,>>>,>>>,>>>,>>9.99") + lnldelimeter + to_string(((op_list.add_vat - 1) * 100) , "->>9.99") + lnldelimeter + bl_amount_add_vat
         str3 = Str3()
         str3_data.append(str3)
 

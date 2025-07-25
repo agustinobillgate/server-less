@@ -1,0 +1,58 @@
+{
+    "Gl_acct": {
+        "read": [
+            "fibukonto",
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Gl_jouhdr": {
+        "read": [],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "flogical",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Mathis": {
+        "read": [
+            "asset",
+            "name",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fa_artikel": {
+        "read": [
+            "nr",
+            "katnr",
+            "anz_depn",
+            "book_wert",
+            "subgrp",
+            "credit_fibu",
+            "debit_fibu",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fa_grup": {
+        "read": [
+            "credit_fibu",
+            "debit_fibu",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fa_kateg": {
+        "read": [
+            "nutzjahr",
+            "methode",
+            "_recid"
+        ],
+        "write": []
+    }
+}
