@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 25/7/2025
+# gitlab: 586
+# rmBuff -> rmbuff
+# if not available rml return
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -54,6 +59,11 @@ def ba_plan_create_wlist_prevbl(rml_data:[Rml], from_date:date):
         Rmbuff =  create_buffer("Rmbuff",Bk_raum)
 
         rml = query(rml_data, filters=(lambda rml: rml.raum.lower()  == (curr_rm).lower()  and rml.nr == bk_reser.resstatus), first=True)
+
+        # Rd 25/7/2025
+        # if not available, return
+        if rml is None:
+            return
         j = (bk_reser.datum - from_date).days
         k = (bk_reser.bis_datum - from_date).days
 
@@ -126,8 +136,8 @@ def ba_plan_create_wlist_prevbl(rml_data:[Rml], from_date:date):
                 rml.blocked[i - 1] = 1
 
         for rmbuff in db_session.query(Rmbuff).filter(
-                 (rmBuff.lu_raum == (curr_rm).lower())).order_by(Rmbuff._recid).all():
-            create_wlist1(bk_reser.raum, rmBuff.raum)
+                 (Rmbuff.lu_raum == (curr_rm).lower())).order_by(Rmbuff._recid).all():
+            create_wlist1(bk_reser.raum, rmbuff.raum)
 
 
     def create_wlist2(parent_rm:string, curr_rm:string):
@@ -153,6 +163,11 @@ def ba_plan_create_wlist_prevbl(rml_data:[Rml], from_date:date):
         Childrm =  create_buffer("Childrm",Bk_raum)
 
         rml = query(rml_data, filters=(lambda rml: rml.raum.lower()  == (curr_rm).lower()  and rml.nr == bk_reser.resstatus), first=True)
+        # Rd 25/7/2025
+        # if not available, return
+        if rml is None:
+            return
+ 
         j = (bk_reser.datum - from_date).days
         k = (bk_reser.bis_datum - from_date).days
 
@@ -225,11 +240,11 @@ def ba_plan_create_wlist_prevbl(rml_data:[Rml], from_date:date):
                 rml.blocked[i - 1] = 1
 
         childrm = db_session.query(Childrm).filter(
-                 (childRM.raum == (curr_rm).lower())).first()
+                 (Childrm.raum == (curr_rm).lower())).first()
 
         for rmbuff in db_session.query(Rmbuff).filter(
-                 (rmBuff.raum == childRM.lu_raum)).order_by(Rmbuff._recid).all():
-            create_wlist2(bk_reser.raum, rmBuff.raum)
+                 (rmbuff.raum == childrm.lu_raum)).order_by(Rmbuff._recid).all():
+            create_wlist2(bk_reser.raum, rmbuff.raum)
 
 
     bk_reser_obj_list = {}
@@ -251,10 +266,13 @@ def ba_plan_create_wlist_prevbl(rml_data:[Rml], from_date:date):
         create_wlist1(bk_reser.raum, bk_reser.raum)
 
         childrm = db_session.query(Childrm).filter(
-                 (childRM.raum == bk_reser.raum)).first()
-
-        for rmbuff in db_session.query(Rmbuff).filter(
-                 (rmBuff.raum == childRM.lu_raum)).order_by(Rmbuff._recid).all():
-            create_wlist2(bk_reser.raum, rmBuff.raum)
+                 (Childrm.raum == bk_reser.raum)).first()
+        
+        # Rd, 25/7/2025
+        # if available
+        if childrm:
+            for rmbuff in db_session.query(Rmbuff).filter(
+                    (Rmbuff.raum == childrm.lu_raum)).order_by(Rmbuff._recid).all():
+                create_wlist2(bk_reser.raum, rmbuff.raum)
 
     return generate_output()
