@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 25/7/2025
+# gitlab: 587
+# lower case Veranstalteranschrift
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -120,7 +124,12 @@ def main_fs_create_fslbl(b1_resnr:int, b1_resline:int, bk_veran_recid:int, rsvso
     fsl.veranstalteranschrift[1] = bk_func.veranstalteranschrift[1]
     fsl.veranstalteranschrift[2] = bk_func.veranstalteranschrift[2]
     fsl.veranstalteranschrift[3] = bk_func.veranstalteranschrift[3]
-    fsl.veranstalteranschrift[4] = bk_func.Veranstalteranschrift[4]
+
+    # Rd, 25/7/2025
+    # lower case
+    # fsl.veranstalteranschrift[4] = bk_func.Veranstalteranschrift[4]
+    fsl.veranstalteranschrift[4] = bk_func.veranstalteranschrift[4]
+    
     fsl.v_kontaktperson[0] = bk_func.v_kontaktperson[0]
     fsl.v_telefon = bk_func.v_telefon
     fsl.v_telefax = bk_func.v_telefax
