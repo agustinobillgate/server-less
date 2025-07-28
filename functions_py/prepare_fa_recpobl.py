@@ -91,6 +91,11 @@ def prepare_fa_recpobl(docu_nr:string, user_init:string, dept_nr:int):
 
     fa_ordheader = get_cache (Fa_ordheader, {"order_nr": [(eq, docu_nr)]})
 
+    # Rd 28/7/2025
+    # if not available , return
+    if fa_ordheader is None:
+        return generate_output()
+
     if fa_ordheader:
         t_faordheader = T_faordheader()
         t_faordheader_data.append(t_faordheader)

@@ -1,5 +1,26 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 25/7/2025
+# gitlab:817
+# payload:
+# {
+#     "request": {
+#         "pvILanguage": 1,
+#         "mainGrp": 0,
+#         "sorttype": 0,
+#         "mattype": 0,
+#         "fromLager": 1,
+#         "toLager": 2,
+#         "fromArt": 1100001,
+#         "toArt": 3990079,
+#         "fromDate": "07/28/2025",
+#         "toDate": "07/28/2025",
+#         "inputUserkey": "95EE44CBF839764A7690C157AC66C9C902905E01",
+#         "inputUsername": "it",
+#         "hotel_schema": "qcserverless3"
+#     }
+# }
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -178,6 +199,10 @@ def stock_translist_btn_gobl(main_grp:int, sorttype:int, mattype:int, from_lager
         t_list_data.clear()
 
         l_lager = get_cache (L_lager, {"lager_nr": [(eq, from_lager)]})
+        if l_lager is None:
+            return
+            
+
         t_lager = 0
         qty =  to_decimal("0")
         val =  to_decimal("0")
@@ -191,69 +216,89 @@ def stock_translist_btn_gobl(main_grp:int, sorttype:int, mattype:int, from_lager
         l_op_obj_list = {}
         l_op = L_op()
         l_artikel = L_artikel()
-        for l_op.pos, l_op.artnr, l_op.anzahl, l_op.warenwert, l_op.datum, l_op._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.zwkum, l_artikel._recid in db_session.query(L_op.pos, L_op.artnr, L_op.anzahl, L_op.warenwert, L_op.datum, L_op._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.zwkum, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
-                 (L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.op_art == 4) & (L_op.herkunftflag == 1) & (L_op.loeschflag <= 1)).order_by(L_op.pos, L_artikel.bezeich).all():
-            if l_op_obj_list.get(l_op._recid):
-                continue
-            else:
-                l_op_obj_list[l_op._recid] = True
+        # Rd 28/7/2025
+        # for l_op.pos, l_op.artnr, l_op.anzahl, l_op.warenwert, l_op.datum, l_op._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.zwkum, l_artikel._recid in db_session.query(L_op.pos, L_op.artnr, L_op.anzahl, L_op.warenwert, L_op.datum, L_op._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.zwkum, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
+        #          (L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.op_art == 4) & (L_op.herkunftflag == 1) & (L_op.loeschflag <= 1)).order_by(L_op.pos, L_artikel.bezeich).all():
+        
+        l_op_list = db_session.query(L_op).filter(
+            (L_op.lager_nr == l_lager.lager_nr) &
+            (L_op.datum >= from_date) &
+            (L_op.datum <= to_date) &
+            (L_op.artnr >= from_art) &
+            (L_op.artnr <= to_art) &
+            (L_op.op_art == 4) &
+            (L_op.herkunftflag == 1) &
+            (L_op.loeschflag <= 1)
+        ).order_by(L_op.pos).all()
 
-            if t_lager == 0:
-                t_lager = l_op.pos
+        for l_op in l_op_list:
+            l_artikel = db_session.query(L_artikel).filter(
+                L_artikel.artnr == l_op.artnr
+            ).order_by(L_artikel.bezeich).first()
 
-            if t_lager != l_op.pos and t_qty != 0:
-                t_list = T_list()
-                t_list_data.append(t_list)
+            if l_artikel:
+                    
+                if l_op_obj_list.get(l_op._recid):
+                    continue
+                else:
+                    l_op_obj_list[l_op._recid] = True
 
-                curr_nr = curr_nr + 1
-                t_list.nr = curr_nr
-                t_list.bezeich = "Total"
-                t_list.qty =  to_decimal(qty)
-                t_list.val =  to_decimal(val)
-                t_list.t_qty =  to_decimal(t_qty)
-                t_list.t_val =  to_decimal(t_val)
-                qty =  to_decimal("0")
-                val =  to_decimal("0")
-                t_qty =  to_decimal("0")
-                t_val =  to_decimal("0")
-                t_lager = l_op.pos
+                if t_lager == 0:
+                    t_lager = l_op.pos
 
-            t_list = query(t_list_data, filters=(lambda t_list: t_list.f_lager == l_lager.lager_nr and t_list.t_lager == l_op.pos and to_int(t_list.artnr) == l_artikel.artnr), first=True)
+                if t_lager != l_op.pos and t_qty != 0:
+                    t_list = T_list()
+                    t_list_data.append(t_list)
 
-            if not t_list:
+                    curr_nr = curr_nr + 1
+                    t_list.nr = curr_nr
+                    t_list.bezeich = "Total"
+                    t_list.qty =  to_decimal(qty)
+                    t_list.val =  to_decimal(val)
+                    t_list.t_qty =  to_decimal(t_qty)
+                    t_list.t_val =  to_decimal(t_val)
+                    qty =  to_decimal("0")
+                    val =  to_decimal("0")
+                    t_qty =  to_decimal("0")
+                    t_val =  to_decimal("0")
+                    t_lager = l_op.pos
 
-                l_store = get_cache (L_lager, {"lager_nr": [(eq, l_op.pos)]})
-                t_list = T_list()
-                t_list_data.append(t_list)
+                t_list = query(t_list_data, filters=(lambda t_list: t_list.f_lager == l_lager.lager_nr and t_list.t_lager == l_op.pos and to_int(t_list.artnr) == l_artikel.artnr), first=True)
 
-                curr_nr = curr_nr + 1
-                t_list.nr = curr_nr
-                t_list.f_lager = l_lager.lager_nr
-                t_list.t_lager = l_op.pos
-                t_list.artnr = to_string(l_op.artnr, "9999999")
+                if not t_list:
 
+                    l_store = get_cache (L_lager, {"lager_nr": [(eq, l_op.pos)]})
+                    t_list = T_list()
+                    t_list_data.append(t_list)
 
-                t_list.bezeich = l_artikel.bezeich
-
-                if t_qty == 0:
-                    t_list.f_bezeich = l_lager.bezeich
-                    t_list.t_bezeich = l_store.bezeich
-
-            if l_op.datum == to_date:
-                t_list.qty =  to_decimal(t_list.qty) + to_decimal(l_op.anzahl)
-                t_list.val =  to_decimal(t_list.val) + to_decimal(l_op.warenwert)
-                qty =  to_decimal(qty) + to_decimal(l_op.anzahl)
-                val =  to_decimal(val) + to_decimal(l_op.warenwert)
-                d_qty =  to_decimal(d_qty) + to_decimal(l_op.anzahl)
-                d_val =  to_decimal(d_val) + to_decimal(l_op.warenwert)
+                    curr_nr = curr_nr + 1
+                    t_list.nr = curr_nr
+                    t_list.f_lager = l_lager.lager_nr
+                    t_list.t_lager = l_op.pos
+                    t_list.artnr = to_string(l_op.artnr, "9999999")
 
 
-            t_list.t_qty =  to_decimal(t_list.t_qty) + to_decimal(l_op.anzahl)
-            t_list.t_val =  to_decimal(t_list.t_val) + to_decimal(l_op.warenwert)
-            t_qty =  to_decimal(t_qty) + to_decimal(l_op.anzahl)
-            t_val =  to_decimal(t_val) + to_decimal(l_op.warenwert)
-            m_qty =  to_decimal(m_qty) + to_decimal(l_op.anzahl)
-            m_val =  to_decimal(m_val) + to_decimal(l_op.warenwert)
+                    t_list.bezeich = l_artikel.bezeich
+
+                    if t_qty == 0:
+                        t_list.f_bezeich = l_lager.bezeich
+                        t_list.t_bezeich = l_store.bezeich
+
+                if l_op.datum == to_date:
+                    t_list.qty =  to_decimal(t_list.qty) + to_decimal(l_op.anzahl)
+                    t_list.val =  to_decimal(t_list.val) + to_decimal(l_op.warenwert)
+                    qty =  to_decimal(qty) + to_decimal(l_op.anzahl)
+                    val =  to_decimal(val) + to_decimal(l_op.warenwert)
+                    d_qty =  to_decimal(d_qty) + to_decimal(l_op.anzahl)
+                    d_val =  to_decimal(d_val) + to_decimal(l_op.warenwert)
+
+
+                t_list.t_qty =  to_decimal(t_list.t_qty) + to_decimal(l_op.anzahl)
+                t_list.t_val =  to_decimal(t_list.t_val) + to_decimal(l_op.warenwert)
+                t_qty =  to_decimal(t_qty) + to_decimal(l_op.anzahl)
+                t_val =  to_decimal(t_val) + to_decimal(l_op.warenwert)
+                m_qty =  to_decimal(m_qty) + to_decimal(l_op.anzahl)
+                m_val =  to_decimal(m_val) + to_decimal(l_op.warenwert)
 
         if t_qty != 0:
             t_list = T_list()

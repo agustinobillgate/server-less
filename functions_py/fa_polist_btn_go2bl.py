@@ -95,6 +95,24 @@ def fa_polist_btn_go2bl(from_date:date, to_date:date, billdate:date, stat_order:
     elif stat_order == 0 and not all_supp:
 
         fa_ordheader_obj_list = {}
+        filters = [
+            Fa_ordheader.activeflag == 0
+        ]
+
+        if from_date is not None:
+            filters.append(Fa_ordheader.order_date >= from_date)
+
+        if to_date is not None:
+            filters.append(Fa_ordheader.order_date <= to_date)
+
+        if billdate is not None:
+            filters.append(Fa_ordheader.expected_delivery >= billdate)
+
+        if lnumber is not None:
+            filters.append(Fa_ordheader.supplier_nr == lnumber)
+
+        results = db_session.query(Fa_ordheader).filter(*filters).order_by(Fa_ordheader._recid).all()
+
         for fa_ordheader, l_lieferant in db_session.query(Fa_ordheader, L_lieferant).join(L_lieferant,(L_lieferant.lief_nr == Fa_ordheader.supplier_nr)).filter(
                  (Fa_ordheader.order_date >= from_date) & (Fa_ordheader.order_date <= to_date) & (Fa_ordheader.activeflag == 0) & (Fa_ordheader.supplier_nr == lnumber) & (Fa_ordheader.expected_delivery >= billdate)).order_by(Fa_ordheader._recid).all():
             w_list = query(w_list_data, (lambda w_list: w_list.nr == fa_ordheader.currency), first=True)

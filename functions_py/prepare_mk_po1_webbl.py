@@ -53,7 +53,12 @@ def prepare_mk_po1_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr
         nonlocal t_parameters, t_waehrung, t_l_order, t_l_orderhdr
         nonlocal t_parameters_data, t_waehrung_data, t_l_order_data, t_l_orderhdr_data
 
-        return {"local_nr": local_nr, "billdate": billdate, "zeroprice_flag": zeroprice_flag, "deptname": deptname, "supplier": supplier, "curr_liefnr": curr_liefnr, "p_222": p_222, "p_234": p_234, "p_266": p_266, "pos": pos, "t_amount": t_amount, "currency_add_first": currency_add_first, "currency_screen_value": currency_screen_value, "msg_str": msg_str, "p_1093": p_1093, "p_464": p_464, "p_220": p_220, "docunr": docunr, "t-waehrung": t_waehrung_data, "t-l-order": t_l_order_data, "t-l-orderhdr": t_l_orderhdr_data, "t-parameters": t_parameters_data}
+        return {"local_nr": local_nr, "billdate": billdate, "zeroprice_flag": zeroprice_flag, "deptname": deptname, "supplier": supplier, 
+                "curr_liefnr": curr_liefnr, "p_222": p_222, "p_234": p_234, "p_266": p_266, 
+                "pos": pos, "t_amount": t_amount, "currency_add_first": currency_add_first, 
+                "currency_screen_value": currency_screen_value, "msg_str": msg_str, 
+                "p_1093": p_1093, "p_464": p_464, "p_220": p_220, "docunr": docunr, 
+                "t-waehrung": t_waehrung_data, "t-l-order": t_l_order_data, "t-l-orderhdr": t_l_orderhdr_data, "t-parameters": t_parameters_data}
 
     def new_po_number():
 
@@ -219,6 +224,9 @@ def prepare_mk_po1_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr
         pass
 
     l_orderhdr = get_cache (L_orderhdr, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, docunr)]})
+    if l_orderhdr is None:
+        return generate_output()
+    
     t_l_orderhdr = T_l_orderhdr()
     t_l_orderhdr_data.append(t_l_orderhdr)
 

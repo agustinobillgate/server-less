@@ -1,0 +1,45 @@
+{
+    "L_lieferant": {
+        "read": [
+            "firma",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fa_ordheader": {
+        "read": [
+            "currency",
+            "dept_nr",
+            "order_nr",
+            "order_date",
+            "order_type",
+            "released_date",
+            "created_date",
+            "printed",
+            "expected_delivery",
+            "modified_date",
+            "released_flag",
+            "supplier_nr",
+            "activeflag",
+            "order_desc",
+            "order_name",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fa_op": {
+        "read": [
+            "lscheinnr",
+            "warenwert",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fa_order": {
+        "read": [
+            "order_amount",
+            "_recid"
+        ],
+        "write": []
+    }
+}
