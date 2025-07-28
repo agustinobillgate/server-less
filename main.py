@@ -626,6 +626,12 @@ update_field_mapping = {
     # "cashless_flag":["cashlessFlag"],
     # "output_Ok_Flag":["outputOkFlag"],
 
+    #vhpIA/correctCoverDept
+    "orig_fpax": "origFpax",
+    "orig_bpax": "origBpax",
+    "orig_pax": "origPax",
+    "avail_h_umsatz":"availHUmsatz",
+
   
    
 
