@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 28/7/2025
+# gitlab: 556
+# payload:
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -124,7 +128,10 @@ def ins_storerequest_create_op_listbl(out_list_data:[Out_list], op_list_data:[Op
 
     l_artikel = get_cache (L_artikel, {"artnr": [(eq, s_artnr)]})
 
-    if l_artikel.betriebsnr > 0:
+    # Rd 28/7/2025
+    # add if available
+    # if l_artikel.betriebsnr > 0:
+    if l_artikel and l_artikel.betriebsnr > 0:
         op_list1_data.clear()
         oh_ok = create_op_list1(l_artikel.betriebsnr, qty, oh_ok)
 

@@ -1,6 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------
 # Rd, 19/7/25
+# gitlab: 956
 #-----------------------------------------
 
 
@@ -206,8 +207,53 @@ def ar_printsoa1_1_webbl(show_type:int, bof_month:date, eof_month:date, param_ar
                     debt_obj_list = {}
                     debt = Debitor()
                     artikel = Artikel()
-                    for debt.gastnr, debt.rechnr, debt.betriebsnr, debt._recid, debt.rgdatum, debt.vesrcod, debt.artnr, debt.counter, debt.debref, debt.saldo, debt.vesrdep, debt.gastnrmember, debt.zahlkonto, debt.opart, artikel.artart, artikel.artnr, artikel.mwst_code, artikel._recid in db_session.query(debt.gastnr, debt.rechnr, debt.betriebsnr, debt._recid, debt.rgdatum, debt.vesrcod, debt.artnr, debt.counter, debt.debref, debt.saldo, debt.vesrdep, debt.gastnrmember, debt.zahlkonto, debt.opart, Artikel.artart, Artikel.artnr, Artikel.mwst_code, Artikel._recid).join(Artikel,(Artikel.artnr == debt.artnr) & (Artikel.artart == 2) & (Artikel.departement == 0)).filter(
-                             (debt.rechnr == soabuff.rechnr) & (debt.gastnr == soabuff.gastnr) & (debt.betriebsnr == soabuff.dptnr) & (debt.opart <= 1) & (soabuff.saldo != 0) & (debt.zahlkonto == 0) & (debt._recid != soa_list.arrecid)).order_by(debt._recid).all():
+
+                    # Rd 28/7/2025
+                    # requery
+                    # for debt.gastnr, debt.rechnr, debt.betriebsnr, debt._recid, debt.rgdatum, debt.vesrcod, debt.artnr, debt.counter, debt.debref, debt.saldo, debt.vesrdep, debt.gastnrmember, debt.zahlkonto, debt.opart, artikel.artart, artikel.artnr, artikel.mwst_code, artikel._recid in db_session.query(debt.gastnr, debt.rechnr, debt.betriebsnr, debt._recid, debt.rgdatum, debt.vesrcod, debt.artnr, debt.counter, debt.debref, debt.saldo, debt.vesrdep, debt.gastnrmember, debt.zahlkonto, debt.opart, Artikel.artart, Artikel.artnr, Artikel.mwst_code, Artikel._recid).join(Artikel,(Artikel.artnr == debt.artnr) & (Artikel.artart == 2) & (Artikel.departement == 0)).filter(
+                    #          (debt.rechnr == soabuff.rechnr) & (debt.gastnr == soabuff.gastnr) & (debt.betriebsnr == soabuff.dptnr) & (debt.opart <= 1) & (soabuff.saldo != 0) & (debt.zahlkonto == 0) & (debt._recid != soa_list.arrecid)).order_by(debt._recid).all():
+                    results = db_session.query(
+                        Debitor.gastnr,
+                        Debitor.rechnr,
+                        Debitor.betriebsnr,
+                        Debitor._recid,
+                        Debitor.rgdatum,
+                        Debitor.vesrcod,
+                        Debitor.artnr,
+                        Debitor.counter,
+                        Debitor.debref,
+                        Debitor.saldo,
+                        Debitor.vesrdep,
+                        Debitor.gastnrmember,
+                        Debitor.zahlkonto,
+                        Debitor.opart,
+                        Artikel.artart,
+                        Artikel.artnr,
+                        Artikel.mwst_code,
+                        Artikel._recid
+                    ).join(
+                        Artikel,
+                        and_(
+                            Artikel.artnr == Debitor.artnr,
+                            Artikel.artart == 2,
+                            Artikel.departement == 0
+                        )
+                    ).filter(
+                        Debitor.rechnr == soabuff.rechnr,
+                        Debitor.gastnr == soabuff.gastnr,
+                        Debitor.betriebsnr == soabuff.dptnr,
+                        Debitor.opart <= 1,
+                        soabuff.saldo != 0,  # Note: this is a value, not a column — ok if it's a literal check
+                        Debitor.zahlkonto == 0,
+                        Debitor._recid != soa_list.arrecid
+                    ).order_by(Debitor._recid).all()
+
+                    for row in results:
+                        (
+                            gastnr, rechnr, betriebsnr, recid, rgdatum, vesrcod, artnr,
+                            counter, debref, saldo, vesrdep, gastnrmember, zahlkonto,
+                            opart, artart, a_artnr, mwst_code, a_recid
+                        ) = row
                         if debt_obj_list.get(debt._recid):
                             continue
                         else:

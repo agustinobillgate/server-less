@@ -2,20 +2,67 @@
 #-----------------------------------------
 # Rd, 18/7/25
 # gitlab #977
-# bad gateway/lama
+# bad gateway/lama->for each buffer -> snapshot
 #-----------------------------------------
-
-
 from functions.additional_functions import *
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import or_, and_, not_
 from functions.get_room_breakdown import get_room_breakdown
 from models import Htparam, Zimkateg, Genstat, Res_line, Reservation, Arrangement, Bill_line, Zimmer, Queasy
 
+
 def safe_divide(numerator, denominator):
     numerator, denominator = to_decimal(numerator), to_decimal(denominator)
-    return (numerator / denominator * to_decimal("100")) if denominator != 0 else to_decimal("0")
+    return (numerator / denominator) if denominator not in (0, None) else to_decimal("0")
+
+
+
+def filter_query(
+    data_list: List[Type], 
+    filters: Callable[[Type], bool] = None, 
+    sort_by: Optional[List[Tuple[str, bool]]] = None,
+    first: bool = False,
+    last: bool = False,
+    curr_data: Type = None
+) -> Union[Type, List[Type], None]:
+    if not data_list:
+        return None if first or last else []
+
+    if first or last and not filters:
+        return data_list[0] if first else data_list[-1]
+
+    if filters:
+        data_list = list(filter(filters, data_list))
+    
+    if not data_list:
+        return None if first or last else []
+
+    if sort_by:
+        class SortWrapper:
+            def __init__(self, value):
+                self.value = value
+            def __lt__(self, other):
+                return self.value > other.value
+            def __eq__(self, other):
+                return self.value == other.value
+
+        def sort_key(obj):
+            key = []
+            for field, descending in sort_by:
+                val = getattr(obj, field, None)
+                if isinstance(val, str):
+                    val = val.lower()
+                key.append(val if not descending else SortWrapper(val))
+            return tuple(key)
+
+        data_list.sort(key=sort_key)
+
+    if first:
+        return data_list[0]
+    if last:
+        return data_list[-1]
+
+    return data_list
 
 
 def rm_fbyroomtype_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_year:int, ex_tent:bool, ex_comp:bool):
@@ -124,28 +171,9 @@ def rm_fbyroomtype_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_yea
 
         if to_date >= ci_date:
 
-            recs = db_session.query(Res_line).filter(
-                    (
-                        (
-                            (Res_line.resstatus <= 13)
-                            & ~(Res_line.resstatus.in_([4, 8, 9, 10, 12]))
-                            & (Res_line.active_flag <= 1)
-                            & (Res_line.ankunft <= to_date)
-                            & (Res_line.abreise >= fr_date)
-                        )
-                        |
-                        (
-                            (Res_line.resstatus == 8)
-                            & (Res_line.active_flag == 2)
-                            & (Res_line.ankunft == ci_date)
-                            & (Res_line.abreise == ci_date)
-                        )
-                    )
-                    & (Res_line.gastnr > 0)
-                    & (Res_line.l_zuordnung[inc_value(2)] == 0)
-                ).order_by(Res_line.resnr, Res_line.reslinnr.desc()).all()
-            print("CreateBrowse, nRecs:", len(recs))
-            for res_line in recs:
+            for res_line in db_session.query(Res_line).filter(
+                     (((Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.active_flag <= 1) & (not_ (Res_line.ankunft > to_date)) & (not_ (Res_line.abreise < fr_date)))) | ((Res_line.resstatus == 8) & (Res_line.active_flag == 2) & (Res_line.ankunft == ci_date) & (Res_line.abreise == ci_date)) & (Res_line.gastnr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resnr, Res_line.reslinnr.desc()).all():
+
                 reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
 
                 zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
@@ -196,8 +224,6 @@ def rm_fbyroomtype_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_yea
 
                     if res_line.abreise < datum2:
                         datum2 = res_line.abreise
-
-                    # Rd, 21/7/2025    
                     for datum in date_range(datum1,datum2) :
                         net_lodg =  to_decimal("0")
                         curr_i = curr_i + 1
@@ -237,275 +263,123 @@ def rm_fbyroomtype_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_yea
 
 
                                 output_list.revenue =  to_decimal(output_list.revenue) + to_decimal(net_lodg)
-    
+
+
     def create_browse1():
-        nonlocal output_list_data, Output_list, db_session
-        nonlocal fr_date, to_date, ci_date, ex_tent, ex_comp
+
+        nonlocal output_list_data, output_list1_data, black_list, counter, ci_date, curr_date, tot_rm, trm, tot_rev, trev, trev1, trm1, loopi, htparam, zimkateg, genstat, res_line, reservation, arrangement, bill_line, zimmer, queasy
+        nonlocal sum_month, fr_date, to_date, to_year, ex_tent, ex_comp
+        nonlocal boutput, boutput1
+
+
+        nonlocal output_list, output_list1, boutput, boutput1
+        nonlocal output_list_data, output_list1_data
+
+        datum:date = None
+        datum1:date = None
+        datum2:date = None
+        tdate:date = None
+        fdate:date = None
+        tot_breakfast:Decimal = to_decimal("0.0")
+        tot_lunch:Decimal = to_decimal("0.0")
+        tot_dinner:Decimal = to_decimal("0.0")
+        tot_other:Decimal = to_decimal("0.0")
         curr_i:int = 0
-        # Use dictionary for fast lookup of (zikatnr, datum)
-        output_index = {}
+        net_lodg:Decimal = to_decimal("0.0")
+        fnet_lodg:Decimal = to_decimal("0.0")
+        tot_rmrev:Decimal = to_decimal("0.0")
+        tot_vat:Decimal = to_decimal("0.0")
+        tot_service:Decimal = to_decimal("0.0")
+        do_it:bool = False
+        for res_line in db_session.query(Res_line).filter(
+                 (((Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.active_flag <= 1) & (not_ (Res_line.ankunft > to_date)) & (not_ (Res_line.abreise < fr_date)))) | ((Res_line.resstatus == 8) & (Res_line.active_flag == 2) & (Res_line.ankunft == ci_date) & (Res_line.abreise == ci_date)) & (Res_line.gastnr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resnr, Res_line.reslinnr.desc()).all():
+            
+            reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-        # Step 1: Query filtered Res_line rows
-        recs = db_session.query(Res_line).filter(
-            and_(
-                or_(
-                    and_(
-                        Res_line.resstatus <= 13,
-                        Res_line.resstatus.notin_([4, 8, 9, 10, 12]),
-                        Res_line.active_flag <= 1,
-                        Res_line.ankunft <= to_date,
-                        Res_line.abreise >= fr_date,
-                    ),
-                    and_(
-                        Res_line.resstatus == 8,
-                        Res_line.active_flag == 2,
-                        Res_line.ankunft == ci_date,
-                        Res_line.abreise == ci_date,
-                    )
-                ),
-                Res_line.gastnr > 0,
-                Res_line.l_zuordnung[inc_value(2)] == 0
-            )
-        ).order_by(
-            Res_line.resnr,
-            Res_line.reslinnr.desc()
-        ).all()
+            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
 
-        print("Createbrowse1:", len(recs))
+            if zimkateg:
+                do_it = True
 
-        for res_line in recs:
-            do_it = False
+                if do_it and res_line.resstatus == 8 and res_line.ankunft == ci_date and res_line.abreise == ci_date:
 
-            zimkateg = get_cache(Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
-            if not zimkateg:
-                continue
+                    arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
 
-            do_it = True
+                    bill_line = get_cache (Bill_line, {"departement": [(eq, 0)],"artnr": [(eq, arrangement.argt_artikelnr)],"bill_datum": [(eq, ci_date)],"massnr": [(eq, res_line.resnr)],"billin_nr": [(eq, res_line.reslinnr)]})
+                    do_it = None != bill_line
 
-            if res_line.resstatus == 8 and res_line.ankunft == ci_date and res_line.abreise == ci_date:
-                arrangement = get_cache(Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
-                if arrangement:
-                    bill_line = get_cache(Bill_line, {
-                        "departement": [(eq, 0)],
-                        "artnr": [(eq, arrangement.argt_artikelnr)],
-                        "bill_datum": [(eq, ci_date)],
-                        "massnr": [(eq, res_line.resnr)],
-                        "billin_nr": [(eq, res_line.reslinnr)]
-                    })
-                    do_it = bill_line is not None
-                else:
-                    do_it = False
+                zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
 
-            zimmer = get_cache(Zimmer, {"zinr": [(eq, res_line.zinr)]})
-            if do_it and zimmer:
-                queasy = get_cache(Queasy, {
-                    "key": [(eq, 14)],
-                    "char1": [(eq, res_line.zinr)],
-                    "date1": [(le, fr_date - timedelta(days=1))],
-                    "date2": [(ge, fr_date - timedelta(days=1))]
-                })
+                if do_it and zimmer:
 
-                if zimmer.sleeping:
-                    if queasy and queasy.number3 == res_line.gastnr:
-                        do_it = False
-                else:
-                    if not queasy or queasy.number3 == res_line.gastnr:
-                        do_it = False
+                    queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
 
-            if ex_tent and res_line.resstatus == 3:
-                continue
+                    if zimmer.sleeping:
 
-            if ex_comp and res_line.gratis != 0:
-                continue
+                        if queasy and queasy.number3 == res_line.gastnr:
+                            do_it = False
+                    else:
 
-            if not do_it:
-                continue
-
-            datum1 = max(fr_date, res_line.ankunft)
-            datum2 = min(to_date, res_line.abreise)
-
-            print("Datum1-2:", datum1, datum2)
-
-            datum = datum1
-            while datum <= datum2:
-                if datum != res_line.abreise:
-                    curr_i += 1
-                    net_lodg = to_decimal("0")
-
-                    # room breakdown logic is skipped
-                    # if res_line.zipreis > 0:
-                    #     fnet_lodg, net_lodg, ..., = get_output(...)
-
-                    if net_lodg is None:
-                        net_lodg = to_decimal("0")
-
-                    if res_line.resstatus not in (11, 13) and not res_line.zimmerfix:
-                        key = (res_line.zikatnr, datum)
-
-                        if key not in output_index:
-                            output_list = Output_list()
-                            output_list.zikatnr = res_line.zikatnr
-                            output_list.datum = datum
-                            output_list.roomtype = zimkateg.kurzbez
-                            output_list_data.append(output_list)
-                            output_index[key] = output_list
+                        if queasy and queasy.number3 != res_line.gastnr:
+                            pass
                         else:
-                            output_list = output_index[key]
+                            do_it = False
 
-                        output_list.room += res_line.zimmeranz
-                        output_list.revenue = to_decimal(output_list.revenue) + net_lodg
+                if ex_tent:
 
-                datum += timedelta(days=1)
+                    if res_line.resstatus == 3:
+                        continue
 
+                if ex_comp:
 
-    # def create_browse1():
+                    if res_line.gratis != 0:
+                        continue
 
-    #     nonlocal output_list_data, output_list1_data, black_list, counter, ci_date, curr_date, tot_rm, trm, tot_rev, trev, trev1, trm1, loopi, htparam, zimkateg, genstat, res_line, reservation, arrangement, bill_line, zimmer, queasy
-    #     nonlocal sum_month, fr_date, to_date, to_year, ex_tent, ex_comp
-    #     nonlocal boutput, boutput1
+                if do_it:
+                    datum1 = fr_date
 
+                    if res_line.ankunft > datum1:
+                        datum1 = res_line.ankunft
+                    datum2 = to_date
 
-    #     nonlocal output_list, output_list1, boutput, boutput1
-    #     nonlocal output_list_data, output_list1_data
+                    if res_line.abreise < datum2:
+                        datum2 = res_line.abreise
+                    for datum in date_range(datum1,datum2) :
+                        net_lodg =  to_decimal("0")
+                        curr_i = curr_i + 1
 
-    #     datum:date = None
-    #     datum1:date = None
-    #     datum2:date = None
-    #     tdate:date = None
-    #     fdate:date = None
-    #     tot_breakfast:Decimal = to_decimal("0.0")
-    #     tot_lunch:Decimal = to_decimal("0.0")
-    #     tot_dinner:Decimal = to_decimal("0.0")
-    #     tot_other:Decimal = to_decimal("0.0")
-    #     curr_i:int = 0
-    #     net_lodg:Decimal = to_decimal("0.0")
-    #     fnet_lodg:Decimal = to_decimal("0.0")
-    #     tot_rmrev:Decimal = to_decimal("0.0")
-    #     tot_vat:Decimal = to_decimal("0.0")
-    #     tot_service:Decimal = to_decimal("0.0")
-    #     do_it:bool = False
+                        if datum == res_line.abreise:
+                            pass
+                        else:
+                            net_lodg =  to_decimal("0")
+                            tot_breakfast =  to_decimal("0")
+                            tot_lunch =  to_decimal("0")
+                            tot_dinner =  to_decimal("0")
+                            tot_other =  to_decimal("0")
+                            tot_rmrev =  to_decimal("0")
+                            tot_vat =  to_decimal("0")
+                            tot_service =  to_decimal("0")
 
-    #     # for res_line in db_session.query(Res_line).filter(
-    #     #          (((Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.active_flag <= 1) & (not_ (Res_line.ankunft > to_date)) & (not_ (Res_line.abreise < fr_date)))) | ((Res_line.resstatus == 8) & (Res_line.active_flag == 2) & (Res_line.ankunft == ci_date) & (Res_line.abreise == ci_date)) & (Res_line.gastnr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resnr, Res_line.reslinnr.desc()).all():
+                            if res_line.zipreis > 0:
+                                fnet_lodg, net_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, tot_vat, tot_service = get_output(get_room_breakdown(res_line._recid, datum, curr_i, fr_date))
 
-    #     recs = db_session.query(Res_line).filter(
-    #                 and_(
-    #                     or_(
-    #                         and_(
-    #                             Res_line.resstatus <= 13,
-    #                             Res_line.resstatus.notin_([4, 8, 9, 10, 12]),
-    #                             Res_line.active_flag <= 1,
-    #                             Res_line.ankunft <= to_date,
-    #                             Res_line.abreise >= fr_date,
-    #                         ),
-    #                         and_(
-    #                             Res_line.resstatus == 8,
-    #                             Res_line.active_flag == 2,
-    #                             Res_line.ankunft == ci_date,
-    #                             Res_line.abreise == ci_date,
-    #                         )
-    #                     ),
-    #                     Res_line.gastnr > 0,
-    #                     Res_line.l_zuordnung[inc_value(2)] == 0
-    #                 )
-    #             ).order_by(
-    #                 Res_line.resnr,
-    #                 Res_line.reslinnr.desc()
-    #             ).all()
-    #     print("Createbrowse1:", len(recs))
-    #     for res_line in recs:
-    #         reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                            if net_lodg == None:
+                                net_lodg =  to_decimal("0")
 
-    #         zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
+                            if res_line.resstatus != 11 and res_line.resstatus != 13 and not res_line.zimmerfix:
+                                output_list = query(output_list_data, filters=(lambda output_list: output_list.zikatnr == res_line.zikatnr and output_list.datum == datum), first=True)
+                                if output_list is None:
+                                    output_list = Output_list()
+                                    output_list.zikatnr = res_line.zikatnr
+                                    output_list.datum = datum
+                                    output_list.roomtype = zimkateg.kurzbez
+                                    output_list_data.append(output_list)
 
+                                output_list.room = output_list.room + res_line.zimmeranz
+                                output_list.revenue =  to_decimal(output_list.revenue) + to_decimal(net_lodg)
+                                
+                              
 
-    #         if zimkateg:
-    #             do_it = True
-
-    #             if do_it and res_line.resstatus == 8 and res_line.ankunft == ci_date and res_line.abreise == ci_date:
-
-    #                 arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
-
-    #                 bill_line = get_cache (Bill_line, {"departement": [(eq, 0)],"artnr": [(eq, arrangement.argt_artikelnr)],"bill_datum": [(eq, ci_date)],"massnr": [(eq, res_line.resnr)],"billin_nr": [(eq, res_line.reslinnr)]})
-    #                 do_it = None != bill_line
-
-    #             zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
-
-    #             if do_it and zimmer:
-
-    #                 queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
-
-    #                 if zimmer.sleeping:
-
-    #                     if queasy and queasy.number3 == res_line.gastnr:
-    #                         do_it = False
-    #                 else:
-
-    #                     if queasy and queasy.number3 != res_line.gastnr:
-    #                         pass
-    #                     else:
-    #                         do_it = False
-
-    #             if ex_tent:
-
-    #                 if res_line.resstatus == 3:
-    #                     continue
-
-    #             if ex_comp:
-
-    #                 if res_line.gratis != 0:
-    #                     continue
-
-    #             if do_it:
-    #                 datum1 = fr_date
-
-    #                 if res_line.ankunft > datum1:
-    #                     datum1 = res_line.ankunft
-    #                 datum2 = to_date
-
-    #                 if res_line.abreise < datum2:
-    #                     datum2 = res_line.abreise
-
-    #                 print("Datum1-2:", datum1, datum2)
-    #                 for datum in date_range(datum1,datum2) :
-    #                     net_lodg =  to_decimal("0")
-    #                     curr_i = curr_i + 1
-
-    #                     if datum == res_line.abreise:
-    #                         pass
-    #                     else:
-    #                         net_lodg =  to_decimal("0")
-    #                         tot_breakfast =  to_decimal("0")
-    #                         tot_lunch =  to_decimal("0")
-    #                         tot_dinner =  to_decimal("0")
-    #                         tot_other =  to_decimal("0")
-    #                         tot_rmrev =  to_decimal("0")
-    #                         tot_vat =  to_decimal("0")
-    #                         tot_service =  to_decimal("0")
-
-    #                         # if res_line.zipreis > 0:
-    #                         #     fnet_lodg, net_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, tot_vat, tot_service = get_output(get_room_breakdown(res_line._recid, datum, curr_i, fr_date))
-
-    #                         if net_lodg == None:
-    #                             net_lodg =  to_decimal("0")
-
-    #                         if res_line.resstatus != 11 and res_line.resstatus != 13 and not res_line.zimmerfix:
-
-    #                             output_list = query(output_list_data, filters=(lambda output_list: output_list.zikatnr == res_line.zikatnr and output_list.datum == datum), first=True)
-
-    #                             if not output_list:
-    #                                 output_list = Output_list()
-    #                                 output_list_data.append(output_list)
-
-    #                                 output_list.zikatnr = res_line.zikatnr
-    #                                 output_list.datum = datum
-    #                                 output_list.roomtype = zimkateg.kurzbez
-
-
-    #                             output_list.room = output_list.room + res_line.zimmeranz
-    #                             output_list.revenue =  to_decimal(output_list.revenue) + to_decimal(net_lodg)
-
-    
 
     def create_browse2():
 
@@ -728,66 +602,69 @@ def rm_fbyroomtype_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_yea
     if sum_month == False:
 
         if fr_date < ci_date:
-            print("create_browse")
             create_browse()
         else:
-            print("create_browse111")
             create_browse1()
 
-        for output_list in query(output_list_data, sort_by=[("datum",False),("zikatnr",False)]):
+        
+        output_list_snapshot = query(output_list_data, sort_by=[("datum", False), ("zikatnr", False)]).copy()
 
-            if curr_date == None:
+        curr_date = None  # Make sure this is defined before the loop
+
+        for output_list in output_list_snapshot:
+            if curr_date is None:
+                # First group header (new date section)
                 boutput = Boutput()
-                boutput_data.append(boutput)
-
-                counter = counter + 1
+                counter += 1
                 boutput.counter = counter
                 boutput.roomtype = to_string(output_list.datum, "99/99/9999")
-
-            elif curr_date != None and curr_date != output_list.datum:
-                boutput = Boutput()
                 boutput_data.append(boutput)
 
-                counter = counter + 1
+            elif curr_date != output_list.datum:
+                # Print TOTAL for previous group
+                boutput = Boutput()
+                counter += 1
                 boutput.counter = counter
                 boutput.datum = curr_date
                 boutput.str_datum = to_string(curr_date, "99/99/9999")
                 boutput.roomtype = "TOTAL"
                 boutput.room = tot_rm
-                boutput.revenue =  to_decimal(tot_rev)
-                # Rd, 21/7/25, divide none/zero
-                # boutput.avrg_rev =  to_decimal(tot_rev) / to_decimal(tot_rm)
-                boutput.avrg_rev =  safe_divide(tot_rev , tot_rm)
-                tot_rm =  to_decimal("0")
-                tot_rev =  to_decimal("0")
+                boutput.revenue = to_decimal(tot_rev)
+                boutput.avrg_rev = safe_divide(tot_rev, tot_rm)
                 boutput.str_room = to_string(boutput.room, ">>>,>>9")
                 boutput.str_revenue = to_string(boutput.revenue, "->>>,>>>,>>>,>>9.99")
                 boutput.str_avrg = to_string(boutput.avrg_rev, "->>>,>>>,>>>,>>9.99")
-
-
-                boutput = Boutput()
                 boutput_data.append(boutput)
 
-                counter = counter + 1
+                # Reset totals
+                tot_rm = to_decimal("0")
+                tot_rev = to_decimal("0")
+
+                # Add blank spacer row
+                boutput = Boutput()
+                counter += 1
                 boutput.counter = counter
-
-
-                boutput = Boutput()
                 boutput_data.append(boutput)
 
-                counter = counter + 1
+                # Add new group header
+                boutput = Boutput()
+                counter += 1
                 boutput.counter = counter
                 boutput.roomtype = to_string(output_list.datum, "99/99/9999")
+                boutput_data.append(boutput)
+
+            # Update current group date
+            curr_date = output_list.datum
 
 
             counter = counter + 1
             output_list.counter = counter
+
+            # Rd, 28/7/2025
+            # safe_divide
             # output_list.avrg_rev =  to_decimal(output_list.revenue) / to_decimal(output_list.room)
-            output_list.avrg_rev = (
-                to_decimal(output_list.revenue) / to_decimal(output_list.room)
-                if to_decimal(output_list.room) not in (0, None)
-                else Decimal("0")
-            )
+            output_list.avrg_rev =  safe_divide(output_list.revenue, output_list.room)
+
             output_list.str_room = to_string(output_list.room, ">>>,>>9")
             output_list.str_revenue = to_string(output_list.revenue, "->>>,>>>,>>>,>>9.99")
             output_list.str_avrg = to_string(output_list.avrg_rev, "->>>,>>>,>>>,>>9.99")
@@ -796,7 +673,6 @@ def rm_fbyroomtype_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_yea
             tot_rev =  to_decimal(tot_rev) + to_decimal(output_list.revenue)
             trm =  to_decimal(trm) + to_decimal(output_list.room)
             trev =  to_decimal(trev) + to_decimal(output_list.revenue)
-
 
         boutput = Boutput()
         boutput_data.append(boutput)
@@ -809,8 +685,10 @@ def rm_fbyroomtype_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_yea
         boutput.room = tot_rm
         boutput.revenue =  to_decimal(tot_rev)
 
+        # Rd, 28/7/2025
+        # safe_divide
         # boutput.avrg_rev =  to_decimal(tot_rev) / to_decimal(tot_rm)
-        boutput.avrg_rev =  safe_divide(tot_rev , tot_rm)
+        boutput.avrg_rev =  safe_divide(tot_rev, tot_rm)
         tot_rm =  to_decimal("0")
         tot_rev =  to_decimal("0")
         boutput.str_room = to_string(boutput.room, ">>>,>>9")
@@ -826,14 +704,17 @@ def rm_fbyroomtype_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_yea
         boutput.roomtype = "Grand TOTAL"
         boutput.room = trm
         boutput.revenue =  to_decimal(trev)
+        # Rd, 28/7/2025
+        # safe_divide
         # boutput.avrg_rev =  to_decimal(trev) / to_decimal(trm)
-        boutput.avrg_rev =  safe_divide(tot_rev , tot_rm)
-        
+        boutput.avrg_rev =  safe_divide(trev, trm)
+
         boutput.str_room = to_string(boutput.room, ">>>,>>9")
         boutput.str_revenue = to_string(boutput.revenue, "->>>,>>>,>>>,>>9.99")
         boutput.str_avrg = to_string(boutput.avrg_rev, "->>>,>>>,>>>,>>9.99")
 
     elif sum_month :
+
         if to_year <= get_year(ci_date):
             create_browse2()
         else:
@@ -857,7 +738,6 @@ def rm_fbyroomtype_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_yea
         counter = counter + 1
         boutput1.counter = counter
         boutput1.roomtype = "TOTAL"
-
 
         for loopi in range(1,12 + 1) :
             boutput1.room[loopi - 1] = trm1[loopi - 1]

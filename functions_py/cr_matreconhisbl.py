@@ -2,7 +2,19 @@
 #-----------------------------------------
 # Rd 23/7/2025
 # gitlab: 659
-# 
+# payload:
+# {
+#     "request": {
+#         "toDate": "09/30/24",
+#         "lagerNo": 0,
+#         "fromMain": 3,
+#         "toMain": 3,
+#         "sortType": 1,
+#         "inputUserkey": "95EE44CBF839764A7690C157AC66C9C902905E01",
+#         "inputUsername": "it",
+#         "hotel_schema": "qcserverless3"
+#     }
+# }
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal

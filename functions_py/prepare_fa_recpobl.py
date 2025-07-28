@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 28/7/2025
+#
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -90,6 +93,11 @@ def prepare_fa_recpobl(docu_nr:string, user_init:string, dept_nr:int):
                 tot_amount =  to_decimal(tot_amount) + to_decimal(tfa_order.order_amount)
 
     fa_ordheader = get_cache (Fa_ordheader, {"order_nr": [(eq, docu_nr)]})
+
+    # Rd 28/7/2025
+    # if not available , return
+    if fa_ordheader is None:
+        return generate_output()
 
     if fa_ordheader:
         t_faordheader = T_faordheader()

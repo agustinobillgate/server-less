@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------
+# Rd 28/7/2025
+# gitlab: 272
+# abreise & ankunft -> None, 
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -108,8 +112,28 @@ def ar_subledger_create_age_list1abl(incl:bool, t_artnr:int, t_dept:int, from_na
                     ar_list.arrecid = debt._recid
 
     debitor_obj_list = {}
-    for debitor, gast in db_session.query(Debitor, Gast).join(Gast,(Gast.gastnr == Debitor.gastnr)).filter(
-             ((to_int(Debitor._recid).in_(list(set([ar_list.arrecid for ar_list in ar_list_data])))))).order_by(Gast.name, Debitor.gastnr, Debitor.debref, Debitor.rgdatum, Debitor.rechnr).all():
+
+    # Rd 28/7/2025
+    # simpler for each find first
+    # for debitor, gast in db_session.query(Debitor, Gast).join(Gast,(Gast.gastnr == Debitor.gastnr)).filter(
+    #          ((to_int(Debitor._recid).in_(list(set([ar_list.arrecid for ar_list in ar_list_data])))))).order_by(Gast.name, Debitor.gastnr, Debitor.debref, Debitor.rgdatum, Debitor.rechnr).all():
+
+    recid_list = [
+        int(ar.arrecid) for ar in ar_list_data
+        if ar.arrecid is not None and str(ar.arrecid).isdigit()
+    ]
+
+    # Step 2: Query debitor and gast using INNER JOIN, filtered by recid_list
+    results = (
+        db_session.query(Debitor, Gast)
+        .join(Gast, Gast.gastnr == Debitor.gastnr)
+        .filter(Debitor._recid.in_(recid_list))
+        .order_by(Gast.name, Debitor.gastnr, Debitor.debref, Debitor.rgdatum, Debitor.rechnr)
+        .all()
+    )
+
+    # Step 3: Iterate over valid pairs (mimicking DO block)
+    for debitor, gast in results:
         if debitor_obj_list.get(debitor._recid):
             continue
         else:
@@ -188,10 +212,22 @@ def ar_subledger_create_age_list1abl(incl:bool, t_artnr:int, t_dept:int, from_na
         age_list.dept = debitor.betriebsnr
         age_list.rid = debitor._recid
         age_list.gname = gname
-        age_list.ankunft = ankunft
-        age_list.abreise = abreise
+
+        if ankunft is not None:
+            age_list.ankunft = ankunft
+
+        if abreise is not None:
+            age_list.abreise = abreise
+
         age_list.ttl =  to_decimal(debitor.vesrdep)
-        age_list.stay = (abreise - ankunft).days
+
+        # Rd, 28/7/2025
+        # tambah nama table
+        # age_list.stay = (abreise - ankunft).days
+        if abreise is not None and ankunft is not None:
+            age_list.stay = (abreise - ankunft).days
+
+        
         age_list.voucher = voucherno
         age_list.remarks = debitor.vesrcod
         age_list.company = gast.name + ", " + gast.vorname1 +\

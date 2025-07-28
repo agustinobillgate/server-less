@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 28/7/2025
+#
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_artikel, Bediener, L_bestand, Gl_acct
@@ -38,8 +41,16 @@ def s_storerequest_create_op_listbl(op_list_artnr:int, op_list_fuellflag:int, op
     sys_user = get_cache (Bediener, {"nr": [(eq, op_list_fuellflag)]})
 
     l_bestand = get_cache (L_bestand, {"artnr": [(eq, op_list_artnr)],"lager_nr": [(eq, curr_lager)]})
-    s_bezeich = l_art.bezeich
-    s_username = sys_user.username
+
+    # Rd 28/7/2025
+    # if available
+    if l_art:
+        s_bezeich = l_art.bezeich
+
+    # Rd 28/7/2025
+    # if available
+    if sys_user:
+        s_username = sys_user.username
 
     if l_bestand:
         s_onhand =  to_decimal(l_bestand.anz_anf_best) + to_decimal(l_bestand.anz_eingang) - to_decimal(l_bestand.anz_ausgang)

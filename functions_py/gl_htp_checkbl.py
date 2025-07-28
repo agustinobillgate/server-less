@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 28/7/2025
+# feldtyp -> feldtype
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -101,28 +104,35 @@ def gl_htp_checkbl(pvilanguage:int, htp_number:int, htgrp_number:int, intval:int
         nonlocal pvilanguage, htp_number, htgrp_number, intval, decval, dateval, logval, charval, user_init, i, d, l, dd, s
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, htp_number)]})
+        # Rd 28/7/2025
+        # if available
+        if htparam is None:
+            return generate_output()
 
-        if htparam.feldtyp == 1:
+        # Rd 28/7/2025
+        # if htparam.feldtyp == 1:
+        if htparam and htparam.feldtype == 1:
             htparam.finteger = intval
             wert = to_string(htparam.finteger)
 
-        elif htparam.feldtyp == 2:
+        elif htparam and htparam.feldtype == 2:
             htparam.fdecimal =  to_decimal(decval)
             wert = to_string(htparam.fdecimal)
 
-        elif htparam.feldtyp == 3:
+        elif htparam and htparam.feldtype == 3:
             htparam.fdate = dateval
             wert = to_string(htparam.fdate)
 
-        elif htparam.feldtyp == 4:
+        elif htparam and htparam.feldtype == 4:
             htparam.flogical = logval
             wert = to_string(htparam.flogical)
             logv = htparam.flogical
             flag = True
 
-        elif htparam.feldtyp == 5:
+        elif htparam and htparam.feldtype == 5:
             htparam.fchar = charval
             wert = to_string(htparam.fchar)
+
         htparam.lupdate = get_current_date()
         htparam.fdefault = user_init + " - " + to_string(get_current_time_in_seconds(), "HH:mm:SS")
         pass

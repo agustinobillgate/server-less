@@ -626,6 +626,16 @@ update_field_mapping = {
     # "cashless_flag":["cashlessFlag"],
     # "output_Ok_Flag":["outputOkFlag"],
 
+    #vhpIA/correctCoverDept
+    "orig_fpax": "origFpax",
+    "orig_bpax": "origBpax",
+    "orig_pax": "origPax",
+    "avail_h_umsatz":"availHUmsatz",
+
+    "rej_id":"rejId",
+    "path_lst":"pathLst",
+    "did":"DID",
+
   
    
 
@@ -791,6 +801,13 @@ update_table_name("vhpENG","egReprequestcancelOpenQuery1","copyrequest","copyReq
 
 #update 1.0.0.44 (23-Juli-2025)
 update_table_name("vhpPC","prInsPrepare","ins-list","insList")
+
+#update 1.0.0.45 (28-Juli-2025)
+update_table_name("vhpFA","prChgPrepare1","t-waehrung","tWaehrung")
+update_table_name("vhpFA","prChgPrepare1","t-parameters","tParameters")
+update_table_name("vhpFA","prChgPrepare1","t-l-orderhdr","tLOrderhdr")
+update_table_name("vhpFA","prChgPrepare1","t-l-artikel","tLArtikel")
+
 
 def get_function_version(module_name, function_name, file_path):
     # file_path  = "/var/task/functions/" + function_name + ".py"
@@ -1556,6 +1573,10 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                             try:
                                 print("Calling getAttr:", function_name)   
                                 obj = getattr(module, function_name)
+
+
+                                # Rd 28/7/2025
+                                input_data = {str(k).lower(): v for k, v in input_data.items()}
                                 update_input_format(obj,input_data)
                                 # print("Start Call:", function_name)  
                                 output_data =  obj(**input_data)

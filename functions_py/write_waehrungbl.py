@@ -1,5 +1,51 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------
+# Rd 28/7/2025
+# gitlab: 950 
+# payload:
+# {
+#     "request": {
+#         "caseType": 3,
+#         "tWaehrung": {
+#             "t-waehrung": [
+#                 {
+#                     "waehrungsnr": 17,
+#                     "wabkurz": "RRP",
+#                     "bezeich": "asd",
+#                     "ankauf": "1.000",
+#                     "verkauf": "1.000",
+#                     "einheit": 1,
+#                     "geaendert": "2025-07-28"
+#                 }
+#             ]
+#         },
+#         "inputUserkey": "95EE44CBF839764A7690C157AC66C9C902905E01",
+#         "inputUsername": "it",
+#         "hotel_schema": "qcserverless3"
+#     }
+# }
+# {
+#     "request": {
+#         "caseType": 1,
+#         "tWaehrung": {
+#             "t-waehrung": [
+#                 {
+#                     "waehrungsnr": 17,
+#                     "wabkurz": "asd",
+#                     "bezeich": "asd",
+#                     "ankauf": 1,
+#                     "verkauf": 1,
+#                     "einheit": 1,
+#                     "geaendert": "2025-07-28"
+#                 }
+#             ]
+#         },
+#         "inputUserkey": "95EE44CBF839764A7690C157AC66C9C902905E01",
+#         "inputUsername": "it",
+#         "hotel_schema": "qcserverless3"
+#     }
+# }
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Waehrung, Res_line, Artikel, Htparam
