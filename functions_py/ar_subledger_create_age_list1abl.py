@@ -2,7 +2,7 @@
 #-------------------------------------------
 # Rd 28/7/2025
 # gitlab: 272
-
+# abreise & ankunft -> None, 
 #-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
