@@ -2,7 +2,7 @@
 #-----------------------------------------
 # Rd, 18/7/25
 # gitlab #977
-# bad gateway/lama
+# bad gateway/lama->for each buffer -> snapshot
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
