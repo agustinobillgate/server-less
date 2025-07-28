@@ -720,7 +720,6 @@ def rm_fbyroomtype_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_yea
         else:
             create_browse3()
 
-        print("lewat1.")
         for output_list1 in query(output_list1_data, sort_by=[("zikatnr",False)]):
             for loopi in range(1,12 + 1) :
                 counter = counter + 1
