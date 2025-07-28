@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 28/7/2025
+# if available
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -85,6 +88,10 @@ def fa_prstockin_create_list_webbl(lief_nr:int, to_date:date, docu_nr:string):
 
 
     l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, lief_nr)]})
-    create_list()
+
+    # Rd 28/7/2025
+    # if available
+    if l_lieferant:
+        create_list()
 
     return generate_output()
