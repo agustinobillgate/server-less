@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------
+# Rd 28/7/2025
+# gitlab: 280
+# tested di UI Baru
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
