@@ -713,7 +713,6 @@ update_table_name("vhpENG","egRepdurationPrepare","Categ-nm","categ-nm")
 
 
 #updated 1.0.0.32, 16-4-2025
-
 update_table_name("vhpENG","egChgReqPrepare","tFstat","tFStat")
 update_table_name("vhpENG","egChgReqPrepare","svendor","sVendor")
 update_table_name("vhpENG","egPropertyLoad","svendor","tEgProperty")

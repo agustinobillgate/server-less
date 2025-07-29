@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 29/7/2025
+# gitlab: 111
+# error konversi, # mtd_totrm = 0 mtd_act == 0 ytd_act == 0 ytd_totrm == 0
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -79,8 +83,29 @@ def nationstat_webbl(printer_nr:int, call_from:int, txt_file:string, from_month:
             room_list.bezeich = nation.kurzbez
             room_list.nationnr = nation.nationnr
 
-        for nationstat in db_session.query(Nationstat).filter(
-                 ((Nationstat.nationnr.in_(list(set([room_list.nationnr for room_list in room_list_data])))) & (Nationstat.datum >= from_date) & (Nationstat.datum <= to_date))).order_by(room_list.bezeich, Nationstat.datum).all():            room_list = query(room_list_data, (lambda room_list: (nationstat.nationnr == room_list.nationnr)), first=True)
+        
+        # Rd, 29/7/2025
+        # requery
+        # for nationstat in db_session.query(Nationstat).filter(
+        #         ((Nationstat.nationnr.in_(list(set([room_list.nationnr for room_list in room_list_data])))) & 
+        #          (Nationstat.datum >= from_date) & (Nationstat.datum <= to_date))).order_by(room_list.bezeich, Nationstat.datum).all():            
+        
+        nation_numbers = list(set([room_list.nationnr for room_list in room_list_data]))
+
+        query = db_session.query(Nationstat)
+        query = query.filter(
+            Nationstat.nationnr.in_(nation_numbers),
+            Nationstat.datum >= from_date,
+            Nationstat.datum <= to_date
+        )
+
+        query = query.order_by(Nationstat.datum)
+
+        nationstat_list = query.all()
+        for nationstat in nationstat_list:
+            # Rd, 29/7/2025
+            # indentation error
+            room_list = query(room_list_data, (lambda room_list: (nationstat.nationnr == room_list.nationnr)), first=True)
             i = get_day(nationstat.datum)
 
             total_per_day = query(total_per_day_data, filters=(lambda total_per_day: total_per_day.date_day == i), first=True)
@@ -155,7 +180,11 @@ def nationstat_webbl(printer_nr:int, call_from:int, txt_file:string, from_month:
             room_list.nationnr = nation.nationnr
 
         for nationstat in db_session.query(Nationstat).filter(
-                 ((Nationstat.nationnr.in_(list(set([room_list.nationnr for room_list in room_list_data])))) & (Nationstat.datum >= from_date) & (Nationstat.datum <= to_date))).order_by(room_list.bezeich, Nationstat.datum).all():            room_list = query(room_list_data, (lambda room_list: (nationstat.nationnr == room_list.nationnr)), first=True)
+                 ((Nationstat.nationnr.in_(list(set([room_list.nationnr for room_list in room_list_data])))) & (Nationstat.datum >= from_date) & (Nationstat.datum <= to_date))).order_by(room_list.bezeich, Nationstat.datum).all():            
+            
+            # Rd, 29/7/2025
+            # indentation error
+            room_list = query(room_list_data, (lambda room_list: (nationstat.nationnr == room_list.nationnr)), first=True)
             i = get_day(nationstat.datum)
 
             total_per_day = query(total_per_day_data, filters=(lambda total_per_day: total_per_day.date_day == i), first=True)
