@@ -528,7 +528,6 @@ update_field_mapping = {
     "res_logi":"res-logi",
     "bez_array":"bez-array",
     "amount_array":"amount-array",
-    "output_Ok_Flag":"outputOkFlag",
     "htp_help":"htp-help",
     "user_number": "user-number",
     "user_init": "user-init",
@@ -624,7 +623,6 @@ update_field_mapping = {
     # "must_print":["mustPrint"],
     # "fl_warn":["flWarn"],
     # "cashless_flag":["cashlessFlag"],
-    # "output_Ok_Flag":["outputOkFlag"],
 
     #vhpIA/correctCoverDept
     "orig_fpax": "origFpax",
@@ -1626,7 +1624,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
         # Rd, 29/7/2025, outputOfFlag -> remark krn update long process sblmnya
         # output_data["outputOkFlag"] = str(ok_flag)
         # buka remark
-        
+
         output_data["outputOkFlag"] = str(ok_flag)
         if is_existing_json == False:
             # output_data["output_Ok_Flag"] = str(ok_flag)
