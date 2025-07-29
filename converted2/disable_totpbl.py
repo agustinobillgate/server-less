@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 29/7/2025
+# gitlab: 991
+# UNIX Command
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bediener, Queasy, Res_history, Paramtext
@@ -9,7 +13,7 @@ def disable_totpbl(user_init:string, user_init_will_disable:string, userotp:stri
     prepare_cache ([Bediener, Res_history, Paramtext])
 
     result_message = ""
-    totpok = FALSE
+    totpok = False
     epoch_signature = 0
     signature_list_data = []
     secretkey:string = ""

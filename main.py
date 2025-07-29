@@ -636,10 +636,6 @@ update_field_mapping = {
     "articlebe":"articleBE",
   
    
-
-
-
-
 }
 docker_version += ".r"
 

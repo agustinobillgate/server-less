@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.48
-
+#-----------------------------------------
+# Rd 29/7/2025
+# gitlab:840
+# 
+#-----------------------------------------
 from functions.additional_functions import *
 import decimal
 from datetime import date
@@ -583,7 +587,8 @@ def pj_inhouse4_btn_go_4_cldbl(sorttype:int, from_date:date, to_date:date, curr_
 
         zkstat_obj_list = []
         for zkstat in db_session.query(Zkstat).filter(
-                 (Zkstat.datum >= from_date) & (Zkstat.datum <= to_date)).order_by(Zkstat._recid).all():
+                 (Zkstat.datum >= from_date) & 
+                 (Zkstat.datum <= to_date)).order_by(Zkstat._recid).all():
             zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == zkstat.zikatnr and zikat_list.selected), first=True)
             if not zikat_list:
                 continue
@@ -600,9 +605,10 @@ def pj_inhouse4_btn_go_4_cldbl(sorttype:int, from_date:date, to_date:date, curr_
         for genstat, reservation, guest, gmember, sourccod in db_session.query(Genstat, Reservation, Guest, Gmember, Sourccod).join(Reservation,(Reservation.resnr == Genstat.resnr)).join(Guest,(Guest.gastnr == Genstat.gastnr)).join(Gmember,(Gmember.gastnr == Genstat.gastnrmember)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).filter(
                  (Genstat.datum >= from_date) & (Genstat.datum <= to_date) & (func.lower(Genstat.zinr) >= (froom).lower()) & (func.lower(Genstat.zinr) <= (troom).lower())).order_by(Genstat.zinr, Genstat.datum, Genstat.erwachs.desc(), Gmember.name).all():
             zikat_list = query(zikat_list_list, (lambda zikat_list: zikat_list.zikatnr == genstat.zikatnr and zikat_list.selected), first=True)
+
             if not zikat_list:
                 continue
-
+            
             if genstat._recid in genstat_obj_list:
                 continue
             else:
@@ -611,261 +617,262 @@ def pj_inhouse4_btn_go_4_cldbl(sorttype:int, from_date:date, to_date:date, curr_
             if exc_depart and genstat.res_date[0] <= genstat.datum and genstat.res_date[1] == genstat.datum and genstat.resstatus == 8:
                 pass
             else:
+                print("Resnr:", res_line.resnr)
 
-                res_line = db_session.query(Res_line).filter(
-                         (Res_line.resnr == genstat.resnr) & (Res_line.reslinnr == genstat.res_int[0])).first()
+        #         res_line = db_session.query(Res_line).filter(
+        #                  (Res_line.resnr == genstat.resnr) & (Res_line.reslinnr == genstat.res_int[0])).first()
 
-                setup_list = query(setup_list_list, filters=(lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
+        #         setup_list = query(setup_list_list, filters=(lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
 
-                zimmer = db_session.query(Zimmer).filter(
-                         (Zimmer.zinr == genstat.zinr)).first()
+        #         zimmer = db_session.query(Zimmer).filter(
+        #                  (Zimmer.zinr == genstat.zinr)).first()
 
-                bill = db_session.query(Bill).filter(
-                         (Bill.resnr == genstat.resnr)).first()
-                nr = nr + 1
-                vip_flag = ""
+        #         bill = db_session.query(Bill).filter(
+        #                  (Bill.resnr == genstat.resnr)).first()
+        #         nr = nr + 1
+        #         vip_flag = ""
 
-                guestseg = db_session.query(Guestseg).filter(
-                         (Guestseg.gastnr == gmember.gastnr) & ((Guestseg.segmentcode == vipnr1) | (Guestseg.segmentcode == vipnr2) | (Guestseg.segmentcode == vipnr3) | (Guestseg.segmentcode == vipnr4) | (Guestseg.segmentcode == vipnr5) | (Guestseg.segmentcode == vipnr6) | (Guestseg.segmentcode == vipnr7) | (Guestseg.segmentcode == vipnr8) | (Guestseg.segmentcode == vipnr9))).first()
+        #         guestseg = db_session.query(Guestseg).filter(
+        #                  (Guestseg.gastnr == gmember.gastnr) & ((Guestseg.segmentcode == vipnr1) | (Guestseg.segmentcode == vipnr2) | (Guestseg.segmentcode == vipnr3) | (Guestseg.segmentcode == vipnr4) | (Guestseg.segmentcode == vipnr5) | (Guestseg.segmentcode == vipnr6) | (Guestseg.segmentcode == vipnr7) | (Guestseg.segmentcode == vipnr8) | (Guestseg.segmentcode == vipnr9))).first()
 
-                if guestseg:
+        #         if guestseg:
 
-                    segment = db_session.query(Segment).filter(
-                             (Segment.segmentcode == guestseg.segmentcode)).first()
-                    vip_flag = replace_str(segment.bezeich, " ", "")
-                cl_list = Cl_list()
-                cl_list_list.append(cl_list)
+        #             segment = db_session.query(Segment).filter(
+        #                      (Segment.segmentcode == guestseg.segmentcode)).first()
+        #             vip_flag = replace_str(segment.bezeich, " ", "")
+        #         cl_list = Cl_list()
+        #         cl_list_list.append(cl_list)
 
-                cl_list.nr = nr
-                cl_list.rmcat = zikat_list.kurzbez + setup_list.char
-                cl_list.kurzbez = zikat_list.kurzbez
-                cl_list.bezeich = zikat_list.bezeich
-                cl_list.nat = gmember.nation1
-                cl_list.resnr = genstat.resnr
-                cl_list.vip = vip_flag
-                cl_list.firstname = right_trim(gmember.vorname1, chr_unicode(10))
-                cl_list.firstname = right_trim(cl_list.firstname, chr_unicode(13))
-                cl_list.firstname = replace_str(cl_list.firstname, chr_unicode(10) , " ")
-                cl_list.lastname = right_trim(gmember.name, chr_unicode(10))
-                cl_list.lastname = right_trim(cl_list.lastname, chr_unicode(13))
-                cl_list.lastname = replace_str(cl_list.lastname, chr_unicode(10) , " ")
+        #         cl_list.nr = nr
+        #         cl_list.rmcat = zikat_list.kurzbez + setup_list.char
+        #         cl_list.kurzbez = zikat_list.kurzbez
+        #         cl_list.bezeich = zikat_list.bezeich
+        #         cl_list.nat = gmember.nation1
+        #         cl_list.resnr = genstat.resnr
+        #         cl_list.vip = vip_flag
+        #         cl_list.firstname = right_trim(gmember.vorname1, chr_unicode(10))
+        #         cl_list.firstname = right_trim(cl_list.firstname, chr_unicode(13))
+        #         cl_list.firstname = replace_str(cl_list.firstname, chr_unicode(10) , " ")
+        #         cl_list.lastname = right_trim(gmember.name, chr_unicode(10))
+        #         cl_list.lastname = right_trim(cl_list.lastname, chr_unicode(13))
+        #         cl_list.lastname = replace_str(cl_list.lastname, chr_unicode(10) , " ")
 
-                if gmember.geburtdatum1 == None:
-                    cl_list.birthdate = ""
-                else:
-                    cl_list.birthdate = to_string(gmember.geburtdatum1, "99/99/9999")
-                cl_list.rmno = genstat.zinr
-                cl_list.zipreis =  to_decimal(genstat.zipreis)
-                cl_list.arrive = genstat.res_date[0]
-                cl_list.depart = genstat.res_date[1]
-                cl_list.qty = 1
-                cl_list.a = genstat.erwachs
-                cl_list.c = genstat.kind1 + genstat.kind2 + genstat.kind3
-                cl_list.co = genstat.gratis
-                cl_list.argt = genstat.argt
-                cl_list.flight = substring(res_line.flight_nr, 11, 6)
-                cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                cl_list.ci_time = to_string(res_line.ankzeit, "HH:MM")
-                cl_list.co_time = to_string(res_line.abreisezeit, "HH:MM")
-                cl_list.paym = genstat.segmentcode
-                cl_list.created = reservation.resdat
-                cl_list.createid = reservation.useridanlage
-                cl_list.inhousedate = genstat.datum
-                cl_list.sob = sourccod.bezeich
-                cl_list.gastnr = gmember.gastnr
-                cl_list.telefon = gmember.telefon
-                cl_list.mobil_tel = gmember.mobil_telefon
-                cl_list.email = gmember.email_adr
-                cl_list.lodging =  to_decimal(genstat.logis)
-                cl_list.rechnr = bill.rechnr
-                cl_list.breakfast =  to_decimal(genstat.res_deci[1])
-                cl_list.lunch =  to_decimal(genstat.res_deci[2])
-                cl_list.dinner =  to_decimal(genstat.res_deci[3])
-                cl_list.otherev =  to_decimal(genstat.res_deci[4])
-                cl_list.night = to_string(genstat.res_date[1] - genstat.res_date[0], ">>>>9")
-                cl_list.city = gmember.wohnort
-                cl_list.keycard = to_string(res_line.betrieb_gast, ">>>>>9")
-                cl_list.etage = zimmer.etage
-                cl_list.zinr_bez = zimmer.bezeich
-
-
-                cl_list.c_zipreis = to_string(cl_list.zipreis, "->>,>>>,>>>,>>9.99")
-                cl_list.c_lodging = to_string(cl_list.lodging, "->>,>>>,>>>,>>9.99")
-                cl_list.c_breakfast = to_string(cl_list.breakfast, "->>,>>>,>>>,>>9.99")
-                cl_list.c_lunch = to_string(cl_list.lunch, "->>,>>>,>>>,>>9.99")
-                cl_list.c_dinner = to_string(cl_list.dinner, "->>,>>>,>>>,>>9.99")
-                cl_list.c_otherev = to_string(cl_list.otherev, "->>,>>>,>>>,>>9.99")
-                cl_list.c_a = to_string(cl_list.a, "9")
-                cl_list.c_c = to_string(cl_list.c, "9")
-                cl_list.c_co = to_string(cl_list.co, ">9")
-                cl_list.c_rechnr = to_string(cl_list.rechnr, ">>>>>9")
-                cl_list.c_resnr = to_string(cl_list.resnr, ">>>>>9")
-
-                if res_line.resstatus != 11 and res_line.resstatus != 13:
-                    cl_list.flag_guest = 1
+        #         if gmember.geburtdatum1 == None:
+        #             cl_list.birthdate = ""
+        #         else:
+        #             cl_list.birthdate = to_string(gmember.geburtdatum1, "99/99/9999")
+        #         cl_list.rmno = genstat.zinr
+        #         cl_list.zipreis =  to_decimal(genstat.zipreis)
+        #         cl_list.arrive = genstat.res_date[0]
+        #         cl_list.depart = genstat.res_date[1]
+        #         cl_list.qty = 1
+        #         cl_list.a = genstat.erwachs
+        #         cl_list.c = genstat.kind1 + genstat.kind2 + genstat.kind3
+        #         cl_list.co = genstat.gratis
+        #         cl_list.argt = genstat.argt
+        #         cl_list.flight = substring(res_line.flight_nr, 11, 6)
+        #         cl_list.etd = substring(res_line.flight_nr, 17, 5)
+        #         cl_list.ci_time = to_string(res_line.ankzeit, "HH:MM")
+        #         cl_list.co_time = to_string(res_line.abreisezeit, "HH:MM")
+        #         cl_list.paym = genstat.segmentcode
+        #         cl_list.created = reservation.resdat
+        #         cl_list.createid = reservation.useridanlage
+        #         cl_list.inhousedate = genstat.datum
+        #         cl_list.sob = sourccod.bezeich
+        #         cl_list.gastnr = gmember.gastnr
+        #         cl_list.telefon = gmember.telefon
+        #         cl_list.mobil_tel = gmember.mobil_telefon
+        #         cl_list.email = gmember.email_adr
+        #         cl_list.lodging =  to_decimal(genstat.logis)
+        #         cl_list.rechnr = bill.rechnr
+        #         cl_list.breakfast =  to_decimal(genstat.res_deci[1])
+        #         cl_list.lunch =  to_decimal(genstat.res_deci[2])
+        #         cl_list.dinner =  to_decimal(genstat.res_deci[3])
+        #         cl_list.otherev =  to_decimal(genstat.res_deci[4])
+        #         cl_list.night = to_string(genstat.res_date[1] - genstat.res_date[0], ">>>>9")
+        #         cl_list.city = gmember.wohnort
+        #         cl_list.keycard = to_string(res_line.betrieb_gast, ">>>>>9")
+        #         cl_list.etage = zimmer.etage
+        #         cl_list.zinr_bez = zimmer.bezeich
 
 
-                else:
-                    cl_list.flag_guest = 2
+        #         cl_list.c_zipreis = to_string(cl_list.zipreis, "->>,>>>,>>>,>>9.99")
+        #         cl_list.c_lodging = to_string(cl_list.lodging, "->>,>>>,>>>,>>9.99")
+        #         cl_list.c_breakfast = to_string(cl_list.breakfast, "->>,>>>,>>>,>>9.99")
+        #         cl_list.c_lunch = to_string(cl_list.lunch, "->>,>>>,>>>,>>9.99")
+        #         cl_list.c_dinner = to_string(cl_list.dinner, "->>,>>>,>>>,>>9.99")
+        #         cl_list.c_otherev = to_string(cl_list.otherev, "->>,>>>,>>>,>>9.99")
+        #         cl_list.c_a = to_string(cl_list.a, "9")
+        #         cl_list.c_c = to_string(cl_list.c, "9")
+        #         cl_list.c_co = to_string(cl_list.co, ">9")
+        #         cl_list.c_rechnr = to_string(cl_list.rechnr, ">>>>>9")
+        #         cl_list.c_resnr = to_string(cl_list.resnr, ">>>>>9")
 
-                bill_line_obj_list = []
-                for bill_line, buff_art in db_session.query(Bill_line, Buff_art).join(Buff_art,(Buff_art.artnr == Bill_line.artnr) & (Buff_art.departement == Bill_line.departement)).filter(
-                         (Bill_line.rechnr == bill.rechnr) & (Bill_line.betrag < 0)).order_by(Bill_line._recid).all():
-                    if bill_line._recid in bill_line_obj_list:
-                        continue
-                    else:
-                        bill_line_obj_list.append(bill_line._recid)
+        #         if res_line.resstatus != 11 and res_line.resstatus != 13:
+        #             cl_list.flag_guest = 1
 
-                    if (buff_art.artart == 2 or buff_art.artart == 5 or buff_art.artart == 6 or buff_art.artart == 7):
-                        cl_list.pay_art = cl_list.pay_art + to_string(bill_line.artnr) + ","
-                cl_list.pay_art = substring(cl_list.pay_art, 0, length(cl_list.pay_art) - 1)
 
-                nation1 = db_session.query(Nation1).filter(
-                         (Nation1.kurzbez == gmember.nation2)).first()
+        #         else:
+        #             cl_list.flag_guest = 2
 
-                if nation1:
-                    cl_list.localreg = gmember.nation2 + " - " + nation1.bezeich
+        #         bill_line_obj_list = []
+        #         for bill_line, buff_art in db_session.query(Bill_line, Buff_art).join(Buff_art,(Buff_art.artnr == Bill_line.artnr) & (Buff_art.departement == Bill_line.departement)).filter(
+        #                  (Bill_line.rechnr == bill.rechnr) & (Bill_line.betrag < 0)).order_by(Bill_line._recid).all():
+        #             if bill_line._recid in bill_line_obj_list:
+        #                 continue
+        #             else:
+        #                 bill_line_obj_list.append(bill_line._recid)
 
-                mc_guest = db_session.query(Mc_guest).filter(
-                         (Mc_guest.gastnr == gmember.gastnr)).first()
+        #             if (buff_art.artart == 2 or buff_art.artart == 5 or buff_art.artart == 6 or buff_art.artart == 7):
+        #                 cl_list.pay_art = cl_list.pay_art + to_string(bill_line.artnr) + ","
+        #         cl_list.pay_art = substring(cl_list.pay_art, 0, length(cl_list.pay_art) - 1)
 
-                if mc_guest:
-                    cl_list.memberno = mc_guest.cardnum
+        #         nation1 = db_session.query(Nation1).filter(
+        #                  (Nation1.kurzbez == gmember.nation2)).first()
 
-                    mc_types = db_session.query(Mc_types).filter(
-                             (Mc_types.nr == mc_guest.nr)).first()
+        #         if nation1:
+        #             cl_list.localreg = gmember.nation2 + " - " + nation1.bezeich
 
-                    if mc_types:
-                        cl_list.membertype = mc_types.bezeich
+        #         mc_guest = db_session.query(Mc_guest).filter(
+        #                  (Mc_guest.gastnr == gmember.gastnr)).first()
 
-                waehrung = db_session.query(Waehrung).filter(
-                         (Waehrung.waehrungsnr == res_line.betriebsnr)).first()
+        #         if mc_guest:
+        #             cl_list.memberno = mc_guest.cardnum
 
-                if waehrung:
-                    cl_list.curr = waehrung.wabkurz
+        #             mc_types = db_session.query(Mc_types).filter(
+        #                      (Mc_types.nr == mc_guest.nr)).first()
 
-                segment = db_session.query(Segment).filter(
-                         (Segment.segmentcode == genstat.segmentcode)).first()
+        #             if mc_types:
+        #                 cl_list.membertype = mc_types.bezeich
 
-                if segment:
-                    cl_list.segm = entry(0, segment.bezeich, "$$0")
+        #         waehrung = db_session.query(Waehrung).filter(
+        #                  (Waehrung.waehrungsnr == res_line.betriebsnr)).first()
 
-                if guest.karteityp != 0:
-                    cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
+        #         if waehrung:
+        #             cl_list.curr = waehrung.wabkurz
 
-                if cl_list.nat == "":
-                    cl_list.nat = "?"
+        #         segment = db_session.query(Segment).filter(
+        #                  (Segment.segmentcode == genstat.segmentcode)).first()
 
-                if genstat.resstatus == 13:
-                    cl_list.qty = 0
+        #         if segment:
+        #             cl_list.segm = entry(0, segment.bezeich, "$$0")
 
-                if incl_gcomment:
+        #         if guest.karteityp != 0:
+        #             cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-                    gbuff = db_session.query(Gbuff).filter(
-                             (Gbuff.gastnr == res_line.gastnrmember)).first()
+        #         if cl_list.nat == "":
+        #             cl_list.nat = "?"
 
-                    if gbuff:
+        #         if genstat.resstatus == 13:
+        #             cl_list.qty = 0
 
-                        if gbuff.bemerkung != None:
-                            for i in range(1,length(gbuff.bemerkung)  + 1) :
+        #         if incl_gcomment:
 
-                                if substring(gbuff.bemerkung, i - 1, 1) == chr_unicode(10):
-                                    cl_list.bemerk = cl_list.bemerk + " "
-                                else:
-                                    cl_list.bemerk = cl_list.bemerk + substring(trim(gbuff.bemerkung) , i - 1, 1)
-                    cl_list.bemerk = cl_list.bemerk + " || "
+        #             gbuff = db_session.query(Gbuff).filter(
+        #                      (Gbuff.gastnr == res_line.gastnrmember)).first()
 
-                if incl_rsvcomment:
+        #             if gbuff:
 
-                    rbuff = db_session.query(Rbuff).filter(
-                             (Rbuff.resnr == reservation.resnr)).first()
+        #                 if gbuff.bemerkung != None:
+        #                     for i in range(1,length(gbuff.bemerkung)  + 1) :
 
-                    if rbuff:
-                        for j in range(1,length(rbuff.bemerk)  + 1) :
+        #                         if substring(gbuff.bemerkung, i - 1, 1) == chr_unicode(10):
+        #                             cl_list.bemerk = cl_list.bemerk + " "
+        #                         else:
+        #                             cl_list.bemerk = cl_list.bemerk + substring(trim(gbuff.bemerkung) , i - 1, 1)
+        #             cl_list.bemerk = cl_list.bemerk + " || "
 
-                            if substring(rbuff.bemerk, j - 1, 1) == chr_unicode(10):
-                                cl_list.bemerk1 = cl_list.bemerk1 + " "
-                            else:
-                                cl_list.bemerk1 = cl_list.bemerk1 + substring(trim(rbuff.bemerk) , j - 1, 1)
-                    cl_list.bemerk = cl_list.bemerk + cl_list.bemerk1
+        #         if incl_rsvcomment:
 
-                if not incl_gcomment and not incl_rsvcomment:
-                    cl_list.bemerk = trim(replace_str(res_line.bemerk, chr_unicode(10) , " "))
+        #             rbuff = db_session.query(Rbuff).filter(
+        #                      (Rbuff.resnr == reservation.resnr)).first()
 
-                reslin_queasy = db_session.query(Reslin_queasy).filter(
-                         (func.lower(Reslin_queasy.key) == ("arrangement").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (genstat.datum >= Reslin_queasy.date1) & (genstat.datum <= Reslin_queasy.date2)).first()
+        #             if rbuff:
+        #                 for j in range(1,length(rbuff.bemerk)  + 1) :
 
-                if reslin_queasy:
+        #                     if substring(rbuff.bemerk, j - 1, 1) == chr_unicode(10):
+        #                         cl_list.bemerk1 = cl_list.bemerk1 + " "
+        #                     else:
+        #                         cl_list.bemerk1 = cl_list.bemerk1 + substring(trim(rbuff.bemerk) , j - 1, 1)
+        #             cl_list.bemerk = cl_list.bemerk + cl_list.bemerk1
 
-                    if reslin_queasy.char2 != "":
-                        cl_list.ratecode = reslin_queasy.char2
-                    else:
-                        for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
-                            str = entry(i - 1, res_line.zimmer_wunsch, ";")
+        #         if not incl_gcomment and not incl_rsvcomment:
+        #             cl_list.bemerk = trim(replace_str(res_line.bemerk, chr_unicode(10) , " "))
 
-                            if substring(str, 0, 6) == ("$CODE$").lower() :
-                                cl_list.ratecode = substring(str, 6)
-                                break
-                cl_list.pax = to_string(cl_list.a, ">9") + "/" + to_string(cl_list.c, "9") + " " + to_string(cl_list.co, "9")
+        #         reslin_queasy = db_session.query(Reslin_queasy).filter(
+        #                  (func.lower(Reslin_queasy.key) == ("arrangement").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (genstat.datum >= Reslin_queasy.date1) & (genstat.datum <= Reslin_queasy.date2)).first()
 
-                if cl_list.nat == "":
-                    cl_list.nat = "?"
-                else:
+        #         if reslin_queasy:
 
-                    nation = db_session.query(Nation).filter(
-                             (Nation.kurzbez == cl_list.nat)).first()
+        #             if reslin_queasy.char2 != "":
+        #                 cl_list.ratecode = reslin_queasy.char2
+        #             else:
+        #                 for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
+        #                     str = entry(i - 1, res_line.zimmer_wunsch, ";")
 
-                    if nation:
-                        cl_list.nation = nation.bezeich
+        #                     if substring(str, 0, 6) == ("$CODE$").lower() :
+        #                         cl_list.ratecode = substring(str, 6)
+        #                         break
+        #         cl_list.pax = to_string(cl_list.a, ">9") + "/" + to_string(cl_list.c, "9") + " " + to_string(cl_list.co, "9")
 
-                zinr_list = query(zinr_list_list, filters=(lambda zinr_list: zinr_list.zinr == genstat.zinr and zinr_list.resnr == res_line.resnr and zinr_list.reslinnr == res_line.reslinnr and zinr_list.datum == genstat.datum), first=True)
+        #         if cl_list.nat == "":
+        #             cl_list.nat = "?"
+        #         else:
 
-                if not zinr_list:
-                    zinr_list = Zinr_list()
-                    zinr_list_list.append(zinr_list)
+        #             nation = db_session.query(Nation).filter(
+        #                      (Nation.kurzbez == cl_list.nat)).first()
 
-                    zinr_list.resnr = res_line.resnr
-                    zinr_list.reslinnr = res_line.reslinnr
-                    zinr_list.zinr = genstat.zinr
-                    zinr_list.datum = genstat.datum
+        #             if nation:
+        #                 cl_list.nation = nation.bezeich
 
-                    queasy = db_session.query(Queasy).filter(
-                             (Queasy.key == 14) & (Queasy.char1 == genstat.zinr) & (Queasy.date1 <= curr_date) & (Queasy.date2 >= curr_date)).first()
+        #         zinr_list = query(zinr_list_list, filters=(lambda zinr_list: zinr_list.zinr == genstat.zinr and zinr_list.resnr == res_line.resnr and zinr_list.reslinnr == res_line.reslinnr and zinr_list.datum == genstat.datum), first=True)
 
-                    if zimmer.sleeping and genstat.resstatus != 13:
+        #         if not zinr_list:
+        #             zinr_list = Zinr_list()
+        #             zinr_list_list.append(zinr_list)
 
-                        if not queasy:
-                            tot_rm = tot_rm + 1
+        #             zinr_list.resnr = res_line.resnr
+        #             zinr_list.reslinnr = res_line.reslinnr
+        #             zinr_list.zinr = genstat.zinr
+        #             zinr_list.datum = genstat.datum
 
-                        elif queasy and queasy.number3 != genstat.gastnr:
-                            tot_rm = tot_rm + 1
+        #             queasy = db_session.query(Queasy).filter(
+        #                      (Queasy.key == 14) & (Queasy.char1 == genstat.zinr) & (Queasy.date1 <= curr_date) & (Queasy.date2 >= curr_date)).first()
 
-                    if zimmer.sleeping and genstat.zipreis > 0 and genstat.resstatus != 13:
-                        z = z + 1
+        #             if zimmer.sleeping and genstat.resstatus != 13:
 
-                        if not queasy:
-                            tot_payrm = tot_payrm + 1
+        #                 if not queasy:
+        #                     tot_rm = tot_rm + 1
 
-                        elif queasy and queasy.number3 != genstat.gastnr:
-                            tot_payrm = tot_payrm + 1
+        #                 elif queasy and queasy.number3 != genstat.gastnr:
+        #                     tot_rm = tot_rm + 1
 
-                    elif not zimmer.sleeping:
+        #             if zimmer.sleeping and genstat.zipreis > 0 and genstat.resstatus != 13:
+        #                 z = z + 1
 
-                        if queasy and queasy.number3 != genstat.gastnr and genstat.zipreis > 0:
-                            tot_rm = tot_rm + 1
-                        inactive = inactive + 1
-                tot_a = tot_a + genstat.erwachs
-                tot_c = tot_c + genstat.kind1 + genstat.kind2 + genstat.kind3
-                tot_co = tot_co + genstat.gratis
-                tot_keycard = tot_keycard + res_line.betrieb_gast
+        #                 if not queasy:
+        #                     tot_payrm = tot_payrm + 1
 
-            if not disp_accompany:
+        #                 elif queasy and queasy.number3 != genstat.gastnr:
+        #                     tot_payrm = tot_payrm + 1
 
-                cl_list = query(cl_list_list, filters=(lambda cl_list: cl_list.rmno == res_line.zinr and cl_list.resnr == res_line.resnr and cl_list.arrive == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
+        #             elif not zimmer.sleeping:
 
-                if cl_list:
-                    cl_list_list.remove(cl_list)
-                    pass
+        #                 if queasy and queasy.number3 != genstat.gastnr and genstat.zipreis > 0:
+        #                     tot_rm = tot_rm + 1
+        #                 inactive = inactive + 1
+        #         tot_a = tot_a + genstat.erwachs
+        #         tot_c = tot_c + genstat.kind1 + genstat.kind2 + genstat.kind3
+        #         tot_co = tot_co + genstat.gratis
+        #         tot_keycard = tot_keycard + res_line.betrieb_gast
+
+        #     if not disp_accompany:
+
+        #         cl_list = query(cl_list_list, filters=(lambda cl_list: cl_list.rmno == res_line.zinr and cl_list.resnr == res_line.resnr and cl_list.arrive == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
+
+        #         if cl_list:
+        #             cl_list_list.remove(cl_list)
+        #             pass
 
         for cl_list in query(cl_list_list, sort_by=[("nation",False),("bezeich",False)]):
 
@@ -1141,7 +1148,6 @@ def pj_inhouse4_btn_go_4_cldbl(sorttype:int, from_date:date, to_date:date, curr_
     bed_setup()
 
     if sorttype == 1:
-
         if from_date >= curr_date:
             create_inhouse()
         else:

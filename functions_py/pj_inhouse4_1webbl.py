@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 29/7/2025
+# gitlab:840
+# 
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -6,6 +11,11 @@ from datetime import date
 from functions.htpdate import htpdate
 from functions.pj_inhouse4_btn_go_4_cldbl import pj_inhouse4_btn_go_4_cldbl
 from models import Queasy, Zimkateg, Paramtext
+
+def safe_divide(numerator, denominator):
+    numerator, denominator = to_decimal(numerator), to_decimal(denominator)
+    return (numerator / denominator) if denominator not in (0, None) else to_decimal("0")
+
 
 def pj_inhouse4_1webbl(sorttype:int, from_date:date, to_date:date, froom:string, troom:string, exc_depart:bool, incl_gcomment:bool, incl_rsvcomment:bool, disp_accompany:bool, idflag:string):
 
@@ -436,8 +446,13 @@ def pj_inhouse4_1webbl(sorttype:int, from_date:date, to_date:date, froom:string,
     summary_nation_data.append(summary_nation)
 
     summary_nation.nat = "AVRG GUEST/ROOM"
-    summary_nation.adult = to_string((tot_a + tot_co) / tot_rm, ">>,>>9.99")
+    # summary_nation.adult = to_string((tot_a + tot_co) / tot_rm, ">>,>>9.99")
 
+    # Rd 29/7/2025
+    # div by 0
+    tmp_adult = 0
+    tmp_adult = safe_divide((tot_a + tot_co) , tot_rm)
+    summary_nation.adult = to_string(tmp_adult, ">>,>>9.99")
 
     summary_nation = Summary_nation()
     summary_nation_data.append(summary_nation)
