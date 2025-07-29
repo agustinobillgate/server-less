@@ -1,8 +1,4 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd 29/7/2025
-# msg-str tidak ada, sblm update dari Fitria
-#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
