@@ -854,7 +854,6 @@ class CustomJSONEncoder(json.JSONEncoder):
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
 
-
 def update_input_format(obj,input_data):
     # Update the input object if variable has "-"
     # Update date data from string into data                                      
@@ -1068,6 +1067,7 @@ def update_input_format(obj,input_data):
 
     # for param_name in input_data.keys():
     #     if not param_name in param_list(obj)
+
 
 def update_output_format(output_data):
     key_list = list(output_data.keys())
@@ -1574,9 +1574,6 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                                 print("Calling getAttr:", function_name)   
                                 obj = getattr(module, function_name)
 
-
-                                # Rd 28/7/2025
-                                input_data = {str(k).lower(): v for k, v in input_data.items()}
                                 update_input_format(obj,input_data)
                                 # print("Start Call:", function_name)  
                                 output_data =  obj(**input_data)
