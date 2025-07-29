@@ -632,7 +632,8 @@ update_field_mapping = {
     "rej_id":"rejId",
     "path_lst":"pathLst",
     "did":"DID",
-
+    "articlevhp":"articleVHP",
+    "articlebe":"articleBE",
   
    
 
@@ -683,8 +684,6 @@ update_table_name("vhpENG","egRephistorymoveBtnGo","smove","sMove")
 update_table_name("vhpSS","egStaffPrepare","dept","Dept")
 update_table_name("vhpSS","egStaffPrepare","userskill","userSkill")
 
-
-update_table_name("vhpSS","ratecodeAdmWrite","tb3buff","tb3Buff")
 update_table_name("vhpAR","soaRelease","deptno","deptNo")
 # update_table_name("vhpAR","soaRelease","DeptNo","deptNo")
 
