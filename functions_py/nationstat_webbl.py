@@ -89,9 +89,8 @@ def nationstat_webbl(printer_nr:int, call_from:int, txt_file:string, from_month:
         # for nationstat in db_session.query(Nationstat).filter(
         #         ((Nationstat.nationnr.in_(list(set([room_list.nationnr for room_list in room_list_data])))) & 
         #          (Nationstat.datum >= from_date) & (Nationstat.datum <= to_date))).order_by(room_list.bezeich, Nationstat.datum).all():            
-        
-        nation_numbers = list(set([room_list.nationnr for room_list in room_list_data]))
 
+        nation_numbers = list(set([room_list.nationnr for room_list in room_list_data]))
         query = db_session.query(Nationstat)
         query = query.filter(
             Nationstat.nationnr.in_(nation_numbers),
@@ -99,10 +98,9 @@ def nationstat_webbl(printer_nr:int, call_from:int, txt_file:string, from_month:
             Nationstat.datum <= to_date
         )
 
-        query = query.order_by(Nationstat.datum)
-
-        nationstat_list = query.all()
-        for nationstat in nationstat_list:
+        query = query.order_by(room_list.bezeich, Nationstat.datum)
+        nationstat_list = query.all()     
+        for nationstat in nationstat_list:        
             # Rd, 29/7/2025
             # indentation error
             room_list = query(room_list_data, (lambda room_list: (nationstat.nationnr == room_list.nationnr)), first=True)

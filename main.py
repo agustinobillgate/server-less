@@ -1623,7 +1623,11 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                 # print(data_string)
 
         # ------------------------------------------------------------------------------
+        # Rd, 29/7/2025, outputOfFlag -> remark krn update long process sblmnya
         # output_data["outputOkFlag"] = str(ok_flag)
+        # buka remark
+        
+        output_data["outputOkFlag"] = str(ok_flag)
         if is_existing_json == False:
             # output_data["output_Ok_Flag"] = str(ok_flag)
             if ui_request_id != "None":
