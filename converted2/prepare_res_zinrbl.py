@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 29/7/2025
+# gitlab: 1005
+# blm ada di har
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal

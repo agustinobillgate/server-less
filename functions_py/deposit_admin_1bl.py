@@ -32,6 +32,8 @@ def deposit_admin_1bl(case_type:int, depo_foreign:bool, lname:string, deposittyp
     Bresline = create_buffer("Bresline",Res_line)
     B_exrate = create_buffer("B_exrate",Exrate)
 
+    # Rd 29/7/2025
+    lname = lname.strip()
 
     db_session = local_storage.db_session
 
@@ -61,7 +63,7 @@ def deposit_admin_1bl(case_type:int, depo_foreign:bool, lname:string, deposittyp
         if lname != "":
             to_name = chr_unicode(asc(substring(lname, 0, 1)) + 1)
 
-        if lname == "":
+        if lname.strip() == "":
 
             if deposittype == 1:
 
