@@ -10,7 +10,6 @@ from models import Htparam, Bediener, Guest, Paramtext
 def arl_list_initial_itbl(inp_resname:string, user_init:string):
 
     prepare_cache ([Htparam, Bediener, Paramtext])
-
     ext_char = ""
     long_stay = 0
     ci_date = None
@@ -130,7 +129,13 @@ def arl_list_initial_itbl(inp_resname:string, user_init:string):
     htparam = get_cache (Htparam, {"paramnr": [(eq, 708)]})
     vipnr9 = htparam.finteger
 
+    # 333333333333333333333333333333333333333333333333333333333333333333333333333333333332233333330000003
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+    if bediener:
+        print("Bediener:", bediener.permissions)
+    else:
+        print("User not Found..", user_init)
+        return generate_output()
 
     if substring(bediener.permissions, 34, 1) != ("0").lower() :
         show_rate = True

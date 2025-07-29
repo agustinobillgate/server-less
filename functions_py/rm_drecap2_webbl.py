@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 29/7/2025
+# gitlab: 111
+# error konversi, # mtd_totrm = 0 mtd_act == 0 ytd_act == 0 ytd_totrm == 0
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -215,7 +219,10 @@ def rm_drecap2_webbl(pvilanguage:int, opening_date:date, from_date:date, to_date
         datum:date = None
         tot1:int = 0
         glob_tot:int = 0
-        mtd_totrm = 0 mtd_act == 0 ytd_act == 0 ytd_totrm == 0
+
+        # Rd 29/7/2025
+        # mtd_totrm = 0 mtd_act == 0 ytd_act == 0 ytd_totrm == 0
+        mtd_totrm = mtd_act = ytd_act = ytd_totrm == 0
 
         for zimmer in db_session.query(Zimmer).filter(
                  (Zimmer.sleeping)).order_by(Zimmer._recid).all():
@@ -253,7 +260,10 @@ def rm_drecap2_webbl(pvilanguage:int, opening_date:date, from_date:date, to_date
         datum:date = None
         tot1:int = 0
         glob_tot:int = 0
-        mtd_totrm = 0 mtd_act == 0 ytd_act == 0 ytd_totrm == 0
+
+        # Rd 29/7/2025
+        # mtd_totrm = 0 mtd_act == 0 ytd_act == 0 ytd_totrm == 0
+        mtd_totrm = mtd_act = ytd_act = ytd_totrm == 0
 
         for zimmer in db_session.query(Zimmer).filter(
                  (Zimmer.sleeping)).order_by(Zimmer._recid).all():
