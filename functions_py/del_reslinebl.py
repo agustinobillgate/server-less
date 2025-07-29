@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 29/7/2025
+# gitlab: 295
+# tambahan leasing, error date
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -169,9 +174,9 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
-
+    
     if (res_mode.lower()  == ("cancel").lower()  or res_mode.lower()  == ("delete").lower()):
-
+        print("Masuk..")
         res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
 
         if not res_line:
@@ -409,7 +414,8 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
             for mast_art in db_session.query(Mast_art).filter(
                      (Mast_art.resnr == resnr) & (Mast_art.reslinnr == 1)).order_by(Mast_art._recid).all():
                 db_session.delete(mast_art)
-
+        else:
+            print("tidak masuk cancel.")
         if res_mode.lower()  == ("delete").lower() :
 
             bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})

@@ -1,0 +1,15 @@
+File: ../functions_py/cr_anfcastbl.py
+Total Lines: 1339
+Database Queries Found:
+----------------------------------------
+Line 319: Query on Zkstat, Filters: None, Method: unknown
+Line 345: Query on Zinrstat, Filters: None, Method: unknown
+Line 365: Query on Outorder, Filters: None, Method: unknown
+Line 389: Query on Outorder, Filters: None, Method: unknown
+Line 411: Query on Genstat, Filters: None, Method: unknown
+Line 490: Query on Res_line, Filters: None, Method: unknown
+Line 625: Query on Kontline, Filters: None, Method: unknown
+Line 670: Query on Res_line, Filters: None, Method: unknown
+Line 890: Query on Argt_line, Filters: None, Method: unknown
+Line 1214: Query on Zimkateg, Filters: None, Method: unknown
+Line 1217: Query on Zimmer, Filters: None, Method: unknown

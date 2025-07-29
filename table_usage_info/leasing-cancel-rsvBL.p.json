@@ -1,0 +1,188 @@
+{
+    "Artikel": {
+        "read": [
+            "bezeich",
+            "artnr",
+            "fibukonto",
+            "service_code",
+            "mwst_code",
+            "prov_code",
+            "departement",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "fchar",
+            "finteger",
+            "fdate",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "number1",
+            "number2",
+            "char2",
+            "date2",
+            "date3",
+            "resnr",
+            "reslinnr",
+            "date1",
+            "logi1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "resnr",
+            "gastnr",
+            "zinr",
+            "gastnrpay",
+            "reslinnr",
+            "gastnrmember",
+            "arrangement",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Arrangement": {
+        "read": [
+            "artnr_logis",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reslin_queasy": {
+        "read": [
+            "deci1",
+            "date1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Counters": {
+        "read": [
+            "counter",
+            "counter_no",
+            "counter_bez",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "segmentcode",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest": {
+        "read": [
+            "name",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bediener": {
+        "read": [
+            "nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bill": {
+        "read": [
+            "flag",
+            "billnr",
+            "rgdruck",
+            "zinr",
+            "gastnr",
+            "resnr",
+            "reslinnr",
+            "parent_nr",
+            "name",
+            "kontakt_nr",
+            "segmentcode",
+            "datum",
+            "rechnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bill_line": {
+        "read": [
+            "bezeich",
+            "rechnr",
+            "artnr",
+            "anzahl",
+            "betrag",
+            "departement",
+            "zeit",
+            "userinit",
+            "bill_datum",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Debitor": {
+        "read": [],
+        "write": []
+    },
+    "Billjournal": {
+        "read": [
+            "artnr",
+            "anzahl",
+            "fremdwaehrng",
+            "betrag",
+            "bezeich",
+            "epreis",
+            "zeit",
+            "billjou_ref",
+            "userinit",
+            "bill_datum",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Umsatz": {
+        "read": [
+            "anzahl",
+            "betrag",
+            "artnr",
+            "datum",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Gl_jouhdr": {
+        "read": [
+            "jnr",
+            "bezeich",
+            "credit",
+            "debit",
+            "refno",
+            "datum",
+            "batch",
+            "jtype",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Gl_journal": {
+        "read": [
+            "credit",
+            "debit",
+            "jnr",
+            "userinit",
+            "zeit",
+            "bemerk",
+            "fibukonto",
+            "_recid"
+        ],
+        "write": []
+    }
+}

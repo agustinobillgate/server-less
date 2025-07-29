@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#--------------------------------------
+# Rd 29/7/2025
+# Err di def Gt -> >
+#--------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -130,6 +133,10 @@ def cr_anfcastbl(pvilanguage:int, vhp_limited:bool, dlist:string, op_type:int, p
             rev_array[j - 1] = rev_array[j - 1] + net_lodg
 
 
+    #--------------
+    # Rd 29/7/2025
+    # Err di def ini
+    #--------------
     def create_browse11():
 
         nonlocal tt_month_str_data, room_list_data, rev_list_data, sum_list_data, segm_list_data, lvcarea, rmsharer, week_list, wlist, month_str, rm_serv, foreign_rate, htl_name, htl_adr, htl_tel, out_type, dis_type, rm_occ, pax_occ, avl_rm, occ_proz, datum, ci_date, curr_day, tot_room, inactive, mm, yy, diff_one, ok, pax, rev_array, curr_date, date1, contcode, ct, room_ooo, tmp_room, paramtext, kontline, htparam, zkstat, zinrstat, zimmer, outorder, genstat, res_line, guest, reservation, arrangement, bill_line, queasy, guestseg, reslin_queasy, waehrung, guest_pr, katpreis, artikel, argt_line, zimkateg
@@ -562,7 +569,7 @@ def cr_anfcastbl(pvilanguage:int, vhp_limited:bool, dlist:string, op_type:int, p
 
                 if do_it:
 
-                    if res_line.ankunft Gt from_date:
+                    if res_line.ankunft > from_date:
                         datum1 = res_line.ankunft
                     else:
                         datum1 = from_date
@@ -1295,7 +1302,7 @@ def cr_anfcastbl(pvilanguage:int, vhp_limited:bool, dlist:string, op_type:int, p
         htl_adr = paramtext.ptexte
 
     paramtext = get_cache (Paramtext, {"txtnr": [(eq, 204)]})
-
+    print(paramtext)
     if paramtext:
         htl_tel = paramtext.ptexte
     out_type = translateExtended ("Output By : Rooms", lvcarea, "")

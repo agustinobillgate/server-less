@@ -528,7 +528,6 @@ update_field_mapping = {
     "res_logi":"res-logi",
     "bez_array":"bez-array",
     "amount_array":"amount-array",
-    "output_Ok_Flag":"outputOkFlag",
     "htp_help":"htp-help",
     "user_number": "user-number",
     "user_init": "user-init",
@@ -624,8 +623,6 @@ update_field_mapping = {
     # "must_print":["mustPrint"],
     # "fl_warn":["flWarn"],
     # "cashless_flag":["cashlessFlag"],
-    # "output_Ok_Flag":["outputOkFlag"],
-
     #vhpIA/correctCoverDept
     "orig_fpax": "origFpax",
     "orig_bpax": "origBpax",
@@ -713,7 +710,6 @@ update_table_name("vhpENG","egRepdurationPrepare","Categ-nm","categ-nm")
 
 
 #updated 1.0.0.32, 16-4-2025
-
 update_table_name("vhpENG","egChgReqPrepare","tFstat","tFStat")
 update_table_name("vhpENG","egChgReqPrepare","svendor","sVendor")
 update_table_name("vhpENG","egPropertyLoad","svendor","tEgProperty")
@@ -1624,7 +1620,10 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                 # print(data_string)
 
         # ------------------------------------------------------------------------------
+        # Rd, 29/7/2025, outputOfFlag -> remark krn update long process sblmnya
         # output_data["outputOkFlag"] = str(ok_flag)
+        # buka remark
+
         if is_existing_json == False:
             # output_data["output_Ok_Flag"] = str(ok_flag)
             if ui_request_id != "None":
@@ -1635,7 +1634,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
             retrieved_json = json.loads(existing_json_data) 
             output_data = retrieved_json
             print("ExistingData:", len(output_data))
-
+        output_data["outputOkFlag"] = str(ok_flag)
         output_data_size = len(data_string)
         ServerInfo["lendata"] = output_data_size
 

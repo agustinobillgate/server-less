@@ -1,0 +1,155 @@
+Loop and Output Function Analysis
+Generated on: 2025-07-29 13:01:05
+File: ../functions_py/cr_anfcastbl.py
+================================================================================
+
+Function: create_browse11
+==================================================
+    └─ Loop_1 (line 186) - standard
+       ├─ Target: i
+       ├─ Iterator: range(1, 12 + 1)
+
+    └─ Loop_1 (line 188) - standard
+       ├─ Target: i
+       ├─ Iterator: range(1, 31 + 1)
+
+    └─ Loop_1 (line 208) - standard
+       ├─ Target: i
+       ├─ Iterator: range(1, 12 + 1)
+
+    └─ Loop_1 (line 286) - standard
+       ├─ Target: i
+       ├─ Iterator: range(1, 12 + 1)
+
+    └─ Loop_1 (line 319) - database_all
+       ├─ Target: zkstat
+       ├─ Iterator: db_session.query(Zkstat).filter((Zkstat.datum >= curr_date) & (Zkstat.datum <= datum2)).order_by(Zkstat._recid).all()
+
+    └─ Loop_1 (line 335) - standard
+       ├─ Target: i
+       ├─ Iterator: range(1, 12 + 1)
+
+    └─ Loop_1 (line 345) - database_all
+       ├─ Target: zinrstat
+       ├─ Iterator: db_session.query(Zinrstat).filter((Zinrstat.datum >= curr_date) & (Zinrstat.datum <= datum2) & (Zinrstat.zinr == 'ooo'.lower())).order_by(Zinrstat._recid).all()
+
+    └─ Loop_1 (line 361) - standard
+       ├─ Target: loop_date
+       ├─ Iterator: date_range(from_date, to_date)
+
+        └─ Loop_2 (line 365) - database_all
+           ├─ Target: (outorder, zimmer)
+           ├─ Iterator: db_session.query(Outorder, Zimmer).join(Zimmer, (Zimmer.zinr == Outorder.zinr) & Zimmer.sleeping).filter((Outorder.gespstart <= loop_date) & (Outorder.gespende >= loop_date) & (Outorder.betriebsnr <= 1)).order_by(Outorder._recid).all()
+
+    └─ Loop_1 (line 385) - standard
+       ├─ Target: loop_date
+       ├─ Iterator: date_range(from_date, to_date)
+
+        └─ Loop_2 (line 389) - database_all
+           ├─ Target: (outorder, zimmer)
+           ├─ Iterator: db_session.query(Outorder, Zimmer).join(Zimmer, (Zimmer.zinr == Outorder.zinr) & Zimmer.sleeping).filter((Outorder.gespstart <= loop_date) & (Outorder.gespende >= loop_date) & (Outorder.betriebsnr <= 1)).order_by(Outorder._recid).all()
+
+    └─ Loop_1 (line 411) - database_all
+       ├─ Target: genstat
+       ├─ Iterator: db_session.query(Genstat).filter((Genstat.datum >= curr_date) & (Genstat.datum <= datum2) & (Genstat.zinr != '') & Genstat.res_logic[inc_value(1)]).order_by(Genstat._recid).all()
+
+    └─ Loop_1 (line 490) - database_all
+       ├─ Target: res_line
+       ├─ Iterator: db_session.query(Res_line).filter((Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.active_flag <= 1) & (Res_line.ankunft <= to_date) & (Res_line.abreise >= from_date) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.ankunft == ci_date) & (Res_line.abreise == ci_date) | (Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.abreise == ci_date)) & (Res_line.gastnr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resnr).all()
+
+        └─ Loop_2 (line 587) - standard
+           ├─ Target: datum
+           ├─ Iterator: date_range(datum1, datum2)
+
+    └─ Loop_1 (line 617) - standard
+       ├─ Target: datum
+       ├─ Iterator: date_range(from_date, to_date)
+
+        └─ Loop_2 (line 625) - database_all
+           ├─ Target: kontline
+           ├─ Iterator: db_session.query(Kontline).filter((Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all()
+
+        └─ Loop_2 (line 670) - database_all
+           ├─ Target: res_line
+           ├─ Iterator: db_session.query(Res_line).filter((Res_line.active_flag <= 1) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 3) & (Res_line.resstatus != 4) & (Res_line.resstatus != 12) & (Res_line.ankunft <= datum) & (Res_line.abreise > datum) & (Res_line.kontignr < 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all()
+
+    └─ Loop_1 (line 681) - query_function
+       ├─ Target: room_list
+       ├─ Iterator: query(room_list_data, filters=lambda room_list: room_list.tag <= 31)
+
+        └─ Loop_2 (line 682) - standard
+           ├─ Target: i
+           ├─ Iterator: range(1, 12 + 1)
+
+    └─ Loop_1 (line 694) - query_function
+       ├─ Target: room_list
+       ├─ Iterator: query(room_list_data, filters=lambda room_list: room_list.tag >= 29 and room_list.tag <= 31)
+
+        └─ Loop_2 (line 695) - standard
+           ├─ Target: i
+           ├─ Iterator: range(1, 12 + 1)
+
+    └─ Loop_1 (line 699) - standard
+       ├─ Target: i
+       ├─ Iterator: range(1, 12 + 1)
+
+
+Function: cal_lodging
+==================================================
+    └─ Loop_1 (line 890) - database_all
+       ├─ Target: argt_line
+       ├─ Iterator: db_session.query(Argt_line).filter((Argt_line.argtnr == arrangement.argtnr) & not_(Argt_line.kind2)).order_by(Argt_line._recid).all()
+
+
+Function: create_rev
+==================================================
+    └─ Loop_1 (line 1168) - standard
+       ├─ Target: i
+       ├─ Iterator: range(1, 6 + 1)
+
+    └─ Loop_1 (line 1178) - standard
+       ├─ Target: i
+       ├─ Iterator: range(1, 6 + 1)
+
+    └─ Loop_1 (line 1186) - standard
+       ├─ Target: i
+       ├─ Iterator: range(1, 6 + 1)
+
+    └─ Loop_1 (line 1196) - standard
+       ├─ Target: i
+       ├─ Iterator: range(1, 6 + 1)
+
+
+Function: sum_rooms
+==================================================
+    └─ Loop_1 (line 1214) - database_all
+       ├─ Target: zimkateg
+       ├─ Iterator: db_session.query(Zimkateg).filter(Zimkateg.verfuegbarkeit).order_by(Zimkateg._recid).all()
+
+        └─ Loop_2 (line 1217) - database_all
+           ├─ Target: zimmer
+           ├─ Iterator: db_session.query(Zimmer).filter(Zimmer.zikatnr == zimkateg.zikatnr).order_by(Zimmer._recid).all()
+
+
+Function: create_label11
+==================================================
+    └─ Loop_1 (line 1243) - standard
+       ├─ Target: i
+       ├─ Iterator: range(1, 12 + 1)
+
+
+Function: clear_shared1
+==================================================
+    └─ Loop_1 (line 1289) - query_function
+       ├─ Target: segm1_list
+       ├─ Iterator: query(segm1_list_data)
+
+
+Summary:
+Total loops: 31
+Total get_output calls: 3
+
+Loop types found:
+- standard: 17
+- database_all: 11
+- query_function: 3
