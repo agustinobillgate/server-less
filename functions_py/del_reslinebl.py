@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 29/7/2025
+# gitlab: 295
+# tambahan leasing, error date
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -169,263 +174,263 @@ def del_reslinebl(pvilanguage:int, res_mode:string, resnr:int, reslinnr:int, use
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
-    print(ci_date)
-    # if (res_mode.lower()  == ("cancel").lower()  or res_mode.lower()  == ("delete").lower()):
-    #     print("Masuk..")
-    #     res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+    
+    if (res_mode.lower()  == ("cancel").lower()  or res_mode.lower()  == ("delete").lower()):
+        print("Masuk..")
+        res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
 
-    #     if not res_line:
+        if not res_line:
 
-    #         return generate_output()
-    #     reslin_queasy = Reslin_queasy()
-    #     db_session.add(reslin_queasy)
+            return generate_output()
+        reslin_queasy = Reslin_queasy()
+        db_session.add(reslin_queasy)
 
-    #     reslin_queasy.key = "ResChanges"
-    #     reslin_queasy.resnr = res_line.resnr
-    #     reslin_queasy.reslinnr = res_line.reslinnr
-    #     reslin_queasy.date2 = get_current_date()
-    #     reslin_queasy.number2 = get_current_time_in_seconds()
+        reslin_queasy.key = "ResChanges"
+        reslin_queasy.resnr = res_line.resnr
+        reslin_queasy.reslinnr = res_line.reslinnr
+        reslin_queasy.date2 = get_current_date()
+        reslin_queasy.number2 = get_current_time_in_seconds()
 
 
-    #     reslin_queasy.char3 = to_string(res_line.ankunft) + ";" + to_string(res_line.ankunft) + ";" + to_string(res_line.abreise) + ";" + to_string(res_line.abreise) + ";" + to_string(res_line.zimmeranz) + ";" + to_string(res_line.zimmeranz) + ";" + to_string(res_line.erwachs) + ";" + to_string(res_line.erwachs) + ";" + to_string(res_line.kind1) + ";" + to_string(res_line.kind1) + ";" + to_string(res_line.gratis) + ";" + to_string(res_line.gratis) + ";" + to_string(res_line.zikatnr) + ";" + to_string(res_line.zikatnr) + ";" + to_string(res_line.zinr) + ";" + to_string(res_line.zinr) + ";" + to_string(res_line.arrangement) + ";" + to_string(res_line.arrangement) + ";" + to_string(res_line.zipreis) + ";" + to_string(res_line.zipreis) + ";" + to_string(user_init) + ";" + to_string(user_init) + ";" + to_string(get_current_date()) + ";" + to_string(get_current_date()) + ";" + to_string(res_line.name) + ";" + to_string(cancel_str) + ";" + to_string(" ") + ";" + to_string(" ") + ";"
-    #     pass
-    #     pass
+        reslin_queasy.char3 = to_string(res_line.ankunft) + ";" + to_string(res_line.ankunft) + ";" + to_string(res_line.abreise) + ";" + to_string(res_line.abreise) + ";" + to_string(res_line.zimmeranz) + ";" + to_string(res_line.zimmeranz) + ";" + to_string(res_line.erwachs) + ";" + to_string(res_line.erwachs) + ";" + to_string(res_line.kind1) + ";" + to_string(res_line.kind1) + ";" + to_string(res_line.gratis) + ";" + to_string(res_line.gratis) + ";" + to_string(res_line.zikatnr) + ";" + to_string(res_line.zikatnr) + ";" + to_string(res_line.zinr) + ";" + to_string(res_line.zinr) + ";" + to_string(res_line.arrangement) + ";" + to_string(res_line.arrangement) + ";" + to_string(res_line.zipreis) + ";" + to_string(res_line.zipreis) + ";" + to_string(user_init) + ";" + to_string(user_init) + ";" + to_string(get_current_date()) + ";" + to_string(get_current_date()) + ";" + to_string(res_line.name) + ";" + to_string(cancel_str) + ";" + to_string(" ") + ";" + to_string(" ") + ";"
+        pass
+        pass
 
-    #     bqueasy = get_cache (Queasy, {"key": [(eq, 329)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)],"logi1": [(eq, False)]})
+        bqueasy = get_cache (Queasy, {"key": [(eq, 329)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)],"logi1": [(eq, False)]})
 
-    #     if bqueasy:
-    #         get_output(leasing_cancel_rsvbl(bqueasy._recid, user_init))
-    #         pass
-    #         bqueasy.logi1 = True
+        if bqueasy:
+            get_output(leasing_cancel_rsvbl(bqueasy._recid, user_init))
+            pass
+            bqueasy.logi1 = True
 
 
-    #         pass
-    #         pass
-    #     for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
-    #         iftask = entry(i - 1, res_line.zimmer_wunsch, ";")
+            pass
+            pass
+        for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
+            iftask = entry(i - 1, res_line.zimmer_wunsch, ";")
 
-    #         if substring(iftask, 0, 10) == ("$origcode$").lower() :
-    #             origcode = substring(iftask, 10)
-    #             break
+            if substring(iftask, 0, 10) == ("$origcode$").lower() :
+                origcode = substring(iftask, 10)
+                break
 
-    #     queasy = get_cache (Queasy, {"key": [(eq, 152)]})
+        queasy = get_cache (Queasy, {"key": [(eq, 152)]})
 
-    #     if queasy:
-    #         cat_flag = True
+        if queasy:
+            cat_flag = True
 
-    #     zbuff = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
+        zbuff = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
 
-    #     if zbuff:
+        if zbuff:
 
-    #         if cat_flag:
-    #             roomnr = zbuff.typ
-    #         else:
-    #             roomnr = zbuff.zikatnr
+            if cat_flag:
+                roomnr = zbuff.typ
+            else:
+                roomnr = zbuff.zikatnr
 
-    #     if res_line.ankunft == res_line.abreise:
-    #         upto_date = res_line.abreise
-    #     else:
-    #         upto_date = res_line.abreise - timedelta(days=1)
-    #     for datum in date_range(res_line.ankunft,upto_date) :
+        if res_line.ankunft == res_line.abreise:
+            upto_date = res_line.abreise
+        else:
+            upto_date = res_line.abreise - timedelta(days=1)
+        for datum in date_range(res_line.ankunft,upto_date) :
 
-    #         queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, "")]})
+            queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, "")]})
 
-    #         if queasy and queasy.logi1 == False and queasy.logi2 == False:
-    #             pass
-    #             queasy.logi2 = True
-    #             pass
-    #             pass
+            if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                pass
+                queasy.logi2 = True
+                pass
+                pass
 
-    #         if origcode != "":
+            if origcode != "":
 
-    #             queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
+                queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
 
-    #             if queasy and queasy.logi1 == False and queasy.logi2 == False:
-    #                 pass
-    #                 queasy.logi2 = True
-    #                 pass
-    #                 pass
+                if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                    pass
+                    queasy.logi2 = True
+                    pass
+                    pass
 
-    #     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
-    #     res_history = Res_history()
-    #     db_session.add(res_history)
+        bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+        res_history = Res_history()
+        db_session.add(res_history)
 
-    #     res_history.nr = bediener.nr
-    #     res_history.datum = get_current_date()
-    #     res_history.zeit = get_current_time_in_seconds()
-    #     res_history.aenderung = "Cancel ResLine: ResNo " + to_string(resnr) + " No " +\
-    #             to_string(reslinnr) + " - " + res_line.name
-    #     res_history.action = "Log Availability"
+        res_history.nr = bediener.nr
+        res_history.datum = get_current_date()
+        res_history.zeit = get_current_time_in_seconds()
+        res_history.aenderung = "Cancel ResLine: ResNo " + to_string(resnr) + " No " +\
+                to_string(reslinnr) + " - " + res_line.name
+        res_history.action = "Log Availability"
 
 
-    #     name1 = res_line.name
+        name1 = res_line.name
 
-    #     if res_line.zinr != "":
+        if res_line.zinr != "":
 
-    #         rline = db_session.query(Rline).filter(
-    #                  (Rline.active_flag == 0) & (matches(Rline.memozinr,("*;*"))) & (entry(1, Rline.memozinr, ";") == res_line.zinr) & not_ (Rline.ankunft >= res_line.abreise) & not_ (Rline.abreise <= res_line.ankunft) & (Rline.resnr != res_line.resnr) & (Rline.zinr != res_line.zinr)).first()
+            rline = db_session.query(Rline).filter(
+                     (Rline.active_flag == 0) & (matches(Rline.memozinr,("*;*"))) & (entry(1, Rline.memozinr, ";") == res_line.zinr) & not_ (Rline.ankunft >= res_line.abreise) & not_ (Rline.abreise <= res_line.ankunft) & (Rline.resnr != res_line.resnr) & (Rline.zinr != res_line.zinr)).first()
 
-    #         if not rline:
+            if not rline:
 
-    #             rline = db_session.query(Rline).filter(
-    #                      (Rline.active_flag == 1) & (matches(Rline.memozinr,("*;*"))) & (entry(1, Rline.memozinr, ";") == res_line.zinr) & (Rline.resnr != res_line.resnr) & (Rline.zinr != res_line.zinr)).first()
+                rline = db_session.query(Rline).filter(
+                         (Rline.active_flag == 1) & (matches(Rline.memozinr,("*;*"))) & (entry(1, Rline.memozinr, ";") == res_line.zinr) & (Rline.resnr != res_line.resnr) & (Rline.zinr != res_line.zinr)).first()
 
-    #         if rline:
-    #             msg_str = msg_str + chr_unicode(2) + "&W" + "Reservation found with Memo RmNo =" + " " + res_line.zinr
+            if rline:
+                msg_str = msg_str + chr_unicode(2) + "&W" + "Reservation found with Memo RmNo =" + " " + res_line.zinr
 
-    #     if (res_mode.lower()  == ("cancel").lower()) and (res_line.resstatus <= 2 or res_line.resstatus == 5):
+        if (res_mode.lower()  == ("cancel").lower()) and (res_line.resstatus <= 2 or res_line.resstatus == 5):
 
-    #         zinrstat = get_cache (Zinrstat, {"zinr": [(eq, "cancres")],"datum": [(eq, ci_date)]})
+            zinrstat = get_cache (Zinrstat, {"zinr": [(eq, "cancres")],"datum": [(eq, ci_date)]})
 
-    #         if not zinrstat:
-    #             zinrstat = Zinrstat()
-    #             db_session.add(zinrstat)
+            if not zinrstat:
+                zinrstat = Zinrstat()
+                db_session.add(zinrstat)
 
-    #             zinrstat.datum = ci_date
-    #             zinrstat.zinr = "CancRes"
+                zinrstat.datum = ci_date
+                zinrstat.zinr = "CancRes"
 
 
-    #         zinrstat.zimmeranz = zinrstat.zimmeranz + res_line.zimmeranz
-    #         zinrstat.personen = zinrstat.personen + res_line.zimmeranz * res_line.erwachs
-    #         pass
+            zinrstat.zimmeranz = zinrstat.zimmeranz + res_line.zimmeranz
+            zinrstat.personen = zinrstat.personen + res_line.zimmeranz * res_line.erwachs
+            pass
 
-    #     if (res_line.resstatus <= 2 or res_line.resstatus == 5) and res_line.zinr != "":
+        if (res_line.resstatus <= 2 or res_line.resstatus == 5) and res_line.zinr != "":
 
-    #         outorder = get_cache (Outorder, {"zinr": [(eq, res_line.zinr)],"betriebsnr": [(eq, res_line.resnr)]})
+            outorder = get_cache (Outorder, {"zinr": [(eq, res_line.zinr)],"betriebsnr": [(eq, res_line.resnr)]})
 
-    #         if outorder:
-    #             pass
-    #             db_session.delete(outorder)
-    #             pass
-    #     release_zinr(res_line.zinr)
-    #     min_resplan()
-    #     pass
+            if outorder:
+                pass
+                db_session.delete(outorder)
+                pass
+        release_zinr(res_line.zinr)
+        min_resplan()
+        pass
 
-    #     if res_mode.lower()  == ("delete").lower() :
+        if res_mode.lower()  == ("delete").lower() :
 
-    #         if priscilla_active:
-    #             get_output(intevent_1(15, res_line.zinr, "Priscilla", res_line.resnr, res_line.reslinnr))
-    #         res_line.betrieb_gastpay = res_line.resstatus
-    #         res_line.resstatus = 99
-    #         res_line.active_flag = 2
-    #         res_line.cancelled = ci_date
-    #         res_line.cancelled_id = user_init +\
-    #                 ";" + to_string(get_current_date()) + "-" + to_string(get_current_time_in_seconds(), "HH:MM:SS") +\
-    #                 ";" + res_line.zinr
-    #         res_line.zinr = ""
+            if priscilla_active:
+                get_output(intevent_1(15, res_line.zinr, "Priscilla", res_line.resnr, res_line.reslinnr))
+            res_line.betrieb_gastpay = res_line.resstatus
+            res_line.resstatus = 99
+            res_line.active_flag = 2
+            res_line.cancelled = ci_date
+            res_line.cancelled_id = user_init +\
+                    ";" + to_string(get_current_date()) + "-" + to_string(get_current_time_in_seconds(), "HH:MM:SS") +\
+                    ";" + res_line.zinr
+            res_line.zinr = ""
 
 
-    #         pass
+            pass
 
-    #         for rline in db_session.query(Rline).filter(
-    #                  (Rline.resnr == res_line.resnr) & (Rline.l_zuordnung[inc_value(2)] == 1) & (Rline.kontakt_nr == reslinnr)).order_by(Rline._recid).all():
-    #             rline.zinr = ""
-    #             rline.betrieb_gastpay = rline.resstatus
-    #             rline.resstatus = 99
-    #             rline.active_flag = 2
-    #             rline.cancelled = ci_date
-    #             rline.cancelled_id = user_init +\
-    #                     ";" + to_string(get_current_date()) + "-" + to_string(get_current_time_in_seconds(), "HH:MM:SS")
+            for rline in db_session.query(Rline).filter(
+                     (Rline.resnr == res_line.resnr) & (Rline.l_zuordnung[inc_value(2)] == 1) & (Rline.kontakt_nr == reslinnr)).order_by(Rline._recid).all():
+                rline.zinr = ""
+                rline.betrieb_gastpay = rline.resstatus
+                rline.resstatus = 99
+                rline.active_flag = 2
+                rline.cancelled = ci_date
+                rline.cancelled_id = user_init +\
+                        ";" + to_string(get_current_date()) + "-" + to_string(get_current_time_in_seconds(), "HH:MM:SS")
 
 
-    #             pass
+                pass
 
-    #         reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
+            reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
 
-    #         if reservation:
-    #             pass
-    #             reservation.vesrdepot2 = cancel_str
+            if reservation:
+                pass
+                reservation.vesrdepot2 = cancel_str
 
 
-    #             pass
-    #     else:
+                pass
+        else:
 
-    #         if priscilla_active:
-    #             get_output(intevent_1(14, res_line.zinr, "Priscilla", res_line.resnr, res_line.reslinnr))
-    #         res_line.betrieb_gastpay = res_line.resstatus
-    #         res_line.resstatus = 9
-    #         res_line.active_flag = 2
-    #         res_line.cancelled = ci_date
-    #         res_line.cancelled_id = user_init +\
-    #                 ";" + to_string(get_current_date()) + "-" + to_string(get_current_time_in_seconds(), "HH:MM:SS") +\
-    #                 ";" + res_line.zinr
-    #         res_line.zinr = ""
+            if priscilla_active:
+                get_output(intevent_1(14, res_line.zinr, "Priscilla", res_line.resnr, res_line.reslinnr))
+            res_line.betrieb_gastpay = res_line.resstatus
+            res_line.resstatus = 9
+            res_line.active_flag = 2
+            res_line.cancelled = ci_date
+            res_line.cancelled_id = user_init +\
+                    ";" + to_string(get_current_date()) + "-" + to_string(get_current_time_in_seconds(), "HH:MM:SS") +\
+                    ";" + res_line.zinr
+            res_line.zinr = ""
 
 
-    #         pass
+            pass
 
-    #         for rline in db_session.query(Rline).filter(
-    #                  (Rline.resnr == res_line.resnr) & (Rline.l_zuordnung[inc_value(2)] == 1) & (Rline.kontakt_nr == reslinnr)).order_by(Rline._recid).all():
-    #             rline.zinr = ""
-    #             rline.betrieb_gastpay = rline.resstatus
-    #             rline.resstatus = 9
-    #             rline.active_flag = 2
-    #             rline.cancelled = ci_date
-    #             rline.cancelled_id = user_init +\
-    #                     ";" + to_string(get_current_date()) + "-" + to_string(get_current_time_in_seconds(), "HH:MM:SS")
+            for rline in db_session.query(Rline).filter(
+                     (Rline.resnr == res_line.resnr) & (Rline.l_zuordnung[inc_value(2)] == 1) & (Rline.kontakt_nr == reslinnr)).order_by(Rline._recid).all():
+                rline.zinr = ""
+                rline.betrieb_gastpay = rline.resstatus
+                rline.resstatus = 9
+                rline.active_flag = 2
+                rline.cancelled = ci_date
+                rline.cancelled_id = user_init +\
+                        ";" + to_string(get_current_date()) + "-" + to_string(get_current_time_in_seconds(), "HH:MM:SS")
 
 
-    #             pass
+                pass
 
-    #         reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
+            reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
 
-    #         if reservation:
-    #             pass
-    #             reservation.vesrdepot2 = cancel_str
-    #             pass
+            if reservation:
+                pass
+                reservation.vesrdepot2 = cancel_str
+                pass
 
-    #     res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"resstatus": [(ne, 9),(ne, 99)]})
+        res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"resstatus": [(ne, 9),(ne, 99)]})
 
-    #     if not res_line:
-    #         del_mainres = True
+        if not res_line:
+            del_mainres = True
 
-    #         reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
-    #         reservation.activeflag = 1
+            reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
+            reservation.activeflag = 1
 
-    #         if cancel_str != "":
-    #             reservation.vesrdepot2 = cancel_str
+            if cancel_str != "":
+                reservation.vesrdepot2 = cancel_str
 
 
-    #         pass
+            pass
 
-    #         guest = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
-    #         guest.stornos = guest.stornos + 1
-    #         pass
+            guest = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+            guest.stornos = guest.stornos + 1
+            pass
 
-    #         bill = get_cache (Bill, {"resnr": [(eq, resnr)],"reslinnr": [(eq, 0)],"zinr": [(eq, "")]})
+            bill = get_cache (Bill, {"resnr": [(eq, resnr)],"reslinnr": [(eq, 0)],"zinr": [(eq, "")]})
 
-    #         if bill:
-    #             pass
-    #             db_session.delete(bill)
-    #             pass
+            if bill:
+                pass
+                db_session.delete(bill)
+                pass
 
-    #         master = get_cache (Master, {"resnr": [(eq, resnr)],"flag": [(eq, 0)]})
+            master = get_cache (Master, {"resnr": [(eq, resnr)],"flag": [(eq, 0)]})
 
-    #         if master:
-    #             pass
-    #             db_session.delete(master)
-    #             pass
+            if master:
+                pass
+                db_session.delete(master)
+                pass
 
-    #         for mast_art in db_session.query(Mast_art).filter(
-    #                  (Mast_art.resnr == resnr) & (Mast_art.reslinnr == 1)).order_by(Mast_art._recid).all():
-    #             db_session.delete(mast_art)
-    #     else:
-    #         print("tidak masuk cancel.")
-    #     if res_mode.lower()  == ("delete").lower() :
+            for mast_art in db_session.query(Mast_art).filter(
+                     (Mast_art.resnr == resnr) & (Mast_art.reslinnr == 1)).order_by(Mast_art._recid).all():
+                db_session.delete(mast_art)
+        else:
+            print("tidak masuk cancel.")
+        if res_mode.lower()  == ("delete").lower() :
 
-    #         bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
-    #         res_history = Res_history()
-    #         db_session.add(res_history)
+            bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+            res_history = Res_history()
+            db_session.add(res_history)
 
-    #         res_history.nr = bediener.nr
-    #         res_history.datum = ci_date
-    #         res_history.zeit = get_current_time_in_seconds()
-    #         res_history.aenderung = "Delete ResLine: ResNo " + to_string(resnr) + " No " +\
-    #                 to_string(reslinnr) + " - " + name1
-    #         res_history.action = "Reservation"
+            res_history.nr = bediener.nr
+            res_history.datum = ci_date
+            res_history.zeit = get_current_time_in_seconds()
+            res_history.aenderung = "Delete ResLine: ResNo " + to_string(resnr) + " No " +\
+                    to_string(reslinnr) + " - " + name1
+            res_history.action = "Reservation"
 
 
-    #         pass
-    #         pass
+            pass
+            pass
 
     return generate_output()
