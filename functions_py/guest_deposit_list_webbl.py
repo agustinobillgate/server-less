@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 29/7/2025
+# gitlab: 980
+# requery
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -124,14 +129,46 @@ def guest_deposit_list_webbl(payload_list_data:[Payload_list], pvilanguage:int):
             guest_deposit = query(guest_deposit_data, first=True)
 
             if guest_deposit:
+                # Rd 29/7/2025
+                # for bill, bill_line in db_session.query(Bill, Bill_line).join(Bill_line,(Bill_line.rechnr == Bill.rechnr) 
+                #                                                               & (Bill_line.artnr == depoart_guest)).filter(
+                #          ((Bill.rechnr > 0) & (Bill.gastnr.in_(list(set([guest_deposit.guest_number for guest_deposit in guest_deposit_data])))))).order_by(Bill._recid).all():                    guest_deposit = query(guest_deposit_data, (lambda guest_deposit: (bill.rechnr > 0)), first=True)
+                    
+                    
+                #     guest_deposit.deposit_used =  to_decimal(guest_deposit.deposit_used) + to_decimal(bill_line.betrag)
+                #     guest_deposit.deposit_balance =  to_decimal(guest_deposit.deposit_balance) + to_decimal(bill_line.betrag)
+                #     total_used =  to_decimal(total_used) + to_decimal(bill_line.betrag)
+                #     total_balance =  to_decimal(total_balance) + to_decimal(bill_line.betrag)
+                total_used = 0
+                total_balance = 0
 
-                for bill, bill_line in db_session.query(Bill, Bill_line).join(Bill_line,(Bill_line.rechnr == Bill.rechnr) & (Bill_line.artnr == depoart_guest)).filter(
-                         ((Bill.rechnr > 0) & (Bill.gastnr.in_(list(set([guest_deposit.guest_number for guest_deposit in guest_deposit_data])))))).order_by(Bill._recid).all():                    guest_deposit = query(guest_deposit_data, (lambda guest_deposit: (bill.rechnr > 0)), first=True)
-                    guest_deposit.deposit_used =  to_decimal(guest_deposit.deposit_used) + to_decimal(bill_line.betrag)
-                    guest_deposit.deposit_balance =  to_decimal(guest_deposit.deposit_balance) + to_decimal(bill_line.betrag)
-                    total_used =  to_decimal(total_used) + to_decimal(bill_line.betrag)
-                    total_balance =  to_decimal(total_balance) + to_decimal(bill_line.betrag)
+                # Step 1: Loop over all guest deposits
+                guest_deposits = db_session.query(guest_deposit).all()
 
+                for guest_deposit in guest_deposits:
+                    guest_number = guest_deposit.guest_number
+
+                    # Step 2: Get matching bills (rechnr > 0 and gastnr = guest_number)
+                    bills = db_session.query(Bill).filter(
+                        Bill.rechnr > 0,
+                        Bill.gastnr == guest_number
+                    ).all()
+
+                    for bill in bills:
+                        # Step 3: Get matching bill-lines (artnr == depoart_guest)
+                        bill_lines = db_session.query(Bill_line).filter(
+                            Bill_line.rechnr == bill.rechnr,
+                            Bill_line.artnr == depoart_guest
+                        ).all()
+
+                        # Step 4: Process each bill-line
+                        for bill_line in bill_lines:
+                            guest_deposit.deposit_used += bill_line.betrag
+                            guest_deposit.deposit_balance += bill_line.betrag
+                            total_used += bill_line.betrag
+                            total_balance += bill_line.betrag
+
+            #-----------------------------------------------------------
             guest_deposit = query(guest_deposit_data, first=True)
 
             if guest_deposit:
