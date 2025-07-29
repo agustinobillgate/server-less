@@ -623,7 +623,6 @@ update_field_mapping = {
     # "must_print":["mustPrint"],
     # "fl_warn":["flWarn"],
     # "cashless_flag":["cashlessFlag"],
-
     #vhpIA/correctCoverDept
     "orig_fpax": "origFpax",
     "orig_bpax": "origBpax",
@@ -1625,7 +1624,6 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
         # output_data["outputOkFlag"] = str(ok_flag)
         # buka remark
 
-        output_data["outputOkFlag"] = str(ok_flag)
         if is_existing_json == False:
             # output_data["output_Ok_Flag"] = str(ok_flag)
             if ui_request_id != "None":
@@ -1636,7 +1634,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
             retrieved_json = json.loads(existing_json_data) 
             output_data = retrieved_json
             print("ExistingData:", len(output_data))
-
+        output_data["outputOkFlag"] = str(ok_flag)
         output_data_size = len(data_string)
         ServerInfo["lendata"] = output_data_size
 
