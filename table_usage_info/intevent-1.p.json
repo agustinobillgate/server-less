@@ -1,0 +1,35 @@
+{
+    "Res_line": {
+        "read": [],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "flogical",
+            "feldtyp",
+            "paramgruppe",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Nightaudit": {
+        "read": [],
+        "write": []
+    },
+    "Interface": {
+        "read": [
+            "key",
+            "zinr",
+            "nebenstelle",
+            "intfield",
+            "decfield",
+            "int_time",
+            "intdate",
+            "parameters",
+            "resnr",
+            "reslinnr",
+            "_recid"
+        ],
+        "write": []
+    }
+}
