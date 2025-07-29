@@ -1,0 +1,20 @@
+{
+    "Queasy": {
+        "read": [
+            "key",
+            "char1",
+            "number1",
+            "char2",
+            "char3",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Paramtext": {
+        "read": [
+            "ptexte",
+            "_recid"
+        ],
+        "write": []
+    }
+}

@@ -1,0 +1,18 @@
+Loop and Output Function Analysis
+Generated on: 2025-07-29 13:36:29
+File: ../functions_py/gacct_balance_btn_go_list_webbl.py
+================================================================================
+
+Function: decode_string
+==================================================
+    └─ Loop_1 (line 84) - standard
+       ├─ Target: len_
+       ├─ Iterator: range(1, length(s) + 1)
+
+
+Summary:
+Total loops: 1
+Total get_output calls: 1
+
+Loop types found:
+- standard: 1

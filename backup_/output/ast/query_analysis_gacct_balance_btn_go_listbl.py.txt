@@ -1,0 +1,9 @@
+File: ../functions_py/gacct_balance_btn_go_listbl.py
+Total Lines: 638
+Database Queries Found:
+----------------------------------------
+Line 124: Query on Bill_line, Filters: None, Method: unknown
+Line 140: Query on Bill, Filters: None, Method: unknown
+Line 159: Query on Bill_line, Filters: None, Method: unknown
+Line 282: Query on Bill_line, Filters: None, Method: unknown
+Line 345: Query on Bill_line, Filters: None, Method: unknown

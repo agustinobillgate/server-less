@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 29/7/2025
+# msg-str tidak ada, sblm update dari Fitria
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -65,11 +68,17 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
 
         bill_list_data.clear()
 
-        bill = get_cache (Bill, {"rechnr": [(gt, 0)]})
-        while None != bill:
+        # Rd 29/7/2025
+        # optimize 
+        print("Billdate:", billdate)
+        bills = db_session.query(Bill).filter(
+            (Bill.rechnr > 0) & (Bill.datum == billdate)
+        ).all()
+        for bill in bills:
             bill_list = Bill_list()
             bill_list_data.append(bill_list)
-
+            print("Rechnr:", bill.rechnr, bill.datum)
+            
             bill_list.resnr = bill.resnr
             bill_list.zinr = bill.zinr
             bill_list.rechnr = bill.rechnr
@@ -137,8 +146,8 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
                 bill_list_data.remove(bill_list)
 
             curr_recid = bill._recid
-            bill = db_session.query(Bill).filter(
-                     (Bill.rechnr > 0) & (Bill._recid > curr_recid)).first()
+            # bill = db_session.query(Bill).filter(
+            #          (Bill.rechnr > 0) & (Bill._recid > curr_recid)).first()
 
 
     def create_data2():
