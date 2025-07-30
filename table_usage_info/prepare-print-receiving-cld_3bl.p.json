@@ -1,0 +1,92 @@
+{
+    "Htparam": {
+        "read": [
+            "fchar",
+            "flogical",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bediener": {
+        "read": [
+            "permissions",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_orderhdr": {
+        "read": [
+            "angebot_lief",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_lieferant": {
+        "read": [
+            "firma",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_op": {
+        "read": [
+            "lscheinnr",
+            "lager_nr",
+            "anzahl",
+            "warenwert",
+            "einzelpreis",
+            "artnr",
+            "_recid",
+            "stornogrund",
+            "docu_nr"
+        ],
+        "write": []
+    },
+    "L_artikel": {
+        "read": [
+            "masseinheit",
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_lager": {
+        "read": [
+            "lager_nr",
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "deci1",
+            "deci2",
+            "char3",
+            "deci3",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_ophis": {
+        "read": [
+            "lscheinnr",
+            "lager_nr",
+            "anzahl",
+            "warenwert",
+            "einzelpreis",
+            "artnr",
+            "fibukonto",
+            "docu_nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Gl_acct": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    }
+}
