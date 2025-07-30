@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 29/7/2025
+# gitlab:130
+# update Fitria
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -42,6 +47,106 @@ def cr_fproduct_showdetail_webbl(v_key:string, v_value:string, cardtype:int, sta
 
         return {"fcasthist-detail-list": fcasthist_detail_list_data}
 
+    def create_list():
+
+        nonlocal fcasthist_detail_list_data, query_string, sob_number, tot_room, tot_pax, tot_rev, tot_expectrev, tot_rmrev, tot_bfast, tot_lunch, tot_dinner, tot_othrev, tot_fix_cost, sourccod
+        nonlocal v_key, v_value, cardtype, stattype, fr_date, to_date, excl_comp, vhp_limited, scin
+
+
+        nonlocal fcasthist_detail_list, t_list
+        nonlocal fcasthist_detail_list_data, t_list_data
+
+
+        fcasthist_detail_list = Fcasthist_detail_list()
+        fcasthist_detail_list_data.append(fcasthist_detail_list)
+
+        fcasthist_detail_list.res_number = to_string(t_list.resnr) + "/" + to_string(t_list.reslinnr)
+        fcasthist_detail_list.display_value = v_value
+        fcasthist_detail_list.reserve_name = t_list.rsv_name
+        fcasthist_detail_list.guest_name = t_list.guest_name
+        fcasthist_detail_list.currency = t_list.currency
+
+        if stattype == 0:
+            fcasthist_detail_list.pax = t_list.pax_guaranteed + t_list.pax_tentative
+            fcasthist_detail_list.room = t_list.room_guaranteed + t_list.room_tentative
+            fcasthist_detail_list.expected_revenue = to_string(t_list.zipreis, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.total_revenue = to_string(t_list.logis_guaranteed + t_list.logis_tentative + t_list.bfast_guaranteed + t_list.bfast_tentative +\
+                    t_list.lunch_guaranteed + t_list.lunch_tentative + t_list.dinner_guaranteed + t_list.dinner_tentative +\
+                    t_list.misc_tentative + t_list.misc_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.room_revenue = to_string(t_list.logis_guaranteed + t_list.logis_tentative, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.bfast_amount = to_string(t_list.bfast_guaranteed + t_list.bfast_tentative, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.lunch_amount = to_string(t_list.lunch_guaranteed + t_list.lunch_tentative, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.dinneramount = to_string(t_list.dinner_guaranteed + t_list.dinner_tentative, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.other_revenue = to_string(t_list.misc_guaranteed + t_list.misc_tentative, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.fix_cost = to_string(t_list.fcost, "->>,>>>,>>>,>>>,>>9.99")
+
+
+            tot_room = tot_room + t_list.pax_guaranteed + t_list.pax_tentative
+            tot_pax = tot_pax + t_list.room_guaranteed + t_list.room_tentative
+            tot_rev =  to_decimal(tot_rev) + to_decimal(t_list.zipreis)
+            tot_expectrev =  to_decimal(tot_expectrev) + to_decimal(t_list.logis_guaranteed) + to_decimal(t_list.logis_tentative) + to_decimal(t_list.bfast_guaranteed) +\
+                    t_list.bfast_tentative + to_decimal(t_list.lunch_guaranteed) + to_decimal(t_list.lunch_tentative) + to_decimal(t_list.dinner_guaranteed) +\
+                    t_list.dinner_tentative + to_decimal(t_list.misc_tentative) + to_decimal(t_list.misc_guaranteed)
+            tot_rmrev =  to_decimal(tot_rmrev) + to_decimal(t_list.logis_guaranteed) + to_decimal(t_list.logis_tentative)
+            tot_bfast =  to_decimal(tot_bfast) + to_decimal(t_list.bfast_guaranteed) + to_decimal(t_list.bfast_tentative)
+            tot_lunch =  to_decimal(tot_lunch) + to_decimal(t_list.lunch_guaranteed) + to_decimal(t_list.lunch_tentative)
+            tot_dinner =  to_decimal(tot_dinner) + to_decimal(t_list.dinner_guaranteed) + to_decimal(t_list.dinner_tentative)
+            tot_othrev =  to_decimal(tot_othrev) + to_decimal(t_list.misc_guaranteed) + to_decimal(t_list.misc_tentative)
+            tot_fix_cost =  to_decimal(tot_fix_cost) + to_decimal(t_list.fcost)
+
+        elif stattype == 1:
+            fcasthist_detail_list.pax = t_list.pax_guaranteed
+            fcasthist_detail_list.room = t_list.room_guaranteed
+            fcasthist_detail_list.expected_revenue = to_string(t_list.zipreis, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.total_revenue = to_string(t_list.logis_guaranteed + t_list.bfast_guaranteed + t_list.lunch_guaranteed +\
+                    t_list.dinner_guaranteed + t_list.misc_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.room_revenue = to_string(t_list.logis_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.bfast_amount = to_string(t_list.bfast_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.lunch_amount = to_string(t_list.lunch_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.dinneramount = to_string(t_list.dinner_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.other_revenue = to_string(t_list.misc_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.fix_cost = to_string(t_list.fcost, "->>,>>>,>>>,>>>,>>9.99")
+
+
+            tot_room = tot_room + t_list.pax_guaranteed
+            tot_pax = tot_pax + t_list.room_guaranteed
+            tot_rev =  to_decimal(tot_rev) + to_decimal(t_list.zipreis)
+            tot_expectrev =  to_decimal(tot_expectrev) + to_decimal(t_list.logis_guaranteed) + to_decimal(t_list.bfast_guaranteed) + to_decimal(t_list.lunch_guaranteed) +\
+                    t_list.dinner_guaranteed + to_decimal(t_list.misc_guaranteed)
+            tot_rmrev =  to_decimal(tot_rmrev) + to_decimal(t_list.logis_guaranteed)
+            tot_bfast =  to_decimal(tot_bfast) + to_decimal(t_list.bfast_guaranteed)
+            tot_lunch =  to_decimal(tot_lunch) + to_decimal(t_list.lunch_guaranteed)
+            tot_dinner =  to_decimal(tot_dinner) + to_decimal(t_list.dinner_guaranteed)
+            tot_othrev =  to_decimal(tot_othrev) + to_decimal(t_list.misc_guaranteed)
+            tot_fix_cost =  to_decimal(tot_fix_cost) + to_decimal(t_list.fcost)
+
+        elif stattype == 3:
+            fcasthist_detail_list.pax = t_list.pax_tentative
+            fcasthist_detail_list.room = t_list.room_tentative
+            fcasthist_detail_list.expected_revenue = to_string(t_list.zipreis, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.total_revenue = to_string(t_list.logis_tentative + t_list.bfast_tentative + t_list.lunch_tentative +\
+                    t_list.dinner_tentative + t_list.misc_tentative, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.room_revenue = to_string(t_list.logis_tentative, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.bfast_amount = to_string(t_list.bfast_tentative, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.lunch_amount = to_string(t_list.lunch_tentative, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.dinneramount = to_string(t_list.dinner_tentative, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.other_revenue = to_string(t_list.misc_tentative, "->>,>>>,>>>,>>>,>>9.99")
+            fcasthist_detail_list.fix_cost = to_string(t_list.fcost, "->>,>>>,>>>,>>>,>>9.99")
+
+
+            tot_room = tot_room + t_list.pax_tentative
+            tot_pax = tot_pax + t_list.room_tentative
+            tot_rev =  to_decimal(tot_rev) + to_decimal(t_list.zipreis)
+            tot_expectrev =  to_decimal(tot_expectrev) + to_decimal(t_list.logis_tentative) + to_decimal(t_list.bfast_tentative) + to_decimal(t_list.lunch_tentative) +\
+                    t_list.dinner_tentative + to_decimal(t_list.misc_tentative)
+            tot_rmrev =  to_decimal(tot_rmrev) + to_decimal(t_list.logis_tentative)
+            tot_bfast =  to_decimal(tot_bfast) + to_decimal(t_list.bfast_tentative)
+            tot_lunch =  to_decimal(tot_lunch) + to_decimal(t_list.lunch_tentative)
+            tot_dinner =  to_decimal(tot_dinner) + to_decimal(t_list.dinner_tentative)
+            tot_othrev =  to_decimal(tot_othrev) + to_decimal(t_list.misc_tentative)
+            tot_fix_cost =  to_decimal(tot_fix_cost) + to_decimal(t_list.fcost)
+
+
     t_list_data = get_output(create_forecast_history_detail_cldbl(fr_date, to_date, excl_comp, vhp_limited, scin))
 
     if v_key.lower()  == ("SOB").lower() :
@@ -52,113 +157,19 @@ def cr_fproduct_showdetail_webbl(v_key:string, v_value:string, cardtype:int, sta
             sob_number = sourccod.source_code
 
         if stattype == 0:
-            query_string = "FOR EACH t-list WHERE t-list.sob EQ " + to_string(sob_number) + "NO-LOCK BY t-list.guest-name:"
+
+            for t_list in query(t_list_data, filters=(lambda t_list: t_list.sob == sob_number), sort_by=[("guest_name",False)]):
+                create_list()
 
         elif stattype == 1:
-            query_string = "FOR EACH t-list WHERE t-list.sob EQ " + to_string(sob_number) + " AND t-list.resstatus NE 3 NO-LOCK BY t-list.guest-name:"
 
-        elif stattype == 3:
-            query_string = "FOR EACH t-list WHERE t-list.sob EQ " + to_string(sob_number) + " AND t-list.resstatus EQ 3 NO-LOCK BY t-list.guest-name:"
-        qh:SET_BUFFERS (BUFFER t_list:HANDLE)
-        qh:QUERY_PREPARE (query_string)
-        qh:QUERY_OPEN
-        while True:
-            qh:GET_NEXT()
+            for t_list in query(t_list_data, filters=(lambda t_list: t_list.sob == sob_number and t_list.resstatus != 3), sort_by=[("guest_name",False)]):
+                create_list()
 
-            if not t_list:
-                break
-            fcasthist_detail_list = Fcasthist_detail_list()
-            fcasthist_detail_list_data.append(fcasthist_detail_list)
+        if stattype == 0:
 
-            fcasthist_detail_list.res_number = to_string(t_list.resnr) + "/" + to_string(t_list.reslinnr)
-            fcasthist_detail_list.display_value = v_value
-            fcasthist_detail_list.reserve_name = t_list.rsv_name
-            fcasthist_detail_list.guest_name = t_list.guest_name
-            fcasthist_detail_list.currency = t_list.currency
-
-            if stattype == 0:
-                fcasthist_detail_list.pax = t_list.pax_guaranteed + t_list.pax_tentative
-                fcasthist_detail_list.room = t_list.room_guaranteed + t_list.room_tentative
-                fcasthist_detail_list.expected_revenue = to_string(t_list.zipreis, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.total_revenue = to_string(t_list.logis_guaranteed + t_list.logis_tentative + t_list.bfast_guaranteed + t_list.bfast_tentative +\
-                        t_list.lunch_guaranteed + t_list.lunch_tentative + t_list.dinner_guaranteed + t_list.dinner_tentative +\
-                        t_list.misc_tentative + t_list.misc_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.room_revenue = to_string(t_list.logis_guaranteed + t_list.logis_tentative, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.bfast_amount = to_string(t_list.bfast_guaranteed + t_list.bfast_tentative, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.lunch_amount = to_string(t_list.lunch_guaranteed + t_list.lunch_tentative, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.dinneramount = to_string(t_list.dinner_guaranteed + t_list.dinner_tentative, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.other_revenue = to_string(t_list.misc_guaranteed + t_list.misc_tentative, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.fix_cost = to_string(t_list.fcost, "->>,>>>,>>>,>>>,>>9.99")
-
-
-                tot_room = tot_room + t_list.pax_guaranteed + t_list.pax_tentative
-                tot_pax = tot_pax + t_list.room_guaranteed + t_list.room_tentative
-                tot_rev =  to_decimal(tot_rev) + to_decimal(t_list.zipreis)
-                tot_expectrev =  to_decimal(tot_expectrev) + to_decimal(t_list.logis_guaranteed) + to_decimal(t_list.logis_tentative) + to_decimal(t_list.bfast_guaranteed) +\
-                        t_list.bfast_tentative + to_decimal(t_list.lunch_guaranteed) + to_decimal(t_list.lunch_tentative) + to_decimal(t_list.dinner_guaranteed) +\
-                        t_list.dinner_tentative + to_decimal(t_list.misc_tentative) + to_decimal(t_list.misc_guaranteed)
-                tot_rmrev =  to_decimal(tot_rmrev) + to_decimal(t_list.logis_guaranteed) + to_decimal(t_list.logis_tentative)
-                tot_bfast =  to_decimal(tot_bfast) + to_decimal(t_list.bfast_guaranteed) + to_decimal(t_list.bfast_tentative)
-                tot_lunch =  to_decimal(tot_lunch) + to_decimal(t_list.lunch_guaranteed) + to_decimal(t_list.lunch_tentative)
-                tot_dinner =  to_decimal(tot_dinner) + to_decimal(t_list.dinner_guaranteed) + to_decimal(t_list.dinner_tentative)
-                tot_othrev =  to_decimal(tot_othrev) + to_decimal(t_list.misc_guaranteed) + to_decimal(t_list.misc_tentative)
-                tot_fix_cost =  to_decimal(tot_fix_cost) + to_decimal(t_list.fcost)
-
-            elif stattype == 1:
-                fcasthist_detail_list.pax = t_list.pax_guaranteed
-                fcasthist_detail_list.room = t_list.room_guaranteed
-                fcasthist_detail_list.expected_revenue = to_string(t_list.zipreis, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.total_revenue = to_string(t_list.logis_guaranteed + t_list.bfast_guaranteed + t_list.lunch_guaranteed +\
-                        t_list.dinner_guaranteed + t_list.misc_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.room_revenue = to_string(t_list.logis_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.bfast_amount = to_string(t_list.bfast_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.lunch_amount = to_string(t_list.lunch_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.dinneramount = to_string(t_list.dinner_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.other_revenue = to_string(t_list.misc_guaranteed, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.fix_cost = to_string(t_list.fcost, "->>,>>>,>>>,>>>,>>9.99")
-
-
-                tot_room = tot_room + t_list.pax_guaranteed
-                tot_pax = tot_pax + t_list.room_guaranteed
-                tot_rev =  to_decimal(tot_rev) + to_decimal(t_list.zipreis)
-                tot_expectrev =  to_decimal(tot_expectrev) + to_decimal(t_list.logis_guaranteed) + to_decimal(t_list.bfast_guaranteed) + to_decimal(t_list.lunch_guaranteed) +\
-                        t_list.dinner_guaranteed + to_decimal(t_list.misc_guaranteed)
-                tot_rmrev =  to_decimal(tot_rmrev) + to_decimal(t_list.logis_guaranteed)
-                tot_bfast =  to_decimal(tot_bfast) + to_decimal(t_list.bfast_guaranteed)
-                tot_lunch =  to_decimal(tot_lunch) + to_decimal(t_list.lunch_guaranteed)
-                tot_dinner =  to_decimal(tot_dinner) + to_decimal(t_list.dinner_guaranteed)
-                tot_othrev =  to_decimal(tot_othrev) + to_decimal(t_list.misc_guaranteed)
-                tot_fix_cost =  to_decimal(tot_fix_cost) + to_decimal(t_list.fcost)
-
-            elif stattype == 3:
-                fcasthist_detail_list.pax = t_list.pax_tentative
-                fcasthist_detail_list.room = t_list.room_tentative
-                fcasthist_detail_list.expected_revenue = to_string(t_list.zipreis, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.total_revenue = to_string(t_list.logis_tentative + t_list.bfast_tentative + t_list.lunch_tentative +\
-                        t_list.dinner_tentative + t_list.misc_tentative, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.room_revenue = to_string(t_list.logis_tentative, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.bfast_amount = to_string(t_list.bfast_tentative, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.lunch_amount = to_string(t_list.lunch_tentative, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.dinneramount = to_string(t_list.dinner_tentative, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.other_revenue = to_string(t_list.misc_tentative, "->>,>>>,>>>,>>>,>>9.99")
-                fcasthist_detail_list.fix_cost = to_string(t_list.fcost, "->>,>>>,>>>,>>>,>>9.99")
-
-
-                tot_room = tot_room + t_list.pax_tentative
-                tot_pax = tot_pax + t_list.room_tentative
-                tot_rev =  to_decimal(tot_rev) + to_decimal(t_list.zipreis)
-                tot_expectrev =  to_decimal(tot_expectrev) + to_decimal(t_list.logis_tentative) + to_decimal(t_list.bfast_tentative) + to_decimal(t_list.lunch_tentative) +\
-                        t_list.dinner_tentative + to_decimal(t_list.misc_tentative)
-                tot_rmrev =  to_decimal(tot_rmrev) + to_decimal(t_list.logis_tentative)
-                tot_bfast =  to_decimal(tot_bfast) + to_decimal(t_list.bfast_tentative)
-                tot_lunch =  to_decimal(tot_lunch) + to_decimal(t_list.lunch_tentative)
-                tot_dinner =  to_decimal(tot_dinner) + to_decimal(t_list.dinner_tentative)
-                tot_othrev =  to_decimal(tot_othrev) + to_decimal(t_list.misc_tentative)
-                tot_fix_cost =  to_decimal(tot_fix_cost) + to_decimal(t_list.fcost)
-
-
-        qh:QUERY_CLOSE()
-
+            for t_list in query(t_list_data, filters=(lambda t_list: t_list.sob == sob_number and t_list.resstatus == 3), sort_by=[("guest_name",False)]):
+                create_list()
 
         fcasthist_detail_list = query(fcasthist_detail_list_data, first=True)
 

@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 29/7/2025
+# gitlab: 1005
+# blm ada di har
+# abreise -> abreise1
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -201,7 +206,10 @@ def res_zinrbl(case_type:int, resno:int, reslinno:int, zikatno:int, ankunft1:dat
                 room_list.infonum = room_list.infonum - 2
                 room_list.recid1 = to_int(resline._recid)
 
-            resline = get_cache (Res_line, {"zinr": [(eq, room_list.zinr)],"active_flag": [(eq, 0)],"ankunft": [(eq, abreise)]})
+            # Rd 29/7/2025
+            # abreise -> abreise1
+            # resline = get_cache (Res_line, {"zinr": [(eq, room_list.zinr)],"active_flag": [(eq, 0)],"ankunft": [(eq, abreise1)]})
+            resline = get_cache (Res_line, {"zinr": [(eq, room_list.zinr)],"active_flag": [(eq, 0)],"ankunft": [(eq, abreise1)]})
 
             if resline:
                 room_list.infonum = room_list.infonum - 1

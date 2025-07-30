@@ -1,4 +1,9 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.48
+#-----------------------------------------
+# Rd 29/7/2025
+# gitlab:840
+# 
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -571,6 +576,7 @@ def pj_inhouse4_btn_go_4_cldbl(sorttype:int, from_date:date, to_date:date, curr_
         tot_avail = 0
 
         zkstat_obj_list = {}
+        print("Zkstat.")
         for zkstat in db_session.query(Zkstat).filter(
                  (Zkstat.datum >= from_date) & (Zkstat.datum <= to_date)).order_by(Zkstat._recid).all():
             zikat_list = query(zikat_list_data, (lambda zikat_list: zikat_list.zikatnr == zkstat.zikatnr and zikat_list.selected), first=True)
@@ -586,8 +592,16 @@ def pj_inhouse4_btn_go_4_cldbl(sorttype:int, from_date:date, to_date:date, curr_
             tot_avail = tot_avail + zkstat.anz100
 
         genstat_obj_list = {}
-        for genstat, reservation, guest, gmember, sourccod in db_session.query(Genstat, Reservation, Guest, Gmember, Sourccod).join(Reservation,(Reservation.resnr == Genstat.resnr)).join(Guest,(Guest.gastnr == Genstat.gastnr)).join(Gmember,(Gmember.gastnr == Genstat.gastnrmember)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).filter(
-                 (Genstat.datum >= from_date) & (Genstat.datum <= to_date) & (Genstat.zinr >= (froom).lower()) & (Genstat.zinr <= (troom).lower())).order_by(Genstat.zinr, Genstat.datum, Genstat.erwachs.desc(), Gmember.name).all():
+        # for genstat, reservation, guest, gmember, sourccod in db_session.query(Genstat, Reservation, Guest, Gmember, Sourccod).join(Reservation,(Reservation.resnr == Genstat.resnr)).join(Guest,(Guest.gastnr == Genstat.gastnr)).join(Gmember,(Gmember.gastnr == Genstat.gastnrmember)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).filter(
+        #          (Genstat.datum >= from_date) & (Genstat.datum <= to_date) & (Genstat.zinr >= (froom).lower()) & (Genstat.zinr <= (troom).lower())).order_by(Genstat.zinr, Genstat.datum, Genstat.erwachs.desc(), Gmember.name).all():
+
+        recs = db_session.query(Genstat, Reservation, Guest, Gmember, Sourccod).join(Reservation,(Reservation.resnr == Genstat.resnr)).join(Guest,(Guest.gastnr == Genstat.gastnr)).join(Gmember,(Gmember.gastnr == Genstat.gastnrmember)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).filter(
+                 (Genstat.datum >= from_date) & 
+                 (Genstat.datum <= to_date) & 
+                 (Genstat.zinr >= (froom).lower()) & 
+                 (Genstat.zinr <= (troom).lower())).order_by(Genstat.zinr, Genstat.datum, Genstat.erwachs.desc(), Gmember.name).all()
+        print("Genstat:", len(recs))
+        for genstat, reservation, guest, gmember, sourccod in recs:
             zikat_list = query(zikat_list_data, (lambda zikat_list: zikat_list.zikatnr == genstat.zikatnr and zikat_list.selected), first=True)
             if not zikat_list:
                 continue
@@ -843,7 +857,7 @@ def pj_inhouse4_btn_go_4_cldbl(sorttype:int, from_date:date, to_date:date, curr_
                 if cl_list:
                     cl_list_data.remove(cl_list)
                     pass
-
+        print("CL_List.")
         for cl_list in query(cl_list_data, sort_by=[("nation",False),("bezeich",False)]):
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.rmcat == cl_list.kurzbez), first=True)
@@ -887,6 +901,7 @@ def pj_inhouse4_btn_go_4_cldbl(sorttype:int, from_date:date, to_date:date, curr_
             s_list.adult = s_list.adult + cl_list.a + cl_list.co
             s_list.child = s_list.child + cl_list.c
 
+        print("S_List1.")
         if (tot_a + tot_co) != 0:
 
             for s_list in query(s_list_data, filters=(lambda s_list: s_list.nat != "")):
@@ -897,7 +912,7 @@ def pj_inhouse4_btn_go_4_cldbl(sorttype:int, from_date:date, to_date:date, curr_
                     s_list.nat = nation.bezeich
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
 
-
+        print("S_List2.")
         for s_list in query(s_list_data):
             s_list.proz_qty = ( to_decimal(s_list.anz) / to_decimal(tot_qty)) * to_decimal("100")
             s_list.proz_rev = ( to_decimal(s_list.rev) / to_decimal(tot_rev)) * to_decimal("100")
