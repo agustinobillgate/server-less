@@ -657,6 +657,18 @@ update_field_mapping = {
     "lager_bez1":"lagerBez1",
     "curr_pos":"currPos",
 
+    "curr_lager":"currLager",
+    #   "deptNo",
+    "show_price":"showPrice",
+    "req_flag":"reqFlag",
+    #   "p220",
+    "out_type":"outType",
+    "to_stock":"toStock",
+    "lager_bezeich":"lagerBezeich",
+    "lager_bez1":"lagerBez1",
+    #   "currPos",
+    "t_amount":"tAmount",
+    #   "opList"
 
 
     }
@@ -826,6 +838,7 @@ update_table_name("vhpFA","prChgPrepare1","t-l-orderhdr","tLOrderhdr")
 update_table_name("vhpFA","prChgPrepare1","t-l-artikel","tLArtikel")
 
 update_table_name("vhpINV","chgStoreRequestLoadData","op-list","opList")
+update_table_name("vhpINV","storeReqInsPrepare","op-list","opList")
 
 def get_function_version(module_name, function_name, file_path):
     # file_path  = "/var/task/functions/" + function_name + ".py"

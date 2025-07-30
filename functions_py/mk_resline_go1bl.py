@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 30/7/25
+# gitlab: 293
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -92,48 +95,54 @@ def mk_resline_go1bl(pvilanguage:int, user_init:string, specrequest:bool, c_appl
         for reslin_queasy in db_session.query(Reslin_queasy).filter(
                  (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == curr_resline.resnr) & (Reslin_queasy.reslinnr == curr_resline.reslinnr)).order_by(Reslin_queasy.date1).all():
 
-            if reslin_queasy.date1 < reslin_queasy.date2:
-                for curr_date in date_range(reslin_queasy.date1 + 1,reslin_queasy.date2) :
-                    rqsy = Reslin_queasy()
-                    db_session.add(rqsy)
+            # Rd 30/7/2025
+            # check if not None
+            if reslin_queasy.date1 and reslin_queasy.date2:
+                if reslin_queasy.date1 < reslin_queasy.date2:
+                    for curr_date in date_range(reslin_queasy.date1 + 1,reslin_queasy.date2) :
+                        rqsy = Reslin_queasy()
+                        db_session.add(rqsy)
 
-                    buffer_copy(reslin_queasy, rqsy,except_fields=["date1","date2"])
-                    rqsy.date1 = curr_date
-                    rqsy.date2 = curr_date
+                        buffer_copy(reslin_queasy, rqsy,except_fields=["date1","date2"])
+                        rqsy.date1 = curr_date
+                        rqsy.date2 = curr_date
+
+
+                        pass
+
+                    rqsy = db_session.query(Rqsy).filter(
+                            (Rqsy._recid == reslin_queasy._recid)).first()
+                    rqsy.date2 = rqsy.date1
 
 
                     pass
-
-                rqsy = db_session.query(Rqsy).filter(
-                         (Rqsy._recid == reslin_queasy._recid)).first()
-                rqsy.date2 = rqsy.date1
-
-
-                pass
-                pass
+                    pass
 
         for reslin_queasy in db_session.query(Reslin_queasy).filter(
                  (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == rmember.resnr) & (Reslin_queasy.reslinnr == rmember.reslinnr)).order_by(Reslin_queasy.date1).all():
 
-            if reslin_queasy.date1 < reslin_queasy.date2:
-                for curr_date in date_range(reslin_queasy.date1 + 1,reslin_queasy.date2) :
-                    rqsy = Reslin_queasy()
-                    db_session.add(rqsy)
+            # Rd 30/7/2025
+            # check if not None
+            if reslin_queasy.date1 and  reslin_queasy.date2:
+                if reslin_queasy.date1 < reslin_queasy.date2:
+                    for curr_date in date_range(reslin_queasy.date1 + 1,reslin_queasy.date2) :
+                        rqsy = Reslin_queasy()
+                        db_session.add(rqsy)
 
-                    buffer_copy(reslin_queasy, rqsy,except_fields=["date1","date2"])
-                    rqsy.date1 = curr_date
-                    rqsy.date2 = curr_date
+                        buffer_copy(reslin_queasy, rqsy,except_fields=["date1","date2"])
+                        rqsy.date1 = curr_date
+                        rqsy.date2 = curr_date
+
+
+                        pass
+
+                    rqsy = db_session.query(Rqsy).filter(
+                            (Rqsy._recid == reslin_queasy._recid)).first()
+                    rqsy.date2 = rqsy.date1
 
 
                     pass
-
-                rqsy = db_session.query(Rqsy).filter(
-                         (Rqsy._recid == reslin_queasy._recid)).first()
-                rqsy.date2 = rqsy.date1
-
-
-                pass
-                pass
+                    pass
 
         for reslin_queasy in db_session.query(Reslin_queasy).filter(
                  (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == curr_resline.resnr) & (Reslin_queasy.reslinnr == curr_resline.reslinnr)).order_by(Reslin_queasy.date1).all():
