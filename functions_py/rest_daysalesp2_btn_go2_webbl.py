@@ -80,10 +80,10 @@ def rest_daysalesp2_btn_go2_webbl(bline_list_data:[Bline_list], buf_art_data:[Bu
 
     if bline_list:
         turnover_data.clear()
-        t_betrag, t_foreign, exchg_rate, tot_serv, tot_tax, tot_debit, tot_cash, 
-        tot_cash1, tot_trans, tot_ledger, tot_cover, nt_cover, tot_other, nt_other, 
-        nt_serv, nt_tax, nt_debit, nt_cash, nt_cash1, nt_trans, nt_ledger, tot_vat, 
-        nt_vat, avail_outstand_list, turnover_data, t_tot_betrag_data, t_nt_betrag_data, 
+        t_betrag, t_foreign, exchg_rate, tot_serv, tot_tax, tot_debit, tot_cash, \
+        tot_cash1, tot_trans, tot_ledger, tot_cover, nt_cover, tot_other, nt_other, \
+        nt_serv, nt_tax, nt_debit, nt_cash, nt_cash1, nt_trans, nt_ledger, tot_vat, \
+        nt_vat, avail_outstand_list, turnover_data, t_tot_betrag_data, t_nt_betrag_data, \
         outstand_list_data, pay_list_data, summ_list_data = get_output(rest_daysalesp2_btn_go_5_cldbl(bline_list_data, buf_art_data, disc_art1, disc_art2, disc_art3, 
                                                                                                       curr_dept, all_user, shift, from_date, to_date, art_str, 
                                                                                                       voucher_art, zero_vat_compli, exclude_compli, show_fbodisc, 

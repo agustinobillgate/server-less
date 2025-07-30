@@ -657,9 +657,10 @@ def rest_daysalesp2_btn_go_5_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
         nt_vat =  to_decimal("0")
         nt_pvoucher =  to_decimal("0")
 
-        # for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.bl_recid (kellner) == bline_list.bl_recid and kellner.departement == curr_dept)):
-        for bline__list in query(bline_list_data, filters=(lambda bline__list: bline__list.selected.lower()  == ("YES").lower())):
-            kellner = get_cache (Kellner, {"rec__id": [(eq, bline__list.bl__recid)],"departement": [(eq, curr_dept)]})
+
+        # for bline__list in query(bline_list_data, filters=(lambda bline__list: bline__list.selected.lower()  == ("YES").lower())):
+        for bline__list in query(bline_list_data, filters=(lambda bline__list: bline__list.selected  == True)):
+            kellner = get_cache (Kellner, {"_recid": [(eq, bline__list.bl_recid)],"departement": [(eq, curr_dept)]})
 
 
             if kellner is None:
