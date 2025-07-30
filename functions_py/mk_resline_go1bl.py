@@ -2,6 +2,7 @@
 #-----------------------------------------
 # Rd 30/7/25
 # gitlab: 293
+# if date1 & date2 not None
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
