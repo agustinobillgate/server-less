@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 30/7/25
+# gitlab: 399
+# t-kellner1 -> t-kellner
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -17,7 +21,6 @@ def ts_restinv_waiter_transferbl(pvilanguage:int, table_list_data:[Table_list], 
     kellner = htparam = h_bill = umsatz = h_bill_line = h_journal = None
 
     t_kellner1 = table_list = None
-
     t_kellner1_data, T_kellner1 = create_model_like(Kellner)
 
     db_session = local_storage.db_session
@@ -30,7 +33,12 @@ def ts_restinv_waiter_transferbl(pvilanguage:int, table_list_data:[Table_list], 
         nonlocal t_kellner1, table_list
         nonlocal t_kellner1_data
 
-        return {"bill_date": bill_date, "t-kellner1": t_kellner1_data}
+        # Rd 30/7/25
+        # gitlab: 399
+        # t-kellner1 -> t-kellner
+        # return {"bill_date": bill_date, "t-kellner1": t_kellner1_data}
+        print(t_kellner1_data)
+        return {"bill_date": bill_date, "t-kellner": t_kellner1_data}
 
     def transfer_now(k1:int, k2:int, bill_date:date):
 

@@ -438,6 +438,9 @@ update_field_mapping = {
     #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
     "adult": "Adult",
     "arrtime": "ArrTime",
+    "arrtime": "arrTime",
+    "statstr":"statStr",
+    
     "deptime": "DepTime",
     "phoneno": "PhoneNo",
     "claimby": "ClaimBy",
@@ -670,6 +673,8 @@ update_field_mapping = {
     "t_amount":"tAmount",
     "chgid":"chgID",        # vhpFOR/globalReservationReview
 
+    "t-kellner":"t-kellner1",
+
 
     }
 docker_version += ".r"
@@ -839,6 +844,9 @@ update_table_name("vhpFA","prChgPrepare1","t-l-artikel","tLArtikel")
 
 update_table_name("vhpINV","chgStoreRequestLoadData","op-list","opList")
 update_table_name("vhpINV","storeReqInsPrepare","op-list","opList")
+
+update_table_name("vhpOU","restInvWaiterTransfer1", "t-kellner", "t-kellner1")
+
 
 def get_function_version(module_name, function_name, file_path):
     # file_path  = "/var/task/functions/" + function_name + ".py"
