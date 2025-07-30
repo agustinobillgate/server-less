@@ -795,6 +795,9 @@ update_table_name("vhpENG","egRepmaintainPrepare","tmaintask","tMaintask")
 update_table_name("vhpENG","egRepmaintainPrepare","tfrequency","tFrequency")
 update_table_name("vhpENG","egRepmaintainPrepare","tstatus","tStatus")
 
+update_table_name("vhpENG","egRepdurationPrepare","tlocation","tLocation")
+update_table_name("vhpENG","egRepdurationPrepare","tmaintask","tMaintask")
+
 #updated 1.0.0.41r (4-Juli-2025) egPropertyPrepare
 update_table_name("vhpENG","egPropertyPrepare","location","Location")
 update_table_name("vhpENG","egPropertyPrepare","maintask","Maintask")
