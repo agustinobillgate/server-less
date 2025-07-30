@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 30/7/2025
+# gitlab: 640
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -63,13 +66,13 @@ def get_po_listbl(usrname:string, po_number:string, last_doc_nr:string, app_sort
 
     if usrname == None:
         usrname = ""
-
+    print("11111")
     if po_number != "":
         param267, t_list_data = get_output(po_list_btn_gocldbl(usrname, po_number, dml_only))
     else:
         first_docu_nr, curr_docu_nr, param267, last_docu_nr, t_list_data = get_output(po_list_btn_go2cldbl(t_liefno, last_doc_nr, sorttype, deptnr, all_supp, stattype, usrname, from_date, to_date, billdate, dml_only, app_sort))
     p_267 = to_int(param267)
-
+    print("22222")
     for t_list in query(t_list_data, sort_by=[("docu_nr",False)]):
         q2_list = Q2_list()
         q2_list_data.append(q2_list)

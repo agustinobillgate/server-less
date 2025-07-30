@@ -128,7 +128,10 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
         s_list.reihenfolge = 1
         s_list.lager_nr = 9999
-        s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+        # Rd 30/7/2025
+        # if available
+        if gl_acct:
+            s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
         s_list.flag = 0
 
         gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, food_bev)]})
@@ -137,7 +140,10 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
         s_list.reihenfolge = 2
         s_list.lager_nr = 9999
-        s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+        # Rd 30/7/2025
+        # if available
+        if gl_acct:
+            s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
         s_list.flag = 0
 
         for l_lager in db_session.query(L_lager).order_by(L_lager._recid).all():
@@ -1198,7 +1204,10 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
         s_list.reihenfolge = 1
         s_list.lager_nr = 9999
-        s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+         # Rd 30/7/2025
+        # if available
+        if gl_acct:
+            s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
         s_list.flag = 0
 
         gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, food_bev)]})
@@ -1207,7 +1216,10 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
         s_list.reihenfolge = 2
         s_list.lager_nr = 9999
-        s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+        # Rd 30/7/2025
+        # if available
+        if gl_acct:
+            s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
         s_list.flag = 0
         flag = 1
 
@@ -1895,7 +1907,10 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
         s_list.reihenfolge = 1
         s_list.lager_nr = 9999
-        s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+        # Rd 30/7/2025
+        # if available
+        if gl_acct:
+            s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
         s_list.flag = 0
 
         gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, food_bev)]})
@@ -1904,7 +1919,10 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
         s_list.reihenfolge = 2
         s_list.lager_nr = 9999
-        s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+        # Rd 30/7/2025
+        # if available
+        if gl_acct:
+            s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
         s_list.flag = 0
         flag = 2
 

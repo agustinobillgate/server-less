@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 30/7/2025
+# gitlab: 640
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_order, L_artikel, Htparam, L_lieferant, L_orderhdr, Parameters, Waehrung, Queasy
