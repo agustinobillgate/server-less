@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 29/7/2025
+# gitlab: 706
+# return {"ci_date": ci_date, "store_number": store_number, "groupid": groupid, "engid": engid, "p_992": p_992, "q-133": q_133_data, "tpic": tpic_data, "dept-link": dept_link_data}
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date

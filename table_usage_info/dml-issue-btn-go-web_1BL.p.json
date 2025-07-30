@@ -1,0 +1,153 @@
+{
+    "L_op": {
+        "read": [
+            "lief_nr",
+            "datum",
+            "lager_nr",
+            "artnr",
+            "zeit",
+            "anzahl",
+            "einzelpreis",
+            "warenwert",
+            "op_art",
+            "herkunftflag",
+            "docu_nr",
+            "lscheinnr",
+            "pos",
+            "fuellflag",
+            "flag",
+            "stornogrund",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Gl_acct": {
+        "read": [],
+        "write": []
+    },
+    "Bediener": {
+        "read": [
+            "nr",
+            "userinit",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_ophdr": {
+        "read": [
+            "datum",
+            "lager_nr",
+            "lscheinnr",
+            "op_typ",
+            "fibukonto",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [],
+        "write": []
+    },
+    "Dml_art": {
+        "read": [],
+        "write": []
+    },
+    "Dml_artdep": {
+        "read": [],
+        "write": []
+    },
+    "L_artikel": {
+        "read": [
+            "ek_aktuell",
+            "ek_letzter",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_lieferant": {
+        "read": [],
+        "write": []
+    },
+    "L_liefumsatz": {
+        "read": [
+            "gesamtumsatz",
+            "datum",
+            "lief_nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reslin_queasy": {
+        "read": [
+            "char3",
+            "deci3",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "flogical",
+            "fchar",
+            "finteger",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_kredit": {
+        "read": [
+            "name",
+            "lief_nr",
+            "lscheinnr",
+            "rgdatum",
+            "datum",
+            "saldo",
+            "ziel",
+            "netto",
+            "bediener_nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Ap_journal": {
+        "read": [
+            "lief_nr",
+            "docu_nr",
+            "lscheinnr",
+            "rgdatum",
+            "saldo",
+            "netto",
+            "userinit",
+            "zeit",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_pprice": {
+        "read": [
+            "counter",
+            "docu_nr",
+            "artnr",
+            "anzahl",
+            "einzelpreis",
+            "warenwert",
+            "bestelldatum",
+            "lief_nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_bestand": {
+        "read": [
+            "anz_eingang",
+            "wert_eingang",
+            "anz_ausgang",
+            "wert_ausgang",
+            "artnr",
+            "lager_nr",
+            "anf_best_dat",
+            "_recid"
+        ],
+        "write": []
+    }
+}

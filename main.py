@@ -498,14 +498,24 @@ update_field_mapping = {
     "created_by": ["Created_by", "Created_By", "created-by"],
     "deptname": ["deptName","DeptName","DeptNAME","DEPTNAME"],
     "main_nr": ["Main-nr", "main-nr"],
-    "engid": ["engId","EngId","EngID"],
+    # "engid": ["engId","EngId","EngID","ENGID"],
+    "engid": "EngID",
     # "PI-status":["pi-status", "pi-Status"],
     "pi_status":["pi-status", "PI-status"],
     "pi_type":["pi-type", "PI-type"],
-    "deptno": ["DeptNo","deptNo"],
+    # "deptno": ["DeptNo","deptNo"],
+    "deptno": "deptNo",
+    "deptno": "DeptNo",
+    
     "postdate": ["postDate", "PostDate"],
     "avail-addvat":"avail-addVAT",
-    "availAddvat": ["availAddVat","availAddVat","availAddVAT"],
+    # "availAddvat": ["availAddVat","availAddVat","availAddVAT"],
+    # vhpINV/receivingReportPrepare1
+    "availAddvat":"availAddVat",
+    "availAddvat":"availAddVat",
+    "availAddvat":"availAddVAT",
+    
+
     "readequipment":"readEquipment",
     "datum":"Datum",
     "gruppenname":"Gruppenname",
@@ -615,6 +625,7 @@ update_field_mapping = {
     "vhpwebbased5-appservicename":"VHPWebBased5-AppServiceName",
 
     # "activeflag": ["ActiveFlag","activeFlag"], 
+    "activeflag":"ActiveFlag",
 
     # "mtd-room": "mtd-Room",
     # "ytd-room": "ytd-Room",
@@ -635,8 +646,32 @@ update_field_mapping = {
     "articlevhp":"articleVHP",
     "articlebe":"articleBE",
   
-   
-}
+    # vhpENG/egReqlistLoad
+    "source-str":"Source-str",
+    # "ex_finishtime":"ex-finishtime",
+    "ex_finishstr":"ex-finishstr",
+    "source":"SOURCE",
+    "avail-image":"avail-image",
+
+    "lager_bezeich": "lagerBezeich",
+    "lager_bez1":"lagerBez1",
+    "curr_pos":"currPos",
+
+    "curr_lager":"currLager",
+    #   "deptNo",
+    "show_price":"showPrice",
+    "req_flag":"reqFlag",
+    #   "p220",
+    "out_type":"outType",
+    "to_stock":"toStock",
+    "lager_bezeich":"lagerBezeich",
+    "lager_bez1":"lagerBez1",
+    #   "currPos",
+    "t_amount":"tAmount",
+    "chgid":"chgID",        # vhpFOR/globalReservationReview
+
+
+    }
 docker_version += ".r"
 
 #updated 1.0.0.14
@@ -772,6 +807,9 @@ update_table_name("vhpENG","egRepmaintainPrepare","tmaintask","tMaintask")
 update_table_name("vhpENG","egRepmaintainPrepare","tfrequency","tFrequency")
 update_table_name("vhpENG","egRepmaintainPrepare","tstatus","tStatus")
 
+update_table_name("vhpENG","egRepdurationPrepare","tlocation","tLocation")
+update_table_name("vhpENG","egRepdurationPrepare","tmaintask","tMaintask")
+
 #updated 1.0.0.41r (4-Juli-2025) egPropertyPrepare
 update_table_name("vhpENG","egPropertyPrepare","location","Location")
 update_table_name("vhpENG","egPropertyPrepare","maintask","Maintask")
@@ -799,6 +837,8 @@ update_table_name("vhpFA","prChgPrepare1","t-parameters","tParameters")
 update_table_name("vhpFA","prChgPrepare1","t-l-orderhdr","tLOrderhdr")
 update_table_name("vhpFA","prChgPrepare1","t-l-artikel","tLArtikel")
 
+update_table_name("vhpINV","chgStoreRequestLoadData","op-list","opList")
+update_table_name("vhpINV","storeReqInsPrepare","op-list","opList")
 
 def get_function_version(module_name, function_name, file_path):
     # file_path  = "/var/task/functions/" + function_name + ".py"
@@ -844,6 +884,7 @@ class CustomJSONEncoder(json.JSONEncoder):
             return obj.days
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
+
 
 def update_input_format(obj,input_data):
     # Update the input object if variable has "-"
@@ -1062,7 +1103,7 @@ def update_input_format(obj,input_data):
 
 def update_output_format(output_data):
     key_list = list(output_data.keys())
-
+    # print("Update Output Data:", key_list)
     for key in key_list:
         #updated 1.0.0.11
         if re.match(r".*__.*",key):
@@ -1071,6 +1112,7 @@ def update_output_format(output_data):
             key = updated_key
 
         camelCaseKey = camelCase(key)
+        # print("camelcase:", camelCaseKey, key, type(output_data[key]))
 
 
         if type(output_data[key]) == list and len(output_data[key]) == 0:
@@ -1175,13 +1217,11 @@ def update_output_format(output_data):
                                         new_field_name = update_field_mapping[new_field_name]
                                         data[new_field_name] = data[updateFieldName]
                                         data[new_field_name.lower()] = data.pop(updateFieldName)
+                                    # data[new_field_name] = data.pop(updateFieldName)
 
                                     #updated 1.0.0.24
                                     elif new_field_name != updateFieldName:
                                             data[new_field_name.lower()] =  data.pop(updateFieldName)
-
-                                    # data[new_field_name] = data.pop(updateFieldName)
-
                             # #updated 1.0.0.2
                             # for updateFieldName in fieldNameList:
                             #     if updateFieldName == "yield_":
@@ -1194,7 +1234,6 @@ def update_output_format(output_data):
                             #         data[(updateFieldName.replace("_","-").replace("--","_"))] = data.pop(updateFieldName)
                             #         # data[(updateFieldName.replace("_","-"))] = data.pop(updateFieldName)
  
-
             #updated 1.0.0.7
             if key != camelCaseKey and key in list(output_data.keys()):                
                 output_data[camelCaseKey] = output_data[key]
@@ -1380,6 +1419,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
         response = json.dumps({"response":output_data}, cls=CustomJSONEncoder, separators=(',', ':'))
         return response
     finally:
+        
         initialize_local_storage()
         pass
     
@@ -1629,7 +1669,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
             retrieved_json = json.loads(existing_json_data) 
             output_data = retrieved_json
             print("ExistingData:", len(output_data))
-        output_data["outputOkFlag"] = str(ok_flag)
+       
         output_data_size = len(data_string)
         ServerInfo["lendata"] = output_data_size
 
@@ -1654,6 +1694,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
             pass
 
     finally:
+        output_data["outputOkFlag"] = str(ok_flag)
         initialize_local_storage()
         try:
             if db_session:

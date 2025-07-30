@@ -2,6 +2,8 @@
 #-----------------------------------------
 # Rd 22/7/2025
 # Gitlab: 767
+# weekday function
+# if available bill_date
 #-----------------------------------------
 
 
@@ -421,10 +423,13 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                                     if queasy and queasy.logi3:
                                         bill_date = res_line.ankunft
 
-                                    if new_contrate:
+                                    # Rd 30/7/2025
+                                    # if date availabel
+                                    if bill_date and new_contrate:
                                         rate_found, rmrate, restricted_disc, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, res_line.resnr, res_line.reslinnr, guest_pr.code, None, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, res_line.zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
                                     else:
-                                        rmrate, rate_found = get_output(pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
+                                        if bill_date:
+                                            rmrate, rate_found = get_output(pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
 
                                         if it_exist:
                                             rate_found = True
@@ -1076,11 +1081,13 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                                     if queasy and queasy.logi3:
                                         bill_date = res_line.ankunft
 
-                                    if new_contrate:
-                                        print("Ankunft:", res_line.ankunft)
+                                    # Rd 30/7/2025
+                                    # if date availabel
+                                    if bill_date and new_contrate:
                                         rate_found, rmrate, restricted_disc, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, res_line.resnr, res_line.reslinnr, guest_pr.code, None, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, res_line.zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
                                     else:
-                                        rmrate, rate_found = get_output(pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
+                                        if bill_date:
+                                            rmrate, rate_found = get_output(pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
 
                                         if it_exist:
                                             rate_found = True
@@ -1091,8 +1098,11 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                                                 rmrate =  to_decimal("0")
 
                                 if not rate_found:
-                                    w_day = wd_array[get_weekday(bill_date) - 1]
 
+                                    # Rd 30/7/2025
+                                    # if bill_date available
+                                    if bill_date:
+                                        w_day = wd_array[get_weekday(bill_date) - 1]
                                     if (bill_date == curr_date) or (bill_date == res_line.ankunft):
                                         rmrate =  to_decimal(res_line.zipreis)
 

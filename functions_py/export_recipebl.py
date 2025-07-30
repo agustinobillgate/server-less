@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 30/7/2025
+# gitlab: 986
+# change query.
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Htparam, H_rezept, H_rezlin, L_artikel
@@ -175,27 +179,36 @@ def export_recipebl(pvilanguage:int, from_artnr:int, to_artnr:int, from_kateg:in
 
         for h_list in query(h_list_data, filters=(lambda h_list: h_list.bezeich.lower()  == ("T O T A L").lower())):
             h_list_data.remove(h_list)
+
+
         h_list = H_list()
         h_list_data.append(h_list)
 
+        h_list.bezeich = "T O T A L"
+        h_list.portion = 0
+        h_list.flag = ""
+        h_list.cat_nr = 0
+        h_list.cat_name = ""
+        h_list.cat_bezeich = ""
+        h_list.rez_recipe_nr = 0
+        h_list.recipe_nr = 0
+        h_list.artnr = 0
+        h_list.qty =  to_decimal("0")
+        h_list.cost =  to_decimal(v_total_cost)
+        h_list.loss =  to_decimal("0")
+
+        # Rd, 30/7/2025
+        # h_list.cost_port = ( to_decimal(IF v_total_portion > 0 THEN)
+        # v_total_cost / v_total_portion
+        # ELSE
+        # 0)
+        # h_list.r_flag = True
+
+        if v_total_portion > 0:
+            h_list.cost_port = v_total_cost / v_total_portion
         else:
-            h_list.bezeich = "T O T A L"
-            h_list.portion = 0
-            h_list.flag = ""
-            h_list.cat_nr = 0
-            h_list.cat_name = ""
-            h_list.cat_bezeich = ""
-            h_list.rez_recipe_nr = 0
-            h_list.recipe_nr = 0
-            h_list.artnr = 0
-            h_list.qty =  to_decimal("0")
-            h_list.cost =  to_decimal(v_total_cost)
-            h_list.loss =  to_decimal("0")
-            h_list.cost_port = ( to_decimal(IF v_total_portion > 0 THEN)
-            v_total_cost / v_total_portion
-            ELSE
-            0)
-            h_list.r_flag = True
-            h_list.mass_unit = ""
+            h_list.cost_port = 0
+        h_list.r_flag = False
+        h_list.mass_unit = ""
 
     return generate_output()

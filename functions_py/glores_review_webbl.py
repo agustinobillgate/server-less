@@ -1,9 +1,14 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 30/7/25
+# gitlab: 108
+# requery: error: ORDER BY expression expected, got datetime.date(2024, 9, 24).
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bediener, Kontline, Guest, Zimkateg, Guest_pr, Res_line, Reservation
+from operator import attrgetter
 
 def glores_review_webbl(pvilanguage:int, delflag:bool, from_date:date, to_date:date, ci_date:date, resflag1:bool, gflag:bool, cflag:bool, from_name:string, to_name:string):
 
@@ -94,8 +99,30 @@ def glores_review_webbl(pvilanguage:int, delflag:bool, from_date:date, to_date:d
         if do_it:
 
             guest_obj_list = {}
-            for guest in db_session.query(Guest).filter(
-                     ((Guest.gastnr.in_(list(set([k_list.gastnr for k_list in k_list_data])))))).order_by(Guest.name, k_list.ankunft).all():
+            # Rd 30/7/2025
+            # for guest in db_session.query(Guest).filter(
+            #          ((Guest.gastnr.in_(list(set([k_list.gastnr for k_list in k_list_data])))))).order_by(Guest.name, k_list.ankunft).all():
+            
+            # for guest in db_session.query(Guest).filter(
+            #          ((Guest.gastnr.in_(list(set([k_list.gastnr for k_list in k_list_data])))))).order_by(Guest.name).all():
+            gastnr_set = {k.gastnr for k in k_list_data}
+            guest_map = {
+                g.gastnr: g
+                for g in db_session.query(Guest).filter(Guest.gastnr.in_(gastnr_set)).all()
+            }
+
+            k_list_sorted = sorted(
+                    k_list_data,
+                    key=lambda k: (
+                        getattr(guest_map.get(k.gastnr), "name", ""),  # guest.name
+                        k.ankunft                                     # tanggal
+                    )
+                )
+            for k in k_list_sorted:
+                guest = guest_map.get(k.gastnr)
+
+                usr = db_session.query(Usr).filter_by(nr=k.bediener_nr).first()
+                zimkateg = db_session.query(Zimkateg).filter_by(zikatnr=k.zikatnr).first()
                 if guest_obj_list.get(guest._recid):
                     continue
                 else:
