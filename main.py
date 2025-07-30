@@ -668,7 +668,7 @@ update_field_mapping = {
     "lager_bez1":"lagerBez1",
     #   "currPos",
     "t_amount":"tAmount",
-    #   "opList"
+    "chgid":"chgID",        # vhpFOR/globalReservationReview
 
 
     }
