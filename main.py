@@ -509,7 +509,13 @@ update_field_mapping = {
     
     "postdate": ["postDate", "PostDate"],
     "avail-addvat":"avail-addVAT",
-    "availAddvat": ["availAddVat","availAddVat","availAddVAT"],
+    # "availAddvat": ["availAddVat","availAddVat","availAddVAT"],
+    # vhpINV/receivingReportPrepare1
+    "availAddvat":"availAddVat",
+    "availAddvat":"availAddVat",
+    "availAddvat":"availAddVAT",
+    
+
     "readequipment":"readEquipment",
     "datum":"Datum",
     "gruppenname":"Gruppenname",

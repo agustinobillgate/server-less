@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 30/7/2025
+# (to_decimal(Queasy.char2) == l_op.einzelpreis) -> (func.cast(Queasy.char2, Numeric) == l_op.einzelpreis)
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
