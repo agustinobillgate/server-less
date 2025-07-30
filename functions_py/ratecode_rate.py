@@ -190,7 +190,12 @@ def ratecode_rate(ebdisc_flag:bool, kbdisc_flag:bool, resnr:int, reslinnr:int, p
 
     if queasy and queasy.logi3:
         datum = ankunft
-    w_day = wd_array[get_weekday(datum) - 1]
+    
+    # Rd, 30/7/2025
+    # weekday
+    # w_day = wd_array[get_weekday(datum) - 1]
+    if datum:
+       w_day = wd_array[get_weekday(datum) - 1]
 
     if argtno != 0:
 

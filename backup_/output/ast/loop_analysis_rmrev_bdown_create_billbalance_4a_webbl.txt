@@ -1,0 +1,138 @@
+Loop and Output Function Analysis
+Generated on: 2025-07-30 14:21:33
+File: ../functions_py/rmrev_bdown_create_billbalance_4a_webbl.py
+================================================================================
+
+Function: create_billbalance
+==================================================
+    └─ Loop_1 (line 243) - database_all
+       ├─ Target: res_line
+       ├─ Iterator: db_session.query(Res_line).filter((Res_line.active_flag <= 1) & ((Res_line.resstatus <= 2) | (Res_line.resstatus == 5) | (Res_line.resstatus == 6)) & not_(Res_line.ankunft > curr_date) & not_(Res_line.abreise < curr_date)).order_by(Res_line.resname).all()
+       ├─ get_output() at line 266:
+       │  --get_output 'calc_servtaxesbl(1, artikel.artnr, artikel.departement, curr_date)'
+       │  Assigns to: (service, vat, vat2, fact)
+       ├─ get_output() at line 513:
+       │  --get_output 'ratecode_seek(res_line.resnr, res_line.reslinnr, contcode, curr_date)'
+       │  Assigns to: prcode
+       ├─ get_output() at line 427:
+       │  --get_output 'ratecode_rate(ebdisc_flag, kbdisc_flag, res_line.resnr, res_line.reslinnr, guest_pr.code, None, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, res_line.zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr)'
+       │  Assigns to: (rate_found, rmrate, restricted_disc, kback_flag)
+       ├─ get_output() at line 430:
+       │  --get_output 'pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr)'
+       │  Assigns to: (rmrate, rate_found)
+
+        └─ Loop_2 (line 306) - standard
+           ├─ Target: curr_i
+           ├─ Iterator: range(1, res_line.zimmeranz + 1)
+           ├─ get_output() at line 513:
+           │  --get_output 'ratecode_seek(res_line.resnr, res_line.reslinnr, contcode, curr_date)'
+           │  Assigns to: prcode
+           ├─ get_output() at line 427:
+           │  --get_output 'ratecode_rate(ebdisc_flag, kbdisc_flag, res_line.resnr, res_line.reslinnr, guest_pr.code, None, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, res_line.zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr)'
+           │  Assigns to: (rate_found, rmrate, restricted_disc, kback_flag)
+           ├─ get_output() at line 430:
+           │  --get_output 'pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr)'
+           │  Assigns to: (rmrate, rate_found)
+
+            └─ Loop_3 (line 385) - standard
+               ├─ Target: loopi
+               ├─ Iterator: range(1, num_entries(res_line.zimmer_wunsch, ';') - 1 + 1)
+
+            └─ Loop_3 (line 522) - database_all
+               ├─ Target: argt_line
+               ├─ Iterator: db_session.query(Argt_line).filter((Argt_line.argtnr == arrangement.argtnr) & not_(Argt_line.kind2)).order_by(Argt_line._recid).all()
+
+            └─ Loop_3 (line 614) - standard
+               ├─ Target: i
+               ├─ Iterator: range(1, htparam.finteger + 1)
+
+            └─ Loop_3 (line 640) - database_all
+               ├─ Target: fixleist
+               ├─ Iterator: db_session.query(Fixleist).filter((Fixleist.resnr == res_line.resnr) & (Fixleist.reslinnr == res_line.reslinnr)).order_by(Fixleist._recid).all()
+
+            └─ Loop_3 (line 714) - database_all
+               ├─ Target: argt_line
+               ├─ Iterator: db_session.query(Argt_line).filter((Argt_line.argtnr == arrangement.argtnr) & Argt_line.kind2).order_by(Argt_line._recid).all()
+
+                └─ Loop_4 (line 778) - database_all
+                   ├─ Target: reslin_queasy
+                   ├─ Iterator: db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line'.lower()) & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (curr_date >= Reslin_queasy.date1) & (curr_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all()
+
+    └─ Loop_1 (line 897) - database_all
+       ├─ Target: res_line
+       ├─ Iterator: db_session.query(Res_line).filter((Res_line.active_flag <= 1) & ((Res_line.resstatus <= 2) | (Res_line.resstatus == 5) | (Res_line.resstatus == 6)) & not_(Res_line.ankunft > curr_date) & not_(Res_line.abreise < curr_date)).order_by(Res_line.zinr, Res_line.resnr).all()
+       ├─ get_output() at line 924:
+       │  --get_output 'calc_servtaxesbl(1, artikel.artnr, artikel.departement, curr_date)'
+       │  Assigns to: (service, vat, vat2, fact)
+       ├─ get_output() at line 1174:
+       │  --get_output 'ratecode_seek(res_line.resnr, res_line.reslinnr, contcode, curr_date)'
+       │  Assigns to: prcode
+       ├─ get_output() at line 1085:
+       │  --get_output 'ratecode_rate(ebdisc_flag, kbdisc_flag, res_line.resnr, res_line.reslinnr, guest_pr.code, None, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, res_line.zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr)'
+       │  Assigns to: (rate_found, rmrate, restricted_disc, kback_flag)
+       ├─ get_output() at line 1088:
+       │  --get_output 'pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr)'
+       │  Assigns to: (rmrate, rate_found)
+
+        └─ Loop_2 (line 964) - standard
+           ├─ Target: curr_i
+           ├─ Iterator: range(1, res_line.zimmeranz + 1)
+           ├─ get_output() at line 1174:
+           │  --get_output 'ratecode_seek(res_line.resnr, res_line.reslinnr, contcode, curr_date)'
+           │  Assigns to: prcode
+           ├─ get_output() at line 1085:
+           │  --get_output 'ratecode_rate(ebdisc_flag, kbdisc_flag, res_line.resnr, res_line.reslinnr, guest_pr.code, None, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, res_line.zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr)'
+           │  Assigns to: (rate_found, rmrate, restricted_disc, kback_flag)
+           ├─ get_output() at line 1088:
+           │  --get_output 'pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr)'
+           │  Assigns to: (rmrate, rate_found)
+
+            └─ Loop_3 (line 1043) - standard
+               ├─ Target: loop2
+               ├─ Iterator: range(1, num_entries(res_line.zimmer_wunsch, ';') - 1 + 1)
+
+            └─ Loop_3 (line 1183) - database_all
+               ├─ Target: argt_line
+               ├─ Iterator: db_session.query(Argt_line).filter((Argt_line.argtnr == arrangement.argtnr) & not_(Argt_line.kind2)).order_by(Argt_line._recid).all()
+
+            └─ Loop_3 (line 1275) - standard
+               ├─ Target: j
+               ├─ Iterator: range(1, htparam.finteger + 1)
+
+            └─ Loop_3 (line 1301) - database_all
+               ├─ Target: fixleist
+               ├─ Iterator: db_session.query(Fixleist).filter((Fixleist.resnr == res_line.resnr) & (Fixleist.reslinnr == res_line.reslinnr)).order_by(Fixleist._recid).all()
+
+            └─ Loop_3 (line 1375) - database_all
+               ├─ Target: argt_line
+               ├─ Iterator: db_session.query(Argt_line).filter((Argt_line.argtnr == arrangement.argtnr) & Argt_line.kind2).order_by(Argt_line._recid).all()
+
+                └─ Loop_4 (line 1438) - database_all
+                   ├─ Target: reslin_queasy
+                   ├─ Iterator: db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line'.lower()) & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (curr_date >= Reslin_queasy.date1) & (curr_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all()
+
+    └─ Loop_1 (line 1556) - query_function
+       ├─ Target: s_list
+       ├─ Iterator: query(s_list_data)
+
+    └─ Loop_1 (line 1560) - query_function
+       ├─ Target: sum_list
+       ├─ Iterator: query(sum_list_data)
+
+    └─ Loop_1 (line 1593) - query_function
+       ├─ Target: cc_list
+       ├─ Iterator: query(cc_list_data, filters=lambda cc_list: cc_list.flag == '', sort_by=[('currency', False)])
+
+    └─ Loop_1 (line 1680) - query_function
+       ├─ Target: cl_list
+       ├─ Iterator: query(cl_list_data, filters=lambda cl_list: cl_list.flag.lower() != '*'.lower())
+
+
+Summary:
+Total loops: 20
+Total get_output calls: 8
+
+Loop types found:
+- database_all: 10
+- standard: 6
+- query_function: 4
