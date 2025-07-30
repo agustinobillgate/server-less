@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 30/7/25
+# gitlab: 152
+# no attribute 'bemerk'. Did you mean: 'bemerkung'?\n"
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bediener, Res_line, Guest, Bill, Reservation, Queasy, Waehrung
@@ -81,7 +85,9 @@ def fo_invoice_fill_rescommentbl(bil_recid:int, fill_co:bool):
     if reservation and reservation.bemerk != "":
         rescomment = rescomment + reservation.bemerk + chr_unicode(10)
 
-    if guestmember and guestmember.bemerk != "":
+    # Rd 30/7/2025
+    # bemerk -> bemerkung
+    if guestmember and guestmember.bemerkung != "":
         rescomment = rescomment + guestmember.bemerk + chr_unicode(10)
 
     waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
