@@ -3709,46 +3709,46 @@ def po_list_btn_go2_1cldbl(t_liefno:int, last_docu_nr:string, sorttype:int, dept
 
                 if sorttype == 2:
                     last_docu_nr1 = last_docu_nr1 + ";" + to_string(last_to_sort)
+        #    else:
+
+            l_orderhdr_obj_list = {}
+            for l_orderhdr, l_lieferant, l_order1 in db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant,(L_lieferant.lief_nr == L_orderhdr.lief_nr)).join(L_order1,(L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter(
+                     (L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all():
+                if l_orderhdr_obj_list.get(l_orderhdr._recid):
+                    continue
                 else:
-
-                    l_orderhdr_obj_list = {}
-                    for l_orderhdr, l_lieferant, l_order1 in db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant,(L_lieferant.lief_nr == L_orderhdr.lief_nr)).join(L_order1,(L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter(
-                            (L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all():
-                        if l_orderhdr_obj_list.get(l_orderhdr._recid):
-                            continue
-                        else:
-                            l_orderhdr_obj_list[l_orderhdr._recid] = True
+                    l_orderhdr_obj_list[l_orderhdr._recid] = True
 
 
-                        cost_list_bezeich = ""
-                        w_list_wabkurz = ""
+                cost_list_bezeich = ""
+                w_list_wabkurz = ""
 
-                        w_list = query(w_list_data, filters=(lambda w_list: w_list.nr == l_orderhdr.angebot_lief[2]), first=True)
+                w_list = query(w_list_data, filters=(lambda w_list: w_list.nr == l_orderhdr.angebot_lief[2]), first=True)
 
-                        cost_list = query(cost_list_data, filters=(lambda cost_list: cost_list.nr == l_orderhdr.angebot_lief[0]), first=True)
+                cost_list = query(cost_list_data, filters=(lambda cost_list: cost_list.nr == l_orderhdr.angebot_lief[0]), first=True)
 
-                        if w_list:
-                            w_list_wabkurz = w_list.wabkurz
+                if w_list:
+                    w_list_wabkurz = w_list.wabkurz
 
-                        if cost_list:
-                            cost_list_bezeich = cost_list.bezeich
+                if cost_list:
+                    cost_list_bezeich = cost_list.bezeich
 
-                        if dml_only:
+                if dml_only:
 
-                            if matches(l_order1.lief_fax[0],r"D*") and l_order1.lief_fax[2] == ("DML").lower() :
-                                cr_temp_table()
+                    if matches(l_order1.lief_fax[0],r"D*") and l_order1.lief_fax[2] == ("DML").lower() :
+                        cr_temp_table()
 
-                        elif pr_only:
+                elif pr_only:
 
-                            if substring(l_order1.lief_fax[0], 0, 1) == ("R").lower() :
-                                cr_temp_table()
+                    if substring(l_order1.lief_fax[0], 0, 1) == ("R").lower() :
+                        cr_temp_table()
 
-                        elif excl_dml_pr:
+                elif excl_dml_pr:
 
-                            if substring(l_order1.lief_fax[0], 0, 1) != ("R").lower()  and (substring(l_order1.lief_fax[0], 0, 1) != ("D").lower()  and l_order1.lief_fax[2] != ("DML").lower()):
-                                cr_temp_table()
-                        else:
-                            cr_temp_table()
+                    if substring(l_order1.lief_fax[0], 0, 1) != ("R").lower()  and (substring(l_order1.lief_fax[0], 0, 1) != ("D").lower()  and l_order1.lief_fax[2] != ("DML").lower()):
+                        cr_temp_table()
+                else:
+                    cr_temp_table()
 
     def disp_list11b():
 
