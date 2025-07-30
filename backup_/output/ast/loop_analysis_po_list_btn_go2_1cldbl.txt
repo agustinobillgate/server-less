@@ -1,0 +1,981 @@
+Loop and Output Function Analysis
+Generated on: 2025-07-30 10:55:21
+File: ../functions_py/po_list_btn_go2_1cldbl.py
+================================================================================
+
+Function: disp_list1
+==================================================
+    └─ Loop_1 (line 72) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 113) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 157) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 198) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 242) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 283) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 327) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 368) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 412) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 453) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 497) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 538) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 582) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 623) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 667) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 708) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+
+Function: disp_list1a
+==================================================
+    └─ Loop_1 (line 765) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 803) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 821) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 865) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 903) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 921) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 965) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 1003) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 1021) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 1065) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 1103) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 1121) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 1165) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 1203) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 1221) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 1265) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 1303) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 1321) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 1365) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 1403) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 1421) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 1465) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 1503) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 1521) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+
+Function: disp_list1b
+==================================================
+    └─ Loop_1 (line 1574) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 1615) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 1659) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 1700) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 1744) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 1785) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 1829) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 1870) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 1914) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 1955) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 1999) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 2040) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 2084) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 2125) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 2169) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 2210) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+
+Function: disp_list11
+==================================================
+    └─ Loop_1 (line 2263) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2304) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2348) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2389) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2433) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2474) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2518) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2559) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2603) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2644) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2688) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2729) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2773) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2814) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2858) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 2899) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+
+Function: disp_list11a
+==================================================
+    └─ Loop_1 (line 2956) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 2994) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 3012) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3056) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3094) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 3112) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3156) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3194) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 3212) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3256) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3294) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 3312) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3356) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3394) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 3412) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3456) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3494) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 3512) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3556) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3594) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 3612) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3656) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 3694) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 3712) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+
+Function: disp_list11b
+==================================================
+    └─ Loop_1 (line 3765) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 3806) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 3850) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 3891) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 3935) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 3976) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 4020) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 4061) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 4105) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 4146) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 4190) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 4231) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 4275) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 4316) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 4360) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 4401) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+
+Function: disp_list2
+==================================================
+    └─ Loop_1 (line 4454) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 4495) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 4539) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 4580) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 4624) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 4665) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 4709) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 4750) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 4794) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 4835) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 4879) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 4920) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 4964) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 5005) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 5049) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 5090) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+
+Function: disp_list2a
+==================================================
+    └─ Loop_1 (line 5147) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5185) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 5203) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5247) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5285) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 5303) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5347) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5385) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 5403) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5447) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5485) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 5503) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5547) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5585) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 5603) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5647) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5685) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 5703) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5747) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5785) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 5803) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5847) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 5885) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 5903) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+
+Function: disp_list2b
+==================================================
+    └─ Loop_1 (line 5956) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 5997) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6041) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6082) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6126) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6167) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6211) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6252) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6296) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6337) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6381) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6422) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6466) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6507) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6551) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 6592) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+
+Function: disp_list22
+==================================================
+    └─ Loop_1 (line 6645) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 6686) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 6730) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 6771) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 6815) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 6856) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 6900) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 6941) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 6985) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 7026) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 7070) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 7111) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 7155) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 7196) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 7240) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+    └─ Loop_1 (line 7281) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all()
+
+
+Function: disp_list22a
+==================================================
+    └─ Loop_1 (line 7338) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 7376) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 7394) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 7438) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 7476) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 7494) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 7538) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 7576) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 7594) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 7638) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 7676) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 7694) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 7738) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 7776) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 7794) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 7838) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 7876) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 7894) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 7938) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 7976) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 7994) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 8038) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+    └─ Loop_1 (line 8076) - query_function
+       ├─ Target: q_list
+       ├─ Iterator: query(q_list_data, filters=lambda q_list: q_list.to_sort > temp_counter_nr)
+
+    └─ Loop_1 (line 8094) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_lieferant.firma, L_orderhdr.bestelldatum, L_orderhdr.docu_nr).all()
+
+
+Function: disp_list22b
+==================================================
+    └─ Loop_1 (line 8147) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8188) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8232) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8273) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8317) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8358) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8402) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8443) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8487) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8528) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8572) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8613) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 1) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8657) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8698) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.lieferdatum < billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8742) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname) & (L_orderhdr.docu_nr > last_docu_nr.lower())).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+    └─ Loop_1 (line 8783) - database_all
+       ├─ Target: (l_orderhdr, l_lieferant, l_order1)
+       ├─ Iterator: db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant, L_lieferant.lief_nr == L_orderhdr.lief_nr).join(L_order1, (L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 2) & (L_order1.pos == 0)).filter((L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.angebot_lief[inc_value(0)] == deptnr) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.besteller == usrname)).order_by(L_orderhdr.docu_nr, L_lieferant.firma, L_orderhdr.bestelldatum).all()
+
+
+Function: create_costlist
+==================================================
+    └─ Loop_1 (line 8835) - database_all
+       ├─ Target: parameters
+       ├─ Iterator: db_session.query(Parameters).filter((Parameters.progname == 'CostCenter'.lower()) & (Parameters.section == 'Name'.lower()) & (Parameters.varname > '')).order_by(Parameters._recid).all()
+
+
+Function: currency_list
+==================================================
+    └─ Loop_1 (line 8869) - database_all
+       ├─ Target: waehrung
+       ├─ Iterator: db_session.query(Waehrung).order_by(Waehrung.wabkurz).all()
+
+
+Function: cr_temp_table
+==================================================
+    └─ Loop_1 (line 8954) - standard
+       ├─ Target: loop
+       ├─ Iterator: range(1, 4 + 1)
+
+    └─ Loop_1 (line 9127) - standard
+       ├─ Target: loop
+       ├─ Iterator: range(1, 4 + 1)
+
+
+Function: create_temp_table_list
+==================================================
+    └─ Loop_1 (line 9237) - standard
+       ├─ Target: loop
+       ├─ Iterator: range(1, 4 + 1)
+
+    └─ Loop_1 (line 9392) - standard
+       ├─ Target: loop
+       ├─ Iterator: range(1, 4 + 1)
+
+
+Summary:
+Total loops: 230
+Total get_output calls: 0
+
+Loop types found:
+- database_all: 194
+- query_function: 32
+- standard: 4
