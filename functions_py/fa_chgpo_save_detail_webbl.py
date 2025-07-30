@@ -102,8 +102,9 @@ def fa_chgpo_save_detail_webbl(s_order_data:[S_order], order_nr:string, credit_t
         fa_order.op_art = 2
         fa_order.last_id = user_init
 
-        if s_order.ActiveReason != "" and s_order.ActiveReason != None:
-            fa_order.activereason = s_order.ActiveReason
+        # if s_order.ActiveReason != "" and s_order.ActiveReason != None:
+        if s_order.activereason not in ("", None):
+            fa_order.activereason = s_order.activereason
         else:
             fa_order.activereason = to_string(s_order.nr_budget)
     fa_ordheader.total_amount =  to_decimal(total_order)
