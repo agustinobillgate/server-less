@@ -2,6 +2,7 @@
 #-----------------------------------------
 # Rd 30/7/25
 # gitlab: 108
+# requery: error: ORDER BY expression expected, got datetime.date(2024, 9, 24).
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
