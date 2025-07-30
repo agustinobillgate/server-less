@@ -1,0 +1,39 @@
+Loop and Output Function Analysis
+Generated on: 2025-07-30 11:31:34
+File: ../functions_py/dml_issue_btn_go_web_1bl.py
+================================================================================
+
+Function: create_purchase_book
+==================================================
+    └─ Loop_1 (line 286) - standard
+       ├─ Target: i
+       ├─ Iterator: range(2, curr_anz + 1)
+
+
+Function: dml_issue_btn_go_web_1bl
+==================================================
+    └─ Loop_1 (line 409) - query_function
+       ├─ Target: op_list
+       ├─ Iterator: query(op_list_data, filters=lambda op_list: op_list.stornogrund.lower() != '' and op_list.stornogrund.lower() != '00000000'.lower() and (op_list.stornogrund.lower() != None))
+
+    └─ Loop_1 (line 438) - query_function
+       ├─ Target: op_list
+       ├─ Iterator: query(op_list_data)
+
+    └─ Loop_1 (line 465) - query_function
+       ├─ Target: op_list
+       ├─ Iterator: query(op_list_data)
+
+    └─ Loop_1 (line 472) - database_all
+       ├─ Target: queasy
+       ├─ Iterator: db_session.query(Queasy).filter((Queasy.key == 331) & ((Queasy.char2 == 'Inv-Cek Reciving'.lower()) | (Queasy.char2 == 'Inv-Cek Reorg'.lower()) | (Queasy.char2 == 'Inv-Cek Journal'.lower()))).order_by(Queasy._recid).all()
+
+
+Summary:
+Total loops: 5
+Total get_output calls: 0
+
+Loop types found:
+- standard: 1
+- query_function: 3
+- database_all: 1

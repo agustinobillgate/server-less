@@ -1,9 +1,4 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd, 30/7/2025
-# update .p baru:beecf590c526b2d7a32605ad4b180345da612894
-# 2x copas script di .p
-#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal

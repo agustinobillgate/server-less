@@ -240,7 +240,7 @@ def write_analysis_to_file(loops: List[Dict], outputs: List[Dict], input_file: s
             f.write(f"- {type_name}: {count}\n")
 
 # Main execution
-script_path = "../functions_py/po_list_btn_go2_1cldbl.py"
+script_path = "../functions_py/dml_issue_btn_go_web_1bl.py"
 output_dir = "./output/ast/"
 os.makedirs(output_dir, exist_ok=True)
 
