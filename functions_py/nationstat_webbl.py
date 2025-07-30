@@ -1,8 +1,9 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------
 # Rd, 29/7/2025
-# gitlab: 111
+# gitlab: 111/979
 # error konversi, # mtd_totrm = 0 mtd_act == 0 ytd_act == 0 ytd_totrm == 0
+# Requery, pisahkan Nation dulu
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -89,17 +90,23 @@ def nationstat_webbl(printer_nr:int, call_from:int, txt_file:string, from_month:
         # for nationstat in db_session.query(Nationstat).filter(
         #         ((Nationstat.nationnr.in_(list(set([room_list.nationnr for room_list in room_list_data])))) & 
         #          (Nationstat.datum >= from_date) & (Nationstat.datum <= to_date))).order_by(room_list.bezeich, Nationstat.datum).all():            
+        nation_numbers = {r.nationnr for r in room_list_data}
+        nation_bezeich = {r.nationnr: r.bezeich for r in room_list_data}
 
-        nation_numbers = list(set([room_list.nationnr for room_list in room_list_data]))
-        query = db_session.query(Nationstat)
-        query = query.filter(
-            Nationstat.nationnr.in_(nation_numbers),
-            Nationstat.datum >= from_date,
-            Nationstat.datum <= to_date
+        nationstat_list = (
+            db_session.query(Nationstat)
+            .filter(
+                Nationstat.nationnr.in_(nation_numbers),
+                Nationstat.datum >= from_date,
+                Nationstat.datum <= to_date
+            )
+            .order_by(Nationstat.datum)
+            .all()
         )
 
-        query = query.order_by(room_list.bezeich, Nationstat.datum)
-        nationstat_list = query.all()     
+        # sort by bezeich + datum
+        nationstat_list.sort(key=lambda x: (nation_bezeich.get(x.nationnr, ""), x.datum))
+
         for nationstat in nationstat_list:        
             # Rd, 29/7/2025
             # indentation error
