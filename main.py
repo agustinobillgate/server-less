@@ -298,7 +298,7 @@ update_field_mapping = {
     "flwarn": "flWarn",
     "maxlapos": "maxLapos",
     "cashlessflag": "cashlessFlag",
-    "thbill": "tHBill",
+    "cashless_flag":"cashlessFlag",
     "thbillline": "tHBillLine",
     "lhbline": "Lhbline",
     "tkellner": "tKellner",
@@ -674,6 +674,7 @@ update_field_mapping = {
     "chgid":"chgID",        # vhpFOR/globalReservationReview
 
     "t-kellner":"t-kellner1",
+    "curr_waiter":"currWaiter",
 
 
     }
