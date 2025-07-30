@@ -1,10 +1,58 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------
 # Rd, 18/7/25
+# gitlab: 676
 # Ex_finishtime -> ex_finishtime
 # CHAR3 -> char3
 # vat_art_list -> ex_finishtime
 # OthersFlag -> othersFlag
+# output table tidak sama
+"""
+"copyRequest": {
+    "copyRequest": [
+      {
+        "reqnr": 33,
+        "openby": "01",
+        "opendate": "2024-10-03",
+        "opentime": 10262,
+        "openstr": "03/10/24 02:51",
+        "status-str": "New",
+        "Source-str": "Front Office",
+        "source-name": "test",
+        "process-date": null,
+        "closed-date": null,
+        "urgency-nr": 1,
+        "urgency": "Low",
+        "category-str": "Lock & Key",
+        "deptnum": 15,
+        "dept-nm": "Engineering",
+        "pmaintask": 0,
+        "maintask": "Key window",
+        "plocation": 60,
+        "location": "Guest Room",
+        "zinr": "233",
+        "property": 5745,
+        "property-nm": "Key Window(5745)",
+        "pic-str": "",
+        "sub-str": "",
+        "ex-finishdate": null,
+        "ex-finishtime": 0,
+        "ex-finishstr": "",
+        "memo": "",
+        "task-def": "test",
+        "task-solv": "",
+        "SOURCE": 1,
+        "category": 14,
+        "reqstatus": 1,
+        "sub-task": "",
+        "subtask-bezeich": "",
+        "assign-to": 0,
+        "delete-flag": false,
+        "str": "",
+        "rec": "",
+        "avail-image": true
+      },
+"""
 #-----------------------------------------
 
 from functions.additional_functions import *
@@ -25,7 +73,11 @@ def eg_reglist1_btn_go_webbl(location:int, rmno:string, main_nr:int, reqstatus:i
 
     tpic = copyrequest = tcategory = tsource = tsubtask = tmaintask = tlocation = troom = tstatus = qbuff1 = None
 
-    copyrequest_data, Copyrequest = create_model("Copyrequest", {"reqnr":int, "openby":string, "opendate":date, "opentime":int, "openstr":string, "status_str":string, "source_str":string, "source_name":string, "process_date":date, "closed_date":date, "urgency_nr":int, "urgency":string, "category_str":string, "deptnum":int, "dept_nm":string, "pmaintask":int, "maintask":string, "plocation":int, "location":string, "zinr":string, "property":int, "property_nm":string, "pic_str":string, "sub_str":string, "ex_finishdate":date, "vat_art_list":int, "ex_finishstr":string, "memo":string, "task_def":string, "task_solv":string, "source":int, "category":int, "reqstatus":int, "sub_task":string, "subtask_bezeich":string, "assign_to":int, "delete_flag":bool, "str":string, "rec":string})
+    copyrequest_data, Copyrequest = create_model("Copyrequest", {"reqnr":int, "openby":string, "opendate":date, "opentime":int, "openstr":string, 
+                                                "status_str":string, "source_str":string, "source_name":string, "process_date":date, "closed_date":date, 
+                                                "urgency_nr":int, "urgency":string, "category_str":string, "deptnum":int, "dept_nm":string, "pmaintask":int, 
+                                                "maintask":string, "plocation":int, "location":string, "zinr":string, "property":int, "property_nm":string, 
+                                                "pic_str":string, "sub_str":string, "ex_finishdate":date, "vat_art_list":int, "ex_finishstr":string, "memo":string, "task_def":string, "task_solv":string, "source":int, "category":int, "reqstatus":int, "sub_task":string, "subtask_bezeich":string, "assign_to":int, "delete_flag":bool, "str":string, "rec":string})
     tcategory_data, Tcategory = create_model("Tcategory", {"categ_nr":int, "categ_nm":string, "categ_selected":bool})
     tsource_data, Tsource = create_model("Tsource", {"source_nr":int, "source_nm":string, "source_selected":bool})
     tsubtask_data, Tsubtask = create_model("Tsubtask", {"sub_nr":string, "sub_nm":string, "sub_selected":bool})
