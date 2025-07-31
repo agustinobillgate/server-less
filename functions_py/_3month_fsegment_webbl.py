@@ -339,13 +339,15 @@ def _3month_fsegment_webbl(from_date:date):
     fr_date = date_mdy(get_month(from_date) , 1, get_year(from_date))
 
     if get_month(fr_date) >= 10:
-        to_date = date_mdy(3 - (12 - get_month(from_date)) , 1, get_year(from_date) + timedelta(days=1) - 1)
+        to_date = date_mdy(3 - (12 - get_month(from_date)) , 1, get_year(from_date) + timedelta(days=1)) - timedelta(days=1)
     else:
-        to_date = date_mdy(get_month(from_date) + timedelta(days=3, 1, get_year(from_date)) - 1)
+        # Rd 31/7/2025
+        # to_date = date_mdy(get_month(from_date) + timedelta(days=3, 1, get_year(from_date)) - 1)
+        to_date = date_mdy(get_month(from_date) + timedelta(months=3), 1, get_year(from_date)) - timedelta(days=1)
 
     for segment in db_session.query(Segment).filter(
              (Segment.betriebsnr == 0) & (Segment.segmentcode != black_list)).order_by(Segment.segmentcode).all():
-        for loopi in range(get_month(fr_date),get_month(fr_date) + 2 + 1) :
+        for loopi in range(get_month(fr_date), get_month(fr_date) + 2 + 1) :
 
             if loopi > 12:
                 monthnr = loopi - 12
