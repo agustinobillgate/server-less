@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 31/7/2025
+# gitlab: 726
+# 
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Waehrung
@@ -118,7 +122,6 @@ def prepare_bookengine_config_webbl(bookengid:int):
     if queasy:
         bookeng_name = queasy.char1
     else:
-
         return generate_output()
 
     queasy = get_cache (Queasy, {"key": [(eq, 160)],"number1": [(eq, bookengid)]})
