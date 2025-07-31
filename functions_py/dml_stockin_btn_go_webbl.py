@@ -425,11 +425,14 @@ def dml_stockin_btn_go_webbl(pvilanguage:int, op_list_data:[Op_list], curr_dept:
 
     artnr_set = {op.artnr for op in op_list_data if op.artnr is not None}
 
+    # Rd 31/7/2025
+    # Remark order by pos, cuman 1 pos saja.
+    # err di order by (not sure, how to fix)
     for l_art, sys_user in (
                 db_session.query(L_art, Sys_user)
                 .join(Sys_user, Sys_user.nr == op_list.fuellflag)
                 .filter(L_art.artnr.in_(artnr_set))
-                .order_by(L_art.pos)  # Only if pos is a column of L_art
+                # .order_by(op_list.pos)  # Only if pos is a column of L_art
                 .all()
             ):
 
