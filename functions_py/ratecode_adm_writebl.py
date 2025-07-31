@@ -1,6 +1,10 @@
 #using conversion tools version: 1.0.0.117
-
-from functions.additional_functions import *
+#-----------------------------------------
+# Rd 31/7/2025
+# gitlab: 512
+# requery, handle recid none
+#-----------------------------------------
+from additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.calc_servvat import calc_servvat
@@ -466,9 +470,38 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
         for tb3buff in query(tb3buff_data):
 
-            for ratecode in db_session.query(Ratecode).filter(
-                     (Ratecode.marknr == markno) & (Ratecode.code == (prcode).lower()) & (Ratecode.argtnr == argtno) & (Ratecode.zikatnr == tb3buff.zikatnr) & (Ratecode.erwachs == tb3buff.erwachs) & (Ratecode.kind1 == tb3buff.kind1) & (Ratecode.kind2 == tb3buff.kind2) & (Ratecode.wday == tb3buff.wday) & not_ (Ratecode.endperiode < tb3buff.startperiode) & not_ (Ratecode.startperiode > tb3buff.endperiode) & (to_int(Ratecode._recid) != tb3buff.s_recid)).order_by(Ratecode._recid).all():
+            # for ratecode in db_session.query(Ratecode).filter(
+            #          (Ratecode.marknr == markno) & (Ratecode.code == (prcode).lower()) & (Ratecode.argtnr == argtno) & 
+            #          (Ratecode.zikatnr == tb3buff.zikatnr) & (Ratecode.erwachs == tb3buff.erwachs) & 
+            #          (Ratecode.kind1 == tb3buff.kind1) & (Ratecode.kind2 == tb3buff.kind2) & 
+            #          (Ratecode.wday == tb3buff.wday) & not_ (Ratecode.endperiode < tb3buff.startperiode) & 
+            #          not_ (Ratecode.startperiode > tb3buff.endperiode) & (to_int(Ratecode._recid) != tb3buff.s_recid)).order_by(Ratecode._recid).all():
+            
+            # Rd 31/7/2025
+            # requery _recid null
+            recid = tb3buff.s_recid
+            if not recid or str(recid).strip() == '':
+                recid = None
 
+            query = db_session.query(Ratecode).filter(
+                (Ratecode.marknr == markno) &
+                (Ratecode.code == prcode.lower()) &
+                (Ratecode.argtnr == argtno) &
+                (Ratecode.zikatnr == tb3buff.zikatnr) &
+                (Ratecode.erwachs == tb3buff.erwachs) &
+                (Ratecode.kind1 == tb3buff.kind1) &
+                (Ratecode.kind2 == tb3buff.kind2) &
+                (Ratecode.wday == tb3buff.wday) &
+                not_(Ratecode.endperiode < tb3buff.startperiode) &
+                not_(Ratecode.startperiode > tb3buff.endperiode)
+            )
+
+            if recid is not None:
+                query = query.filter(Ratecode._recid != str(recid))
+
+            results = query.order_by(Ratecode._recid).all()
+
+            for ratecode in results:
                 if ratecode.startperiode < tb3buff.startperiode:
 
                     if ratecode.endperiode <= tb3buff.endperiode:

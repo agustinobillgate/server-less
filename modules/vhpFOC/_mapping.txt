@@ -166,3 +166,4 @@ bookJournArtList3,fo_journal_list_3_webbl
 bondsHeldRefund,bonds_held_refundbl
 todayCOGuestDUOnlyCustom,co_guest_duonly_webbl
 foInvoiceReturnQty,fo_invoice_return_qty_webbl
+depositAdmin2,deposit_admin_2_webbl

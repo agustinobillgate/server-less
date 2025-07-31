@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 31/7/2025
+# gitlab: 313
+# add if available
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -148,64 +152,69 @@ def ratecode_adm_fill_ratecodebl(user_init:string, prcode:string, market_nr:int,
             res_history.action = "RateCode"
             pass
             pass
-        buffer_copy(p_list, ratecode,except_fields=["p_list.argtnr","p_list.zikatnr"])
-        ratecode.marknr = market_nr
-        ratecode.code = prcode
-        ratecode.argtnr = argtnr
-        ratecode.zikatnr = zikatnr
-        ratecode.char1[0] = ""
-        ratecode.char1[1] = ""
-        ratecode.char1[2] = ""
-        ratecode.char1[3] = ""
-        ratecode.char1[4] = user_init
 
-        if book_room > 0:
-            ratecode.char1[3] = to_string(book_room) + ";" + to_string(comp_room) + ";" + to_string(max_room) + ";"
-        else:
+        # buffer_copy(p_list, ratecode,except_fields=["p_list.argtnr","p_list.zikatnr"])
+        # add if available
+        if p_list is not None and ratecode is not None:
+            buffer_copy(p_list, ratecode, except_fields=["argtnr", "zikatnr"])
+            
+            ratecode.marknr = market_nr
+            ratecode.code = prcode
+            ratecode.argtnr = argtnr
+            ratecode.zikatnr = zikatnr
+            ratecode.char1[0] = ""
+            ratecode.char1[1] = ""
+            ratecode.char1[2] = ""
             ratecode.char1[3] = ""
+            ratecode.char1[4] = user_init
 
-        for early_discount in query(early_discount_data, filters=(lambda early_discount: early_discount.disc_rate != 0)):
-            ratecode.char1[0] = ratecode.char1[0] + to_string(early_discount.disc_rate * 100) + "," + to_string(early_discount.min_days) + "," + to_string(early_discount.min_stay) + "," + to_string(early_discount.max_occ) + ","
-
-            if early_discount.from_date != None:
-                ratecode.char1[0] = ratecode.char1[0] + to_string(get_year(early_discount.from_date) , "9999") + to_string(get_month(early_discount.from_date) , "99") + to_string(get_day(early_discount.from_date) , "99") + ","
+            if book_room > 0:
+                ratecode.char1[3] = to_string(book_room) + ";" + to_string(comp_room) + ";" + to_string(max_room) + ";"
             else:
-                ratecode.char1[0] = ratecode.char1[0] + " ,"
+                ratecode.char1[3] = ""
 
-            if early_discount.to_date != None:
-                ratecode.char1[0] = ratecode.char1[0] + to_string(get_year(early_discount.to_date) , "9999") + to_string(get_month(early_discount.to_date) , "99") + to_string(get_day(early_discount.to_date) , "99") + ";"
-            else:
-                ratecode.char1[0] = ratecode.char1[0] + " ;"
+            for early_discount in query(early_discount_data, filters=(lambda early_discount: early_discount.disc_rate != 0)):
+                ratecode.char1[0] = ratecode.char1[0] + to_string(early_discount.disc_rate * 100) + "," + to_string(early_discount.min_days) + "," + to_string(early_discount.min_stay) + "," + to_string(early_discount.max_occ) + ","
 
-        for kickback_discount in query(kickback_discount_data, filters=(lambda kickback_discount: kickback_discount.disc_rate != 0)):
-            ratecode.char1[1] = ratecode.char1[1] + to_string(kickback_discount.disc_rate * 100) + "," + to_string(kickback_discount.max_days) + "," + to_string(kickback_discount.min_stay) + "," + to_string(kickback_discount.max_occ) + ";"
+                if early_discount.from_date != None:
+                    ratecode.char1[0] = ratecode.char1[0] + to_string(get_year(early_discount.from_date) , "9999") + to_string(get_month(early_discount.from_date) , "99") + to_string(get_day(early_discount.from_date) , "99") + ","
+                else:
+                    ratecode.char1[0] = ratecode.char1[0] + " ,"
 
-        for stay_pay in query(stay_pay_data, filters=(lambda stay_pay: stay_pay.stay != 0)):
-            ratecode.char1[2] = ratecode.char1[2] + to_string(get_year(stay_pay.f_date) , "9999") + to_string(get_month(stay_pay.f_date) , "99") + to_string(get_day(stay_pay.f_date) , "99") + "," + to_string(get_year(stay_pay.t_date) , "9999") + to_string(get_month(stay_pay.t_date) , "99") + to_string(get_day(stay_pay.t_date) , "99") + "," + to_string(stay) + "," + to_string(pay) + ";"
+                if early_discount.to_date != None:
+                    ratecode.char1[0] = ratecode.char1[0] + to_string(get_year(early_discount.to_date) , "9999") + to_string(get_month(early_discount.to_date) , "99") + to_string(get_day(early_discount.to_date) , "99") + ";"
+                else:
+                    ratecode.char1[0] = ratecode.char1[0] + " ;"
 
-        for pcode1 in db_session.query(Pcode1).filter(
-                 (Pcode1.code == (prcode).lower())).order_by(Pcode1._recid).all():
+            for kickback_discount in query(kickback_discount_data, filters=(lambda kickback_discount: kickback_discount.disc_rate != 0)):
+                ratecode.char1[1] = ratecode.char1[1] + to_string(kickback_discount.disc_rate * 100) + "," + to_string(kickback_discount.max_days) + "," + to_string(kickback_discount.min_stay) + "," + to_string(kickback_discount.max_occ) + ";"
 
-            if pcode1.endperiode != None and to_date != None:
+            for stay_pay in query(stay_pay_data, filters=(lambda stay_pay: stay_pay.stay != 0)):
+                ratecode.char1[2] = ratecode.char1[2] + to_string(get_year(stay_pay.f_date) , "9999") + to_string(get_month(stay_pay.f_date) , "99") + to_string(get_day(stay_pay.f_date) , "99") + "," + to_string(get_year(stay_pay.t_date) , "9999") + to_string(get_month(stay_pay.t_date) , "99") + to_string(get_day(stay_pay.t_date) , "99") + "," + to_string(stay) + "," + to_string(pay) + ";"
 
-                if pcode1.endperiode > to_date:
-                    to_date = pcode1.endperiode
+            for pcode1 in db_session.query(Pcode1).filter(
+                    (Pcode1.code == (prcode).lower())).order_by(Pcode1._recid).all():
 
-        if to_date != date_mdy(1, 1, 1990):
+                if pcode1.endperiode != None and to_date != None:
 
-            for guest_pr in db_session.query(Guest_pr).filter(
-                     (Guest_pr.code == (prcode).lower())).order_by(Guest_pr._recid).all():
+                    if pcode1.endperiode > to_date:
+                        to_date = pcode1.endperiode
 
-                guest = get_cache (Guest, {"gastnr": [(eq, guest_pr.gastnr)]})
-                guest.endperiode = to_date
-                pass
+            if to_date != date_mdy(1, 1, 1990):
 
-        tb3_buff = db_session.query(Tb3_buff).filter(
-                 (Tb3_buff._recid == ratecode._recid)).first()
-        buffer_copy(ratecode, p_list)
+                for guest_pr in db_session.query(Guest_pr).filter(
+                        (Guest_pr.code == (prcode).lower())).order_by(Guest_pr._recid).all():
 
-        if p_list.s_recid == 0:
-            p_list.s_recid = to_int(ratecode._recid)
+                    guest = get_cache (Guest, {"gastnr": [(eq, guest_pr.gastnr)]})
+                    guest.endperiode = to_date
+                    pass
+
+            tb3_buff = db_session.query(Tb3_buff).filter(
+                    (Tb3_buff._recid == ratecode._recid)).first()
+            buffer_copy(ratecode, p_list)
+
+            if p_list.s_recid == 0:
+                p_list.s_recid = to_int(ratecode._recid)
 
 
     def update_child_ratecode():

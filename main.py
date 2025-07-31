@@ -294,7 +294,7 @@ update_field_mapping = {
     "foreignrate": "foreignRate",
     "doublecurrency": "doubleCurrency",
     "exchgRate": "exchgRate",
-    "mustprint": "mustPrint",
+    
     "flwarn": "flWarn",
     "maxlapos": "maxLapos",
     "cashlessflag": "cashlessFlag",
@@ -437,8 +437,8 @@ update_field_mapping = {
 
     #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
     "adult": "Adult",
-    "arrtime": "ArrTime",
-    "arrtime": "arrTime",
+    "arrtime": ["ArrTime", "arrTime"],
+    # "arrtime": "arrTime",
     "statstr":"statStr",
     
     "deptime": "DepTime",
@@ -506,9 +506,9 @@ update_field_mapping = {
     # "PI-status":["pi-status", "pi-Status"],
     "pi_status":["pi-status", "PI-status"],
     "pi_type":["pi-type", "PI-type"],
-    # "deptno": ["DeptNo","deptNo"],
-    "deptno": "deptNo",
-    "deptno": "DeptNo",
+    "deptno": ["DeptNo","deptNo"],
+    # "deptno": "deptNo",
+    # "deptno": "DeptNo",
     
     "postdate": ["postDate", "PostDate"],
     "avail-addvat":"avail-addVAT",
@@ -629,12 +629,13 @@ update_field_mapping = {
 
     # "activeflag": ["ActiveFlag","activeFlag"], 
     "activeflag":"ActiveFlag",
-
     # "mtd-room": "mtd-Room",
     # "ytd-room": "ytd-Room",
        
-    # "max_lapos": ["maxLapos"],
-    # "must_print":["mustPrint"],
+    "max_lapos": "maxLapos",
+    "must_print":"mustPrint",
+    "mustprint":"mustPrint",
+
     # "fl_warn":["flWarn"],
     # "cashless_flag":["cashlessFlag"],
     #vhpIA/correctCoverDept
@@ -788,7 +789,7 @@ update_table_name("vhpENG","egRepmaintainPrepare","Categ-nm","categ-nm")
 #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
 
 update_table_name("vhpFOR","monthlyFcastDDown1List1","adult","Adult")
-update_table_name("vhpFOR","monthlyFcastDDown1List1","arrtime","ArrTime")
+# update_table_name("vhpFOR","monthlyFcastDDown1List1","arrtime","ArrTime")
 update_table_name("vhpFOR","monthlyFcastDDown1List1","deptime","DepTime")
 
 #updated 1.0.0.38r (26-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
@@ -1242,7 +1243,7 @@ def update_input_format(obj, input_data):
 
 def update_output_format(output_data):
     key_list = list(output_data.keys())
-    # print("Update Output Data:", key_list)
+    print("Update Output Data:", key_list)
     for key in key_list:
         #updated 1.0.0.11
         if re.match(r".*__.*",key):

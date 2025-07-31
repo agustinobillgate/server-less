@@ -1,0 +1,80 @@
+{
+    "Res_line": {
+        "read": [
+            "name",
+            "ankunft",
+            "abreise",
+            "zimmeranz",
+            "zipreis",
+            "erwachs",
+            "resstatus",
+            "arrangement",
+            "zimmer_wunsch",
+            "zikatnr",
+            "resnr",
+            "reslinnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "resnr",
+            "grpflag",
+            "name",
+            "groupname",
+            "depositgef",
+            "depositbez",
+            "depositbez2",
+            "limitdate",
+            "zahldatum",
+            "zahldatum2",
+            "zahlkonto",
+            "zahlkonto2",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Exrate": {
+        "read": [
+            "betrag",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [
+            "ankauf",
+            "einheit",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Arrangement": {
+        "read": [
+            "argt_bez",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "bezeichnung",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fixleist": {
+        "read": [
+            "artnr",
+            "departement",
+            "sequenz",
+            "dekade",
+            "lfakt",
+            "betrag",
+            "number",
+            "_recid"
+        ],
+        "write": []
+    }
+}

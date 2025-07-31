@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 31/7/2025
+# gitlab:260
+# 
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -63,9 +67,9 @@ def check_bonus_nightbl(ci_date:date, co_date:date, res_dynarate_data:[Res_dynar
 
                 for res_dynarate in query(res_dynarate_data, sort_by=[("date1",False)]):
                     datum = res_dynarate.date1
-                    w_day = wd_array[get_weekday(datum - 1) - 1]
-
-
+                    # Rd 31/7/2025
+                    # w_day = wd_array[get_weekday(datum - 1) - 1]
+                    w_day = wd_array[get_weekday(datum - timedelta(days=1)) - 1]
                     stay_pay_data.clear()
 
                     ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, res_dynarate.markno)],"argtnr": [(eq, argtno)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)]})

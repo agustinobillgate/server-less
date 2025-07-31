@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_prepareGCPilist" path="/prepareGCPilist" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-gc-pilistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-gc-pilistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcPilist" path="/gcPilist" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gc-pilistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gc-pilistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcPilistDelete" path="/gcPilistDelete" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gc-pilist-btndelbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gc-pilist-btndelbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prepareAddGCPi" path="/prepareAddGCPi" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-mk-gcpi-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-mk-gcpi-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addGCPiCheck1" path="/addGCPiCheck1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-gcpi-check1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-gcpi-check1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addGCPiCheck1a" path="/addGCPiCheck1a" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-gcpi-check1abl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-gcpi-check1abl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addGCPi3" path="/addGCPi3" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-gcpi-go3bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-gcpi-go3bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addGCPiCheck2" path="/addGCPiCheck2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-gcpi-check2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-gcpi-check2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcPiTypeRead" path="/gcPiTypeRead" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-read-gc-pitypebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-read-gc-pitypebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcPiTypeDelete" path="/gcPiTypeDelete" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gc-pitype-btn-deletebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gc-pitype-btn-deletebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcPiTypeSave" path="/gcPiTypeSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gc-pitype-btn-exitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gc-pitype-btn-exitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcGiroDelete" path="/gcGiroDelete" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-delete-gc-girobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-delete-gc-girobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcGiroSave" path="/gcGiroSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gc-giroadmin-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gc-giroadmin-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcGiroReadGiro" path="/gcGiroRead" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-read-gc-girobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-read-gc-girobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcGiroReadPiAcct" path="/readPiAcct" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-read-gc-piacctbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-read-gc-piacctbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_prepareGCPiAcct" path="/prepareGCPiAcct" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-gc-piacctbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-gc-piacctbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcPiAcctBtnExit" path="/gcPiAcctBtnExit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gc-piacct-btn-exitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gc-piacct-btn-exitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcPiAcctBtnDel" path="/gcPiAcctBtnDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gc-piacct-btn-delartbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gc-piacct-btn-delartbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fundsReportChkAcctno" path="/fundsReportChkAcctno" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gc-fundreport-chk-acctnobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gc-fundreport-chk-acctnobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_fundsReportAdd" path="/fundsReportAdd" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gc-fundreport-btn-addbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gc-fundreport-btn-addbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_saveAddGCPi" path="/saveAddGCPi" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-gcpi-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-gcpi-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_selectGCPI" path="/selectGCPI" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-select-gcpibl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-select-gcpibl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_selectAPInvoicePrepare" path="/selectAPInvoicePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-select-ap-deliverynotebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-select-ap-deliverynotebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_selectAPInvoiceList" path="/selectAPInvoiceList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-select-ap-deliverynotebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-select-ap-deliverynotebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_summCashier" path="/summCashier" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-sum-cashierbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-sum-cashierbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_foDaysalePrepare" path="/foDaysalePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fo-daysalebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fo-daysalebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_foDaysaleList1" path="/foDaysaleList1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fo-daysale-daysale-list1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fo-daysale-daysale-list1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_foDaysaleList" path="/foDaysaleList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fo-daysale-daysale-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fo-daysale-daysale-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_cashSummaryPrepare" path="/gcCashSummaryPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-gc-cashsummary-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-gc-cashsummary-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcCashSummaryList" path="/gcCashSummaryList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gc-cashsummary-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gc-cashsummary-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_printGCPIPrepare21" path="/printGCPIPrepare21" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-print-gcpi2_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-print-gcpi2_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_printGCPIPrepare1b" path="/printGCPIPrepare1b" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-print-gcpi1bbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-print-gcpi1bbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_deleteAddGCPi" path="/deleteAddGCPi" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-gcpi-btn-delbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-gcpi-btn-delbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addGCPi1" path="/addGCPi1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-gcpi-go1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-gcpi-go1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addGCPi1a" path="/addGCPi1a" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-gcpi-go1abl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-gcpi-go1abl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addGCPi1b" path="/addGCPi1b" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-gcpi-go1bbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-gcpi-go1bbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addGCPi2" path="/addGCPi2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-gcpi-go2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-gcpi-go2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addGCPi2a" path="/addGCPi2a" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-gcpi-go2abl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-gcpi-go2abl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_printGCPIPrepare1" path="/printGCPIPrepare1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-print-gcpi1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-print-gcpi1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_printGCPIPrepare1a" path="/printGCPIPrepare1a" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-print-gcpi1abl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-print-gcpi1abl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_addGCPi11" path="/addGCPi11" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-gcpi-go1-1bbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-gcpi-go1-1bbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_printGCPIChgStat" path="/printGCPIChgStat" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-print-gcpi-chg-statbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-print-gcpi-chg-statbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+</prgs:model>

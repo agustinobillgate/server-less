@@ -6,7 +6,7 @@ from datetime import date
 from functions.get_room_breakdown import get_room_breakdown
 from models import Htparam, Genstat, Segment, Res_line, Reservation, Zinrstat, Zimmer, Outorder, Zkstat
 
-def 3monthly_forecastbl(fmonth:string, tmonth:string):
+def _3monthly_forecast_webbl(fmonth:string, tmonth:string, excl_compl:bool):
 
     prepare_cache ([Htparam, Genstat, Segment, Res_line, Reservation, Zinrstat, Zkstat])
 
@@ -33,6 +33,7 @@ def 3monthly_forecastbl(fmonth:string, tmonth:string):
     tot_vat:Decimal = to_decimal("0.0")
     tot_service:Decimal = to_decimal("0.0")
     actual_tot_room:int = 0
+    do_it:bool = TRUE
     curr_month:int = 0
     tot_rmsold:Decimal = to_decimal("0.0")
     tot_ooo:Decimal = to_decimal("0.0")
@@ -56,8 +57,8 @@ def 3monthly_forecastbl(fmonth:string, tmonth:string):
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal output_list1_data, bill_date, fdate, tdate, fmm, fyy, tmm, tyy, datum, datum1, datum2, datum3, curr_i, net_lodg, fnet_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, tot_vat, tot_service, actual_tot_room, curr_month, tot_rmsold, tot_ooo, tot_comp, tot_houseuse, tot_rmrevenue, tot_avrgrevenue, tot_room, tot_zinr, htparam, genstat, segment, res_line, reservation, zinrstat, zimmer, outorder, zkstat
-        nonlocal fmonth, tmonth
+        nonlocal output_list1_data, bill_date, fdate, tdate, fmm, fyy, tmm, tyy, datum, datum1, datum2, datum3, curr_i, net_lodg, fnet_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, tot_vat, tot_service, actual_tot_room, do_it, curr_month, tot_rmsold, tot_ooo, tot_comp, tot_houseuse, tot_rmrevenue, tot_avrgrevenue, tot_room, tot_zinr, htparam, genstat, segment, res_line, reservation, zinrstat, zimmer, outorder, zkstat
+        nonlocal fmonth, tmonth, excl_compl
         nonlocal boutput
 
 
@@ -68,8 +69,8 @@ def 3monthly_forecastbl(fmonth:string, tmonth:string):
 
     def get_active_room(curr_datum:date):
 
-        nonlocal output_list1_data, bill_date, fdate, tdate, fmm, fyy, tmm, tyy, datum, datum1, datum2, datum3, curr_i, net_lodg, fnet_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, tot_vat, tot_service, actual_tot_room, curr_month, tot_rmsold, tot_ooo, tot_comp, tot_houseuse, tot_rmrevenue, tot_avrgrevenue, tot_room, tot_zinr, htparam, genstat, segment, res_line, reservation, zinrstat, zimmer, outorder, zkstat
-        nonlocal fmonth, tmonth
+        nonlocal output_list1_data, bill_date, fdate, tdate, fmm, fyy, tmm, tyy, datum, datum1, datum2, datum3, curr_i, net_lodg, fnet_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, tot_vat, tot_service, actual_tot_room, do_it, curr_month, tot_rmsold, tot_ooo, tot_comp, tot_houseuse, tot_rmrevenue, tot_avrgrevenue, tot_room, tot_zinr, htparam, genstat, segment, res_line, reservation, zinrstat, zimmer, outorder, zkstat
+        nonlocal fmonth, tmonth, excl_compl
         nonlocal boutput
 
 
@@ -97,8 +98,8 @@ def 3monthly_forecastbl(fmonth:string, tmonth:string):
 
     def create_active_room_list():
 
-        nonlocal output_list1_data, bill_date, fdate, tdate, fmm, fyy, tmm, tyy, datum, datum1, datum2, datum3, curr_i, net_lodg, fnet_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, tot_vat, tot_service, actual_tot_room, curr_month, tot_rmsold, tot_ooo, tot_comp, tot_houseuse, tot_rmrevenue, tot_avrgrevenue, tot_room, tot_zinr, htparam, genstat, segment, res_line, reservation, zinrstat, zimmer, outorder, zkstat
-        nonlocal fmonth, tmonth
+        nonlocal output_list1_data, bill_date, fdate, tdate, fmm, fyy, tmm, tyy, datum, datum1, datum2, datum3, curr_i, net_lodg, fnet_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, tot_vat, tot_service, actual_tot_room, do_it, curr_month, tot_rmsold, tot_ooo, tot_comp, tot_houseuse, tot_rmrevenue, tot_avrgrevenue, tot_room, tot_zinr, htparam, genstat, segment, res_line, reservation, zinrstat, zimmer, outorder, zkstat
+        nonlocal fmonth, tmonth, excl_compl
         nonlocal boutput
 
 
@@ -169,9 +170,27 @@ def 3monthly_forecastbl(fmonth:string, tmonth:string):
                 output_list.datum = genstat.datum
                 output_list.smonth = get_month(genstat.datum)
 
+            if excl_compl:
 
-            output_list.rmsold = output_list.rmsold + 1
-            output_list.rmrevenue =  to_decimal(output_list.rmrevenue) + to_decimal(genstat.logis)
+                segment = db_session.query(Segment).filter(
+                         (Segment.segmentcode == genstat.segmentcode) & ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
+
+                if segment:
+                    do_it = False
+
+
+                else:
+
+                    if genstat.zipreis == 0 and genstat.gratis != 0 and genstat.res_logic[1] :
+                        do_it = False
+
+
+                    else:
+                        do_it = True
+
+            if do_it:
+                output_list.rmsold = output_list.rmsold + 1
+                output_list.rmrevenue =  to_decimal(output_list.rmrevenue) + to_decimal(genstat.logis)
 
             segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
 
@@ -235,7 +254,25 @@ def 3monthly_forecastbl(fmonth:string, tmonth:string):
                         if tot_rmrev == None:
                             tot_rmrev =  to_decimal("0")
 
-                        if res_line.resstatus != 11 and res_line.resstatus != 13 and not res_line.zimmerfix:
+                        if excl_compl:
+
+                            segment = db_session.query(Segment).filter(
+                                     (Segment.segmentcode == reservation.segmentcode) & ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
+
+                            if segment:
+                                do_it = False
+
+
+                            else:
+
+                                if res_line.zipreis == 0 and res_line.gratis != 0:
+                                    do_it = False
+
+
+                                else:
+                                    do_it = True
+
+                        if do_it and res_line.resstatus != 11 and res_line.resstatus != 13 and not res_line.zimmerfix:
                             output_list.rmsold = output_list.rmsold + res_line.zimmeranz
                             output_list.rmrevenue =  to_decimal(output_list.rmrevenue) + to_decimal(net_lodg)
 
@@ -303,7 +340,25 @@ def 3monthly_forecastbl(fmonth:string, tmonth:string):
                     if tot_rmrev == None:
                         tot_rmrev =  to_decimal("0")
 
-                    if res_line.resstatus != 11 and res_line.resstatus != 13 and not res_line.zimmerfix:
+                    if excl_compl:
+
+                        segment = db_session.query(Segment).filter(
+                                 (Segment.segmentcode == reservation.segmentcode) & ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
+
+                        if segment:
+                            do_it = False
+
+
+                        else:
+
+                            if res_line.zipreis == 0 and res_line.gratis != 0:
+                                do_it = False
+
+
+                            else:
+                                do_it = True
+
+                    if do_it and res_line.resstatus != 11 and res_line.resstatus != 13 and not res_line.zimmerfix:
                         output_list.rmsold = output_list.rmsold + res_line.zimmeranz
                         output_list.rmrevenue =  to_decimal(output_list.rmrevenue) + to_decimal(net_lodg)
 

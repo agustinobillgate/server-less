@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+#-----------------------------------------
+# Rd, 31/7/2025
+# gitlab: 130
+# check datum None
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -408,7 +413,17 @@ def create_forecast_history_detail_cldbl(fr_date:date, to_date:date, excl_comp:b
 
             if do_it and zimmer:
 
-                queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, datum)],"date2": [(ge, datum)]})
+                # Rd, 31/7/2025
+                # queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, datum)],"date2": [(ge, datum)]})
+                if datum is not None:
+                    queasy = db_session.query(Queasy).filter(
+                        Queasy.key == 14,
+                        Queasy.char1 == res_line.zinr,
+                        Queasy.date1 <= datum,
+                        Queasy.date2 >= datum
+                    ).first()
+                else:
+                    queasy = None
 
                 if zimmer.sleeping:
 

@@ -1,12 +1,21 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 31/7/2025
+# gitlab: 977
+# update mapping, 
+# date range, update
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
+from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta
 from functions.get_room_breakdown import get_room_breakdown
 from models import Segment, Res_line, Htparam, Zimmer, Genstat, Reservation, Arrangement, Bill_line, Queasy, Reslin_queasy, Zkstat, Zinrstat, Outorder
 
-def 3month_fsegment_webbl(from_date:date):
+def _3month_fsegment_webbl(from_date:date):
+
 
     prepare_cache ([Segment, Res_line, Htparam, Genstat, Reservation, Arrangement, Queasy, Reslin_queasy, Zkstat, Zinrstat])
 
@@ -96,9 +105,50 @@ def 3month_fsegment_webbl(from_date:date):
         else:
             tdate = ci_date - timedelta(days=1)
 
-        for genstat in db_session.query(Genstat).filter(
-                 (((Genstat.datum >= fr_date) & (Genstat.datum <= tdate)) | ((Genstat.datum >= date_mdy(get_month(fr_date) , get_day(fr_date) , get_year(fr_date) - 1)) & (Genstat.datum <= (date_mdy(get_month(to_date) + 1, 1, get_year(to_date) - 1) - 1)))) & (Genstat.segmentcode != 0) & (Genstat.segmentcode != black_list) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)]) & (Genstat.resstatus != 13) & (not_ (Genstat.res_date[inc_value(0)] < Genstat.datum) & (Genstat.res_date[inc_value(1)] == Genstat.datum) & (Genstat.resstatus == 8))).order_by(Genstat._recid).all():
+        # for genstat in db_session.query(Genstat).filter(
+        #          (((Genstat.datum >= fr_date) & 
+        #            (Genstat.datum <= tdate)) | ((Genstat.datum >= date_mdy(get_month(fr_date) , get_day(fr_date) , get_year(fr_date) - 1)) & 
+        #                                         (Genstat.datum <= (date_mdy(get_month(to_date) + 1, 1, get_year(to_date) - 1) - 1)))) & 
+        #                                         (Genstat.segmentcode != 0) & 
+        #                                         (Genstat.segmentcode != black_list) & 
+        #                                         (Genstat.nationnr != 0) & (Genstat.zinr != "") & 
+        #                                         (Genstat.res_logic[inc_value(1)]) & (Genstat.resstatus != 13) & 
+        #                                         (not_ (Genstat.res_date[inc_value(0)] < Genstat.datum) & 
+        #                                          (Genstat.res_date[inc_value(1)] == Genstat.datum) & 
+        #                                          (Genstat.resstatus == 8))).order_by(Genstat._recid).all():
 
+        
+        # Pre-calculate adjusted date ranges
+        fr_date_last_year = fr_date - relativedelta(years=1)
+        to_date_last_year = to_date - relativedelta(years=1)
+        to_date_last_year_end = (to_date_last_year + relativedelta(months=1)).replace(day=1) - timedelta(days=1)
+
+        # Prepare filtered query
+        genstat_query = db_session.query(Genstat).filter(
+            (
+                (Genstat.datum >= fr_date) & (Genstat.datum <= tdate)
+            ) | (
+                (Genstat.datum >= fr_date_last_year) & (Genstat.datum <= to_date_last_year_end)
+            ),
+            Genstat.segmentcode != 0,
+            Genstat.segmentcode != black_list,
+            Genstat.nationnr != 0,
+            Genstat.zinr != "",
+            Genstat.resstatus != 13,
+            Genstat.resstatus == 8  # moved this out to avoid nesting issues
+        ).order_by(Genstat._recid)
+
+        # Apply post-query filtering in Python for list access
+        genstats = []
+        for row in genstat_query.all():
+            try:
+                if row.res_logic[inc_value(1)] and \
+                not (row.res_date[inc_value(0)] < row.datum) and \
+                row.res_date[inc_value(1)] == row.datum:
+                    genstats.append(row)
+            except (IndexError, TypeError, AttributeError):
+                continue  # or log warning
+        for genstat in genstats:
             output_list = query(output_list_data, filters=(lambda output_list: output_list.segmentcode == genstat.segmentcode and output_list.monthyear == date_mdy(get_month(genstat.datum) , 1, get_year(genstat.datum))), first=True)
 
             if not output_list:
@@ -251,12 +301,14 @@ def 3month_fsegment_webbl(from_date:date):
         datum:date = None
         ldatum:date = None
         ooo:int = 0
-        mtd_totrm = 0 mtd_act == 0 all_rm == 0
+        mtd_totrm = 0 
+        mtd_act == 0 
+        all_rm == 0
 
         if get_month(in_date) == 12:
-            datum = date_mdy(1, 1, get_year(in_date) + timedelta(days=1) - 1)
+            datum = date_mdy(1, 1, get_year(in_date) + 1) - timedelta(days=1)
         else:
-            datum = date_mdy(get_month(in_date) + timedelta(days=1, 1, get_year(in_date)) - 1)
+            datum = date_mdy(get_month(in_date) + 1, 1, get_year(in_date)) - timedelta(days=1)
 
         if (get_month(in_date) < get_month(ci_date) and get_year(in_date) == get_year(ci_date)) or (get_year(in_date) < get_year(ci_date)):
 
@@ -285,9 +337,14 @@ def 3month_fsegment_webbl(from_date:date):
             for zinrstat in db_session.query(Zinrstat).filter(
                      (Zinrstat.zinr == ("ooo").lower()) & (Zinrstat.datum >= in_date) & (Zinrstat.datum <= ci_date)).order_by(Zinrstat._recid).all():
                 ooo = ooo + zinrstat.zimmeranz
-            all_rm = all_rm + (act_rm * (datum - ci_date))
-            mtd_totrm = mtd_totrm + (tot_room * (datum - ci_date))
-            for ldatum in date_range(ci_date + 1,datum) :
+            
+            # all_rm = all_rm + (act_rm * (datum - ci_date))
+            # mtd_totrm = mtd_totrm + (tot_room * (datum - ci_date))
+            all_rm += act_rm * ((datum - ci_date).days + 1)
+            mtd_totrm += tot_room * ((datum - ci_date).days + 1)
+
+            # for ldatum in date_range(ci_date + 1,datum) :
+            for ldatum in date_range(ci_date + timedelta(days=1),datum) :
 
                 outorder_obj_list = {}
                 for outorder, zimmer in db_session.query(Outorder, Zimmer).join(Zimmer,(Zimmer.zinr == Outorder.zinr) & (Zimmer.sleeping)).filter(
@@ -300,8 +357,11 @@ def 3month_fsegment_webbl(from_date:date):
 
                     ooo = ooo + 1
         else:
-            all_rm = act_rm * (datum - in_date + 1)
-            mtd_totrm = mtd_totrm + (tot_room * (datum - in_date + 1))
+            # all_rm = act_rm * (datum - in_date + 1)
+            all_rm = act_rm * ((datum - in_date).days + 1)
+
+            # mtd_totrm = mtd_totrm + (tot_room * (datum - in_date + 1))
+            mtd_totrm += tot_room * ((datum - in_date).days + 1)
             for ldatum in date_range(in_date,datum) :
 
                 outorder_obj_list = {}
@@ -338,14 +398,18 @@ def 3month_fsegment_webbl(from_date:date):
     tot_room = act_rm + inactive
     fr_date = date_mdy(get_month(from_date) , 1, get_year(from_date))
 
+    
     if get_month(fr_date) >= 10:
-        to_date = date_mdy(3 - (12 - get_month(from_date)) , 1, get_year(from_date) + timedelta(days=1) - 1)
+        to_date = date_mdy(3 - (12 - get_month(from_date)) , 1, get_year(from_date) + timedelta(days=1)) - timedelta(days=1)
     else:
-        to_date = date_mdy(get_month(from_date) + timedelta(days=3, 1, get_year(from_date)) - 1)
+        # Rd 31/7/2025
+        # to_date = date_mdy(get_month(from_date) + timedelta(days=3, 1, get_year(from_date)) - 1)
+        to_date = (from_date + relativedelta(months=+4)).replace(day=1) - timedelta(days=1)
 
     for segment in db_session.query(Segment).filter(
              (Segment.betriebsnr == 0) & (Segment.segmentcode != black_list)).order_by(Segment.segmentcode).all():
-        for loopi in range(get_month(fr_date),get_month(fr_date) + 2 + 1) :
+        # print("Segmeng:", segment.segmentcode)
+        for loopi in range(get_month(fr_date), get_month(fr_date) + 2 + 1) :
 
             if loopi > 12:
                 monthnr = loopi - 12
@@ -356,21 +420,19 @@ def 3month_fsegment_webbl(from_date:date):
                 monthnr = loopi
                 yearnr = 0
 
+            output_list = Output_list()
+            output_list_data.append(output_list)
+
+            output_list.segmentcode = segment.segmentcode
+            output_list.segment = entry(0, segment.bezeich, "$$0")
+            output_list.monthyear = date_mdy(monthnr, 1, get_year(from_date) + yearnr)
 
             output_list = Output_list()
             output_list_data.append(output_list)
 
             output_list.segmentcode = segment.segmentcode
             output_list.segment = entry(0, segment.bezeich, "$$0")
-            output_list.monthyear = date_mdy(monthnr, 1, get_year(from_date) + timedelta(days=yearnr))
-
-
-            output_list = Output_list()
-            output_list_data.append(output_list)
-
-            output_list.segmentcode = segment.segmentcode
-            output_list.segment = entry(0, segment.bezeich, "$$0")
-            output_list.monthyear = date_mdy(monthnr, 1, get_year(from_date) + timedelta(days=yearnr - 1))
+            output_list.monthyear = date_mdy(monthnr, 1, get_year(from_date) + yearnr - 1)
 
 
     create_list()
@@ -397,7 +459,7 @@ def 3month_fsegment_webbl(from_date:date):
 
         output_list.segmentcode = 99999
         output_list.segment = "T O T A L"
-        output_list.monthyear = date_mdy(monthnr, 1, get_year(from_date) + timedelta(days=yearnr))
+        output_list.monthyear = date_mdy(monthnr, 1, get_year(from_date) + yearnr)
 
 
         output_list = Output_list()
@@ -405,7 +467,7 @@ def 3month_fsegment_webbl(from_date:date):
 
         output_list.segmentcode = 99999
         output_list.segment = "T O T A L"
-        output_list.monthyear = date_mdy(monthnr, 1, get_year(from_date) + timedelta(days=yearnr - 1))
+        output_list.monthyear = date_mdy(monthnr, 1, get_year(from_date) + yearnr - 1)
 
     for output_list in query(output_list_data, sort_by=[("segmentcode",False)]):
         count_mtd_totrm(output_list.monthyear)
