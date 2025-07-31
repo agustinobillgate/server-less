@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_setupDepart" path="/setupDepartPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-setup-departbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-setup-departbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_setupDepart_1" path="/setupDepart" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-setup-departbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-setup-departbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_readUmsatz" path="/readUmsatz" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-read-umsatzbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-read-umsatzbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_setupRmcat" path="/setupRmcat" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-setup-rmcatbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-setup-rmcatbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_setupMain2Prepare" path="/setupMain2Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare2-main0.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare2-main0" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_setupMainPrepare" path="/setupMainPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-main0_1.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-main0_1" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_setupRoomPrepare" path="/setupRoomPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-setup-roombl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-setup-roombl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_setupRoomResline" path="/setupRoomResline" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-setup-room-reslinebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-setup-room-reslinebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_setupRoom" path="/setupRoom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-setup-roombl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-setup-roombl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+</prgs:model>

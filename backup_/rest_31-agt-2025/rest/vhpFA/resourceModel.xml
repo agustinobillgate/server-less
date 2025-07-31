@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_faArtlistPrepare" path="/faArtlistPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-artlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-artlistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faMovePrepare" path="/faMovePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-movebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-movebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faMoveIt" path="/faMoveIt" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-move-move-itbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-move-move-itbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistLocate" path="/faArtlistLocate" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-locatebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-locatebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistListName" path="/faArtlistListName" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-m-list-name1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-m-list-name1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistDepnWert" path="/faArtlistDepnWert" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-depn-wertbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-depn-wertbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistFibukonto" path="/faArtlistFibukonto" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-fibukontobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-fibukontobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistGnr" path="/faArtlistGnr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-gnrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-gnrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlisSubgrp" path="/faArtlisSubgrp" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-subgrpbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-subgrpbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlisKatnr" path="/faArtlisKatnr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-katnrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-katnrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistBtnExit" path="/faArtlistBtnExit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-btn-exitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-btn-exitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistChgMathisPrepare" path="/faArtlistChgMathisPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-artlist-chg-mathisbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-artlist-chg-mathisbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistListName1" path="/faArtlistListName1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-m-list-namebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-m-list-namebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistBtnDelete" path="/faArtlistBtnDelete" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-btn-delbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-btn-delbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faStockInPrepare" path="/faStockInPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-stockinbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-stockinbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faStockInLoad" path="/faStockInLoad" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-stockinbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-stockinbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faStockInPOCancel" path="/faStockInPOCancel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-stockin-btn-pocancelbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-stockin-btn-pocancelbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPchaseCancel" path="/faPchaseCancel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-cancel-fapchasebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-cancel-fapchasebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faStInPrepare" path="/faStInPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-stinbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-stinbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faStInNewLscheinnr" path="/faStInNewLscheinnr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-stin-new-lscheinnrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-stin-new-lscheinnrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faStInLoad" path="/faStInLoad" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-stin-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-stin-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistAsset" path="/faArtlistAsset" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-assetbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-assetbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistFindNewArtnr" path="/faArtlistFindNewArtnr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-find-new-artnrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-find-new-artnrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtSelectPrepare" path="/faArtSelectPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-select-faartbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-select-faartbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faStoreSelectPrepare" path="/faStoreSelectPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-select-fastorebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-select-fastorebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faGrpSelectPrepare" path="/faGrpSelectPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-select-fagrpbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-select-fagrpbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faSalePrepare" path="/faSalePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-salebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-salebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faDepnRefno" path="/faDepnRefno" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-depn-refnobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-depn-refnobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faSaleStep2" path="/faSaleStep2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-sale-step-twobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-sale-step-twobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faSaleLoad" path="/faSaleLoad" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-sale-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-sale-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faSubgrpSelectPrepare" path="/faSubgrpSelectPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-select-fasubgrpbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-select-fasubgrpbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faUpgradePrepare" path="/faUpgradePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-upgradebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-upgradebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faUpgradeStep2" path="/faUpgradeStep2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-upgrade-step-twobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-upgrade-step-twobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faUpgradeLoad" path="/faUpgradeLoad" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-upgrade-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-upgrade-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faValuatePrepare" path="/faValuatePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-valuatebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-valuatebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faValuateBtnGo" path="/faValuateBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-valuate-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-valuate-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faCancStockInPrepare" path="/faCancStockInPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-cancstockinbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-cancstockinbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faCancStockInDispIt" path="/faCancStockInDispIt" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-cancstockin-disp-itbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-cancstockin-disp-itbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faMovelistPrepare" path="/faMovelistPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-movelistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-movelistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faMovelist" path="/faMovelist" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-movelistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-movelistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faUpgradelistPrepare" path="/faUpgradelistPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-upgradelistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-upgradelistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faUpgradelistBtnGo" path="/faUpgradelistBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-upgradelist-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-upgradelist-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faUpgradelistBtnCancel" path="/faUpgradelistBtnCancel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-upgradelist-btn-cancelbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-upgradelist-btn-cancelbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faIncoming" path="/faIncoming" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-incomingbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-incomingbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faIncomingPO" path="/faIncomingPO" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-incomingpobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-incomingpobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPOListPrepare" path="/faPOListPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-polistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-polistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPOListBtnGo2" path="/faPOListBtnGo2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-polist-btn-go2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-polist-btn-go2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faRecPOPrepare" path="/faRecPOPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-recpobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-recpobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faRecPONewLscheinnr" path="/faRecPONewLscheinnr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-recpo-new-lscheinnrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-recpo-new-lscheinnrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faRecPOUpdLscheinnr" path="/faRecPOUpdLscheinnr" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-recpo-update-lscheinnrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-recpo-update-lscheinnrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faRecPOBtnGo" path="/faRecPOBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-recpo-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-recpo-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPODetail" path="/faPODetail" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-podetailbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-podetailbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faDepnPrepare" path="/faDepnPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-depnbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-depnbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faDepnStep2" path="/faDepnStep2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-depn-step-twobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-depn-step-twobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faDepnBtnGo2" path="/faDepnBtnGo2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-depn-btn-go2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-depn-btn-go2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faKategadminPrepare" path="/faKategadminPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-kategadminbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-kategadminbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faKategadminBtnDelart" path="/faKategadminBtnDelart" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-kategadmin-btn-delartbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-kategadmin-btn-delartbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faKategadminBtnExit" path="/faKategadminBtnExit" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-kategadmin-btn-exitbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-kategadmin-btn-exitbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faModifyPOPrepare" path="/faModifyPOPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-modifypobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-modifypobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faChgPOSaveDetail" path="/faChgPOSaveDetail" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-chgpo-save-detailbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-chgpo-save-detailbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPOBtnDel" path="/faPOBtnDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-po-btn-delbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-po-btn-delbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPOCheckDel" path="/faPOCheckDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-po-check-delbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-po-check-delbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPOCreateBtnGo" path="/faPOCreateBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-mkpo-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-mkpo-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPONewPrepare" path="/faPONewPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-newpobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-newpobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPOListBtnGo" path="/faPOListBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-polist-btn-gobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-polist-btn-gobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faKategSelectPrepare" path="/faKategSelectPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-select-fakategbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-select-fakategbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistMListAsset" path="/faArtlistMListAsset" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-m-list-assetbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-m-list-assetbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPOCreateCheckMathis" path="/faPOCreateCheckMathis" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-mkpo-check-mathisbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-mkpo-check-mathisbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faInlist" path="/faInlist" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-inlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-inlistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPrstockinCreateList" path="/faPrstockinCreateList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-prstockin-create-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-prstockin-create-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPrintReceiving" path="/faPrintReceiving" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-print-receiving-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-print-receiving-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faSelartlistPrepare" path="/faSelartlistPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-selartlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-selartlistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPchasePrintLnL" path="/faPchasePrintLnL" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-print-fa-pchase-lnlbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-print-fa-pchase-lnlbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faBypolist" path="/faBypolist" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-bypolistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-bypolistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faCancelDepnPrepare" path="/faCancelDepnPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-canceldepnbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-canceldepnbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faCancelDepn" path="/faCancelDepn" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-canceldepnbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-canceldepnbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPchaseParser" path="/faPchaseParser" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-pchase-parser-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-pchase-parser-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPchaseParserPrint" path="/faPchaseParserPrint" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-print-fa-pchase-parser-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-print-fa-pchase-parser-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPOList" path="/faPOList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-polistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-polistbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faBudget" path="/faBudget" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-budgetbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-budgetbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faBudgetList" path="/faBudgetList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-budget-listbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-budget-listbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPOCreateCheckMathisCustom" path="/faPOCreateCheckMathisCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-mkpo-check-mathis-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-mkpo-check-mathis-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistMobileviewSave" path="/faArtlistMobileviewSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-mobileview-savebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-mobileview-savebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistFindNewArtnr1" path="/faArtlistFindNewArtnr1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-find-new-artnr-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-find-new-artnr-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistChgMathisPrepareCustom" path="/faArtlistChgMathisPrepareCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-artlist-chg-mathis-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-artlist-chg-mathis-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistBtnExitCustom" path="/faArtlistBtnExitCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-btn-exit-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-btn-exit-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistBtnDelCustom" path="/faArtlistBtnDelCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-artlist-btn-del-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-artlist-btn-del-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPOCreateBtnGoCustom" path="/faPOCreateBtnGoCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-mkpo-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-mkpo-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faChgPOSaveDetailCustom" path="/faChgPOSaveDetailCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-chgpo-save-detail-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-chgpo-save-detail-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faBudgetLoad" path="/faBudgetLoad" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-get-fix-asset-budget-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-get-fix-asset-budget-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faBudgetCreate" path="/faBudgetCreate" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-fix-asset-budget-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-fix-asset-budget-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faBudgetUp" path="/faBudgetUp" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-up-fix-asset-budget-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-up-fix-asset-budget-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faBudgetDel" path="/faBudgetDel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-del-fix-asset-budget-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-del-fix-asset-budget-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faValuateBtnGo1" path="/faValuateBtnGo1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-valuate-btn-go1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-valuate-btn-go1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faPOListBtnGoCustom" path="/faPOListBtnGoCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-polist-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-polist-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faBudgetRealizationList" path="/faBudgetRealizationList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-budget-realization-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-budget-realization-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faDepreciationReportList" path="/faDepreciationReportList" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-depreciation-report-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-depreciation-report-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistPrepareCustom" path="/faArtlistPrepareCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-artlist-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-artlist-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlist1Prepare" path="/faArtlist1Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-artlist1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-artlist1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlistPrepareCreateOutput" path="/faArtlistPrepareCreateOutput" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-artlist-create-output-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-artlist-create-output-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faArtlist2Prepare" path="/faArtlist2Prepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-fa-artlist2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-fa-artlist2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faDepreciationReportList1" path="/faDepreciationReportList1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-depreciation-report1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-depreciation-report1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faValuateBtnGo2" path="/faValuateBtnGo2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-valuate-btn-go2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-valuate-btn-go2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+</prgs:model>
