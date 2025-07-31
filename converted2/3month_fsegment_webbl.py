@@ -6,7 +6,7 @@ from datetime import date
 from functions.get_room_breakdown import get_room_breakdown
 from models import Segment, Res_line, Htparam, Zimmer, Genstat, Reservation, Arrangement, Bill_line, Queasy, Reslin_queasy, Zkstat, Zinrstat, Outorder
 
-def 3month_fsegment_webbl(from_date:date):
+def _3month_fsegment_webbl(from_date:date):
 
     prepare_cache ([Segment, Res_line, Htparam, Genstat, Reservation, Arrangement, Queasy, Reslin_queasy, Zkstat, Zinrstat])
 

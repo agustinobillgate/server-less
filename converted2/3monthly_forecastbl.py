@@ -6,7 +6,7 @@ from datetime import date
 from functions.get_room_breakdown import get_room_breakdown
 from models import Htparam, Genstat, Segment, Res_line, Reservation, Zinrstat, Zimmer, Outorder, Zkstat
 
-def 3monthly_forecastbl(fmonth:string, tmonth:string):
+def _3monthly_forecastbl(fmonth:string, tmonth:string):
 
     prepare_cache ([Htparam, Genstat, Segment, Res_line, Reservation, Zinrstat, Zkstat])
 

@@ -91,7 +91,7 @@ def load_ratecode2bl(case_type:int, markno:int, prcode:string, argtno:int, zikat
                      (Ratecode.marknr == markno) & (Ratecode.code == (prcode).lower()) & (Ratecode.argtnr == argtno) & 
                      (Ratecode.zikatnr == zikatno) & (Ratecode._recid != s_recid) & (Ratecode.erwachs == adult) & 
                      (Ratecode.kind1 == child1) & (Ratecode.kind2 == child2) & (Ratecode.wday == w_day) & 
-                     (not_ (Ratecode.startperiode > enddate)) & (not_ (Ratecode.endperiod < startdate))).first()
+                     (not_ (Ratecode.startperiode > enddate)) & (not_ (Ratecode.endperiode < startdate))).first()
 
         if ratecode:
             error_flag = True
