@@ -437,8 +437,8 @@ update_field_mapping = {
 
     #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
     "adult": "Adult",
-    "arrtime": "ArrTime",
-    "arrtime": "arrTime",
+    "arrtime": ["ArrTime", "arrTime"],
+    # "arrtime": "arrTime",
     "statstr":"statStr",
     
     "deptime": "DepTime",
@@ -506,9 +506,9 @@ update_field_mapping = {
     # "PI-status":["pi-status", "pi-Status"],
     "pi_status":["pi-status", "PI-status"],
     "pi_type":["pi-type", "PI-type"],
-    # "deptno": ["DeptNo","deptNo"],
-    "deptno": "deptNo",
-    "deptno": "DeptNo",
+    "deptno": ["DeptNo","deptNo"],
+    # "deptno": "deptNo",
+    # "deptno": "DeptNo",
     
     "postdate": ["postDate", "PostDate"],
     "avail-addvat":"avail-addVAT",
@@ -788,7 +788,7 @@ update_table_name("vhpENG","egRepmaintainPrepare","Categ-nm","categ-nm")
 #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
 
 update_table_name("vhpFOR","monthlyFcastDDown1List1","adult","Adult")
-update_table_name("vhpFOR","monthlyFcastDDown1List1","arrtime","ArrTime")
+# update_table_name("vhpFOR","monthlyFcastDDown1List1","arrtime","ArrTime")
 update_table_name("vhpFOR","monthlyFcastDDown1List1","deptime","DepTime")
 
 #updated 1.0.0.38r (26-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
