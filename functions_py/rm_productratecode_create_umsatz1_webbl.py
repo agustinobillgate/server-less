@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 31/7/2025
+# gitlab: 1003
+# 
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -131,6 +135,9 @@ def rm_productratecode_create_umsatz1_webbl(disptype:int, mi_ftd:bool, f_date:da
             else:
                 genstat_obj_list[genstat._recid] = True
 
+            gratelocal = Decimal(genstat.ratelocal)
+            glogis = Decimal(genstat.logis)
+
             zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, genstat.zikatnr)]})
             curr_code = zimkateg.kurzbez
 
@@ -200,7 +207,7 @@ def rm_productratecode_create_umsatz1_webbl(disptype:int, mi_ftd:bool, f_date:da
                     if genstat.gratis > 0:
                         to_list.pax = to_list.pax + genstat.gratis
                         pax = pax + genstat.gratis
-                        avrgrate =  to_decimal(avrgrate) + to_decimal(genstat.ratelocal)
+                        avrgrate =  to_decimal(avrgrate) + gratelocal
 
 
                     else:
@@ -208,16 +215,16 @@ def rm_productratecode_create_umsatz1_webbl(disptype:int, mi_ftd:bool, f_date:da
                                 genstat.kind1 + genstat.kind2
                         pax = pax + genstat.erwachs +\
                                 genstat.kind1 + genstat.kind2
-                        avrgrate =  to_decimal(avrgrate) + to_decimal(genstat.ratelocal)
+                        avrgrate =  to_decimal(avrgrate) + gratelocal
 
                     if disptype == 0:
-                        to_list.logis =  to_decimal(to_list.logis) + to_decimal(genstat.logis)
-                        logis =  to_decimal(logis) + to_decimal(genstat.logis)
+                        to_list.logis =  to_decimal(to_list.logis) + glogis
+                        logis =  to_decimal(logis) + glogis
 
 
                     else:
-                        to_list.logis =  to_decimal(to_list.logis) + to_decimal(genstat.ratelocal)
-                        logis =  to_decimal(logis) + to_decimal(genstat.ratelocal)
+                        to_list.logis =  to_decimal(to_list.logis) + gratelocal
+                        logis =  to_decimal(logis) + gratelocal
 
                 if get_month(genstat.datum) == mm and get_year(genstat.datum) == yy:
 
@@ -228,7 +235,7 @@ def rm_productratecode_create_umsatz1_webbl(disptype:int, mi_ftd:bool, f_date:da
                     if genstat.gratis > 0:
                         to_list.m_pax = to_list.m_pax + genstat.gratis
                         m_pax = m_pax + genstat.gratis
-                        m_avrgrate =  to_decimal(m_avrgrate) + to_decimal(genstat.ratelocal)
+                        m_avrgrate =  to_decimal(m_avrgrate) + gratelocal
 
 
                     else:
@@ -236,16 +243,16 @@ def rm_productratecode_create_umsatz1_webbl(disptype:int, mi_ftd:bool, f_date:da
                                 genstat.kind1 + genstat.kind2
                         m_pax = m_pax + genstat.erwachs +\
                                 genstat.kind1 + genstat.kind2
-                        m_avrgrate =  to_decimal(m_avrgrate) + to_decimal(genstat.ratelocal)
+                        m_avrgrate =  to_decimal(m_avrgrate) + gratelocal
 
                     if disptype == 0:
-                        to_list.m_logis =  to_decimal(to_list.m_logis) + to_decimal(genstat.logis)
-                        m_logis =  to_decimal(m_logis) + to_decimal(genstat.logis)
+                        to_list.m_logis =  to_decimal(to_list.m_logis) + glogis
+                        m_logis =  to_decimal(m_logis) + glogis
 
 
                     else:
-                        to_list.m_logis =  to_decimal(to_list.m_logis) + to_decimal(genstat.ratelocal)
-                        m_logis =  to_decimal(m_logis) + to_decimal(genstat.ratelocal)
+                        to_list.m_logis =  to_decimal(to_list.m_logis) + gratelocal
+                        m_logis =  to_decimal(m_logis) + gratelocal
 
                 if genstat.resstatus != 13:
                     to_list.y_room = to_list.y_room + 1
@@ -254,7 +261,7 @@ def rm_productratecode_create_umsatz1_webbl(disptype:int, mi_ftd:bool, f_date:da
                 if genstat.gratis > 0:
                     to_list.y_pax = to_list.y_pax + genstat.gratis
                     y_pax = y_pax + genstat.gratis
-                    y_avrgrate =  to_decimal(y_avrgrate) + to_decimal(genstat.ratelocal)
+                    y_avrgrate =  to_decimal(y_avrgrate) + gratelocal
 
 
                 else:
@@ -262,16 +269,16 @@ def rm_productratecode_create_umsatz1_webbl(disptype:int, mi_ftd:bool, f_date:da
                             genstat.kind1 + genstat.kind2
                     y_pax = y_pax + genstat.erwachs +\
                             genstat.kind1 + genstat.kind2
-                    y_avrgrate =  to_decimal(y_avrgrate) + to_decimal(genstat.ratelocal)
+                    y_avrgrate =  to_decimal(y_avrgrate) + gratelocal
 
                 if disptype == 0:
-                    to_list.y_logis =  to_decimal(to_list.y_logis) + to_decimal(genstat.logis)
-                    y_logis =  to_decimal(y_logis) + to_decimal(genstat.logis)
+                    to_list.y_logis =  to_decimal(to_list.y_logis) + glogis
+                    y_logis =  to_decimal(y_logis) + glogis
 
 
                 else:
-                    to_list.y_logis =  to_decimal(to_list.y_logis) + to_decimal(genstat.ratelocal)
-                    y_logis =  to_decimal(y_logis) + to_decimal(genstat.ratelocal)
+                    to_list.y_logis =  to_decimal(to_list.y_logis) + gratelocal
+                    y_logis =  to_decimal(y_logis) + gratelocal
 
                 if genstat.zipreis == 0 and (genstat.gratis > 0 or (genstat.erwachs + genstat.kind1 + genstat.kind2 + genstat.gratis == 0) and genstat.resstatus != 13):
 
