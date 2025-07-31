@@ -52,7 +52,7 @@ def fa_podetailbl(docu_nr:string):
 
         mathis = mathis_map.get(fa_order.fa_nr)
         temp_last = bediener_map.get(fa_order.last_id, "")
-
+        print("Order:", fa_order.order_nr)
         # Create s_order entry
         s_order = S_order()
         s_order.order_nr = fa_order.order_nr
@@ -68,18 +68,26 @@ def fa_podetailbl(docu_nr:string):
         s_order.fa_pos = fa_order.fa_pos
         s_order.last_id = fa_order.last_id
         s_order.last_user = temp_last
-        db_session.add(s_order)
+
+        # Rd 30/7/2025
+        # db_session.add(s_order)
+        s_order_data.append(s_order)
 
         # Create disclist entry
         disclist = Disclist()
         disclist.fa_recid = fa_order.fa_pos
         try:
-            disclist.price0 = fa_order.order_price / (1 - fa_order.discount1 * 0.01) \
-                            / (1 - fa_order.discount2 * 0.01) / (1 + fa_order.vat * 0.01)
+            # disclist.price0 = fa_order.order_price / (1 - fa_order.discount1 * 0.01) \
+            #                 / (1 - fa_order.discount2 * 0.01) / (1 + fa_order.vat * 0.01)
+            disclist.price0 = fa_order.order_price / (1 - fa_order.discount1 * Decimal("0.01")) \
+                                  / (1 - fa_order.discount2 * Decimal("0.01")) \
+                                  / (1 + fa_order.vat * Decimal("0.01"))
         except ZeroDivisionError:
             disclist.price0 = 0
         disclist.brutto = disclist.price0 * fa_order.order_amount
-        db_session.add(disclist)
+
+        # db_session.add(disclist)
+        disclist_data.append(disclist)
 
     # --- Second loop over s_order ---
     # Pre-fetch mathis and disclist again
@@ -101,7 +109,8 @@ def fa_podetailbl(docu_nr:string):
             tmp.delivered_qty = s_order.delivered_qty
             tmp.delivered_date = s_order.delivered_date
             tmp.last_user = s_order.last_user
-            db_session.add(tmp)
+            # db_session.add(tmp)
+            tmp_tbl_data.append(tmp)
 
     # Finally commit all changes
     db_session.commit()

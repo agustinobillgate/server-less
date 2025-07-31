@@ -895,73 +895,276 @@ class CustomJSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def update_input_format(obj,input_data):
-    # Update the input object if variable has "-"
-    # Update date data from string into data                                      
+# def update_input_format(obj,input_data):
+#     # Update the input object if variable has "-"
+#     # Update date data from string into data                                      
+#     param_list = parameter_and_inner_types(obj)
+#     param_name_list = []
+#     lower_param_names = [param.lower() for param in list(input_data.keys())]
+
+#     for param_name,param_data_type in param_list.items():
+#         param_name_list.append(param_name)
+
+#         if not param_name in input_data:
+
+#             if camelCase(param_name) in input_data:
+#                 input_data[param_name] = input_data[camelCase(param_name)]
+#                 input_data.pop(camelCase(param_name))
+#             elif param_name in lower_param_names:
+#                 curr_input_param_name = ""
+#                 for input_param_name in input_data.keys():
+#                     if input_param_name.lower() == param_name:
+#                         curr_input_param_name = input_param_name
+#                         break
+
+#                 input_data[param_name] = input_data[curr_input_param_name]
+#                 input_data.pop(curr_input_param_name)
+
+#             elif isinstance(param_data_type, list):
+#                 #updated 1.0.0.21
+#                 outer_input_param_name = camelCase(param_name.removesuffix("_data"))
+#                 inner_input_param_name = param_name.removesuffix("_data").replace("_","-")
+#                 # outer_input_param_name = camelCase(param_name.removesuffix("_list"))
+#                 # inner_input_param_name = param_name.removesuffix("_list").replace("_","-")
+
+#                 tmp_input_data = input_data
+
+#                 #updated 1.0.0.4
+#                 if not outer_input_param_name in input_data:
+#                     for field_name in input_data:
+#                         if outer_input_param_name.lower() == field_name.lower():
+#                             outer_input_param_name = field_name
+#                             break
+
+#                 if outer_input_param_name in input_data:
+#                     if not inner_input_param_name in input_data[outer_input_param_name]:
+#                         for field_name in input_data[outer_input_param_name]:
+#                             if inner_input_param_name.lower() == field_name.lower():
+#                                 input_data[outer_input_param_name][inner_input_param_name] = input_data[outer_input_param_name]
+#                                 input_data[outer_input_param_name].pop(field_name)
+#                                 break
+
+#                     if inner_input_param_name in input_data[outer_input_param_name]:
+#                         input_data[param_name] = input_data[outer_input_param_name][inner_input_param_name]
+#                         input_data.pop(outer_input_param_name)
+
+#                 # if outer_input_param_name in input_data:
+#                 #     input_data[param_name] = input_data[outer_input_param_name][inner_input_param_name]
+#                 #     input_data.pop(outer_input_param_name)
+#                 # else:
+#                 #     #updated 1.0.0.3
+#                 #     outer_input_param_name = outer_input_param_name[0].upper() + outer_input_param_name[1:]
+#                 #     inner_input_param_name = inner_input_param_name[0].upper() + inner_input_param_name[1:]
+
+#                 #     if outer_input_param_name in input_data:
+#                 #         input_data[param_name] = input_data[outer_input_param_name][inner_input_param_name]
+#                 #         input_data.pop(outer_input_param_name)
+
+#         if not param_name in input_data:
+#             if not isinstance(param_data_type, list) :
+#                 if param_data_type == bool:
+#                     input_data[param_name] = False
+#                 elif param_data_type == str:
+#                     input_data[param_name] = ""
+#                 elif param_data_type == int:
+#                     input_data[param_name] = 0
+#                 elif param_data_type == float:
+#                     input_data[param_name] = 0.0
+#             #updated 1.0.0.19
+#                 # elif param_data_type == decimal:
+#                 elif param_data_type == Decimal:
+#                     input_data[param_name] = 0.0
+#                 else:
+#                     input_data[param_name] = None
+                
+
+#         input_value = input_data[param_name]
+
+#         if param_data_type == date:
+#             input_data[param_name] = get_date_input(input_value)
+#         elif param_data_type == bool and type(input_value) == str:
+#             input_data[param_name] = convert_to_bool(input_value)
+#         elif param_data_type == int and type(input_value) == str:
+#             input_data[param_name] = convert_to_int(input_value.strip(" "))
+#         elif param_data_type == str and type(input_value) == int:
+#             input_data[param_name] = to_string(input_value)
+#         #updated 1.0.0.1
+#         #updated 1.0.0.19
+#         # elif param_data_type == decimal:
+#         elif param_data_type == Decimal:
+#             input_data[param_name] = to_decimal(input_value)
+
+#         elif isinstance(param_data_type, list):
+#             if param_data_type[0] == bool:  
+#                 for i in range(len(input_data[param_name])):
+#                     input_data[param_name][i] =  convert_to_bool(input_data[param_name][i])
+#             elif param_data_type[0] == date:
+#                 for i in range(len(input_data[param_name])):
+#                     input_data[param_name][i] =  get_date_input(input_data[param_name][i])
+#                     # input_data[param_name][i] =  ExtendedDate.from_date(get_date_input(input_data[param_name][i]))
+#             elif param_data_type[0] == int:
+#                 for i in range(len(input_data[param_name])):
+#                     input_data[param_name][i] =  convert_to_int(input_data[param_name][i])
+
+
+#             #updated 1.0.0.1
+#             #updated 1.0.0.19
+#             # elif not type(param_data_type[0]) in {int, decimal, float, complex, str, list, tuple, range, dict, set, 
+#             #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
+#             #     not param_data_type[0] in {int, decimal, float, complex, str, list, tuple, range, dict, set, 
+#             #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)}:
+#             elif not type(param_data_type[0]) in {int,  Decimal, float, complex, str, list, tuple, range, dict, set, 
+#                                                   frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
+#                 not param_data_type[0] in {int, Decimal, float, complex, str, list, tuple, range, dict, set, 
+#                                                   frozenset, bool, bytes, bytearray, memoryview, type(None)}:
+                                                    
+#                 data_list = input_data[param_name]
+#                 if not isinstance(data_list,list):
+#                     input_data[param_name] = [data_list]
+#                     data_list = input_data[param_name]   
+                
+#                 if len(data_list) > 0:
+#                     fieldNameList = []
+#                     boolFormatList = []
+#                     dateFormatList = []
+
+#                     #updated 1.0.0.10
+#                     bytesFormatList = []
+                    
+                    
+#                     check_recid = False
+
+#                     for field in fields(param_data_type[0]):
+
+#                         field.name = field.name.lower()
+#                         if field.name == "_recid":
+#                             check_recid = True
+#                         else:
+#                             if field.type == date:
+#                                 dateFormatList.append(field.name)
+#                             elif field.type == bool:
+#                                 boolFormatList.append(field.name)
+#                             #updated 1.0.0.10
+#                             elif field.type == bytes:
+#                                 bytesFormatList.append(field.name)           
+
+
+#                             # updated 1.0.0.5
+#                             if not field.name in data_list[0]:
+#                                 if field.name.replace("_","-") in data_list[0]:
+#                                     fieldNameList.append(field.name)
+#                                 else:
+#                                     for field_name in data_list[0].keys():
+#                                         if field.name == field_name.lower():
+#                                             fieldNameList.append(field_name)
+#                                             break
+
+#                             # if (not field.name in data_list[0] and 
+#                             #         # field.name.replace("_","-") in data_list):
+#                             #         field.name.replace("_","-") in data_list[0]):
+#                             #     fieldNameList.append(field.name)
+                            
+#                     if check_recid or len(fieldNameList) > 0 or len(dateFormatList) > 0 or len(boolFormatList) > 0:
+#                         for data in data_list:
+#                             if check_recid:
+#                                 if data.get("_recid") == 0 or not "_recid" in data:
+#                                     data["_recid"] = None
+
+#                             # Rd
+#                             # for name in fieldNameList:
+#                             #     #updated 1.0.0.5
+#                             #     data_field_name = name.replace("_","-")
+#                             #     data[name.lower()] = data[data_field_name]
+#                             #     data.pop(data_field_name)
+
+#                             for name in fieldNameList:
+#                                 for key in list(data.keys()):
+#                                     if key.lower() == name.lower() or key.lower() == name.replace("_", "-").lower():
+#                                         data[name.lower()] = data[key]
+#                                         data.pop(key)
+#                                         break
+                            
+#                             for name in dateFormatList:
+#                                 # data[name] = get_date_temp_table(data[name])
+#                                 data[name] = get_date_temp_table(data.get(name))
+
+#                             for name in boolFormatList:
+#                                 data[name] = convert_to_bool(data.get(name))
+#                                 # data[name] = convert_to_bool(data[name])
+
+#                             #updated 1.0.0.10
+#                             for name in bytesFormatList:
+#                                 data[name] = base64.b64decode(data.get(name))
+                
+#                     ignore_key_list = []
+#                     param_key_list = [field.name for field in fields(param_data_type[0])]
+#                     for key in data_list[0].keys():
+#                         if not key in param_key_list:
+#                             ignore_key_list.append(key)
+
+#                     for i in range(0,len(data_list)):
+#                         for key in ignore_key_list:                            
+#                             # data_list[i].pop(key)
+#                             # Rd
+#                             data_list[i].pop(key, None)
+
+#                         data_list[i] = param_data_type[0](**data_list[i])        
+
+#     input_data_keys = list(input_data.keys())
+
+#     for input_param_name in input_data_keys:
+#         if not input_param_name in param_name_list:
+#             input_data.pop(input_param_name)
+
+
+#     # for param_name in input_data.keys():
+#     #     if not param_name in param_list(obj)
+
+
+def update_input_format(obj, input_data):
+    from decimal import Decimal
+    import base64
+    from datetime import date
+    from dataclasses import fields
+
+    def camelCase(s):
+        parts = s.split('_')
+        return parts[0] + ''.join(word.capitalize() for word in parts[1:])
+
     param_list = parameter_and_inner_types(obj)
     param_name_list = []
-    lower_param_names = [param.lower() for param in list(input_data.keys())]
+    lower_param_names = [param.lower() for param in input_data]
 
-    for param_name,param_data_type in param_list.items():
+    for param_name, param_data_type in param_list.items():
         param_name_list.append(param_name)
 
-        if not param_name in input_data:
-
+        if param_name not in input_data:
             if camelCase(param_name) in input_data:
-                input_data[param_name] = input_data[camelCase(param_name)]
-                input_data.pop(camelCase(param_name))
+                input_data[param_name] = input_data.pop(camelCase(param_name))
             elif param_name in lower_param_names:
-                curr_input_param_name = ""
-                for input_param_name in input_data.keys():
-                    if input_param_name.lower() == param_name:
-                        curr_input_param_name = input_param_name
+                for k in input_data:
+                    if k.lower() == param_name:
+                        input_data[param_name] = input_data.pop(k)
+                        break
+            elif isinstance(param_data_type, list):
+                outer_key = camelCase(param_name.removesuffix('_data'))
+                inner_key = param_name.removesuffix('_data').replace('_', '-')
+
+                for k in list(input_data.keys()):
+                    if k.lower() == outer_key.lower():
+                        outer_key = k
                         break
 
-                input_data[param_name] = input_data[curr_input_param_name]
-                input_data.pop(curr_input_param_name)
-
-            elif isinstance(param_data_type, list):
-                #updated 1.0.0.21
-                outer_input_param_name = camelCase(param_name.removesuffix("_data"))
-                inner_input_param_name = param_name.removesuffix("_data").replace("_","-")
-                # outer_input_param_name = camelCase(param_name.removesuffix("_list"))
-                # inner_input_param_name = param_name.removesuffix("_list").replace("_","-")
-
-                tmp_input_data = input_data
-
-                #updated 1.0.0.4
-                if not outer_input_param_name in input_data:
-                    for field_name in input_data:
-                        if outer_input_param_name.lower() == field_name.lower():
-                            outer_input_param_name = field_name
+                if outer_key in input_data:
+                    for k in list(input_data[outer_key].keys()):
+                        if k.lower() == inner_key.lower():
+                            input_data[param_name] = input_data[outer_key].pop(k)
                             break
+                    input_data.pop(outer_key, None)
 
-                if outer_input_param_name in input_data:
-                    if not inner_input_param_name in input_data[outer_input_param_name]:
-                        for field_name in input_data[outer_input_param_name]:
-                            if inner_input_param_name.lower() == field_name.lower():
-                                input_data[outer_input_param_name][inner_input_param_name] = input_data[outer_input_param_name]
-                                input_data[outer_input_param_name].pop(field_name)
-                                break
-
-                    if inner_input_param_name in input_data[outer_input_param_name]:
-                        input_data[param_name] = input_data[outer_input_param_name][inner_input_param_name]
-                        input_data.pop(outer_input_param_name)
-
-                # if outer_input_param_name in input_data:
-                #     input_data[param_name] = input_data[outer_input_param_name][inner_input_param_name]
-                #     input_data.pop(outer_input_param_name)
-                # else:
-                #     #updated 1.0.0.3
-                #     outer_input_param_name = outer_input_param_name[0].upper() + outer_input_param_name[1:]
-                #     inner_input_param_name = inner_input_param_name[0].upper() + inner_input_param_name[1:]
-
-                #     if outer_input_param_name in input_data:
-                #         input_data[param_name] = input_data[outer_input_param_name][inner_input_param_name]
-                #         input_data.pop(outer_input_param_name)
-
-        if not param_name in input_data:
-            if not isinstance(param_data_type, list) :
+        # Fill default values
+        if param_name not in input_data:
+            if not isinstance(param_data_type, list):
                 if param_data_type == bool:
                     input_data[param_name] = False
                 elif param_data_type == str:
@@ -970,144 +1173,71 @@ def update_input_format(obj,input_data):
                     input_data[param_name] = 0
                 elif param_data_type == float:
                     input_data[param_name] = 0.0
-            #updated 1.0.0.19
-                # elif param_data_type == decimal:
                 elif param_data_type == Decimal:
                     input_data[param_name] = 0.0
                 else:
                     input_data[param_name] = None
-                
 
         input_value = input_data[param_name]
 
+        # Convert types
         if param_data_type == date:
             input_data[param_name] = get_date_input(input_value)
-        elif param_data_type == bool and type(input_value) == str:
+        elif param_data_type == bool and isinstance(input_value, str):
             input_data[param_name] = convert_to_bool(input_value)
-        elif param_data_type == int and type(input_value) == str:
-            input_data[param_name] = convert_to_int(input_value.strip(" "))
-        elif param_data_type == str and type(input_value) == int:
+        elif param_data_type == int and isinstance(input_value, str):
+            input_data[param_name] = convert_to_int(input_value.strip())
+        elif param_data_type == str and isinstance(input_value, int):
             input_data[param_name] = to_string(input_value)
-        #updated 1.0.0.1
-        #updated 1.0.0.19
-        # elif param_data_type == decimal:
         elif param_data_type == Decimal:
             input_data[param_name] = to_decimal(input_value)
 
-        elif isinstance(param_data_type, list):
-            if param_data_type[0] == bool:  
+        # Handle list of complex types
+        elif isinstance(param_data_type, list) and len(param_data_type) > 0:
+            inner_type = param_data_type[0]
+            if inner_type in [bool, int, date]:
                 for i in range(len(input_data[param_name])):
-                    input_data[param_name][i] =  convert_to_bool(input_data[param_name][i])
-            elif param_data_type[0] == date:
-                for i in range(len(input_data[param_name])):
-                    input_data[param_name][i] =  get_date_input(input_data[param_name][i])
-                    # input_data[param_name][i] =  ExtendedDate.from_date(get_date_input(input_data[param_name][i]))
-            elif param_data_type[0] == int:
-                for i in range(len(input_data[param_name])):
-                    input_data[param_name][i] =  convert_to_int(input_data[param_name][i])
-
-
-            #updated 1.0.0.1
-            #updated 1.0.0.19
-            # elif not type(param_data_type[0]) in {int, decimal, float, complex, str, list, tuple, range, dict, set, 
-            #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
-            #     not param_data_type[0] in {int, decimal, float, complex, str, list, tuple, range, dict, set, 
-            #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)}:
-            elif not type(param_data_type[0]) in {int,  Decimal, float, complex, str, list, tuple, range, dict, set, 
-                                                  frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
-                not param_data_type[0] in {int, Decimal, float, complex, str, list, tuple, range, dict, set, 
-                                                  frozenset, bool, bytes, bytearray, memoryview, type(None)}:
-                                                    
+                    if inner_type == bool:
+                        input_data[param_name][i] = convert_to_bool(input_data[param_name][i])
+                    elif inner_type == int:
+                        input_data[param_name][i] = convert_to_int(input_data[param_name][i])
+                    elif inner_type == date:
+                        input_data[param_name][i] = get_date_input(input_data[param_name][i])
+            elif not isinstance(inner_type, type) or inner_type not in {int, float, str, bool, Decimal, bytes, list, dict, tuple, set}:
                 data_list = input_data[param_name]
-                if not isinstance(data_list,list):
-                    input_data[param_name] = [data_list]
-                    data_list = input_data[param_name]   
-                
-                if len(data_list) > 0:
-                    fieldNameList = []
-                    boolFormatList = []
-                    dateFormatList = []
+                if not isinstance(data_list, list):
+                    data_list = [data_list]
+                    input_data[param_name] = data_list
 
-                    #updated 1.0.0.10
-                    bytesFormatList = []
-                    
-                    
-                    check_recid = False
+                if data_list and isinstance(data_list[0], dict):
+                    model_fields = {f.name: f.type for f in fields(inner_type)}
+                    param_keys = set(model_fields.keys())
 
-                    for field in fields(param_data_type[0]):
+                    for i, record in enumerate(data_list):
+                        clean_data = {}
+                        for k, v in record.items():
+                            norm_key = k.replace("-", "_").lower()
+                            for actual_key in param_keys:
+                                if norm_key == actual_key.lower():
+                                    clean_data[actual_key] = v
+                                    break
+                        for key in list(clean_data):
+                            expected_type = model_fields.get(key)
+                            if expected_type == bool:
+                                clean_data[key] = convert_to_bool(clean_data.get(key))
+                            elif expected_type == date:
+                                clean_data[key] = get_date_temp_table(clean_data.get(key))
+                            elif expected_type == bytes and isinstance(clean_data.get(key), str):
+                                clean_data[key] = base64.b64decode(clean_data[key])
+                        try:
+                            data_list[i] = inner_type(**clean_data)
+                        except TypeError as e:
+                            raise Exception(f"Failed to create {inner_type} with {clean_data}") from e
 
-                        if field.name == "_recid":
-                            check_recid = True
-                        else:
-                            if field.type == date:
-                                dateFormatList.append(field.name)
-                            elif field.type == bool:
-                                boolFormatList.append(field.name)
-                            #updated 1.0.0.10
-                            elif field.type == bytes:
-                                bytesFormatList.append(field.name)           
-
-
-                            # updated 1.0.0.5
-                            if not field.name in data_list[0]:
-                                if field.name.replace("_","-") in data_list[0]:
-                                    fieldNameList.append(field.name)
-                                else:
-                                    for field_name in data_list[0].keys():
-                                        if field.name == field_name.lower():
-                                            fieldNameList.append(field_name)
-                                            break
-
-                            # if (not field.name in data_list[0] and 
-                            #         # field.name.replace("_","-") in data_list):
-                            #         field.name.replace("_","-") in data_list[0]):
-                            #     fieldNameList.append(field.name)
-                            
-                    if check_recid or len(fieldNameList) > 0 or len(dateFormatList) > 0 or len(boolFormatList) > 0:
-                        for data in data_list:
-                            if check_recid:
-                                if data.get("_recid") == 0 or not "_recid" in data:
-                                    data["_recid"] = None
-
-                            for name in fieldNameList:
-                                #updated 1.0.0.5
-                                data_field_name = name.replace("_","-")
-                                data[name.lower()] = data[data_field_name]
-                                data.pop(data_field_name)
-                            
-                            for name in dateFormatList:
-                                # data[name] = get_date_temp_table(data[name])
-                                data[name] = get_date_temp_table(data.get(name))
-
-                            for name in boolFormatList:
-                                data[name] = convert_to_bool(data.get(name))
-                                # data[name] = convert_to_bool(data[name])
-
-                            #updated 1.0.0.10
-                            for name in bytesFormatList:
-                                data[name] = base64.b64decode(data.get(name))
-                
-                    ignore_key_list = []
-                    param_key_list = [field.name for field in fields(param_data_type[0])]
-                    for key in data_list[0].keys():
-                        if not key in param_key_list:
-                            ignore_key_list.append(key)
-
-                    for i in range(0,len(data_list)):
-                        for key in ignore_key_list:                            
-                            data_list[i].pop(key)
-
-                        data_list[i] = param_data_type[0](**data_list[i])        
-
-    input_data_keys = list(input_data.keys())
-
-    for input_param_name in input_data_keys:
-        if not input_param_name in param_name_list:
-            input_data.pop(input_param_name)
-
-
-    # for param_name in input_data.keys():
-    #     if not param_name in param_list(obj)
+    # Remove extra parameters not in the function signature
+    for key in list(input_data):
+        if key not in param_name_list:
+            input_data.pop(key)
 
 
 def update_output_format(output_data):
