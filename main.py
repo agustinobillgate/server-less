@@ -294,7 +294,7 @@ update_field_mapping = {
     "foreignrate": "foreignRate",
     "doublecurrency": "doubleCurrency",
     "exchgRate": "exchgRate",
-    "mustprint": "mustPrint",
+    
     "flwarn": "flWarn",
     "maxlapos": "maxLapos",
     "cashlessflag": "cashlessFlag",
@@ -629,12 +629,13 @@ update_field_mapping = {
 
     # "activeflag": ["ActiveFlag","activeFlag"], 
     "activeflag":"ActiveFlag",
-
     # "mtd-room": "mtd-Room",
     # "ytd-room": "ytd-Room",
        
-    # "max_lapos": ["maxLapos"],
-    # "must_print":["mustPrint"],
+    "max_lapos": "maxLapos",
+    "must_print":"mustPrint",
+    "mustprint":"mustPrint",
+
     # "fl_warn":["flWarn"],
     # "cashless_flag":["cashlessFlag"],
     #vhpIA/correctCoverDept
@@ -1242,7 +1243,7 @@ def update_input_format(obj, input_data):
 
 def update_output_format(output_data):
     key_list = list(output_data.keys())
-    # print("Update Output Data:", key_list)
+    print("Update Output Data:", key_list)
     for key in key_list:
         #updated 1.0.0.11
         if re.match(r".*__.*",key):

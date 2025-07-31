@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 31/7/2025
+# gitlab: 510
+# diff key, edit manual di generate_output
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -44,7 +49,9 @@ def prepare_ts_splitbillbl(dept:int, tischnr:int):
         nonlocal menu, lhbline, t_h_bill, t_h_bill_line
         nonlocal menu_data, lhbline_data, t_h_bill_data, t_h_bill_line_data
 
+        # Rd 31/7/2025
         return {"multi_vat": multi_vat, "zero_flag": zero_flag, "multi_cash": multi_cash, "price_decimal": price_decimal, "foreign_rate": foreign_rate, "double_currency": double_currency, "exchg_rate": exchg_rate, "deptname": deptname, "must_print": must_print, "fl_warn": fl_warn, "max_lapos": max_lapos, "cashless_flag": cashless_flag, "t-h-bill": t_h_bill_data, "t-h-bill-line": t_h_bill_line_data, "menu": menu_data, "Lhbline": lhbline_data}
+        # return {"multi_vat": multi_vat, "zero_flag": zero_flag, "multi_cash": multi_cash, "price_decimal": price_decimal, "foreign_rate": foreign_rate, "double_currency": double_currency, "exchg_rate": exchg_rate, "deptname": deptname, "mustPrint": must_print, "flWarn": fl_warn, "maxLapos": max_lapos, "cashlessFlag": cashless_flag, "t-h-bill": t_h_bill_data, "t-h-bill-line": t_h_bill_line_data, "menu": menu_data, "LhbLine": lhbline_data}
 
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 834)]})
