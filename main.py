@@ -234,7 +234,7 @@ update_field_mapping = {
     "resanz": "resAnz",
     "resnrstr": "resnrStr",
     
-    "deptname": "deptName",
+    # "deptname": "deptName",
     "appstr": "appStr",
     "appflag": "appFlag",
 
@@ -486,7 +486,7 @@ update_field_mapping = {
 
     "Created-By":"created-by",
     "created-by":"Created-By",
-    "deptname":"deptName",
+    # "deptname":"deptName",
 
     "posteddate":"postedDate",  #vhpGC/gcGiroRead (FA)
     "move-from":"Move-from",
@@ -496,17 +496,20 @@ update_field_mapping = {
     "arrflag":"arrFlag",
     "dptno":"dptNo",
     "event":"EVENT",
-    "engid": "EngID",
-    "engid": "EngId",
+    # "engid": "EngID",
+    # "engid": "EngId",
+    # "activeflag":"ActiveFlag", #egMainschedulePrepare
+    # "activeflag":"activeFlag", #egMainschedulePrepare
+
     
 
 
     #updated 1.0.0.22
-    "create_by": ["Create_by", "Create_By"],
+    "create_by": ["Create_by", "Create_By", "create-by"],
     "created_by": ["Created_by", "Created_By", "created-by"],
     "deptname": ["deptName","DeptName","DeptNAME","DEPTNAME"],
     "main_nr": ["Main-nr", "main-nr"],
-    # "engid": ["engId","EngId","EngID","ENGID"],
+    "engid": ["engId","EngId","EngID","ENGID"],
     
     # "PI-status":["pi-status", "pi-Status"],
     "pi_status":["pi-status", "PI-status"],
@@ -632,8 +635,8 @@ update_field_mapping = {
     "vhpwebbased4-appservicename":"VHPWebBased4-AppServiceName",
     "vhpwebbased5-appservicename":"VHPWebBased5-AppServiceName",
 
-    # "activeflag": ["ActiveFlag","activeFlag"], 
-    "activeflag":"ActiveFlag",
+    "activeflag": ["ActiveFlag","activeFlag"], 
+   
     "mtd-room": "mtd-Room",         # vhpSM/rmAtproductCreateUmsatz1
     "ytd-room": "ytd-Room",         # vhpSM/rmAtproductCreateUmsatz1
        

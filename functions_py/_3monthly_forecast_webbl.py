@@ -33,7 +33,7 @@ def _3monthly_forecast_webbl(fmonth:string, tmonth:string, excl_compl:bool):
     tot_vat:Decimal = to_decimal("0.0")
     tot_service:Decimal = to_decimal("0.0")
     actual_tot_room:int = 0
-    do_it:bool = TRUE
+    do_it:bool = True
     curr_month:int = 0
     tot_rmsold:Decimal = to_decimal("0.0")
     tot_ooo:Decimal = to_decimal("0.0")
