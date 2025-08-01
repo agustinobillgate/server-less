@@ -2,7 +2,7 @@
 #-----------------------------------------
 # Rd, 18/7/25
 # gitlab: 676
-# Ex_finishtime -> ex_finishtime
+# ex_finishtime -> ex_finishtime
 # CHAR3 -> char3
 # vat_art_list -> ex_finishtime
 # property -> propertynr
@@ -878,7 +878,7 @@ def eg_reglist1_btn_go_webbl(location:int, rmno:string, main_nr:int, reqstatus:i
             if eg_request.ex_finishdate == None:
                 ex_finishstr = ""
             else:
-                ex_finishstr = to_string(eg_request.ex_finishdate , "99/99/99") + " " + to_string(eg_request.Ex_finishtime , "HH:MM")
+                ex_finishstr = to_string(eg_request.ex_finishdate , "99/99/99") + " " + to_string(eg_request.ex_finishtime , "HH:MM")
 
             if eg_request.propertynr == 0:
                 eg_request.char2 = strdatetime
