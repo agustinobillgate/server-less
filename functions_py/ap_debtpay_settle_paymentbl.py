@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.27
+#----------------------------------------
+# Rd, 1/8/2025
+# 
+#----------------------------------------
 
 from functions.additional_functions import *
 import decimal
@@ -59,10 +63,21 @@ def ap_debtpay_settle_paymentbl(pay_list_list:[Pay_list], age_list_list:[Age_lis
         for age_list in query(age_list_list, filters=(lambda age_list: age_list.selected)):
 
             l_kredit1 = db_session.query(L_kredit1).filter(
-                     (L_kredit1.opart == 0) & (L_kredit1.lief_nr == age_list.lief_nr) & (L_kredit1.name == age_list.docu_nr) & (L_kredit1.lscheinnr == age_list.lscheinnr) & (L_kredit1.rgdatum == age_list.rgdatum) & (L_kredit1.saldo == age_list.debt)).first()
+                     (L_kredit1.opart == 0) & (L_kredit1.lief_nr == age_list.lief_nr) & 
+                     (L_kredit1.name == age_list.docu_nr) & (L_kredit1.lscheinnr == age_list.lscheinnr) & 
+                     (L_kredit1.rgdatum == age_list.rgdatum) & (L_kredit1.saldo == age_list.debt)).first()
 
+            # Rd 1/8/2025
+            # if available
+            # l_lieferant = db_session.query(L_lieferant).filter(
+            #          (L_lieferant.lief_nr == l_kredit1.lief_nr)).first()
+
+            if l_kredit1 is None:
+                continue
+            
             l_lieferant = db_session.query(L_lieferant).filter(
                      (L_lieferant.lief_nr == l_kredit1.lief_nr)).first()
+
             supplier = l_lieferant.firma
             saldo_i =  to_decimal(age_list.tot_debt)
             payment1 =  - to_decimal(saldo_i)
