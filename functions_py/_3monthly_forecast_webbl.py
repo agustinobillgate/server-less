@@ -1,10 +1,24 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 1/8/2025
+# gitlab: 978
+# TRUE -> True
+# houseuse -> houseuse
+# rmRevenue -> rmrevenue
+# rmsold -> rmsold
+# avrgRevenue -> avrgrevenue
+# add variable counter,
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.get_room_breakdown import get_room_breakdown
 from models import Htparam, Genstat, Segment, Res_line, Reservation, Zinrstat, Zimmer, Outorder, Zkstat
+
+def safe_divide(numerator, denominator):
+    numerator, denominator = to_decimal(numerator), to_decimal(denominator)
+    return (numerator / denominator) if denominator not in (0, None) else to_decimal("0")
 
 def _3monthly_forecast_webbl(fmonth:string, tmonth:string, excl_compl:bool):
 
@@ -14,6 +28,9 @@ def _3monthly_forecast_webbl(fmonth:string, tmonth:string, excl_compl:bool):
     bill_date:date = None
     fdate:date = None
     tdate:date = None
+    # Rd, 1/8/2025
+    counter:int = 0
+
     fmm:int = 0
     fyy:int = 0
     tmm:int = 0
@@ -461,8 +478,8 @@ def _3monthly_forecast_webbl(fmonth:string, tmonth:string, excl_compl:bool):
             output_list1.comp = tot_comp
             output_list1.houseuse = tot_houseuse
             output_list1.rmrevenue =  to_decimal(tot_rmrevenue)
-            output_list1.avrgrevenue =  to_decimal(output_list1.rmRevenue) / to_decimal(output_list1.rmSold)
-            output_list1.percent_occ =  to_decimal(output_list1.rmSold) / to_decimal(tot_zinr) * to_decimal("100")
+            output_list1.avrgrevenue =  to_decimal(output_list1.rmrevenue) / to_decimal(output_list1.rmsold)
+            output_list1.percent_occ =  to_decimal(output_list1.rmsold) / to_decimal(tot_zinr) * to_decimal("100")
             tot_rmsold =  to_decimal("0")
             tot_ooo =  to_decimal("0")
             tot_comp =  to_decimal("0")
@@ -480,15 +497,15 @@ def _3monthly_forecast_webbl(fmonth:string, tmonth:string, excl_compl:bool):
         counter = counter + 1
         output_list1.counter = counter
         output_list1.sdate = to_string(output_list.datum)
-        output_list1.avrgrevenue =  to_decimal(output_list.rmRevenue) / to_decimal(output_list.rmSold)
-        output_list1.percent_occ =  to_decimal(output_list.rmSold) / to_decimal(tot_room) * to_decimal("100")
+        output_list1.avrgrevenue =  safe_divide(output_list.rmrevenue, output_list.rmsold)
+        output_list1.percent_occ =  safe_divide(output_list.rmsold, tot_room) * to_decimal("100")
         curr_month = get_month(output_list.datum)
-        tot_rmsold =  to_decimal(tot_rmsold) + to_decimal(output_list1.rmSold)
+        tot_rmsold =  to_decimal(tot_rmsold) + to_decimal(output_list1.rmsold)
         tot_ooo =  to_decimal(tot_ooo) + to_decimal(output_list1.ooo)
         tot_comp =  to_decimal(tot_comp) + to_decimal(output_list1.comp)
-        tot_houseuse =  to_decimal(tot_houseuse) + to_decimal(output_list1.houseUse)
-        tot_rmrevenue =  to_decimal(tot_rmrevenue) + to_decimal(output_list1.rmRevenue)
-        tot_avrgrevenue =  to_decimal(tot_avrgrevenue) + to_decimal(output_list1.avrgRevenue)
+        tot_houseuse =  to_decimal(tot_houseuse) + to_decimal(output_list1.houseuse)
+        tot_rmrevenue =  to_decimal(tot_rmrevenue) + to_decimal(output_list1.rmrevenue)
+        tot_avrgrevenue =  to_decimal(tot_avrgrevenue) + to_decimal(output_list1.avrgrevenue)
         tot_zinr = tot_zinr + tot_room
 
 
@@ -504,7 +521,7 @@ def _3monthly_forecast_webbl(fmonth:string, tmonth:string, excl_compl:bool):
     output_list1.comp = tot_comp
     output_list1.houseuse = tot_houseuse
     output_list1.rmrevenue =  to_decimal(tot_rmrevenue)
-    output_list1.avrgrevenue =  to_decimal(output_list1.rmRevenue) / to_decimal(output_list1.rmSold)
-    output_list1.percent_occ =  to_decimal(output_list1.rmSold) / to_decimal(tot_zinr) * to_decimal("100")
+    output_list1.avrgrevenue =  safe_divide(output_list1.rmrevenue, output_list1.rmsold)
+    output_list1.percent_occ =  safe_divide(output_list1.rmsold, tot_zinr) * to_decimal("100")
 
     return generate_output()

@@ -501,9 +501,12 @@ update_field_mapping = {
     # "activeflag":"ActiveFlag", #egMainschedulePrepare
     # "activeflag":"activeFlag", #egMainschedulePrepare
 
+    # _3monthly_forecast_webbl
+    "rmsold":"rmSold",
+    "houseuse":"houseUse",
+    "rmrevenue":"rmRevenue",
+    "avrgrevenue":"avrgRevenue",
     
-
-
     #updated 1.0.0.22
     "create_by": ["Create_by", "Create_By", "create-by"],
     "created_by": ["Created_by", "Created_By", "created-by"],
