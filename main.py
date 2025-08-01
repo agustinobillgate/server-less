@@ -506,6 +506,10 @@ update_field_mapping = {
     "houseuse":"houseUse",
     "rmrevenue":"rmRevenue",
     "avrgrevenue":"avrgRevenue",
+
+    # pr_list_btn_go_1bl
+    "supno":"supNo",
+    "currno":"currNo",
     
     #updated 1.0.0.22
     "create_by": ["Create_by", "Create_By", "create-by"],
