@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 1/8/2025
+# if available 
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Eg_resources

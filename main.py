@@ -497,6 +497,9 @@ update_field_mapping = {
     "dptno":"dptNo",
     "event":"EVENT",
     "engid": "EngID",
+    "engid": "EngId",
+    
+
 
     #updated 1.0.0.22
     "create_by": ["Create_by", "Create_By"],
@@ -798,8 +801,8 @@ update_table_name("vhpFOR","monthlyFcastDDown1List1","deptime","DepTime")
 
 #updated 1.0.0.38r (26-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
 update_table_name("vhpENG","egReqlistLoad","copyrequest","copyRequest")
-update_table_name("vhpENG","egReqlistLoad","action","Action")
-update_table_name("vhpENG","egReqlistLoad","smaintain","sMaintain")
+update_table_name("vhpENG","egReqlistLoad","Action","action")
+update_table_name("vhpENG","egReqlistLoad","sMaintain","smaintain")
 
 #updated 1.0.0.39r (27-Mei-2025) fb_flashbl
 
@@ -807,6 +810,11 @@ update_table_name("vhpENG","egReqlistLoad","smaintain","sMaintain")
 #updated 1.0.0.40r (3-Juli-2025) egRepdurationDisp
 update_table_name("vhpENG","egRepmaintainDisp","tlocation","tLocation")
 update_table_name("vhpENG","egRepmaintainDisp","tstatus","tStatus")
+
+
+update_table_name("vhpENG","egMaincalendardelPrepare","tlocation","tLocation")
+update_table_name("vhpENG","egMaincalendardelPrepare","tstatus","tStatus")
+update_table_name("vhpENG","egMaincalendardelPrepare","tmaintask","tMaintask")
 
 update_table_name("vhpENG","egMaincalendarPrepare","tlocation","tLocation")
 update_table_name("vhpENG","egMaincalendarPrepare","tstatus","tStatus")
