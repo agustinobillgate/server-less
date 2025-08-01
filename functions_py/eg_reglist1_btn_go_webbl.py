@@ -2,7 +2,7 @@
 #-----------------------------------------
 # Rd, 18/7/25
 # gitlab: 676
-# ex_finishtime -> ex_finishtime
+# Ex_finishtime -> ex_finishtime
 # CHAR3 -> char3
 # vat_art_list -> ex_finishtime
 # property -> propertynr
