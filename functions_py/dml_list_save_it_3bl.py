@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.61
-
+#-----------------------------------------
+# Rd 31/7/2025
+# gitlab: 566
+# remarks Unix Command
+#-----------------------------------------
 from functions.additional_functions import *
 import decimal
 from datetime import date
@@ -37,36 +41,36 @@ def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, sele
     if paramtext:
         htl_name = paramtext.ptexte
 
-    if OPSYS.lower()  == ("UNIX").lower() :
+    # if OPSYS.lower()  == ("UNIX").lower() :
 
-        if SEARCH ("/usr1/vhp/tmpLOG/") == None:
-            UNIX SILENT VALUE ("mkdir " + "/usr1/vhp/tmpLOG/")
+    #     if SEARCH ("/usr1/vhp/tmpLOG/") == None:
+    #         UNIX SILENT VALUE ("mkdir " + "/usr1/vhp/tmpLOG/")
 
-        if curr_select.lower()  == ("new").lower() :
-            OUTPUT STREAM s1 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-New" + ".txt") APPEND UNBUFFERED
+    #     if curr_select.lower()  == ("new").lower() :
+    #         OUTPUT STREAM s1 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-New" + ".txt") APPEND UNBUFFERED
 
-            if cbuff_approved:
-                OUTPUT STREAM s2 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
-        else:
-            OUTPUT STREAM s1 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Modify" + ".txt") APPEND UNBUFFERED
+    #         if cbuff_approved:
+    #             OUTPUT STREAM s2 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
+    #     else:
+    #         OUTPUT STREAM s1 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Modify" + ".txt") APPEND UNBUFFERED
 
-            if cbuff_approved:
-                OUTPUT STREAM s2 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
-    else:
+    #         if cbuff_approved:
+    #             OUTPUT STREAM s2 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
+    # else:
 
-        if SEARCH ("C:\\e1-vhp\\tmpLOG\\") == None:
-            UNIX SILENT VALUE ("mkdir " + "C:\\e1-vhp\\tmpLOG\\")
+    #     if SEARCH ("C:\\e1-vhp\\tmpLOG\\") == None:
+    #         UNIX SILENT VALUE ("mkdir " + "C:\\e1-vhp\\tmpLOG\\")
 
-        if curr_select.lower()  == ("new").lower() :
-            OUTPUT STREAM s1 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-New" + ".txt") APPEND UNBUFFERED
+    #     if curr_select.lower()  == ("new").lower() :
+    #         OUTPUT STREAM s1 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-New" + ".txt") APPEND UNBUFFERED
 
-            if cbuff_approved:
-                OUTPUT STREAM s2 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
-        else:
-            OUTPUT STREAM s1 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Modify" + ".txt") APPEND UNBUFFERED
+    #         if cbuff_approved:
+    #             OUTPUT STREAM s2 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
+    #     else:
+    #         OUTPUT STREAM s1 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Modify" + ".txt") APPEND UNBUFFERED
 
-            if cbuff_approved:
-                OUTPUT STREAM s2 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
+    #         if cbuff_approved:
+    #             OUTPUT STREAM s2 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
 
     if curr_dept == 0:
 

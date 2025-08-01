@@ -495,6 +495,8 @@ update_field_mapping = {
     "coa":"COA",
     "arrflag":"arrFlag",
     "dptno":"dptNo",
+    "event":"EVENT",
+    "engid": "EngID",
 
     #updated 1.0.0.22
     "create_by": ["Create_by", "Create_By"],
@@ -502,7 +504,7 @@ update_field_mapping = {
     "deptname": ["deptName","DeptName","DeptNAME","DEPTNAME"],
     "main_nr": ["Main-nr", "main-nr"],
     # "engid": ["engId","EngId","EngID","ENGID"],
-    "engid": "EngID",
+    
     # "PI-status":["pi-status", "pi-Status"],
     "pi_status":["pi-status", "PI-status"],
     "pi_type":["pi-type", "PI-type"],
@@ -629,8 +631,8 @@ update_field_mapping = {
 
     # "activeflag": ["ActiveFlag","activeFlag"], 
     "activeflag":"ActiveFlag",
-    # "mtd-room": "mtd-Room",
-    # "ytd-room": "ytd-Room",
+    "mtd-room": "mtd-Room",         # vhpSM/rmAtproductCreateUmsatz1
+    "ytd-room": "ytd-Room",         # vhpSM/rmAtproductCreateUmsatz1
        
     "max_lapos": "maxLapos",
     "must_print":"mustPrint",
@@ -676,6 +678,8 @@ update_field_mapping = {
 
     "t-kellner":"t-kellner1",
     "curr_waiter":"currWaiter",
+
+    
 
 
     }
@@ -1883,3 +1887,19 @@ Jadi bsk coba saya info ke Mba Fitria utk simpan temp datanya disini dlu, Pak.
 #                 DELETE FROM res_line WHERE resstatus = 8 AND ankunft != abreise 
 #                 """)
 # db_session.execute(clear_8, {})
+
+"""
+SELECT * FROM test_detail td join test t on (t.id=td.test_id) 
+where t.test_datetime::date = '2025-08-01' 
+and td.compare_status like '%KeyError%'
+
+LIMIT 100
+"""
+
+"""
+SELECT vhp_module, endpoint_module,  compare_status FROM test_detail td join test t on (t.id=td.test_id) 
+where t.test_datetime::date = '2025-08-01' 
+and td.compare_status like '%AttributeError: "NoneType" object has no attribute %'
+group by vhp_module, endpoint_module, compare_status
+LIMIT 100
+"""
