@@ -31,15 +31,10 @@ def fa_podetailbl(docu_nr:string):
 
         return {"tmp-tbl-data": tmp_tbl_data_data}
 
-    fa_order_obj_list = {}
-    fa_order = Fa_order()
-    mathis = Mathis()
-    for fa_order.last_id, fa_order.order_nr, fa_order.fa_nr, fa_order.order_qty, fa_order.activeflag, fa_order.order_price, fa_order.order_amount, fa_order.activereason, fa_order.delivered_qty, fa_order.delivered_date, fa_order.fa_pos, fa_order.discount1, fa_order._recid, mathis.nr, mathis.name, mathis.asset, mathis._recid in db_session.query(Fa_order.last_id, Fa_order.order_nr, Fa_order.fa_nr, Fa_order.order_qty, Fa_order.activeflag, Fa_order.order_price, Fa_order.order_amount, Fa_order.activereason, Fa_order.delivered_qty, Fa_order.delivered_date, Fa_order.fa_pos, Fa_order.discount1, Fa_order._recid, Mathis.nr, Mathis.name, Mathis.asset, Mathis._recid).join(Mathis,(Mathis.nr == Fa_order.fa_nr)).filter(
+    for fa_order in db_session.query(Fa_order).filter(
              (Fa_order.order_nr == (docu_nr).lower()) & (Fa_order.fa_pos > 0) & (Fa_order.activeflag == 0)).order_by(Fa_order.fa_pos).all():
-        if fa_order_obj_list.get(fa_order._recid):
-            continue
-        else:
-            fa_order_obj_list[fa_order._recid] = True
+
+        mathis = get_cache (Mathis, {"nr": [(eq, fa_order.fa_nr)]})
 
         bediener = get_cache (Bediener, {"userinit": [(eq, fa_order.last_id)]})
 
@@ -69,31 +64,33 @@ def fa_podetailbl(docu_nr:string):
         disclist_data.append(disclist)
 
         disclist.fa_recid = s_order.fa_pos
-        disclist.price0 =  to_decimal(fa_order.order_price) / to_decimal((1) - to_decimal(fa_order.discount1) * to_decimal(0.01)) /\
-                (1 - to_decimal(fa_order.discount2) * to_decimal(0.01)) / to_decimal((1) + to_decimal(fa_order.vat) * to_decimal(0.01) )
+        disclist.price0 =  to_decimal(fa_order.order_price) /\
+                (1 - to_decimal(fa_order.discount1) * to_decimal(0.01)) /\
+                (1 - to_decimal(fa_order.discount2) * to_decimal(0.01)) /\
+                (1 + to_decimal(fa_order.vat) * to_decimal(0.01) )
         disclist.brutto =  to_decimal(disclist.price0) * to_decimal(fa_order.order_amount)
+        disclist.disc =  to_decimal(fa_order.discount1)
+        disclist.disc2 =  to_decimal(fa_order.discount2)
+        disclist.vat =  to_decimal(fa_order.vat)
 
-    mathis_obj_list = {}
-    for mathis in db_session.query(Mathis)disclist = query(disclist_data, (lambda disclist: disclist.fa_recid == s_order.fa_pos), first=True)if not disclist:    continue
-.filter(
-             ((Mathis.nr.in_(list(set([s_order.fa_nr for s_order in s_order_data if s_order.order_nr == (docu_nr).lower() ])))))).order_by(s_order.fa_pos).all():
-        if mathis_obj_list.get(mathis._recid):
-            continue
-        else:
-            mathis_obj_list[mathis._recid] = True
+    for s_order in query(s_order_data, filters=(lambda s_order: s_order.order_nr.lower()  == (docu_nr).lower())):
 
-        s_order = query(s_order_data, (lambda s_order: (mathis.nr == s_order.fa_nr)), first=True)
-        tmp_tbl_data = Tmp_tbl_data()
-        tmp_tbl_data_data.append(tmp_tbl_data)
+        disclist = query(disclist_data, filters=(lambda disclist: disclist.fa_recid == s_order.fa_pos), first=True)
 
-        tmp_tbl_data.fa_nr = s_order.fa_nr
-        tmp_tbl_data.name = mathis.name
-        tmp_tbl_data.asset = mathis.asset
-        tmp_tbl_data.order_qty = s_order.order_qty
-        tmp_tbl_data.order_price =  to_decimal(s_order.order_price)
-        tmp_tbl_data.order_amount =  to_decimal(s_order.order_amount)
-        tmp_tbl_data.delivered_qty = s_order.delivered_qty
-        tmp_tbl_data.delivered_date = s_order.delivered_date
-        tmp_tbl_data.last_user = s_order.last_user
+        mathis = get_cache (Mathis, {"nr": [(eq, s_order.fa_nr)]})
+
+        if disclist and mathis:
+            tmp_tbl_data = Tmp_tbl_data()
+            tmp_tbl_data_data.append(tmp_tbl_data)
+
+            tmp_tbl_data.fa_nr = s_order.fa_nr
+            tmp_tbl_data.name = mathis.name
+            tmp_tbl_data.asset = mathis.asset
+            tmp_tbl_data.order_qty = s_order.order_qty
+            tmp_tbl_data.order_price =  to_decimal(s_order.order_price)
+            tmp_tbl_data.order_amount =  to_decimal(s_order.order_amount)
+            tmp_tbl_data.delivered_qty = s_order.delivered_qty
+            tmp_tbl_data.delivered_date = s_order.delivered_date
+            tmp_tbl_data.last_user = s_order.last_user
 
     return generate_output()
