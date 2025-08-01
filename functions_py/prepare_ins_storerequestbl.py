@@ -45,9 +45,7 @@ def prepare_ins_storerequestbl(user_init:string, t_datum:date, t_lschein:string)
         nonlocal op_list, t_l_lager, sys_user
         nonlocal op_list_data, t_l_lager_data
 
-        # return {"deptname": deptname, "curr_lager": curr_lager, "deptno": deptno, "show_price": show_price, "req_flag": req_flag, "p_220": p_220, "out_type": out_type, "transfered": transfered, "to_stock": to_stock, "lager_bezeich": lager_bezeich, "lager_bez1": lager_bez1, "curr_pos": curr_pos, "t_amount": t_amount, "lscheinnr": lscheinnr, "op-list": op_list_data}
-
-        return {"deptname": deptname, "currLager": curr_lager, "deptNo": deptno, "showPrice": show_price, "reqFlag": req_flag, "p220": p_220, "outType": out_type, "transfered": transfered, "toStock": to_stock, "lagerBezeich": lager_bezeich, "lagerBez1": lager_bez1, "currPos": curr_pos, "tAmount": t_amount, "lscheinnr": lscheinnr, "opList": op_list_data}
+        return {"deptname": deptname, "curr_lager": curr_lager, "deptno": deptno, "show_price": show_price, "req_flag": req_flag, "p_220": p_220, "out_type": out_type, "transfered": transfered, "to_stock": to_stock, "lager_bezeich": lager_bezeich, "lager_bez1": lager_bez1, "curr_pos": curr_pos, "t_amount": t_amount, "lscheinnr": lscheinnr, "op-list": op_list_data}
 
     def read_data():
 

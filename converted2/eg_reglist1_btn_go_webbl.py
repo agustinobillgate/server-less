@@ -2,10 +2,9 @@
 #-----------------------------------------
 # Rd, 18/7/25
 # gitlab: 676
-# ex_finishtime -> ex_finishtime
+# Ex_finishtime -> ex_finishtime
 # CHAR3 -> char3
 # vat_art_list -> ex_finishtime
-# property -> propertynr
 # OthersFlag -> othersFlag
 # output table tidak sama
 from functions.additional_functions import *
@@ -878,7 +877,7 @@ def eg_reglist1_btn_go_webbl(location:int, rmno:string, main_nr:int, reqstatus:i
             if eg_request.ex_finishdate == None:
                 ex_finishstr = ""
             else:
-                ex_finishstr = to_string(eg_request.ex_finishdate , "99/99/99") + " " + to_string(eg_request.ex_finishtime , "HH:MM")
+                ex_finishstr = to_string(eg_request.ex_finishdate , "99/99/99") + " " + to_string(eg_request.Ex_finishtime , "HH:MM")
 
             if eg_request.propertynr == 0:
                 eg_request.char2 = strdatetime
@@ -917,19 +916,17 @@ def eg_reglist1_btn_go_webbl(location:int, rmno:string, main_nr:int, reqstatus:i
     create_request1()
     open_query1()
     t_eg_maintain_data = get_output(eg_repmaintain_open_querybl(get_current_date(), get_current_date()))
-    
-    # Rd, 1/8/2025
-    if t_eg_maintain_data:        
-        eg_location_obj_list = {}
-        for eg_location, eg_property, eg_staff in db_session.query(Eg_location, Eg_property, Eg_staff).join(Eg_property,(Eg_property.nr == t_eg_maintain.propertynr)).join(Eg_staff,(Eg_staff.nr == t_eg_maintain.pic)).filter(
-                ((Eg_location.nr.in_(list(set([t_eg_maintain.location for t_eg_maintain in t_eg_maintain_data])))))).order_by(Eg_location._recid).all():
-            if eg_location_obj_list.get(eg_location._recid):
-                continue
-            else:
-                eg_location_obj_list[eg_location._recid] = True
+
+    eg_location_obj_list = {}
+    for eg_location, eg_property, eg_staff in db_session.query(Eg_location, Eg_property, Eg_staff).join(Eg_property,(Eg_property.nr == t_eg_maintain.propertynr)).join(Eg_staff,(Eg_staff.nr == t_eg_maintain.pic)).filter(
+             ((Eg_location.nr.in_(list(set([t_eg_maintain.location for t_eg_maintain in t_eg_maintain_data])))))).order_by(Eg_location._recid).all():
+        if eg_location_obj_list.get(eg_location._recid):
+            continue
+        else:
+            eg_location_obj_list[eg_location._recid] = True
 
 
-            create_temp()
+        create_temp()
 
     for smaintain in query(smaintain_data):
 

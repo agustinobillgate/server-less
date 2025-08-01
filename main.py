@@ -1,6 +1,6 @@
 docker_version = "1.0.0.24.689"
 
-#Version 1.0.0.24
+#Version 1.0.0.25
 
 print("Start:", docker_version)
 
@@ -234,7 +234,7 @@ update_field_mapping = {
     "resanz": "resAnz",
     "resnrstr": "resnrStr",
     
-    "deptname": "deptName",
+    # "deptname": "deptName",
     "appstr": "appStr",
     "appflag": "appFlag",
 
@@ -486,7 +486,7 @@ update_field_mapping = {
 
     "Created-By":"created-by",
     "created-by":"Created-By",
-    "deptname":"deptName",
+    # "deptname":"deptName",
 
     "posteddate":"postedDate",  #vhpGC/gcGiroRead (FA)
     "move-from":"Move-from",
@@ -496,14 +496,23 @@ update_field_mapping = {
     "arrflag":"arrFlag",
     "dptno":"dptNo",
     "event":"EVENT",
-    "engid": "EngID",
+    # "engid": "EngID",
+    # "engid": "EngId",
+    # "activeflag":"ActiveFlag", #egMainschedulePrepare
+    # "activeflag":"activeFlag", #egMainschedulePrepare
 
+    # _3monthly_forecast_webbl
+    "rmsold":"rmSold",
+    "houseuse":"houseUse",
+    "rmrevenue":"rmRevenue",
+    "avrgrevenue":"avrgRevenue",
+    
     #updated 1.0.0.22
-    "create_by": ["Create_by", "Create_By"],
+    "create_by": ["Create_by", "Create_By", "create-by"],
     "created_by": ["Created_by", "Created_By", "created-by"],
     "deptname": ["deptName","DeptName","DeptNAME","DEPTNAME"],
     "main_nr": ["Main-nr", "main-nr"],
-    # "engid": ["engId","EngId","EngID","ENGID"],
+    "engid": ["engId","EngId","EngID","ENGID"],
     
     # "PI-status":["pi-status", "pi-Status"],
     "pi_status":["pi-status", "PI-status"],
@@ -629,8 +638,8 @@ update_field_mapping = {
     "vhpwebbased4-appservicename":"VHPWebBased4-AppServiceName",
     "vhpwebbased5-appservicename":"VHPWebBased5-AppServiceName",
 
-    # "activeflag": ["ActiveFlag","activeFlag"], 
-    "activeflag":"ActiveFlag",
+    "activeflag": ["ActiveFlag","activeFlag"], 
+   
     "mtd-room": "mtd-Room",         # vhpSM/rmAtproductCreateUmsatz1
     "ytd-room": "ytd-Room",         # vhpSM/rmAtproductCreateUmsatz1
        
@@ -798,8 +807,8 @@ update_table_name("vhpFOR","monthlyFcastDDown1List1","deptime","DepTime")
 
 #updated 1.0.0.38r (26-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
 update_table_name("vhpENG","egReqlistLoad","copyrequest","copyRequest")
-update_table_name("vhpENG","egReqlistLoad","action","Action")
-update_table_name("vhpENG","egReqlistLoad","smaintain","sMaintain")
+update_table_name("vhpENG","egReqlistLoad","Action","action")
+update_table_name("vhpENG","egReqlistLoad","sMaintain","smaintain")
 
 #updated 1.0.0.39r (27-Mei-2025) fb_flashbl
 
@@ -807,6 +816,11 @@ update_table_name("vhpENG","egReqlistLoad","smaintain","sMaintain")
 #updated 1.0.0.40r (3-Juli-2025) egRepdurationDisp
 update_table_name("vhpENG","egRepmaintainDisp","tlocation","tLocation")
 update_table_name("vhpENG","egRepmaintainDisp","tstatus","tStatus")
+
+
+update_table_name("vhpENG","egMaincalendardelPrepare","tlocation","tLocation")
+update_table_name("vhpENG","egMaincalendardelPrepare","tstatus","tStatus")
+update_table_name("vhpENG","egMaincalendardelPrepare","tmaintask","tMaintask")
 
 update_table_name("vhpENG","egMaincalendarPrepare","tlocation","tLocation")
 update_table_name("vhpENG","egMaincalendarPrepare","tstatus","tStatus")
@@ -847,11 +861,11 @@ update_table_name("vhpFA","prChgPrepare1","t-waehrung","tWaehrung")
 update_table_name("vhpFA","prChgPrepare1","t-parameters","tParameters")
 update_table_name("vhpFA","prChgPrepare1","t-l-orderhdr","tLOrderhdr")
 update_table_name("vhpFA","prChgPrepare1","t-l-artikel","tLArtikel")
+# )
+# update_table_name("vhpINV","chgStoreRequestLoadData","op-list","opList")
+# update_table_name("vhpINV","storeReqInsPrepare","op-list","opList"
 
-update_table_name("vhpINV","chgStoreRequestLoadData","op-list","opList")
-update_table_name("vhpINV","storeReqInsPrepare","op-list","opList")
-
-update_table_name("vhpOU","restInvWaiterTransfer1", "t-kellner", "t-kellner1")
+# update_table_name("vhpOU","restInvWaiterTransfer1", "t-kellner", "t-kellner1")
 
 
 def get_function_version(module_name, function_name, file_path):
@@ -1247,7 +1261,7 @@ def update_input_format(obj, input_data):
 
 def update_output_format(output_data):
     key_list = list(output_data.keys())
-    print("Update Output Data:", key_list)
+
     for key in key_list:
         #updated 1.0.0.11
         if re.match(r".*__.*",key):
@@ -1256,7 +1270,6 @@ def update_output_format(output_data):
             key = updated_key
 
         camelCaseKey = camelCase(key)
-        # print("camelcase:", camelCaseKey, key, type(output_data[key]))
 
 
         if type(output_data[key]) == list and len(output_data[key]) == 0:
@@ -1401,7 +1414,14 @@ def update_output_format(output_data):
 
             #updated 1.0.0.6
             if key in update_field_mapping.keys():
-                output_data[update_field_mapping[key]] = output_data[key]
+
+                #updated 1.0.0.25
+                if type(update_field_mapping[key]) == list:
+                    for field_name in update_field_mapping[key]:
+                        if field_name in output_data:
+                            output_data[update_field_mapping[field_name]] = output_data[field_name]
+                else:
+                    output_data[update_field_mapping[key]] = output_data[key]
 
 
         #updated 1.0.0.14
