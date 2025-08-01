@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.27
 #----------------------------------------
 # Rd, 1/8/2025
-# 
+# if available l_kredit1
 #----------------------------------------
 
 from functions.additional_functions import *
@@ -74,7 +74,7 @@ def ap_debtpay_settle_paymentbl(pay_list_list:[Pay_list], age_list_list:[Age_lis
 
             if l_kredit1 is None:
                 continue
-            
+
             l_lieferant = db_session.query(L_lieferant).filter(
                      (L_lieferant.lief_nr == l_kredit1.lief_nr)).first()
 

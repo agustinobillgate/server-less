@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 1/8/2025
+# if available l_kredit
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -59,7 +62,9 @@ def ap_debtpay_get_voucherbl(age_list_data:[Age_list], pvilanguage:int):
         abuff.rechnr = counters.counter
 
         l_kredit = get_cache (L_kredit, {"_recid": [(eq, abuff.ap_recid)]})
-        l_kredit.rechnr = counters.counter
+        # Rd, 1/8/2025
+        if l_kredit:
+            l_kredit.rechnr = counters.counter
         pass
 
     if trim(p_786) != "":
