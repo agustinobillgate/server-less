@@ -1,6 +1,6 @@
 docker_version = "1.0.0.24.689"
 
-#Version 1.0.0.24
+#Version 1.0.0.25
 
 print("Start:", docker_version)
 
@@ -855,11 +855,11 @@ update_table_name("vhpFA","prChgPrepare1","t-waehrung","tWaehrung")
 update_table_name("vhpFA","prChgPrepare1","t-parameters","tParameters")
 update_table_name("vhpFA","prChgPrepare1","t-l-orderhdr","tLOrderhdr")
 update_table_name("vhpFA","prChgPrepare1","t-l-artikel","tLArtikel")
+# )
+# update_table_name("vhpINV","chgStoreRequestLoadData","op-list","opList")
+# update_table_name("vhpINV","storeReqInsPrepare","op-list","opList"
 
-update_table_name("vhpINV","chgStoreRequestLoadData","op-list","opList")
-update_table_name("vhpINV","storeReqInsPrepare","op-list","opList")
-
-update_table_name("vhpOU","restInvWaiterTransfer1", "t-kellner", "t-kellner1")
+# update_table_name("vhpOU","restInvWaiterTransfer1", "t-kellner", "t-kellner1")
 
 
 def get_function_version(module_name, function_name, file_path):
@@ -1255,7 +1255,7 @@ def update_input_format(obj, input_data):
 
 def update_output_format(output_data):
     key_list = list(output_data.keys())
-    print("Update Output Data:", key_list)
+
     for key in key_list:
         #updated 1.0.0.11
         if re.match(r".*__.*",key):
@@ -1264,7 +1264,6 @@ def update_output_format(output_data):
             key = updated_key
 
         camelCaseKey = camelCase(key)
-        # print("camelcase:", camelCaseKey, key, type(output_data[key]))
 
 
         if type(output_data[key]) == list and len(output_data[key]) == 0:
@@ -1409,7 +1408,14 @@ def update_output_format(output_data):
 
             #updated 1.0.0.6
             if key in update_field_mapping.keys():
-                output_data[update_field_mapping[key]] = output_data[key]
+
+                #updated 1.0.0.25
+                if type(update_field_mapping[key]) == list:
+                    for field_name in update_field_mapping[key]:
+                        if field_name in output_data:
+                            output_data[update_field_mapping[field_name]] = output_data[field_name]
+                else:
+                    output_data[update_field_mapping[key]] = output_data[key]
 
 
         #updated 1.0.0.14
