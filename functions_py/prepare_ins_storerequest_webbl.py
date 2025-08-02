@@ -37,7 +37,10 @@ def prepare_ins_storerequest_webbl(payload_list_data:[Payload_list]):
 
     op_list_data, Op_list = create_model_like(L_op, {"bezeich":string, "username":string, "onhand":Decimal, "new_flag":bool}, {"new_flag": True})
     t_l_lager_data, T_l_lager = create_model_like(L_lager)
-    response_list_data, Response_list = create_model("Response_list", {"deptname":string, "curr_lager":int, "deptno":int, "show_price":bool, "req_flag":bool, "p_220":int, "out_type":int, "transfered":bool, "to_stock":int, "lager_bezeich":string, "lager_bez1":string, "curr_pos":int, "t_amount":Decimal, "lscheinnr":string, "sr_remark":string}, {"out_type": 1})
+    response_list_data, Response_list = create_model("Response_list", {"deptname":string, "curr_lager":int, "deptno":int, "show_price":bool, 
+                                                                       "req_flag":bool, "p_220":int, "out_type":int, "transfered":bool, "to_stock":int, "lager_bezeich":string, 
+                                                                       "lager_bez1":string, "curr_pos":int, "t_amount":Decimal, "lscheinnr":string, 
+                                                                       "sr_remark":string}, {"out_type": 1})
 
     Sys_user = create_buffer("Sys_user",Bediener)
 
