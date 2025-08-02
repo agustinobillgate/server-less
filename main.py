@@ -506,7 +506,7 @@ update_field_mapping = {
     "arrflag":"arrFlag",
     "dptno":"dptNo",
     "event":"EVENT",
-    # "engid": "EngId",
+    "engId": "EngID",
     # "activeflag":"ActiveFlag", #egMainschedulePrepare
     # "activeflag":"activeFlag", #egMainschedulePrepare
 
@@ -696,7 +696,7 @@ update_field_mapping = {
     "lager_bezeich":"lagerBezeich",
     "lager_bez1":"lagerBez1",
     #   "currPos",
-    "t_amount":"tAmount",
+    "t_amount":"t-amount",
     "chgid":"chgID",        # vhpFOR/globalReservationReview
 
     "t-kellner":"t-kellner1",
