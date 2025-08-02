@@ -1,12 +1,5 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd, 18/7/25
-# gitlab: 676
-# Ex_finishtime -> ex_finishtime
-# CHAR3 -> char3
-# vat_art_list -> ex_finishtime
-# OthersFlag -> othersFlag
-# output table tidak sama
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -769,7 +762,7 @@ def eg_reglist1_btn_go_webbl(location:int, rmno:string, main_nr:int, reqstatus:i
         queasy = get_cache (Queasy, {"key": [(eq, 19)],"number1": [(eq, eg_request.deptnum)]})
 
         if queasy:
-            strdept = queasy.char3
+            strdept = queasy.CHAR3
         else:
             strdept = ""
         copyrequest = Copyrequest()
@@ -838,7 +831,7 @@ def eg_reglist1_btn_go_webbl(location:int, rmno:string, main_nr:int, reqstatus:i
 
             if eg_subtask:
 
-                if eg_subtask.othersFlag:
+                if eg_subtask.OthersFlag:
 
                     if eg_request.subtask_bezeich != "":
                         copyrequest.sub_str = tsubtask.sub_nm + "(" + eg_request.subtask_bezeich + ")"

@@ -157,7 +157,7 @@ def _3monthly_forecast_webbl(fmonth:string, tmonth:string, excl_compl:bool):
 
 
     if tmm + 1 > 12:
-        tdate = date_mdy(1, 1, tyy + timedelta(days=1)) - timedelta(days=1)
+        tdate = date_mdy(1, 1, tyy + 1) - timedelta(days=1)
 
 
     else:

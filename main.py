@@ -1,6 +1,6 @@
 docker_version = "1.0.0.24.689"
 
-#Version 1.0.0.25
+#Version 1.0.0.26
 
 print("Start:", docker_version)
 
@@ -198,8 +198,7 @@ update_field_mapping = {
     "base64Imagefile": "base64ImageFile",
     "rmno": "rmNo",
     "errcode": "errCode",
-    "menu": ["MENU"],
-
+   
     #updated 1.0.0.15
     "refno": "refNo",
     "voucherno": "voucherNo",
@@ -277,6 +276,9 @@ update_field_mapping = {
     "tableno": "tableNo",
     "billno": "billNo",
     "artno": "artNo",
+    "art": "Art",
+    "kontnr-res":"Kontnr-res",
+    
 
     #updated 1.0.0.20
     "roomnumber": "roomNumber",
@@ -300,7 +302,7 @@ update_field_mapping = {
     "cashlessflag": "cashlessFlag",
     "cashless_flag":"cashlessFlag",
     "thbillline": "tHBillLine",
-    "lhbline": "Lhbline",
+    # "lhbline": "Lhbline",
     "tkellner": "tKellner",
     "indgastnr":"indGastnr",
     "piDocuno":"piDocuNo",
@@ -315,15 +317,13 @@ update_field_mapping = {
     "rmatproduct": "rmAtproduct",
     "lavail": "lAvail",
     "b1list":"b1List",
-
+    "infotafel":"Infotafel",
     #updated 1.0.0.22
    
     "dept": "Dept",
     "tb3buff": "tb3Buff",
 
     # Rd vhpENG/egRepmaintainPrepare
-    # "categ-nr":"Categ-nr",
-    # "categ-nm":"Categ-nm",
     "categ-sel":"Categ-sel",
 
     "pic-dept":"pic-Dept",
@@ -390,8 +390,8 @@ update_field_mapping = {
     "type":"TYPE",
     "spec": "Spec",
 
-    # "Categ-nr": "categ-nr",
-    # "Categ-nm": "categ-nm",
+    "categ-nr": "Categ-nr",
+    "categ-nm": "Categ-nm",
 
     #updated 1.0.0.29r
     "msgStrq":"msgStrQ",
@@ -434,6 +434,7 @@ update_field_mapping = {
     "sourceform": "sourceForm",
     "othersflag": "OthersFlag",
 
+    "menu":"MENU",
 
     #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
     "adult": "Adult",
@@ -491,13 +492,21 @@ update_field_mapping = {
     "posteddate":"postedDate",  #vhpGC/gcGiroRead (FA)
     "move-from":"Move-from",
     "move-to":"Move-to",
-    "Order-Date":"order-date",
+    "Order_Date":"Order-Date",
+    "Order_Nr":"Order-Nr",
+    "Order_Type":"Order-Type",
+    "Released_Date":"Released-Date",
+    "Expected_Delivery":"Expected-Delivery",
+    "Released_Flag":"Released-Flag",
+    "Supplier_Nr":"Supplier-Nr",
+    "Order_Desc":"Order-Desc",
+    "Order_Name":"Order-Name",
+    "Created_Date":"Created-Date",
     "coa":"COA",
     "arrflag":"arrFlag",
     "dptno":"dptNo",
     "event":"EVENT",
-    # "engid": "EngID",
-    # "engid": "EngId",
+    "engId": "EngID",
     # "activeflag":"ActiveFlag", #egMainschedulePrepare
     # "activeflag":"activeFlag", #egMainschedulePrepare
 
@@ -506,13 +515,23 @@ update_field_mapping = {
     "houseuse":"houseUse",
     "rmrevenue":"rmRevenue",
     "avrgrevenue":"avrgRevenue",
+
+    "activate_deposit":"activateDeposit",
+
+
+
+
+    # pr_list_btn_go_1bl
+    "supno":"supNo",
+    "currno":"currNo",
     
     #updated 1.0.0.22
     "create_by": ["Create_by", "Create_By", "create-by"],
     "created_by": ["Created_by", "Created_By", "created-by"],
-    "deptname": ["deptName","DeptName","DeptNAME","DEPTNAME"],
-    "main_nr": ["Main-nr", "main-nr"],
     "engid": ["engId","EngId","EngID","ENGID"],
+    "deptname": ["deptName","DeptName"],
+    "main_nr": ["Main-nr", "main-nr"],
+    
     
     # "PI-status":["pi-status", "pi-Status"],
     "pi_status":["pi-status", "PI-status"],
@@ -523,12 +542,8 @@ update_field_mapping = {
     
     "postdate": ["postDate", "PostDate"],
     "avail-addvat":"avail-addVAT",
-    # "availAddvat": ["availAddVat","availAddVat","availAddVAT"],
-    # vhpINV/receivingReportPrepare1
-    "availAddvat":"availAddVat",
-    "availAddvat":"availAddVat",
-    "availAddvat":"availAddVAT",
-    
+    "availAddvat": ["availAddVat","availAddVat","availAddVat"],
+   
 
     "readequipment":"readEquipment",
     "datum":"Datum",
@@ -620,10 +635,9 @@ update_field_mapping = {
     "l_amount":"l-amount",
     "f_amount":"f-amount",
     "i_counter":"i-counter",
-    "curr_waiter":"currWaiter",
     "fl_code":"flCode",
     "cashless_flag":"cashlessFlag",
-    "activate_deposit":"activateDeposit",
+    
     "c_param870":"cParam870",
     "p_223":"p223",
 
@@ -682,11 +696,12 @@ update_field_mapping = {
     "lager_bezeich":"lagerBezeich",
     "lager_bez1":"lagerBez1",
     #   "currPos",
-    "t_amount":"tAmount",
+    "t_amount":"t-amount",
     "chgid":"chgID",        # vhpFOR/globalReservationReview
 
     "t-kellner":"t-kellner1",
     "curr_waiter":"currWaiter",
+    "isupgrade":"isUpgrade",
 
     
 
@@ -708,7 +723,7 @@ update_table_name("vhpSS","ratecodeAdmWrite","tb3buff","tb3Buff")
 
 #updated 1.0.0.16
 update_table_name("vhpSS","egStaffPrepare","dept","Dept")
-update_table_name("vhpSS","egStaffPrepare","userskill","Userskill")
+update_table_name("vhpSS","egStaffPrepare","userskill","UserSkill")
 
 #updated 1.0.0.17
 update_table_name("vhpSS","egStaffPrepare","userskill","UserSkill")
@@ -722,7 +737,6 @@ update_table_name("vhpSC","rmAtproductCreateUmsatz1","rmatproduct","rmAtproduct"
 
 #updated 1.0.0.22
 update_table_name("HouseKeeping","getStoreRoomDiscrepancyList","hkdiscrepancy-list","hk-discrepancy-list")
-update_table_name("vhpOU","splitbillPrepare","menu","MENU")
 
 update_table_name("vhpENG","egMainschedulePrepare","Delete-Flag","delete-flag")
 
@@ -733,7 +747,6 @@ update_table_name("vhpENG","egRephistorymoveBtnGo","smove","sMove")
 #updated 1.0.0.23
 
 update_table_name("vhpSS","egStaffPrepare","dept","Dept")
-update_table_name("vhpSS","egStaffPrepare","userskill","userSkill")
 
 update_table_name("vhpAR","soaRelease","deptno","deptNo")
 # update_table_name("vhpAR","soaRelease","DeptNo","deptNo")
@@ -748,15 +761,6 @@ update_table_name("vhpINV","chgStoreRequestLoadData","deptno","deptNo")
 update_table_name("vhpENG","egPropertyListBtnGo","type","TYPE")
 update_table_name("vhpENG","egPropertyListBtnGo","spec","Spec")
 
-update_table_name("vhpENG","egSelMainAll","Categ-nr","categ-nr")
-update_table_name("vhpENG","egSelMainAll","Categ-nm","categ-nm")
-
-#updated 1.0.0.29
-update_table_name("vhpENG","egReprequestcancelPrepare","Categ-nr","categ-nr")
-update_table_name("vhpENG","egReprequestcancelPrepare","Categ-nm","categ-nm")
-
-update_table_name("vhpENG","egRepdurationPrepare","Categ-nr","categ-nr")
-update_table_name("vhpENG","egRepdurationPrepare","Categ-nm","categ-nm")
 
 
 #updated 1.0.0.32, 16-4-2025
@@ -764,12 +768,6 @@ update_table_name("vhpENG","egChgReqPrepare","tFstat","tFStat")
 update_table_name("vhpENG","egChgReqPrepare","svendor","sVendor")
 update_table_name("vhpENG","egPropertyLoad","svendor","tEgProperty")
 
-update_table_name("vhpENG","egPropertyPrepare","Categ-nr","categ-nr")
-update_table_name("vhpENG","egPropertyPrepare","Categ-nm","categ-nm")
-update_table_name("vhpENG","egReprequestcancelPrepare","Categ-nr","categ-nr")
-update_table_name("vhpENG","egReprequestcancelPrepare","Categ-nm","categ-nm")
-update_table_name("vhpENG","egRepdurationPrepare","Categ-nr","categ-nr")
-update_table_name("vhpENG","egRepdurationPrepare","Categ-nm","categ-nm")
 
 update_table_name("vhpENG","egReprequestcancelPrepare","mainaction","MainAction")
 update_table_name("vhpENG","egReprequestcancelPrepare","tmaintain","tMaintain")
@@ -793,10 +791,6 @@ update_table_name("vhpEG","egSelLookmaintainPrepare","mainaction","MainAction")
 # update_table_name("vhpINV","storeReqInsPrepare","appflag","appFlag")
 
 #updated 1.0.0.36r (19-Mei-2025) egSubTaskPrepare
-
-#updated 1.0.0.37r (22-Mei-2025) egRepmaintainPrepare
-update_table_name("vhpENG","egRepmaintainPrepare","Categ-nr","categ-nr")
-update_table_name("vhpENG","egRepmaintainPrepare","Categ-nm","categ-nm")
 
 
 #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
@@ -861,8 +855,8 @@ update_table_name("vhpFA","prChgPrepare1","t-waehrung","tWaehrung")
 update_table_name("vhpFA","prChgPrepare1","t-parameters","tParameters")
 update_table_name("vhpFA","prChgPrepare1","t-l-orderhdr","tLOrderhdr")
 update_table_name("vhpFA","prChgPrepare1","t-l-artikel","tLArtikel")
-# )
-# update_table_name("vhpINV","chgStoreRequestLoadData","op-list","opList")
+
+update_table_name("vhpOU","splitbillPrepare","menu","MENU")
 # update_table_name("vhpINV","storeReqInsPrepare","op-list","opList"
 
 # update_table_name("vhpOU","restInvWaiterTransfer1", "t-kellner", "t-kellner1")
@@ -1415,11 +1409,10 @@ def update_output_format(output_data):
             #updated 1.0.0.6
             if key in update_field_mapping.keys():
 
-                #updated 1.0.0.25
+                #updated 1.0.0.26
                 if type(update_field_mapping[key]) == list:
                     for field_name in update_field_mapping[key]:
-                        if field_name in output_data:
-                            output_data[update_field_mapping[field_name]] = output_data[field_name]
+                            output_data[field_name] = output_data[key]
                 else:
                     output_data[update_field_mapping[key]] = output_data[key]
 
@@ -1894,13 +1887,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
 
 # infostr -> request Id
 # imagefile -> content
-"""
-Saat ini masih mencukupi, Pak.
-Jadi ada infostr (char) bisa utk letakkan nama file, utk contentnya bisa disimpan dalam imagefile (blob).
-Lalu untuk created date/timestamp disini ada field created (date) dan zeit (integer).
-Kemudian masih ada beberapa field lainnya dan ada reserve field jga seperti reserve-char, reserve-int, dan reserve-logic..
-Jadi bsk coba saya info ke Mba Fitria utk simpan temp datanya disini dlu, Pak..
-"""
+
 
 
 # clear_8 = text("""

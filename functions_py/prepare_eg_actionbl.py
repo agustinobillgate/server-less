@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 2/8/2025,
+# Manual Edit output EngID
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Eg_action, Htparam, Bediener, Queasy
@@ -29,7 +32,8 @@ def prepare_eg_actionbl(user_init:string):
         nonlocal t_eg_action, maintask
         nonlocal t_eg_action_data, maintask_data
 
-        return {"engid": engid, "groupid": groupid, "maintask": maintask_data, "t-eg-action": t_eg_action_data}
+        # return {"engid": engid, "groupid": groupid, "maintask": maintask_data, "t-eg-action": t_eg_action_data}
+        return {"eng_iD": engid, "groupid": groupid, "maintask": maintask_data, "t-eg-action": t_eg_action_data}
 
     def define_engineering():
 

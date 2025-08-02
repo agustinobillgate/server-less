@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 2/8/2025
+# if available
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -78,11 +82,19 @@ def pr_list_update_slist_1bl(s_list_data:[S_list], lief_nr:int, po_nr:string, bi
                     curr_pr = s_list.docu_nr
 
                     l_order = get_cache (L_order, {"docu_nr": [(eq, curr_pr)],"pos": [(eq, 0)]})
-                    l_order.loeschflag = 1
+                    # Rd, 2/8/2025
+                    # if available
+                    # l_order.loeschflag = 1
+                    if l_order:
+                        l_order.loeschflag = 1
                     pass
 
                     s_list1 = query(s_list1_data, filters=(lambda s_list1: s_list1.artnr == 0 and s_list1.docu_nr == s_list.docu_nr), first=True)
-                    s_list1.loeschflag = 1
+                    # Rd, 2/8/2025
+                    # if available
+                    # s_list1.loeschflag = 1
+                    if s_list1:
+                        s_list1.loeschflag = 1
         curr_pr = ""
 
         for s_list in query(s_list_data, filters=(lambda s_list: s_list.selected and s_list.artnr > 0), sort_by=[("docu_nr",False)]):
@@ -95,17 +107,21 @@ def pr_list_update_slist_1bl(s_list_data:[S_list], lief_nr:int, po_nr:string, bi
                 if not l_order:
 
                     l_order = get_cache (L_order, {"docu_nr": [(eq, curr_pr)],"pos": [(eq, 0)]})
-                    l_order.loeschflag = 1
-                    l_order.lieferdatum_eff = billdate
-                    l_order.angebot_lief[2] = bediener.nr
+                    # Rd 2/8/2025
+                    if l_order:
+                        l_order.loeschflag = 1
+                        l_order.lieferdatum_eff = billdate
+                        l_order.angebot_lief[2] = bediener.nr
 
 
                     pass
 
                     s_list1 = query(s_list1_data, filters=(lambda s_list1: s_list1.docu_nr.lower()  == (curr_pr).lower()  and s_list1.artnr == 0), first=True)
-                    s_list1.loeschflag = 1
-                    s_list1.cdate = billdate
-                    s_list1.cid = bediener.userinit
+                    # Rd 2/8/2025
+                    if s_list1:
+                        s_list1.loeschflag = 1
+                        s_list1.cdate = billdate
+                        s_list1.cid = bediener.userinit
 
 
             s_list.selected = False

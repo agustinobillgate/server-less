@@ -1,0 +1,62 @@
+{
+    "Fa_lager": {
+        "read": [],
+        "write": []
+    },
+    "Mathis": {
+        "read": [
+            "nr",
+            "asset",
+            "name",
+            "datum",
+            "location",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fa_artikel": {
+        "read": [
+            "gnr",
+            "book_wert",
+            "anzahl",
+            "depn_wert",
+            "anz_depn",
+            "first_depn",
+            "last_depn",
+            "warenwert",
+            "katnr",
+            "next_depn",
+            "subgrp",
+            "fibukonto",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fa_grup": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fa_kateg": {
+        "read": [
+            "bezeich",
+            "rate",
+            "methode",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Gl_acct": {
+        "read": [],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "fchar",
+            "_recid"
+        ],
+        "write": []
+    }
+}

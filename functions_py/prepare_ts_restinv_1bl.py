@@ -65,15 +65,14 @@ def prepare_ts_restinv_1bl(pvilanguage:int, curr_dept:int, curr_printer:int, use
 
         nonlocal hbill, t_kellner, bill_guest
         nonlocal hbill_data, t_kellner_data
-
-        return {"mealcoupon_cntrl": mealcoupon_cntrl, "must_print": must_print, "zero_flag": zero_flag, "multi_cash": multi_cash, "cancel_exist": cancel_exist, "msg_str": msg_str, "disc_art1": disc_art1, "disc_art2": disc_art2, "disc_art3": disc_art3, "mi_ordertaker": mi_ordertaker, "price_decimal": price_decimal, "curr_local": curr_local, "curr_foreign": curr_foreign, "double_currency": double_currency, "foreign_rate": foreign_rate, "exchg_rate": exchg_rate, "b_title": b_title, "deptname": deptname, "p_223": p_223, "curr_waiter": curr_waiter, "fl_code": fl_code, "pos1": pos1, "pos2": pos2, "cashless_flag": cashless_flag, "c_param870": c_param870, "activate_deposit": activate_deposit, "hbill": hbill_data, "t-kellner": t_kellner_data}
+        # return {"mealcoupon_cntrl": mealcoupon_cntrl, "must_print": must_print, "zero_flag": zero_flag, "multi_cash": multi_cash, "cancel_exist": cancel_exist, "msg_str": msg_str, "disc_art1": disc_art1, "disc_art2": disc_art2, "disc_art3": disc_art3, "mi_ordertaker": mi_ordertaker, "price_decimal": price_decimal, "curr_local": curr_local, "curr_foreign": curr_foreign, "double_currency": double_currency, "foreign_rate": foreign_rate, "exchg_rate": exchg_rate, "b_title": b_title, "deptname": deptname, "p_223": p_223, "curr_waiter": curr_waiter, "fl_code": fl_code, "pos1": pos1, "pos2": pos2, "cashless_flag": cashless_flag, "c_param870": c_param870, "activate_deposit": activate_deposit, "hbill": hbill_data, "t-kellner": t_kellner_data}
         # Rd, 30/7/2025
-        # return {"mealcoupon_cntrl": mealcoupon_cntrl, "must_print": must_print, "zero_flag": zero_flag, "multi_cash": multi_cash, 
-        #         "cancel_exist": cancel_exist, "msg_str": msg_str, "disc_art1": disc_art1, "disc_art2": disc_art2, "disc_art3": disc_art3, 
-        #         "mi_ordertaker": mi_ordertaker, "price_decimal": price_decimal, "curr_local": curr_local, "curr_foreign": curr_foreign, 
-        #         "double_currency": double_currency, "foreign_rate": foreign_rate, "exchg_rate": exchg_rate, "b_title": b_title, "deptname": deptname, 
-        #         "p223": p_223, "currWaiter": curr_waiter, "flCode": fl_code, "pos1": pos1, "pos2": pos2, "cashlessFlag": cashless_flag, 
-        #         "cParam870": c_param870, "activateDeposit": activate_deposit, "hbill": hbill_data, "tKellner": t_kellner_data}
+        return {"mealcoupon_cntrl": mealcoupon_cntrl, "must_print": must_print, "zero_flag": zero_flag, "multi_cash": multi_cash, 
+                "cancel_exist": cancel_exist, "msg_str": msg_str, "disc_art1": disc_art1, "disc_art2": disc_art2, "disc_art3": disc_art3, 
+                "mi_ordertaker": mi_ordertaker, "price_decimal": price_decimal, "curr_local": curr_local, "curr_foreign": curr_foreign, 
+                "double_currency": double_currency, "foreign_rate": foreign_rate, "exchg_rate": exchg_rate, "b_title": b_title, "deptname": deptname, 
+                "p223": p_223, "curr_waiter": curr_waiter, "fl_code": fl_code, "pos1": pos1, "pos2": pos2, "cashlessFlag": cashless_flag, 
+                "c_param870": c_param870, "activate_deposit": activate_deposit, "hbill": hbill_data, "t-kellner": t_kellner_data}
 
     def chg_billdate(message_flag:bool):
 
