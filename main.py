@@ -198,8 +198,7 @@ update_field_mapping = {
     "base64Imagefile": "base64ImageFile",
     "rmno": "rmNo",
     "errcode": "errCode",
-    "menu": ["MENU"],
-
+   
     #updated 1.0.0.15
     "refno": "refNo",
     "voucherno": "voucherNo",
@@ -300,7 +299,7 @@ update_field_mapping = {
     "cashlessflag": "cashlessFlag",
     "cashless_flag":"cashlessFlag",
     "thbillline": "tHBillLine",
-    "lhbline": "Lhbline",
+    # "lhbline": "Lhbline",
     "tkellner": "tKellner",
     "indgastnr":"indGastnr",
     "piDocuno":"piDocuNo",
@@ -434,6 +433,7 @@ update_field_mapping = {
     "sourceform": "sourceForm",
     "othersflag": "OthersFlag",
 
+    "menu":"MENU",
 
     #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
     "adult": "Adult",
@@ -506,6 +506,11 @@ update_field_mapping = {
     "houseuse":"houseUse",
     "rmrevenue":"rmRevenue",
     "avrgrevenue":"avrgRevenue",
+
+    "activate_deposit":"activateDeposit",
+
+
+
 
     # pr_list_btn_go_1bl
     "supno":"supNo",
@@ -624,10 +629,9 @@ update_field_mapping = {
     "l_amount":"l-amount",
     "f_amount":"f-amount",
     "i_counter":"i-counter",
-    "curr_waiter":"currWaiter",
     "fl_code":"flCode",
     "cashless_flag":"cashlessFlag",
-    "activate_deposit":"activateDeposit",
+    
     "c_param870":"cParam870",
     "p_223":"p223",
 
@@ -726,7 +730,6 @@ update_table_name("vhpSC","rmAtproductCreateUmsatz1","rmatproduct","rmAtproduct"
 
 #updated 1.0.0.22
 update_table_name("HouseKeeping","getStoreRoomDiscrepancyList","hkdiscrepancy-list","hk-discrepancy-list")
-update_table_name("vhpOU","splitbillPrepare","menu","MENU")
 
 update_table_name("vhpENG","egMainschedulePrepare","Delete-Flag","delete-flag")
 
@@ -865,8 +868,8 @@ update_table_name("vhpFA","prChgPrepare1","t-waehrung","tWaehrung")
 update_table_name("vhpFA","prChgPrepare1","t-parameters","tParameters")
 update_table_name("vhpFA","prChgPrepare1","t-l-orderhdr","tLOrderhdr")
 update_table_name("vhpFA","prChgPrepare1","t-l-artikel","tLArtikel")
-# )
-# update_table_name("vhpINV","chgStoreRequestLoadData","op-list","opList")
+
+update_table_name("vhpOU","splitbillPrepare","menu","MENU")
 # update_table_name("vhpINV","storeReqInsPrepare","op-list","opList"
 
 # update_table_name("vhpOU","restInvWaiterTransfer1", "t-kellner", "t-kellner1")
@@ -1898,13 +1901,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
 
 # infostr -> request Id
 # imagefile -> content
-"""
-Saat ini masih mencukupi, Pak.
-Jadi ada infostr (char) bisa utk letakkan nama file, utk contentnya bisa disimpan dalam imagefile (blob).
-Lalu untuk created date/timestamp disini ada field created (date) dan zeit (integer).
-Kemudian masih ada beberapa field lainnya dan ada reserve field jga seperti reserve-char, reserve-int, dan reserve-logic..
-Jadi bsk coba saya info ke Mba Fitria utk simpan temp datanya disini dlu, Pak..
-"""
+
 
 
 # clear_8 = text("""
