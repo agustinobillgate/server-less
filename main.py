@@ -356,7 +356,7 @@ update_field_mapping = {
     "strmonth": "strMONTH",
     "dailyrec":"dailyRec",
     "room-selected":"room-Selected",
-    "tmaintask": "tMaintask",
+    # "tmaintask": "tMaintask",
     "tstatus": "tStatus",
     "tfrequency": "tFrequency",
     # "tlocation": "tLocation",
@@ -364,8 +364,8 @@ update_field_mapping = {
     "svendor": "sVendor",
     
     "maintask": "Maintask",
-    "copyrequest": "CopyRequest",
-    "copyrequest": "copyRequest",
+    # "copyrequest": "CopyRequest",
+    # "copyrequest": "copyRequest",
     "lrate": "lRate",
 
     #updated 1.0.0.24
@@ -814,7 +814,7 @@ update_table_name("vhpENG","egReqlistLoad","sMaintain","smaintain")
 #updated 1.0.0.39r (27-Mei-2025) fb_flashbl
 
 
-#updated 1.0.0.40r (3-Juli-2025) egRepdurationDisp
+#updated 1.0.0.40r (3-Juli-2025) 
 update_table_name("vhpENG","egRepmaintainDisp","tlocation","tLocation")
 update_table_name("vhpENG","egRepmaintainDisp","tstatus","tStatus")
 
@@ -823,10 +823,15 @@ update_table_name("vhpENG","egMaincalendardelPrepare","tlocation","tLocation")
 update_table_name("vhpENG","egMaincalendardelPrepare","tstatus","tStatus")
 update_table_name("vhpENG","egMaincalendardelPrepare","tmaintask","tMaintask")
 
+
+update_table_name("vhpENG","egRepdurationDisp","tstatus","tStatus")
+update_table_name("vhpENG","egRepdurationDisp","tmaintask","tMaintask")
+update_table_name("vhpENG","egRepdurationDisp","tlocation","tLocation")
+update_table_name("vhpENG","egRepdurationDisp","copyrequest","copyRequest")
+
 update_table_name("vhpENG","egMaincalendarPrepare","tlocation","tLocation")
 update_table_name("vhpENG","egMaincalendarPrepare","tstatus","tStatus")
 update_table_name("vhpENG","egMaincalendarPrepare","tmaintask","tMaintask")
-
 
 update_table_name("vhpENG","egRepmaintainPrepare","tlocation","tLocation")
 update_table_name("vhpENG","egRepmaintainPrepare","tmaintask","tMaintask")
