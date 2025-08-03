@@ -348,6 +348,7 @@ def kitchen_display_getdata_cld_1bl(casetype:int, kp_number:int):
 
     elif casetype == 2:
         pass
+    
     create_done()
 
     for bkds in query(bkds_list, filters=(lambda bkds: bkds.curr_flag.lower()  == ("kds-header").lower()), sort_by=[("count_pos",False)]):

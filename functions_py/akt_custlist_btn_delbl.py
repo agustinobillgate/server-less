@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# if not availble -> return
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Akt_cust, Akthdr
@@ -24,6 +27,10 @@ def akt_custlist_btn_delbl(a_gastnr:int, rec_id:int):
     if akthdr:
         err = 1
     pass
-    db_session.delete(akt_cust)
+
+    # Rd, 3/8/2025
+    # if available
+    if akt_cust:
+        db_session.delete(akt_cust)
 
     return generate_output()

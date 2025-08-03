@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# if not availble -> return
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill_line, H_bill, H_umsatz, Queasy
@@ -48,7 +51,11 @@ def ts_closeinv_btn_stopbl(t_p_list_data:[T_p_list], rec_id:int, pax:int, belegu
 
 
     h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
-
+    # Rd 3/8/2025
+    # if not avail return
+    if h_bill is None:
+        return generate_output()
+    
     if pax != belegung:
 
         hbline = get_cache (H_bill_line, {"rechnr": [(eq, h_bill.rechnr)],"departement": [(eq, h_bill.departement)]})
