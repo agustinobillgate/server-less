@@ -35,7 +35,10 @@ def chg_storerequest_read_data_webbl(payload_list_list:[Payload_list]):
     op_list = payload_list = response_list = sys_user = None
 
     op_list_list, Op_list = create_model_like(L_op, {"bezeich":string, "username":string, "onhand":Decimal, "anzahl0":Decimal, "fibu":string, "fibu10":string, "s_recid":int, "einheit":string})
-    response_list_list, Response_list = create_model("Response_list", {"t_amount":Decimal, "lscheinnr":string, "curr_lager":int, "deptno":int, "transfered":bool, "out_type":int, "to_stock":int, "deptname":string, "lager_bezeich":string, "lager_bez1":string, "curr_pos":int, "sr_remark":string})
+    response_list_list, Response_list = create_model("Response_list", {"t_amount":Decimal, "lscheinnr":string, "curr_lager":int, "deptno":int, 
+                                                                    "transfered":bool, "out_type":int, "to_stock":int, "deptname":string, 
+                                                                    "lager_bezeich":string, "lager_bez1":string, "curr_pos":int, 
+                                                                    "sr_remark":string})
     
     Sys_user = create_buffer("Sys_user",Bediener)
 

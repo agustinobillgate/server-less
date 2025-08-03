@@ -694,8 +694,8 @@ update_field_mapping = {
     "curr_pos":["currPos", "curr-pos"],
 
     #   "deptNo",
-    "show_price":"showPrice",
-    "req_flag":"reqFlag",
+    "show_price":["showPrice", "show-price"],
+    "req_flag":["reqFlag", "req-flag"],
     #   "p220",
     # "out_type":"outType",
     # "to_stock":"toStock",
