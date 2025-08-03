@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# if not availble -> return
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -159,7 +162,11 @@ def ts_restinv_btn_ccard2bl(billart:int, rec_id:int, curr_dept:int, balance:Deci
             pass
 
     h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
-
+    # Rd 3/8/2025
+    # if not avail return
+    if h_bill is None:
+        return generate_output()
+    
     h_artikel = get_cache (H_artikel, {"departement": [(eq, curr_dept)],"artnr": [(eq, billart)]})
     billart = h_artikel.artnr
     qty = 1

@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# if not availble -> return
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill, H_bill_line, H_artikel, Htparam
@@ -94,6 +97,10 @@ def ts_biltransfer_check_vatbl(rec_id:int, multi_vat:bool, balance:Decimal, clos
 
 
     h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # Rd 3/8/2025
+    # if not avail return
+    if h_bill is None:
+        return generate_output()
     check_vat()
     vat_list_data.clear()
 
