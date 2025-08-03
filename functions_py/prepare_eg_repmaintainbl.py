@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 3/8/2025
+# update key: tfrequency -> tFrequency
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -45,7 +49,14 @@ def prepare_eg_repmaintainbl(user_init:string, all_room:bool):
         nonlocal t_zimmer, tproperty, troom, tmaintask, tpic, tstatus, tfrequency, tlocation, tcategory, comcategory, qbuff1, comlocat, commain, comroom
         nonlocal t_zimmer_data, tproperty_data, troom_data, tmaintask_data, tpic_data, tstatus_data, tfrequency_data, tlocation_data, tcategory_data
 
-        return {"ci_date": ci_date, "engid": engid, "groupid": groupid, "tproperty": tproperty_data, "troom": troom_data, "tMaintask": tmaintask_data, "tpic": tpic_data, "tStatus": tstatus_data, "tfrequency": tfrequency_data, "tLocation": tlocation_data, "tcategory": tcategory_data, "t-zimmer": t_zimmer_data}
+        # Rd, 3/8/2025
+        # update key: tfrequency -> tFrequency          
+        # return {"ci_date": ci_date, "engid": engid, "groupid": groupid, "tproperty": tproperty_data, 
+        #         "troom": troom_data, "tMaintask": tmaintask_data, "tpic": tpic_data, "tStatus": tstatus_data, 
+        #         "tfrequency": tfrequency_data, "tLocation": tlocation_data, "tcategory": tcategory_data, "t-zimmer": t_zimmer_data}
+        return {"ci_date": ci_date, "engid": engid, "groupid": groupid, "tproperty": tproperty_data, 
+                "troom": troom_data, "tMaintask": tmaintask_data, "tpic": tpic_data, "tStatus": tstatus_data, 
+                "tFrequency": tfrequency_data, "tLocation": tlocation_data, "tcategory": tcategory_data, "t-zimmer": t_zimmer_data}
 
     def define_engineering():
 
