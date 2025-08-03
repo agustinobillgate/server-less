@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# if not availble -> return
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -71,6 +74,10 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
         if bilrecid != 0:
 
             hbill = get_cache (H_bill, {"_recid": [(eq, bilrecid)]})
+            # Rd 3/8/2025
+            # if not avail return
+            if h_bill is None:
+                return
         else:
 
             counters = get_cache (Counters, {"counter_no": [(eq, (100 + dept))]})
@@ -195,6 +202,9 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
         rhbline_data.clear()
 
     h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
-    move_table()
+    # Rd 3/8/2025
+    # if  availble 
+    if h_bill:
+        move_table()
 
     return generate_output()
