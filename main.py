@@ -359,7 +359,7 @@ update_field_mapping = {
     "tmaintask": "tMaintask",
     "tstatus": "tStatus",
     "tfrequency": "tFrequency",
-    "tlocation": "tLocation",
+    # "tlocation": "tLocation",
     "tfstat":"tFStat",
     "svendor": "sVendor",
     
@@ -451,7 +451,7 @@ update_field_mapping = {
     
     "location": "Location",
     "maintask": "Maintask",
-    "tstatus": "tStatus",
+    # "tstatus": "tStatus",
     
     "main-nm": "Main-nm",
     
@@ -775,6 +775,9 @@ update_table_name("vhpENG","egPropertyLoad","svendor","tEgProperty")
 
 update_table_name("vhpENG","egReprequestcancelPrepare","mainaction","MainAction")
 update_table_name("vhpENG","egReprequestcancelPrepare","tmaintain","tMaintain")
+update_table_name("vhpENG","egReprequestcancelPrepare","tmaintask","tMaintask")
+update_table_name("vhpENG","egReprequestcancelPrepare","tlocation","tLocation")
+update_table_name("vhpENG","egReprequestcancelPrepare","tstatus","tStatus")
 
 update_table_name("vhpSS","egMaintaskBtnDelart","flcode","flCode")
 update_table_name("vhpSS","egCategoryBtnExit","flcode","flCode")
