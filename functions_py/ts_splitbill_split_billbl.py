@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# if not availble -> return
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill_line, H_bill, H_artikel
@@ -127,6 +130,11 @@ def ts_splitbill_split_billbl(rec_id:int, dept:int, price_decimal:int):
         art_list_data.clear()
 
     h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # Rd 3/8/2025
+    # if not avail return
+    if h_bill is None:
+        return generate_output()
+    
     split_bill()
 
     for h_bill_line in db_session.query(H_bill_line).filter(

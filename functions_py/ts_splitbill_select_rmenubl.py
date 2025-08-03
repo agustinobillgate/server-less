@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# if not availble -> return
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.ts_splitbill_build_rmenubl import ts_splitbill_build_rmenubl
@@ -33,6 +36,10 @@ def ts_splitbill_select_rmenubl(rec_id_h_bill_line:int, rec_id:int, curr_select:
 
 
     h_bill_line = get_cache (H_bill_line, {"_recid": [(eq, rec_id_h_bill_line)]})
+    # Rd 3/8/2025
+    # if not avail return
+    if h_bill_line is None:
+        return generate_output()
     h_bill_line.waehrungsnr = 0
     pass
     pass
