@@ -1,4 +1,7 @@
 #using conversion tools version: 1.0.0.117
+#----------------------------------------
+# Rd 3/8/2025
+#----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -61,7 +64,10 @@ def prepare_res_gname2bl(resnr:int):
         for res_line in db_session.query(Res_line).filter(
                  (Res_line.resnr == resnr) & (Res_line.active_flag < 2) & (Res_line.resstatus != 12) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
 
-            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikat)]})
+            # Rd 3/8/2025
+            # zikat -> zikatnr
+            # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikat)]})
+            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
 
             guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
             s_list = S_list()
@@ -85,7 +91,8 @@ def prepare_res_gname2bl(resnr:int):
             s_list.active_flag = res_line.active_flag
             s_list.karteityp = guest.karteityp
             s_list.erwachs = res_line.erwachs
-            s_list.rmcat = zimkateg.kurzbez
+            if zimkateg:
+                s_list.rmcat = zimkateg.kurzbez
             s_list.ankunft = res_line.ankunft
             s_list.abreise = res_line.abreise
             s_list.kind1 = res_line.kind1
