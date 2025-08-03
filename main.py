@@ -309,6 +309,7 @@ update_field_mapping = {
 
     "tLorderhdr": "tLOrderhdr",
     "addvat": "addVAT",
+    "vat":"VAT",
 
     "tpushlist":"tPushList",
     "rcodevhp": "rcodeVHP",
@@ -355,19 +356,17 @@ update_field_mapping = {
     "month": "MONTH",
     "strmonth": "strMONTH",
     "dailyrec":"dailyRec",
-    "tmaintain":"tMaintain",
-    "mainaction":"MainAction",
     "room-selected":"room-Selected",
-    "tmaintask": "tMaintask",
+    # "tmaintask": "tMaintask",
     "tstatus": "tStatus",
     "tfrequency": "tFrequency",
-    "tlocation": "tLocation",
+    # "tlocation": "tLocation",
     "tfstat":"tFStat",
     "svendor": "sVendor",
     
     "maintask": "Maintask",
-    "copyrequest": "CopyRequest",
-    "copyrequest": "copyRequest",
+    # "copyrequest": "CopyRequest",
+    # "copyrequest": "copyRequest",
     "lrate": "lRate",
 
     #updated 1.0.0.24
@@ -453,7 +452,7 @@ update_field_mapping = {
     
     "location": "Location",
     "maintask": "Maintask",
-    "tstatus": "tStatus",
+    # "tstatus": "tStatus",
     
     "main-nm": "Main-nm",
     
@@ -485,8 +484,8 @@ update_field_mapping = {
     "totpuri":"totpURI",
     "recoverycode":"recoveryCode",
 
-    "Created-By":"created-by",
-    "created-by":"Created-By",
+    # "Created-By":"created-by",
+    # "created-by":"Created-By",
     # "deptname":"deptName",
 
     "posteddate":"postedDate",  #vhpGC/gcGiroRead (FA)
@@ -495,9 +494,50 @@ update_field_mapping = {
     "Order_Date":"Order-Date",
     "Order_Nr":"Order-Nr",
     "Order_Type":"Order-Type",
-    "Released_Date":"Released-Date",
+    # "Released_Date":"Released-Date",
     "Expected_Delivery":"Expected-Delivery",
+    "expected_delivery":"Expected-Delivery",
+    "expected-delivery":"Expected-Delivery",
     "Released_Flag":"Released-Flag",
+    "released_flag":"Released-Flag",
+    "Released-Flag":"Released-Flag",
+    "released-flag":"Released-Flag",
+    "Released_By":"Released-By",
+    "released-by":"Released-By",
+    "Released_Date":"Released-Date",
+    "released-date":"Released-Date",
+
+    "Released_Time":"Released-Time",
+    "released-time":"Released-Time",
+
+    "Created_By":"Created-By",
+    "created-by":"Created-By",
+    "Created_Date":"Created-Date",
+    "created-date":"Created-Date",
+    "Created_Time":"Created-Time",
+    "created-time":"Created-Time",
+
+    "Cancel_By":"Cancel-By",
+    "cancel-by":"Cancel-By",
+    "Cancel_Date":"Cancel-Date",
+    "cancel-date":"Cancel-Date",
+    "Cancel_Time":"Cancel-Time",
+    "cancel-time":"Cancel-Time",
+
+    "Delete_By":"Delete-By",
+    "delete-by":"Delete-By",
+    "Delete_Date":"Delete-Date",
+    "delete-date":"Delete-Date",
+    "Delete_Time":"Delete-Time",
+    "delete-time":"Delete-Time",
+
+    "Modified_By":"Modified-By",
+    "modified-by":"Modified-By",
+    "Modified_Date":"Modified-Date",
+    "modified-date":"Modified-Date",
+    "Modified_Time":"Modified-Time",
+    "modified-time":"Modified-Time",
+
     "Supplier_Nr":"Supplier-Nr",
     "Order_Desc":"Order-Desc",
     "Order_Name":"Order-Name",
@@ -518,20 +558,17 @@ update_field_mapping = {
 
     "activate_deposit":"activateDeposit",
 
-
-
-
     # pr_list_btn_go_1bl
     "supno":"supNo",
     "currno":"currNo",
     
     #updated 1.0.0.22
-    "create_by": ["Create_by", "Create_By", "create-by"],
-    "created_by": ["Created_by", "Created_By", "created-by"],
+    # "create_by": ["Create_by", "Create_By", "create-by"],
+    # "created_by": ["Created_by", "Created_By", "created-by"],
     "engid": ["engId","EngId","EngID","ENGID"],
     "deptname": ["deptName","DeptName"],
     "main_nr": ["Main-nr", "main-nr"],
-    
+
     
     # "PI-status":["pi-status", "pi-Status"],
     "pi_status":["pi-status", "PI-status"],
@@ -652,7 +689,7 @@ update_field_mapping = {
     "vhpwebbased4-appservicename":"VHPWebBased4-AppServiceName",
     "vhpwebbased5-appservicename":"VHPWebBased5-AppServiceName",
 
-    "activeflag": ["ActiveFlag","activeFlag"], 
+    "activeflag": ["ActiveFlag","activeFlag", "Activeflag"], 
    
     "mtd-room": "mtd-Room",         # vhpSM/rmAtproductCreateUmsatz1
     "ytd-room": "ytd-Room",         # vhpSM/rmAtproductCreateUmsatz1
@@ -682,19 +719,23 @@ update_field_mapping = {
     "source":"SOURCE",
     "avail-image":"avail-image",
 
-    "lager_bezeich": "lagerBezeich",
-    "lager_bez1":"lagerBez1",
-    "curr_pos":"currPos",
+    "lager_bezeich": ["lagerBezeich","lager-bezeich"],
+    "lager_bez1":["lagerBez1","lager-bez1"],
+    "lager-bezeich": ["lagerBezeich","lager-bezeich"],
+    "lager-bez1":["lagerBez1","lager-bez1"],
+    "curr_lager":["currLager","curr-lager","curr_lager"],
+    "curr-lager":["curr-lager","curr_lager"],
+    "out_type":["out-type", "out_type"],
+    "out_type":["out-type", "out_type"],
+    # "out-type":["out-type", "out_type"],
+    "curr_pos":["currPos", "curr-pos"],
 
-    "curr_lager":"currLager",
     #   "deptNo",
-    "show_price":"showPrice",
-    "req_flag":"reqFlag",
+    "show_price":["showPrice", "show-price"],
+    "req_flag":["reqFlag", "req-flag"],
     #   "p220",
-    "out_type":"outType",
-    "to_stock":"toStock",
-    "lager_bezeich":"lagerBezeich",
-    "lager_bez1":"lagerBez1",
+    # "out_type":"outType",
+    # "to_stock":"toStock",
     #   "currPos",
     "t_amount":"t-amount",
     "chgid":"chgID",        # vhpFOR/globalReservationReview
@@ -703,7 +744,70 @@ update_field_mapping = {
     "curr_waiter":"currWaiter",
     "isupgrade":"isUpgrade",
 
+    # "tmaintain":"tMaintain",
+
+    # vhpFA/faRecPOPrepare
+    "order-nr":"Order-Nr",
+    "pr-nr":"PR-Nr",
+    "pr-flag":"PR-Flag",
+    "order-date":"Order-Date",
+    "order-type":"Order-Type",
+    "order_date":"Order-Date",
+    "order_type":"Order-Type",
+    "order-desc":"Order-Desc",
+    "order_desc":"Order-Desc",
+    "order-name":"Order-Name",
+    "order_name":"Order-Name",
+    "supplier-nr":"Supplier-Nr",
+    "supplier_nr":"Supplier-Nr",
+    "credit-term":"Credit-Term",
+    "credit_term":"Credit-Term",
+    "dept-nr":"Dept-Nr",
+    "dept":"Dept-Nr",
+    "currency":"Currency",
+    "paymentdate":"PaymentDate",
+    # "expected-delivery":"Expected-Delivery",
+    # "approved-1":"Approved-1",
+    "approved_1":"Approved-1",
+    "approved_2":"Approved-2",
+    "approved_3":"Approved-3",
+    "approved-1-by":"Approved-1-By",
+    "approved-2-by":"Approved-2-By",
+    "approved-3-by":"Approved-3-By",
+    "approved-1-date":"Approved-1-Date",
+    "approved-2-date":"Approved-2-Date",
+    "approved-3-date":"Approved-3-Date",
+    "approved-1-time":"Approved-1-Time",
+    "approved-1-time":"Approved-1-time",
+    "approved-2-time":"Approved-2-Time",
+    "approved-2-time":"Approved-2-time",
+    "approved-3-time":"Approved-3-Time",
     
+    "statflag":"statFlag",
+
+    "total-amount": "Total-Amount",
+    "printedtime":"PrintedTime",
+    "fa-pos":"Fa-Pos",
+    "fa-nr":"Fa-Nr",
+    
+    "order-qty":"Order-Qty",
+    "order-price":"Order-Price",
+    "order-amount":"Order-Amount",
+    "discount1":"Discount1",
+    "discount2":"Discount2",
+
+    "exchangerate":"ExchangeRate",
+    "fa-remarks":"Fa-remarks",
+    "activereason":"ActiveReason",
+    "create-by":"Create-By",
+    "create-date":"Create-Date",
+    "create-time":"Create-Time",
+    "change-by":"Change-By",
+    "change-date":"Change-Date",
+    "change-time":"Change-Time",
+    "closeflag":"CloseFlag",
+    "close-date":"Close-Date",
+    "close-time":"Close-Time",
 
 
     }
@@ -771,6 +875,9 @@ update_table_name("vhpENG","egPropertyLoad","svendor","tEgProperty")
 
 update_table_name("vhpENG","egReprequestcancelPrepare","mainaction","MainAction")
 update_table_name("vhpENG","egReprequestcancelPrepare","tmaintain","tMaintain")
+update_table_name("vhpENG","egReprequestcancelPrepare","tmaintask","tMaintask")
+update_table_name("vhpENG","egReprequestcancelPrepare","tlocation","tLocation")
+update_table_name("vhpENG","egReprequestcancelPrepare","tstatus","tStatus")
 
 update_table_name("vhpSS","egMaintaskBtnDelart","flcode","flCode")
 update_table_name("vhpSS","egCategoryBtnExit","flcode","flCode")
@@ -781,8 +888,8 @@ update_table_name("vhpGC","prepareAddGCPi","tGcPibline","tGcPIbline")
 update_table_name("vhpEG","egSelLookmaintainPrepare","tmaintain","tMaintain")
 update_table_name("vhpEG","egSelLookmaintainPrepare","mainaction","MainAction")
 
-update_table_name("vhpEG","egSelLookmaintainPrepare","tmaintain","tMaintain")
-update_table_name("vhpEG","egSelLookmaintainPrepare","mainaction","MainAction")
+update_table_name("vhpENG","egSelLookmaintainPrepare","tmaintain","tMaintain")
+update_table_name("vhpENG","egSelLookmaintainPrepare","mainaction","MainAction")
 
 #updated 1.0.0.33 2025-05-14
 # update_table_name("vhpINV","storeReqInsPrepare","deptno","deptNo")
@@ -807,7 +914,7 @@ update_table_name("vhpENG","egReqlistLoad","sMaintain","smaintain")
 #updated 1.0.0.39r (27-Mei-2025) fb_flashbl
 
 
-#updated 1.0.0.40r (3-Juli-2025) egRepdurationDisp
+#updated 1.0.0.40r (3-Juli-2025) 
 update_table_name("vhpENG","egRepmaintainDisp","tlocation","tLocation")
 update_table_name("vhpENG","egRepmaintainDisp","tstatus","tStatus")
 
@@ -816,15 +923,21 @@ update_table_name("vhpENG","egMaincalendardelPrepare","tlocation","tLocation")
 update_table_name("vhpENG","egMaincalendardelPrepare","tstatus","tStatus")
 update_table_name("vhpENG","egMaincalendardelPrepare","tmaintask","tMaintask")
 
+
+update_table_name("vhpENG","egRepdurationDisp","tstatus","tStatus")
+update_table_name("vhpENG","egRepdurationDisp","tmaintask","tMaintask")
+update_table_name("vhpENG","egRepdurationDisp","tlocation","tLocation")
+update_table_name("vhpENG","egRepdurationDisp","copyrequest","copyRequest")
+
 update_table_name("vhpENG","egMaincalendarPrepare","tlocation","tLocation")
 update_table_name("vhpENG","egMaincalendarPrepare","tstatus","tStatus")
 update_table_name("vhpENG","egMaincalendarPrepare","tmaintask","tMaintask")
-
 
 update_table_name("vhpENG","egRepmaintainPrepare","tlocation","tLocation")
 update_table_name("vhpENG","egRepmaintainPrepare","tmaintask","tMaintask")
 update_table_name("vhpENG","egRepmaintainPrepare","tfrequency","tFrequency")
 update_table_name("vhpENG","egRepmaintainPrepare","tstatus","tStatus")
+
 
 update_table_name("vhpENG","egRepdurationPrepare","tlocation","tLocation")
 update_table_name("vhpENG","egRepdurationPrepare","tmaintask","tMaintask")

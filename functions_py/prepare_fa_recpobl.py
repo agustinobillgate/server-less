@@ -44,7 +44,9 @@ def prepare_fa_recpobl(docu_nr:string, user_init:string, dept_nr:int):
         nonlocal t_faordheader, t_lieferant, tfa_order, t_parameters
         nonlocal t_faordheader_data, t_lieferant_data, tfa_order_data, t_parameters_data
 
-        return {"enforce_rflag": enforce_rflag, "show_price": show_price, "price_decimal": price_decimal, "billdate": billdate, "add_first_waehrung_wabkurz": add_first_waehrung_wabkurz, "exchg_rate": exchg_rate, "tot_amount": tot_amount, "pr_21": pr_21, "pr_973": pr_973, "t-faordheader": t_faordheader_data, "tfa-order": tfa_order_data, "t-lieferant": t_lieferant_data, "t-parameters": t_parameters_data}
+        return {"enforce_rflag": enforce_rflag, "show_price": show_price, "price_decimal": price_decimal, "billdate": billdate, 
+                "add_first_waehrung_wabkurz": add_first_waehrung_wabkurz, "exchg_rate": exchg_rate, "tot_amount": tot_amount, 
+                "pr_21": pr_21, "pr_973": pr_973, "t-faordheader": t_faordheader_data, "tfa-order": tfa_order_data, "t-lieferant": t_lieferant_data, "t-parameters": t_parameters_data}
 
     def get_currency():
 
