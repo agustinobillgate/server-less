@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill, H_artikel, Htparam, H_bill_line
@@ -42,6 +44,11 @@ def ts_biltransfer_check_discartbl(rec_id:int, dept:int):
                 it_exist = True
 
     h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # Rd 3/8/2025
+    # if not avail -> return
+    if h_bill is None:
+        return generate_output()
+    
     check_discart()
 
     for h_artikel in db_session.query(H_artikel).filter(
