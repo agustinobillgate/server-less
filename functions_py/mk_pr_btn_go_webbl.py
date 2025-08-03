@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# if not availble -> return
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -71,6 +74,11 @@ def mk_pr_btn_go_webbl(s_list_data:[S_list], docu_nr:string, rec_id:int, dml_cre
         pass
 
     l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, rec_id)]})
+    # Rd 3/8/2025
+    # if not avail return
+    if l_orderhdr is None:
+        return generate_output()
+    
     l_orderhdr.lieferdatum = t_l_orderhdr_lieferdatum
     l_orderhdr.lief_fax[2] = comments_screen_value
     l_orderhdr.lief_fax[1] = " ; ; ; "
