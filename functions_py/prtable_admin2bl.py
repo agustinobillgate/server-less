@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 3/8/2025
+# if availabe
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Prtable, Queasy, Prmarket
@@ -17,13 +20,19 @@ def prtable_admin2bl(rec_id:int, nr:int):
 
 
     prtable = get_cache (Prtable, {"_recid": [(eq, rec_id)]})
-    db_session.delete(prtable)
+    # Rd, 3/8/2025
+    # if available
+    if prtable:
+        db_session.delete(prtable)
 
     for queasy in db_session.query(Queasy).filter(
              (Queasy.key == 18) & (Queasy.number1 == nr)).order_by(Queasy._recid).all():
         db_session.delete(queasy)
 
     prmarket = get_cache (Prmarket, {"nr": [(eq, nr)]})
-    db_session.delete(prmarket)
+    # Rd, 3/8/2025
+    # if available
+    if prmarket:
+        db_session.delete(prmarket)
 
     return generate_output()
