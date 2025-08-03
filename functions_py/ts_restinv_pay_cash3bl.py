@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# if not availble -> return
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_artikel, H_bill_line, H_bill, Htparam
@@ -36,7 +39,11 @@ def ts_restinv_pay_cash3bl(pvilanguage:int, curr_dept:int, do_it:bool, rec_id:in
         return {"exrate": exrate, "msg_str": msg_str, "t-h-artikel": t_h_artikel_data}
 
     h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
-
+    # Rd 3/8/2025
+    # if not avail return
+    if h_bill is None:
+        return generate_output()
+    
     htparam = get_cache (Htparam, {"paramnr": [(eq, 855)]})
 
     h_artikel = get_cache (H_artikel, {"departement": [(eq, curr_dept)],"artnr": [(eq, htparam.finteger)]})
