@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# if not availble -> return
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -357,6 +360,10 @@ def ts_restinv_btn_transfer_paytype56bl(rec_id:int, guestnr:int, curr_dept:int, 
 
 
     h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # Rd 3/8/2025
+    # if not availble -> return
+    if h_bill is None:
+        return generate_output()
 
     if h_bill.kellner_nr != to_int(user_init):
         h_bill.kellner_nr = to_int(user_init)

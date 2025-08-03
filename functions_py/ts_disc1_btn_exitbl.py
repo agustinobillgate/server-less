@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# if available h_bill
+# if not availble -> return
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -473,9 +477,15 @@ def ts_disc1_btn_exitbl(rec_id:int, billart:int, dept:int, transdate:date, amoun
 
 
     h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # Rd, 3/8/2025
+    # if not avail return
+    if h_bill is None:
+        return generate_output()
 
     h_artikel = get_cache (H_artikel, {"artnr": [(eq, billart)],"departement": [(eq, dept)]})
-    update_bill(h_artikel.artart, h_artikel.artnrfront)
-    update_rev_argtart(h_artikel.artnrfront)
+    #R 3/8/2025
+    if h_artikel:
+        update_bill(h_artikel.artart, h_artikel.artnrfront)
+        update_rev_argtart(h_artikel.artnrfront)
 
     return generate_output()
