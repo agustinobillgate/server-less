@@ -808,6 +808,7 @@ update_field_mapping = {
     "closeflag":"CloseFlag",
     "close-date":"Close-Date",
     "close-time":"Close-Time",
+    "persons":"Persons",
 
 
     }
