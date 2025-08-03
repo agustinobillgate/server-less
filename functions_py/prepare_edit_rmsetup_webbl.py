@@ -59,7 +59,7 @@ def prepare_edit_rmsetup_webbl(raum:string, curr_select:string, setup_id:int, re
             # if available
             if bk_setup:
                 setup_bez = bk_setup.bezeichnung
-
+                
             if bk_rset:
                 bk_list.raum = bk_rset.raum
                 bk_list.bezeich = bk_rset.bezeich
