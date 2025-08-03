@@ -1,6 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #----------------------------------------
 # Rd 3/8/2025
+# if not avail -> return 
 #----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
