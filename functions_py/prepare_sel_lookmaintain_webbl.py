@@ -59,7 +59,11 @@ def prepare_sel_lookmaintain_webbl(pvilanguage:int, prop_nr:int):
         nonlocal t_head, t_line_cost, t_line_vendor, mainaction, tmaintain, flocation, tlocation, q1_list, qbuff, tbuff
         nonlocal t_head_data, t_line_cost_data, t_line_vendor_data, mainaction_data, tmaintain_data, flocation_data, tlocation_data, q1_list_data
 
-        return {"e_price": e_price, "e_datum": e_datum, "avail_eg_property": avail_eg_property, "rec_meter": rec_meter, "rec_hour": rec_hour, "rec_date": rec_date, "rec_time": rec_time, "tot_cost": tot_cost, "tot_vend": tot_vend, "t-head": t_head_data, "t-line-cost": t_line_cost_data, "t-line-vendor": t_line_vendor_data, "q1-list": q1_list_data, "tMaintain": tmaintain_data, "MainAction": mainaction_data}
+        return {"e_price": e_price, "e_datum": e_datum, "avail_eg_property": avail_eg_property, "rec_meter": rec_meter, 
+                "rec_hour": rec_hour, "rec_date": rec_date, 
+                "rec_time": rec_time, "tot_cost": tot_cost, "tot_vend": tot_vend, 
+                "t-head": t_head_data, "t-line-cost": t_line_cost_data, "t-line-vendor": t_line_vendor_data, 
+                "q1-list": q1_list_data, "tMaintain": tmaintain_data, "MainAction": mainaction_data}
 
     def create_history():
 

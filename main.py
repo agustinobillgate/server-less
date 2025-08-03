@@ -355,8 +355,6 @@ update_field_mapping = {
     "month": "MONTH",
     "strmonth": "strMONTH",
     "dailyrec":"dailyRec",
-    "tmaintain":"tMaintain",
-    "mainaction":"MainAction",
     "room-selected":"room-Selected",
     "tmaintask": "tMaintask",
     "tstatus": "tStatus",
@@ -707,6 +705,8 @@ update_field_mapping = {
     "curr_waiter":"currWaiter",
     "isupgrade":"isUpgrade",
 
+    "tmaintain":"tMaintain",
+
     
 
 
@@ -785,8 +785,8 @@ update_table_name("vhpGC","prepareAddGCPi","tGcPibline","tGcPIbline")
 update_table_name("vhpEG","egSelLookmaintainPrepare","tmaintain","tMaintain")
 update_table_name("vhpEG","egSelLookmaintainPrepare","mainaction","MainAction")
 
-update_table_name("vhpEG","egSelLookmaintainPrepare","tmaintain","tMaintain")
-update_table_name("vhpEG","egSelLookmaintainPrepare","mainaction","MainAction")
+update_table_name("vhpENG","egSelLookmaintainPrepare","tmaintain","tMaintain")
+update_table_name("vhpENG","egSelLookmaintainPrepare","mainaction","MainAction")
 
 #updated 1.0.0.33 2025-05-14
 # update_table_name("vhpINV","storeReqInsPrepare","deptno","deptNo")
