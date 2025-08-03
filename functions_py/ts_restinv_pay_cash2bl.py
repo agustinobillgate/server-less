@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# if available h_bill
+# if not availble -> return
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -319,29 +323,32 @@ def ts_restinv_pay_cash2bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
         active_deposit = htparam.flogical
 
     h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # Rd 3/8/2025
+    # if not availble -> return
+    if h_bill is None:
+        return generate_output()
     pass
-    h_bill.flag = 1
+    # Rd 3/8/2025
+    # if available
+    if h_bill:
+        h_bill.flag = 1
 
 
-    interface = Interface()
-    db_session.add(interface)
+        interface = Interface()
+        db_session.add(interface)
 
-    interface.key = 38
-    interface.action = True
-    interface.nebenstelle = ""
-    interface.parameters = "close-bill"
-    interface.intfield = h_bill.rechnr
-    interface.decfield =  to_decimal(h_bill.departement)
-    interface.int_time = get_current_time_in_seconds()
-    interface.intdate = get_current_date()
-    interface.resnr = h_bill.resnr
-    interface.reslinnr = h_bill.reslinnr
+        interface.key = 38
+        interface.action = True
+        interface.nebenstelle = ""
+        interface.parameters = "close-bill"
+        interface.intfield = h_bill.rechnr
+        interface.decfield =  to_decimal(h_bill.departement)
+        interface.int_time = get_current_time_in_seconds()
+        interface.intdate = get_current_date()
+        interface.resnr = h_bill.resnr
+        interface.reslinnr = h_bill.reslinnr
 
-
-    pass
-    pass
-    pass
-    get_rechnr = h_bill.rechnr
+        get_rechnr = h_bill.rechnr
 
     for h_bill_line in db_session.query(H_bill_line).filter(
                  (H_bill_line.departement == h_bill.departement) & (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.betrag < 0)).order_by(H_bill_line._recid).all():

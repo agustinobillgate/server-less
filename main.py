@@ -752,7 +752,7 @@ update_field_mapping = {
     "pr-flag":"PR-Flag",
     "order-date":"Order-Date",
     "order-type":"Order-Type",
-    "order_date":"Order-Date",
+    "order_date":["Order-Date","order-date"], 
     "order_type":"Order-Type",
     "order-desc":"Order-Desc",
     "order_desc":"Order-Desc",
@@ -808,6 +808,7 @@ update_field_mapping = {
     "closeflag":"CloseFlag",
     "close-date":"Close-Date",
     "close-time":"Close-Time",
+    "persons":"Persons",
 
 
     }

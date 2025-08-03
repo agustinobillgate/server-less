@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 3/8/2025
+# if bediener
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Res_history, Bediener
@@ -33,7 +36,8 @@ def benutzer_zugriffbl(ch:string, nr:int, username:string, permissions:string, r
     pass
 
     bediener = get_cache (Bediener, {"_recid": [(eq, rec_id)]})
-    bediener.permissions = ch
+    if bediener:
+        bediener.permissions = ch
     pass
 
     return generate_output()

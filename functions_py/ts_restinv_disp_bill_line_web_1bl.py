@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# dept -> ordered_item.dept
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -251,7 +254,9 @@ def ts_restinv_disp_bill_line_web_1bl(double_currency:bool, rechnr:int, curr_dep
         service =  to_decimal("0")
         mwst =  to_decimal("0")
 
-        h_artikel = get_cache (H_artikel, {"departement": [(eq, dept)],"artnr": [(eq, ordered_item.artnr)],"artart": [(eq, 0)]})
+        # Rd, 3/8/2025
+        # h_artikel = get_cache (H_artikel, {"departement": [(eq, dept)],"artnr": [(eq, ordered_item.artnr)],"artart": [(eq, 0)]})
+        h_artikel = get_cache (H_artikel, {"departement": [(eq, ordered_item.dept)],"artnr": [(eq, ordered_item.artnr)],"artart": [(eq, 0)]})
 
         if h_artikel:
 

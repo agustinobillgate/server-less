@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -96,6 +98,10 @@ def ts_restinv_calculate_amountbl(rec_id:int, double_currency:bool, price:Decima
                 fl_code1 = 1
 
     h_artikel = get_cache (H_artikel, {"_recid": [(eq, rec_id)]})
-    calculate_amount()
+
+    # Rd 3/8/2025
+    # if available
+    if h_artikel:
+        calculate_amount()
 
     return generate_output()

@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 3/8/2025
+# bezeich-> bezeichnung
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -50,21 +54,28 @@ def prepare_edit_rmsetup_webbl(raum:string, curr_select:string, setup_id:int, re
 
             bk_setup = get_cache (Bk_setup, {"setup_id": [(eq, setup_id)]})
             raum_bez = bk_raum.bezeich
-            setup_bez = bk_setup.bezeich
-            bk_list.raum = bk_rset.raum
-            bk_list.bezeich = bk_rset.bezeich
-            bk_list.groesse = bk_rset.groesse
-            bk_list.nebenstelle = bk_rset.nebenstelle
-            bk_list.personen = bk_rset.personen
-            bk_list.preis =  to_decimal(bk_rset.preis)
-            bk_list.vorbereit = bk_rset.vorbereit
-            bk_list.vname = bk_rset.vname
-            bk_list.rec_id = bk_rset._recid
+
+            # Rd, 3/8/2025
+            # if available
+            if bk_setup:
+                setup_bez = bk_setup.bezeichnung
+                
+            if bk_rset:
+                bk_list.raum = bk_rset.raum
+                bk_list.bezeich = bk_rset.bezeich
+                bk_list.groesse = bk_rset.groesse
+                bk_list.nebenstelle = bk_rset.nebenstelle
+                bk_list.personen = bk_rset.personen
+                bk_list.preis =  to_decimal(bk_rset.preis)
+                bk_list.vorbereit = bk_rset.vorbereit
+                bk_list.vname = bk_rset.vname
+                bk_list.rec_id = bk_rset._recid
 
     bk_list = Bk_list()
     bk_list_data.append(bk_list)
 
-
+    
+    
     if curr_select.lower()  == ("chg").lower() :
         fill_bk_list()
 

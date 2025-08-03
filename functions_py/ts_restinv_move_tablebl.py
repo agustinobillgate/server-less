@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd 3/8/2025
+# if available, geser indent
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -595,7 +598,13 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
             fl_code = 2
 
             return generate_output()
-    move_table()
+        # Rd, 3/8/2025
+        # masuk dalam if available h_bill
+        move_table()
+    
+    # geser indent
+    # move_table()
+
     pass
 
     if h_bill:
