@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------
 # Rd, 28/7/2025
-# feldtyp -> feldtype
+# if available
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -110,26 +110,25 @@ def gl_htp_checkbl(pvilanguage:int, htp_number:int, htgrp_number:int, intval:int
             return generate_output()
 
         # Rd 28/7/2025
-        # if htparam.feldtyp == 1:
-        if htparam and htparam.feldtype == 1:
+        if htparam and htparam.feldtyp == 1:
             htparam.finteger = intval
             wert = to_string(htparam.finteger)
 
-        elif htparam and htparam.feldtype == 2:
+        elif htparam and htparam.feldtyp == 2:
             htparam.fdecimal =  to_decimal(decval)
             wert = to_string(htparam.fdecimal)
 
-        elif htparam and htparam.feldtype == 3:
+        elif htparam and htparam.feldtyp == 3:
             htparam.fdate = dateval
             wert = to_string(htparam.fdate)
 
-        elif htparam and htparam.feldtype == 4:
+        elif htparam and htparam.feldtyp == 4:
             htparam.flogical = logval
             wert = to_string(htparam.flogical)
             logv = htparam.flogical
             flag = True
 
-        elif htparam and htparam.feldtype == 5:
+        elif htparam and htparam.feldtyp == 5:
             htparam.fchar = charval
             wert = to_string(htparam.fchar)
 
