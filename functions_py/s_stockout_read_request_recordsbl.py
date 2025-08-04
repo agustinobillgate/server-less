@@ -149,4 +149,4 @@ def s_stockout_read_request_recordsbl(rec_id:int, out_type:int, t_lschein:string
     if l_ophdr:
         read_request_records()
 
-        return generate_output()
+    return generate_output()

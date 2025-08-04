@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 04/08/2025
+# gitlab: -
+# remarks: -
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Salesbud
@@ -17,7 +21,8 @@ def salesbud_btn_delbl(rec_id:int):
 
 
     salesbud = get_cache (Salesbud, {"_recid": [(eq, rec_id)]})
-    db_session.delete(salesbud)
-    pass
-
+    # Rd 4/8/2025
+    if salesbud:
+        db_session.delete(salesbud)
+    
     return generate_output()
