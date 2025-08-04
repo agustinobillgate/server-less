@@ -39,6 +39,9 @@ def pr_list_btn_del_1bl(s_list_data:[S_list], s_list_artnr:int, billdate:date, u
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
     s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == s_list_artnr), first=True)
+    # Rd 4/8/2025
+    if s_list is None:
+        return generate_output()
 
     l_orderhdr = get_cache (L_orderhdr, {"docu_nr": [(eq, s_list.docu_nr)]})
     # Rd 4/8/2025
