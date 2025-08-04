@@ -810,6 +810,8 @@ update_field_mapping = {
     "close-time":"Close-Time",
     "persons":"Persons",
 
+    "chgdate":"chgDate",
+
 
     }
 docker_version += ".r"
