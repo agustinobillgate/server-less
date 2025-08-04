@@ -839,7 +839,9 @@ def eg_reglist1_btn_go_webbl(location:int, rmno:string, main_nr:int, reqstatus:i
 
             if eg_subtask:
 
-                if eg_subtask.othersFlag:
+                # Rd 3/8/2025
+                # othersFlag -> othersflag
+                if eg_subtask.othersflag:
 
                     if eg_request.subtask_bezeich != "":
                         copyrequest.sub_str = tsubtask.sub_nm + "(" + eg_request.subtask_bezeich + ")"

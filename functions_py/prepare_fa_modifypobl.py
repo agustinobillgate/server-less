@@ -110,8 +110,14 @@ def prepare_fa_modifypobl(docu_nr:string):
             tfa_order.discount2 =  to_decimal(fa_order.discount2)
             tfa_order.vat =  to_decimal(fa_order.vat)
 
-            budget_fix_asset_list = query(budget_fix_asset_list_data, filters=(lambda budget_fix_asset_list: budget_fix_asset_list.to_string(budget_fix_asset_list.nr_budget) == fa_order.activereason), first=True)
-
+            # Rd 4/8/2025
+            # budget_fix_asset_list = query(budget_fix_asset_list_data, 
+            #                               filters=(lambda budget_fix_asset_list: budget_fix_asset_list.to_string(budget_fix_asset_list.nr_budget) == fa_order.activereason), first=True)
+            budget_fix_asset_list = query(
+                budget_fix_asset_list_data,
+                filters=(lambda budget_fix_asset_list: str(budget_fix_asset_list.nr_budget) == fa_order.activereason),
+                first=True
+            )
             if budget_fix_asset_list:
                 tfa_order.desc_budget = budget_fix_asset_list.desc_budget
                 tfa_order.date_budget = budget_fix_asset_list.date_budget
