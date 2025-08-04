@@ -811,6 +811,7 @@ update_field_mapping = {
     "persons":"Persons",
 
     "chgdate":"chgDate",
+    "totpok":"totpOK",
 
 
     }
