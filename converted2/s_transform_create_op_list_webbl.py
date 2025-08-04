@@ -1,9 +1,4 @@
 #using conversion tools version: 1.0.0.117
-#------------------------------------------
-# Rd, 4/8/2025
-# gitlab: 961
-# Requery script di .p, konversi lagi.
-#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -82,7 +77,6 @@ def s_transform_create_op_list_webbl(op_list_data:[Op_list], qty:Decimal, price:
 
     create_op_list()
 
-    # hasil requery
     for op_list in query(op_list_data, sort_by=[("pos",True)]):
 
         l_artikel = get_cache (L_artikel, {"artnr": [(eq, op_list.artnr)]})

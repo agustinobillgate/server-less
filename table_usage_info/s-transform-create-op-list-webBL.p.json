@@ -1,0 +1,20 @@
+{
+    "L_op": {
+        "read": [],
+        "write": []
+    },
+    "Bediener": {
+        "read": [
+            "username",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_artikel": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    }
+}
