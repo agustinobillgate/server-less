@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Andika 04/08/2025
+# gitlab: -
+# remarks: -
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -215,9 +219,9 @@ def dml_list_create_pr_11_webbl(c_list_data:[C_list], s_list_data:[S_list], curr
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
     l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, rec_id)]})
-    create_pr()
 
     if l_orderhdr:
+        create_pr()
         pass
         t_l_orderhdr = T_l_orderhdr()
         t_l_orderhdr_data.append(t_l_orderhdr)

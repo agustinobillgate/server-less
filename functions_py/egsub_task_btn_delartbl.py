@@ -18,7 +18,8 @@ def egsub_task_btn_delartbl(rec_id:int):
 
     eg_subtask = get_cache (Eg_subtask, {"_recid": [(eq, rec_id)]})
     pass
-    db_session.delete(eg_subtask)
-    pass
+    if eg_subtask:
+        db_session.delete(eg_subtask)
+        pass
 
     return generate_output()

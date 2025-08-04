@@ -60,9 +60,10 @@ def pr_list_btn_del_1bl(s_list_data:[S_list], s_list_artnr:int, billdate:date, u
 
         if not l_order:
             l_order = L_order()
-            db_session.add(l_order)
+            if l_order:
+                db_session.add(l_order)
 
-            l_order.docu_nr = docu_nr
+                l_order.docu_nr = docu_nr
 
 
         l_order.loeschflag = 2
