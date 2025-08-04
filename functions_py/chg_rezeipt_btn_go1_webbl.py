@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 04/08/2025
+# gitlab: -
+# remarks: if available
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_rezept, Bediener, Res_history, Queasy
@@ -22,6 +26,10 @@ def chg_rezeipt_btn_go1_webbl(rec_id:int, katnr:int, portion:int, h_bezeich:stri
 
 
     h_rezept = get_cache (H_rezept, {"_recid": [(eq, rec_id)]})
+    # Rd 4/8/2025
+    if h_rezept is None:
+        return generate_output()
+    
     h_artnr = h_rezept.artnrrezept
     pass
 
@@ -34,7 +42,9 @@ def chg_rezeipt_btn_go1_webbl(rec_id:int, katnr:int, portion:int, h_bezeich:stri
         res_history = Res_history()
         db_session.add(res_history)
 
-        res_history.nr = bediener.nr
+        # Rd 4/8/2025
+        if bediener:
+            res_history.nr = bediener.nr
         res_history.datum = get_current_date()
         res_history.zeit = get_current_time_in_seconds()
         res_history.action = "Change Recipe"
