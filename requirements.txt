@@ -38,3 +38,4 @@ uvicorn
 watchtower            
 gunicorn
 jinja2
+pyotp

@@ -1,4 +1,4 @@
-# version = 1.0.0.43
+# version = 1.0.0.44
 # import logging
 # logging.basicConfig()
 # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -11,6 +11,7 @@ from sqlalchemy.sql.elements import BinaryExpression, Cast
 from sqlalchemy import not_, func, text, Function, and_
 from sqlalchemy.dialects.postgresql import CITEXT
 from operator import gt, ge, lt, le, ne, eq
+import pyotp
 
 # from models import Sourcetext, Desttext
 # from functions.additional_class import ExtendedDate
@@ -156,11 +157,62 @@ os.environ['AWS_DEFAULT_REGION'] = 'ap-southeast-1'
 """
 # local_storage = threading.local()
 local_storage = AsyncLocal()
+session_storage = AsyncLocal()
 
 s3_bucket_name = 'elasticbeanstalk-ap-southeast-1-341938954922'
 lambda_flag = False
-
 # pd.options.display.min_rows = 100
+
+
+
+def stash_all_local_storage(session_name):
+    if not hasattr(session_storage, "session_list"):
+        session_storage.session_list = {}
+    session_storage.session_list[session_name] = local_storage._ctx.get().copy()
+
+def restore_all_local_storage(session_name):
+    local_storage._ctx.set(session_storage.session_list[session_name].copy())
+
+def run_program_session(hotel_schema: str, function_name: str, input_data: tuple) -> dict:
+    output_data = {}
+
+    stash_all_local_storage("original")
+    local_storage.clear()
+
+    if hotel_schema in session_storage.session_list:
+        restore_all_local_storage(hotel_schema)
+        print("restore " + hotel_schema)
+    else:
+        initialize_local_storage()
+
+        set_db_and_schema(hotel_schema)
+        if not local_storage.db_session:
+            restore_all_local_storage("original")
+            # TODO: error handling
+            return {}
+    
+    module_name = "functions." + function_name
+    if importlib.util.find_spec(module_name):
+        module = importlib.import_module(module_name)
+        if hasattr(module, function_name):
+            obj = getattr(module, function_name)
+            output_data = obj(*input_data)
+    else:
+        restore_all_local_storage("original")
+
+        raise ImportError(f"Function {function_name} not found in module {module_name}")
+
+    if local_storage.db_session:
+        try:
+            local_storage.db_session.commit()
+        except Exception:
+            local_storage.db_session.rollback()
+            raise
+
+    stash_all_local_storage(hotel_schema)
+    restore_all_local_storage("original")
+
+    return output_data
 
 def initialize_local_storage():
     local_storage.combo_flag = False    
@@ -1433,6 +1485,7 @@ def get_db_url(hotelCode):
     # return "postgresql://postgres:shadow2010@localhost:5432/qctest"
 
 
+
 def set_db_and_schema(hotelCode):
     from models import Htparam
 
@@ -1716,6 +1769,15 @@ def chr_unicode(input_char):
         output_char = ""
 
     return output_char
+
+def check_totp(secret_key):
+    otp_code = ""
+    try:
+        totp = pyotp.TOTP(secret_key)
+        otp_code = totp.now()
+    except Exception as e:
+        otp_code = ""
+    return otp_code
 
 #TODO
 def translateExtended(ipCOriText, ipCContext, ipCDelimiter):
