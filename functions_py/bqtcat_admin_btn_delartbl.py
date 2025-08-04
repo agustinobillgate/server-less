@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 4/8/2025
+# if available
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Bediener
@@ -18,7 +21,11 @@ def bqtcat_admin_btn_delartbl(rec_id:int):
 
 
     queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
-
+    # Rd 4/8/2025
+    # if available
+    if queasy is None:
+        return generate_output()
+    
     bediener = get_cache (Bediener, {"user_group": [(eq, int (queasy.char1))],"flag": [(eq, 0)]})
 
     if bediener:

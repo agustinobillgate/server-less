@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd, 4/8/2025
+# if available
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -22,6 +26,9 @@ def fa_stockin_btn_pocancelbl(rec_id:int):
 
 
     fa_op = get_cache (Fa_op, {"_recid": [(eq, rec_id)]})
+    # Rd 4/8/2025
+    if fa_op is None:
+        return generate_output()
 
     fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, fa_op.nr)]})
 

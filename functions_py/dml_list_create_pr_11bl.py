@@ -237,4 +237,4 @@ def dml_list_create_pr_11bl(c_list_data:[C_list], s_list_data:[S_list], curr_dep
         buffer_copy(l_orderhdr, t_l_orderhdr)
         t_l_orderhdr.rec_id = l_orderhdr._recid
 
-        return generate_output()
+    return generate_output()
