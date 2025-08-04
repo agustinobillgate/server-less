@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 4/8/2025
+# if available
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -17,8 +21,8 @@ def rmcat_rate_btn_delbl(rec_id:int):
 
 
     katpreis = get_cache (Katpreis, {"_recid": [(eq, rec_id)]})
-    pass
-    db_session.delete(katpreis)
-    pass
-
+    # Rd, 4/8 2025
+    if katpreis:
+        db_session.delete(katpreis)
+    
     return generate_output()
