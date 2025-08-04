@@ -1,0 +1,32 @@
+{
+    "Bediener": {
+        "read": [
+            "username",
+            "nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [],
+        "write": []
+    },
+    "Res_history": {
+        "read": [
+            "nr",
+            "datum",
+            "zeit",
+            "aenderung",
+            "action",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Paramtext": {
+        "read": [
+            "ptexte",
+            "_recid"
+        ],
+        "write": []
+    }
+}

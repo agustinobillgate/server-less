@@ -4814,8 +4814,8 @@ def convert_files(read_table_usage_info=False):
     # source_file_path = file_path + "check-p-files2/"
     # source_file_path = file_path + "check-p-files3/"
 
-    source_file_path = file_path + "check-p-files2/"
-    target_file_path = file_path + "converted2/"
+    # source_file_path = file_path + "check-p-files2/"
+    # target_file_path = file_path + "converted2/"
 
     # source_file_path = file_path + "check-p-files/"
     # target_file_path = file_path + "converted2/"

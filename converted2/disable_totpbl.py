@@ -1,9 +1,8 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.118
 #-----------------------------------------
-# Rd 29/7/2025
-# gitlab: 991
-# UNIX Command
+# Rd, 4/8/2025
 #-----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bediener, Queasy, Res_history, Paramtext
@@ -13,6 +12,7 @@ def disable_totpbl(user_init:string, user_init_will_disable:string, userotp:stri
     prepare_cache ([Bediener, Res_history, Paramtext])
 
     result_message = ""
+    # totpok = FALSE
     totpok = False
     epoch_signature = 0
     signature_list_data = []
@@ -200,24 +200,25 @@ def disable_totpbl(user_init:string, user_init_will_disable:string, userotp:stri
                 return generate_output()
             else:
                 secretkey = queasy.char2
-                filename = "check_totp_" + userotp + ".txt"
+                # filename = "check_totp_" + userotp + ".txt"
 
-                if OPSYS.lower()  == ("WIN32").lower() :
-                    cmd = "wsl oathtool --totp -b " + secretkey + " > " + filename
-                    OS_COMMAND SILENT VALUE (cmd)
-                else:
-                    foldername = "/usr1/vhp/tmp/totp/"
-                    UNIX SILENT VALUE ("mkdir /usr1/vhp")
-                    UNIX SILENT VALUE ("mkdir /usr1/vhp/tmp")
-                    UNIX SILENT VALUE ("mkdir " + foldername)
-                    filename = foldername + filename
-                    cmd = "oathtool --totp -b " + secretkey + " > " + filename
-                    UNIX SILENT VALUE (cmd)
-                    INPUT FROM VALUE (filename)
-                    IMPORT UNFORMATTED result
-                    INPUT CLOSE
-                    OS_DELETE VALUE (filename)
-                    result = trim(result)
+                # if OPSYS.lower()  == ("WIN32").lower() :
+                #     cmd = "wsl oathtool --totp -b " + secretkey + " > " + filename
+                #     OS_COMMAND SILENT VALUE (cmd)
+                # else:
+                #     foldername = "/usr1/vhp/tmp/totp/"
+                #     UNIX SILENT VALUE ("mkdir /usr1/vhp")
+                #     UNIX SILENT VALUE ("mkdir /usr1/vhp/tmp")
+                #     UNIX SILENT VALUE ("mkdir " + foldername)
+                #     filename = foldername + filename
+                #     cmd = "oathtool --totp -b " + secretkey + " > " + filename
+                #     UNIX SILENT VALUE (cmd)
+                #     INPUT FROM VALUE (filename)
+                #     IMPORT UNFORMATTED result
+                #     INPUT CLOSE
+                #     OS_DELETE VALUE (filename)
+                #     result = trim(result)
+                result = check_otp(secretkey)
 
                     if userotp.lower()  == (result).lower() :
                         totpok = True
