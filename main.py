@@ -579,7 +579,7 @@ update_field_mapping = {
     
     "postdate": ["postDate", "PostDate"],
     "avail-addvat":"avail-addVAT",
-    "availAddvat": ["availAddVat","availAddVat","availAddVat"],
+    "availAddvat": ["availAddVat","availAddVAT","availAddVat"],
    
 
     "readequipment":"readEquipment",

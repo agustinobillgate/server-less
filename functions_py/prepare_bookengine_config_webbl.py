@@ -118,14 +118,21 @@ def prepare_bookengine_config_webbl(bookengid:int):
             t_list.delaypushbook = 60
 
     queasy = get_cache (Queasy, {"key": [(eq, 159)],"number1": [(eq, bookengid)]})
-
+    # Rd 3/8/2025
+    # if not avail return
+    if queasy is None:
+        return generate_output()
     if queasy:
         bookeng_name = queasy.char1
     else:
         return generate_output()
 
     queasy = get_cache (Queasy, {"key": [(eq, 160)],"number1": [(eq, bookengid)]})
-
+    # Rd 3/8/2025
+    # if not avail return
+    if queasy is None:
+        return generate_output()
+    
     if queasy:
         t_list = T_list()
         t_list_data.append(t_list)
