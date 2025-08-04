@@ -59,11 +59,12 @@ def prepare_ts_restinvbl(pvilanguage:int, curr_dept:int, curr_printer:int, user_
         nonlocal pvilanguage, curr_dept, curr_printer, user_init_str, transdate
         nonlocal bill_guest
 
-
         nonlocal hbill, t_kellner, bill_guest
         nonlocal hbill_data, t_kellner_data
-
-        return {"mealcoupon_cntrl": mealcoupon_cntrl, "must_print": must_print, "zero_flag": zero_flag, "multi_cash": multi_cash, "cancel_exist": cancel_exist, "msg_str": msg_str, "disc_art1": disc_art1, "disc_art2": disc_art2, "disc_art3": disc_art3, "mi_ordertaker": mi_ordertaker, "price_decimal": price_decimal, "curr_local": curr_local, "curr_foreign": curr_foreign, "double_currency": double_currency, "foreign_rate": foreign_rate, "exchg_rate": exchg_rate, "b_title": b_title, "deptname": deptname, "p_223": p_223, "curr_waiter": curr_waiter, "fl_code": fl_code, "pos1": pos1, "pos2": pos2, "cashless_flag": cashless_flag, "hbill": hbill_data, "t-kellner": t_kellner_data}
+        # Rd 4/8/2025
+        # p451 sementara
+        # return {"mealcoupon_cntrl": mealcoupon_cntrl, "must_print": must_print, "zero_flag": zero_flag, "multi_cash": multi_cash, "cancel_exist": cancel_exist, "msg_str": msg_str, "disc_art1": disc_art1, "disc_art2": disc_art2, "disc_art3": disc_art3, "mi_ordertaker": mi_ordertaker, "price_decimal": price_decimal, "curr_local": curr_local, "curr_foreign": curr_foreign, "double_currency": double_currency, "foreign_rate": foreign_rate, "exchg_rate": exchg_rate, "b_title": b_title, "deptname": deptname, "p_223": p_223, "curr_waiter": curr_waiter, "fl_code": fl_code, "pos1": pos1, "pos2": pos2, "cashless_flag": cashless_flag, "hbill": hbill_data, "t-kellner": t_kellner_data}
+        return {"p451": " ", "mealcoupon_cntrl": mealcoupon_cntrl, "must_print": must_print, "zero_flag": zero_flag, "multi_cash": multi_cash, "cancel_exist": cancel_exist, "msg_str": msg_str, "disc_art1": disc_art1, "disc_art2": disc_art2, "disc_art3": disc_art3, "mi_ordertaker": mi_ordertaker, "price_decimal": price_decimal, "curr_local": curr_local, "curr_foreign": curr_foreign, "double_currency": double_currency, "foreign_rate": foreign_rate, "exchg_rate": exchg_rate, "b_title": b_title, "deptname": deptname, "p_223": p_223, "curr_waiter": curr_waiter, "fl_code": fl_code, "pos1": pos1, "pos2": pos2, "cashless_flag": cashless_flag, "hbill": hbill_data, "t-kellner": t_kellner_data}
 
     def chg_billdate(message_flag:bool):
 

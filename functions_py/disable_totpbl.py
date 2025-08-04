@@ -1,8 +1,6 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.118
 #-----------------------------------------
-# Rd 29/7/2025
-# gitlab: 991
-# UNIX Command
+# Rd, 4/8/2025
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -13,6 +11,7 @@ def disable_totpbl(user_init:string, user_init_will_disable:string, userotp:stri
     prepare_cache ([Bediener, Res_history, Paramtext])
 
     result_message = ""
+    # totpok = FALSE
     totpok = False
     epoch_signature = 0
     signature_list_data = []
@@ -200,60 +199,61 @@ def disable_totpbl(user_init:string, user_init_will_disable:string, userotp:stri
                 return generate_output()
             else:
                 secretkey = queasy.char2
-                filename = "check_totp_" + userotp + ".txt"
+                # filename = "check_totp_" + userotp + ".txt"
 
-                if OPSYS.lower()  == ("WIN32").lower() :
-                    cmd = "wsl oathtool --totp -b " + secretkey + " > " + filename
-                    OS_COMMAND SILENT VALUE (cmd)
+                # if OPSYS.lower()  == ("WIN32").lower() :
+                #     cmd = "wsl oathtool --totp -b " + secretkey + " > " + filename
+                #     OS_COMMAND SILENT VALUE (cmd)
+                # else:
+                #     foldername = "/usr1/vhp/tmp/totp/"
+                #     UNIX SILENT VALUE ("mkdir /usr1/vhp")
+                #     UNIX SILENT VALUE ("mkdir /usr1/vhp/tmp")
+                #     UNIX SILENT VALUE ("mkdir " + foldername)
+                #     filename = foldername + filename
+                #     cmd = "oathtool --totp -b " + secretkey + " > " + filename
+                #     UNIX SILENT VALUE (cmd)
+                #     INPUT FROM VALUE (filename)
+                #     IMPORT UNFORMATTED result
+                #     INPUT CLOSE
+                #     OS_DELETE VALUE (filename)
+                #     result = trim(result)
+                result = check_totp(secretkey)
+
+                if userotp.lower()  == (result).lower() :
+                    totpok = True
+
+                    bediener = get_cache (Bediener, {"userinit": [(eq, user_init_will_disable)]})
+
+                    if bediener:
+
+                        queasy = get_cache (Queasy, {"key": [(eq, 341)],"char1": [(eq, bediener.username)]})
+
+                        if queasy:
+                            pass
+                            db_session.delete(queasy)
+                            res_history = Res_history()
+                            db_session.add(res_history)
+
+                            res_history.nr = opr_bediener.nr
+                            res_history.datum = get_current_date()
+                            res_history.zeit = get_current_time_in_seconds()
+                            res_history.aenderung = "Disable TOTP For User: " + bediener.username + " reason: " + reason
+                            res_history.action = "User"
+
+
+                            result_message = "TOTP Disable Succesfull"
+                        else:
+                            result_message = "TOTP Already Disabled"
                 else:
-                    foldername = "/usr1/vhp/tmp/totp/"
-                    UNIX SILENT VALUE ("mkdir /usr1/vhp")
-                    UNIX SILENT VALUE ("mkdir /usr1/vhp/tmp")
-                    UNIX SILENT VALUE ("mkdir " + foldername)
-                    filename = foldername + filename
-                    cmd = "oathtool --totp -b " + secretkey + " > " + filename
-                    UNIX SILENT VALUE (cmd)
-                    INPUT FROM VALUE (filename)
-                    IMPORT UNFORMATTED result
-                    INPUT CLOSE
-                    OS_DELETE VALUE (filename)
-                    result = trim(result)
+                    result_message = "TOTP Not Match"
+                value_list = Value_list()
+                value_list_data.append(value_list)
 
-                    if userotp.lower()  == (result).lower() :
-                        totpok = True
-
-                        bediener = get_cache (Bediener, {"userinit": [(eq, user_init_will_disable)]})
-
-                        if bediener:
-
-                            queasy = get_cache (Queasy, {"key": [(eq, 341)],"char1": [(eq, bediener.username)]})
-
-                            if queasy:
-                                pass
-                                db_session.delete(queasy)
-                                res_history = Res_history()
-                                db_session.add(res_history)
-
-                                res_history.nr = opr_bediener.nr
-                                res_history.datum = get_current_date()
-                                res_history.zeit = get_current_time_in_seconds()
-                                res_history.aenderung = "Disable TOTP For User: " + bediener.username + " reason: " + reason
-                                res_history.action = "User"
+                value_list.var_name = "totpok"
+                value_list.value_str = to_string(totpok)
 
 
-                                result_message = "TOTP Disable Succesfull"
-                            else:
-                                result_message = "TOTP Already Disabled"
-                    else:
-                        result_message = "TOTP Not Match"
-                    value_list = Value_list()
-                    value_list_data.append(value_list)
-
-                    value_list.var_name = "totpok"
-                    value_list.value_str = to_string(totpok)
-
-
-                    epoch_signature, signature_list_data = create_signature(opr_bediener.username, value_list_data)
+                epoch_signature, signature_list_data = create_signature(opr_bediener.username, value_list_data)
     else:
         totpok = False
         result_message = "User Not Found!"

@@ -1,0 +1,41 @@
+{
+    "Reslin_queasy": {
+        "read": [],
+        "write": []
+    },
+    "Dml_artdep": {
+        "read": [],
+        "write": []
+    },
+    "Paramtext": {
+        "read": [
+            "ptexte",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Dml_art": {
+        "read": [
+            "userinit",
+            "chginit",
+            "artnr",
+            "datum",
+            "anzahl",
+            "einzelpreis",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "key",
+            "number1",
+            "number2",
+            "number3",
+            "date1",
+            "char1",
+            "_recid"
+        ],
+        "write": []
+    }
+}

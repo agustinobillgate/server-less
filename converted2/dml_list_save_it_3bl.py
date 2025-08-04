@@ -1,9 +1,3 @@
-#using conversion tools version: 1.0.0.61
-#-----------------------------------------
-# Rd 31/7/2025
-# gitlab: 566
-# remarks Unix Command 
-#-----------------------------------------
 #using conversion tools version: 1.0.0.118
 
 from functions.additional_functions import *
