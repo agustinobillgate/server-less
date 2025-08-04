@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 04/08/2025
+# gitlab: -
+# remarks: if available
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -191,7 +195,10 @@ def s_transform_btn_go_1bl(op_list_data:[Op_list], rec_id:int, curr_lager:int, c
 
 
     l_ophdr = get_cache (L_ophdr, {"_recid": [(eq, rec_id)]})
-    pass
+    # Rd 04/08/2025
+    if l_ophdr is None:
+        return generate_output()
+    
     l_ophdr.datum = transdate
     l_ophdr.lager_nr = curr_lager
 
