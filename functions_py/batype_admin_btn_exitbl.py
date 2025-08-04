@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 4/8/2025
+# if available, bezeichnung
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Ba_typ
@@ -35,11 +38,13 @@ def batype_admin_btn_exitbl(icase:int, rec_id:int, ba_list_data:[Ba_list]):
 
 
         ba_typ.typ_id = ba_list.typ_id
-        ba_typ.bezeichnung = ba_list.bezeich
+        ba_typ.bezeichnung = ba_list.bezeichnung
 
 
     ba_list = query(ba_list_data, first=True)
-
+    if ba_list is None:
+        return generate_output()
+    
     if icase == 1:
         ba_typ = Ba_typ()
         db_session.add(ba_typ)
@@ -48,7 +53,10 @@ def batype_admin_btn_exitbl(icase:int, rec_id:int, ba_list_data:[Ba_list]):
     else:
 
         ba_typ = get_cache (Ba_typ, {"_recid": [(eq, rec_id)]})
-        ba_typ.bezeichnung = ba_list.bezeich
+        # Rd 4/8/2025
+        # if available
+        if ba_typ:
+            ba_typ.bezeichnung = ba_list.bezeich
         pass
 
     return generate_output()
