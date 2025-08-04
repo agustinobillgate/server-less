@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Andika 04/08/2025
+# gitlab: -
+# remarks: -
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -53,9 +57,10 @@ def pr_list_btn_del_1bl(s_list_data:[S_list], s_list_artnr:int, billdate:date, u
 
         if not l_order:
             l_order = L_order()
-            db_session.add(l_order)
+            if l_order:
+                db_session.add(l_order)
 
-            l_order.docu_nr = docu_nr
+                l_order.docu_nr = docu_nr
 
 
         l_order.loeschflag = 2
@@ -70,9 +75,10 @@ def pr_list_btn_del_1bl(s_list_data:[S_list], s_list_artnr:int, billdate:date, u
             if s1_list.artnr > 0:
 
                 l_order = get_cache (L_order, {"_recid": [(eq, s1_list.s_recid)]})
-                l_order.loeschflag = 2
-                l_order.lieferdatum_eff = billdate
-                l_order.angebot_lief[2] = bediener.nr
+                if l_order:
+                    l_order.loeschflag = 2
+                    l_order.lieferdatum_eff = billdate
+                    l_order.angebot_lief[2] = bediener.nr
 
 
                 pass

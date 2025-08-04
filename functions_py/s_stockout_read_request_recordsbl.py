@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Andika 04/08/2025
+# gitlab: -
+# remarks: -
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -142,6 +146,7 @@ def s_stockout_read_request_recordsbl(rec_id:int, out_type:int, t_lschein:string
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
     l_ophdr = get_cache (L_ophdr, {"_recid": [(eq, rec_id)]})
-    read_request_records()
+    if l_ophdr:
+        read_request_records()
 
-    return generate_output()
+        return generate_output()
