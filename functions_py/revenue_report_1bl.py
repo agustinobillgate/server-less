@@ -1,6 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------
 # Rd, 2/8/2025
+# Optimasi
 #-----------------------------------------
 
 from functions.additional_functions import *
@@ -199,7 +200,7 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
 
         for hoteldpt in db_session.query(Hoteldpt).order_by(Hoteldpt.num).all():
             curr_dept = hoteldpt.depart
-
+            print("Dept:", curr_dept)
             if dept == -1:
                 dept = hoteldpt.num
 
@@ -216,7 +217,6 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
                 cl_list.lm_mnet =  to_decimal(lm_mnet)
                 cl_list.ly_mnet =  to_decimal(ly_mnet)
                 cl_list.ly_ynet =  to_decimal(ly_ynet)
-
 
                 cl_list = Cl_list()
                 cl_list_data.append(cl_list)
@@ -264,10 +264,9 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
 
                         if zwkum_list:
                             cl_list.bezeich = zwkum_list.bezeich
+
                     for datum in date_range(jan1,to_date) :
-
                         if datum >= from_date:
-
                             for budget_list in query(budget_list_data, filters=(lambda budget_list: budget_list.departement == art_list.departement and budget_list.artnr == art_list.artnr and budget_list.datum == datum)):
                                 cl_list.mbudget =  to_decimal(cl_list.mbudget) + to_decimal(budget_list.betrag)
                                 mbudget =  to_decimal(mbudget) + to_decimal(budget_list.betrag)
@@ -399,7 +398,6 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
         cl_list.lm_mnet =  to_decimal(lm_mnet)
         cl_list.ly_mnet =  to_decimal(ly_mnet)
         cl_list.ly_ynet =  to_decimal(ly_ynet)
-
 
         cl_list = Cl_list()
         cl_list_data.append(cl_list)

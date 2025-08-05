@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------
+# Rd 5/8/2025
+# loadRmcompSegmentList1
+# debug, data output beda.
+# Optimasi
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -188,13 +193,48 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
         tmpdate = d1 + timedelta(days=1)
         bydate = (d2 - tmpdate).days
         tdate = d2
-        while bydate != 0:
 
+        print("Bydate:", bydate, d1, d2)
+        while bydate != 0:
             genstat_obj_list = {}
             genstat = Genstat()
             guest = Guest()
-            for genstat.datum, genstat.zinr, genstat.segmentcode, genstat.resstatus, genstat.gastnr, genstat.argt, genstat.ratelocal, genstat.erwachs, genstat.logis, genstat.zipreis, genstat.gratis, genstat.kind1, genstat.kind2, genstat._recid, guest.karteityp, guest.phonetik3, guest.name, guest.vorname1, guest._recid in db_session.query(Genstat.datum, Genstat.zinr, Genstat.segmentcode, Genstat.resstatus, Genstat.gastnr, Genstat.argt, Genstat.ratelocal, Genstat.erwachs, Genstat.logis, Genstat.zipreis, Genstat.gratis, Genstat.kind1, Genstat.kind2, Genstat._recid, Guest.karteityp, Guest.phonetik3, Guest.name, Guest.vorname1, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr)).filter(
-                     (Genstat.datum == tdate) & (Genstat.zinr != "") & (Genstat.gastnr != 0) & (Genstat.resstatus != 13) & (Genstat.segmentcode != 0) & (Genstat.res_logic[inc_value(1)])).order_by(Guest.name, Guest.gastnr).all():
+            # for genstat.datum, genstat.zinr, genstat.segmentcode, genstat.resstatus, genstat.gastnr, genstat.argt, \
+            #     genstat.ratelocal, genstat.erwachs, genstat.logis, genstat.zipreis, genstat.gratis, genstat.kind1, \
+            #     genstat.kind2, genstat._recid, guest.karteityp, guest.phonetik3, guest.name, guest.vorname1, guest._recid \
+            #         in db_session.query(Genstat.datum, Genstat.zinr, Genstat.segmentcode, Genstat.resstatus, Genstat.gastnr, \
+            #                             Genstat.argt, Genstat.ratelocal, Genstat.erwachs, Genstat.logis, Genstat.zipreis, \
+            #                             Genstat.gratis, Genstat.kind1, Genstat.kind2, Genstat._recid, Guest.karteityp, \
+            #                             Guest.phonetik3, Guest.name, Guest.vorname1, Guest._recid)\
+            #                         .join(Guest,(Guest.gastnr == Genstat.gastnr))\
+            #                         .filter(
+            #                             (Genstat.datum == tdate) & 
+            #                             (Genstat.zinr != "") & 
+            #                             (Genstat.gastnr != 0) & 
+            #                             (Genstat.resstatus != 13) & 
+            #                             (Genstat.segmentcode != 0) & 
+            #                             (Genstat.res_logic[inc_value(1)]))\
+            #                         .order_by(Guest.name, Guest.gastnr).all():
+            
+            recs = db_session.query(Genstat.datum, Genstat.zinr, Genstat.segmentcode, Genstat.resstatus, Genstat.gastnr, \
+                                        Genstat.argt, Genstat.ratelocal, Genstat.erwachs, Genstat.logis, Genstat.zipreis, \
+                                        Genstat.gratis, Genstat.kind1, Genstat.kind2, Genstat._recid, Guest.karteityp, \
+                                        Guest.phonetik3, Guest.name, Guest.vorname1, Guest._recid)\
+                                    .join(Guest,(Guest.gastnr == Genstat.gastnr))\
+                                    .filter(
+                                        (Genstat.datum == tdate) & 
+                                        (Genstat.zinr != "") & 
+                                        (Genstat.gastnr != 0) & 
+                                        (Genstat.resstatus != 13) & 
+                                        (Genstat.segmentcode != 0) & 
+                                        (Genstat.res_logic[inc_value(1)]))\
+                                    .order_by(Guest.name, Guest.gastnr).all()
+            
+            for genstat.datum, genstat.zinr, genstat.segmentcode, genstat.resstatus, genstat.gastnr, genstat.argt, \
+                genstat.ratelocal, genstat.erwachs, genstat.logis, genstat.zipreis, genstat.gratis, genstat.kind1, \
+                genstat.kind2, genstat._recid, guest.karteityp, guest.phonetik3, guest.name, guest.vorname1, guest._recid \
+                    in recs:
+                
                 if genstat_obj_list.get(genstat._recid):
                     continue
                 else:
@@ -207,7 +247,6 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
                     do_dat = False
 
                 zimmer = get_cache (Zimmer, {"zinr": [(eq, genstat.zinr)]})
-
                 segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
 
                 if cardtype < 3:
@@ -516,7 +555,6 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
                         gty_logis =  to_decimal(gty_logis) + to_decimal(s_list.y_logis)
                         gty_avrgrate =  to_decimal(gty_avrgrate) + to_decimal(s_list.y_avrgrate)
                         gty_revenue =  to_decimal(gty_revenue) + to_decimal(s_list.revenue)
-
 
             tdate = tdate - timedelta(days=1)
             bydate = bydate - 1
@@ -2339,6 +2377,7 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
         from_date = date_mdy(1, 1, yy)
         f_date = date_mdy(get_month(t_date) , 1, get_year(t_date))
 
+    print("From/To:", from_date, to_date, ci_date)
     if (from_date < ci_date) and (to_date < ci_date):
 
         if sorttype == 0 or sorttype == 1:
@@ -2352,8 +2391,8 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
             create_umsatz2(from_date, to_date)
             create_output2()
 
-    elif (from_date < ci_date) and (to_date >= ci_date):
 
+    elif (from_date < ci_date) and (to_date >= ci_date):
         if sorttype == 0 or sorttype == 1:
             tmpdate = ci_date - timedelta(days=1)
             create_umsatz(from_date, tmpdate)
@@ -2370,7 +2409,6 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
             create_output2()
 
     elif (from_date >= ci_date) and (to_date >= ci_date):
-
         if sorttype == 0 or sorttype == 1:
             create_fcast(from_date, to_date)
 
