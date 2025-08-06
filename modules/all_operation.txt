@@ -1045,6 +1045,9 @@ cr_availabilitybl
 check_outstandbl
 mkres_gname_1bl
 prepare_gcf_historybl
+prepare_gcf_history_1bl
+prepare_gcf_history_centralizedbl
+repeat_glist_centralized_webbl
 gcf_history_1bl
 gcf_rsvlistbl
 prepare_gcf_infobl
@@ -3407,3 +3410,4 @@ messages_btn_messbl
 messages_btn_printbl
 messages_update_reslinebl
 get_messages_webbl
+change_pin_screen_webbl

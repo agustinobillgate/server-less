@@ -219,7 +219,8 @@ def repeat_glist_1bl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
 
 
                         fnet_lodg, net_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, 
-                        tot_vat, tot_service = get_output(get_room_breakdown(res_line._recid, datum, curr_i, datum))
+                        if datum is not None:
+                            tot_vat, tot_service = get_output(get_room_breakdown(res_line._recid, datum, curr_i, datum))
                         g_list.lodging =  to_decimal(g_list.lodging) + to_decimal(net_lodg)
 
                     if waehrung:
