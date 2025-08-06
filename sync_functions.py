@@ -12,6 +12,14 @@ def get_current_commit_hash():
     except subprocess.CalledProcessError:
         return None
 
+def get_current_branch():
+    try:
+        result = subprocess.run(['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
+                                capture_output=True, text=True, check=True)
+        return result.stdout.strip()
+    except subprocess.CalledProcessError:
+        return None
+
 def get_git_log_between(start_hash, end_hash):
     try:
         result = subprocess.run(['git', 'log', f'{start_hash}..{end_hash}', '--oneline'],
@@ -28,9 +36,14 @@ def get_git_diff_between(start_hash, end_hash):
     except subprocess.CalledProcessError:
         return "⚠️ Failed to retrieve git diff."
 
-def git_pull(branch='production', log_dir='logs'):
+def git_pull(log_dir='logs'):
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, 'git_pull_history.log')
+
+    branch = get_current_branch()
+    if not branch:
+        print("❌ Failed to detect current git branch.")
+        return False
 
     before_hash = get_current_commit_hash()
 
@@ -40,7 +53,6 @@ def git_pull(branch='production', log_dir='logs'):
 
         after_hash = get_current_commit_hash()
 
-        # Prepare git log and diff (only if commit changed)
         commit_changed = before_hash != after_hash
         git_log = get_git_log_between(before_hash, after_hash) if commit_changed else "No new commits."
         git_diff = get_git_diff_between(before_hash, after_hash) if commit_changed else "No changes in code."
@@ -52,13 +64,10 @@ def git_pull(branch='production', log_dir='logs'):
             log.write(f"After Commit : {after_hash}\n\n")
             log.write("Output from `git pull`:\n")
             log.write(result.stdout + "\n")
-
             log.write("Git Log (oneline summary):\n")
             log.write(git_log + "\n\n")
-
             log.write("Git Diff (code changes):\n")
             log.write(git_diff + "\n")
-
             log.write("="*60 + "\n")
 
         print(result.stdout)
@@ -117,8 +126,8 @@ def main():
     os.makedirs(logs_dir, exist_ok=True)
     log_file = os.path.join(logs_dir, 'sync_functions_timestamps.log')
 
-    # Step 0: Git Pull
-    if not git_pull(branch='production', log_dir=logs_dir):
+    # Step 0: Git Pull (Dynamic Branch)
+    if not git_pull(log_dir=logs_dir):
         print("❌ Aborting due to git pull failure.")
         sys.exit(1)
 
