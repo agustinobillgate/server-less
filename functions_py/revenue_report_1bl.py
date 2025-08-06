@@ -1,18 +1,19 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.118
 #-----------------------------------------
 # Rd, 2/8/2025
 # Optimasi
 #-----------------------------------------
 
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.calc_servvat import calc_servvat
-from models import Artikel, Budget, Zwkum, Umsatz, Hoteldpt, Ekum, Htparam, Kontplan
+from models import Htparam, Hoteldpt, Artikel, Zwkum, Budget, Umsatz, Ekum, Kontplan
 
 def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date:date, to_date:date):
 
-    prepare_cache ([Htparam])
+    prepare_cache ([Htparam, Hoteldpt, Artikel, Zwkum, Budget, Umsatz, Ekum])
 
     output_list_data = []
     fact1:int = 0
@@ -62,19 +63,12 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
     year_ly_tdate:int = 0
     num_year_datum:int = 0
     tmp_day:date = None
-    artikel = budget = zwkum = umsatz = hoteldpt = ekum = htparam = kontplan = None
+    htparam = hoteldpt = artikel = zwkum = budget = umsatz = ekum = kontplan = None
 
-    output_list = cl_list = calc_list = art_list = budget_list = zwkum_list = umsatz_list = hotel_list = ekum_list = None
+    output_list = cl_list = None
 
     output_list_data, Output_list = create_model("Output_list", {"flag":string, "str":string, "bezeich":string, "tnett":Decimal, "mtd":Decimal, "mtd_budget":Decimal, "ytd_budget":Decimal, "lmon_mtd":Decimal, "lyear_mtd":Decimal, "lyear_ytd":Decimal})
     cl_list_data, Cl_list = create_model("Cl_list", {"flag":string, "artnr":int, "kum":int, "dept":int, "bezeich":string, "dnet":Decimal, "mnet":Decimal, "mbudget":Decimal, "ynet":Decimal, "lm_mnet":Decimal, "ly_mnet":Decimal, "ly_ynet":Decimal})
-    calc_list_data, Calc_list = create_model("Calc_list", {"dept":int, "artnr":int, "datum":date, "serv_code":int, "mwst_code":int, "serv":Decimal, "vat":Decimal, "fact":Decimal})
-    art_list_data, Art_list = create_model_like(Artikel)
-    budget_list_data, Budget_list = create_model_like(Budget)
-    zwkum_list_data, Zwkum_list = create_model_like(Zwkum)
-    umsatz_list_data, Umsatz_list = create_model_like(Umsatz)
-    hotel_list_data, Hotel_list = create_model_like(Hoteldpt)
-    ekum_list_data, Ekum_list = create_model_like(Ekum)
 
 
     set_cache(Zwkum, None,[["zknr", "departement"]], True,[],[])
@@ -83,67 +77,21 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal output_list_data, fact1, price_decimal, curr_dept, curr_art, bezeich, datum, ly_datum, jan1, ly_jan1, lm_fdate, lm_tdate, ly_fdate, ly_tdate, fact, ekum_serverless, dnet, mnet, ynet, lm_mnet, ly_mnet, ly_ynet, tdnet, tmnet, tynet, tlm_mnet, tly_mnet, tly_ynet, taxnr, servnr, do_it, vat, serv, nett_serv, nett_tax, nett_amt, dept, zwkum_serverless, serv_vat, mbudget, t_mbudget, tmp_month, year_ly_jan1, num_year_ly_jan1, year_ly_fdate, year_ly_tdate, num_year_datum, tmp_day, artikel, budget, zwkum, umsatz, hoteldpt, ekum, htparam, kontplan
+        nonlocal output_list_data, fact1, price_decimal, curr_dept, curr_art, bezeich, datum, ly_datum, jan1, ly_jan1, lm_fdate, lm_tdate, ly_fdate, ly_tdate, fact, ekum_serverless, dnet, mnet, ynet, lm_mnet, ly_mnet, ly_ynet, tdnet, tmnet, tynet, tlm_mnet, tly_mnet, tly_ynet, taxnr, servnr, do_it, vat, serv, nett_serv, nett_tax, nett_amt, dept, zwkum_serverless, serv_vat, mbudget, t_mbudget, tmp_month, year_ly_jan1, num_year_ly_jan1, year_ly_fdate, year_ly_tdate, num_year_datum, tmp_day, htparam, hoteldpt, artikel, zwkum, budget, umsatz, ekum, kontplan
         nonlocal sorttype, long_digit, short_flag, from_date, to_date
 
 
-        nonlocal output_list, cl_list, calc_list, art_list, budget_list, zwkum_list, umsatz_list, hotel_list, ekum_list
-        nonlocal output_list_data, cl_list_data, calc_list_data, art_list_data, budget_list_data, zwkum_list_data, umsatz_list_data, hotel_list_data, ekum_list_data
+        nonlocal output_list, cl_list
+        nonlocal output_list_data, cl_list_data
 
         return {"output-list": output_list_data}
 
+
     htparam = get_cache (Htparam, {"paramnr": [(eq, 479)]})
     serv_vat = htparam.flogical
-
-    for artikel in db_session.query(Artikel).filter(
-             ((Artikel.artart == 0) | (Artikel.artart == 8))).order_by(Artikel._recid).all():
-        art_list = Art_list()
-        art_list_data.append(art_list)
-
-        buffer_copy(artikel, art_list)
-
-    for zwkum in db_session.query(Zwkum).order_by(Zwkum._recid).all():
-        zwkum_list = Zwkum_list()
-        zwkum_list_data.append(zwkum_list)
-
-        buffer_copy(zwkum, zwkum_list)
-
-    for ekum in db_session.query(Ekum).order_by(Ekum._recid).all():
-        ekum_list = Ekum_list()
-        ekum_list_data.append(ekum_list)
-
-        buffer_copy(ekum, ekum_list)
-
-    for hoteldpt in db_session.query(Hoteldpt).order_by(Hoteldpt._recid).all():
-        hotel_list = Hotel_list()
-        hotel_list_data.append(hotel_list)
-
-        buffer_copy(hoteldpt, hotel_list)
     jan1 = date_mdy(1, 1, get_year(from_date))
     num_year_ly_jan1 = get_year(jan1) - 1
     ly_jan1 = date_mdy(1, 1, num_year_ly_jan1)
-
-    for budget in db_session.query(Budget).filter(
-             (Budget.datum >= from_date) & (Budget.datum <= to_date)).order_by(Budget._recid).all():
-
-        art_list = query(art_list_data, filters=(lambda art_list: art_list.artnr == budget.artnr and art_list.departement == budget.departement), first=True)
-
-        if art_list:
-            budget_list = Budget_list()
-            budget_list_data.append(budget_list)
-
-            buffer_copy(budget, budget_list)
-
-    for umsatz in db_session.query(Umsatz).filter(
-             (Umsatz.datum >= ly_jan1) & (Umsatz.datum <= to_date)).order_by(Umsatz._recid).all():
-
-        art_list = query(art_list_data, filters=(lambda art_list: art_list.artnr == umsatz.artnr and art_list.departement == umsatz.departement), first=True)
-
-        if art_list:
-            umsatz_list = Umsatz_list()
-            umsatz_list_data.append(umsatz_list)
-
-            buffer_copy(umsatz, umsatz_list)
 
     set_cache(Umsatz, (Umsatz.datum >= ly_jan1) & (Umsatz.datum <= to_date),[["artnr", "departement", "datum"]], True,[],[])
 
@@ -200,7 +148,7 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
 
         for hoteldpt in db_session.query(Hoteldpt).order_by(Hoteldpt.num).all():
             curr_dept = hoteldpt.depart
-            print("Dept:", curr_dept)
+
             if dept == -1:
                 dept = hoteldpt.num
 
@@ -217,6 +165,7 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
                 cl_list.lm_mnet =  to_decimal(lm_mnet)
                 cl_list.ly_mnet =  to_decimal(ly_mnet)
                 cl_list.ly_ynet =  to_decimal(ly_ynet)
+
 
                 cl_list = Cl_list()
                 cl_list_data.append(cl_list)
@@ -238,80 +187,61 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
             cl_list.bezeich = hoteldpt.depart
             zwkum_serverless = 0
 
-            for art_list in query(art_list_data, filters=(lambda art_list: art_list.departement == hoteldpt.num), sort_by=[("zwkum",False)]):
-                bezeich = to_string(art_list.artnr) + " - " + art_list.bezeich
+            for artikel in db_session.query(Artikel).filter(
+                     (Artikel.departement == hoteldpt.num) & ((Artikel.artart == 0) | (Artikel.artart == 8))).order_by(Artikel.zwkum).all():
+                bezeich = to_string(artikel.artnr) + " - " + artikel.bezeich
                 do_it = True
 
-                if (art_list.artnr == taxnr or art_list.artnr == servnr) and art_list.departement == 0:
+                if (artikel.artnr == taxnr or artikel.artnr == servnr) and artikel.departement == 0:
                     do_it = False
 
                 if do_it:
 
-                    if zwkum_serverless != art_list.zwkum:
-                        zwkum_serverless = art_list.zwkum
+                    if zwkum_serverless != artikel.zwkum:
+                        zwkum_serverless = artikel.zwkum
 
-                        zwkum_list = query(zwkum_list_data, filters=(lambda zwkum_list: zwkum_list.zknr == art_list.zwkum and zwkum_list.departement == art_list.departement), first=True)
+                        zwkum = get_cache (Zwkum, {"zknr": [(eq, artikel.zwkum)],"departement": [(eq, artikel.departement)]})
 
-                    cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.kum == art_list.zwkum and cl_list.dept == art_list.departement), first=True)
+                    cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.kum == artikel.zwkum and cl_list.dept == artikel.departement), first=True)
 
                     if not cl_list:
                         cl_list = Cl_list()
                         cl_list_data.append(cl_list)
 
-                        cl_list.kum = art_list.zwkum
-                        cl_list.artnr = art_list.artnr
-                        cl_list.dept = art_list.departement
+                        cl_list.kum = artikel.zwkum
+                        cl_list.artnr = artikel.artnr
+                        cl_list.dept = artikel.departement
 
-                        if zwkum_list:
-                            cl_list.bezeich = zwkum_list.bezeich
-
+                        if zwkum:
+                            cl_list.bezeich = zwkum.bezeich
                     for datum in date_range(jan1,to_date) :
+
                         if datum >= from_date:
-                            for budget_list in query(budget_list_data, filters=(lambda budget_list: budget_list.departement == art_list.departement and budget_list.artnr == art_list.artnr and budget_list.datum == datum)):
-                                cl_list.mbudget =  to_decimal(cl_list.mbudget) + to_decimal(budget_list.betrag)
-                                mbudget =  to_decimal(mbudget) + to_decimal(budget_list.betrag)
-                                t_mbudget =  to_decimal(t_mbudget) + to_decimal(budget_list.betrag)
 
-                        umsatz_list = query(umsatz_list_data, filters=(lambda umsatz_list: umsatz_list.artnr == art_list.artnr and umsatz_list.departement == art_list.departement and umsatz_list.datum == datum), first=True)
+                            budget = get_cache (Budget, {"departement": [(eq, artikel.departement)],"artnr": [(eq, artikel.artnr)],"datum": [(eq, datum)]})
 
-                        if umsatz_list:
+                            if budget:
+                                cl_list.mbudget =  to_decimal(cl_list.mbudget) + to_decimal(budget.betrag)
+                                mbudget =  to_decimal(mbudget) + to_decimal(budget.betrag)
+                                t_mbudget =  to_decimal(t_mbudget) + to_decimal(budget.betrag)
+
+                        umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, datum)]})
+
+                        if umsatz:
                             fact =  to_decimal("0")
                             serv =  to_decimal("0")
                             vat =  to_decimal("0")
 
-                            calc_list = query(calc_list_data, filters=(lambda calc_list: calc_list.dept == umsatz_list.departement and calc_list.artnr == umsatz_list.artnr and calc_list.datum == umsatz_list.datum and calc_list.serv_code == art_list.service_code and calc_list.mwst_code == art_list.mwst_code), first=True)
 
-                            if not calc_list:
-                                calc_list = Calc_list()
-                                calc_list_data.append(calc_list)
-
-                                calc_list.dept = umsatz_list.departement
-                                calc_list.artnr = umsatz_list.artnr
-                                calc_list.datum = umsatz_list.datum
-                                calc_list.serv_code = art_list.service_code
-                                calc_list.mwst_code = art_list.mwst_code
-
-
-                                serv, vat = get_output(calc_servvat(umsatz_list.departement, umsatz_list.artnr, umsatz_list.datum, art_list.service_code, art_list.mwst_code))
-                                calc_list.serv = serv
-                                calc_list.vat =  to_decimal(vat)
-                                fact =  to_decimal(1.00) + to_decimal(serv) + to_decimal(vat)
-                                fact =  to_decimal(fact) * to_decimal(fact1)
-                                calc_list.fact =  to_decimal(fact)
-
-
-                            else:
-                                serv =  to_decimal(calc_list.serv)
-                                vat =  to_decimal(calc_list.vat)
-                                fact =  to_decimal(calc_list.fact)
-
-
-                            nett_amt =  to_decimal(umsatz_list.betrag) / to_decimal(fact)
+                            serv, vat = get_output(calc_servvat(umsatz.departement, umsatz.artnr, umsatz.datum, artikel.service_code, artikel.mwst_code))
+                            fact =  to_decimal(1.00) + to_decimal(serv) + to_decimal(vat)
+                            fact =  to_decimal(fact) * to_decimal(fact1)
+                            nett_amt =  to_decimal(umsatz.betrag) / to_decimal(fact)
                             nett_serv = to_decimal(round(nett_amt * serv , price_decimal))
                             nett_tax = to_decimal(round(nett_amt * vat , price_decimal))
-                            nett_amt =  to_decimal(umsatz_list.betrag) - to_decimal(nett_serv) - to_decimal(nett_tax)
+                            nett_amt =  to_decimal(umsatz.betrag) - to_decimal(nett_serv) - to_decimal(nett_tax)
 
-                            if umsatz_list.datum == to_date:
+                            if umsatz.datum == to_date:
                                 cl_list.dnet =  to_decimal(cl_list.dnet) + to_decimal(nett_amt)
                                 dnet =  to_decimal(dnet) + to_decimal(nett_amt)
                                 tdnet =  to_decimal(tdnet) + to_decimal(nett_amt)
@@ -337,44 +267,21 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
                             num_year_datum = get_year(datum) - 1
                             ly_datum = date_mdy(get_month(datum) , get_day(datum) , num_year_datum)
 
-                            umsatz_list = query(umsatz_list_data, filters=(lambda umsatz_list: umsatz_list.artnr == art_list.artnr and umsatz_list.departement == art_list.departement and umsatz_list.datum == ly_datum), first=True)
+                            umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, ly_datum)]})
 
-                            if umsatz_list:
+                            if umsatz:
                                 fact =  to_decimal("0")
                                 serv =  to_decimal("0")
                                 vat =  to_decimal("0")
 
-                                calc_list = query(calc_list_data, filters=(lambda calc_list: calc_list.dept == umsatz_list.departement and calc_list.artnr == umsatz_list.artnr and calc_list.datum == umsatz_list.datum and calc_list.serv_code == art_list.service_code and calc_list.mwst_code == art_list.mwst_code), first=True)
 
-                                if not calc_list:
-                                    calc_list = Calc_list()
-                                    calc_list_data.append(calc_list)
-
-                                    calc_list.dept = umsatz_list.departement
-                                    calc_list.artnr = umsatz_list.artnr
-                                    calc_list.datum = umsatz_list.datum
-                                    calc_list.serv_code = art_list.service_code
-                                    calc_list.mwst_code = art_list.mwst_code
-
-
-                                    serv, vat = get_output(calc_servvat(umsatz_list.departement, umsatz_list.artnr, umsatz_list.datum, art_list.service_code, art_list.mwst_code))
-                                    calc_list.serv = serv
-                                    calc_list.vat =  to_decimal(vat)
-                                    fact =  to_decimal(1.00) + to_decimal(serv) + to_decimal(vat)
-                                    fact =  to_decimal(fact) * to_decimal(fact1)
-                                    calc_list.fact =  to_decimal(fact)
-
-
-                                else:
-                                    serv =  to_decimal(calc_list.serv)
-                                    vat =  to_decimal(calc_list.vat)
-                                    fact =  to_decimal(calc_list.fact)
-
-
-                                nett_amt =  to_decimal(umsatz_list.betrag) / to_decimal(fact)
+                                serv, vat = get_output(calc_servvat(umsatz.departement, umsatz.artnr, umsatz.datum, artikel.service_code, artikel.mwst_code))
+                                fact =  to_decimal(1.00) + to_decimal(serv) + to_decimal(vat)
+                                fact =  to_decimal(fact) * to_decimal(fact1)
+                                nett_amt =  to_decimal(umsatz.betrag) / to_decimal(fact)
                                 nett_serv = to_decimal(round(nett_amt * serv , price_decimal))
                                 nett_tax = to_decimal(round(nett_amt * vat , price_decimal))
-                                nett_amt =  to_decimal(umsatz_list.betrag) - to_decimal(nett_serv) - to_decimal(nett_tax)
+                                nett_amt =  to_decimal(umsatz.betrag) - to_decimal(nett_serv) - to_decimal(nett_tax)
 
                                 if ly_datum >= ly_fdate:
                                     cl_list.ly_mnet =  to_decimal(cl_list.ly_mnet) + to_decimal(nett_amt)
@@ -398,6 +305,7 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
         cl_list.lm_mnet =  to_decimal(lm_mnet)
         cl_list.ly_mnet =  to_decimal(ly_mnet)
         cl_list.ly_ynet =  to_decimal(ly_ynet)
+
 
         cl_list = Cl_list()
         cl_list_data.append(cl_list)
@@ -487,34 +395,35 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
             ly_tdate = date_mdy(get_month(to_date) , get_day(to_date) , year_ly_tdate)
         ekum_serverless = 0
 
-        for art_list in query(art_list_data, filters=(lambda art_list:(art_list.artart == 0 or art_list.artart == 8)), sort_by=[("endkum",False),("bezeich",False)]):
+        for artikel in db_session.query(Artikel).filter(
+                 ((Artikel.artart == 0) | (Artikel.artart == 8))).order_by(Artikel.endkum, Artikel.bezeich).all():
 
-            hotel_list = query(hotel_list_data, filters=(lambda hotel_list: hotel_list.num == art_list.departement), first=True)
+            hoteldpt = get_cache (Hoteldpt, {"num": [(eq, artikel.departement)]})
 
-            if hotel_list:
-                curr_dept = hotel_list.depart
-                bezeich = to_string(art_list.artnr) + " - " + art_list.bezeich
+            if hoteldpt:
+                curr_dept = hoteldpt.depart
+                bezeich = to_string(artikel.artnr) + " - " + artikel.bezeich
             do_it = True
 
-            if (art_list.artnr == taxnr or art_list.artnr == servnr) and art_list.departement == 0:
+            if (artikel.artnr == taxnr or artikel.artnr == servnr) and artikel.departement == 0:
                 do_it = False
 
             if do_it:
 
                 if ekum_serverless == 0:
-                    ekum_serverless = art_list.endkum
+                    ekum_serverless = artikel.endkum
 
-                    ekum_list = query(ekum_list_data, filters=(lambda ekum_list: ekum_list.eknr == art_list.endkum), first=True)
+                    ekum = get_cache (Ekum, {"eknr": [(eq, artikel.endkum)]})
                     cl_list = Cl_list()
                     cl_list_data.append(cl_list)
 
                     cl_list.flag = "**"
-                    cl_list.kum = art_list.endkum
+                    cl_list.kum = artikel.endkum
 
-                    if ekum_list:
-                        cl_list.bezeich = ekum_list.bezeich
+                    if ekum:
+                        cl_list.bezeich = ekum.bezeich
 
-                if ekum_serverless != art_list.endkum:
+                if ekum_serverless != artikel.endkum:
                     cl_list.dnet =  to_decimal(dnet)
                     cl_list.mnet =  to_decimal(mnet)
                     cl_list.mbudget =  to_decimal(mbudget)
@@ -522,9 +431,9 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
                     cl_list.lm_mnet =  to_decimal(lm_mnet)
                     cl_list.ly_mnet =  to_decimal(ly_mnet)
                     cl_list.ly_ynet =  to_decimal(ly_ynet)
-                    ekum_serverless = art_list.endkum
+                    ekum_serverless = artikel.endkum
 
-                    ekum_list = query(ekum_list_data, filters=(lambda ekum_list: ekum_list.eknr == art_list.endkum), first=True)
+                    ekum = get_cache (Ekum, {"eknr": [(eq, artikel.endkum)]})
                     cl_list = Cl_list()
                     cl_list_data.append(cl_list)
 
@@ -541,70 +450,49 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
                     cl_list_data.append(cl_list)
 
                     cl_list.flag = "**"
-                    cl_list.kum = art_list.endkum
+                    cl_list.kum = artikel.endkum
 
-                    if ekum_list:
-                        cl_list.bezeich = ekum_list.bezeich
+                    if ekum:
+                        cl_list.bezeich = ekum.bezeich
 
-                cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.kum == art_list.endkum), first=True)
+                cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.kum == artikel.endkum), first=True)
 
                 if not cl_list:
                     cl_list = Cl_list()
                     cl_list_data.append(cl_list)
 
-                    cl_list.kum = art_list.endkum
+                    cl_list.kum = artikel.endkum
 
-                    if ekum_list:
-                        cl_list.bezeich = ekum_list.bezeich
+                    if ekum:
+                        cl_list.bezeich = ekum.bezeich
                 for datum in date_range(jan1,to_date) :
 
                     if datum >= from_date:
 
-                        for budget_list in query(budget_list_data, filters=(lambda budget_list: budget_list.departement == art_list.departement and budget_list.artnr == art_list.artnr and budget_list.datum == datum)):
-                            cl_list.mbudget =  to_decimal(cl_list.mbudget) + to_decimal(budget_list.betrag)
-                            mbudget =  to_decimal(mbudget) + to_decimal(budget_list.betrag)
-                            t_mbudget =  to_decimal(t_mbudget) + to_decimal(budget_list.betrag)
+                        budget = get_cache (Budget, {"departement": [(eq, artikel.departement)],"artnr": [(eq, artikel.artnr)],"datum": [(eq, datum)]})
 
-                    umsatz_list = query(umsatz_list_data, filters=(lambda umsatz_list: umsatz_list.artnr == art_list.artnr and umsatz_list.departement == art_list.departement and umsatz_list.datum == datum), first=True)
+                        if budget:
+                            cl_list.mbudget =  to_decimal(cl_list.mbudget) + to_decimal(budget.betrag)
+                            mbudget =  to_decimal(mbudget) + to_decimal(budget.betrag)
+                            t_mbudget =  to_decimal(t_mbudget) + to_decimal(budget.betrag)
 
-                    if umsatz_list:
+                    umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, datum)]})
+
+                    if umsatz:
                         fact =  to_decimal("0")
                         serv =  to_decimal("0")
                         vat =  to_decimal("0")
 
-                        calc_list = query(calc_list_data, filters=(lambda calc_list: calc_list.dept == umsatz_list.departement and calc_list.artnr == umsatz_list.artnr and calc_list.datum == umsatz_list.datum and calc_list.serv_code == art_list.service_code and calc_list.mwst_code == art_list.mwst_code), first=True)
 
-                        if not calc_list:
-                            calc_list = Calc_list()
-                            calc_list_data.append(calc_list)
-
-                            calc_list.dept = umsatz_list.departement
-                            calc_list.artnr = umsatz_list.artnr
-                            calc_list.datum = umsatz_list.datum
-                            calc_list.serv_code = art_list.service_code
-                            calc_list.mwst_code = art_list.mwst_code
-
-
-                            serv, vat = get_output(calc_servvat(umsatz_list.departement, umsatz_list.artnr, umsatz_list.datum, art_list.service_code, art_list.mwst_code))
-                            calc_list.serv = serv
-                            calc_list.vat =  to_decimal(vat)
-                            fact =  to_decimal(1.00) + to_decimal(serv) + to_decimal(vat)
-                            fact =  to_decimal(fact) * to_decimal(fact1)
-                            calc_list.fact =  to_decimal(fact)
-
-
-                        else:
-                            serv =  to_decimal(calc_list.serv)
-                            vat =  to_decimal(calc_list.vat)
-                            fact =  to_decimal(calc_list.fact)
-
-
-                        nett_amt =  to_decimal(umsatz_list.betrag) / to_decimal(fact)
+                        serv, vat = get_output(calc_servvat(umsatz.departement, umsatz.artnr, umsatz.datum, artikel.service_code, artikel.mwst_code))
+                        fact =  to_decimal(1.00) + to_decimal(serv) + to_decimal(vat)
+                        fact =  to_decimal(fact) * to_decimal(fact1)
+                        nett_amt =  to_decimal(umsatz.betrag) / to_decimal(fact)
                         nett_serv = to_decimal(round(nett_amt * serv , price_decimal))
                         nett_tax = to_decimal(round(nett_amt * vat , price_decimal))
-                        nett_amt =  to_decimal(umsatz_list.betrag) - to_decimal(nett_serv) - to_decimal(nett_tax)
+                        nett_amt =  to_decimal(umsatz.betrag) - to_decimal(nett_serv) - to_decimal(nett_tax)
 
-                        if umsatz_list.datum == to_date:
+                        if umsatz.datum == to_date:
                             cl_list.dnet =  to_decimal(cl_list.dnet) + to_decimal(nett_amt)
                             dnet =  to_decimal(dnet) + to_decimal(nett_amt)
                             tdnet =  to_decimal(tdnet) + to_decimal(nett_amt)
@@ -632,44 +520,21 @@ def revenue_report_1bl(sorttype:int, long_digit:bool, short_flag:bool, from_date
                         num_year_datum = get_year(datum) - 1
                         ly_datum = date_mdy(get_month(datum) , get_day(datum) , num_year_datum)
 
-                        umsatz_list = query(umsatz_list_data, filters=(lambda umsatz_list: umsatz_list.artnr == art_list.artnr and umsatz_list.departement == art_list.departement and umsatz_list.datum == ly_datum), first=True)
+                        umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, ly_datum)]})
 
-                        if umsatz_list:
+                        if umsatz:
                             fact =  to_decimal("0")
                             serv =  to_decimal("0")
                             vat =  to_decimal("0")
 
-                            calc_list = query(calc_list_data, filters=(lambda calc_list: calc_list.dept == umsatz_list.departement and calc_list.artnr == umsatz_list.artnr and calc_list.datum == umsatz_list.datum and calc_list.serv_code == art_list.service_code and calc_list.mwst_code == art_list.mwst_code), first=True)
 
-                            if not calc_list:
-                                calc_list = Calc_list()
-                                calc_list_data.append(calc_list)
-
-                                calc_list.dept = umsatz_list.departement
-                                calc_list.artnr = umsatz_list.artnr
-                                calc_list.datum = umsatz_list.datum
-                                calc_list.serv_code = art_list.service_code
-                                calc_list.mwst_code = art_list.mwst_code
-
-
-                                serv, vat = get_output(calc_servvat(umsatz_list.departement, umsatz_list.artnr, umsatz_list.datum, art_list.service_code, art_list.mwst_code))
-                                calc_list.serv = serv
-                                calc_list.vat =  to_decimal(vat)
-                                fact =  to_decimal(1.00) + to_decimal(serv) + to_decimal(vat)
-                                fact =  to_decimal(fact) * to_decimal(fact1)
-                                calc_list.fact =  to_decimal(fact)
-
-
-                            else:
-                                serv =  to_decimal(calc_list.serv)
-                                vat =  to_decimal(calc_list.vat)
-                                fact =  to_decimal(calc_list.fact)
-
-
-                            nett_amt =  to_decimal(umsatz_list.betrag) / to_decimal(fact)
+                            serv, vat = get_output(calc_servvat(umsatz.departement, umsatz.artnr, umsatz.datum, artikel.service_code, artikel.mwst_code))
+                            fact =  to_decimal(1.00) + to_decimal(serv) + to_decimal(vat)
+                            fact =  to_decimal(fact) * to_decimal(fact1)
+                            nett_amt =  to_decimal(umsatz.betrag) / to_decimal(fact)
                             nett_serv = to_decimal(round(nett_amt * serv , price_decimal))
                             nett_tax = to_decimal(round(nett_amt * vat , price_decimal))
-                            nett_amt =  to_decimal(umsatz_list.betrag) - to_decimal(nett_serv) - to_decimal(nett_tax)
+                            nett_amt =  to_decimal(umsatz.betrag) - to_decimal(nett_serv) - to_decimal(nett_tax)
 
                             if ly_datum >= ly_fdate:
                                 cl_list.ly_mnet =  to_decimal(cl_list.ly_mnet) + to_decimal(nett_amt)

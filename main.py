@@ -813,7 +813,6 @@ update_field_mapping = {
     "chgdate":"chgDate",
     "totpok":"totpOK",
 
-
     }
 docker_version += ".r"
 
@@ -1767,7 +1766,6 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                     function_name = ""
 
                     for mapping in mapping_service:
-                        # print(mapping)
                         if mapping['service'] == service_name:
                             function_name = mapping["function"]
                             break
