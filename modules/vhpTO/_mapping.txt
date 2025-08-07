@@ -25,3 +25,4 @@ messageMess,messages_btn_messbl
 messagePrint,messages_btn_printbl
 messageUpdateResline,messages_update_reslinebl
 messageLoadCustom,get_messages_webbl
+telop1List,telop1_webbl

@@ -1392,4 +1392,10 @@
   <prgs:resource consumes="application/json" name="_sTransformCreateOpListCustom" path="/sTransformCreateOpListCustom" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-s-transform-create-op-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-s-transform-create-op-list-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dpurchaseCancelCustom" path="/dpurchaseCancelCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-cancel-dpurchase-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-cancel-dpurchase-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_stockOutlistChgCustom" path="/stockOutlistChgCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-stock-outlist-btn-chg-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-stock-outlist-btn-chg-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

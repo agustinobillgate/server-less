@@ -103,3 +103,4 @@ soaUpdateRefCustom,ar_update_ref_webbl
 soaReleaseUpdateCustom,update_arprintsoa_webbl
 arPaymentDebtPay2Custom,ar_debtpay_2_webbl
 getPrepareARDebtlist,prepare_ar_debtlistbl
+soaPrintSendmail,ar_printsoa_sendmail_webbl

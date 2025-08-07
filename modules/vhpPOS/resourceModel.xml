@@ -963,4 +963,7 @@
   <prgs:resource consumes="application/json" name="_fbSalesCostsAnal2Lists1" path="/fbSalesCostsAnal2Lists1" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-menu-eng-v2-list1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-menu-eng-v2-list1-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvCalculateAmountCustom" path="/restInvCalculateAmountCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-calculate-amount-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-calculate-amount-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>
