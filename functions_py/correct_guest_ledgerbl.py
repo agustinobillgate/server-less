@@ -479,7 +479,6 @@ def correct_guest_ledgerbl(fdate:date, tdate:date):
             t_balance =  to_decimal(t_balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
             s_list.balance =  to_decimal(balance)
 
-
     htparam = get_cache (Htparam, {"paramnr": [(eq, 246)]})
     long_digit = htparam.flogical
 
