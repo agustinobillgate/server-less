@@ -4,7 +4,7 @@
 source /usr1/vhp-serverless/lenv/bin/activate
 
 # Jalankan script sinkronisasi
-python /usr1/vhp-serverless/sync_functions.py
+/usr1/vhp-serverless/lenv/bin/python3.11 /usr1/vhp-serverless/sync_functions.py
 
 # Restart service
 sudo systemctl restart vhppy
