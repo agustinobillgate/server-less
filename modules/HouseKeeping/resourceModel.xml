@@ -216,4 +216,7 @@
   <prgs:resource consumes="application/json" name="_getOverview1" path="/getOverview1" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hk-count_1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hk-count_1-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getRoomMaidCustom" path="/getRoomMaidCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hk-zimaid-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hk-zimaid-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

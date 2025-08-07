@@ -306,4 +306,7 @@
   <prgs:resource consumes="application/json" name="_faDepreciationReportList1" path="/faDepreciationReportList1" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-depreciation-report1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-depreciation-report1-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faValuateBtnGo2" path="/faValuateBtnGo2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-valuate-btn-go2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-valuate-btn-go2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

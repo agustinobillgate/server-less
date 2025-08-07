@@ -312,4 +312,7 @@
   <prgs:resource consumes="application/json" name="_getPrepareARDebtList" path="/getPrepareARDebtlist" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ar-debtlistbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ar-debtlistbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_soaPrintSendmail" path="/soaPrintSendmail" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ar-printsoa-sendmail-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ar-printsoa-sendmail-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>
