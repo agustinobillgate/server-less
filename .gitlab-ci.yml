@@ -8,5 +8,3 @@ deploy_to_production:
         - ./bash/sync_and_restart.sh
     only:
         - production
-    tags:
-        - shell
