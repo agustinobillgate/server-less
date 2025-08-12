@@ -1,0 +1,15 @@
+Master/bgBL/stock-outlist-btn-go1bl.p
+Master/bgBL/arl-list-disp-arlist5-webBL.p
+Master/bgBL/gcf-history-webBL.p
+Master/bgBL/gcf-history_4BL.p
+Master/bgBL/nt-shareguest-profileBL.p
+Master/bgBL/chg-rezeipt-btn-delBL.p
+Master/bgBL/ins-storerequest-btn-goBL.p
+Master/bgBL/rest-stat2-webbl.p
+Master/bgBL/s-stockout-btn-go-webBL.p
+Master/bgBL/storeReq-list-btn-exit2BL.p
+
+Master/bgBL/menu-eng-btn-goBL.p
+
+
+Master/bgBL/po-stockin-btn-stop-web_1bl.p
