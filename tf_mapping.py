@@ -1,9 +1,19 @@
+#---------------------------------------------------------------------------
+# Update dari folder:
+# D:\VHP-Projects\vhp-master-source\VHPWebBased\.services\Expose\rest
+# copy ke:
+# D:\VHP-Projects\vhp-serverless\modules
+#---------------------------------------------------------------------------
+
 import xml.etree.ElementTree as ET
 from pathlib import Path
-import os
+import os, shutil
 from functions.additional_functions import *
 
 all_operations = []
+
+gitlab_xml = f"D:/VHP-Projects/vhp-master-source/VHPWebBased/.services/Expose/rest"
+vhp_projects_xml = f"D:/VHP-Projects/vhp-serverless/modules"
 
 def createMapping(path):
     global all_operations
@@ -41,7 +51,21 @@ all_operation_path = os.getcwd() + "/modules/all_operation.txt"
 
 for subfolder in subfolders:
     print(subfolder)
-    createMapping(subfolder)
+    curr_module = os.path.basename(subfolder)
+    xml_gitlab1 = f"{gitlab_xml}/{curr_module}/resourceModel.xml"
+    xml_module = f"{subfolder}/resourceModel.xml"
+    # print(xml_gitlab1, Path(xml_gitlab1).exists())
+    # print(xml_module, Path(xml_module).exists())
+    if os.path.isfile(xml_gitlab1) and Path(xml_gitlab1).exists() and Path(xml_module).exists():  # Check source file exists
+        os.makedirs(os.path.dirname(xml_module), exist_ok=True)  # Ensure target dir exists
+        shutil.copyfile(xml_gitlab1, xml_module)  # Copy file
+        print(f"Copied: {xml_gitlab1} → {xml_module}")
+    else:
+        print(f"Source file not found: {xml_gitlab1}")
+    print("-----------------------------------------------")
+    shutil.copyfile(xml_gitlab1, xml_module)
+
+    # createMapping(subfolder)
 
 with open(all_operation_path, 'w') as output_file_all:
     all_operations_str = "\n".join(all_operations)
