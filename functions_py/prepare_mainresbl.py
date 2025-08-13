@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 13/8/2025
+# num_entries
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -170,8 +173,15 @@ def prepare_mainresbl(res_mode:string, user_init:string, origcode:string, gastnr
         guestseg_obj_list = {}
         guestseg = Guestseg()
         segment = Segment()
-        for guestseg.segmentcode, guestseg.reihenfolge, guestseg._recid, segment.segmentcode, segment.bezeich, segment._recid in db_session.query(Guestseg.segmentcode, Guestseg.reihenfolge, Guestseg._recid, Segment.segmentcode, Segment.bezeich, Segment._recid).join(Segment,(Segment.segmentcode == Guestseg.segmentcode) & (Segment.betriebsnr <= 2) & (num_entries(Segment.bezeich, "$$0") == 1)).filter(
-                 (Guestseg.gastnr == reservation.gastnr)).order_by(Segment.betriebsnr, Segment.segmentcode).all():
+        for guestseg.segmentcode, guestseg.reihenfolge, guestseg._recid, segment.segmentcode, segment.bezeich, segment._recid in \
+            db_session.query(Guestseg.segmentcode, Guestseg.reihenfolge, Guestseg._recid, Segment.segmentcode, Segment.bezeich, Segment._recid) \
+                    .join(Segment,(Segment.segmentcode == Guestseg.segmentcode) & 
+                          (Segment.betriebsnr <= 2) & 
+                          (num_entries(Segment.bezeich, "$$0") == 1)) \
+                        .filter(
+                            (Guestseg.gastnr == reservation.gastnr))\
+                        .order_by(Segment.betriebsnr, Segment.segmentcode).all():
+            
             if guestseg_obj_list.get(guestseg._recid):
                 continue
             else:
