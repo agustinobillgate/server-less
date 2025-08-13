@@ -501,4 +501,7 @@
   <prgs:resource consumes="application/json" name="_egPropertyListBtnGo1" path="/egPropertyListBtnGo1" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-eg-propertylist-btn-go1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-eg-propertylist-btn-go1-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_egChgReqCreateHistoryCustom" path="/egChgReqCreateHistoryCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-eg-chgreq-create-history-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-eg-chgreq-create-history-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

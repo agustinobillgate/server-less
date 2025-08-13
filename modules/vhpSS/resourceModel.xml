@@ -1503,4 +1503,13 @@
   <prgs:resource consumes="application/json" name="_journalSetupBtnGo" path="/journalSetupBtnGo" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-journal-setup-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-journal-setup-btn-go-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hmenuCreatePrepareCustom" path="/hmenuCreatePrepareCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-mk-hmenu-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-mk-hmenu-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hmenuCreateDispItCustom" path="/hmenuCreateDispItCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-hmenu-disp-it-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-hmenu-disp-it-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hmenuCreateMenuCustom" path="/hmenuCreateMenuCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-hmenu-create-menu-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-hmenu-create-menu-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

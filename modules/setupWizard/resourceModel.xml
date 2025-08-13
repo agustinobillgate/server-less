@@ -57,4 +57,13 @@
   <prgs:resource consumes="application/json" name="_rmViewDelete" path="/rmViewDelete" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-delete-rm-view-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-delete-rm-view-setup-wizardbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_outletTbplanAdmin" path="/outletTbplanAdmin" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-outlet-tbplan-admin-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-outlet-tbplan-admin-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_outletTbplanPrepare" path="/outletTbplanPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-outlet-tbplan-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-outlet-tbplan-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_progressSave" path="/progressSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-save-progress-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-save-progress-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>
