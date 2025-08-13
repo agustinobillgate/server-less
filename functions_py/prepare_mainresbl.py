@@ -198,15 +198,18 @@ def prepare_mainresbl(res_mode:string, user_init:string, origcode:string, gastnr
             if guestseg.reihenfolge == 1:
                 f_mainres.main_segm = to_string(segment.segmentcode) + " " + segmcode
 
+        # Rd, 13/8/2025
+        # for segment in db_session.query(Segment).filter(
+        #          (Segment.betriebsnr <= 2) & (Segment.segmentcode != reservation.segmentcode) & (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment.betriebsnr, Segment.segmentcode).all():
         for segment in db_session.query(Segment).filter(
-                 (Segment.betriebsnr <= 2) & (Segment.segmentcode != reservation.segmentcode) & (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment.betriebsnr, Segment.segmentcode).all():
+                 (Segment.betriebsnr <= 2) & (Segment.segmentcode != reservation.segmentcode) ).order_by(Segment.betriebsnr, Segment.segmentcode).all():
+            if (num_entries(Segment.bezeich, "$$0") == 1):
+                guestseg = get_cache (Guestseg, {"gastnr": [(eq, reservation.gastnr)],"segmentcode": [(eq, segment.segmentcode)]})
 
-            guestseg = get_cache (Guestseg, {"gastnr": [(eq, reservation.gastnr)],"segmentcode": [(eq, segment.segmentcode)]})
-
-            if not guestseg:
-                segmcode = replace_str(segment.bezeich, ",", "/")
-                f_mainres.curr_segm = f_mainres.curr_segm +\
-                    to_string(segment.segmentcode) + " " + segmcode + ";"
+                if not guestseg:
+                    segmcode = replace_str(segment.bezeich, ",", "/")
+                    f_mainres.curr_segm = f_mainres.curr_segm +\
+                        to_string(segment.segmentcode) + " " + segmcode + ";"
 
         if reservation.resart != 0:
 
