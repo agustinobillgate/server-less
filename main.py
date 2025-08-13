@@ -812,6 +812,7 @@ update_field_mapping = {
 
     "chgdate":"chgDate",
     "totpok":"totpOK",
+    "ratecode":"rateCode",
 
     }
 docker_version += ".r"
@@ -1622,7 +1623,7 @@ def handle_get_post(request: Request, input_data: Dict[str, Any] = {}, body_str:
     url = str(request.url)
     headers = dict(request.headers)
 
-    print("Hd:", headers)
+    # print("Hd:", headers)
     # print("Request:", request)
 
     if not hasattr(local_storage,"app"):

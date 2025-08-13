@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 13/8/2025
+# if available arrangment
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -258,10 +262,12 @@ def ratecode_rate(ebdisc_flag:bool, kbdisc_flag:bool, resnr:int, reslinnr:int, p
 
     arrangement = get_cache (Arrangement, {"argtnr": [(eq, argtno)]})
 
-    waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, arrangement.betriebsnr)]})
+    # Rd, 13/8/2025
+    if arrangement:
+        waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, arrangement.betriebsnr)]})
 
-    if waehrung:
-        exrate1 =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+        if waehrung:
+            exrate1 =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
 
     if res_exrate != 0:
         ex2 =  to_decimal(ex2) / to_decimal(res_exrate)

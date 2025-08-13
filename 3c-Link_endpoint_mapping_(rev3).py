@@ -7,15 +7,19 @@
 import os
 import psycopg2
 import datetime 
+import time, json, os
+from dotenv import load_dotenv
 
+
+load_dotenv()
 folder_modules = f"D:/VHP-Projects/vhp-serverless/modules"
 
 
 conn = psycopg2.connect(
-    host = "psql.staging.e1-vhp.com",
-    database = "vhptools",
-    user = "postgres",
-    password = "DevPostgreSQL#2024"
+    "host": os.getenv("host"),
+    "database": os.getenv("database"),
+    "user": os.getenv("user"),
+    "password": os.getenv("password"),
 )
 cursor = conn.cursor()
 

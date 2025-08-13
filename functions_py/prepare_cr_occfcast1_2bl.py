@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 13/8/2025
+# Gitlab: =
+# segment kosong
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -73,15 +77,17 @@ def prepare_cr_occfcast1_2bl(pvilanguage:int, vhp_limited:bool):
         nonlocal t_buff_queasy_data, segm_list_data, argt_list_data, zikat_list_data, outlook_list_data
 
         for segment in db_session.query(Segment).filter(
-                 (Segment.betriebsnr <= 2) & (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment.segmentcode).all():
+                 (Segment.betriebsnr <= 2) ).order_by(Segment.segmentcode).all():
 
-            if not vhp_limited or (vhp_limited and segment.vip_level == 0):
-                segm_list = Segm_list()
-                segm_list_data.append(segm_list)
+            # Rd 13/8/2025
+            if (num_entries(segment.bezeich, "$$0") == 1):
+                if not vhp_limited or (vhp_limited and segment.vip_level == 0):
+                    segm_list = Segm_list()
+                    segm_list_data.append(segm_list)
 
-                segm_list.segm = segment.segmentcode
-                segm_list.bezeich = to_string(segment.segmentcode, ">>9 ") + entry(0, segment.bezeich, "$$0")
-
+                    segm_list.segm = segment.segmentcode
+                    segm_list.bezeich = to_string(segment.segmentcode, ">>9 ") + entry(0, segment.bezeich, "$$0")
+        
 
     def create_argt():
 
