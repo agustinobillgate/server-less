@@ -65,7 +65,7 @@ for subfolder in subfolders:
     print("-----------------------------------------------")
     shutil.copyfile(xml_gitlab1, xml_module)
 
-    # createMapping(subfolder)
+    createMapping(subfolder)
 
 with open(all_operation_path, 'w') as output_file_all:
     all_operations_str = "\n".join(all_operations)
