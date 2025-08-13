@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 13/8/2025
+# num_entries
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.get_vipnrbl import get_vipnrbl
@@ -45,12 +48,16 @@ def prepare_mk_segmbl(gastnr:int):
 
     vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9 = get_output(get_vipnrbl())
 
-    for segment in db_session.query(Segment).filter(
-             (Segment.vip_level == 0) & (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment._recid).all():
-        hsegm_list = Hsegm_list()
-        hsegm_list_data.append(hsegm_list)
+    # Rd 13/8/2025
+    # num-entries
+    # for segment in db_session.query(Segment).filter(
+    #          (Segment.vip_level == 0) & (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment._recid).all():
+    for segment in db_session.query(Segment).filter(Segment.vip_level == 0).order_by(Segment._recid).all():
+        if (num_entries(segment.bezeich, "$$0") == 1):
+            hsegm_list = Hsegm_list()
+            hsegm_list_data.append(hsegm_list)
 
-        buffer_copy(segment, hsegm_list)
+            buffer_copy(segment, hsegm_list)
 
     for guestseg in db_session.query(Guestseg).filter(
              (Guestseg.gastnr == gastnr)).order_by(Guestseg._recid).all():

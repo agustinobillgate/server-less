@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 13/8/2025
+# num-entries
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Segment, H_bill
@@ -28,13 +31,13 @@ def ts_tbplan_load_segmentbl(vkey:int, bill_number:int, dept_number:int):
         return {"t-segment": t_segment_data}
 
     if vkey == 1:
+        # Rd, 13/8/2025
+        for segment in db_session.query(Segment).order_by(Segment.segmentcode).all():
+            if (num_entries(Segment.bezeich, "$$0") == 1):
+                t_segment = T_segment()
+                t_segment_data.append(t_segment)
 
-        for segment in db_session.query(Segment).filter(
-                 (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment.segmentcode).all():
-            t_segment = T_segment()
-            t_segment_data.append(t_segment)
-
-            buffer_copy(segment, t_segment)
+                buffer_copy(segment, t_segment)
 
     elif vkey == 2:
 

@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 13/8/2025
+# num_entries
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -256,8 +259,20 @@ def gl_parxls1_2bl(briefnr:int, gl_year:int, from_date:date, to_date:date, forei
         W_room = W1
         w_room_data = w1_data
 
+        # Rd, 13/8/2025
+        # for s_param in db_session.query(S_param).filter(
+        #          (S_param.progname == ("GL-macro").lower()) & (S_param.section == to_string(briefnr)) & 
+        #          (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & 
+        #          (entry(2, S_param.varname, "-") == ("FO").lower()) & 
+        #          (substring(S_param.vstring, 0, 4) == ("segm").lower())).order_by(S_param.varname).all():
         for s_param in db_session.query(S_param).filter(
-                 (S_param.progname == ("GL-macro").lower()) & (S_param.section == to_string(briefnr)) & (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & (entry(2, S_param.varname, "-") == ("FO").lower()) & (substring(S_param.vstring, 0, 4) == ("segm").lower())).order_by(S_param.varname).all():
+                 (S_param.progname == ("GL-macro").lower()) & (S_param.section == to_string(briefnr)) & 
+                 (entry(2, S_param.varname, "-") == ("FO").lower()) & 
+                 (substring(S_param.vstring, 0, 4) == ("segm").lower())).order_by(S_param.varname).all():
+
+
+            if not ((num_entries(s_param.vstring, ":") == 1) & (num_entries(s_param.varname, "-") == 3)):
+                continue
 
             if prev_param != s_param.varname:
                 prev_param = s_param.varname
@@ -480,9 +495,15 @@ def gl_parxls1_2bl(briefnr:int, gl_year:int, from_date:date, to_date:date, forei
         W4 = W1
         w4_data = w1_data
 
+        # Rd, 13/8/2025
+        # for s_param in db_session.query(S_param).filter(
+        #          (S_param.progname == ("GL-macro").lower()) & (S_param.section == to_string(briefnr)) & (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & (entry(2, S_param.varname, "-") == ("REV").lower())).order_by(S_param.varname).all():
         for s_param in db_session.query(S_param).filter(
-                 (S_param.progname == ("GL-macro").lower()) & (S_param.section == to_string(briefnr)) & (num_entries(S_param.vstring, ":") == 1) & (num_entries(S_param.varname, "-") == 3) & (entry(2, S_param.varname, "-") == ("REV").lower())).order_by(S_param.varname).all():
+                 (S_param.progname == ("GL-macro").lower()) & (S_param.section == to_string(briefnr)) & 
+                 (entry(2, S_param.varname, "-") == ("REV").lower())).order_by(S_param.varname).all():
 
+            if not ((num_entries(s_param.vstring, ":") == 1) & (num_entries(s_param.varname, "-") == 3) ):
+                continue
             if prev_param != s_param.varname:
                 prev_param = s_param.varname
 
@@ -619,44 +640,62 @@ def gl_parxls1_2bl(briefnr:int, gl_year:int, from_date:date, to_date:date, forei
     combo_pf_file2 = htparam.fchar
     g_list_data.clear()
 
+    # Rd, 13/8/2025
+    # parameters = db_session.query(Parameters).filter(
+    #          (Parameters.progname == ("GL-Macro").lower()) & 
+    #          (Parameters.section == to_string(briefnr)) & 
+    #          (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).first()
     parameters = db_session.query(Parameters).filter(
-             (Parameters.progname == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).first()
+             (Parameters.progname == ("GL-Macro").lower()) & 
+             (Parameters.section == to_string(briefnr)) 
+             ).first()
 
     if parameters:
-        cash_flow = True
+        if (num_entries(parameters.varname, "-") == 3) & (entry(2, parameters.varname, "-") == ("CF").lower()):
+            cash_flow = True
 
+    # Rd, 13/8/2025
+    # parameters = db_session.query(Parameters).filter(
+    #          (Parameters.progname == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("REV").lower())).first()
     parameters = db_session.query(Parameters).filter(
-             (Parameters.progname == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("REV").lower())).first()
+             (Parameters.progname == ("GL-Macro").lower()) & 
+             (Parameters.section == to_string(briefnr)) ).first()
 
     if parameters:
-        fill_revenue()
+        if (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("REV").lower()):
+            fill_revenue()
 
+    # Rd, 13/8/2025
     parameters = db_session.query(Parameters).filter(
              (Parameters.progname == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (matches((Parameters.vstring,"*segmrev*")) | (matches(Parameters.vstring,"*segmpers*")) | (matches(Parameters.vstring,"*segmroom*")))).first()
-
     if parameters:
         fill_segment()
 
     if cash_flow:
-
+        # Rd, 13/8/2025
+        # for parameters in db_session.query(Parameters).filter(
+        #          (Parameters.progname == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).order_by(Parameters.varname).all():
         for parameters in db_session.query(Parameters).filter(
-                 (Parameters.progname == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(Parameters.varname, "-") == 3) & (entry(2, Parameters.varname, "-") == ("CF").lower())).order_by(Parameters.varname).all():
-            t_parameters = T_parameters()
-            t_parameters_data.append(t_parameters)
+                 (Parameters.progname == ("GL-Macro").lower()) & (Parameters.section == to_string(briefnr)) 
+                 ).order_by(Parameters.varname).all():
+            
+            if (num_entries(parameters.varname, "-") == 3) & (entry(2, parameters.varname, "-") == ("CF").lower()):
+                t_parameters = T_parameters()
+                t_parameters_data.append(t_parameters)
 
-            buffer_copy(parameters, t_parameters)
+                buffer_copy(parameters, t_parameters)
 
-            gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, entry(0, t_parameters.vstring, ":"))]})
+                gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, entry(0, t_parameters.vstring, ":"))]})
 
-            if gl_acct:
+                if gl_acct:
 
-                coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.fibu == gl_acct.fibukonto), first=True)
+                    coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.fibu == gl_acct.fibukonto), first=True)
 
-                if not coa_list:
-                    coa_list = Coa_list()
-                    coa_list_data.append(coa_list)
+                    if not coa_list:
+                        coa_list = Coa_list()
+                        coa_list_data.append(coa_list)
 
-                    coa_list.fibu = gl_acct.fibukonto
+                        coa_list.fibu = gl_acct.fibukonto
 
 
         calc_cf()
@@ -684,9 +723,15 @@ def gl_parxls1_2bl(briefnr:int, gl_year:int, from_date:date, to_date:date, forei
             buffer_copy(parameters, t_parameters)
     prev_str = ""
 
+    # Rd, 13/8/2025
+    # for parameters in db_session.query(Parameters).filter(
+    #          (Parameters.progname == ("GL-macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(PARAMETERS.vstring, ":") == 1) & (num_entries(Parameters.varname, "-") == 2)).order_by(Parameters.varname).all():
     for parameters in db_session.query(Parameters).filter(
-             (Parameters.progname == ("GL-macro").lower()) & (Parameters.section == to_string(briefnr)) & (num_entries(PARAMETERS.vstring, ":") == 1) & (num_entries(Parameters.varname, "-") == 2)).order_by(Parameters.varname).all():
-
+             (Parameters.progname == ("GL-macro").lower()) & (Parameters.section == to_string(briefnr)) 
+             ).order_by(Parameters.varname).all():
+        
+        if not ((num_entries(parameters.vstring, ":") == 1) & (num_entries(parameters.varname, "-") == 2)):
+            continue
         if prev_str != parameters.varname:
             prev_str = parameters.varname
 
