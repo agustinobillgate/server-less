@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 13/8/2025
+# Gitlab: =
+# segment kosong
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date

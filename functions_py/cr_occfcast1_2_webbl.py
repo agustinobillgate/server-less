@@ -2,7 +2,7 @@
 #-----------------------------------------
 # Rd 21/7/2025
 # Gitlab: 252
-# Add safe_divide
+# Add safe_divide, if argm, if room
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -63,15 +63,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
     room_list = segm_list = argt_list = zikat_list = outlook_list = print_list = print_list2 = print_list3 = argt6_list = rline1 = active_rm_list = dayuse_list = s_list = a_list = z_list = o_list = bsegm = bargt = broom = s_list = a_list = z_list = o_list = s_list = z_list = None
 
-    room_list_data, Room_list = create_model("Room_list", {"wd":int, "datum":date, "bezeich":string, 
-                                                           "room":[Decimal,17], "coom":[string,17], "k_pax":int, "t_pax":int, 
-                                                           "lodg":[Decimal,7], "avrglodg":Decimal, "avrglodg2":Decimal, 
-                                                           "avrgrmrev":Decimal, "avrgrmrev2":Decimal, "others":[Decimal,8], 
-                                                           "ly_fcast":string, "ly_actual":string, "ly_avlodge":string, 
-                                                           "room_exccomp":int, "room_comp":int, "fixleist":Decimal, 
-                                                           "fixleist2":Decimal, "rmrate":Decimal, "rmrate2":Decimal, 
-                                                           "revpar":Decimal, "revpar2":Decimal, "avrglodg_inclcomp":Decimal, 
-                                                           "avrglodg_exclcomp":Decimal, "rmocc_exclcomp":Decimal})
+    room_list_data, Room_list = create_model("Room_list", {"wd":int, "datum":date, "bezeich":string, "room":[Decimal,17], "coom":[string,17], "k_pax":int, "t_pax":int, "lodg":[Decimal,7], "avrglodg":Decimal, "avrglodg2":Decimal, "avrgrmrev":Decimal, "avrgrmrev2":Decimal, "others":[Decimal,8], "ly_fcast":string, "ly_actual":string, "ly_avlodge":string, "room_exccomp":int, "room_comp":int, "fixleist":Decimal, "fixleist2":Decimal, "rmrate":Decimal, "rmrate2":Decimal, "revpar":Decimal, "revpar2":Decimal, "avrglodg_inclcomp":Decimal, "avrglodg_exclcomp":Decimal, "rmocc_exclcomp":Decimal})
     print_list_data, Print_list = create_model("Print_list", {"code_name":string})
     print_list2_data, Print_list2 = create_model("Print_list2", {"argm":string})
     print_list3_data, Print_list3 = create_model("Print_list3", {"room":string})
@@ -220,21 +212,20 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             room_list.datum = datum
             room_list.bezeich = " " + week_list[wd - 1] + " " + to_string(datum) + rsvstat
 
-            # for kontline in db_session.query(Kontline).filter(
-            #          (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
-            #     allot_doit = True
+            for kontline in db_session.query(Kontline).filter(
+                     (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+                allot_doit = True
 
-            #     if kontline.zikatnr != 0 and not all_zikat:
+                if kontline.zikatnr != 0 and not all_zikat:
 
-            #         z_list = query(z_list_data, filters=(lambda z_list: z_list.zikatnr == kontline.zikatnr and z_list.selected), first=True)
-            #         allot_doit = None != z_list
+                    z_list = query(z_list_data, filters=(lambda z_list: z_list.zikatnr == kontline.zikatnr and z_list.selected), first=True)
+                    allot_doit = None != z_list
 
-            #     if allot_doit and (datum >= (ci_date + timedelta(days=kontline.ruecktage))):
-            #         room_list.room[13] = room_list.room[13] + kontline.zimmeranz
-            #         rm_array[13] = rm_array[13] + kontline.zimmeranz
-
-
+                if allot_doit and (datum >= (ci_date + timedelta(days=kontline.ruecktage))):
+                    room_list.room[13] = room_list.room[13] + kontline.zimmeranz
+                    rm_array[13] = rm_array[13] + kontline.zimmeranz
         datum1 = curr_date
+
         if to_date < (ci_date - timedelta(days=1)):
             d2 = to_date
         else:
@@ -269,13 +260,13 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                 if do_it:
                     pax = genstat.erwachs + genstat.kind1 + genstat.kind2 + genstat.gratis
 
-                    # room_list = query(room_list_data, filters=(lambda room_list: room_list.datum == genstat.res_date[1]), first=True)
+                    room_list = query(room_list_data, filters=(lambda room_list: room_list.datum == genstat.res_date[1]), first=True)
 
-                    # if room_list:
-                    #     room_list.room[4] = room_list.room[4] + 1
-                    #     room_list.room[5] = room_list.room[5] + pax
-                    #     rm_array[4] = rm_array[4] + 1
-                    #     rm_array[5] = rm_array[5] + pax
+                    if room_list:
+                        room_list.room[4] = room_list.room[4] + 1
+                        room_list.room[5] = room_list.room[5] + pax
+                        rm_array[4] = rm_array[4] + 1
+                        rm_array[5] = rm_array[5] + pax
 
 
             curr_zinr = genstat.zinr
@@ -290,28 +281,35 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                 do_it = False
 
             if do_it:
+
                 segment = get_cache (Segment, {"segmentcode": [(eq, genstat.segmentcode)]})
                 do_it = None != segment and segment.vip_level == 0
             rmsharer = (genstat.resstatus == 13)
 
             if do_it and not all_segm:
+
                 s_list = query(s_list_data, filters=(lambda s_list: s_list.segm == genstat.segmentcode and s_list.selected), first=True)
                 do_it = None != s_list
 
             if do_it and not all_argt:
+
                 a_list = query(a_list_data, filters=(lambda a_list: a_list.argt == genstat.argt and a_list.selected), first=True)
                 do_it = None != a_list
 
             if do_it and not all_zikat:
+
                 z_list = query(z_list_data, filters=(lambda z_list: z_list.zikatnr == genstat.zikatnr and z_list.selected), first=True)
                 do_it = None != z_list
 
             if excl_compl and do_it:
+
                 segment = db_session.query(Segment).filter(
                          (Segment.segmentcode == genstat.segmentcode) & ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
 
                 if segment:
                     do_it = False
+
+
                 else:
 
                     if genstat.zipreis == 0 and genstat.gratis != 0 and genstat.resstatus == 6 and genstat.res_logic[1] :
@@ -331,12 +329,14 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
 
             if waehrung:
+
                 exrate = get_cache (Exrate, {"datum": [(eq, genstat.datum)],"artnr": [(eq, waehrung.waehrungsnr)]})
 
                 if exrate:
                     exchg_rate =  to_decimal(exrate.betrag)
 
             if do_it:
+
                 room_list = query(room_list_data, filters=(lambda room_list: room_list.datum == genstat.datum), first=True)
 
                 if room_list:
@@ -461,6 +461,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
         d2 = d2 + timedelta(days=1)
 
         if to_date >= ci_date:
+
             for res_line in db_session.query(Res_line).filter(
                      (((Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.active_flag <= 1) & (Res_line.ankunft <= to_date) & (Res_line.abreise >= d2))) | (((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.ankunft == ci_date) & (Res_line.abreise == ci_date)) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.abreise == ci_date))) & (Res_line.gastnr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resnr, Res_line.reslinnr.desc()).all():
 
@@ -1069,90 +1070,90 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
         for i in range(1,tmpint + 1) :
             datum = datum + timedelta(days=1)
-            # anzahl_dayuse = 0
+            anzahl_dayuse = 0
 
 
-            # tot_room = get_active_room(datum)
-            # accum_tot_room = accum_tot_room + tot_room
+            tot_room = get_active_room(datum)
+            accum_tot_room = accum_tot_room + tot_room
 
-            # dayuse_list = query(dayuse_list_data, filters=(lambda dayuse_list: dayuse_list.datum == datum), first=True)
+            dayuse_list = query(dayuse_list_data, filters=(lambda dayuse_list: dayuse_list.datum == datum), first=True)
 
-            # if dayuse_list:
-            #     anzahl_dayuse = dayuse_list.zimmeranz
+            if dayuse_list:
+                anzahl_dayuse = dayuse_list.zimmeranz
 
-            # room_list = query(room_list_data, filters=(lambda room_list: room_list.datum == datum), first=True)
+            room_list = query(room_list_data, filters=(lambda room_list: room_list.datum == datum), first=True)
 
-            # if tot_room != 0:
-            #     room_list.room[8] = room_list.room[6] / tot_room * 100
-            #     prev_room = prev_room + room_list.room[6]
-            #     room_list.room[9] = prev_room / accum_tot_room * 100
-            #     room_list.rmocc_exclcomp = ( to_decimal(room_list.room[6]) - to_decimal(room_list.room_comp)) / to_decimal(tot_room) * to_decimal("100")
+            if tot_room != 0:
+                room_list.room[8] = room_list.room[6] / tot_room * 100
+                prev_room = prev_room + room_list.room[6]
+                room_list.room[9] = prev_room / accum_tot_room * 100
+                room_list.rmocc_exclcomp = ( to_decimal(room_list.room[6]) - to_decimal(room_list.room_comp)) / to_decimal(tot_room) * to_decimal("100")
 
-            # if (room_list.room[6] - anzahl_dayuse) < tot_room:
-            #     room_list.room[10] = tot_room - room_list.room[6] + anzahl_dayuse
-            #     rm_array[10] = rm_array[10] + tot_room - room_list.room[6] + anzahl_dayuse
-            # else:
-            #     room_list.room[11] = room_list.room[6] - tot_room - anzahl_dayuse
-            #     rm_array[11] = rm_array[11] + room_list.room[6] - tot_room - anzahl_dayuse
+            if (room_list.room[6] - anzahl_dayuse) < tot_room:
+                room_list.room[10] = tot_room - room_list.room[6] + anzahl_dayuse
+                rm_array[10] = rm_array[10] + tot_room - room_list.room[6] + anzahl_dayuse
+            else:
+                room_list.room[11] = room_list.room[6] - tot_room - anzahl_dayuse
+                rm_array[11] = rm_array[11] + room_list.room[6] - tot_room - anzahl_dayuse
 
-            # if i > 1:
-            #     room_list.room[0] = p_room
-            #     room_list.room[1] = p_pax
-            #     rm_array[0] = rm_array[0] + p_room
-            #     rm_array[1] = rm_array[1] + p_pax
+            if i > 1:
+                room_list.room[0] = p_room
+                room_list.room[1] = p_pax
+                rm_array[0] = rm_array[0] + p_room
+                rm_array[1] = rm_array[1] + p_pax
 
 
-            # p_room = room_list.room[6]
-            # p_pax = room_list.room[7]
+            p_room = room_list.room[6]
+            p_pax = room_list.room[7]
 
         for room_list in query(room_list_data, filters=(lambda room_list: room_list.wd != 0)):
-            pass
-            # if room_list.datum < ci_date:
 
-            #     zinrstat = get_cache (Zinrstat, {"zinr": [(eq, "ooo")],"datum": [(eq, room_list.datum)]})
+            if room_list.datum < ci_date:
 
-            #     if zinrstat:
+                zinrstat = get_cache (Zinrstat, {"zinr": [(eq, "ooo")],"datum": [(eq, room_list.datum)]})
 
-            #         if not all_zikat:
+                if zinrstat:
 
-            #             z_list = query(z_list_data, filters=(lambda z_list: z_list.zikatnr == zimmer.zikatnr and z_list.selected), first=True)
+                    if not all_zikat:
 
-            #             if z_list:
-            #                 room_list.room[14] = zinrstat.zimmeranz
-            #                 rm_array[14] = rm_array[14] + zinrstat.zimmeranz
+                        z_list = query(z_list_data, filters=(lambda z_list: z_list.zikatnr == zimmer.zikatnr and z_list.selected), first=True)
 
-
-            #         else:
-            #             room_list.room[14] = zinrstat.zimmeranz
-            #             rm_array[14] = rm_array[14] + zinrstat.zimmeranz
+                        if z_list:
+                            room_list.room[14] = zinrstat.zimmeranz
+                            rm_array[14] = rm_array[14] + zinrstat.zimmeranz
 
 
-            # else:
-
-            #     outorder_obj_list = {}
-            #     for outorder, zimmer in db_session.query(Outorder, Zimmer).join(Zimmer,(Zimmer.zinr == Outorder.zinr) & (Zimmer.sleeping)).filter(
-            #              (Outorder.gespstart <= room_list.datum) & (Outorder.gespende >= room_list.datum) & (Outorder.betriebsnr <= 1)).order_by(Outorder._recid).all():
-            #         if outorder_obj_list.get(outorder._recid):
-            #             continue
-            #         else:
-            #             outorder_obj_list[outorder._recid] = True
-
-            #         if not all_zikat:
-
-            #             z_list = query(z_list_data, filters=(lambda z_list: z_list.zikatnr == zimmer.zikatnr and z_list.selected), first=True)
-
-            #             if z_list:
-            #                 room_list.room[14] = room_list.room[14] + 1
-            #                 rm_array[14] = rm_array[14] + 1
+                    else:
+                        room_list.room[14] = zinrstat.zimmeranz
+                        rm_array[14] = rm_array[14] + zinrstat.zimmeranz
 
 
-            #         else:
-            #             room_list.room[14] = room_list.room[14] + 1
-            #             rm_array[14] = rm_array[14] + 1
+            else:
 
-            # if exclooo:
-            #     room_list.room[10] = room_list.room[10] - room_list.room[14]
-            #     rm_array[10] = rm_array[10] - room_list.room[14]
+                outorder_obj_list = {}
+                for outorder, zimmer in db_session.query(Outorder, Zimmer).join(Zimmer,(Zimmer.zinr == Outorder.zinr) & (Zimmer.sleeping)).filter(
+                         (Outorder.gespstart <= room_list.datum) & (Outorder.gespende >= room_list.datum) & (Outorder.betriebsnr <= 1)).order_by(Outorder._recid).all():
+                    if outorder_obj_list.get(outorder._recid):
+                        continue
+                    else:
+                        outorder_obj_list[outorder._recid] = True
+
+                    if not all_zikat:
+
+                        z_list = query(z_list_data, filters=(lambda z_list: z_list.zikatnr == zimmer.zikatnr and z_list.selected), first=True)
+
+                        if z_list:
+                            room_list.room[14] = room_list.room[14] + 1
+                            rm_array[14] = rm_array[14] + 1
+
+
+                    else:
+                        room_list.room[14] = room_list.room[14] + 1
+                        rm_array[14] = rm_array[14] + 1
+
+            if exclooo:
+                room_list.room[10] = room_list.room[10] - room_list.room[14]
+                rm_array[10] = rm_array[10] - room_list.room[14]
 
         for room_list in query(room_list_data, filters=(lambda room_list: room_list.wd != 0)):
             for i in range(1,8 + 1) :
@@ -1169,212 +1170,212 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
         do_it = True
 
-        # if show_rev == 1 or show_rev == 2:
+        if show_rev == 1 or show_rev == 2:
 
-        #     for s_list in query(s_list_data, filters=(lambda s_list: s_list.selected)):
-        #         counter = counter + 1
+            for s_list in query(s_list_data, filters=(lambda s_list: s_list.selected)):
+                counter = counter + 1
 
-        #         segment = get_cache (Segment, {"segmentcode": [(eq, s_list.segm)]})
+                segment = get_cache (Segment, {"segmentcode": [(eq, s_list.segm)]})
 
-        #         if segment:
+                if segment:
 
-        #             if tmin == 0 and counter == 1:
+                    if tmin == 0 and counter == 1:
 
-        #                 if segment.betriebsnr == 0:
-        #                     tmin = 0
-
-
-        #                 else:
-        #                     tmin = segment.betriebsnr
-
-        #             if segment.betriebsnr > tmax:
-        #                 tmax = segment.betriebsnr
-
-        #             if segment.betriebsnr < tmin:
-        #                 tmin = segment.betriebsnr
-
-        #     if tmax <= 2 and tmin >= 1:
-        #         do_it = False
+                        if segment.betriebsnr == 0:
+                            tmin = 0
 
 
-        #     else:
-        #         do_it = True
+                        else:
+                            tmin = segment.betriebsnr
+
+                    if segment.betriebsnr > tmax:
+                        tmax = segment.betriebsnr
+
+                    if segment.betriebsnr < tmin:
+                        tmin = segment.betriebsnr
+
+            if tmax <= 2 and tmin >= 1:
+                do_it = False
+
+
+            else:
+                do_it = True
 
         if do_it:
 
             if incl_oth:
-                pass
-                # for room_list in query(room_list_data):
-                #     othrev = calc_othrev(room_list.datum)
 
-                #     if room_list.datum != None:
+                for room_list in query(room_list_data):
+                    othrev = calc_othrev(room_list.datum)
 
-                #         if room_list.datum < ci_date:
+                    if room_list.datum != None:
 
-                #             htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
+                        if room_list.datum < ci_date:
 
-                #             waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
+                            htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
 
-                #             if waehrung:
+                            waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
 
-                #                 exrate = get_cache (Exrate, {"datum": [(eq, room_list.datum)],"artnr": [(eq, waehrung.waehrungsnr)]})
+                            if waehrung:
 
-                #                 if exrate:
-                #                     exchg_rate =  to_decimal(exrate.betrag)
-                #         else:
+                                exrate = get_cache (Exrate, {"datum": [(eq, room_list.datum)],"artnr": [(eq, waehrung.waehrungsnr)]})
 
-                #             htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
+                                if exrate:
+                                    exchg_rate =  to_decimal(exrate.betrag)
+                        else:
 
-                #             waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
+                            htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
 
-                #             if waehrung:
-                #                 exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
-                #             else:
-                #                 exchg_rate =  to_decimal("1")
-                #     room_list.lodg[4] = room_list.lodg[4] + othrev
-                #     room_list.lodg[6] = room_list.lodg[4] / exchg_rate
+                            waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
 
-                #     if room_list.wd != 0:
-                #         t_lodg[4] = t_lodg[4] + othrev
+                            if waehrung:
+                                exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+                            else:
+                                exchg_rate =  to_decimal("1")
+                    room_list.lodg[4] = room_list.lodg[4] + othrev
+                    room_list.lodg[6] = room_list.lodg[4] / exchg_rate
 
-
-                #     t_lodg[6] = t_lodg[6] + (othrev / exchg_rate)
-        # room_list = Room_list()
-        # room_list_data.append(room_list)
-
-        # room_list.bezeich = " TOTAL"
-
-        # for room_list in query(room_list_data):
-        #     tot_avrg =  to_decimal(tot_avrg) + to_decimal(room_list.room[8])
-
-        #     if (room_list.room[6] - room_list.room[15]) != 0:
-        #         room_list.avrglodg =  to_decimal(room_list.lodg[3]) / to_decimal((room_list.room[6] - room_list.room[15]))
-        #     room_list.avrglodg2 =  to_decimal(room_list.avrglodg) / to_decimal(exchg_rate)
-
-        #     if (room_list.room_exccomp - room_list.room[15]) != 0:
-        #         room_list.avrgrmrev =  to_decimal(room_list.lodg[4]) / to_decimal((room_list.room[6] - room_list.room[15]) )
-        #         room_list.avrgrmrev2 =  to_decimal(room_list.avrgrmrev) / to_decimal(exchg_rate)
-
-        #     if room_list.wd != 0:
-        #         troom_exccomp = troom_exccomp + (room_list.room[6] - room_list.room[15])
-
-        #     if ((to_decimal(room_list.coom[8]) * room_list.avrgrmrev) / 100) != 0:
-        #         room_list.revpar = ( to_decimal(to_decimal(room_list.coom[8])) * to_decimal(room_list.avrgrmrev)) / to_decimal("100")
-        #         room_list.revpar2 =  to_decimal(room_list.revpar) / to_decimal(exchg_rate)
+                    if room_list.wd != 0:
+                        t_lodg[4] = t_lodg[4] + othrev
 
 
-        #     # Rd, error division
-        #     # room_list.avrglodg_inclcomp =  to_decimal(room_list.lodg[4]) / to_decimal(room_list.room[6])
-        #     room_list.avrglodg_inclcomp = safe_divide(room_list.lodg[4], room_list.room[6])
+                    t_lodg[6] = t_lodg[6] + (othrev / exchg_rate)
+        room_list = Room_list()
+        room_list_data.append(room_list)
 
-        #     # room_list.avrglodg_exclcomp =  to_decimal(room_list.lodg[4]) / to_decimal((room_list.room[6]) - to_decimal(room_list.room_comp))
-        #     room_list.avrglodg_exclcomp = safe_divide(room_list.lodg[4], to_decimal(room_list.room[6]) - to_decimal(room_list.room_comp))
+        room_list.bezeich = " TOTAL"
+
+        for room_list in query(room_list_data):
+            tot_avrg =  to_decimal(tot_avrg) + to_decimal(room_list.room[8])
+
+            if (room_list.room[6] - room_list.room[15]) != 0:
+                room_list.avrglodg =  to_decimal(room_list.lodg[3]) / to_decimal((room_list.room[6] - room_list.room[15]))
+            room_list.avrglodg2 =  to_decimal(room_list.avrglodg) / to_decimal(exchg_rate)
+
+            if (room_list.room_exccomp - room_list.room[15]) != 0:
+                room_list.avrgrmrev =  to_decimal(room_list.lodg[4]) / to_decimal((room_list.room[6] - room_list.room[15]) )
+                room_list.avrgrmrev2 =  to_decimal(room_list.avrgrmrev) / to_decimal(exchg_rate)
+
+            if room_list.wd != 0:
+                troom_exccomp = troom_exccomp + (room_list.room[6] - room_list.room[15])
+
+            if ((to_decimal(room_list.coom[8]) * room_list.avrgrmrev) / 100) != 0:
+                room_list.revpar = ( to_decimal(to_decimal(room_list.coom[8])) * to_decimal(room_list.avrgrmrev)) / to_decimal("100")
+                room_list.revpar2 =  to_decimal(room_list.revpar) / to_decimal(exchg_rate)
+
+
+            # Rd, error division
+            # room_list.avrglodg_inclcomp =  to_decimal(room_list.lodg[4]) / to_decimal(room_list.room[6])
+            room_list.avrglodg_inclcomp = safe_divide(room_list.lodg[4], room_list.room[6])
+
+            # room_list.avrglodg_exclcomp =  to_decimal(room_list.lodg[4]) / to_decimal((room_list.room[6]) - to_decimal(room_list.room_comp))
+            room_list.avrglodg_exclcomp = safe_divide(room_list.lodg[4], to_decimal(room_list.room[6]) - to_decimal(room_list.room_comp))
 
         
-        # # tavg_rmrev =  to_decimal(t_lodg[4]) / to_decimal(troom_exccomp)
-        # tavg_rmrev =  safe_divide(t_lodg[4] , troom_exccomp)
+        # tavg_rmrev =  to_decimal(t_lodg[4]) / to_decimal(troom_exccomp)
+        tavg_rmrev =  safe_divide(t_lodg[4] , troom_exccomp)
 
-        # tavg_rmrev2 =  to_decimal(tavg_rmrev) / to_decimal(exchg_rate)
-        # # t_avrglodg_inclcomp =  to_decimal(t_lodg[4]) / to_decimal(rm_array[6])
-        # t_avrglodg_inclcomp =  safe_divide(t_lodg[4] , rm_array[6])
-
-
-        # # t_avrglodg_exclcomp =  to_decimal(t_lodg[4]) / to_decimal((rm_array[6]) - to_decimal(t_room_comp))
-        # t_avrglodg_exclcomp =  safe_divide(t_lodg[4], to_decimal((rm_array[6]) - to_decimal(t_room_comp)))
-        # avrg_rate =  safe_divide(tot_avrg, jml_date)
-        # mtd_tot_room = get_mtd_active_room()
-        # mtd_occ =  to_decimal("0")
-
-        # if mtd_tot_room != 0:
-        #     mtd_occ =  to_decimal(rm_array[6]) / to_decimal(mtd_tot_room) * to_decimal("100")
-        #     t_rmocc_exclcomp = ( to_decimal(rm_array[6]) - to_decimal(t_room_comp)) / to_decimal(mtd_tot_room) * to_decimal("100")
-
-        # room_list = query(room_list_data, filters=(lambda room_list: room_list.wd == 0), first=True)
-        # for i in range(1,8 + 1) :
-        #     room_list.room[i - 1] = rm_array[i - 1]
-        # for i in range(11,17 + 1) :
-        #     room_list.room[i - 1] = rm_array[i - 1]
-        # for i in range(1,8 + 1) :
-        #     room_list.coom[i - 1] = to_string(room_list.room[i - 1], ">>>>>>9")
-        # for i in range(11,12 + 1) :
-        #     room_list.coom[i - 1] = to_string(room_list.room[i - 1], ">>>>>>>")
-        # room_list.room[8] = mtd_occ
-        # room_list.coom[8] = to_string(mtd_occ, " >>9.99")
-        # room_list.coom[9] = to_string(avrg_rate, " >>9.99")
-        # room_list.coom[12] = to_string(rm_array[12], ">>>>>>>")
-        # room_list.coom[13] = to_string(rm_array[13], ">>>>>>>")
-        # room_list.coom[14] = to_string(rm_array[14], ">>>>>>>")
-        # room_list.lodg[1] = t_lodg[1]
-        # room_list.lodg[2] = t_lodg[2]
-        # room_list.lodg[3] = t_lodg[3]
-        # room_list.lodg[4] = t_lodg[4]
-        # room_list.lodg[5] = t_lodg[5]
-        # room_list.lodg[6] = t_lodg[6]
+        tavg_rmrev2 =  to_decimal(tavg_rmrev) / to_decimal(exchg_rate)
+        # t_avrglodg_inclcomp =  to_decimal(t_lodg[4]) / to_decimal(rm_array[6])
+        t_avrglodg_inclcomp =  safe_divide(t_lodg[4] , rm_array[6])
 
 
-        # for i in range(16,17 + 1) :
-        #     room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>9")
-        # mtd_occ =  to_decimal("0")
-        # avrg_lodging =  to_decimal("0")
-        # avrg_rmrate =  to_decimal("0")
+        # t_avrglodg_exclcomp =  to_decimal(t_lodg[4]) / to_decimal((rm_array[6]) - to_decimal(t_room_comp))
+        t_avrglodg_exclcomp =  safe_divide(t_lodg[4], to_decimal((rm_array[6]) - to_decimal(t_room_comp)))
+        avrg_rate =  safe_divide(tot_avrg, jml_date)
+        mtd_tot_room = get_mtd_active_room()
+        mtd_occ =  to_decimal("0")
 
-        # for room_list in query(room_list_data, filters=(lambda room_list: room_list.wd != 0)):
-        #     avrg_lodging =  to_decimal(avrg_lodging) + to_decimal(room_list.avrglodg)
-        #     avrg_rmrate =  to_decimal(avrg_rmrate) + to_decimal(room_list.avrgrmrev)
-        #     avrg_lodging2 =  to_decimal(avrg_lodging2) + to_decimal(room_list.avrglodg2)
-        #     avrg_rmrate2 =  to_decimal(avrg_rmrate2) + to_decimal(room_list.avrgrmrev2)
-        #     mtd_occ =  to_decimal(mtd_occ) + to_decimal(room_list.room[8])
-        #     sum_breakfast =  to_decimal(sum_breakfast) + to_decimal(room_list.others[0])
-        #     sum_lunch =  to_decimal(sum_lunch) + to_decimal(room_list.others[1])
-        #     sum_dinner =  to_decimal(sum_dinner) + to_decimal(room_list.others[2])
-        #     sum_other =  to_decimal(sum_other) + to_decimal(room_list.others[3])
-        #     sum_breakfast_usd =  to_decimal(sum_breakfast_usd) + to_decimal(room_list.others[4])
-        #     sum_lunch_usd =  to_decimal(sum_lunch_usd) + to_decimal(room_list.others[5])
-        #     sum_dinner_usd =  to_decimal(sum_dinner_usd) + to_decimal(room_list.others[6])
-        #     sum_other_usd =  to_decimal(sum_other_usd) + to_decimal(room_list.others[7])
-        #     sum_comp =  to_decimal(sum_comp) + to_decimal(room_list.room_comp)
-        #     t_revpar =  to_decimal(t_revpar) + to_decimal(room_list.revpar)
-        #     t_revpar2 =  to_decimal(t_revpar2) + to_decimal(room_list.revpar2)
-        #     t_rmrate =  to_decimal(t_rmrate) + to_decimal(room_list.rmrate)
-        #     t_rmrate2 =  to_decimal(t_rmrate2) + to_decimal(room_list.rmrate2)
+        if mtd_tot_room != 0:
+            mtd_occ =  to_decimal(rm_array[6]) / to_decimal(mtd_tot_room) * to_decimal("100")
+            t_rmocc_exclcomp = ( to_decimal(rm_array[6]) - to_decimal(t_room_comp)) / to_decimal(mtd_tot_room) * to_decimal("100")
 
-        # room_list = query(room_list_data, filters=(lambda room_list: room_list.wd == 0), first=True)
-
-        # if tavg_rmrev == None:
-        #     tavg_rmrev =  to_decimal("0")
-
-        # if tavg_rmrev2 == None:
-        #     tavg_rmrev2 =  to_decimal("0")
-        # room_list.avrglodg =  to_decimal(avrg_lodging) / to_decimal(tmpint)
-        # room_list.avrglodg2 =  to_decimal(avrg_lodging2) / to_decimal(tmpint)
-        # room_list.avrgrmrev =  to_decimal(tavg_rmrev)
-        # room_list.avrgrmrev2 =  to_decimal(tavg_rmrev2)
-        # room_list.others[0] = sum_breakfast
-        # room_list.others[1] = sum_lunch
-        # room_list.others[2] = sum_dinner
-        # room_list.others[3] = sum_other
-        # room_list.others[4] = sum_breakfast_usd
-        # room_list.others[5] = sum_lunch_usd
-        # room_list.others[6] = sum_dinner_usd
-        # room_list.others[7] = sum_other_usd
-        # room_list.room_comp = sum_comp
-        # room_list.rmrate =  to_decimal(t_rmrate)
-        # room_list.rmrate2 =  to_decimal(t_rmrate2)
-        # room_list.fixleist =  to_decimal(tot_fixcost)
-        # room_list.fixleist2 =  to_decimal(tot_fixcost2)
-        # room_list.avrglodg_inclcomp =  to_decimal(t_avrglodg_inclcomp)
-        # room_list.avrglodg_exclcomp =  to_decimal(t_avrglodg_exclcomp)
-        # room_list.rmocc_exclcomp =  to_decimal(t_rmocc_exclcomp)
-
-        # if ((to_decimal(room_list.coom[8]) * room_list.avrgrmrev) / 100) != 0:
-        #     room_list.revpar = ( to_decimal(to_decimal(room_list.coom[8])) * to_decimal(room_list.avrgrmrev)) / to_decimal("100")
-        #     room_list.revpar2 =  to_decimal(room_list.revpar) / to_decimal(exchg_rate)
-
-        # if room_list.room[6] != 0:
-        #     room_list.avrglodg =  to_decimal(room_list.lodg[3]) / to_decimal(room_list.room[6])
+        room_list = query(room_list_data, filters=(lambda room_list: room_list.wd == 0), first=True)
+        for i in range(1,8 + 1) :
+            room_list.room[i - 1] = rm_array[i - 1]
+        for i in range(11,17 + 1) :
+            room_list.room[i - 1] = rm_array[i - 1]
+        for i in range(1,8 + 1) :
+            room_list.coom[i - 1] = to_string(room_list.room[i - 1], ">>>>>>9")
+        for i in range(11,12 + 1) :
+            room_list.coom[i - 1] = to_string(room_list.room[i - 1], ">>>>>>>")
+        room_list.room[8] = mtd_occ
+        room_list.coom[8] = to_string(mtd_occ, " >>9.99")
+        room_list.coom[9] = to_string(avrg_rate, " >>9.99")
+        room_list.coom[12] = to_string(rm_array[12], ">>>>>>>")
+        room_list.coom[13] = to_string(rm_array[13], ">>>>>>>")
+        room_list.coom[14] = to_string(rm_array[14], ">>>>>>>")
+        room_list.lodg[1] = t_lodg[1]
+        room_list.lodg[2] = t_lodg[2]
+        room_list.lodg[3] = t_lodg[3]
+        room_list.lodg[4] = t_lodg[4]
+        room_list.lodg[5] = t_lodg[5]
+        room_list.lodg[6] = t_lodg[6]
 
 
-        # room_list.avrglodg2 =  to_decimal(room_list.avrglodg) / to_decimal(exchg_rate)
+        for i in range(16,17 + 1) :
+            room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>9")
+        mtd_occ =  to_decimal("0")
+        avrg_lodging =  to_decimal("0")
+        avrg_rmrate =  to_decimal("0")
+
+        for room_list in query(room_list_data, filters=(lambda room_list: room_list.wd != 0)):
+            avrg_lodging =  to_decimal(avrg_lodging) + to_decimal(room_list.avrglodg)
+            avrg_rmrate =  to_decimal(avrg_rmrate) + to_decimal(room_list.avrgrmrev)
+            avrg_lodging2 =  to_decimal(avrg_lodging2) + to_decimal(room_list.avrglodg2)
+            avrg_rmrate2 =  to_decimal(avrg_rmrate2) + to_decimal(room_list.avrgrmrev2)
+            mtd_occ =  to_decimal(mtd_occ) + to_decimal(room_list.room[8])
+            sum_breakfast =  to_decimal(sum_breakfast) + to_decimal(room_list.others[0])
+            sum_lunch =  to_decimal(sum_lunch) + to_decimal(room_list.others[1])
+            sum_dinner =  to_decimal(sum_dinner) + to_decimal(room_list.others[2])
+            sum_other =  to_decimal(sum_other) + to_decimal(room_list.others[3])
+            sum_breakfast_usd =  to_decimal(sum_breakfast_usd) + to_decimal(room_list.others[4])
+            sum_lunch_usd =  to_decimal(sum_lunch_usd) + to_decimal(room_list.others[5])
+            sum_dinner_usd =  to_decimal(sum_dinner_usd) + to_decimal(room_list.others[6])
+            sum_other_usd =  to_decimal(sum_other_usd) + to_decimal(room_list.others[7])
+            sum_comp =  to_decimal(sum_comp) + to_decimal(room_list.room_comp)
+            t_revpar =  to_decimal(t_revpar) + to_decimal(room_list.revpar)
+            t_revpar2 =  to_decimal(t_revpar2) + to_decimal(room_list.revpar2)
+            t_rmrate =  to_decimal(t_rmrate) + to_decimal(room_list.rmrate)
+            t_rmrate2 =  to_decimal(t_rmrate2) + to_decimal(room_list.rmrate2)
+
+        room_list = query(room_list_data, filters=(lambda room_list: room_list.wd == 0), first=True)
+
+        if tavg_rmrev == None:
+            tavg_rmrev =  to_decimal("0")
+
+        if tavg_rmrev2 == None:
+            tavg_rmrev2 =  to_decimal("0")
+        room_list.avrglodg =  to_decimal(avrg_lodging) / to_decimal(tmpint)
+        room_list.avrglodg2 =  to_decimal(avrg_lodging2) / to_decimal(tmpint)
+        room_list.avrgrmrev =  to_decimal(tavg_rmrev)
+        room_list.avrgrmrev2 =  to_decimal(tavg_rmrev2)
+        room_list.others[0] = sum_breakfast
+        room_list.others[1] = sum_lunch
+        room_list.others[2] = sum_dinner
+        room_list.others[3] = sum_other
+        room_list.others[4] = sum_breakfast_usd
+        room_list.others[5] = sum_lunch_usd
+        room_list.others[6] = sum_dinner_usd
+        room_list.others[7] = sum_other_usd
+        room_list.room_comp = sum_comp
+        room_list.rmrate =  to_decimal(t_rmrate)
+        room_list.rmrate2 =  to_decimal(t_rmrate2)
+        room_list.fixleist =  to_decimal(tot_fixcost)
+        room_list.fixleist2 =  to_decimal(tot_fixcost2)
+        room_list.avrglodg_inclcomp =  to_decimal(t_avrglodg_inclcomp)
+        room_list.avrglodg_exclcomp =  to_decimal(t_avrglodg_exclcomp)
+        room_list.rmocc_exclcomp =  to_decimal(t_rmocc_exclcomp)
+
+        if ((to_decimal(room_list.coom[8]) * room_list.avrgrmrev) / 100) != 0:
+            room_list.revpar = ( to_decimal(to_decimal(room_list.coom[8])) * to_decimal(room_list.avrgrmrev)) / to_decimal("100")
+            room_list.revpar2 =  to_decimal(room_list.revpar) / to_decimal(exchg_rate)
+
+        if room_list.room[6] != 0:
+            room_list.avrglodg =  to_decimal(room_list.lodg[3]) / to_decimal(room_list.room[6])
+
+
+        room_list.avrglodg2 =  to_decimal(room_list.avrglodg) / to_decimal(exchg_rate)
 
 
     def segm_code_name():
@@ -1451,6 +1452,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
         str_cut:string = ""
         Bargt = Argt_list
         bargt_data = argt_list_data
+        # Rd 13/8/2025
+        argm = ""
         argm_name = ""
         print_list2_data.clear()
 
@@ -1475,7 +1478,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             if a > 0:
                 argm = substring(argm_name, r + 1 - 1, a)
 
-            if length(argm) > 0:
+            # Rd 13/8/2025, if argm
+            if argm and length(argm) > 0:
                 argm = substring(argm, 1, (length(argm) - 1))
         else:
             print_list2 = Print_list2()
@@ -1485,7 +1489,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             if a > 0:
                 argm = substring(argm_name, r - 1, a)
 
-            if length(argm) > 0:
+            # Rd 13/8/2025, if argm and
+            if argm and length(argm) > 0:
                 argm = substring(argm, 1, (length(argm) - 1))
 
 
@@ -1534,7 +1539,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             if a > 0:
                 room = substring(room_name, r + 1 - 1, a)
 
-            if length(room) > 0:
+            # Rd 13/8/2025, if room
+            if room and length(room) > 0:
                 room = substring(room, 1, (length(room) - 1))
         else:
             print_list3 = Print_list3()
@@ -1544,7 +1550,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             if a > 0:
                 room = substring(room_name, r - 1, a)
 
-            if length(room) > 0:
+             # Rd 13/8/2025, if room
+            if room and length(room) > 0:
                 room = substring(room, 1, (length(room) - 1))
 
 
@@ -1553,7 +1560,6 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
         nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
-
 
         nonlocal room_list, segm_list, argt_list, zikat_list, outlook_list, print_list, print_list2, print_list3, argt6_list, rline1, active_rm_list, dayuse_list, s_list, a_list, z_list, o_list, bsegm, bargt, broom, s_list, a_list, z_list, o_list, s_list, z_list
         nonlocal room_list_data, print_list_data, print_list2_data, print_list3_data, argt6_list_data, active_rm_list_data, dayuse_list_data
@@ -2363,166 +2369,173 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                     room_list.room[10] = room_list.room[10] - room_list.room[14]
                     rm_array[10] = rm_array[10] - room_list.room[14]
 
-        # for room_list in query(room_list_data, filters=(lambda room_list: room_list.wd != 0)):
-        #     for i in range(1,8 + 1) :
-        #         room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>9")
-        #     for i in range(9,10 + 1) :
-        #         room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>9.99")
-        #     for i in range(11,15 + 1) :
-        #         room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>>")
-        #     for i in range(16,17 + 1) :
-        #         room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>9")
-        # jml_date = (to_date - curr_date).days
-        # jml_date = jml_date + 1
+        for room_list in query(room_list_data, filters=(lambda room_list: room_list.wd != 0)):
+            for i in range(1,8 + 1) :
+                room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>9")
+            for i in range(9,10 + 1) :
+                room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>9.99")
+            for i in range(11,15 + 1) :
+                room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>>")
+            for i in range(16,17 + 1) :
+                room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>9")
+        jml_date = (to_date - curr_date).days
+        jml_date = jml_date + 1
 
 
-        # do_it = True
+        do_it = True
 
-        # if show_rev == 1 or show_rev == 2:
+        if show_rev == 1 or show_rev == 2:
 
-        #     for s_list in query(s_list_data, filters=(lambda s_list: s_list.selected)):
-        #         counter = counter + 1
+            for s_list in query(s_list_data, filters=(lambda s_list: s_list.selected)):
+                counter = counter + 1
 
-        #         segment = get_cache (Segment, {"segmentcode": [(eq, s_list.segm)]})
+                segment = get_cache (Segment, {"segmentcode": [(eq, s_list.segm)]})
 
-        #         if segment:
+                if segment:
 
-        #             if tmin == 0 and counter == 1:
+                    if tmin == 0 and counter == 1:
 
-        #                 if segment.betriebsnr == 0:
-        #                     tmin = 0
-
-
-        #                 else:
-        #                     tmin = segment.betriebsnr
-
-        #             if segment.betriebsnr > tmax:
-        #                 tmax = segment.betriebsnr
-
-        #             if segment.betriebsnr < tmin:
-        #                 tmin = segment.betriebsnr
-
-        #     if tmax <= 2 and tmin >= 1:
-        #         do_it = False
+                        if segment.betriebsnr == 0:
+                            tmin = 0
 
 
-        #     else:
-        #         do_it = True
+                        else:
+                            tmin = segment.betriebsnr
 
-        # if do_it:
-        #     if incl_oth:
-        #         for room_list in query(room_list_data):
-        #             othrev = calc_othrev(room_list.datum)
+                    if segment.betriebsnr > tmax:
+                        tmax = segment.betriebsnr
 
-        #             if room_list.datum != None:
+                    if segment.betriebsnr < tmin:
+                        tmin = segment.betriebsnr
 
-        #                 if room_list.datum < ci_date:
+            if tmax <= 2 and tmin >= 1:
+                do_it = False
 
-        #                     htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
 
-        #                     waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
+            else:
+                do_it = True
 
-        #                     if waehrung:
+        if do_it:
 
-        #                         exrate = get_cache (Exrate, {"datum": [(eq, room_list.datum)],"artnr": [(eq, waehrung.waehrungsnr)]})
+            if incl_oth:
 
-        #                         if exrate:
-        #                             exchg_rate =  to_decimal(exrate.betrag)
-        #                 else:
+                for room_list in query(room_list_data):
+                    othrev = calc_othrev(room_list.datum)
 
-        #                     htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
+                    if room_list.datum != None:
 
-        #                     waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
+                        if room_list.datum < ci_date:
 
-        #                     if waehrung:
-        #                         exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
-        #                     else:
-        #                         exchg_rate =  to_decimal("1")
-        #             room_list.lodg[4] = room_list.lodg[4] + othrev
-        #             room_list.lodg[6] = room_list.lodg[4] / exchg_rate
+                            htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
 
-        #             if room_list.wd != 0:
-        #                 t_lodg[4] = t_lodg[4] + othrev
+                            waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
 
-        #             t_lodg[6] = t_lodg[6] + (othrev / exchg_rate)
+                            if waehrung:
 
-        # for room_list in query(room_list_data):
-        #     tot_avrg =  to_decimal(tot_avrg) + to_decimal(room_list.room[8])
+                                exrate = get_cache (Exrate, {"datum": [(eq, room_list.datum)],"artnr": [(eq, waehrung.waehrungsnr)]})
 
-        #     if (room_list.room[6] - room_list.room[15]) != 0:
-        #         room_list.avrglodg =  to_decimal(room_list.lodg[3]) / to_decimal((room_list.room[6] - room_list.room[15]))
-        #     room_list.avrglodg2 =  to_decimal(room_list.avrglodg) / to_decimal(exchg_rate)
+                                if exrate:
+                                    exchg_rate =  to_decimal(exrate.betrag)
+                        else:
 
-        #     if (room_list.room_exccomp - room_list.room[15]) != 0:
-        #         room_list.avrgrmrev =  to_decimal(room_list.lodg[4]) / to_decimal((room_list.room[6] - room_list.room[15]))
-        #         room_list.avrgrmrev2 =  to_decimal(room_list.avrgrmrev) / to_decimal(exchg_rate)
+                            htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
 
-        #     if room_list.wd != 0:
-        #         troom_exccomp = troom_exccomp + (room_list.room[6] - room_list.room[15])
+                            waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
 
-        #     if ((to_decimal(room_list.coom[8]) * room_list.avrgrmrev) / 100) != 0:
-        #         room_list.revpar = ( to_decimal(to_decimal(room_list.coom[8])) * to_decimal(room_list.avrgrmrev)) / to_decimal("100")
-        #         room_list.revpar2 =  to_decimal(room_list.revpar) / to_decimal(exchg_rate)
+                            if waehrung:
+                                exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+                            else:
+                                exchg_rate =  to_decimal("1")
+                    room_list.lodg[4] = room_list.lodg[4] + othrev
+                    room_list.lodg[6] = room_list.lodg[4] / exchg_rate
 
-        #     room_list.avrglodg_inclcomp =  to_decimal(room_list.lodg[4]) / to_decimal(room_list.room[6])
-        #     room_list.avrglodg_exclcomp =  to_decimal(room_list.lodg[4]) / to_decimal((room_list.room[6]) - to_decimal(room_list.room_comp))
+                    if room_list.wd != 0:
+                        t_lodg[4] = t_lodg[4] + othrev
 
-        # if troom_exccomp != 0:
-        #     tavg_rmrev =  to_decimal(t_lodg[4]) / to_decimal(troom_exccomp)
-        # tavg_rmrev2 =  to_decimal(tavg_rmrev) / to_decimal(exchg_rate)
-        # avrg_rate =  to_decimal(tot_avrg) / to_decimal(jml_date)
-        # t_avrglodg_inclcomp =  to_decimal(t_lodg[4]) / to_decimal(rm_array[6])
-        # t_avrglodg_exclcomp =  to_decimal(t_lodg[4]) / to_decimal((rm_array[6]) - to_decimal(t_room_comp))
-        # mtd_occ =  to_decimal(rm_array[6]) / to_decimal((tot_room) * to_decimal(tmpint)) * to_decimal("100")
-        # t_rmocc_exclcomp = ( to_decimal(rm_array[6]) - to_decimal(t_room_comp)) / to_decimal((tot_room) * to_decimal(tmpint)) * to_decimal("100")
 
-        # room_list = query(room_list_data, filters=(lambda room_list: room_list.wd == 0), first=True)
-        # for i in range(1,8 + 1) :
-        #     room_list.room[i - 1] = rm_array[i - 1]
-        # for i in range(11,17 + 1) :
-        #     room_list.room[i - 1] = rm_array[i - 1]
-        # for i in range(1,8 + 1) :
-        #     room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>9")
-        # for i in range(11,12 + 1) :
-        #     room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>>")
-        # room_list.room[8] = mtd_occ
-        # room_list.coom[8] = to_string(mtd_occ, " >>9.99")
-        # room_list.coom[9] = to_string(avrg_rate, "->>9.99")
-        # room_list.coom[12] = to_string(rm_array[12], "->>>>>>")
-        # room_list.coom[13] = to_string(rm_array[13], "->>>>>>")
-        # room_list.coom[14] = to_string(rm_array[14], "->>>>>>")
-        # room_list.lodg[1] = t_lodg[1]
-        # room_list.lodg[2] = t_lodg[2]
-        # room_list.lodg[3] = t_lodg[3]
-        # room_list.lodg[4] = t_lodg[4]
-        # room_list.lodg[5] = t_lodg[5]
-        # room_list.lodg[6] = t_lodg[6]
-        # room_list.rmocc_exclcomp =  to_decimal(t_rmocc_exclcomp)
+                    t_lodg[6] = t_lodg[6] + (othrev / exchg_rate)
 
-        # room_list.avrglodg_inclcomp =  to_decimal(t_avrglodg_inclcomp)
-        # room_list.avrglodg_exclcomp =  to_decimal(t_avrglodg_exclcomp)
-        # for i in range(16,17 + 1) :
-        #     room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>9")
-        # mtd_occ =  to_decimal("0")
-        # avrg_lodging =  to_decimal("0")
+        for room_list in query(room_list_data):
+            tot_avrg =  to_decimal(tot_avrg) + to_decimal(room_list.room[8])
 
-        # for room_list in query(room_list_data, filters=(lambda room_list: room_list.wd != 0)):
-        #     avrg_lodging =  to_decimal(avrg_lodging) + to_decimal(room_list.avrglodg)
-        #     mtd_occ =  to_decimal(mtd_occ) + to_decimal(room_list.room[8])
-        #     sum_breakfast =  to_decimal(sum_breakfast) + to_decimal(room_list.others[0])
-        #     sum_lunch =  to_decimal(sum_lunch) + to_decimal(room_list.others[1])
-        #     sum_dinner =  to_decimal(sum_dinner) + to_decimal(room_list.others[2])
-        #     sum_other =  to_decimal(sum_other) + to_decimal(room_list.others[3])
+            if (room_list.room[6] - room_list.room[15]) != 0:
+                room_list.avrglodg =  to_decimal(room_list.lodg[3]) / to_decimal((room_list.room[6] - room_list.room[15]))
+            room_list.avrglodg2 =  to_decimal(room_list.avrglodg) / to_decimal(exchg_rate)
 
-        #     sum_breakfast_usd =  to_decimal(sum_breakfast_usd) + to_decimal(room_list.others[4])
-        #     sum_lunch_usd =  to_decimal(sum_lunch_usd) + to_decimal(room_list.others[5])
-        #     sum_dinner_usd =  to_decimal(sum_dinner_usd) + to_decimal(room_list.others[6])
-        #     sum_other_usd =  to_decimal(sum_other_usd) + to_decimal(room_list.others[7])
-        #     sum_comp =  to_decimal(sum_comp) + to_decimal(room_list.room_comp)
-        #     t_revpar =  to_decimal(t_revpar) + to_decimal(room_list.revpar)
-        #     t_revpar2 =  to_decimal(t_revpar2) + to_decimal(room_list.revpar2)
-        #     t_rmrate =  to_decimal(t_rmrate) + to_decimal(room_list.rmrate)
-        #     t_rmrate2 =  to_decimal(t_rmrate2) + to_decimal(room_list.rmrate2)
+            if (room_list.room_exccomp - room_list.room[15]) != 0:
+                room_list.avrgrmrev =  to_decimal(room_list.lodg[4]) / to_decimal((room_list.room[6] - room_list.room[15]))
+                room_list.avrgrmrev2 =  to_decimal(room_list.avrgrmrev) / to_decimal(exchg_rate)
+
+            if room_list.wd != 0:
+                troom_exccomp = troom_exccomp + (room_list.room[6] - room_list.room[15])
+
+            if ((to_decimal(room_list.coom[8]) * room_list.avrgrmrev) / 100) != 0:
+                room_list.revpar = ( to_decimal(to_decimal(room_list.coom[8])) * to_decimal(room_list.avrgrmrev)) / to_decimal("100")
+                room_list.revpar2 =  to_decimal(room_list.revpar) / to_decimal(exchg_rate)
+
+
+            # Rd 13/8,
+            # room_list.avrglodg_inclcomp =  to_decimal(room_list.lodg[4]) / to_decimal(room_list.room[6])
+            room_list.avrglodg_inclcomp =  safe_divide(room_list.lodg[4],room_list.room[6])
+            room_list.avrglodg_exclcomp =  safe_divide(room_list.lodg[4], (room_list.room[6] - room_list.room_comp))
+
+        if troom_exccomp != 0:
+            tavg_rmrev =  to_decimal(t_lodg[4]) / to_decimal(troom_exccomp)
+        tavg_rmrev2 =  to_decimal(tavg_rmrev) / to_decimal(exchg_rate)
+        avrg_rate =  to_decimal(tot_avrg) / to_decimal(jml_date)
+        t_avrglodg_inclcomp =  to_decimal(t_lodg[4]) / to_decimal(rm_array[6])
+        t_avrglodg_exclcomp =  to_decimal(t_lodg[4]) / to_decimal((rm_array[6]) - to_decimal(t_room_comp))
+        mtd_occ =  to_decimal(rm_array[6]) / to_decimal((tot_room) * to_decimal(tmpint)) * to_decimal("100")
+        t_rmocc_exclcomp = ( to_decimal(rm_array[6]) - to_decimal(t_room_comp)) / to_decimal((tot_room) * to_decimal(tmpint)) * to_decimal("100")
+
+        room_list = query(room_list_data, filters=(lambda room_list: room_list.wd == 0), first=True)
+        for i in range(1,8 + 1) :
+            room_list.room[i - 1] = rm_array[i - 1]
+        for i in range(11,17 + 1) :
+            room_list.room[i - 1] = rm_array[i - 1]
+        for i in range(1,8 + 1) :
+            room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>9")
+        for i in range(11,12 + 1) :
+            room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>>")
+        room_list.room[8] = mtd_occ
+        room_list.coom[8] = to_string(mtd_occ, " >>9.99")
+        room_list.coom[9] = to_string(avrg_rate, "->>9.99")
+        room_list.coom[12] = to_string(rm_array[12], "->>>>>>")
+        room_list.coom[13] = to_string(rm_array[13], "->>>>>>")
+        room_list.coom[14] = to_string(rm_array[14], "->>>>>>")
+        room_list.lodg[1] = t_lodg[1]
+        room_list.lodg[2] = t_lodg[2]
+        room_list.lodg[3] = t_lodg[3]
+        room_list.lodg[4] = t_lodg[4]
+        room_list.lodg[5] = t_lodg[5]
+        room_list.lodg[6] = t_lodg[6]
+        room_list.rmocc_exclcomp =  to_decimal(t_rmocc_exclcomp)
+
+        room_list.avrglodg_inclcomp =  to_decimal(t_avrglodg_inclcomp)
+        room_list.avrglodg_exclcomp =  to_decimal(t_avrglodg_exclcomp)
+        for i in range(16,17 + 1) :
+            room_list.coom[i - 1] = to_string(room_list.room[i - 1], "->>>>>9")
+        mtd_occ =  to_decimal("0")
+        avrg_lodging =  to_decimal("0")
+
+        for room_list in query(room_list_data, filters=(lambda room_list: room_list.wd != 0)):
+            avrg_lodging =  to_decimal(avrg_lodging) + to_decimal(room_list.avrglodg)
+            mtd_occ =  to_decimal(mtd_occ) + to_decimal(room_list.room[8])
+            sum_breakfast =  to_decimal(sum_breakfast) + to_decimal(room_list.others[0])
+            sum_lunch =  to_decimal(sum_lunch) + to_decimal(room_list.others[1])
+            sum_dinner =  to_decimal(sum_dinner) + to_decimal(room_list.others[2])
+            sum_other =  to_decimal(sum_other) + to_decimal(room_list.others[3])
+
+
+            sum_breakfast_usd =  to_decimal(sum_breakfast_usd) + to_decimal(room_list.others[4])
+            sum_lunch_usd =  to_decimal(sum_lunch_usd) + to_decimal(room_list.others[5])
+            sum_dinner_usd =  to_decimal(sum_dinner_usd) + to_decimal(room_list.others[6])
+            sum_other_usd =  to_decimal(sum_other_usd) + to_decimal(room_list.others[7])
+            sum_comp =  to_decimal(sum_comp) + to_decimal(room_list.room_comp)
+            t_revpar =  to_decimal(t_revpar) + to_decimal(room_list.revpar)
+            t_revpar2 =  to_decimal(t_revpar2) + to_decimal(room_list.revpar2)
+            t_rmrate =  to_decimal(t_rmrate) + to_decimal(room_list.rmrate)
+            t_rmrate2 =  to_decimal(t_rmrate2) + to_decimal(room_list.rmrate2)
 
         room_list = query(room_list_data, filters=(lambda room_list: room_list.wd == 0), first=True)
 
@@ -2573,43 +2586,43 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
         room_list = query(room_list_data, filters=(lambda room_list: room_list.datum == curr_date), first=True)
 
-        # if curr_date <= ci_date:
+        if curr_date <= ci_date:
 
-        #     for genstat in db_session.query(Genstat).filter(
-        #              (Genstat.datum == curr_date - timedelta(days=1)) & (Genstat.res_logic[inc_value(1)]) & (Genstat.zinr != "") & (Genstat.resstatus != 13)).order_by(Genstat._recid).all():
-        #         do_it = True
+            for genstat in db_session.query(Genstat).filter(
+                     (Genstat.datum == curr_date - timedelta(days=1)) & (Genstat.res_logic[inc_value(1)]) & (Genstat.zinr != "") & (Genstat.resstatus != 13)).order_by(Genstat._recid).all():
+                do_it = True
 
-        #         if do_it and not all_segm:
+                if do_it and not all_segm:
 
-        #             s_list = query(s_list_data, filters=(lambda s_list: s_list.segm == genstat.segmentcode and s_list.selected), first=True)
-        #             do_it = None != s_list
+                    s_list = query(s_list_data, filters=(lambda s_list: s_list.segm == genstat.segmentcode and s_list.selected), first=True)
+                    do_it = None != s_list
 
-        #         if do_it and not all_argt:
+                if do_it and not all_argt:
 
-        #             argt_list = query(argt_list_data, filters=(lambda argt_list: argt_list.argt == genstat.argt and argt_list.selected), first=True)
-        #             do_it = None != argt_list
+                    argt_list = query(argt_list_data, filters=(lambda argt_list: argt_list.argt == genstat.argt and argt_list.selected), first=True)
+                    do_it = None != argt_list
 
-        #         if do_it and not all_zikat:
+                if do_it and not all_zikat:
 
-        #             zikat_list = query(zikat_list_data, filters=(lambda zikat_list: zikat_list.zikatnr == genstat.zikatnr and zikat_list.selected), first=True)
-        #             do_it = None != zikat_list
+                    zikat_list = query(zikat_list_data, filters=(lambda zikat_list: zikat_list.zikatnr == genstat.zikatnr and zikat_list.selected), first=True)
+                    do_it = None != zikat_list
 
-        #         if do_it:
-        #             room_list.room[0] = room_list.room[0] + 1
-        #             rm_array[0] = rm_array[0] + 1
-        #             room_list.room[1] = room_list.room[1] + genstat.erwachs + genstat.kind1 +\
-        #                     genstat.kind2 + genstat.kind3 + genstat.gratis
-        #             rm_array[1] = rm_array[1] + genstat.erwachs + genstat.kind1 +\
-        #                     genstat.kind2 + genstat.kind3 + genstat.gratis
+                if do_it:
+                    room_list.room[0] = room_list.room[0] + 1
+                    rm_array[0] = rm_array[0] + 1
+                    room_list.room[1] = room_list.room[1] + genstat.erwachs + genstat.kind1 +\
+                            genstat.kind2 + genstat.kind3 + genstat.gratis
+                    rm_array[1] = rm_array[1] + genstat.erwachs + genstat.kind1 +\
+                            genstat.kind2 + genstat.kind3 + genstat.gratis
 
 
-        # else:
-        #     room_list.room[0] = room_list.room[6] - room_list.room[2] +\
-        #             room_list.room[4]
-        #     rm_array[0] = rm_array[0] + room_list.room[0]
-        #     room_list.room[1] = room_list.room[7] - room_list.room[3] +\
-        #             room_list.room[5]
-        #     rm_array[1] = rm_array[1] + room_list.room[1]
+        else:
+            room_list.room[0] = room_list.room[6] - room_list.room[2] +\
+                    room_list.room[4]
+            rm_array[0] = rm_array[0] + room_list.room[0]
+            room_list.room[1] = room_list.room[7] - room_list.room[3] +\
+                    room_list.room[5]
+            rm_array[1] = rm_array[1] + room_list.room[1]
 
 
         room_list.lodg[0] = room_list.lodg[3] - room_list.lodg[1] + room_list.lodg[2]
@@ -2984,6 +2997,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             create_browse()
         else:
             create_browse1()
+            
         segm_code_name()
         room_code_name()
         argt_code_name()
