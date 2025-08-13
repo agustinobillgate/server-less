@@ -4,7 +4,6 @@
 # if available arrangment
 #-----------------------------------------
 
-
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date

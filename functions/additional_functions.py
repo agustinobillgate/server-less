@@ -1,4 +1,4 @@
-# version = 1.0.0.45.4
+# version = 1.0.0.46
 # import logging
 # logging.basicConfig()
 # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -43,10 +43,8 @@ import uuid
 import operator
 
 # import decimal
-from decimal import Decimal, DivisionByZero
+from decimal import Decimal, DivisionByZero, ROUND_HALF_UP, InvalidOperation
 from typing import TypeVar, Generic, Tuple
-
-from contextvars import ContextVar
 
 from contextvars import ContextVar
 
@@ -755,10 +753,22 @@ def create_model_like(model, additional_fields=None, default_values=None):
         for name, default in post_init_defaults.items():
             setattr(self, name, default)
 
+    def make_field(v):
+        if callable(v):
+            # Already a factory function
+            return field(default_factory=v)
+        elif isinstance(v, (list, dict, set)):
+            # Mutable default — wrap in factory
+            return field(default_factory=lambda v=v: v.copy())
+        else:
+            # Immutable default — safe to assign directly
+            return field(default=v)
+        
     DataclassModel = dataclass(type(model.__name__ + string(random.randint(111111,999999)), (object,), {
         '__annotations__': fields_,
         '__post_init__': combined_post_init,
-        **{k: field(default=v) for k, v in default_values.items()}  # set default values
+        # **{k: field(default=v) for k, v in default_values.items()}  # set default values
+        **{k: make_field(v) for k, v in default_values.items()}
     }))
     return [], DataclassModel
 
@@ -1100,6 +1110,116 @@ def to_int(input_str):
 
     return int_value
 
+def num_to_string(value, fmt=""):
+    fmt = (fmt or "").strip()
+    if fmt == "":
+        return "" if value is None else str(value)
+
+    # --- Pure alignment with '>' and optional leading '-' (sign slot) ---
+    if set(fmt) <= {">", "-"} and "9" not in fmt and "." not in fmt and "," not in fmt:
+        width = len(fmt)
+        s = str(value)
+        if fmt.startswith("-"):
+            sign = "-" if (isinstance(value, (int, float, Decimal)) and Decimal(str(value)) < 0) or (isinstance(value, str) and value.startswith("-")) else " "
+            magnitude = s[1:] if str(s).startswith("-") else s
+            rest = width - 1
+            return sign + magnitude.rjust(rest)
+        else:
+            return str(value).rjust(width)
+
+    # --- Determine if numeric pattern ---
+    is_numeric_pattern = any(ch in fmt for ch in "9>.,-")
+    if not is_numeric_pattern:
+        return str(value).rjust(len(fmt))
+
+    # Split integer/decimal patterns
+    if "." in fmt:
+        int_pat, frac_pat = fmt.split(".", 1)
+    else:
+        int_pat, frac_pat = fmt, ""
+
+    # Sign slot?
+    sign_slot = int_pat.startswith("-")
+    if sign_slot:
+        int_pat_body = int_pat[1:]
+    else:
+        int_pat_body = int_pat
+
+    # Normalize numeric value
+    try:
+        dec = Decimal(str(value))
+    except (InvalidOperation, ValueError):
+        total_width = len(fmt.replace(",", ""))
+        return str(value).rjust(total_width)
+
+    negative = dec < 0
+    dec = -dec if negative else dec
+
+    # Decimal places requested
+    frac_places = sum(1 for ch in frac_pat if ch in ("9", ">"))
+    q = Decimal(1).scaleb(-frac_places)
+    if frac_places > 0:
+        dec = dec.quantize(q, rounding=ROUND_HALF_UP)
+    else:
+        dec = dec.quantize(Decimal(1), rounding=ROUND_HALF_UP)
+
+    # Extract integer and fraction digits
+    int_digits = f"{int(dec):d}"
+    frac_digits = ""
+    if frac_places > 0:
+        frac_val = (dec - int(dec)).scaleb(frac_places)
+        frac_val = abs(frac_val)
+        frac_digits = f"{int(frac_val):0{frac_places}d}"
+
+    # Fill integer side from right to left
+    pat_chars = list(int_pat_body)
+    out_int_chars = []
+    src = list(int_digits)
+    src_i = len(src) - 1
+
+    for i in range(len(pat_chars) - 1, -1, -1):
+        ch = pat_chars[i]
+        if ch == ",":
+            # Suppress comma if no digits will be to the left
+            if src_i >= 0:
+                out_int_chars.append(",")
+            else:
+                out_int_chars.append(" ")
+            continue
+
+        if src_i >= 0:
+            d = src[src_i]
+            src_i -= 1
+            out_int_chars.append(d)
+        else:
+            if ch == "9":
+                out_int_chars.append("0")
+            elif ch == ">":
+                out_int_chars.append(" ")
+            else:
+                out_int_chars.append(ch)
+
+    out_int = "".join(reversed(out_int_chars))
+
+    # Overflow digits
+    if src_i >= 0:
+        overflow = "".join(src[:src_i + 1])
+        out_int = overflow + out_int
+
+    # Fractional part
+    out_frac = ""
+    if frac_places > 0:
+        out_frac = "." + frac_digits
+
+    # Apply sign slot
+    if sign_slot:
+        sign_char = "-" if negative else " "
+        out = sign_char + out_int + out_frac
+    else:
+        out = ("-" if negative else "") + out_int + out_frac
+
+    return out
+
 
 def to_string(input_value, format_spec=""):
     if is_sqlalchemy_data(input_value):    
@@ -1128,28 +1248,30 @@ def to_string(input_value, format_spec=""):
         # String formatting: x(15) in ABL is like {:15} in Python
         width = int(clean_format_spec[2:-1])
         formatted = f"{input_value:<{width}}"
-    elif (any(char.isdigit() for char in format_spec)) and ('.' in clean_format_spec or ',' in clean_format_spec or '>' in clean_format_spec or clean_format_spec[0] == "-" ):
-        decimal_places = ""
-        num_decimal = 0
-        total_width = len(clean_format_spec.split('.')[0])
+    elif (any(char.isdigit() for char in format_spec)):
+        return num_to_string(input_value, clean_format_spec)
+    # elif (any(char.isdigit() for char in format_spec)) and ('.' in clean_format_spec or ',' in clean_format_spec or '>' in clean_format_spec or clean_format_spec[0] == "-" ):
+    #     decimal_places = ""
+    #     num_decimal = 0
+    #     total_width = len(clean_format_spec.split('.')[0])
 
-        if '.' in clean_format_spec:
-            # Numeric formatting with potential right alignment
-            decimal_places = clean_format_spec.split('.')[-1]
-            num_decimal = len(decimal_places)
+    #     if '.' in clean_format_spec:
+    #         # Numeric formatting with potential right alignment
+    #         decimal_places = clean_format_spec.split('.')[-1]
+    #         num_decimal = len(decimal_places)
 
-        input_value = to_decimal(input_value)
+    #     input_value = to_decimal(input_value)
 
-        if ',' in format_spec:
-            formatted = f"{input_value:>{total_width},.{num_decimal}f}"
-        else:
-            formatted = f"{input_value:>{total_width}.{num_decimal}f}"
+    #     if ',' in format_spec:
+    #         formatted = f"{input_value:>{total_width},.{num_decimal}f}"
+    #     else:
+    #         formatted = f"{input_value:>{total_width}.{num_decimal}f}"
         
-        if ">" in format_spec:
-            formatted = formatted.strip(" ")
+    #     if ">" in format_spec:
+    #         formatted = formatted.strip(" ")
 
-        if format_spec[0] == "-" and formatted[0] != "-":
-            formatted = " " + formatted
+    #     if format_spec[0] == "-" and formatted[0] != "-":
+    #         formatted = " " + formatted
         
     elif type(input_value) == bool:
         if input_value:
@@ -1176,11 +1298,6 @@ def to_string(input_value, format_spec=""):
 
     if " " in format_spec:
         formatted = format_spec.replace(format_spec.strip(" "),formatted)
-    #Rd 13/8/2025
-    elif clean_format_spec.isdigit():
-        # '99' means 2-digit, zero-padded
-        width = len(clean_format_spec)cr
-        formatted = f"{int(input_value):0{width}d}"
 
     return formatted
 
@@ -1583,6 +1700,7 @@ def get_db_url(hotelCode):
 
     return "postgresql://" + username + ":" + enc_pass + "@" + ip + ":" + str(port) + "/" + db_name
     # return "postgresql://postgres:shadow2010@localhost:5432/qctest"
+
 
 
 def set_db_and_schema(hotelCode):
