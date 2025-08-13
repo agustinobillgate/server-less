@@ -428,7 +428,10 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
 
                 if not disp_accompany:
 
-                    cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.rmno == res_line.zinr and cl_list.resnr == res_line.resnr and date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
+                    cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.rmno == res_line.zinr and 
+                                                           cl_list.resnr == res_line.resnr and 
+                                                           date_mdy(cl_list.arrive) == res_line.ankunft and 
+                                                           cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
 
                     if cl_list:
                         cl_list_data.remove(cl_list)
