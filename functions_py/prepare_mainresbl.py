@@ -203,7 +203,7 @@ def prepare_mainresbl(res_mode:string, user_init:string, origcode:string, gastnr
         #          (Segment.betriebsnr <= 2) & (Segment.segmentcode != reservation.segmentcode) & (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment.betriebsnr, Segment.segmentcode).all():
         for segment in db_session.query(Segment).filter(
                  (Segment.betriebsnr <= 2) & (Segment.segmentcode != reservation.segmentcode) ).order_by(Segment.betriebsnr, Segment.segmentcode).all():
-            if (num_entries(Segment.bezeich, "$$0") == 1):
+            if (num_entries(segment.bezeich, "$$0") == 1):
                 guestseg = get_cache (Guestseg, {"gastnr": [(eq, reservation.gastnr)],"segmentcode": [(eq, segment.segmentcode)]})
 
                 if not guestseg:

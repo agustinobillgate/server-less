@@ -51,7 +51,7 @@ def dml_list_create_listbl(curr_dept:int, selected_date:date):
                      (Dml_art.datum == selected_date) & 
                      
                      (entry(1, Dml_art.chginit, ";") != "")).first()
-            if (num_entries(Dml_art.chginit, ";") > 1):
+            if (num_entries(dml_art.chginit, ";") > 1):
                 if not dml_art:
 
                     dml_art = get_cache (Dml_art, {"datum": [(eq, selected_date)]})
@@ -81,7 +81,7 @@ def dml_list_create_listbl(curr_dept:int, selected_date:date):
                      (Dml_artdep.datum == selected_date) & 
                      (Dml_artdep.departement == curr_dept) & 
                      (entry(1, Dml_artdep.chginit, ";") != "") & (Dml_artdep.anzahl > 0)).first()
-            if (num_entries(Dml_artdep.chginit, ";") > 1):
+            if (num_entries(dml_artdep.chginit, ";") > 1):
                 if not dml_artdep:
 
                     dml_artdep = get_cache (Dml_artdep, {"datum": [(eq, selected_date)],"departement": [(eq, curr_dept)],"anzahl": [(gt, 0)]})

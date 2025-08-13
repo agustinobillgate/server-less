@@ -213,7 +213,7 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
                              (H_mjourn.rechnr == h_journal.rechnr) & (H_mjourn.bill_datum == h_journal.bill_datum) & 
                              (H_mjourn.sysdate == h_journal.sysdate) & (H_mjourn.zeit == h_journal.zeit) & 
                              (to_int(entry(0, H_mjourn.request, "|")) == recid_h_bill_line)).order_by(H_mjourn._recid).all():
-                        if  (num_entries(H_mjourn.request, "|") > 1):
+                        if  (num_entries(h_mjourn.request, "|") > 1):
                             h_art = get_cache (H_artikel, {"artnr": [(eq, h_mjourn.artnr)],"departement": [(eq, dept)]})
 
                             if h_art:

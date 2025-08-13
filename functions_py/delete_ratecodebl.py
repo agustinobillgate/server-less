@@ -81,7 +81,7 @@ def delete_ratecodebl(case_type:int, int1:int, user_init:string):
         for queasy in db_session.query(Queasy).filter(
                  (Queasy.key == 2) & not_ (Queasy.logi2) &  
                  (entry(1, Queasy.char3, ";") == (prcode).lower())).order_by(Queasy._recid).all():
-            if (num_entries(Queasy.char3, ";") > 2):
+            if (num_entries(queasy.char3, ";") > 2):
                 chcode = queasy.char1
 
                 ratecode = get_cache (Ratecode, {"code": [(eq, queasy.char1)],"startperiode": [(eq, startperiode)],"endperiode": [(eq, endperiode)],"wday": [(eq, wday)],"erwachs": [(eq, adult)],"zikatnr": [(eq, rmcode)]})

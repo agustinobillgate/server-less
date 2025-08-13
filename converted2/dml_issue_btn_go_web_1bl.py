@@ -125,7 +125,7 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
             #          (D_art.artnr == s_artnr) & (D_art.datum == billdate) & (num_entries(D_art.chginit, ";") > 1)).first()
             d_art = db_session.query(D_art).filter(
                      (D_art.artnr == s_artnr) & (D_art.datum == billdate) ).first()
-            if (num_entries(D_art.chginit, ";") > 1):
+            if (num_entries(d_art.chginit, ";") > 1):
                 if d_art:
 
                     if entry(1, d_art.chginit, ";") != "" and entry(1, d_art.chginit, ";") == (dml_code).lower() :
@@ -149,7 +149,7 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
             d_art1 = db_session.query(D_art1).filter(
                      (D_art1.artnr == s_artnr) & (D_art1.datum == billdate) & (D_art1.departement == curr_dept) 
                     & (entry(1, D_art1.chginit, ";") == (dml_code).lower())).first()
-            if (num_entries(D_art1.chginit, ";") > 1):
+            if (num_entries(d_art1.chginit, ";") > 1):
                 if d_art1:
 
                     if entry(1, d_art1.chginit, ";") != "" and entry(1, d_art1.chginit, ";") == (dml_code).lower() :

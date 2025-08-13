@@ -92,7 +92,7 @@ def get_guest_deposit_balance_webbl(guest_number:int):
                  (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit").lower())).first()
 
         if billjournal:
-            if (num_entries(Billjournal.bezeich, "[") > 1):
+            if (num_entries(billjournal.bezeich, "[") > 1):
                 # Rd, 13/8/2025
                 # billjournal = db_session.query(Billjournal).filter(
                 #         (Billjournal.billjou_ref == guest_number) & 

@@ -34,7 +34,7 @@ def select_segmbl():
     #          (Segment.betriebsnr <= 2) & (Segment.vip_level == 0) & (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment.segmentcode).all():
     for segment in db_session.query(Segment).filter(
              (Segment.betriebsnr <= 2) & (Segment.vip_level == 0) ).order_by(Segment.segmentcode).all():
-        if (num_entries(Segment.bezeich, "$$0") == 1):
+        if (num_entries(segment.bezeich, "$$0") == 1):
             segm_list = Segm_list()
             segm_list_data.append(segm_list)
 

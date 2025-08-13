@@ -44,7 +44,7 @@ def read_segmentbl(case_type:int, segmentno:int, segmname:string):
         #          (Segment.betriebsnr <= 2) & (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment.betriebsnr, Segment.segmentcode).all():
         for segment in db_session.query(Segment).filter(
                  (Segment.betriebsnr <= 2)).order_by(Segment.betriebsnr, Segment.segmentcode).all():
-            if (num_entries(Segment.bezeich, "$$0") == 1):
+            if (num_entries(segment.bezeich, "$$0") == 1):
                 t_segment = T_segment()
                 t_segment_data.append(t_segment)
 
