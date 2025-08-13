@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 13/8/2025
+# num_entries
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Segment
@@ -35,12 +38,17 @@ def read_segmentbl(case_type:int, segmentno:int, segmname:string):
             buffer_copy(segment, t_segment)
     elif case_type == 2:
 
+        # Rd, 13/8/2025
+        # num-entries
+        # for segment in db_session.query(Segment).filter(
+        #          (Segment.betriebsnr <= 2) & (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment.betriebsnr, Segment.segmentcode).all():
         for segment in db_session.query(Segment).filter(
-                 (Segment.betriebsnr <= 2) & (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment.betriebsnr, Segment.segmentcode).all():
-            t_segment = T_segment()
-            t_segment_data.append(t_segment)
+                 (Segment.betriebsnr <= 2)).order_by(Segment.betriebsnr, Segment.segmentcode).all():
+            if (num_entries(Segment.bezeich, "$$0") == 1):
+                t_segment = T_segment()
+                t_segment_data.append(t_segment)
 
-            buffer_copy(segment, t_segment)
+                buffer_copy(segment, t_segment)
 
     elif case_type == 3:
 
@@ -72,11 +80,12 @@ def read_segmentbl(case_type:int, segmentno:int, segmname:string):
     elif case_type == 6:
 
         for segment in db_session.query(Segment).filter(
-                 (Segment.vip_level == 0) & (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment.betriebsnr, Segment.segmentcode).all():
-            t_segment = T_segment()
-            t_segment_data.append(t_segment)
+                 (Segment.vip_level == 0) ).order_by(Segment.betriebsnr, Segment.segmentcode).all():
+            if (num_entries(Segment.bezeich, "$$0") == 1):
+                t_segment = T_segment()
+                t_segment_data.append(t_segment)
 
-            buffer_copy(segment, t_segment)
+                buffer_copy(segment, t_segment)
 
 
     return generate_output()
