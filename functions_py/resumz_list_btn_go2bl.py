@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 14/8/2025
+# to_decimal
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -217,7 +220,8 @@ def resumz_list_btn_go2bl(ldry_flag:bool, ldry:int, dstore:int, from_dept:int, t
                             turn_reportlist.todate_mproz =  to_decimal(to_decimal(to_string(cl_list.proz4 , "->>,>>9")))
                         else:
                             turn_reportlist.todate_mproz =  to_decimal(to_decimal(to_string(cl_list.proz4 , "->>9.99")))
-                        turn_reportlist.todate_ynet =  to_decimal(to_decimal(to_string(cl_list.ynet , "->>>,>>>,>>9.99")))
+                        # turn_reportlist.todate_ynet =  to_decimal(to_decimal(to_string(cl_list.ynet , "->>>,>>>,>>9.99")))
+                        turn_reportlist.todate_ynet =  to_decimal(to_string(cl_list.ynet , "->>>,>>>,>>9.99"))
                         turn_reportlist.todate_ygros =  to_decimal(to_decimal(to_string(cl_list.ygros , "->>>,>>>,>>9.99")))
 
                         if cl_list.proz6 > 999 or cl_list.proz6 < -999:
