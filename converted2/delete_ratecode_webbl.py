@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 13/8/2025
+# num_entries
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -81,31 +84,36 @@ def delete_ratecode_webbl(case_type:int, recid_list_data:[Recid_list], user_init
                     pass
                 success_flag = True
 
+            # Rd 13/8/2025
+            # for queasy in db_session.query(Queasy).filter(
+            #          (Queasy.key == 2) & not_ (Queasy.logi2) & (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode).lower())).order_by(Queasy._recid).all():
             for queasy in db_session.query(Queasy).filter(
-                     (Queasy.key == 2) & not_ (Queasy.logi2) & (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode).lower())).order_by(Queasy._recid).all():
-                chcode = queasy.char1
+                     (Queasy.key == 2) & not_ (Queasy.logi2) & 
+                     (entry(1, Queasy.char3, ";") == (prcode).lower())).order_by(Queasy._recid).all():
+                if (num_entries(Queasy.char3, ";") > 2):
+                    chcode = queasy.char1
 
-                ratecode = get_cache (Ratecode, {"code": [(eq, queasy.char1)],"startperiode": [(eq, startperiode)],"endperiode": [(eq, endperiode)],"wday": [(eq, wday)],"erwachs": [(eq, adult)],"zikatnr": [(eq, rmcode)]})
+                    ratecode = get_cache (Ratecode, {"code": [(eq, queasy.char1)],"startperiode": [(eq, startperiode)],"endperiode": [(eq, endperiode)],"wday": [(eq, wday)],"erwachs": [(eq, adult)],"zikatnr": [(eq, rmcode)]})
 
-                if ratecode:
-                    pass
-                    db_session.delete(ratecode)
-                    pass
+                    if ratecode:
+                        pass
+                        db_session.delete(ratecode)
+                        pass
 
-                bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+                    bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
-                if bediener:
-                    res_history = Res_history()
-                    db_session.add(res_history)
+                    if bediener:
+                        res_history = Res_history()
+                        db_session.add(res_history)
 
-                    res_history.nr = bediener.nr
-                    res_history.datum = get_current_date()
-                    res_history.zeit = get_current_time_in_seconds()
-                    res_history.aenderung = "Auto Delete Child RateCode, Code: " + chcode + " rmtype : " + rmtype + " Parent : " + prcode
-                    res_history.action = "RateCode"
+                        res_history.nr = bediener.nr
+                        res_history.datum = get_current_date()
+                        res_history.zeit = get_current_time_in_seconds()
+                        res_history.aenderung = "Auto Delete Child RateCode, Code: " + chcode + " rmtype : " + rmtype + " Parent : " + prcode
+                        res_history.action = "RateCode"
 
 
-                    pass
-                    pass
+                        pass
+                        pass
 
     return generate_output()
