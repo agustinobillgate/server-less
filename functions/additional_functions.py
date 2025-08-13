@@ -1176,6 +1176,11 @@ def to_string(input_value, format_spec=""):
 
     if " " in format_spec:
         formatted = format_spec.replace(format_spec.strip(" "),formatted)
+    #Rd 13/8/2025
+    elif clean_format_spec.isdigit():
+        # '99' means 2-digit, zero-padded
+        width = len(clean_format_spec)
+        formatted = f"{int(input_value):0{width}d}"
 
     return formatted
 

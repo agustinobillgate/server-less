@@ -1,7 +1,8 @@
 #using conversion tools version: 1.0.0.117
 #--------------------------------------
 # Rd 29/7/2025
-# Err di def Gt -> >
+# Err di def Gt -> > tmp_list[i - 1] = anz[j - 1]
+# additional functions to_string
 #--------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -154,6 +155,7 @@ def cr_anfcastbl(pvilanguage:int, vhp_limited:bool, dlist:string, op_type:int, p
         abreise1:date = None
         cur_date:date = None
         anz:List[int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        
         tmp_list:List[int] = create_empty_list(12,0)
         tmp_i:List[int] = create_empty_list(12, 0)
         last_resnr:int = 0
@@ -270,7 +272,7 @@ def cr_anfcastbl(pvilanguage:int, vhp_limited:bool, dlist:string, op_type:int, p
         r8_list = query(r8_list_data, filters=(lambda r8_list: r8_list.tag == 39), first=True)
         mm = to_int(substring(from_month, 0, 2)) + diff_one
         yy = to_int(substring(from_month, 2, 4))
-
+        print("1.my:", mm, yy, to_string(9, "99"))
         if diff_one == 1 and mm == 13:
             mm = 1
             yy = yy + 1
@@ -279,30 +281,61 @@ def cr_anfcastbl(pvilanguage:int, vhp_limited:bool, dlist:string, op_type:int, p
             mm = 12
             yy = yy - 1
         curr_date = date_mdy(mm, 1, yy)
+        print("Currdate:", curr_date)
+        print("Getmonth:", get_month(curr_date))
+        print("GetYear:", get_year(curr_date))
+        
         from_month = to_string(get_month(curr_date) , "99") + to_string(get_year(curr_date) , "9999")
+        print("From Month:", from_month)
         mm = to_int(substring(from_month, 0, 2))
         yy = to_int(substring(from_month, 2, 4))
-        j = mm - 1
-        for i in range(1,12 + 1) :
-            j = j + 1
+        print("2.my:", mm, yy)
+        # Rd 13/8/2025
+        # j = mm - 1
+        # for i in range(1,12 + 1) :
+        #     j = j + 1
 
-            if j > 12:
+        #     if j > 12:
+        #         j = j - 12
+        #     tmp_list[i - 1] = anz[j - 1]
+
+        #     if j == 2:
+
+        #         if mm <= 2:
+
+        #             if (yy % 4) == 0:
+        #                 tmp_list[i - 1] = 29
+        #         else:
+
+        #             if ((yy + 1) % 4) == 0:
+        #                 tmp_list[i - 1] = 29
+        
+        tmp_list = [0] * 12          # ensure 12 slots
+        j = (mm - 1) % 12            # 0..11, safe start like ABL's j = mm - 1
+
+        for i in range(12):          # i = 0..11  (ABL: DO i = 1 TO 12)
+            j = (j + 1)              # ABL: j = j + 1  (now j is 1..12 in ABL terms)
+            if j > 12:               # ABL: IF j GT 12 THEN j = j - 12
                 j = j - 12
-            tmp_list[i - 1] = anz[j - 1]
 
+            # ABL uses 1-based arrays -> Python index is j-1
+            tmp_list[i] = anz[j - 1]
+
+            # ABL: IF j = 2 THEN ...
             if j == 2:
-
                 if mm <= 2:
-
                     if (yy % 4) == 0:
-                        tmp_list[i - 1] = 29
+                        tmp_list[i] = 29
                 else:
-
                     if ((yy + 1) % 4) == 0:
-                        tmp_list[i - 1] = 29
+                        tmp_list[i] = 29
+                        
         tmp_yy = yy + 1
         curr_date = date_mdy(mm, 1, yy)
+        # Rd 13/8/2025
+        # to_date = date_mdy(mm, 1, tmp_yy) - timedelta(days=1)
         to_date = date_mdy(mm, 1, tmp_yy) - timedelta(days=1)
+
 
         if curr_date >= ci_date:
             from_date = curr_date
