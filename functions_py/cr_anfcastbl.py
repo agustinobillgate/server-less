@@ -272,7 +272,6 @@ def cr_anfcastbl(pvilanguage:int, vhp_limited:bool, dlist:string, op_type:int, p
         r8_list = query(r8_list_data, filters=(lambda r8_list: r8_list.tag == 39), first=True)
         mm = to_int(substring(from_month, 0, 2)) + diff_one
         yy = to_int(substring(from_month, 2, 4))
-        print("1.my:", mm, yy, to_string(9, "99"))
         if diff_one == 1 and mm == 13:
             mm = 1
             yy = yy + 1
@@ -281,15 +280,12 @@ def cr_anfcastbl(pvilanguage:int, vhp_limited:bool, dlist:string, op_type:int, p
             mm = 12
             yy = yy - 1
         curr_date = date_mdy(mm, 1, yy)
-        print("Currdate:", curr_date)
-        print("Getmonth:", get_month(curr_date))
-        print("GetYear:", get_year(curr_date))
         
         from_month = to_string(get_month(curr_date) , "99") + to_string(get_year(curr_date) , "9999")
-        print("From Month:", from_month)
         mm = to_int(substring(from_month, 0, 2))
         yy = to_int(substring(from_month, 2, 4))
-        print("2.my:", mm, yy)
+
+
         # Rd 13/8/2025
         # j = mm - 1
         # for i in range(1,12 + 1) :
@@ -335,7 +331,6 @@ def cr_anfcastbl(pvilanguage:int, vhp_limited:bool, dlist:string, op_type:int, p
         # Rd 13/8/2025
         # to_date = date_mdy(mm, 1, tmp_yy) - timedelta(days=1)
         to_date = date_mdy(mm, 1, tmp_yy) - timedelta(days=1)
-
 
         if curr_date >= ci_date:
             from_date = curr_date

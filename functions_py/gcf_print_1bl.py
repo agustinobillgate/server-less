@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#-------------------------------------------
+# Rd 13/8/2025
+# city -> city.strip()
+#
+#-------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -391,11 +396,21 @@ def gcf_print_1bl(pvilanguage:int, fl_list:bool, city:string, sorttype:int, from
         Guest1 =  create_buffer("Guest1",Guest)
         gcf_print2_data.clear()
 
+        # Rd, 13/8/2025
+        # strip()
+        city = city.strip()
         if city != "":
             to_city = city
 
         for guest in db_session.query(Guest).filter(
-                 (Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (Guest.name >= (from_name).lower()) & (Guest.name <= (to_name).lower()) & (Guest.wohnort >= (city).lower()) & (Guest.wohnort <= (to_city).lower()) & (Guest.anlage_datum >= fdate) & (Guest.anlage_datum <= tdate)).order_by(Guest.name).all():
+                 (Guest.gastnr > 0) & 
+                 (Guest.karteityp == sorttype) & 
+                 (Guest.name >= (from_name).lower()) & 
+                 (Guest.name <= (to_name).lower()) & 
+                 (Guest.wohnort >= (city).lower()) & 
+                 (Guest.wohnort <= (to_city).lower()) & 
+                 (Guest.anlage_datum >= fdate) & 
+                 (Guest.anlage_datum <= tdate)).order_by(Guest.name).all():
             do_it = True
 
             if not segm_all :
@@ -456,16 +471,24 @@ def gcf_print_1bl(pvilanguage:int, fl_list:bool, city:string, sorttype:int, from
                         gcf_print2.ratecode = gcf_print2.ratecode + guest_pr.code + ";"
 
 
+                # Rd, if available
+                # if segm_all:
+                #     guestseg = get_cache (Guestseg, {"gastnr": [(eq, guest.gastnr)]})
+
+                # segment = get_cache (Segment, {"segmentcode": [(eq, guestseg.segmentcode)]})
+
+                # if segment:
+                #     gcf_print2.segment = segment.bezeich
+                # else:
+                #     gcf_print2.segment = ""
+
                 if segm_all:
-
                     guestseg = get_cache (Guestseg, {"gastnr": [(eq, guest.gastnr)]})
-
-                segment = get_cache (Segment, {"segmentcode": [(eq, guestseg.segmentcode)]})
-
-                if segment:
-                    gcf_print2.segment = segment.bezeich
-                else:
-                    gcf_print2.segment = ""
+                    segment = get_cache (Segment, {"segmentcode": [(eq, guestseg.segmentcode)]})
+                    if segment:
+                        gcf_print2.segment = segment.bezeich
+                    else:
+                        gcf_print2.segment = ""
 
     if fl_list:
         create_gcflist1()

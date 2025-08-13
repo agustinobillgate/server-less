@@ -1179,7 +1179,7 @@ def to_string(input_value, format_spec=""):
     #Rd 13/8/2025
     elif clean_format_spec.isdigit():
         # '99' means 2-digit, zero-padded
-        width = len(clean_format_spec)
+        width = len(clean_format_spec)cr
         formatted = f"{int(input_value):0{width}d}"
 
     return formatted

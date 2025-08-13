@@ -812,6 +812,7 @@ update_field_mapping = {
 
     "chgdate":"chgDate",
     "totpok":"totpOK",
+    "ratecode":"rateCode",
 
     }
 docker_version += ".r"
