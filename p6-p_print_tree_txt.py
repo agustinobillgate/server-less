@@ -1,5 +1,10 @@
 import psycopg2
 from datetime import datetime
+import time, json, os
+from dotenv import load_dotenv
+
+global n_dotp, n_dotr
+load_dotenv()
 
 output_file = f"D:/VHP-Projects/vhp-serverless/output/vhptools/p_tree_structure.txt"
 # output_file = f"/usr1/vhp_gittools/output/txt/p_tree_structure.txt"
@@ -45,19 +50,10 @@ def print_modules_to_file(cursor, file, parent_nr=0, level=0):
 def main():
     # Database connection details
     conn = psycopg2.connect(
-        # host = "vhp-devtest.cjxtrsmbui3n.ap-southeast-1.rds.amazonaws.com",
-        # database = "vhptools",
-        # user = "vhpadmin",
-        # password = "bFdq8QsQoxH1vAvO"
-        # host = "localhost",
-        # database = "vhptools",
-        # user = "postgres",
-        # password = "bali2000"
-        host = "psql.staging.e1-vhp.com",
-        database = "vhptools",
-        user = "postgres",
-        password = "DevPostgreSQL#2024",
-
+        host =os.getenv("host"),
+        database = os.getenv("database"),
+        user = os.getenv("user"),
+        password = os.getenv("password"),
     )
     cursor = conn.cursor()
 

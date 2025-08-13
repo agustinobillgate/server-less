@@ -1,4 +1,4 @@
-# version = 1.0.0.44
+# version = 1.0.0.45.4
 # import logging
 # logging.basicConfig()
 # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -12,6 +12,12 @@ from sqlalchemy import not_, func, text, Function, and_
 from sqlalchemy.dialects.postgresql import CITEXT
 from operator import gt, ge, lt, le, ne, eq
 import pyotp
+import smtplib
+from email.message import EmailMessage
+from email.utils import formataddr
+from email.header import Header
+import mimetypes
+from typing import Any, Dict, List, Type
 
 # from models import Sourcetext, Desttext
 # from functions.additional_class import ExtendedDate
@@ -260,6 +266,7 @@ def update_function_cache(function_name, input_data, output_data):
     local_storage.function_cache[function_name][str(input_data)] = output_data
 
 def prepare_cache(model_list):
+    # amazonq-ignore-next-line
     for model in model_list:
         if model not in local_storage.simplified_model_list.keys():
             # local_storage.data_cache[model] = {}
@@ -501,59 +508,137 @@ def get_cache(model, filters, field_names=[]):
     return db_result
 """
 
-def create_model(model_name: string, create_fields: Dict[string, Type], default_values=None):
+
+# def create_model(model_name: string, create_fields: Dict[string, Type], default_values=None):
+#     if default_values is None:
+#         default_values = {}
+
+#     fields = {}
+#     post_init_defaults = {}
+
+#     def post_init_method(self):        
+#         for name, value in post_init_defaults.items():
+#             setattr(self, name, value)
+
+#     for name, field_type in create_fields.items():
+#         set_default_value = True
+#         if name in default_values:
+#             set_default_value = False
+
+#         if type(field_type) == list:
+#             inner_type = field_type[0]
+            
+#             fields[name] = List[inner_type]
+
+#             if len(field_type) == 2:
+#                 size = field_type[1]
+#             else:
+#                 size = 0
+
+#             if set_default_value:
+#                 default_values[name] = lambda: []
+
+#                 # amazonq-ignore-next-line
+#                 if inner_type == int: post_init_defaults[name] = [0] * size
+#                 elif inner_type == float: post_init_defaults[name] = [0.0] * size
+#                 elif re.match(".*decimal.*",string(inner_type),re.IGNORECASE): post_init_defaults[name] = [Decimal("0")] * size
+#                 elif inner_type == bool: post_init_defaults[name] = [False] * size
+#                 elif inner_type == str: post_init_defaults[name] = [""] * size
+#                 else: post_init_defaults[name] = [None] * size
+#                 # print(1, post_init_defaults.get("food_amount"))
+
+#         else:
+#             fields[name] = field_type
+#             if set_default_value:
+
+#                 if field_type == int: default_values[name] = 0
+#                 elif field_type == float: default_values[name] = 0.0
+#                 elif re.match(".*decimal.*",string(field_type),re.IGNORECASE): default_values[name] = Decimal("0")
+#                 elif field_type == bool: default_values[name] = False
+#                 elif field_type == string: default_values[name] = ""
+#                 else: default_values[name] = None         
+#                 # print(2, post_init_defaults.get("food_amount"))
+#     return [], dataclass(type(model_name, (object,), {
+#         '__annotations__': fields,
+#         '__post_init__': post_init_method,
+#         **{k: field(default_factory=lambda v=v: v) for k, v in default_values.items()}  # set default values
+#     }))
+
+def _scalar_default_for(t: Type[Any]) -> Any:
+    if t is int:
+        return 0
+    if t is float:
+        return 0.0
+    if t is bool:
+        return False
+    if t is str:
+        return ""
+    if t is Decimal:
+        return Decimal("0")
+    # fallback
+    return None
+
+def create_model(model_name: str, create_fields: Dict[str, Any], default_values: Dict[str, Any] | None = None):
+    """
+    create_fields schema:
+      - scalar:  {"pax": int, "table_no": str}
+      - fixed-size list: {"food_amount": [str, 4]}
+      - variable-size list: {"tags": [str]}  # size defaults to 0 (empty)
+    """
     if default_values is None:
         default_values = {}
 
-    fields = {}
-    post_init_defaults = {}
-
-    def post_init_method(self):
-        for name, value in post_init_defaults.items():
-            setattr(self, name, value)
+    annotations: Dict[str, Any] = {}
+    dataclass_fields: Dict[str, Any] = {}
 
     for name, field_type in create_fields.items():
-        set_default_value = True
-        if name in default_values:
-            set_default_value = False
+        user_overrode = name in default_values
 
-        if type(field_type) == list:
+        # list type: [inner_type, optional_size]
+        if isinstance(field_type, list):
+            if not field_type:
+                raise ValueError(f"{name}: list spec must be like [inner_type, optional_size]")
             inner_type = field_type[0]
-            
-            fields[name] = List[inner_type]
+            size = field_type[1] if len(field_type) >= 2 else 0
 
-            if len(field_type) == 2:
-                size = field_type[1]
+            annotations[name] = List[inner_type]
+
+            if user_overrode:
+                # respect provided default/default_factory
+                val = default_values[name]
+                if callable(val):
+                    dataclass_fields[name] = field(default_factory=val)
+                else:
+                    dataclass_fields[name] = field(default_factory=lambda v=val: list(v))
             else:
-                size = 0
-
-            if set_default_value:
-                default_values[name] = lambda: []
-
-                if inner_type == int: post_init_defaults[name] = [0] * size
-                elif inner_type == float: post_init_defaults[name] = [0.0] * size
-                elif re.match(".*decimal.*",string(inner_type),re.IGNORECASE): post_init_defaults[name] = [Decimal("0")] * size
-                elif inner_type == bool: post_init_defaults[name] = [False] * size
-                elif inner_type == str: post_init_defaults[name] = [""] * size
-                else: post_init_defaults[name] = [None] * size
-
+                # create a fresh list per instance
+                fill = _scalar_default_for(inner_type)
+                if size > 0:
+                    # for immutable scalars (int/float/bool/str/Decimal/None), *size is fine
+                    dataclass_fields[name] = field(
+                        default_factory=lambda fill=fill, size=size: [fill for _ in range(size)]
+                    )
+                else:
+                    dataclass_fields[name] = field(default_factory=list)
         else:
-            fields[name] = field_type
-            if set_default_value:
+            # scalar
+            annotations[name] = field_type
+            if user_overrode:
+                val = default_values[name]
+                if callable(val):
+                    dataclass_fields[name] = field(default_factory=val)
+                else:
+                    dataclass_fields[name] = field(default_factory=lambda v=val: v)
+            else:
+                dataclass_fields[name] = field(default_factory=lambda t=field_type: _scalar_default_for(t))
 
-                if field_type == int: default_values[name] = 0
-                elif field_type == float: default_values[name] = 0.0
-                elif re.match(".*decimal.*",string(field_type),re.IGNORECASE): default_values[name] = Decimal("0")
-                elif field_type == bool: default_values[name] = False
-                elif field_type == string: default_values[name] = ""
-                else: default_values[name] = None         
-        
-    return [], dataclass(type(model_name, (object,), {
-        '__annotations__': fields,
-        '__post_init__': post_init_method,
-        **{k: field(default_factory=lambda v=v: v) for k, v in default_values.items()}  # set default values
-    }))
+    # build the dataclass dynamically
+    cls_dict = {
+        "__annotations__": annotations,
+        **dataclass_fields
+    }
 
+    return [], dataclass(type(model_name, (object,), cls_dict))
 
 # def create_model_like(model, additional_fields=None, default_values=None):
 def create_model_like(model, additional_fields=None, default_values=None):
@@ -1118,13 +1203,14 @@ def get_delimited_data(input_str,delimiter,key,has_value):
 def update_key_delimited_data(input_str,delimiter,key,value=""):
     foundFlag = False
 
-    list = input_str.split(delimiter)
+    data_list = input_str.split(delimiter)
     output = ""
-    for data in list:
+    for data in data_list:
         if data.startswith(key) and not foundFlag:
             output += key + value + ";"
             foundFlag = True
         else:
+            # amazonq-ignore-next-line
             output += data + ";"
     
     if not foundFlag:
@@ -1318,12 +1404,21 @@ def get_current_date():
     else:
         return None
 
+# def get_current_time():
+#     if(hasattr(local_storage,"timezone")):
+#         return datetime.now(pytz.timezone(local_storage.timezone)).time()
+#     else:
+#         return None
+
 def get_current_time():
-    if(hasattr(local_storage,"timezone")):
-        return datetime.now(pytz.timezone(local_storage.timezone)).time()
-    else:
-        return None
-    
+    try:
+        if hasattr(local_storage,"timezone") and local_storage.timezone:
+            return datetime.now(pytz.timezone(local_storage.timezone)).time()
+        else:
+            return datetime.now().time()
+    except pytz.exceptions.UnknownTimeZoneError:
+        return None  
+
 def get_current_datetime():
     if(hasattr(local_storage,"timezone")):
         return datetime.now(pytz.timezone(local_storage.timezone))
@@ -1483,7 +1578,6 @@ def get_db_url(hotelCode):
 
     return "postgresql://" + username + ":" + enc_pass + "@" + ip + ":" + str(port) + "/" + db_name
     # return "postgresql://postgres:shadow2010@localhost:5432/qctest"
-
 
 
 def set_db_and_schema(hotelCode):
@@ -1778,6 +1872,79 @@ def check_totp(secret_key):
     except Exception as e:
         otp_code = ""
     return otp_code
+
+def send_email_with_attachment(
+    smtp_server: str,
+    smtp_port: int,
+    sender_alias: str,
+    sender_email: str,
+    sender_password: str,
+    receiver_emails: list,
+    subject: str,
+    html_content: str = "",
+    plain_text: str = "",
+    attachments: list = None,
+    attachments_base64: list = None):
+
+    msg = EmailMessage()
+    msg['From'] = formataddr((str(Header(sender_alias, 'utf-8')), sender_email))
+    msg['To'] = ', '.join(receiver_emails)
+    msg['Subject'] = subject
+
+    # Add both plain text and HTML versions
+    msg.set_content(plain_text)
+    msg.add_alternative(html_content, subtype='html')
+
+    # Add file path attachments
+    if attachments:
+        for file_path in attachments:
+            try:
+                mime_type, _ = mimetypes.guess_type(file_path)
+                mime_type, mime_subtype = mime_type.split('/')
+                with open(file_path, 'rb') as f:
+                    msg.add_attachment(
+                        f.read(),
+                        maintype=mime_type,
+                        subtype=mime_subtype,
+                        filename=file_path.split('/')[-1]
+                    )
+            except Exception as e:
+                print(f"[ERROR] Failed to attach {file_path}: {e}")
+
+    # Add base64 attachments
+    if attachments_base64:
+        for item in attachments_base64:
+            try:
+                file_data = base64.b64decode(item['base64_data'])
+                mime_type, _ = mimetypes.guess_type(item['filename'])
+                if mime_type is None:
+                    mime_type = 'application/octet-stream'  # default fallback
+                mime_main, mime_sub = mime_type.split('/')               
+                msg.add_attachment(
+                    file_data,
+                    maintype=mime_main,
+                    subtype=mime_sub,
+                    filename=item['filename']
+                )
+            except Exception as e:
+                print(f"[ERROR] Failed to attach base64 data for {item.get('filename', 'Unknown')}: {e}")
+
+    use_ssl = True
+
+    if smtp_port == 587:
+        use_ssl = False
+
+    if use_ssl:
+        with smtplib.SMTP_SSL(smtp_server, smtp_port) as smtp:
+            smtp.login(sender_email, sender_password)
+            smtp.send_message(msg)
+    else:
+        with smtplib.SMTP(smtp_server, smtp_port) as smtp:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.login(sender_email, sender_password)
+            smtp.send_message(msg)
+
 
 #TODO
 def translateExtended(ipCOriText, ipCContext, ipCDelimiter):

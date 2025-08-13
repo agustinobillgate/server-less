@@ -1,9 +1,11 @@
 import requests
 import psycopg2
 from psycopg2.extras import execute_values, execute_batch
-import time, json
+import time, json, os
+from dotenv import load_dotenv
 
 global n_dotp, n_dotr
+load_dotenv()
 
 n_dotp = n_dotr = n_xml = 0
 def create_tables(connection):
@@ -183,22 +185,16 @@ def get_all_commits(project_id, headers, connection):
 if __name__ == "__main__":
     # PostgreSQL configuration
     db_config = {
-        "host": "psql.staging.e1-vhp.com",
-        "database": "vhptools",
-        "user": "postgres",
-        "password": "DevPostgreSQL#2024",
-
-        # "host": "localhost",
-        # "database": "vhptools",
-        # "user": "postgres",
-        # "password": "bali2000",
-     
+        "host": os.getenv("host"),
+        "database": os.getenv("database"),
+        "user": os.getenv("user"),
+        "password": os.getenv("password"),
     }
 
-    project_id = "40308396"  
-    branch = "develop"
+    project_id = os.getenv("gitlab_project_id")
+    branch = os.getenv("gitlab_branch")
     headers = {
-        'PRIVATE-TOKEN': 'glpat-MvsFdKb4b16SyqZXvVqp',
+        'PRIVATE-TOKEN': os.getenv("gitlab_token"),
         'Cookie': '_cfuvid=fmTFyINfP48UAsCBxR.53c4U.MTQKGx9isYRy9jDKLQ-1736316897545-0.0.1.1-604800000'
         }
     # Connect to PostgreSQL database
