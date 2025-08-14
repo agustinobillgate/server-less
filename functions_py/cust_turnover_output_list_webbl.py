@@ -68,7 +68,9 @@ def cust_turnover_output_list_webbl(idflag:string, cust_list_data:[Cust_list]):
 
         bqueasy = db_session.query(Bqueasy).filter(
                  (Bqueasy._recid == queasy._recid)).first()
-        db_session.delete(bqueasy)
+        # Rd 14/8/2025
+        if bqueasy:
+            db_session.delete(bqueasy)
         pass
 
     pqueasy = db_session.query(Pqueasy).filter(

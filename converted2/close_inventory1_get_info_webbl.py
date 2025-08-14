@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 14/8/2025
+# TODAY -> today
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -57,9 +60,11 @@ def close_inventory1_get_info_webbl(pvilanguage:int):
     if bqueasy:
         msg_str = bqueasy.char1
         close_done = True
-
+        # Rd 14/8/2025
+        # TODAY -> today
+        today = datetime.date.today()
         for pqueasy in db_session.query(Pqueasy).filter(
-                 (Pqueasy.key == 279) & (Pqueasy.date1 == TODAY)).order_by(Pqueasy._recid).all():
+                 (Pqueasy.key == 279) & (Pqueasy.date1 == today)).order_by(Pqueasy._recid).all():
             db_session.delete(pqueasy)
 
         return generate_output()
@@ -101,9 +106,12 @@ def close_inventory1_get_info_webbl(pvilanguage:int):
                 pass
                 db_session.delete(pqueasy)
                 pass
-
+            
+            # Rd 14/8/2025
+            # TODAY -> today
+            today = datetime.date.today()
             for bqueasy in db_session.query(Bqueasy).filter(
-                     (Bqueasy.key == 279) & (Bqueasy.date1 == TODAY)).order_by(Bqueasy._recid).all():
+                     (Bqueasy.key == 279) & (Bqueasy.date1 == today)).order_by(Bqueasy._recid).all():
                 db_session.delete(bqueasy)
 
     return generate_output()

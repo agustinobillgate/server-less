@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 14/8/2025
+# if available bqueasy
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -68,7 +71,9 @@ def cust_turnover_sorting_detail_output_list_webbl(idflag:string, b_list_data:[B
 
         bqueasy = db_session.query(Bqueasy).filter(
                  (Bqueasy._recid == queasy._recid)).first()
-        db_session.delete(bqueasy)
+        # Rd 14/8/2025
+        if bqueasy:
+            db_session.delete(bqueasy)
         pass
 
     pqueasy = db_session.query(Pqueasy).filter(
