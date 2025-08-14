@@ -181,7 +181,9 @@ def pj_inhouse4_create_output_1webbl(idflag:string, inhouse_guest_list_data:[Inh
 
         bqueasy = db_session.query(Bqueasy).filter(
                  (Bqueasy._recid == queasy._recid)).first()
-        db_session.delete(bqueasy)
+        # Rd 14/8/2025
+        if bqueasy:
+            db_session.delete(bqueasy)
         pass
 
     pqueasy = db_session.query(Pqueasy).filter(

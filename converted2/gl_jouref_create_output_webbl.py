@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 14/8/2025
+# if available bqueasy
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -44,7 +47,9 @@ def gl_jouref_create_output_webbl(idflag:string, output_list_data:[Output_list])
 
         bqueasy = db_session.query(Bqueasy).filter(
                  (Bqueasy._recid == queasy._recid)).first()
-        db_session.delete(bqueasy)
+        # Rd 14/8/2025
+        if bqueasy:
+            db_session.delete(bqueasy)
         pass
 
         curr_recid = queasy._recid

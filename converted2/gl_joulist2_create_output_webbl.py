@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 14/8/2025
+# if available bqueasy
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -114,7 +117,9 @@ def gl_joulist2_create_output_webbl(out_list_data:[Out_list]):
 
         bqueasy = db_session.query(Bqueasy).filter(
                  (Bqueasy._recid == queasy._recid)).first()
-        db_session.delete(bqueasy)
+        # Rd 14/8/2025
+        if bqueasy:
+            db_session.delete(bqueasy)
         pass
 
     pqueasy = db_session.query(Pqueasy).filter(

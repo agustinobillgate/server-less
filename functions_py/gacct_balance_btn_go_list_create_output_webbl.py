@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 14/8/2025
+# if available bqueasy
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Paramtext
@@ -100,7 +103,9 @@ def gacct_balance_btn_go_list_create_output_webbl(idflag:string, gacct_balance_l
 
         bqueasy = db_session.query(Bqueasy).filter(
                  (Bqueasy._recid == queasy._recid)).first()
-        db_session.delete(bqueasy)
+        # Rd 14/8/2025
+        if bqueasy:
+            db_session.delete(bqueasy)
         pass
 
     pqueasy = db_session.query(Pqueasy).filter(

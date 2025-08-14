@@ -1,6 +1,7 @@
 #using conversion tools version: 1.0.0.118
 #-------------------------------------------
 # Rd 28/7/2025
+# Rd 14/8/2025
 # gitlab: 626
 # "progress": [
     #   "outputOkFlag",
@@ -10,6 +11,7 @@
     #   "availHUmsatz"
     # ],
 # update dari fitria: 8/8/2025
+# elif last-date 
 #-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -107,6 +109,10 @@ def correct_guest_ledgerbl(fdate:date, tdate:date):
             if first_date == None:
                 continue
 
+            # Rd 14/8/2025
+            elif last_date == None:
+                continue
+            
             elif first_date > billdate:
                 continue
 
