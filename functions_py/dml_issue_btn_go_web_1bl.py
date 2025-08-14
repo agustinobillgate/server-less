@@ -1,10 +1,8 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd, 30/7/2025
-# update .p baru:beecf590c526b2d7a32605ad4b180345da612894
-# 2x copas script di .p
-#-----------------------------------------
-
+#------------------------------------------
+# Rd, 13/8/2025
+# num_entries
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -122,58 +120,65 @@ def dml_issue_btn_go_web_1bl(op_list_data:[Op_list], billdate:date, closedate:da
 
         if curr_dept == 0:
 
+            # Rd 13/8/2025
+            # d_art = db_session.query(D_art).filter(
+            #          (D_art.artnr == s_artnr) & (D_art.datum == billdate) & (num_entries(D_art.chginit, ";") > 1)).first()
             d_art = db_session.query(D_art).filter(
-                     (D_art.artnr == s_artnr) & (D_art.datum == billdate) & (num_entries(D_art.chginit, ";") > 1)).first()
-
-            if d_art:
-
-                if entry(1, d_art.chginit, ";") != "" and entry(1, d_art.chginit, ";") == (dml_code).lower() :
-                    pass
-                    d_art.geliefert =  to_decimal(d_art.geliefert) + to_decimal(anzahl)
-                    pass
-            else:
-
-                d_art = db_session.query(D_art).filter(
-                         (D_art.artnr == s_artnr) & (D_art.datum == billdate)).first()
-
+                     (D_art.artnr == s_artnr) & (D_art.datum == billdate) ).first()
+            if (num_entries(d_art.chginit, ";") > 1):
                 if d_art:
-                    pass
-                    d_art.geliefert =  to_decimal(d_art.geliefert) + to_decimal(anzahl)
-                    pass
 
-        elif curr_dept > 0:
-
-            d_art1 = db_session.query(D_art1).filter(
-                     (D_art1.artnr == s_artnr) & (D_art1.datum == billdate) & (D_art1.departement == curr_dept) & (num_entries(D_art1.chginit, ";") > 1) & (entry(1, D_art1.chginit, ";") == (dml_code).lower())).first()
-
-            if d_art1:
-
-                if entry(1, d_art1.chginit, ";") != "" and entry(1, d_art1.chginit, ";") == (dml_code).lower() :
-                    pass
-                    d_art1.geliefert =  to_decimal(d_art1.geliefert) + to_decimal(anzahl)
-                    pass
-            else:
-
-                reslin_queasy = db_session.query(Reslin_queasy).filter(
-                         (Reslin_queasy.key == ("DML").lower()) & (Reslin_queasy.date1 == billdate) & (to_int(entry(0, Reslin_queasy.char1, ";")) == s_artnr) & (to_int(entry(1, Reslin_queasy.char1, ";")) == curr_dept) & (num_entries(Reslin_queasy.char3, ";") > 1) & (entry(1, Reslin_queasy.char3, ";") == (dml_code).lower())).first()
-
-                if reslin_queasy:
-
-                    if entry(1, reslin_queasy.char3, ";") != "" and entry(1, reslin_queasy.char3, ";") == (dml_code).lower() :
+                    if entry(1, d_art.chginit, ";") != "" and entry(1, d_art.chginit, ";") == (dml_code).lower() :
                         pass
-                        reslin_queasy.deci3 =  to_decimal(reslin_queasy.deci3) + to_decimal(anzahl)
-
-
+                        d_art.geliefert =  to_decimal(d_art.geliefert) + to_decimal(anzahl)
                         pass
                 else:
 
-                    d_art1 = db_session.query(D_art1).filter(
-                             (D_art1.artnr == s_artnr) & (D_art1.datum == billdate) & (D_art1.departement == curr_dept)).first()
+                    d_art = db_session.query(D_art).filter(
+                            (D_art.artnr == s_artnr) & (D_art.datum == billdate)).first()
 
-                    if d_art1:
+                    if d_art:
+                        pass
+                        d_art.geliefert =  to_decimal(d_art.geliefert) + to_decimal(anzahl)
+                        pass
+
+        elif curr_dept > 0:
+            # Rd 13/8/2025
+            # d_art1 = db_session.query(D_art1).filter(
+            #          (D_art1.artnr == s_artnr) & (D_art1.datum == billdate) & (D_art1.departement == curr_dept) & (num_entries(D_art1.chginit, ";") > 1) & (entry(1, D_art1.chginit, ";") == (dml_code).lower())).first()
+            d_art1 = db_session.query(D_art1).filter(
+                     (D_art1.artnr == s_artnr) & (D_art1.datum == billdate) & (D_art1.departement == curr_dept) 
+                    & (entry(1, D_art1.chginit, ";") == (dml_code).lower())).first()
+            if (num_entries(d_art1.chginit, ";") > 1):
+                if d_art1:
+
+                    if entry(1, d_art1.chginit, ";") != "" and entry(1, d_art1.chginit, ";") == (dml_code).lower() :
                         pass
                         d_art1.geliefert =  to_decimal(d_art1.geliefert) + to_decimal(anzahl)
                         pass
+                else:
+
+                    reslin_queasy = db_session.query(Reslin_queasy).filter(
+                            (Reslin_queasy.key == ("DML").lower()) & (Reslin_queasy.date1 == billdate) & (to_int(entry(0, Reslin_queasy.char1, ";")) == s_artnr) & (to_int(entry(1, Reslin_queasy.char1, ";")) == curr_dept) & (num_entries(Reslin_queasy.char3, ";") > 1) & (entry(1, Reslin_queasy.char3, ";") == (dml_code).lower())).first()
+
+                    if reslin_queasy:
+
+                        if entry(1, reslin_queasy.char3, ";") != "" and entry(1, reslin_queasy.char3, ";") == (dml_code).lower() :
+                            pass
+                            reslin_queasy.deci3 =  to_decimal(reslin_queasy.deci3) + to_decimal(anzahl)
+
+
+                            pass
+                    else:
+
+                        d_art1 = db_session.query(D_art1).filter(
+                                (D_art1.artnr == s_artnr) & (D_art1.datum == billdate) & (D_art1.departement == curr_dept)).first()
+
+                        if d_art1:
+                            pass
+                            d_art1.geliefert =  to_decimal(d_art1.geliefert) + to_decimal(anzahl)
+                            pass
+                        
         create_purchase_book(s_artnr, price, anzahl, billdate, lief_nr)
         update_price =  to_decimal(wert) / to_decimal(qty)
 
