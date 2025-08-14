@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 14/8/2025
+# rest-list masih kosong
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -50,8 +53,6 @@ def prepare_auto_checkinbl(pvilanguage:int, resnr:int):
         for res_line in db_session.query(Res_line).filter(
                  (Res_line.resnr == resnr) & (Res_line.active_flag == 0) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.ankunft == ci_date)).order_by(Res_line.zinr, Res_line.resstatus).all():
             res_list = Res_list()
-            res_list_data.append(res_list)
-
             res_list.gastnr = res_line.gastnr
             res_list.name = res_line.name
             res_list.zinr = res_line.zinr
@@ -61,6 +62,7 @@ def prepare_auto_checkinbl(pvilanguage:int, resnr:int):
             res_list.resstatus = res_line.resstatus
             res_list.sysdate = get_current_date()
             res_list.zeit = get_current_time_in_seconds()
+            res_list_data.append(res_list)
 
 
     reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})

@@ -9,7 +9,7 @@ from datetime import date
 from functions.fo_journal_cld_3bl import fo_journal_cld_3bl
 from models import Queasy, Artikel, Htparam
 
-def web_fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int, from_date:date, to_date:date, sorttype:int, exclude_artrans:bool, long_digit:bool, foreign_flag:bool, onlyjournal:bool, excljournal:bool, mi_post:bool, mi_showrelease:bool, mi_break:bool, id_flag:string):
+def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int, from_date:date, to_date:date, sorttype:int, exclude_artrans:bool, long_digit:bool, foreign_flag:bool, onlyjournal:bool, excljournal:bool, mi_post:bool, mi_showrelease:bool, mi_break:bool, id_flag:string):
 
     prepare_cache ([Queasy, Artikel, Htparam])
 

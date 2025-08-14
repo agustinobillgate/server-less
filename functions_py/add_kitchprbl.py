@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 13/8/2025
+# num-entries
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -202,18 +205,23 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
                 h_journal = get_cache (H_journal, {"artnr": [(eq, h_bill_line.artnr)],"departement": [(eq, dept)],"rechnr": [(eq, rechnr)],"bill_datum": [(eq, h_bill_line.bill_datum)],"zeit": [(eq, h_bill_line.zeit)],"sysdate": [(eq, h_bill_line.sysdate)],"schankbuch": [(eq, recid_h_bill_line)]})
 
                 if h_journal:
-
+                    # Rd 13/8/2025
+                    # for h_mjourn in db_session.query(H_mjourn).filter(
+                    #          (H_mjourn.departement == dept) & (H_mjourn.h_artnr == h_journal.artnr) & (H_mjourn.rechnr == h_journal.rechnr) & (H_mjourn.bill_datum == h_journal.bill_datum) & (H_mjourn.sysdate == h_journal.sysdate) & (H_mjourn.zeit == h_journal.zeit) & (num_entries(H_mjourn.request, "|") > 1) & (to_int(entry(0, H_mjourn.request, "|")) == recid_h_bill_line)).order_by(H_mjourn._recid).all():
                     for h_mjourn in db_session.query(H_mjourn).filter(
-                             (H_mjourn.departement == dept) & (H_mjourn.h_artnr == h_journal.artnr) & (H_mjourn.rechnr == h_journal.rechnr) & (H_mjourn.bill_datum == h_journal.bill_datum) & (H_mjourn.sysdate == h_journal.sysdate) & (H_mjourn.zeit == h_journal.zeit) & (num_entries(H_mjourn.request, "|") > 1) & (to_int(entry(0, H_mjourn.request, "|")) == recid_h_bill_line)).order_by(H_mjourn._recid).all():
+                             (H_mjourn.departement == dept) & (H_mjourn.h_artnr == h_journal.artnr) & 
+                             (H_mjourn.rechnr == h_journal.rechnr) & (H_mjourn.bill_datum == h_journal.bill_datum) & 
+                             (H_mjourn.sysdate == h_journal.sysdate) & (H_mjourn.zeit == h_journal.zeit) & 
+                             (to_int(entry(0, H_mjourn.request, "|")) == recid_h_bill_line)).order_by(H_mjourn._recid).all():
+                        if  (num_entries(h_mjourn.request, "|") > 1):
+                            h_art = get_cache (H_artikel, {"artnr": [(eq, h_mjourn.artnr)],"departement": [(eq, dept)]})
 
-                        h_art = get_cache (H_artikel, {"artnr": [(eq, h_mjourn.artnr)],"departement": [(eq, dept)]})
+                            if h_art:
+                                created = True
+                                t_queasy.char3 = t_queasy.char3 + " -> " + to_string(h_art.bezeich) + chr_unicode(10)
 
-                        if h_art:
-                            created = True
-                            t_queasy.char3 = t_queasy.char3 + " -> " + to_string(h_art.bezeich) + chr_unicode(10)
-
-                            if h_mjourn.request != "":
-                                t_queasy.char3 = t_queasy.char3 + ":::" + h_mjourn.request + chr_unicode(10)
+                                if h_mjourn.request != "":
+                                    t_queasy.char3 = t_queasy.char3 + ":::" + h_mjourn.request + chr_unicode(10)
 
 
         if created:
