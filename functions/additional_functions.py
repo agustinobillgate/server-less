@@ -1,4 +1,4 @@
-# version = 1.0.0.46
+# version = 1.0.0.47
 # import logging
 # logging.basicConfig()
 # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -1084,7 +1084,7 @@ def camelCase(input_str):
 
 def to_decimal(input_value):
     if type(input_value) == string:
-        input_value = input_value.replace(",","").strip(" ")
+        input_value = input_value.replace(",","").replace(" ","")
 
     if input_value == "":
         return 0
@@ -1111,7 +1111,7 @@ def to_int(input_str):
     return int_value
 
 def num_to_string(value, fmt=""):
-    fmt = (fmt or "").strip()
+    fmt = (fmt or "").strip().strip("-")
     if fmt == "":
         return "" if value is None else str(value)
 
@@ -1145,7 +1145,7 @@ def num_to_string(value, fmt=""):
     else:
         int_pat_body = int_pat
 
-    # Normalize numeric value
+    # Try to parse numeric
     try:
         dec = Decimal(str(value))
     except (InvalidOperation, ValueError):
@@ -1155,7 +1155,7 @@ def num_to_string(value, fmt=""):
     negative = dec < 0
     dec = -dec if negative else dec
 
-    # Decimal places requested
+    # Decimal places requested by pattern
     frac_places = sum(1 for ch in frac_pat if ch in ("9", ">"))
     q = Decimal(1).scaleb(-frac_places)
     if frac_places > 0:
@@ -1201,22 +1201,41 @@ def num_to_string(value, fmt=""):
 
     out_int = "".join(reversed(out_int_chars))
 
-    # Overflow digits
+    # Overflow digits (if any)
     if src_i >= 0:
         overflow = "".join(src[:src_i + 1])
         out_int = overflow + out_int
 
     # Fractional part
-    out_frac = ""
-    if frac_places > 0:
-        out_frac = "." + frac_digits
+    out_frac = "." + frac_digits if frac_places > 0 else ""
 
-    # Apply sign slot
+    # Sign handling
     if sign_slot:
         sign_char = "-" if negative else " "
         out = sign_char + out_int + out_frac
     else:
-        out = ("-" if negative else "") + out_int + out_frac
+        # implicit sign placement for negatives
+        out = out_int + out_frac
+        if negative:
+            # place '-' into the leftmost space just left of the first digit
+            first_digit_idx = None
+            for i, c in enumerate(out_int):
+                if c.isdigit():
+                    first_digit_idx = i
+                    break
+            if first_digit_idx is None:
+                out = "-" + out  # no digits? just prefix
+            else:
+                place = None
+                for i in range(first_digit_idx - 1, -1, -1):
+                    if out_int[i] == " ":
+                        place = i
+                        break
+                if place is not None:
+                    out_int = out_int[:place] + "-" + out_int[place + 1:]
+                    out = out_int + out_frac
+                else:
+                    out = "-" + out  # overflow if no room
 
     return out
 
