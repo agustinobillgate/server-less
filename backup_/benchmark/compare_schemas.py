@@ -14,35 +14,46 @@
 #
 # For loop timing only:
 # python compare_schemas.py --dsn "...dsn..." --schema1 s1 --schema2 s2 --mode time-loop --only-hash
+# python compare_schemas.py --dsn "host=psql.staging.e1-vhp.com dbname=qctest user=postgres password=DevPostgreSQL#2024 port=5432" --schema1 qcserverless2 --schema2 qcserverless3 --mode time-loop --only-hash --batch-size 1000
+
+
 #
 # For DB‑side checksum only:
 # python compare_schemas.py --dsn "...dsn..." --schema1 s1 --schema2 s2 --mode checksum
 #----------------------------------------
-
 #!/usr/bin/env python3
 import argparse, time, sys
 from typing import List, Tuple, Optional
 import psycopg2
 import psycopg2.extras
 
-# ---------- Helpers ----------
+# ---------- Identifier quoting ----------
 
-def get_columns(conn, schema: str, table: str) -> List[str]:
-    """Return column names ordered by ordinal_position."""
+def psql_ident(ident: str) -> str:
+    if not isinstance(ident, str):
+        raise TypeError(f"psql_ident expected str, got {type(ident).__name__}: {ident!r}")
+    return '"' + ident.replace('"', '""') + '"'
+
+# ---------- Introspection ----------
+
+def get_columns_with_types(conn, schema: str, table: str) -> List[Tuple[str, bool]]:
+    """
+    Returns list of (column_name, is_bytea) ordered by ordinal_position.
+    """
     with conn.cursor() as cur:
         cur.execute("""
-            SELECT column_name
-            FROM information_schema.columns
-            WHERE table_schema=%s AND table_name=%s
-            ORDER BY ordinal_position
+            SELECT c.column_name,
+                   (c.udt_name = 'bytea') AS is_bytea
+            FROM information_schema.columns c
+            WHERE c.table_schema = %s AND c.table_name = %s
+            ORDER BY c.ordinal_position
         """, (schema, table))
-        cols = [r[0] for r in cur.fetchall()]
-        if not cols:
+        rows = cur.fetchall()
+        if not rows:
             raise RuntimeError(f"No columns found for {schema}.{table}")
-        return cols
+        return [(r[0], bool(r[1])) for r in rows]
 
 def get_primary_key(conn, schema: str, table: str) -> Optional[List[str]]:
-    """Return PK column list if exists, else None."""
     with conn.cursor() as cur:
         cur.execute("""
             SELECT a.attname
@@ -56,43 +67,41 @@ def get_primary_key(conn, schema: str, table: str) -> Optional[List[str]]:
         rows = cur.fetchall()
         return [r[0] for r in rows] if rows else None
 
-def make_rowhash_sql(cols: List[str]) -> str:
-    """
-    Build an expression that hashes the *values* in column order, ignoring names.
-    Uses md5(concat_ws(...)) which is stable across schemas as long as data and column order match.
-    """
-    pieces = [f"COALESCE({psql_cast(c)}, '')" for c in cols]
-    return f"md5(concat_ws('||', {', '.join(pieces)}))"
+# ---------- Expression builders (value-only hashing; ignore field names) ----------
 
-def psql_cast(col: str) -> str:
-    # Cast every column to text in a reasonably safe way
-    # (bytea -> hex, json/jsonb -> text, arrays -> text, others -> text)
-    return f"CASE WHEN pg_typeof({psql_ident(col)})::text='bytea' THEN encode({psql_ident(col)}, 'hex') ELSE {psql_ident(col)}::text END"
+def make_value_expr(col: str, is_bytea: bool) -> str:
+    # bytea -> hex string; everything else -> ::text
+    return (f"encode({psql_ident(col)}, 'hex')" if is_bytea
+            else f"{psql_ident(col)}::text")
 
-def psql_ident(ident: str) -> str:
-    # naive identifier quoting (no dots here since we pass bare column names)
-    return '"' + ident.replace('"', '""') + '"'
+def make_rowconcat_sql(cols_with_types):
+    # Build a '||'-joined string from all column values (ignores names).
+    parts = [f"COALESCE({make_value_expr(c, isb)}, '')" for c, isb in cols_with_types]
+    return "array_to_string(ARRAY[" + ", ".join(parts) + "], '||')"
 
+def make_rowhash_sql(cols_with_types):
+    # md5 of the joined values
+    return "md5(" + make_rowconcat_sql(cols_with_types) + ")"
 # ---------- Modes ----------
 
-def time_loop(conn, schema: str, table: str, batch_size: int, only_hash: bool) -> Tuple[int, float, int]:
-    """
-    Stream rows using a server-side cursor, compute rolling checksum and time it.
-    Returns (row_count, elapsed_seconds, checksum64)
-    """
-    cols = get_columns(conn, schema, table)
-    rowhash_expr = make_rowhash_sql(cols)
+def time_loop(conn, schema: str, table: str, batch_size: int, only_hash: bool):
+    cols_with_types = get_columns_with_types(conn, schema, table)
+    rowhash_expr = make_rowhash_sql(cols_with_types)
 
-    select_list = rowhash_expr + (" " if only_hash else ", " + ", ".join(psql_ident(c) for c in cols))
-    order_cols = get_primary_key(conn, schema, table) or cols  # fall back to all cols for stable order
+    select_list = rowhash_expr if only_hash else (
+        rowhash_expr + ", " + ", ".join(psql_ident(c) for c, _ in cols_with_types)
+    )
+    order_cols = get_primary_key(conn, schema, table) or [c for c, _ in cols_with_types]
     order_by = ", ".join(psql_ident(c) for c in order_cols)
 
-    # Named cursor => server-side streaming
+    # Set work_mem in a separate (non-named) cursor BEFORE opening the named cursor
+    with conn.cursor() as cur_tmp:
+        cur_tmp.execute("SET LOCAL work_mem = '128MB'")
+
     cur_name = f"csr_{schema}_{table}_{int(time.time()*1000)}"
     cur = conn.cursor(name=cur_name, cursor_factory=psycopg2.extras.DictCursor)
     cur.itersize = batch_size
 
-    cur.execute(f'SET LOCAL work_mem = %s', ('128MB',))  # helps ORDER BY if needed
     cur.execute(f"""
         SELECT {select_list}
         FROM {psql_ident(schema)}.{psql_ident(table)}
@@ -107,7 +116,7 @@ def time_loop(conn, schema: str, table: str, batch_size: int, only_hash: bool) -
         if not batch:
             break
         for r in batch:
-            # r[0] is md5 hex string -> fold into uint64 rolling checksum (simple, fast)
+            # r[0] is md5 hex string -> fold into uint64 rolling checksum
             h = int(r[0], 16)
             checksum64 ^= (h & ((1<<64)-1))
             rows += 1
@@ -115,13 +124,9 @@ def time_loop(conn, schema: str, table: str, batch_size: int, only_hash: bool) -
     cur.close()
     return rows, elapsed, checksum64
 
-def sql_checksum(conn, schema: str, table: str) -> Tuple[int, int]:
-    """
-    Single-scan SQL checksum: SUM of hashtextextended of concatenated values.
-    Fast and memory-friendly. Returns (row_count, sum_hash64).
-    """
-    cols = get_columns(conn, schema, table)
-    rowconcat = "concat_ws('||', " + ", ".join(f"COALESCE({psql_cast(c)}, '')" for c in cols) + ")"
+def sql_checksum(conn, schema: str, table: str):
+    cols_with_types = get_columns_with_types(conn, schema, table)
+    rowconcat = make_rowconcat_sql(cols_with_types)
     with conn.cursor() as cur:
         cur.execute(f"""
             SELECT COUNT(*)::bigint,
@@ -138,17 +143,16 @@ def main():
     parser.add_argument("--dsn", required=True, help="psycopg2 DSN, e.g. 'host=... dbname=... user=... password=... sslmode=prefer'")
     parser.add_argument("--schema1", required=True)
     parser.add_argument("--schema2", required=True)
-    parser.add_argument("--tables", nargs="+", default=["gastnr", "genstat", "res_line", "reservation"])
-    parser.add_argument("--batch-size", type=int, default=5000, help="Fetchmany batch size for streaming")
+    parser.add_argument("--tables", nargs="+", default=["guest", "genstat", "res_line", "reservation"])
+    parser.add_argument("--batch-size", type=int, default=5000)
     parser.add_argument("--mode", choices=["time-loop", "checksum", "both"], default="both")
-    parser.add_argument("--only-hash", action="store_true", help="When timing, fetch only the per-row hash (less network I/O)")
+    parser.add_argument("--only-hash", action="store_true")
     args = parser.parse_args()
 
     try:
         conn = psycopg2.connect(args.dsn)
-        conn.autocommit = False  # so SET LOCAL works
+        conn.autocommit = False  # needed for SET LOCAL
 
-        # Print header
         print(f"Schemas: {args.schema1} vs {args.schema2}")
         print(f"Tables: {', '.join(args.tables)}")
         print(f"Mode: {args.mode} | batch={args.batch_size} | only_hash={args.only_hash}")
@@ -157,17 +161,12 @@ def main():
         for tbl in args.tables:
             print(f"=== {tbl} ===")
             if args.mode in ("time-loop", "both"):
-                # schema1
                 with conn:
                     rows1, t1, c1 = time_loop(conn, args.schema1, tbl, args.batch_size, args.only_hash)
-                # schema2
                 with conn:
                     rows2, t2, c2 = time_loop(conn, args.schema2, tbl, args.batch_size, args.only_hash)
 
-                if rows1 != rows2:
-                    note = " (DIFF rowcount!)"
-                else:
-                    note = ""
+                note = " (DIFF rowcount!)" if rows1 != rows2 else ""
                 equal_hint = "equal" if (rows1 == rows2 and c1 == c2) else "DIFF"
 
                 print(f" time-loop: {args.schema1}: rows={rows1:,} time={t1:.2f}s speed={rows1/max(t1,1e-9):,.0f} r/s checksum64=0x{c1:016x}")
