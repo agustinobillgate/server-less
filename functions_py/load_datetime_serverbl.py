@@ -2,7 +2,6 @@
 
 #Rulita 140825 49F8AD | Modify format date output param datetime_server MM/DD/YY format
 
-
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
