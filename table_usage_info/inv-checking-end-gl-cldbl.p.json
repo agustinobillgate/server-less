@@ -1,0 +1,49 @@
+{
+    "Htparam": {
+        "read": [
+            "fdate",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_artikel": {
+        "read": [
+            "zwkum",
+            "artnr",
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_untergrup": {
+        "read": [
+            "fibukonto",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Gl_acct": {
+        "read": [
+            "fibukonto",
+            "actual",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_besthis": {
+        "read": [
+            "val_anf_best",
+            "wert_eingang",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_bestand": {
+        "read": [
+            "val_anf_best",
+            "wert_eingang",
+            "_recid"
+        ],
+        "write": []
+    }
+}

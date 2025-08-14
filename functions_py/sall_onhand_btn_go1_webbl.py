@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 14/8/2025
+#to_decimal
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_bestand, Htparam, L_lager, L_artikel, L_untergrup
@@ -1228,8 +1231,12 @@ def sall_onhand_btn_go1_webbl(all_flag:bool, show_price:bool, zero_flag:bool, fr
         soh_list.artnr = output_list.artnr
         soh_list.bezeich = output_list.bezeich
         soh_list.unit = output_list.unit
-        soh_list.act_qty =  to_decimal(to_decimal(output_list.act_qty) )
-        soh_list.act_val =  to_decimal(to_decimal(output_list.act_val) )
+        # Rd, 14/8/2025
+        # soh_list.act_qty =  to_decimal(to_decimal(output_list.act_qty) )
+        # soh_list.act_val =  to_decimal(to_decimal(output_list.act_val) )
+        print("act_qty:", output_list.act_qty, ":", output_list.act_val)
+        soh_list.act_qty =  to_decimal(output_list.act_qty) 
+        soh_list.act_val =  to_decimal(output_list.act_val) 
         soh_list.cont1 = output_list.cont1
         soh_list.d_unit = output_list.d_unit
         soh_list.cont2 = output_list.cont2
