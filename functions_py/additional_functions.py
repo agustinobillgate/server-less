@@ -1,4 +1,4 @@
-# version = 1.0.0.47
+# version = 1.0.0.48
 # import logging
 # logging.basicConfig()
 # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -1481,20 +1481,23 @@ def date_mdy(*args):
     month = 0
     year = 0
 
-    # input string dd/mm/yyyyy
     if len(args) == 1 and isinstance(args[0], string):
         input_str = args[0]        
-
-
         if input_str.strip(" ") == "":
             return None
 
-        date_str = input_str.split("/")
-        
-        day = to_int(date_str[0])
-        month = to_int(date_str[1])
-        year = to_int(date_str[2])
-
+        # input string dd/mm/yyyyy
+        if "/" in input_str:
+            date_str = input_str.split("/")
+            day = to_int(date_str[0])
+            month = to_int(date_str[1])
+            year = to_int(date_str[2])
+        # input string yyyy-mm-dd
+        elif "-" in input_str:
+            date_str = input_str.split("-")
+            year = to_int(date_str[0])
+            month = to_int(date_str[1])
+            day = to_int(date_str[2])
     #input integer m,d,y
     elif len(args) == 3 and isinstance(args[0], int) and isinstance(args[1], int) and isinstance(args[0], int):
         month = args[0]

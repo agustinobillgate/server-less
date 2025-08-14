@@ -108,7 +108,6 @@ def pj_arrive1_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 add_cllist()
 
                 if not incl_accompany:
-                    print("Cl-List.arrival.111:", cl_list.arrival)
                     cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.rmno == res_line.zinr and cl_list.resnr == res_line.resnr and date_mdy(cl_list.arrival) == res_line.ankunft and to_decimal(cl_list.zipreis) == 0 and cl_list.a == 0 and (cl_list.res_stat == 11 or cl_list.res_stat == 13) and cl_list.co < 1), first=True)
 
                     if cl_list:
@@ -505,7 +504,6 @@ def pj_arrive1_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 add_cllist()
 
                 if not incl_accompany:
-                    print("Cl-List.arrival.509:", cl_list.arrival)
                     cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.rmno == res_line.zinr and cl_list.resnr == res_line.resnr and date_mdy(cl_list.arrival) == res_line.ankunft and to_decimal(cl_list.zipreis) == 0 and cl_list.a == 0 and (cl_list.res_stat == 11 or cl_list.res_stat == 13) and cl_list.co < 1), first=True)
 
                     if cl_list:
@@ -941,7 +939,6 @@ def pj_arrive1_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                     add_cllist1()
 
                     if not incl_accompany:
-                        print("Cl-List.arrival.3:", cl_list.arrival)
                         cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.rmno == res_line.zinr and cl_list.resnr == res_line.resnr and date_mdy(cl_list.arrival) == res_line.ankunft and to_decimal(cl_list.zipreis) == 0 and cl_list.a == 0 and (cl_list.res_stat == 8 or cl_list.res_stat == 11 or cl_list.res_stat == 13) and cl_list.co < 1), first=True)
 
                         if cl_list:
@@ -980,7 +977,6 @@ def pj_arrive1_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                     add_cllist1()
 
                     if not incl_accompany:
-                        print("Cl-List.arrival.1:", cl_list.arrival)
                         cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.rmno == res_line.zinr and cl_list.resnr == res_line.resnr and date_mdy(cl_list.arrival) == res_line.ankunft and to_decimal(cl_list.zipreis) == 0 and cl_list.a == 0 and (cl_list.res_stat == 8 or cl_list.res_stat == 11 or cl_list.res_stat == 13) and cl_list.co < 1), first=True)
 
                         if cl_list:
@@ -1019,7 +1015,6 @@ def pj_arrive1_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                     add_cllist1()
 
                     if not incl_accompany:
-                        print("Cl-List.arrival.2:", cl_list.arrival)
                         cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.rmno == res_line.zinr and cl_list.resnr == res_line.resnr and date_mdy(cl_list.arrival) == res_line.ankunft and to_decimal(cl_list.zipreis) == 0 and cl_list.a == 0 and (cl_list.res_stat == 8 or cl_list.res_stat == 11 or cl_list.res_stat == 13) and cl_list.co < 1), first=True)
 
                         if cl_list:
