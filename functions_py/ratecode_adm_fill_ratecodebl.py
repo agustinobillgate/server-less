@@ -3,6 +3,7 @@
 # Rd 31/7/2025
 # gitlab: 313
 # add if available
+# Rd 15/8/2025, erwach -> erwachs
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -63,7 +64,8 @@ def ratecode_adm_fill_ratecodebl(user_init:string, prcode:string, market_nr:int,
 
         nonlocal p_list, early_discount, kickback_discount, stay_pay, child_list, child_ratecode, q_list, r_list, qsy, rbuff, q_curr, tb3_buff
         nonlocal child_list_data, child_ratecode_data, q_list_data, r_list_data
-
+        # Rd 15/8/2025
+        db_session.commit()
         return {"p-list": p_list_data}
 
     def create_child_list():
@@ -109,13 +111,17 @@ def ratecode_adm_fill_ratecodebl(user_init:string, prcode:string, market_nr:int,
             if ratecode:
                 bef_start = ratecode.startperiode
                 bef_end = ratecode.endperiode
-                bef_pax = ratecode.erwach
+                # Rd 15/8/2025
+                # erwach -> erwachs
+                bef_pax = ratecode.erwachs
                 bef_rate =  to_decimal(ratecode.zipreis)
 
 
         else:
             ratecode = Ratecode()
             db_session.add(ratecode)
+            # Rd 15/8/2025
+            db_session.commit()
 
 
         if p_list.s_recid != 0:
@@ -150,6 +156,8 @@ def ratecode_adm_fill_ratecodebl(user_init:string, prcode:string, market_nr:int,
 
 
             res_history.action = "RateCode"
+            # Rd 15/8/2025
+            db_session.commit()
             pass
             pass
 
@@ -290,6 +298,8 @@ def ratecode_adm_fill_ratecodebl(user_init:string, prcode:string, market_nr:int,
 
             buffer_copy(child_ratecode, ratecode)
             child_ratecode_data.remove(child_ratecode)
+            # Rd 15/8/2025
+            db_session.commit()
 
         for child_list in query(child_list_data, filters=(lambda child_list: child_list.true_child)):
 
