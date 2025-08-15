@@ -2483,8 +2483,14 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             tavg_rmrev =  to_decimal(t_lodg[4]) / to_decimal(troom_exccomp)
         tavg_rmrev2 =  to_decimal(tavg_rmrev) / to_decimal(exchg_rate)
         avrg_rate =  to_decimal(tot_avrg) / to_decimal(jml_date)
-        t_avrglodg_inclcomp =  to_decimal(t_lodg[4]) / to_decimal(rm_array[6])
-        t_avrglodg_exclcomp =  to_decimal(t_lodg[4]) / to_decimal((rm_array[6]) - to_decimal(t_room_comp))
+
+        # Rd, 14/8/2025
+        # safe_divide
+        # t_avrglodg_inclcomp =  to_decimal(t_lodg[4]) / to_decimal(rm_array[6])
+        # t_avrglodg_exclcomp =  to_decimal(t_lodg[4]) / to_decimal((rm_array[6]) - to_decimal(t_room_comp))
+        t_avrglodg_inclcomp =  safe_divide(t_lodg[4], rm_array[6])
+        t_avrglodg_exclcomp =  safe_divide(t_lodg[4], (rm_array[6]) - to_decimal(t_room_comp))
+
         mtd_occ =  to_decimal(rm_array[6]) / to_decimal((tot_room) * to_decimal(tmpint)) * to_decimal("100")
         t_rmocc_exclcomp = ( to_decimal(rm_array[6]) - to_decimal(t_room_comp)) / to_decimal((tot_room) * to_decimal(tmpint)) * to_decimal("100")
 
