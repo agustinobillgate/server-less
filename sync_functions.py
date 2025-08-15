@@ -36,6 +36,35 @@ def get_git_diff_between(start_hash, end_hash):
     except subprocess.CalledProcessError:
         return "⚠️ Failed to retrieve git diff."
 
+def git_reset_hard(log_dir='logs'):
+    """Reset the repository to HEAD, discarding all local changes"""
+    log_file = os.path.join(log_dir, 'git_pull_history.log')
+    
+    try:
+        result = subprocess.run(['git', 'reset', '--hard', 'HEAD'],
+                                capture_output=True, text=True, check=True)
+        
+        with open(log_file, 'a') as log:
+            log.write(f"\n=== Git Reset --hard at {datetime.now().isoformat()} ===\n")
+            log.write("Output from `git reset --hard HEAD`:\n")
+            log.write(result.stdout + "\n")
+            log.write("="*60 + "\n")
+        
+        print("🔄 Git reset --hard completed successfully.")
+        return True
+    
+    except subprocess.CalledProcessError as e:
+        print("❌ Failed to reset git repository:")
+        print(e.stderr)
+        
+        with open(log_file, 'a') as log:
+            log.write(f"\n=== Git Reset --hard FAILED at {datetime.now().isoformat()} ===\n")
+            log.write("Error:\n")
+            log.write(e.stderr)
+            log.write("="*60 + "\n")
+        
+        return False
+
 def git_pull(log_dir='logs'):
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, 'git_pull_history.log')
@@ -43,6 +72,12 @@ def git_pull(log_dir='logs'):
     branch = get_current_branch()
     if not branch:
         print("❌ Failed to detect current git branch.")
+        return False
+
+    # First, reset --hard to discard local changes
+    print("🔄 Resetting repository to discard local changes...")
+    if not git_reset_hard(log_dir):
+        print("❌ Failed to reset repository. Aborting.")
         return False
 
     before_hash = get_current_commit_hash()
@@ -126,7 +161,7 @@ def main():
     os.makedirs(logs_dir, exist_ok=True)
     log_file = os.path.join(logs_dir, 'sync_functions_timestamps.log')
 
-    # Step 0: Git Pull (Dynamic Branch)
+    # Step 0: Git Reset --hard + Git Pull (Dynamic Branch)
     if not git_pull(log_dir=logs_dir):
         print("❌ Aborting due to git pull failure.")
         sys.exit(1)
@@ -155,4 +190,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
