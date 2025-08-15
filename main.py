@@ -1040,6 +1040,7 @@ def update_input_format(obj,input_data):
                 if outer_input_param_name in input_data:
                     if not inner_input_param_name in input_data[outer_input_param_name]:
                         for field_name in input_data[outer_input_param_name]:
+                            # print("Field:", inner_input_param_name, field_name)
                             if inner_input_param_name.lower() == field_name.lower():
                                 input_data[outer_input_param_name][inner_input_param_name] = input_data[outer_input_param_name]
                                 input_data[outer_input_param_name].pop(field_name)
