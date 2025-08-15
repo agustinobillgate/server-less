@@ -1850,7 +1850,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                             orig_infostr = existing_request.orig_infostr 
                             local_storage.debugging = local_storage.debugging + ',Retrieve'
                             # print("Existing JSON:", json_data)
-                            print("Existing JSON:")
+                            # print("Existing JSON:")
                             is_existing_json = True
                             existing_json_data = json_data
                         else: 
@@ -1871,7 +1871,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                         local_storage.debugging = local_storage.debugging + ',Run'
                         db_session.commit()
                     if importlib.util.find_spec(module_name):
-                        print("Masuk Module:", module_name, function_name)
+                        print("Masuk Module:", module_name)
                         module = importlib.import_module(module_name)
                         if hasattr(module, function_name):
                             try:
