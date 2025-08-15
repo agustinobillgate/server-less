@@ -54,7 +54,7 @@ from urllib.parse import urlparse
 from pprint import pprint
 import watchtower, logging, traceback
 from functions.additional_functions import *
-from functions.check_userkeybl import *
+# from functions.check_userkeybl import *
 from decimal import Decimal
 import asyncio
 from models.base import get_database_session
@@ -1665,6 +1665,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
 
             module_name = "functions." + function_name
             # ok_flag = get_output(check_userkeybl(input_data["inputUsername"], input_data["inputUserkey"]))
+            of_flag = True
             version = ""
             if os.environ.get('AWS_EXECUTION_ENV'):
                 version = get_function_version(module_name, function_name, "/var/task/functions/")
