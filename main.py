@@ -1,4 +1,4 @@
-docker_version = "1.0.0.24.689"
+docker_version = "1.0.0.24.690"
 
 #Version 1.0.0.26
 
