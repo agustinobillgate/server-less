@@ -78,8 +78,6 @@ from sqlalchemy.orm import sessionmaker
 from mangum import Mangum
 
 from models.guestbook import Guestbook
-# print("1:", docker_version)
-
 log_agent = vhp_module = service_name = hotel_code = inputUsername = orig_infostr = existing_json_data = ""
 is_existing_json = False
 
@@ -253,7 +251,6 @@ update_field_mapping = {
     "bankname":"bankName",
     "duedate": "dueDate",
     
-    
     "cid": "CID",
     "mid": "MID",
     "printed1a": "printed1A",
@@ -279,7 +276,6 @@ update_field_mapping = {
     "art": "Art",
     "kontnr-res":"Kontnr-res",
     
-
     #updated 1.0.0.20
     "roomnumber": "roomNumber",
     "checkoutdate": "checkoutDate",
@@ -449,18 +445,15 @@ update_field_mapping = {
     "urlws": "urlWS",
     "licensenr": "licenseNr",
     
-    
     "location": "Location",
     "maintask": "Maintask",
     # "tstatus": "tStatus",
     
     "main-nm": "Main-nm",
-    
 
     #updated 1.0.0.42r (4-Juli-2025) egRepdurationDisp
     "email": "Email",
     
-
     #updated 11-Juli-2025
     "outchar": "outChar",
     "outint" : "outInt",
@@ -549,13 +542,11 @@ update_field_mapping = {
     "engId": "EngID",
     # "activeflag":"ActiveFlag", #egMainschedulePrepare
     # "activeflag":"activeFlag", #egMainschedulePrepare
-
     # _3monthly_forecast_webbl
     "rmsold":"rmSold",
     "houseuse":"houseUse",
     "rmrevenue":"rmRevenue",
     "avrgrevenue":"avrgRevenue",
-
     "activate_deposit":"activateDeposit",
 
     # pr_list_btn_go_1bl
@@ -569,7 +560,6 @@ update_field_mapping = {
     "deptname": ["deptName","DeptName"],
     "main_nr": ["Main-nr", "main-nr"],
 
-    
     # "PI-status":["pi-status", "pi-Status"],
     "pi_status":["pi-status", "PI-status"],
     "pi_type":["pi-type", "PI-type"],
@@ -581,7 +571,6 @@ update_field_mapping = {
     "avail-addvat":"avail-addVAT",
     "availAddvat": ["availAddVat","availAddVAT","availAddVat"],
    
-
     "readequipment":"readEquipment",
     "datum":"Datum",
     "gruppenname":"Gruppenname",
@@ -841,8 +830,6 @@ update_table_name("vhpSS","egStaffPrepare","userSkill","UserSkill")
 update_table_name("vhpSC","rmAtproductCreateUmsatz1","b1list","b1List")
 update_table_name("vhpSC","rmAtproductCreateUmsatz1","rmatproduct","rmAtproduct")
 
-
-
 #updated 1.0.0.22
 update_table_name("HouseKeeping","getStoreRoomDiscrepancyList","hkdiscrepancy-list","hk-discrepancy-list")
 
@@ -851,11 +838,8 @@ update_table_name("vhpENG","egMainschedulePrepare","Delete-Flag","delete-flag")
 update_table_name("vhpENG","egRephistorymoveCreateBrowse","smove","sMove")
 update_table_name("vhpENG","egRephistorymoveBtnGo","smove","sMove")
 
-
 #updated 1.0.0.23
-
 update_table_name("vhpSS","egStaffPrepare","dept","Dept")
-
 update_table_name("vhpAR","soaRelease","deptno","deptNo")
 # update_table_name("vhpAR","soaRelease","DeptNo","deptNo")
 
@@ -869,13 +853,10 @@ update_table_name("vhpINV","chgStoreRequestLoadData","deptno","deptNo")
 update_table_name("vhpENG","egPropertyListBtnGo","type","TYPE")
 update_table_name("vhpENG","egPropertyListBtnGo","spec","Spec")
 
-
-
 #updated 1.0.0.32, 16-4-2025
 update_table_name("vhpENG","egChgReqPrepare","tFstat","tFStat")
 update_table_name("vhpENG","egChgReqPrepare","svendor","sVendor")
 update_table_name("vhpENG","egPropertyLoad","svendor","tEgProperty")
-
 
 update_table_name("vhpENG","egReprequestcancelPrepare","mainaction","MainAction")
 update_table_name("vhpENG","egReprequestcancelPrepare","tmaintain","tMaintain")
@@ -902,8 +883,6 @@ update_table_name("vhpENG","egSelLookmaintainPrepare","mainaction","MainAction")
 # update_table_name("vhpINV","storeReqInsPrepare","appflag","appFlag")
 
 #updated 1.0.0.36r (19-Mei-2025) egSubTaskPrepare
-
-
 #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
 
 update_table_name("vhpFOR","monthlyFcastDDown1List1","adult","Adult")
@@ -916,17 +895,13 @@ update_table_name("vhpENG","egReqlistLoad","Action","action")
 update_table_name("vhpENG","egReqlistLoad","sMaintain","smaintain")
 
 #updated 1.0.0.39r (27-Mei-2025) fb_flashbl
-
-
 #updated 1.0.0.40r (3-Juli-2025) 
 update_table_name("vhpENG","egRepmaintainDisp","tlocation","tLocation")
 update_table_name("vhpENG","egRepmaintainDisp","tstatus","tStatus")
 
-
 update_table_name("vhpENG","egMaincalendardelPrepare","tlocation","tLocation")
 update_table_name("vhpENG","egMaincalendardelPrepare","tstatus","tStatus")
 update_table_name("vhpENG","egMaincalendardelPrepare","tmaintask","tMaintask")
-
 
 update_table_name("vhpENG","egRepdurationDisp","tstatus","tStatus")
 update_table_name("vhpENG","egRepdurationDisp","tmaintask","tMaintask")
@@ -942,7 +917,6 @@ update_table_name("vhpENG","egRepmaintainPrepare","tmaintask","tMaintask")
 update_table_name("vhpENG","egRepmaintainPrepare","tfrequency","tFrequency")
 update_table_name("vhpENG","egRepmaintainPrepare","tstatus","tStatus")
 
-
 update_table_name("vhpENG","egRepdurationPrepare","tlocation","tLocation")
 update_table_name("vhpENG","egRepdurationPrepare","tmaintask","tMaintask")
 
@@ -951,7 +925,6 @@ update_table_name("vhpENG","egPropertyPrepare","location","Location")
 update_table_name("vhpENG","egPropertyPrepare","maintask","Maintask")
 
 update_table_name("vhpSS","dynaratecodeUpdateCreateDynarateList","dynarateList","dynaRateList")
-
 update_table_name("vhpAP","getAPListAddItemList","ttstock","ttStock")
 
 #update 1.0.0.42 (11-Juli-2025)
@@ -975,7 +948,6 @@ update_table_name("vhpFA","prChgPrepare1","t-l-artikel","tLArtikel")
 
 update_table_name("vhpOU","splitbillPrepare","menu","MENU")
 # update_table_name("vhpINV","storeReqInsPrepare","op-list","opList"
-
 # update_table_name("vhpOU","restInvWaiterTransfer1", "t-kellner", "t-kellner1")
 
 
@@ -1023,8 +995,6 @@ class CustomJSONEncoder(json.JSONEncoder):
             return obj.days
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
-
-
 
 def update_input_format(obj,input_data):
     # Update the input object if variable has "-"
@@ -1410,7 +1380,6 @@ def update_output_format(output_data):
         if curr_module_function in update_table_name_list and camelCaseKey in update_table_name_list[curr_module_function]:
             output_data[update_table_name_list[curr_module_function][camelCaseKey]] = output_data[camelCaseKey]
             output_data.pop(camelCaseKey)
-
 
 def decimal_converter(obj):
     if isinstance(obj, Decimal):
