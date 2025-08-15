@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 15/8/2025
+# erwach -> erwachs
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -194,7 +197,10 @@ def hk_countsheetbl(pvilanguage:int):
                             out_list.anz = out_list.anz + 1
                             out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(res_line.erwach, ">> ")
                             out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
-                            out_list.pax = out_list.pax + to_string(res_line.erwach, ">>> ")
+                            # Rd 15/8/2025
+                            # out_list.pax = out_list.pax + to_string(res_line.erwach, ">>> ")
+                            out_list.pax = out_list.pax + to_string(res_line.erwachs, ">>> ")
+
 
                     elif zimmer.zistatus >= 0 and zimmer.zistatus <= 2:
 
