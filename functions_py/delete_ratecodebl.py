@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 13/8/2025
-# num_entries
+# num_entries, db_commit()
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -56,6 +56,8 @@ def delete_ratecodebl(case_type:int, int1:int, user_init:string):
 
 
             db_session.delete(ratecode)
+            # Rd 15/8/2025
+            db_session.commit()
             pass
 
             bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
@@ -89,6 +91,8 @@ def delete_ratecodebl(case_type:int, int1:int, user_init:string):
                 if ratecode:
                     pass
                     db_session.delete(ratecode)
+                    # Rd 15/8/2025
+                    db_session.commit()
                     pass
 
                 bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
@@ -102,6 +106,8 @@ def delete_ratecodebl(case_type:int, int1:int, user_init:string):
                     res_history.zeit = get_current_time_in_seconds()
                     res_history.aenderung = "Delete Child RateCode, Code: " + chcode + " rmtype : " + rmtype
                     res_history.action = "RateCode"
+                    # Rd 15/8/2025
+                    db_session.commit()
 
                     pass
                     pass

@@ -5,7 +5,7 @@
 # requery, handle recid none
 # num_entries
 #-----------------------------------------
-from additional_functions import *
+from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.calc_servvat import calc_servvat
@@ -226,7 +226,6 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
         for curr_1 in range(1,num_entries(p_list.rmcat_str, ",")  + 1) :
             mesval = trim(entry(curr_1 - 1, p_list.rmcat_str, ","))
-            print("Mesval 229:", mesval)
             if mesval != "":
 
                 zimkateg = get_cache (Zimkateg, {"kurzbez": [(eq, mesval)]})
@@ -271,7 +270,6 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
         #          (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode).lower())).order_by(Queasy._recid).all():
         for queasy in db_session.query(Queasy).filter(
             (Queasy.key == 2) & not_ (Queasy.logi2)).order_by(Queasy._recid).all():
-            print("Masuk")
             if (num_entries(queasy.char3, ";") > 2) & (entry(1, queasy.char3, ";") == (prcode).lower()):
                 child_list = Child_list()
                 child_list_data.append(child_list)
@@ -294,7 +292,6 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
         for curr_1 in range(1,num_entries(p_list.rmcat_str, ",")  + 1) :
             mesval = trim(entry(curr_1 - 1, p_list.rmcat_str, ","))
-            print("297:", mesval)
             if mesval != "":
 
                 zimkateg = get_cache (Zimkateg, {"kurzbez": [(eq, mesval)]})
@@ -314,7 +311,6 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
                                     if mesval != "":
                                         child1 = to_int(mesval)
-                                        print("create")
                                         create_ratecode()
 
 
@@ -480,7 +476,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
         rbuff = None
         Rbuff =  create_buffer("Rbuff",Ratecode)
 
-        for tb3buff in query(tb3buff_data):
+        # for tb3buff in query(tb3buff_data):
 
             # for ratecode in db_session.query(Ratecode).filter(
             #          (Ratecode.marknr == markno) & (Ratecode.code == (prcode).lower()) & (Ratecode.argtnr == argtno) & 
@@ -491,6 +487,8 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
             
             # Rd 31/7/2025
             # requery _recid null
+
+        for tb3buff in tb3buff_data:
             recid = tb3buff.s_recid
             if not recid or str(recid).strip() == '':
                 recid = None
@@ -932,7 +930,6 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
     ci_date = htparam.fdate
 
     if mode_str.lower()  == ("insert").lower() :
-        print("Check Overlap.")
         check_overlapping()
 
     if error_flag:

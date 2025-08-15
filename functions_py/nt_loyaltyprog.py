@@ -1,3 +1,8 @@
+
+#-----------------------------------------
+# Rd 15/8/2025
+# erwach -> erwachs
+#-----------------------------------------
 from functions.additional_functions import *
 import decimal
 from datetime import date
@@ -438,7 +443,10 @@ def nt_loyaltyprog():
                                     ratecd = entry(2, str_param, "$")
 
                             if res_line:
-                                tline_list.pax = res_line.erwach + res_line.kind1 + res_line.kind2
+                                # Rd 15/8/2025
+                                # tline_list.pax = res_line.erwach + res_line.kind1 + res_line.kind2
+                                tline_list.pax = res_line.erwachs + res_line.kind1 + res_line.kind2
+
                                 tline_list.resnr = res_line.resnr
                                 tline_list.reslinnr = res_line.reslinnr
                                 tline_list.checkin = res_line.ankunft
@@ -650,7 +658,9 @@ def nt_loyaltyprog():
                                     ratecd = entry(2, str_param, "$")
 
                             if res_line:
-                                tline_list.pax = res_line.erwach + res_line.kind1 + res_line.kind2
+                                # tline_list.pax = res_line.erwach + res_line.kind1 + res_line.kind2
+                                tline_list.pax = res_line.erwachs + res_line.kind1 + res_line.kind2
+
                                 tline_list.reslinnr = res_line.reslinnr
                                 tline_list.checkin = res_line.ankunft
                                 tline_list.checkout = res_line.abreise
@@ -984,7 +994,9 @@ def nt_loyaltyprog():
                                     ratecd = entry(2, str_param, "$")
 
                             if res_line:
-                                tline_list.pax = res_line.erwach + res_line.kind1 + res_line.kind2
+                                # tline_list.pax = res_line.erwach + res_line.kind1 + res_line.kind2
+                                tline_list.pax = res_line.erwachs + res_line.kind1 + res_line.kind2
+
                                 tline_list.reslinnr = res_line.reslinnr
                                 tline_list.checkin = res_line.ankunft
                                 tline_list.checkout = res_line.abreise
@@ -1019,7 +1031,9 @@ def nt_loyaltyprog():
                                     ratecd = entry(2, str_param, "$")
 
                             if res_line:
-                                tline_list.pax = res_line.erwach + res_line.kind1 + res_line.kind2
+                                # tline_list.pax = res_line.erwach + res_line.kind1 + res_line.kind2
+                                tline_list.pax = res_line.erwachs + res_line.kind1 + res_line.kind2
+
                                 tline_list.checkin = res_line.ankunft
                                 tline_list.checkout = res_line.abreise
                                 tline_list.ankzeit = res_line.ankzeit
@@ -1402,7 +1416,9 @@ def nt_loyaltyprog():
                                     ratecd = entry(2, str_param, "$")
 
                             if res_line:
-                                tline_list.pax = res_line.erwach + res_line.kind1 + res_line.kind2
+                                # tline_list.pax = res_line.erwach + res_line.kind1 + res_line.kind2
+                                tline_list.pax = res_line.erwachs + res_line.kind1 + res_line.kind2
+
                                 tline_list.reslinnr = res_line.reslinnr
                                 tline_list.checkin = res_line.ankunft
                                 tline_list.checkout = res_line.abreise
@@ -1436,7 +1452,9 @@ def nt_loyaltyprog():
                                     ratecd = entry(2, str_param, "$")
 
                             if res_line:
-                                tline_list.pax = res_line.erwach + res_line.kind1 + res_line.kind2
+                                # tline_list.pax = res_line.erwach + res_line.kind1 + res_line.kind2
+                                tline_list.pax = res_line.erwachs + res_line.kind1 + res_line.kind2
+
                                 tline_list.checkin = res_line.ankunft
                                 tline_list.checkout = res_line.abreise
                                 tline_list.ankzeit = res_line.ankzeit

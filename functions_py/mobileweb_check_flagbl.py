@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 15/8/2025
+# erwach -> erwachs
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Res_line, Queasy, Htparam
@@ -110,10 +113,17 @@ def mobileweb_check_flagbl(rsv_number:int, rsvline_number:int, case_type:int):
 
                 for rline in db_session.query(Rline).filter(
                          (Rline.resnr == res_line.resnr) & (Rline.resstatus == 11) & (Rline.zinr == res_line.zinr)).order_by(Rline._recid).all():
-                    key_qty = key_qty + rline.erwach + rline.kind1 + rline.gratis
+                    
+                    # Rd 15/8/2025
+                    # key_qty = key_qty + rline.erwach + rline.kind1 + rline.gratis
+                    key_qty = key_qty + rline.erwachs + rline.kind1 + rline.gratis
                     key_maked = key_maked + rline.betrieb_gast
             key_maked = key_maked + res_line.betrieb_gast
-            key_qty = key_qty + res_line.erwach + res_line.kind1 + res_line.gratis
+
+
+            # key_qty = key_qty + res_line.erwach + res_line.kind1 + res_line.gratis
+            key_qty = key_qty + res_line.erwachs + res_line.kind1 + res_line.gratis
+            
             key_avail = key_max - key_maked
 
             if key_maked >= key_max:

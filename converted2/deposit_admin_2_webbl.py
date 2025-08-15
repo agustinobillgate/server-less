@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 15/8/2025
+# erwach -> erwachs
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -1178,7 +1181,10 @@ def deposit_admin_2_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
         depo_list.rmrate =  to_decimal(res_line.zipreis)
         depo_list.remark = " "
         depo_list.stafid = " "
-        depo_list.adult = res_line.erwach
+
+        # Rd, 15/8/2025
+        # depo_list.adult = res_line.erwach
+        depo_list.adult = res_line.erwachs
         depo_list.rsv_status = res_line.resstatus
 
         arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
@@ -1240,7 +1246,11 @@ def deposit_admin_2_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
         b1_list.rmrate =  to_decimal(res_line.zipreis)
         b1_list.remark = " "
         b1_list.stafid = " "
-        b1_list.adult = res_line.erwach
+
+        # Rd, 15/8/2025
+        # erwach -> erwachs
+        # b1_list.adult = res_line.erwach
+        b1_list.adult = res_line.erwachw
         b1_list.zipreis =  to_decimal(res_line.zipreis)
         b1_list.rsv_status = res_line.resstatus
 
@@ -1313,7 +1323,11 @@ def deposit_admin_2_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
         b1_print.rmrate =  to_decimal(res_line.zipreis)
         b1_print.remark = " "
         b1_print.stafid = " "
-        b1_print.adult = res_line.erwach
+
+        # Rd, 15/8/2025
+        # erwach -> erwachs
+        # b1_print.adult = res_line.erwach
+        b1_print.adult = res_line.erwachs
         b1_print.zipreis =  to_decimal(res_line.zipreis)
         b1_print.rsv_status = res_line.resstatus
 

@@ -1871,7 +1871,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                         local_storage.debugging = local_storage.debugging + ',Run'
                         db_session.commit()
                     if importlib.util.find_spec(module_name):
-                        print("Masuk Module:", module_name)
+                        print("Masuk Module:", module_name, function_name)
                         module = importlib.import_module(module_name)
                         if hasattr(module, function_name):
                             try:
@@ -1911,6 +1911,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                                     pass
                         else:
                             # db_session.close()
+                            print("Else Not Found:", module_name)
                             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
                     else:
                         # db_session.close()
