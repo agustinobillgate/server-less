@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 18/8/2025
+#
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -165,7 +169,6 @@ def fa_incomingpobl(fromdate:date, todate:date, searchby:int, devnote_no:string,
 
         nonlocal fa_ordheader, l_lieferant, mathis, fa_op, bediener, fa_order
         nonlocal fromdate, todate, searchby, devnote_no, po_no, supp_no
-
 
         nonlocal op_list, fa_ordheaderlist
         nonlocal op_list_data, fa_ordheaderlist_data
