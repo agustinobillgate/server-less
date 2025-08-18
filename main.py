@@ -1207,7 +1207,6 @@ def update_input_format(obj,input_data):
         if not input_param_name in param_name_list:
             input_data.pop(input_param_name)
 
-
     # for param_name in input_data.keys():
     #     if not param_name in param_list(obj)
 
