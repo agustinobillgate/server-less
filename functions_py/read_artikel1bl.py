@@ -1,5 +1,8 @@
-#using conversion tools version: 1.0.0.117
-
+#using conversion tools version: 1.0.0.118
+#------------------------------------------
+# Rd, 18/8/2025
+# ada casetype baru: 35
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Artikel
@@ -285,6 +288,11 @@ def read_artikel1bl(case_type:int, artno:int, dept:int, aname:string, artart:int
         artikel = get_cache (Artikel, {"artnr": [(eq, artno)],"departement": [(eq, dept)],"artart": [(eq, artart)],"activeflag": [(eq, actflag)]})
 
         if artikel:
+            cr_artikel()
+    elif case_type == 35:
+
+        for artikel in db_session.query(Artikel).filter(
+                 (Artikel.departement == dept) & ((Artikel.artart == 2) | (Artikel.artart == 7))).order_by(Artikel._recid).all():
             cr_artikel()
 
     return generate_output()
