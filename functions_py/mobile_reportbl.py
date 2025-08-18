@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 18/8/2025
+# update compare " " -> " ".strip()
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -80,19 +83,27 @@ def mobile_reportbl(case_type:int, from_date:date, to_date:date):
                     rlist.rc_mobile = "*"
                     tot_rcmb = tot_rcmb + 1
 
-            if rlist.ci_mobile == " ":
+            # Rd, 18/8/2025
+            # if rlist.ci_mobile == " ":
+            if rlist.ci_mobile.strip() == "":
                 rlist.ci_fda = "*"
                 tot_cifda = tot_cifda + 1
 
-            if rlist.scan_mobile == " ":
+            # Rd, 18/8/2025
+            # if rlist.scan_mobile == " ":
+            if rlist.scan_mobile.strip() == "":
                 rlist.scan_fda = "*"
                 tot_scanfda = tot_scanfda + 1
 
-            if rlist.sign_mobile == " ":
+            # Rd, 18/8/2025
+            # if rlist.sign_mobile == " ":
+            if rlist.sign_mobile.strip() == "":
                 rlist.sign_fda = "*"
                 tot_signfda = tot_signfda + 1
 
-            if rlist.rc_mobile == " ":
+            # Rd, 18/8/2025
+            # if rlist.rc_mobile == " ":
+            if rlist.rc_mobile.strip() == "":
                 rlist.rc_fda = "*"
                 tot_rcfda = tot_rcfda + 1
 
@@ -114,7 +125,8 @@ def mobile_reportbl(case_type:int, from_date:date, to_date:date):
                 str1 = entry(loopi - 1, res_line.zimmer_wunsch, ";")
 
                 if matches(str1,r"*mobile-ci*"):
-                    rlist.ci_mobile = "*"
+                    rlist.ci_mobile = "res_line.zimmer_wunsch"  #"*"
+
                     tot_cimb = tot_cimb + 1
 
                 if matches(str1,r"*mobile-scan*"):
@@ -129,19 +141,42 @@ def mobile_reportbl(case_type:int, from_date:date, to_date:date):
                     rlist.rc_mobile = "*"
                     tot_rcmb = tot_rcmb + 1
 
-            if rlist.ci_mobile == " ":
+            # if rlist.ci_mobile == " ":
+            #     rlist.ci_fda = "*"
+            #     tot_cifda = tot_cifda + 1
+
+            # if rlist.scan_mobile == " ":
+            #     rlist.scan_fda = "*"
+            #     tot_scanfda = tot_scanfda + 1
+
+            # if rlist.sign_mobile == " ":
+            #     rlist.sign_fda = "*"
+            #     tot_signfda = tot_signfda + 1
+
+            # if rlist.rc_mobile == " ":
+            #     rlist.rc_fda = "*"
+            #     tot_rcfda = tot_rcfda + 1
+            # Rd, 18/8/2025
+            # if rlist.ci_mobile == " ":
+            if rlist.ci_mobile.strip() == "":
                 rlist.ci_fda = "*"
                 tot_cifda = tot_cifda + 1
 
-            if rlist.scan_mobile == " ":
+            # Rd, 18/8/2025
+            # if rlist.scan_mobile == " ":
+            if rlist.scan_mobile.strip() == "":
                 rlist.scan_fda = "*"
                 tot_scanfda = tot_scanfda + 1
 
-            if rlist.sign_mobile == " ":
+            # Rd, 18/8/2025
+            # if rlist.sign_mobile == " ":
+            if rlist.sign_mobile.strip() == "":
                 rlist.sign_fda = "*"
                 tot_signfda = tot_signfda + 1
 
-            if rlist.rc_mobile == " ":
+            # Rd, 18/8/2025
+            # if rlist.rc_mobile == " ":
+            if rlist.rc_mobile.strip() == "":
                 rlist.rc_fda = "*"
                 tot_rcfda = tot_rcfda + 1
 
@@ -178,19 +213,42 @@ def mobile_reportbl(case_type:int, from_date:date, to_date:date):
                     rlist.rc_mobile = "*"
                     tot_rcmb = tot_rcmb + 1
 
-            if rlist.ci_mobile == " ":
+            # if rlist.ci_mobile == " ":
+            #     rlist.ci_fda = "*"
+            #     tot_cifda = tot_cifda + 1
+
+            # if rlist.scan_mobile == " ":
+            #     rlist.scan_fda = "*"
+            #     tot_scanfda = tot_scanfda + 1
+
+            # if rlist.sign_mobile == " ":
+            #     rlist.sign_fda = "*"
+            #     tot_signfda = tot_signfda + 1
+
+            # if rlist.rc_mobile == " ":
+            #     rlist.rc_fda = "*"
+            #     tot_rcfda = tot_rcfda + 1
+            # Rd, 18/8/2025
+            # if rlist.ci_mobile == " ":
+            if rlist.ci_mobile.strip() == "":
                 rlist.ci_fda = "*"
                 tot_cifda = tot_cifda + 1
 
-            if rlist.scan_mobile == " ":
+            # Rd, 18/8/2025
+            # if rlist.scan_mobile == " ":
+            if rlist.scan_mobile.strip() == "":
                 rlist.scan_fda = "*"
                 tot_scanfda = tot_scanfda + 1
 
-            if rlist.sign_mobile == " ":
+            # Rd, 18/8/2025
+            # if rlist.sign_mobile == " ":
+            if rlist.sign_mobile.strip() == "":
                 rlist.sign_fda = "*"
                 tot_signfda = tot_signfda + 1
 
-            if rlist.rc_mobile == " ":
+            # Rd, 18/8/2025
+            # if rlist.rc_mobile == " ":
+            if rlist.rc_mobile.strip() == "":
                 rlist.rc_fda = "*"
                 tot_rcfda = tot_rcfda + 1
 

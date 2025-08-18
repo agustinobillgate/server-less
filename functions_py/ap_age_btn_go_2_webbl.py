@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 18/8/2025
+# kolom terpotong
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -850,7 +853,11 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
             output_list1_data.append(output_list1)
 
             buffer_copy(output_list, output_list1)
-            output_list1.nr = substring(output_list.str, 0, 7)
+
+            # rd 15/8/2025
+            # output_list1.nr = substring(output_list.str, 0, 7)
+            output_list1.nr = substring(output_list.str, 0, 6)
+
             output_list1.cust_name = substring(output_list.str, 7, 35)
             output_list1.outstanding = substring(output_list.str, 42, 20)
             output_list1.day = substring(output_list.str, 62, 20)

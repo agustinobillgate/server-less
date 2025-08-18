@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 18/8/2025
+# 
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -15,17 +18,25 @@ troom_data, Troom = create_model("Troom", {"room_nm":string, "room_selected":boo
 tproperty_data, Tproperty = create_model("Tproperty", {"prop_nr":int, "prop_nm":string, "prop_selected":bool, "pcateg_nr":int, "pcateg":string, "pmain_nr":int, "pmain":string, "ploc_nr":int, "ploc":string, "pzinr":string})
 tpic_data, Tpic = create_model("Tpic", {"pic_nr":int, "pic_nm":string, "pic_selected":bool})
 
-def eg_repmaintain_disp_webbl(all_room:bool, all_status:bool, all_location:bool, all_property:bool, all_pic:bool, fdate:date, tdate:date, main_date:int, tmaintask_data:[Tmaintask], tfrequency_data:[Tfrequency], tstatus_data:[Tstatus], tlocation_data:[Tlocation], troom_data:[Troom], tproperty_data:[Tproperty], tpic_data:[Tpic]):
+def eg_repmaintain_disp_webbl(all_room:bool, all_status:bool, all_location:bool, all_property:bool, all_pic:bool, fdate:date, tdate:date, main_date:int, 
+                              tmaintask_data:[Tmaintask], 
+                              tfrequency_data:[Tfrequency], 
+                              tstatus_data:[Tstatus], 
+                              tlocation_data:[Tlocation], 
+                              troom_data:[Troom], 
+                              tproperty_data:[Tproperty], 
+                              tpic_data:[Tpic]):
     smaintain_data = []
     int_str:List[string] = ["Weekly", "Monthly", "Quarter", "Half Yearly", "Year"]
     eg_maintain = None
-
     t_eg_maintain = smaintain = tstatus = tlocation = tmaintask = troom = tproperty = tpic = tfrequency = None
 
     t_eg_maintain_data, T_eg_maintain = create_model_like(Eg_maintain)
     smaintain_data, Smaintain = create_model("Smaintain", {"maintainnr":int, "estworkdate":date, "workdate":date, "donedate":date, "stat_nr":int, "stat_nm":string, "freq":string, "category_str":string, "maintask":string, "location":string, "zinr":string, "property":string, "comments":string, "pic":string, "str":string})
 
     db_session = local_storage.db_session
+    print("fdate:", fdate )
+    print("tdate:", tdate )
 
     def generate_output():
         nonlocal smaintain_data, int_str, eg_maintain
@@ -64,6 +75,7 @@ def eg_repmaintain_disp_webbl(all_room:bool, all_status:bool, all_location:bool,
         smaintain.property = tproperty.prop_nm
         smaintain.comments = t_eg_maintain.comments
         smaintain.pic = tpic.pic_nm
+
 
     smaintain_data.clear()
     troom_data, tproperty_data = get_output(eg_repmaintain_all_locationbl(all_room, tlocation_data, tmaintask_data))
