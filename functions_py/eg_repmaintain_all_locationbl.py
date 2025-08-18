@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 3/8/2025
+# 
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Zimmer, Eg_property, Queasy, Eg_location
@@ -47,24 +50,29 @@ def eg_repmaintain_all_locationbl(all_room:bool, tlocation_data:[Tlocation], tma
         Qbuff1 = Tlocation
         qbuff1_data = tlocation_data
         troom_data.clear()
+        for aa in qbuff1_data:
+            print("AA:", aa)
 
-        qbuff1 = query(qbuff1_data, filters=(lambda qbuff1: qbuff1.loc_selected  and qbuff1.loc_guest), first=True)
-
+        qbuff1 = query(qbuff1_data, filters=(lambda qbuff1_data: qbuff1_data.loc_selected  and qbuff1_data.loc_guest), first=True)
         if qbuff1:
-
-            for qbuff in db_session.query(Qbuff).order_by(Qbuff._recid).all():
+            for qb1 in qbuff1:
+                print("QB1:", qb1)
+            #-------------------------
+            # for qbuff in db_session.query(Qbuff).order_by(Qbuff._recid).all():
+            for qbuff in db_session.query(Zimmer).order_by(Zimmer._recid).all():
+                print("Zinr:", qbuff.zinr)
                 troom = Troom()
-                troom_data.append(troom)
-
                 troom.room_nm = qbuff.zinr
                 troom.room_selected = False
+                troom_data.append(troom)
+        else:
+            print("tidak ada.")
 
 
     def create_property():
 
         nonlocal troom_data, tproperty_data, zimmer, eg_property, queasy, eg_location
         nonlocal all_room
-
 
         nonlocal tproperty, tmaintask, troom, tlocation, qbuff1, comlocat, commain, comroom
         nonlocal tproperty_data, troom_data
