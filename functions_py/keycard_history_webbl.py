@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 19/8/2025
+# input_list.fromdate
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -43,7 +47,9 @@ def keycard_history_webbl(input_list_data:[Input_list]):
         nonlocal ubuff, input_list, output_list
         nonlocal output_list_data
 
-        if input_list.usrID != "" and input_list.usrID != None:
+        # Rd 19/8/2025
+        # if input_list.usrID != "" and input_list.usrID != None:
+        if input_list.usrid != "" and input_list.usrid != None:
 
             bediener = get_cache (Bediener, {"userinit": [(eq, trim(entry(0, input_list.usrid, "-")))]})
 
@@ -68,8 +74,12 @@ def keycard_history_webbl(input_list_data:[Input_list]):
                 return
         else:
 
+            # for res_history in db_session.query(Res_history).filter(
+            #          (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("Keycard").lower())).order_by(Res_history.datum, Res_history.zeit).all():
             for res_history in db_session.query(Res_history).filter(
-                     (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("Keycard").lower())).order_by(Res_history.datum, Res_history.zeit).all():
+                     (Res_history.datum >= input_list.from_date) & (Res_history.datum <= input_list.to_date) & (Res_history.action == ("Keycard").lower())).order_by(Res_history.datum, Res_history.zeit).all():
+                
+                
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
