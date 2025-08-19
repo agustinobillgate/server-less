@@ -1299,7 +1299,9 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
             output_list.lodging1 =  to_decimal(tot_lodging1)
             output_list.room_night = tot_los
             output_list.rm_night = tot_rmnight
-            output_list.avg_lodging =  to_decimal(tot_avrlodging) / to_decimal(tot_rmnight)
+            # Rd 19/8/2025
+            # output_list.avg_lodging =  to_decimal(tot_avrlodging) / to_decimal(tot_rmnight)
+            output_list.avg_lodging =  safe_divide(tot_avrlodging, tot_rmnight)
             output_list.adult = tot_adult
             output_list.child = tot_child
             output_list.infant = tot_infant
@@ -1309,7 +1311,10 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
             output_list.avrg_los =  to_decimal(tot_avrglos) / to_decimal(tot_rsv)
             output_list.rmrate =  to_decimal(tot_rmrate)
             output_list.rmrate1 =  to_decimal(tot_rmrate1)
-            output_list.avg_rmrate =  to_decimal(tot_avrgrmrate) / to_decimal(tot_rmnight)
+
+            # Rd 19/8/2025, safe_divide
+            # output_list.avg_rmrate =  to_decimal(tot_avrgrmrate) / to_decimal(tot_rmnight)
+            output_list.avg_rmrate =  safe_divide(tot_avrgrmrate, tot_rmnight)
             output_list.tot_reserv = tot_rsv
             output_list.check_flag = True
 
@@ -1581,8 +1586,11 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                             output_list.lodging1 =  to_decimal("0")
 
                         if output_list.room_night != None and output_list.room_night != 0:
-                            output_list.avg_rmrate =  to_decimal(output_list.rmrate) / to_decimal(output_list.room_night)
-                            output_list.avg_lodging =  to_decimal(output_list.lodging) / to_decimal(output_list.room_night)
+                            # Rd 19/8/2025, safe_divide
+                            # output_list.avg_rmrate =  to_decimal(output_list.rmrate) / to_decimal(output_list.room_night)
+                            # output_list.avg_lodging =  to_decimal(output_list.lodging) / to_decimal(output_list.room_night)
+                            output_list.avg_rmrate =  safe_divide(output_list.rmrate, output_list.room_night)
+                            output_list.avg_lodging =  safe_divide(output_list.lodging, output_list.room_night)
 
 
                         else:
@@ -1629,7 +1637,11 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.lodging1 =  to_decimal(t_lodging1)
                     boutput.room_night = t_los
                     boutput.rm_night = t_rmnight
-                    boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+
+                    # Rd 19/8/2025, safe_divide
+                    # boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+                    boutput.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
+
                     boutput.adult = t_adult
                     boutput.child = t_child
                     boutput.infant = t_infant
@@ -1640,7 +1652,11 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.pos = counter
                     boutput.rmrate =  to_decimal(t_rmrate)
                     boutput.rmrate1 =  to_decimal(t_rmrate1)
-                    boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+
+                    # Rd 19/8/2025, safe_divide
+                    # boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+                    boutput.avg_rmrate =  safe_divide(t_avrgrmrate, t_rmnight)
+
                     t_rmrate =  to_decimal("0")
                     t_rmrate1 =  to_decimal("0")
                     t_avrgrmrate =  to_decimal("0")
@@ -1902,8 +1918,12 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                             output_list.lodging1 =  to_decimal("0")
 
                         if output_list.room_night != None and output_list.room_night != 0:
-                            output_list.avg_rmrate =  to_decimal(output_list.rmrate) / to_decimal(output_list.room_night)
-                            output_list.avg_lodging =  to_decimal(output_list.lodging) / to_decimal(output_list.room_night)
+
+                            # Rd
+                            # output_list.avg_rmrate =  to_decimal(output_list.rmrate) / to_decimal(output_list.room_night)
+                            # output_list.avg_lodging =  to_decimal(output_list.lodging) / to_decimal(output_list.room_night)
+                            output_list.avg_rmrate =  safe_divide(output_list.rmrate, output_list.room_night)
+                            output_list.avg_lodging =  safe_divide(output_list.lodging, output_list.room_night)
 
 
                         else:
@@ -1985,10 +2005,12 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     if t_rmnight != None and t_rmnight != 0:
 
                         if t_avrlodging != None and t_avrlodging != 0:
-                            boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+                            # boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+                            boutput.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
 
                         if t_avrgrmrate != None and t_avrgrmrate != 0:
-                            boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+                            # boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+                            boutput.avg_rmrate =  safe_divide(t_avrgrmrate, t_rmnight)
 
                     tot_list = query(tot_list_data, filters=(lambda tot_list: tot_list.gastnr == t_gastnr), first=True)
 
@@ -2048,7 +2070,10 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
         output_list.lodging1 =  to_decimal(t_lodging1)
         output_list.room_night = t_los
         output_list.rm_night = t_rmnight
-        output_list.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+
+        # output_list.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+        output_list.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
+        
         output_list.adult = t_adult
         output_list.child = t_child
         output_list.infant = t_infant
@@ -2058,7 +2083,10 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
         output_list.avrg_los =  to_decimal(t_avrglos)
         output_list.rmrate =  to_decimal(t_rmrate)
         output_list.rmrate1 =  to_decimal(t_rmrate1)
-        output_list.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+
+        # output_list.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+        output_list.avg_rmrate =  safe_divide(t_avrgrmrate, t_rmnight)
+        
         totaldatacount = totaldatacount + datacount
         datacount = 0
         output_list.check_flag = True
@@ -2085,7 +2113,9 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
         output_list.lodging1 =  to_decimal(tot_lodging1)
         output_list.room_night = tot_los
         output_list.rm_night = tot_rmnight
-        output_list.avg_lodging =  to_decimal(tot_avrlodging) / to_decimal(tot_rmnight)
+        # output_list.avg_lodging =  to_decimal(tot_avrlodging) / to_decimal(tot_rmnight)
+        output_list.avg_lodging =  safe_divide(tot_avrlodging, tot_rmnight)
+
         output_list.adult = tot_adult
         output_list.child = tot_child
         output_list.infant = tot_infant
@@ -2272,8 +2302,10 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     output_list.lodging1 =  to_decimal("0")
 
                 if output_list.room_night != None and output_list.room_night != 0:
-                    output_list.avg_rmrate =  to_decimal(output_list.rmrate) / to_decimal(output_list.room_night)
-                    output_list.avg_lodging =  to_decimal(output_list.lodging) / to_decimal(output_list.room_night)
+                    # output_list.avg_rmrate =  to_decimal(output_list.rmrate) / to_decimal(output_list.room_night)
+                    # output_list.avg_lodging =  to_decimal(output_list.lodging) / to_decimal(output_list.room_night)
+                    output_list.avg_rmrate =  safe_divide(output_list.rmrate, output_list.room_night)
+                    output_list.avg_lodging =  safe_divide(output_list.lodging, output_list.room_night)
 
 
                 else:
@@ -2499,8 +2531,10 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                             output_list.lodging1 =  to_decimal("0")
 
                         if output_list.room_night != None and output_list.room_night != 0:
-                            output_list.avg_rmrate =  to_decimal(output_list.rmrate) / to_decimal(output_list.room_night)
-                            output_list.avg_lodging =  to_decimal(output_list.lodging) / to_decimal(output_list.room_night)
+                            # output_list.avg_rmrate =  to_decimal(output_list.rmrate) / to_decimal(output_list.room_night)
+                            # output_list.avg_lodging =  to_decimal(output_list.lodging) / to_decimal(output_list.room_night)
+                            output_list.avg_rmrate =  safe_divide(output_list.rmrate, output_list.room_night)
+                            output_list.avg_lodging =  safe_divide(output_list.lodging, output_list.room_night)
 
 
                         else:
@@ -2547,7 +2581,9 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.lodging1 =  to_decimal(t_lodging1)
                     boutput.room_night = t_los
                     boutput.rm_night = t_rmnight
-                    boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+                    # boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+                    boutput.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
+
                     boutput.adult = t_adult
                     boutput.child = t_child
                     boutput.infant = t_infant
@@ -2558,7 +2594,9 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.pos = counter
                     boutput.rmrate =  to_decimal(t_rmrate)
                     boutput.rmrate1 =  to_decimal(t_rmrate1)
-                    boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+                    # boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+                    boutput.avg_rmrate =  safe_divide(t_avrgrmrate, t_rmnight)
+
                     t_rmrate =  to_decimal("0")
                     t_rmrate1 =  to_decimal("0")
                     t_avrgrmrate =  to_decimal("0")
@@ -2958,8 +2996,10 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                                 output_list.lodging1 =  to_decimal("0")
 
                             if output_list.room_night != None and output_list.room_night != 0:
-                                output_list.avg_rmrate =  to_decimal(output_list.rmrate) / to_decimal(output_list.room_night)
-                                output_list.avg_lodging =  to_decimal(output_list.lodging) / to_decimal(output_list.room_night)
+                                # output_list.avg_rmrate =  to_decimal(output_list.rmrate) / to_decimal(output_list.room_night)
+                                # output_list.avg_lodging =  to_decimal(output_list.lodging) / to_decimal(output_list.room_night)
+                                output_list.avg_rmrate =  safe_divide(output_list.rmrate, output_list.room_night)
+                                output_list.avg_lodging =  safe_divide(output_list.lodging, output_list.room_night)
 
 
                             else:
@@ -3006,7 +3046,10 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.lodging1 =  to_decimal(t_lodging1)
                     boutput.room_night = t_los
                     boutput.rm_night = t_rmnight
-                    boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+
+                    # boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+                    boutput.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
+
                     boutput.adult = t_adult
                     boutput.child = t_child
                     boutput.infant = t_infant
@@ -3017,7 +3060,9 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.pos = counter
                     boutput.rmrate =  to_decimal(t_rmrate)
                     boutput.rmrate1 =  to_decimal(t_rmrate1)
-                    boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+                    # boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+                    boutput.avg_rmrate =  safe_divide(t_avrgrmrate, t_rmnight)
+
                     t_rmrate =  to_decimal("0")
                     t_rmrate1 =  to_decimal("0")
                     t_avrgrmrate =  to_decimal("0")
@@ -3479,7 +3524,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.pos = counter
                     boutput.rmrate =  to_decimal(t_rmrate)
                     boutput.rmrate1 =  to_decimal(t_rmrate1)
-                    boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+                    boutput.avg_rmrate =  safe_divide(t_avrgrmrate, t_rmnight)
+
                     t_rmrate =  to_decimal("0")
                     t_rmrate1 =  to_decimal("0")
                     t_avrgrmrate =  to_decimal("0")
@@ -3802,7 +3848,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.pos = counter
                     boutput.rmrate =  to_decimal(t_rmrate)
                     boutput.rmrate1 =  to_decimal(t_rmrate1)
-                    boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+                    boutput.avg_rmrate =  safe_divide(t_avrgrmrate, t_rmnight)
+
                     t_rmrate =  to_decimal("0")
                     t_rmrate1 =  to_decimal("0")
                     t_avrgrmrate =  to_decimal("0")
@@ -4388,7 +4435,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.pos = counter
                     boutput.rmrate =  to_decimal(t_rmrate)
                     boutput.rmrate1 =  to_decimal(t_rmrate1)
-                    boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+                    boutput.avg_rmrate =  safe_divide(t_avrgrmrate, t_rmnight)
+
                     t_rmrate =  to_decimal("0")
                     t_rmrate1 =  to_decimal("0")
                     t_avrgrmrate =  to_decimal("0")
@@ -4847,7 +4895,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.pos = counter
                     boutput.rmrate =  to_decimal(t_rmrate)
                     boutput.rmrate1 =  to_decimal(t_rmrate1)
-                    boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+                    boutput.avg_rmrate =  safe_divide(t_avrgrmrate, t_rmnight)
+
                     t_rmrate =  to_decimal("0")
                     t_rmrate1 =  to_decimal("0")
                     t_avrgrmrate =  to_decimal("0")
@@ -5298,7 +5347,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.pos = counter
                     boutput.rmrate =  to_decimal(t_rmrate)
                     boutput.rmrate1 =  to_decimal(t_rmrate1)
-                    boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+                    boutput.avg_rmrate =  safe_divide(t_avrgrmrate, t_rmnight)
+
                     t_rmrate =  to_decimal("0")
                     t_rmrate1 =  to_decimal("0")
                     t_avrgrmrate =  to_decimal("0")
@@ -5621,7 +5671,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.pos = counter
                     boutput.rmrate =  to_decimal(t_rmrate)
                     boutput.rmrate1 =  to_decimal(t_rmrate1)
-                    boutput.avg_rmrate =  to_decimal(t_avrgrmrate) / to_decimal(t_rmnight)
+                    boutput.avg_rmrate =  safe_divide(t_avrgrmrate, t_rmnight)
+
                     t_rmrate =  to_decimal("0")
                     t_rmrate1 =  to_decimal("0")
                     t_avrgrmrate =  to_decimal("0")
