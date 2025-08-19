@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 19/8/2025
+# date, timedelta
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -56,7 +60,9 @@ def comp_productbl(pvilanguage:int, curr_date:string):
     from_date = date_mdy(1, 1, yy)
 
     if mm == 12:
-        to_date = date_mdy(1, 1, yy + timedelta(days=1)) - timedelta(days=1)
+        # Rd 19/8/2025
+        # to_date = date_mdy(1, 1, yy + timedelta(days=1)) - timedelta(days=1)
+        to_date = date_mdy(1, 1, yy + 1) - timedelta(days=1)
     else:
         to_date = date_mdy(mm + 1, 1, yy) - timedelta(days=1)
 
@@ -97,7 +103,9 @@ def comp_productbl(pvilanguage:int, curr_date:string):
     from_date = date_mdy(1, 1, jml)
 
     if mm == 12:
-        to_date = date_mdy(1, 1, jml + timedelta(days=1)) - timedelta(days=1)
+        # Rd 19/8/2025
+        # to_date = date_mdy(1, 1, jml + timedelta(days=1)) - timedelta(days=1)
+        to_date = date_mdy(1, 1, jml + 1) - timedelta(days=1)
     else:
         to_date = date_mdy(mm + 1, 1, jml) - timedelta(days=1)
     curr_guest = 0

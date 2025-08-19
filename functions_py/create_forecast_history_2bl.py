@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+# ----------------------------------------
+# Rd, 19/8/2025
+# genstat.Argt -> genstat.argt
+# ----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -175,7 +179,10 @@ def create_forecast_history_2bl(fr_date:date, to_date:date, excl_comp:bool, vhp_
                     t_list.zipreis =  to_decimal(t_list.zipreis) + to_decimal(genstat.zipreis)
                     t_list.flag_history = True
                     t_list.segmentcode = genstat.segmentcode
-                    t_list.argtcode = genstat.Argt
+
+                    # Rd 19/8/2025
+                    # t_list.argtcode = genstat.Argt
+                    t_list.argtcode = genstat.argt
 
 
     def create_umsatz_excl_compliment():
@@ -323,6 +330,8 @@ def create_forecast_history_2bl(fr_date:date, to_date:date, excl_comp:bool, vhp_
                     t_list.zipreis =  to_decimal(t_list.zipreis) + to_decimal(genstat.zipreis)
                     t_list.flag_history = True
                     t_list.segmentcode = genstat.segmentcode
+
+                    # Rd 19/8/2025
                     t_list.argtcode = genstat.argt
 
 
