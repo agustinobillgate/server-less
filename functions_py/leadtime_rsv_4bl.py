@@ -248,7 +248,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
 
                     if reservation:
                         output_list.create_date = reservation.resdat
-                        output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        # output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        output_list.lead = (genstat.res_date[0] - reservation.resdat).days
 
                     res_line = get_cache (Res_line, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
 
@@ -268,7 +269,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     output_list.lodging =  to_decimal(output_list.lodging) + to_decimal(genstat.logis)
 
             for output_list in query(output_list_data, filters=(lambda output_list: output_list.check_flag2), sort_by=[("rsvname",False),("create_date",False)]):
-                output_list.tot_avg_rate = to_string(to_decimal(output_list.tot_rate) / output_list.room_night, "->>>,>>>,>>>,>>9.99")
+                # output_list.tot_avg_rate = to_string(to_decimal(output_list.tot_rate) / output_list.room_night, "->>>,>>>,>>>,>>9.99")
+                output_list.tot_avg_rate = to_string(safe_divide(output_list.tot_rate, output_list.room_night), "->>>,>>>,>>>,>>9.99")
                 output_list.tot_rate1 = to_string(to_decimal(output_list.tot_rate) / foreign_curr, "->>>,>>>,>>>,>>9.99")
 
                 if foreign_curr != 0:
@@ -290,6 +292,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     output_list.avg_lodging =  to_decimal(output_list.lodging)
 
 
+                # tot_lead =  to_decimal(tot_lead) + to_decimal(output_list.lead)
                 tot_lead =  to_decimal(tot_lead) + to_decimal(output_list.lead)
                 tot_lodging =  to_decimal(tot_lodging) + to_decimal(output_list.lodging)
                 tot_lodging1 =  to_decimal(tot_lodging1) + to_decimal(output_list.lodging1)
@@ -402,7 +405,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
 
                             if waehrung:
                                 output_list.currency = waehrung.wabkurz
-                        for ldatum in date_range(res_line.ankunft,res_line.abreise - 1) :
+                        for ldatum in date_range(res_line.ankunft, (res_line.abreise - timedelta(days=1))) :
 
                             reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, ldatum)],"date2": [(ge, ldatum)]})
 
@@ -845,7 +848,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
 
                     if reservation:
                         output_list.create_date = reservation.resdat
-                        output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        # output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        output_list.lead = (genstat.res_date[0] - reservation.resdat).days
 
                     res_line = get_cache (Res_line, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
 
@@ -1307,8 +1311,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
             output_list.infant = tot_infant
             output_list.comp = tot_comp
             output_list.compchild = tot_compchild
-            output_list.avrg_lead =  to_decimal(tot_avrglead) / to_decimal(tot_rsv)
-            output_list.avrg_los =  to_decimal(tot_avrglos) / to_decimal(tot_rsv)
+            output_list.avrg_lead =  safe_divide(tot_avrglead, tot_rsv)
+            output_list.avrg_los =  safe_divide(tot_avrglos, tot_rsv)
             output_list.rmrate =  to_decimal(tot_rmrate)
             output_list.rmrate1 =  to_decimal(tot_rmrate1)
 
@@ -2121,8 +2125,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
         output_list.infant = tot_infant
         output_list.comp = tot_comp
         output_list.compchild = tot_compchild
-        output_list.avrg_lead =  to_decimal(tot_avrglead) / to_decimal(tot_rsv)
-        output_list.avrg_los =  to_decimal(tot_avrglos) / to_decimal(tot_rsv)
+        output_list.avrg_lead =  safe_divide(tot_avrglead, tot_rsv)
+        output_list.avrg_los =  safe_divide(tot_avrglos, tot_rsv)
         output_list.rmrate =  to_decimal(tot_rmrate)
         output_list.rmrate1 =  to_decimal(tot_rmrate1)
         output_list.avg_rmrate =  to_decimal(tot_avrgrmrate) / to_decimal(tot_rmnight)
@@ -2271,7 +2275,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
 
                     if reservation:
                         output_list.create_date = reservation.resdat
-                        output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        # output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        output_list.lead = (genstat.res_date[0] - reservation.resdat).days
 
                     res_line = get_cache (Res_line, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
 
@@ -2734,7 +2739,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
 
                     if reservation:
                         output_list.create_date = reservation.resdat
-                        output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        # output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        output_list.lead =  (genstat.res_date[0] - reservation.resdat)
 
                     res_line = get_cache (Res_line, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
 
@@ -3178,8 +3184,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
         output_list.infant = tot_infant
         output_list.comp = tot_comp
         output_list.compchild = tot_compchild
-        output_list.avrg_lead =  to_decimal(tot_avrglead) / to_decimal(tot_rsv)
-        output_list.avrg_los =  to_decimal(tot_avrglos) / to_decimal(tot_rsv)
+        output_list.avrg_lead =  safe_divide(tot_avrglead, tot_rsv)
+        output_list.avrg_los =  safe_divide(tot_avrglos, tot_rsv)
         output_list.rmrate =  to_decimal(tot_rmrate)
         output_list.rmrate1 =  to_decimal(tot_rmrate1)
         output_list.avg_rmrate =  to_decimal(tot_avrgrmrate) / to_decimal(tot_rmnight)
@@ -3963,8 +3969,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
         output_list.infant = tot_infant
         output_list.comp = tot_comp
         output_list.compchild = tot_compchild
-        output_list.avrg_lead =  to_decimal(tot_avrglead) / to_decimal(tot_rsv)
-        output_list.avrg_los =  to_decimal(tot_avrglos) / to_decimal(tot_rsv)
+        output_list.avrg_lead =  safe_divide(tot_avrglead, tot_rsv)
+        output_list.avrg_los =  safe_divide(tot_avrglos, tot_rsv)
         output_list.rmrate =  to_decimal(tot_rmrate)
         output_list.rmrate1 =  to_decimal(tot_rmrate1)
         output_list.avg_rmrate =  to_decimal(tot_avrgrmrate) / to_decimal(tot_rmnight)
@@ -4111,7 +4117,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
 
                     if reservation:
                         output_list.create_date = reservation.resdat
-                        output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        # output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        output_list.lead = (genstat.res_date[0] - reservation.resdat).days
 
                     res_line = get_cache (Res_line, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
 
@@ -4574,7 +4581,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
 
                     if reservation:
                         output_list.create_date = reservation.resdat
-                        output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        # output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        output_list.lead = (genstat.res_date[0] - reservation.resdat).days
 
                     res_line = get_cache (Res_line, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
 
@@ -5012,8 +5020,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
         output_list.infant = tot_infant
         output_list.comp = tot_comp
         output_list.compchild = tot_compchild
-        output_list.avrg_lead =  to_decimal(tot_avrglead) / to_decimal(tot_rsv)
-        output_list.avrg_los =  to_decimal(tot_avrglos) / to_decimal(tot_rsv)
+        output_list.avrg_lead =  safe_divide(tot_avrglead, tot_rsv)
+        output_list.avrg_los =  safe_divide(tot_avrglos, tot_rsv)
         output_list.rmrate =  to_decimal(tot_rmrate)
         output_list.rmrate1 =  to_decimal(tot_rmrate1)
         output_list.avg_rmrate =  to_decimal(tot_avrgrmrate) / to_decimal(tot_rmnight)
