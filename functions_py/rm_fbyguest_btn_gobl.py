@@ -7,6 +7,10 @@ from sqlalchemy import func
 from functions.get_room_breakdown import get_room_breakdown
 from models import Htparam, Zimkateg, Guest, Genstat, Reservation, Res_line, Arrangement, Bill_line, Zimmer, Queasy
 
+def safe_divide(numerator, denominator):
+    numerator, denominator = to_decimal(numerator), to_decimal(denominator)
+    return (numerator / denominator) if denominator not in (0, None) else to_decimal("0")
+
 def rm_fbyguest_btn_gobl(sum_month:bool, fr_date:date, to_date:date, to_year:int, ex_tent:bool, ex_comp:bool, guest_type:string):
 
     prepare_cache ([Htparam, Guest, Genstat, Res_line, Arrangement, Queasy])
@@ -709,7 +713,9 @@ def rm_fbyguest_btn_gobl(sum_month:bool, fr_date:date, to_date:date, to_year:int
                 boutput.guest_name = "TOTAL"
                 boutput.room = tot_rm
                 boutput.revenue =  to_decimal(tot_rev)
-                boutput.avrg_rev =  to_decimal(tot_rev) / to_decimal(tot_rm)
+
+                # Rd 19/8/22025
+                boutput.avrg_rev =  safe_divide(tot_rev, tot_rm)
                 tot_rm =  to_decimal("0")
                 tot_rev =  to_decimal("0")
                 boutput.str_room = to_string(boutput.room, ">>>,>>9")
@@ -756,7 +762,8 @@ def rm_fbyguest_btn_gobl(sum_month:bool, fr_date:date, to_date:date, to_year:int
         boutput.guest_name = "TOTAL"
         boutput.room = tot_rm
         boutput.revenue =  to_decimal(tot_rev)
-        boutput.avrg_rev =  to_decimal(tot_rev) / to_decimal(tot_rm)
+
+        boutput.avrg_rev =  safe_divide(tot_rev, tot_rm)
         tot_rm =  to_decimal("0")
         tot_rev =  to_decimal("0")
         boutput.str_room = to_string(boutput.room, ">>>,>>9")
