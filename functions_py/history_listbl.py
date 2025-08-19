@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 19/8/2025
+# history kosong
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -653,28 +657,34 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
             history_list.vip = "non-VIP"
 
 
-    if substring(from_name, 0, 1) == ("*").lower() :
-
-        if substring(from_name, length(from_name) - 1, 1) != ("*").lower() :
+    if substring(from_name, 0, 1) == ("*"):
+        print("*")
+        if substring(from_name, length(from_name) - 1, 1) != ("*"):
             from_name = from_name + "*"
 
         if disptype == 0:
+            print("it1")
             disp_it1()
 
         elif disptype > 0 and not all_flag:
+            print("it1a")
             disp_it1a()
 
         elif disptype > 0 and all_flag:
+            print("it1b")
             disp_it1b()
     else:
-
+        print("--")
         if disptype == 0:
+            print("it")
             disp_it()
 
         elif disptype > 0 and not all_flag:
+            print("ita")
             disp_ita()
 
         elif disptype > 0 and all_flag:
+            print("itb")
             disp_itb()
 
     return generate_output()
