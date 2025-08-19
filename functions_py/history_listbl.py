@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 19/8/2025
 # history kosong
+# zinr = zinr.strip()
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -390,18 +391,19 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
 
         nonlocal history_list_data, zeit, counter, history, guest, reservation, segment
         nonlocal from_name, zinr, disptype, sorttype, all_flag, f_date, t_date
-
-
         nonlocal history_list, h_list, i_list
         nonlocal history_list_data, h_list_data, i_list_data
-
+        # Rd 19/8/2025
+        zinr = zinr.strip()
         if sorttype == 0:
-
+           
             if zinr == "":
 
                 history_obj_list = {}
                 for history, guest in db_session.query(History, Guest).join(Guest,(Guest.gastnr == History.gastnr)).filter(
-                         (History.betriebsnr <= 1) & (History.ankunft >= f_date) & (History.ankunft <= t_date) & (History.gastnr > 0)).order_by(History.ankunft, History.gastinfo).all():
+                         (History.betriebsnr <= 1) & (History.ankunft >= f_date) & 
+                         (History.ankunft <= t_date) & (History.gastnr > 0))    \
+                            .order_by(History.ankunft, History.gastinfo).all():
                     if history_obj_list.get(history._recid):
                         continue
                     else:
@@ -480,6 +482,8 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
         Hbuff =  create_buffer("Hbuff",History)
         h_list_data.clear()
 
+        # Rd 19/8/2025
+        from_name = from_name.strip()
         if sorttype == 0:
 
             guest = db_session.query(Guest).filter(
