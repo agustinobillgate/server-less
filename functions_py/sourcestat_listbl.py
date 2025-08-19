@@ -48,7 +48,10 @@ def sourcestat_listbl(from_month:string, ci_date:date, sorttype:int, hide_zero:b
 
     else:
         from_date = date_mdy(mm, 1, yy)
-        to_date = date_mdy(1, 1, yy + timedelta(days=1)) - timedelta(days=1)
+
+        # Rd, 19/8/2025
+        # to_date = date_mdy(1, 1, yy + timedelta(days=1)) - timedelta(days=1)
+        to_date = date_mdy(1, 1, yy + 1) - timedelta(days=1)
 
     if to_date > ci_date:
         to_date = ci_date

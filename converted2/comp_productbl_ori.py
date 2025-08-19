@@ -58,7 +58,9 @@ def comp_productbl_ori(pvilanguage:int, curr_date:string):
     from_date = date_mdy(1, 1, yy)
 
     if mm == 12:
-        to_date = date_mdy(1, 1, yy + timedelta(days=1)) - timedelta(days=1)
+        # Rd, 19/8/2025
+        # to_date = date_mdy(1, 1, yy + timedelta(days=1)) - timedelta(days=1)
+        to_date = date_mdy(1, 1, yy + 1) - timedelta(days=1)
     else:
         to_date = date_mdy(mm + 1, 1, yy) - timedelta(days=1)
     lfdate = date_mdy(1, 1, jml)
