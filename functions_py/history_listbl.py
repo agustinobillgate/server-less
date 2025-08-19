@@ -48,7 +48,8 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
         nonlocal history_list_data, h_list_data, i_list_data
 
         curr_date:int = 0
-
+        # Rd 19/8/20225
+        zinr = zinr.strip()
         if sorttype == 0:
 
             if zinr == "":
@@ -128,7 +129,8 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
 
         nonlocal history_list, h_list, i_list
         nonlocal history_list_data, h_list_data, i_list_data
-
+        # Rd 19/8/20225
+        zinr = zinr.strip()
         if sorttype == 0:
 
             if zinr == "":
@@ -215,6 +217,8 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
         h_list_data.clear()
         i_list_data.clear()
 
+        # Rd 19/8/20225
+        from_name = from_name.strip()
         if sorttype == 0:
 
             guest = get_cache (Guest, {"gastnr": [(gt, 0)],"name": [(ge, from_name)],"karteityp": [(eq, disptype)]})
@@ -316,6 +320,8 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
         nonlocal history_list, h_list, i_list
         nonlocal history_list_data, h_list_data, i_list_data
 
+        # Rd 19/8/20225
+        zinr = zinr.strip()
         if sorttype == 0:
 
             if zinr == "":
