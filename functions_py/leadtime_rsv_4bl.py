@@ -580,7 +580,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.lodging1 =  to_decimal(t_lodging1)
                     boutput.room_night = t_los
                     boutput.rm_night = t_rmnight
-                    boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+                    boutput.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
                     boutput.adult = t_adult
                     boutput.child = t_child
                     boutput.infant = t_infant
@@ -697,7 +697,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
             output_list.lodging1 =  to_decimal(t_lodging1)
             output_list.room_night = t_los
             output_list.rm_night = t_rmnight
-            output_list.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+            output_list.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
             output_list.adult = t_adult
             output_list.child = t_child
             output_list.infant = t_infant
@@ -3138,7 +3138,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
         output_list.lodging1 =  to_decimal(t_lodging1)
         output_list.room_night = t_los
         output_list.rm_night = t_rmnight
-        output_list.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+        output_list.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
+        output_list.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
         output_list.adult = t_adult
         output_list.child = t_child
         output_list.infant = t_infant
@@ -3513,7 +3514,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.lodging1 =  to_decimal(t_lodging1)
                     boutput.room_night = t_los
                     boutput.rm_night = t_rmnight
-                    boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+                    boutput.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
                     boutput.adult = t_adult
                     boutput.child = t_child
                     boutput.infant = t_infant
@@ -3837,7 +3838,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.lodging1 =  to_decimal(t_lodging1)
                     boutput.room_night = t_los
                     boutput.rm_night = t_rmnight
-                    boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+                    boutput.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
                     boutput.adult = t_adult
                     boutput.child = t_child
                     boutput.infant = t_infant
@@ -3923,7 +3924,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
         output_list.lodging1 =  to_decimal(t_lodging1)
         output_list.room_night = t_los
         output_list.rm_night = t_rmnight
-        output_list.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+        output_list.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
         output_list.adult = t_adult
         output_list.child = t_child
         output_list.infant = t_infant
@@ -4424,7 +4425,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.lodging1 =  to_decimal(t_lodging1)
                     boutput.room_night = t_los
                     boutput.rm_night = t_rmnight
-                    boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+                    boutput.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
                     boutput.adult = t_adult
                     boutput.child = t_child
                     boutput.infant = t_infant
@@ -4884,7 +4885,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.lodging1 =  to_decimal(t_lodging1)
                     boutput.room_night = t_los
                     boutput.rm_night = t_rmnight
-                    boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+                    boutput.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
                     boutput.adult = t_adult
                     boutput.child = t_child
                     boutput.infant = t_infant
@@ -4972,7 +4973,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
         output_list.lodging1 =  to_decimal(t_lodging1)
         output_list.room_night = t_los
         output_list.rm_night = t_rmnight
-        output_list.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+        output_list.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
         output_list.adult = t_adult
         output_list.child = t_child
         output_list.infant = t_infant
@@ -5336,7 +5337,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.lodging1 =  to_decimal(t_lodging1)
                     boutput.room_night = t_los
                     boutput.rm_night = t_rmnight
-                    boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+                    boutput.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
                     boutput.adult = t_adult
                     boutput.child = t_child
                     boutput.infant = t_infant
@@ -5660,7 +5661,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
                     boutput.lodging1 =  to_decimal(t_lodging1)
                     boutput.room_night = t_los
                     boutput.rm_night = t_rmnight
-                    boutput.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+                    boutput.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
                     boutput.adult = t_adult
                     boutput.child = t_child
                     boutput.infant = t_infant
@@ -5748,7 +5749,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
         output_list.lodging1 =  to_decimal(t_lodging1)
         output_list.room_night = t_los
         output_list.rm_night = t_rmnight
-        output_list.avg_lodging =  to_decimal(t_avrlodging) / to_decimal(t_rmnight)
+        output_list.avg_lodging =  safe_divide(t_avrlodging, t_rmnight)
         output_list.adult = t_adult
         output_list.child = t_child
         output_list.infant = t_infant
