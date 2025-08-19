@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 19/8/2025
+# history kosong
+# zinr = zinr.strip()
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -43,7 +48,8 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
         nonlocal history_list_data, h_list_data, i_list_data
 
         curr_date:int = 0
-
+        # Rd 19/8/20225
+        zinr = zinr.strip()
         if sorttype == 0:
 
             if zinr == "":
@@ -123,7 +129,8 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
 
         nonlocal history_list, h_list, i_list
         nonlocal history_list_data, h_list_data, i_list_data
-
+        # Rd 19/8/20225
+        zinr = zinr.strip()
         if sorttype == 0:
 
             if zinr == "":
@@ -210,6 +217,8 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
         h_list_data.clear()
         i_list_data.clear()
 
+        # Rd 19/8/20225
+        from_name = from_name.strip()
         if sorttype == 0:
 
             guest = get_cache (Guest, {"gastnr": [(gt, 0)],"name": [(ge, from_name)],"karteityp": [(eq, disptype)]})
@@ -311,6 +320,8 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
         nonlocal history_list, h_list, i_list
         nonlocal history_list_data, h_list_data, i_list_data
 
+        # Rd 19/8/20225
+        zinr = zinr.strip()
         if sorttype == 0:
 
             if zinr == "":
@@ -386,18 +397,19 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
 
         nonlocal history_list_data, zeit, counter, history, guest, reservation, segment
         nonlocal from_name, zinr, disptype, sorttype, all_flag, f_date, t_date
-
-
         nonlocal history_list, h_list, i_list
         nonlocal history_list_data, h_list_data, i_list_data
-
+        # Rd 19/8/2025
+        zinr = zinr.strip()
         if sorttype == 0:
-
+           
             if zinr == "":
 
                 history_obj_list = {}
                 for history, guest in db_session.query(History, Guest).join(Guest,(Guest.gastnr == History.gastnr)).filter(
-                         (History.betriebsnr <= 1) & (History.ankunft >= f_date) & (History.ankunft <= t_date) & (History.gastnr > 0)).order_by(History.ankunft, History.gastinfo).all():
+                         (History.betriebsnr <= 1) & (History.ankunft >= f_date) & 
+                         (History.ankunft <= t_date) & (History.gastnr > 0))    \
+                            .order_by(History.ankunft, History.gastinfo).all():
                     if history_obj_list.get(history._recid):
                         continue
                     else:
@@ -476,6 +488,8 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
         Hbuff =  create_buffer("Hbuff",History)
         h_list_data.clear()
 
+        # Rd 19/8/2025
+        from_name = from_name.strip()
         if sorttype == 0:
 
             guest = db_session.query(Guest).filter(
@@ -653,28 +667,34 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
             history_list.vip = "non-VIP"
 
 
-    if substring(from_name, 0, 1) == ("*").lower() :
-
-        if substring(from_name, length(from_name) - 1, 1) != ("*").lower() :
+    if substring(from_name, 0, 1) == ("*"):
+        print("*")
+        if substring(from_name, length(from_name) - 1, 1) != ("*"):
             from_name = from_name + "*"
 
         if disptype == 0:
+            print("it1")
             disp_it1()
 
         elif disptype > 0 and not all_flag:
+            print("it1a")
             disp_it1a()
 
         elif disptype > 0 and all_flag:
+            print("it1b")
             disp_it1b()
     else:
-
+        print("--")
         if disptype == 0:
+            print("it")
             disp_it()
 
         elif disptype > 0 and not all_flag:
+            print("ita")
             disp_ita()
 
         elif disptype > 0 and all_flag:
+            print("itb")
             disp_itb()
 
     return generate_output()

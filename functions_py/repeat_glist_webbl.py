@@ -59,6 +59,10 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
         if sorttype == 0:
 
             for output_rlist in query(output_rlist_data, sort_by=[("stay",True),("name",False)]):
+                
+                # Rd 19/8/2025
+                if output_rlist.stay is None:
+                    continue
 
                 if (output_rlist.stay >= min_stay) or (output_rlist.stay >= (min_stay - 1) and output_rlist.arrflag):
                     repeat_list = Repeat_list()

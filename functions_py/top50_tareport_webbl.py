@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 19/8/2025
+# yy timedelta
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -70,7 +74,10 @@ def top50_tareport_webbl(pvilanguage:int, curr_date:string, curr_month:int, sort
     from_date = date_mdy(1, 1, yy)
 
     if mm == 12:
-        to_date = date_mdy(1, 1, yy + timedelta(days=1)) - timedelta(days=1)
+        # Rd 19/8/22025
+        # timedelta
+        # to_date = date_mdy(1, 1, yy + timedelta(days=1)) - timedelta(days=1)
+        to_date = date_mdy(1, 1, yy + 1) - timedelta(days=1)
     else:
         to_date = date_mdy(mm + 1, 1, yy) - timedelta(days=1)
     for curr_date_loop in date_range(from_date,to_date) :

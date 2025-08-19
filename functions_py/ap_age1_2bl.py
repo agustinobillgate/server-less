@@ -1,16 +1,19 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 19/8/2025
+# credi-> credit
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpint import htpint
 from models import L_kredit, Htparam, L_lieferant, Queasy
 
-def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:string, detailed:bool, mi_bill:bool, segm:int, curr_disp:int, round_zero:bool):
+def ap_age1_2bl(pvilanguage:int, to_date:date, from_name:string, to_name:string, detailed:bool, mi_bill:bool, segm:int, curr_disp:int, round_zero:bool):
 
     prepare_cache ([L_kredit, Htparam, L_lieferant, Queasy])
 
-    ap_list_data = []
+    apage_list_data = []
     billdate:date = None
     curr_lief_nr:int = 0
     curr_art:int = 0
@@ -54,10 +57,9 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
     lvcarea:string = "ap-age1"
     l_kredit = htparam = l_lieferant = queasy = None
 
-    apage_list = ap_list = debtrec = debt = age_list = None
+    apage_list = debtrec = debt = age_list = None
 
     apage_list_data, Apage_list = create_model("Apage_list", {"docu_nr":string, "lschein":string, "rgdatum":string, "rechnr":string, "str":string})
-    ap_list_data, Ap_list = create_model("Ap_list", {"docu_nr":string, "lschein":string, "rgdatum":string, "rechnr":string, "count_no":int, "supplier_name":string, "prev_balance":Decimal, "credit":Decimal, "debit":Decimal, "ending_bal":Decimal, "age1":Decimal, "age2":Decimal, "age3":Decimal, "age4":Decimal})
     age_list_data, Age_list = create_model("Age_list", {"artnr":int, "rechnr":string, "lschein":string, "counter":int, "lief_nr":int, "rgdatum":date, "firma":string, "voucher_no":int, "p_bal":Decimal, "debit":Decimal, "credit":Decimal, "saldo":Decimal, "debt0":Decimal, "debt1":Decimal, "debt2":Decimal, "debt3":Decimal, "tot_debt":Decimal})
 
     Debtrec = create_buffer("Debtrec",L_kredit)
@@ -67,25 +69,25 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal ap_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, curr_po, curr_lschein, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, curr_rgdatum, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, voucher_no, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
+        nonlocal apage_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, curr_po, curr_lschein, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, curr_rgdatum, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, voucher_no, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
         nonlocal pvilanguage, to_date, from_name, to_name, detailed, mi_bill, segm, curr_disp, round_zero
         nonlocal debtrec, debt
 
 
-        nonlocal apage_list, ap_list, debtrec, debt, age_list
-        nonlocal apage_list_data, ap_list_data, age_list_data
+        nonlocal apage_list, debtrec, debt, age_list
+        nonlocal apage_list_data, age_list_data
 
-        return {"ap-list": ap_list_data}
+        return {"apage-list": apage_list_data}
 
     def age_list():
 
-        nonlocal ap_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, curr_po, curr_lschein, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, curr_rgdatum, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, voucher_no, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
+        nonlocal apage_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, curr_po, curr_lschein, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, curr_rgdatum, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, voucher_no, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
         nonlocal pvilanguage, to_date, from_name, to_name, detailed, mi_bill, segm, curr_disp, round_zero
         nonlocal debtrec, debt
 
 
-        nonlocal apage_list, ap_list, debtrec, debt, age_list
-        nonlocal apage_list_data, ap_list_data, age_list_data
+        nonlocal apage_list, debtrec, debt, age_list
+        nonlocal apage_list_data, age_list_data
 
         l_kredit_obj_list = {}
         l_kredit = L_kredit()
@@ -195,13 +197,13 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
 
     def age_list1():
 
-        nonlocal ap_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, curr_po, curr_lschein, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, curr_rgdatum, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, voucher_no, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
+        nonlocal apage_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, curr_po, curr_lschein, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, curr_rgdatum, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, voucher_no, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
         nonlocal pvilanguage, to_date, from_name, to_name, detailed, mi_bill, segm, curr_disp, round_zero
         nonlocal debtrec, debt
 
 
-        nonlocal apage_list, ap_list, debtrec, debt, age_list
-        nonlocal apage_list_data, ap_list_data, age_list_data
+        nonlocal apage_list, debtrec, debt, age_list
+        nonlocal apage_list_data, age_list_data
 
         l_kredit_obj_list = {}
         l_kredit = L_kredit()
@@ -311,13 +313,13 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
 
     def age_list2():
 
-        nonlocal ap_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, curr_po, curr_lschein, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, curr_rgdatum, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, voucher_no, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
+        nonlocal apage_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, curr_po, curr_lschein, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, curr_rgdatum, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, voucher_no, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
         nonlocal pvilanguage, to_date, from_name, to_name, detailed, mi_bill, segm, curr_disp, round_zero
         nonlocal debtrec, debt
 
 
-        nonlocal apage_list, ap_list, debtrec, debt, age_list
-        nonlocal apage_list_data, ap_list_data, age_list_data
+        nonlocal apage_list, debtrec, debt, age_list
+        nonlocal apage_list_data, age_list_data
 
         l_kredit_obj_list = {}
         l_kredit = L_kredit()
@@ -427,13 +429,13 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
 
     def age_list3():
 
-        nonlocal ap_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, curr_po, curr_lschein, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, curr_rgdatum, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, voucher_no, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
+        nonlocal apage_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, curr_po, curr_lschein, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, curr_rgdatum, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, voucher_no, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
         nonlocal pvilanguage, to_date, from_name, to_name, detailed, mi_bill, segm, curr_disp, round_zero
         nonlocal debtrec, debt
 
 
-        nonlocal apage_list, ap_list, debtrec, debt, age_list
-        nonlocal apage_list_data, ap_list_data, age_list_data
+        nonlocal apage_list, debtrec, debt, age_list
+        nonlocal apage_list_data, age_list_data
 
         l_kredit_obj_list = {}
         l_kredit = L_kredit()
@@ -550,13 +552,13 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
 
     def fill_in_list(fill_billno:bool, curr_po:string, curr_lschein:string, curr_rgdatum:string, voucher_no:string):
 
-        nonlocal ap_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
+        nonlocal apage_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
         nonlocal pvilanguage, to_date, from_name, to_name, detailed, mi_bill, segm, curr_disp, round_zero
         nonlocal debtrec, debt
 
 
-        nonlocal apage_list, ap_list, debtrec, debt, age_list
-        nonlocal apage_list_data, ap_list_data, age_list_data
+        nonlocal apage_list, debtrec, debt, age_list
+        nonlocal apage_list_data, age_list_data
 
 
         apage_list = Apage_list()
@@ -581,13 +583,13 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
 
     def add_detail_date():
 
-        nonlocal ap_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, curr_po, curr_lschein, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, curr_rgdatum, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, voucher_no, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
+        nonlocal apage_list_data, billdate, curr_lief_nr, curr_art, counter, i, curr_name, firma, curr_po, curr_lschein, p_bal, debit, credit, debt0, debt1, debt2, debt3, tot_debt, t_comm, t_adjust, t_saldo, t_prev, t_debit, t_credit, t_debt0, t_debt1, t_debt2, t_debt3, tmp_saldo, curr_rgdatum, from_date, guest_name, curr_bezeich, outlist, do_it, price_decimal, voucher_no, day1, day2, day3, curr_saldo, lvcarea, l_kredit, htparam, l_lieferant, queasy
         nonlocal pvilanguage, to_date, from_name, to_name, detailed, mi_bill, segm, curr_disp, round_zero
         nonlocal debtrec, debt
 
 
-        nonlocal apage_list, ap_list, debtrec, debt, age_list
-        nonlocal apage_list_data, ap_list_data, age_list_data
+        nonlocal apage_list, debtrec, debt, age_list
+        nonlocal apage_list_data, age_list_data
 
         if to_date - age_list.rgdatum > day3:
             age_list.debt3 =  to_decimal(age_list.tot_debt)
@@ -655,25 +657,6 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
                 outlist = " " + to_string(counter, ">>>9 ") + to_string(firma, "x(30)") + to_string(tot_debt, "->,>>>,>>>,>>>,>>9") + to_string(p_bal, "->,>>>,>>>,>>>,>>9") + to_string(debit, "->,>>>,>>>,>>>,>>9") + to_string(credit, "->,>>>,>>>,>>>,>>9") + to_string(debt0, "->,>>>,>>>,>>>,>>9") + to_string(debt1, "->,>>>,>>>,>>>,>>9") + to_string(debt2, "->,>>>,>>>,>>>,>>9") + to_string(debt3, "->,>>>,>>>,>>>,>>9")
             else:
                 outlist = " " + to_string(counter, ">>>9 ") + to_string(firma, "x(30)") + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + to_string(p_bal, "->>,>>>,>>>,>>9.99") + to_string(debit, "->>,>>>,>>>,>>9.99") + to_string(credit, "->>,>>>,>>>,>>9.99") + to_string(debt0, "->>,>>>,>>>,>>9.99") + to_string(debt1, "->>,>>>,>>>,>>9.99") + to_string(debt2, "->>,>>>,>>>,>>9.99") + to_string(debt3, "->>,>>>,>>>,>>9.99")
-            ap_list = Ap_list()
-            ap_list_data.append(ap_list)
-
-            ap_list.docu_nr = curr_po
-            ap_list.lschein = curr_lschein
-            ap_list.rgdatum = curr_rgdatum
-            ap_list.rechnr = voucher_no
-            ap_list.count_no = counter
-            ap_list.supplier_name = firma
-            ap_list.prev_balance =  to_decimal(p_bal)
-            ap_list.credit =  to_decimal(credit)
-            ap_list.debit =  to_decimal(debit)
-            ap_list.ending_bal =  to_decimal(tot_debt)
-            ap_list.age1 =  to_decimal(debt0)
-            ap_list.age2 =  to_decimal(debt1)
-            ap_list.age3 =  to_decimal(debt2)
-            ap_list.age4 =  to_decimal(debt3)
-
-
             fill_in_list(True, curr_po, curr_lschein, curr_rgdatum, voucher_no)
             curr_po = age_list.rechnr
             curr_lschein = age_list.lschein
@@ -683,6 +666,7 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
         else:
             counter = counter - 1
         age_list_data.remove(age_list)
+
 
     billdate = None
     curr_lief_nr = 0
@@ -764,7 +748,8 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
                 t_saldo =  to_decimal(t_saldo) + to_decimal(age_list.tot_debt)
                 t_prev =  to_decimal(t_prev) + to_decimal(age_list.p_bal)
                 t_debit =  to_decimal(t_debit) + to_decimal(age_list.debit)
-                t_credit =  to_decimal(t_credit) + to_decimal(age_list.credi)
+                # t_credit =  to_decimal(t_credit) + to_decimal(age_list.credi)
+                t_credit =  to_decimal(t_credit) + to_decimal(age_list.credit)
                 t_debt0 =  to_decimal(t_debt0) + to_decimal(age_list.debt0)
                 t_debt1 =  to_decimal(t_debt1) + to_decimal(age_list.debt1)
                 t_debt2 =  to_decimal(t_debt2) + to_decimal(age_list.debt2)
@@ -818,25 +803,6 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
                         outlist = " " + to_string(counter, ">>>9 ") + to_string(firma, "x(30)") + to_string(tot_debt, "->,>>>,>>>,>>>,>>9") + to_string(p_bal, "->,>>>,>>>,>>>,>>9") + to_string(debit, "->,>>>,>>>,>>>,>>9") + to_string(credit, "->,>>>,>>>,>>>,>>9") + to_string(debt0, "->,>>>,>>>,>>>,>>9") + to_string(debt1, "->,>>>,>>>,>>>,>>9") + to_string(debt2, "->,>>>,>>>,>>>,>>9") + to_string(debt3, "->,>>>,>>>,>>>,>>9")
                     else:
                         outlist = " " + to_string(counter, ">>>9 ") + to_string(firma, "x(30)") + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + to_string(p_bal, "->>,>>>,>>>,>>9.99") + to_string(debit, "->>,>>>,>>>,>>9.99") + to_string(credit, "->>,>>>,>>>,>>9.99") + to_string(debt0, "->>,>>>,>>>,>>9.99") + to_string(debt1, "->>,>>>,>>>,>>9.99") + to_string(debt2, "->>,>>>,>>>,>>9.99") + to_string(debt3, "->>,>>>,>>>,>>9.99")
-                    ap_list = Ap_list()
-                    ap_list_data.append(ap_list)
-
-                    ap_list.docu_nr = curr_po
-                    ap_list.lschein = curr_lschein
-                    ap_list.rgdatum = curr_rgdatum
-                    ap_list.rechnr = voucher_no
-                    ap_list.count_no = counter
-                    ap_list.supplier_name = firma
-                    ap_list.prev_balance =  to_decimal(p_bal)
-                    ap_list.credit =  to_decimal(credit)
-                    ap_list.debit =  to_decimal(debit)
-                    ap_list.ending_bal =  to_decimal(tot_debt)
-                    ap_list.age1 =  to_decimal(debt0)
-                    ap_list.age2 =  to_decimal(debt1)
-                    ap_list.age3 =  to_decimal(debt2)
-                    ap_list.age4 =  to_decimal(debt3)
-
-
                     fill_in_list(True, curr_po, curr_lschein, curr_rgdatum, "")
                     curr_po = age_list.rechnr
                     curr_lschein = age_list.lschein
@@ -909,25 +875,6 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
             outlist = " " + to_string(counter, ">>>9 ") + to_string(firma, "x(30)") + to_string(tot_debt, "->,>>>,>>>,>>>,>>9") + to_string(p_bal, "->,>>>,>>>,>>>,>>9") + to_string(debit, "->,>>>,>>>,>>>,>>9") + to_string(credit, "->,>>>,>>>,>>>,>>9") + to_string(debt0, "->,>>>,>>>,>>>,>>9") + to_string(debt1, "->,>>>,>>>,>>>,>>9") + to_string(debt2, "->,>>>,>>>,>>>,>>9") + to_string(debt3, "->,>>>,>>>,>>>,>>9")
         else:
             outlist = " " + to_string(counter, ">>>9 ") + to_string(firma, "x(30)") + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + to_string(p_bal, "->>,>>>,>>>,>>9.99") + to_string(debit, "->>,>>>,>>>,>>9.99") + to_string(credit, "->>,>>>,>>>,>>9.99") + to_string(debt0, "->>,>>>,>>>,>>9.99") + to_string(debt1, "->>,>>>,>>>,>>9.99") + to_string(debt2, "->>,>>>,>>>,>>9.99") + to_string(debt3, "->>,>>>,>>>,>>9.99")
-        ap_list = Ap_list()
-        ap_list_data.append(ap_list)
-
-        ap_list.docu_nr = curr_po
-        ap_list.lschein = curr_lschein
-        ap_list.rgdatum = curr_rgdatum
-        ap_list.rechnr = voucher_no
-        ap_list.count_no = counter
-        ap_list.supplier_name = firma
-        ap_list.prev_balance =  to_decimal(p_bal)
-        ap_list.credit =  to_decimal(credit)
-        ap_list.debit =  to_decimal(debit)
-        ap_list.ending_bal =  to_decimal(tot_debt)
-        ap_list.age1 =  to_decimal(debt0)
-        ap_list.age2 =  to_decimal(debt1)
-        ap_list.age3 =  to_decimal(debt2)
-        ap_list.age4 =  to_decimal(debt3)
-
-
         fill_in_list(True, curr_po, curr_lschein, curr_rgdatum, "")
     else:
         counter = counter - 1
@@ -938,39 +885,6 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
         outlist = " " + to_string(translateExtended ("T O T A L A/P:", lvcarea, "") , "x(30)") + to_string(round(t_saldo, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_prev, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debit, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_credit, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debt0, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debt1, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debt2, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debt3, 0) , "->>,>>>,>>>,>>9.99")
     else:
         outlist = " " + to_string(translateExtended ("T O T A L A/P:", lvcarea, "") , "x(30)") + to_string(t_saldo, "->>,>>>,>>>,>>9.99") + to_string(t_prev, "->>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>9.99") + to_string(t_debt0, "->>,>>>,>>>,>>9.99") + to_string(t_debt1, "->>,>>>,>>>,>>9.99") + to_string(t_debt2, "->>,>>>,>>>,>>9.99") + to_string(t_debt3, "->>,>>>,>>>,>>9.99")
-
-    if round_zero:
-        ap_list = Ap_list()
-        ap_list_data.append(ap_list)
-
-        ap_list.count_no = counter
-        ap_list.supplier_name = translateExtended ("T O T A L A/P:", lvcarea, "")
-        ap_list.prev_balance = to_decimal(round(t_prev , 0))
-        ap_list.credit = to_decimal(round(t_credit , 0))
-        ap_list.debit = to_decimal(round(t_debit , 0))
-        ap_list.ending_bal = to_decimal(round(t_saldo , 0))
-        ap_list.age1 = to_decimal(round(t_debt0 , 0))
-        ap_list.age2 = to_decimal(round(t_debt1 , 0))
-        ap_list.age3 = to_decimal(round(t_debt2 , 0))
-        ap_list.age4 = to_decimal(round(t_debt3 , 0))
-
-
-    else:
-        ap_list = Ap_list()
-        ap_list_data.append(ap_list)
-
-        ap_list.count_no = counter
-        ap_list.supplier_name = translateExtended ("T O T A L A/P:", lvcarea, "")
-        ap_list.prev_balance =  to_decimal(t_prev)
-        ap_list.credit =  to_decimal(t_credit)
-        ap_list.debit =  to_decimal(t_debit)
-        ap_list.ending_bal =  to_decimal(t_saldo)
-        ap_list.age1 =  to_decimal(t_debt0)
-        ap_list.age2 =  to_decimal(t_debt1)
-        ap_list.age3 =  to_decimal(t_debt2)
-        ap_list.age4 =  to_decimal(t_debt3)
-
-
     fill_in_list(False, "", "", "", "")
     outlist = "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
     fill_in_list(False, "", "", "--------", "")
@@ -978,18 +892,6 @@ def ap_age1_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:strin
     for i in range(1,54 + 1) :
         outlist = outlist + " "
     outlist = outlist + to_string((t_debt0 / t_saldo * 100) , " ->>9.99") + to_string((t_debt1 / t_saldo * 100) , " ->>9.99") + to_string((t_debt2 / t_saldo * 100) , " ->>9.99") + to_string((t_debt3 / t_saldo * 100) , " ->>9.99")
-    ap_list = Ap_list()
-    ap_list_data.append(ap_list)
-
-    ap_list.count_no = counter
-    ap_list.supplier_name = translateExtended ("Statistic Percentage (%) :", lvcarea, "")
-    ap_list.ending_bal =  to_decimal("100")
-    ap_list.age1 = ( to_decimal(t_debt0) / to_decimal(t_saldo) * to_decimal("100") )
-    ap_list.age2 = ( to_decimal(t_debt1) / to_decimal(t_saldo) * to_decimal("100") )
-    ap_list.age3 = ( to_decimal(t_debt2) / to_decimal(t_saldo) * to_decimal("100") )
-    ap_list.age4 = ( to_decimal(t_debt3) / to_decimal(t_saldo) * to_decimal("100") )
-
-
     fill_in_list(False, "", "", "", "")
     outlist = ""
     fill_in_list(False, "", "", "", "")
