@@ -32,8 +32,6 @@ def change_pin_screen_webbl(t_payload_list_data:[T_payload_list]):
 
     db_session = local_storage.db_session
 
-    log_program.write_log("debug", "test-12")
-
     def generate_output():
         nonlocal signature_list_data, t_output_list_data, epoch_signature, c_pin, c_hashed_pin, c_pin_new, c_hashed_pin_new, queasy, bediener, res_history, paramtext
         nonlocal buf_queasy
@@ -93,8 +91,6 @@ def change_pin_screen_webbl(t_payload_list_data:[T_payload_list]):
 
 
         paramtext = get_cache(Paramtext, {"txtnr": [(eq, 243)]})
-
-        log_program.write_log("debug", str(paramtext))
 
         if paramtext and paramtext.ptexte != "":
             lic_nr = decode_string(paramtext.ptexte)
@@ -200,24 +196,12 @@ def change_pin_screen_webbl(t_payload_list_data:[T_payload_list]):
 
         bediener = get_cache(Bediener, {"userinit": [(eq, t_payload_list.user_init)]})
 
-        if bediener == None:
-            bediener = db_session.query(Bediener).filter(func.trim(Bediener.userinit) == "165").first()
-
-        log_program.write_log("debug", bediener.userinit)
-
         if bediener:
             queasy = get_cache(Queasy, {"key": [(eq, 360)],"number1": [(eq, bediener.nr)]})
-
-            if queasy == None:
-                queasy = db_session.query(Queasy).filter(Queasy.key == 360, Queasy.number1 == bediener.nr).first()
-                log_program.write_log("debug", "str(queasy.char1.lower)")
-                log_program.write_log("debug", str(queasy.char1.lower))
 
             if queasy:
                 c_pin = t_payload_list.old_pin + bediener.userinit
                 c_hashed_pin = sha1(c_pin).hexdigest()
-
-                log_program.write_log("debug", str(queasy.char1.lower))
 
                 if queasy.char1.lower()  == (c_hashed_pin).lower() :
 
@@ -229,8 +213,6 @@ def change_pin_screen_webbl(t_payload_list_data:[T_payload_list]):
 
                         value_list.var_name = "flag"
                         value_list.value_str = to_string(t_output_list.flag)
-
-                        log_program.write_log("debug", "invalid pin")
 
                         epoch_signature, signature_list_data = create_signature(bediener.username, value_list_data)
 
