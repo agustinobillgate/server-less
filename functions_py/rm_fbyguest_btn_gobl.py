@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 19/8/2025
+# 
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -779,7 +783,9 @@ def rm_fbyguest_btn_gobl(sum_month:bool, fr_date:date, to_date:date, to_year:int
         boutput.guest_name = "Grand TOTAL"
         boutput.room = trm
         boutput.revenue =  to_decimal(trev)
-        boutput.avrg_rev =  to_decimal(trev) / to_decimal(trm)
+        # Rd 19/8/2025
+        # boutput.avrg_rev =  to_decimal(trev) / to_decimal(trm)
+        boutput.avrg_rev =  safe_divide(trev, trm)
         boutput.str_room = to_string(boutput.room, ">>>,>>9")
         boutput.str_revenue = to_string(boutput.revenue, "->>>,>>>,>>>,>>9.99")
         boutput.str_avrg = to_string(boutput.avrg_rev, "->>>,>>>,>>>,>>9.99")
