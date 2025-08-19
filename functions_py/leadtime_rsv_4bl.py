@@ -3,6 +3,8 @@
 #------------------------------------------
 # Rd, 19/8/2025
 # safe_divide, reslin -> reslin_queasy
+# date - date
+# output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -248,6 +250,7 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
 
                     if reservation:
                         output_list.create_date = reservation.resdat
+                        # output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
                         output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
 
                     res_line = get_cache (Res_line, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
@@ -845,7 +848,9 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
 
                     if reservation:
                         output_list.create_date = reservation.resdat
-                        output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        # output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        output_list.lead =  (genstat.res_date[0]) - reservation.resdat)
+
 
                     res_line = get_cache (Res_line, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
 
@@ -2271,7 +2276,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
 
                     if reservation:
                         output_list.create_date = reservation.resdat
-                        output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        # output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        output_list.lead =  (genstat.res_date[0]) - reservation.resdat)
 
                     res_line = get_cache (Res_line, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
 
@@ -2734,7 +2740,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
 
                     if reservation:
                         output_list.create_date = reservation.resdat
-                        output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        # output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        output_list.lead =  (genstat.res_date[0]) - reservation.resdat)
 
                     res_line = get_cache (Res_line, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
 
@@ -4112,7 +4119,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
 
                     if reservation:
                         output_list.create_date = reservation.resdat
-                        output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        # output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        output_list.lead =  (genstat.res_date[0]) - reservation.resdat)
 
                     res_line = get_cache (Res_line, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
 
@@ -4575,7 +4583,8 @@ def leadtime_rsv_4bl(fromdate:date, todate:date, from_rsv:string, to_rsv:string,
 
                     if reservation:
                         output_list.create_date = reservation.resdat
-                        output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        # output_list.lead =  to_decimal(genstat.res_date[0]) - to_decimal(reservation.resdat)
+                        output_list.lead =  (genstat.res_date[0]) - reservation.resdat)
 
                     res_line = get_cache (Res_line, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
 
