@@ -1027,7 +1027,7 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
                     t_debit =  to_decimal(t_debit) + to_decimal(age_list.debit)
 
                     # Rd 19/8/2025
-                    t_credit =  to_decimal(t_credit) + to_decimal(age_list.credi)
+                    # t_credit =  to_decimal(t_credit) + to_decimal(age_list.credi)
                     t_credit =  to_decimal(t_credit) + to_decimal(age_list.credit)
                     t_debt0 =  to_decimal(t_debt0) + to_decimal(age_list.debt0)
                     t_debt1 =  to_decimal(t_debt1) + to_decimal(age_list.debt1)
