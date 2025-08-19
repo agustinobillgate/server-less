@@ -1,0 +1,144 @@
+{
+    "Guest": {
+        "read": [
+            "name",
+            "_recid",
+            "nation1"
+        ],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [
+            "wabkurz",
+            "_recid",
+            "ankauf",
+            "waehrungsnr"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "fdate",
+            "fchar",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "name",
+            "resart",
+            "resdat",
+            "segmentcode",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Genstat": {
+        "read": [
+            "gastnr",
+            "resnr",
+            "res_int",
+            "res_date",
+            "argt",
+            "zipreis",
+            "logis",
+            "erwachs",
+            "kind1",
+            "kind2",
+            "gratis",
+            "kind3",
+            "gastnrmember",
+            "segmentcode",
+            "zikatnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Nation": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Segment": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "kurzbez",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Sourccod": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "betriebsnr",
+            "arrangement",
+            "gastnrmember",
+            "gastnr",
+            "resnr",
+            "reslinnr",
+            "ankunft",
+            "abreise",
+            "erwachs",
+            "kind1",
+            "kind2",
+            "gratis",
+            "l_zuordnung",
+            "zikatnr",
+            "_recid",
+            "zimmer_wunsch",
+            "reserve_int",
+            "reserve_dec",
+            "zipreis"
+        ],
+        "write": []
+    },
+    "Reslin_queasy": {
+        "read": [
+            "number3",
+            "deci1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Arrangement": {
+        "read": [
+            "argtnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest_pr": {
+        "read": [
+            "code",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [],
+        "write": []
+    },
+    "Katpreis": {
+        "read": [
+            "perspreis",
+            "kindpreis",
+            "_recid"
+        ],
+        "write": []
+    }
+}
