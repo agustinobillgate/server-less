@@ -260,7 +260,8 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
         summary_list1.summ = ""
         summary_list1.room_type = "OCC. PAYING ROOMS (%)"
-        summary_list1.qty = to_string(tot_payrm / tot_avail * 100, "->>9.99")
+        # summary_list1.qty = to_string(tot_payrm / tot_avail * 100, "->>9.99")
+        summary_list1.qty = to_string(safe_divide(tot_payrm , (tot_avail * 100)), "->>9.99")
 
         for sum_list in query(sum_list_data):
             summary_list2 = Summary_list2()
