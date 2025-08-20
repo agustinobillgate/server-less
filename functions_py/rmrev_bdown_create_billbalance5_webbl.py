@@ -1,3 +1,7 @@
+#------------------------------------------
+# Rd, 20/8/2025
+#
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal

@@ -46,7 +46,9 @@ def rmrev_bdown_partial_create_list_webbl(id_flag:string):
         return {"cl-list": cl_list_data, "currency-list": currency_list_data, "sum-list": sum_list_data, "s-list": s_list_data, "argt-list": argt_list_data, "done_flag": done_flag}
 
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 280) & (Queasy.char1 == ("RRB Period").lower()) & (Queasy.char2 == (id_flag).lower())).order_by(Queasy.number1).all():
+             (Queasy.key == 280) & (Queasy.char1 == "RRB Period") & (Queasy.char2 == id_flag)).order_by(Queasy.number1).all():
+        
+        print("Q:", queasy.char3)
         tbl_name = entry(0, queasy.char3, "|")
         counter = counter + 1
 
