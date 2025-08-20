@@ -82,6 +82,8 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
         summary_list4_data.clear()
         lnl_sum_data.clear()
 
+        
+
         if sorttype == 1 or sorttype == 3:
             outnr = 0
 
@@ -346,7 +348,9 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
         output_list.stay = (cl_list.depart - cl_list.arrive).days
 
-
+    if datum is None or curr_date is None:
+        return generate_output()
+    
     create_inhouse_v2()
 
     return generate_output()
