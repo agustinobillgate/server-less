@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 21/8/2025
+# bill datum (fo_cashgjourn_cldbl)
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -555,9 +558,18 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
                             pass
 
                         if not long_digit:
-                            output_list.str = to_string(bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(17)") + to_string(amt, "->,>>>,>>>,>>9.99") + to_string(zeit, "HH:MM:SS") + to_string(bediener.userinit, "x(3)")
+                            # Rd 21/8/2025, bill-datum, zeit
+                            # output_list.str = to_string(bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(17)") + to_string(amt, "->,>>>,>>>,>>9.99") + to_string(zeit, "HH:MM:SS") + to_string(bediener.userinit, "x(3)")
+                            output_list.str = to_string(billjournal.bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + \
+                                            to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(17)") + \
+                                                to_string(amt, "->,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(bediener.userinit, "x(3)")
                         else:
-                            output_list.str = to_string(bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(17)") + to_string(amt, "->>>>,>>>,>>>,>>9") + to_string(zeit, "HH:MM:SS") + to_string(bediener.userinit, "x(3)")
+                            # Rd 21/8/2025, bill-datum, zeit
+                            # output_list.str = to_string(bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(17)") + to_string(amt, "->>>>,>>>,>>>,>>9") + to_string(zeit, "HH:MM:SS") + to_string(bediener.userinit, "x(3)")
+                            output_list.str = to_string(billjournal.bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + \
+                                                to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(17)") + \
+                                                to_string(amt, "->>>>,>>>,>>>,>>9") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(bediener.userinit, "x(3)")
+
                     qty = qty + billjournal.anzahl
 
                     if artikel.pricetab or artikel.betriebsnr != 0:
