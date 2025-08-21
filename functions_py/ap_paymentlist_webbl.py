@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 21/8/2025
-# Total nol
+# Total nol, untuk flag-string = 1, menggunakan pay_amount
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -142,14 +142,16 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        # ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.flag_string = 1
 
 
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(tot_credit)
+        # ap_paymentlist.ap_amount =  to_decimal(tot_credit)
+        ap_paymentlist.pay_amount =  to_decimal(tot_credit)
         ap_paymentlist.flag_string = 1
 
 

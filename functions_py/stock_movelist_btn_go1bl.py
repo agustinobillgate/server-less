@@ -1,9 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
 #-----------------------------------------
 # Rd, 23/7/20225
 # gitlab:656
 # requery for each, close_date dikeluarkan
+# 21/8/2025, Last Receiving date kosong
 #-----------------------------------------
 
 from functions.additional_functions import *
