@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 21/8/20225
+# data tidak tampil semua
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -41,6 +44,7 @@ def trialbaiance_btn_executebl(acct_type:int, from_fibu:string, to_fibu:string, 
     if sorttype == 1:
 
         for output_list in query(output_list_data):
+            # print(output_list.str)
             refno = output_list.ref_no
             begining_bal = output_list.begin_bal
             tot_debit = output_list.tot_debit
@@ -79,9 +83,10 @@ def trialbaiance_btn_executebl(acct_type:int, from_fibu:string, to_fibu:string, 
                 ending_bal = replace_str(ending_bal, ")", "")
             tb_list_detail = Tb_list_detail()
             tb_list_detail_data.append(tb_list_detail)
-
+ 
             tb_list_detail.marks = output_list.ch
             tb_list_detail.date = date_mdy(trim(substring(output_list.str, 0, 8)))
+            # print("Date:", substring(output_list.str, 0, 8) )
             tb_list_detail.ref_no = refno
             tb_list_detail.begining_bal = begining_bal
             tb_list_detail.tot_debit = tot_debit
@@ -99,6 +104,7 @@ def trialbaiance_btn_executebl(acct_type:int, from_fibu:string, to_fibu:string, 
     else:
 
         for output_list in query(output_list_data):
+            # print(output_list.str)
             refno = substring(output_list.str, 0, 16)
             begining_bal = (replace_str(substring(output_list.str, 54, 22) , ",", ""))
             tot_debit = (replace_str(substring(output_list.str, 76, 22) , ",", ""))

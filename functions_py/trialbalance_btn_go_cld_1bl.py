@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 21/8/20225
+# data tidak tampil semua
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -208,12 +211,13 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
 
 
                         c = convert_fibu(gl_acct.fibukonto)
-                        str = " " + to_string(c, "x(16)") + substring(gl_acct.bezeich, 0, 20)
+                        # output_list.str = "        " + to_string(c, "x(16)") + substring(gl_acct.bezeich, 0, 20)
+                        output_list.str = to_string("", "x(8)") + to_string(c, "x(16)") + substring(gl_acct.bezeich, 0, 20)
                         output_list.ref_no = to_string(c, "x(32)")
                         output_list.begin_bal = gl_acct.bezeich
                         output_list.tot_debit = ""
                         output_list.is_show_depart = True
-
+                       
                         gl_department = get_cache (Gl_department, {"nr": [(eq, gl_acct.deptnr)]})
 
                         if gl_department:
@@ -224,7 +228,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                             output_list.dept_nr = 0
 
                         if length(gl_acct.bezeich) > 20:
-                            str = str + substring(gl_acct.bezeich, 20, 18)
+                            output_list.str = output_list.str + substring(gl_acct.bezeich, 20, 18)
                         t_debit =  to_decimal("0")
                         t_credit =  to_decimal("0")
                         p_bal =  to_decimal("0")
@@ -292,29 +296,29 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                                             output_list.nr = counter
 
 
-                                            str = to_string(gl_jouhdr.datum) + to_string(gl_jouhdr.refno, "x(16)")
+                                            output_list.str = to_string(gl_jouhdr.datum) + to_string(gl_jouhdr.refno, "x(16)")
                                             output_list.ref_no = to_string(gl_jouhdr.refno, "x(32)")
                                             output_list.begin_bal = to_string(tot_bal - gl_journal.debit + gl_journal.credit, "->>,>>>,>>>,>>>,>>9.99")
                                             output_list.net_change = to_string((gl_journal.debit - gl_journal.credit) , "->>,>>>,>>>,>>>,>>9.99")
                                             output_list.ending_bal = to_string((tot_bal) , "->>,>>>,>>>,>>>,>>9.99")
                                             output_list.is_show_depart = False
                                             for i in range(1,22 + 1) :
-                                                str = str + " "
+                                                output_list.str = output_list.str + " "
 
                                             if gl_journal.debit >= 0:
-                                                str = str + to_string(gl_journal.debit, ">>>,>>>,>>>,>>>,>>9.99")
+                                                output_list.str = output_list.str + to_string(gl_journal.debit, ">>>,>>>,>>>,>>>,>>9.99")
                                                 output_list.tot_debit = to_string(gl_journal.debit, ">>>,>>>,>>>,>>>,>>9.99")
                                             else:
-                                                str = str + to_string(gl_journal.debit, "->>,>>>,>>>,>>>,>>9.99")
+                                                output_list.str = output_list.str + to_string(gl_journal.debit, "->>,>>>,>>>,>>>,>>9.99")
                                                 output_list.tot_debit = to_string(gl_journal.debit, "->>,>>>,>>>,>>>,>>9.99")
 
                                             if gl_journal.credit >= 0:
-                                                str = str + to_string(gl_journal.credit, ">>>,>>>,>>>,>>>,>>9.99")
+                                                output_list.str = output_list.str + to_string(gl_journal.credit, ">>>,>>>,>>>,>>>,>>9.99")
                                                 output_list.tot_credit = to_string(gl_journal.credit, ">>>,>>>,>>>,>>>,>>9.99")
                                             else:
-                                                str = str + to_string(gl_journal.credit, "->>,>>>,>>>,>>>,>>9.99")
+                                                output_list.str = output_list.str + to_string(gl_journal.credit, "->>,>>>,>>>,>>>,>>9.99")
                                                 output_list.tot_credit = to_string(gl_journal.credit, "->>,>>>,>>>,>>>,>>9.99")
-                                            str = str + to_string("", "x(44) ") + to_string(get_bemerk (gl_journal.bemerk) , "x(62)")
+                                            output_list.str = output_list.str + to_string("", "x(44) ") + to_string(get_bemerk (gl_journal.bemerk) , "x(62)")
 
                                 if from_datehis != None and to_datehis != None:
 
@@ -357,7 +361,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                                             output_list.nr = counter
 
 
-                                            str = to_string(gl_jhdrhis.datum) + to_string(gl_jhdrhis.refno, "x(13)")
+                                            output_list.str = to_string(gl_jhdrhis.datum) + to_string(gl_jhdrhis.refno, "x(13)")
                                             output_list.ref_no = to_string(gl_jhdrhis.refno, "x(32)")
                                             output_list.begin_bal = to_string(tot_bal - gl_jourhis.debit + gl_jourhis.credit, "->>,>>>,>>>,>>>,>>9.99")
                                             output_list.net_change = to_string((gl_jourhis.debit - gl_jourhis.credit) , "->>,>>>,>>>,>>>,>>9.99")
@@ -373,22 +377,22 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                                                 output_list.dept_name = ""
                                                 output_list.dept_nr = 0
                                             for i in range(1,22 + 1) :
-                                                str = str + " "
+                                                output_list.str = output_list.str + " "
 
                                             if gl_jourhis.debit >= 0:
-                                                str = str + to_string(gl_jourhis.debit, ">>>,>>>,>>>,>>>,>>9.99")
+                                                output_list.str = output_list.str + to_string(gl_jourhis.debit, ">>>,>>>,>>>,>>>,>>9.99")
                                                 output_list.tot_debit = to_string(gl_jourhis.debit, ">>>,>>>,>>>,>>>,>>9.99")
                                             else:
-                                                str = str + to_string(gl_jourhis.debit, "->>,>>>,>>>,>>>,>>9.99")
+                                                output_list.str = output_list.str + to_string(gl_jourhis.debit, "->>,>>>,>>>,>>>,>>9.99")
                                                 output_list.tot_debit = to_string(gl_jourhis.debit, "->>,>>>,>>>,>>>,>>9.99")
 
                                             if gl_jourhis.credit >= 0:
-                                                str = str + to_string(gl_jourhis.credit, ">>>,>>>,>>>,>>>,>>9.99")
+                                                output_list.str = output_list.str + to_string(gl_jourhis.credit, ">>>,>>>,>>>,>>>,>>9.99")
                                                 output_list.tot_credit = to_string(gl_jourhis.credit, ">>>,>>>,>>>,>>>,>>9.99")
                                             else:
-                                                str = str + to_string(gl_jourhis.credit, "->>,>>>,>>>,>>>,>>9.99")
+                                                output_list.str = output_list.str + to_string(gl_jourhis.credit, "->>,>>>,>>>,>>>,>>9.99")
                                                 output_list.tot_credit = to_string(gl_jourhis.credit, "->>,>>>,>>>,>>>,>>9.99")
-                                            str = str + to_string("", "x(44)") + to_string(get_bemerk (gl_jourhis.bemerk) , "x(62)")
+                                            output_list.str = output_list.str + to_string("", "x(44)") + to_string(get_bemerk (gl_jourhis.bemerk) , "x(62)")
                         p_bal, y_bal = calcrevcost(t_bal, p_bal, y_bal)
 
                         if gl_acct.acc_type != 3 and gl_acct.acc_type != 4:
@@ -402,25 +406,25 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                             output_list.nr = counter
 
 
-                            str = " " + "T O T A L "
+                            output_list.str = to_string("", "x(8)")  + "T O T A L "
                             c = convert_balance(p_bal)
-                            str = str + to_string(c, "x(22)")
+                            output_list.str = output_list.str + to_string(c, "x(22)")
                             output_list.ref_no = "T O T A L"
                             output_list.begin_bal = c
                             output_list.is_show_depart = False
 
                             if t_debit >= 0:
-                                str = str + to_string(t_debit, ">>>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(t_debit, ">>>,>>>,>>>,>>>,>>9.99")
                                 output_list.tot_debit = to_string(t_debit, ">>>,>>>,>>>,>>>,>>9.99")
                             else:
-                                str = str + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
                                 output_list.tot_debit = to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
 
                             if t_credit >= 0:
-                                str = str + to_string(t_credit, ">>>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(t_credit, ">>>,>>>,>>>,>>>,>>9.99")
                                 output_list.tot_credit = to_string(t_credit, ">>>,>>>,>>>,>>>,>>9.99")
                             else:
-                                str = str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
                                 output_list.tot_credit = to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
 
                             if gl_acct.acc_type == 1 or gl_acct.acc_type == 4:
@@ -430,13 +434,13 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                                 diff =  to_decimal(t_debit) - to_decimal(t_credit)
                                 tot_diff =  to_decimal(tot_diff) - to_decimal(t_credit) + to_decimal(t_debit)
                             c = convert_balance(diff)
-                            str = str + to_string(c, "x(22)")
+                            output_list.str = output_list.str + to_string(c, "x(22)")
                             output_list.net_change = to_string(c, "x(22)")
                             t_bal =  to_decimal(p_bal) + to_decimal(tot_diff)
 
 
                             c = convert_balance(t_bal)
-                            str = str + to_string(c, "x(22)")
+                            output_list.str = output_list.str + to_string(c, "x(22)")
                             output_list.ending_bal = to_string(c, "x(22)")
                             output_list = Output_list()
                             output_list_data.append(output_list)
@@ -467,7 +471,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
 
 
                         c = convert_fibu(gl_acct.fibukonto)
-                        str = " " + to_string(c, "x(16)") + substring(gl_acct.bezeich, 0, 20)
+                        output_list.str = to_string("", "x(8)")  + to_string(c, "x(16)") + substring(gl_acct.bezeich, 0, 20)
                         output_list.ref_no = to_string(c, "x(32)")
                         output_list.begin_bal = gl_acct.bezeich
                         output_list.tot_debit = ""
@@ -483,7 +487,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                             output_list.dept_nr = 0
 
                         if length(gl_acct.bezeich) > 20:
-                            str = str + substring(gl_acct.bezeich, 20, 18)
+                            output_list.str = output_list.str + substring(gl_acct.bezeich, 20, 18)
                         t_debit =  to_decimal("0")
                         t_credit =  to_decimal("0")
                         p_bal =  to_decimal("0")
@@ -543,29 +547,29 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                                         output_list.nr = counter
 
 
-                                        str = to_string(gl_jouhdr.datum) + to_string(gl_jouhdr.refno, "x(16)")
+                                        output_list.str = to_string(gl_jouhdr.datum) + to_string(gl_jouhdr.refno, "x(16)")
                                         output_list.ref_no = to_string(gl_jouhdr.refno, "x(32)")
                                         output_list.begin_bal = ""
                                         output_list.net_change = "0.00"
                                         output_list.ending_bal = "0.00"
                                         output_list.is_show_depart = False
                                         for i in range(1,22 + 1) :
-                                            str = str + " "
+                                            output_list.str = output_list.str + " "
 
                                         if gl_journal.debit >= 0:
-                                            str = str + to_string(gl_journal.debit, ">>>,>>>,>>>,>>>,>>9.99")
+                                            output_list.str = output_list.str + to_string(gl_journal.debit, ">>>,>>>,>>>,>>>,>>9.99")
                                             output_list.tot_debit = to_string(gl_journal.debit, ">>>,>>>,>>>,>>>,>>9.99")
                                         else:
-                                            str = str + to_string(gl_journal.debit, "->>,>>>,>>>,>>>,>>9.99")
+                                            output_list.str = output_list.str + to_string(gl_journal.debit, "->>,>>>,>>>,>>>,>>9.99")
                                             output_list.tot_debit = to_string(gl_journal.debit, "->>,>>>,>>>,>>>,>>9.99")
 
                                         if gl_journal.credit >= 0:
-                                            str = str + to_string(gl_journal.credit, ">>>,>>>,>>>,>>>,>>9.99")
+                                            output_list.str = output_list.str + to_string(gl_journal.credit, ">>>,>>>,>>>,>>>,>>9.99")
                                             output_list.tot_credit = to_string(gl_journal.credit, ">>>,>>>,>>>,>>>,>>9.99")
                                         else:
-                                            str = str + to_string(gl_journal.credit, "->>,>>>,>>>,>>>,>>9.99")
+                                            output_list.str = output_list.str + to_string(gl_journal.credit, "->>,>>>,>>>,>>>,>>9.99")
                                             output_list.tot_credit = to_string(gl_journal.credit, "->>,>>>,>>>,>>>,>>9.99")
-                                        str = str + to_string("", "x(44) ") + to_string(get_bemerk (gl_journal.bemerk) , "x(62)")
+                                        output_list.str = output_list.str + to_string("", "x(44) ") + to_string(get_bemerk (gl_journal.bemerk) , "x(62)")
 
                                 if from_datehis != None and to_datehis != None:
 
@@ -608,7 +612,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                                             output_list.nr = counter
 
 
-                                            str = to_string(gl_jhdrhis.datum) + to_string(gl_jhdrhis.refno, "x(13)")
+                                            output_list.str = to_string(gl_jhdrhis.datum) + to_string(gl_jhdrhis.refno, "x(13)")
                                             output_list.ref_no = to_string(gl_jhdrhis.refno, "x(32)")
                                             output_list.begin_bal = ""
                                             output_list.net_change = "0.00"
@@ -624,22 +628,22 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                                                 output_list.dept_name = ""
                                                 output_list.dept_nr = 0
                                             for i in range(1,22 + 1) :
-                                                str = str + " "
+                                                output_list.str = output_list.str + " "
 
                                             if gl_jourhis.debit >= 0:
-                                                str = str + to_string(gl_jourhis.debit, ">>>,>>>,>>>,>>>,>>9.99")
+                                                output_list.str = output_list.str + to_string(gl_jourhis.debit, ">>>,>>>,>>>,>>>,>>9.99")
                                                 output_list.tot_debit = to_string(gl_jourhis.debit, ">>>,>>>,>>>,>>>,>>9.99")
                                             else:
-                                                str = str + to_string(gl_jourhis.debit, "->>,>>>,>>>,>>>,>>9.99")
+                                                output_list.str = output_list.str + to_string(gl_jourhis.debit, "->>,>>>,>>>,>>>,>>9.99")
                                                 output_list.tot_debit = to_string(gl_jourhis.debit, "->>,>>>,>>>,>>>,>>9.99")
 
                                             if gl_jourhis.credit >= 0:
-                                                str = str + to_string(gl_jourhis.credit, ">>>,>>>,>>>,>>>,>>9.99")
+                                                output_list.str = output_list.str + to_string(gl_jourhis.credit, ">>>,>>>,>>>,>>>,>>9.99")
                                                 output_list.tot_credit = to_string(gl_jourhis.credit, ">>>,>>>,>>>,>>>,>>9.99")
                                             else:
-                                                str = str + to_string(gl_jourhis.credit, "->>,>>>,>>>,>>>,>>9.99")
+                                                output_list.str = output_list.str + to_string(gl_jourhis.credit, "->>,>>>,>>>,>>>,>>9.99")
                                                 output_list.tot_credit = to_string(gl_jourhis.credit, "->>,>>>,>>>,>>>,>>9.99")
-                                            str = str + to_string("", "x(44)") + to_string(get_bemerk (gl_jourhis.bemerk) , "x(62)")
+                                            output_list.str = output_list.str + to_string("", "x(44)") + to_string(get_bemerk (gl_jourhis.bemerk) , "x(62)")
                         p_bal, y_bal = calcrevcost(t_bal, p_bal, y_bal)
 
                         if gl_acct.acc_type != 3 and gl_acct.acc_type != 4:
@@ -653,25 +657,25 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                             output_list.nr = counter
 
 
-                            str = " " + "T O T A L "
+                            output_list.str = to_string("", "x(8)") + "T O T A L "
                             c = convert_balance(p_bal)
-                            str = str + to_string(c, "x(22)")
+                            output_list.str = output_list.str + to_string(c, "x(22)")
                             output_list.ref_no = "T O T A L"
                             output_list.begin_bal = c
                             output_list.is_show_depart = False
 
                             if t_debit >= 0:
-                                str = str + to_string(t_debit, ">>>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(t_debit, ">>>,>>>,>>>,>>>,>>9.99")
                                 output_list.tot_debit = to_string(t_debit, ">>>,>>>,>>>,>>>,>>9.99")
                             else:
-                                str = str + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
                                 output_list.tot_debit = to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
 
                             if t_credit >= 0:
-                                str = str + to_string(t_credit, ">>>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(t_credit, ">>>,>>>,>>>,>>>,>>9.99")
                                 output_list.tot_credit = to_string(t_credit, ">>>,>>>,>>>,>>>,>>9.99")
                             else:
-                                str = str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
                                 output_list.tot_credit = to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
 
                             if gl_acct.acc_type == 1 or gl_acct.acc_type == 4:
@@ -681,10 +685,10 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                                 diff =  to_decimal(t_debit) - to_decimal(t_credit)
                                 tot_diff =  to_decimal(tot_diff) - to_decimal(t_credit) + to_decimal(t_debit)
                             c = convert_balance(diff)
-                            str = str + to_string(c, "x(22)")
+                            output_list.str = output_list.str + to_string(c, "x(22)")
                             output_list.net_change = to_string(c, "x(22)")
                             c = convert_balance(t_bal)
-                            str = str + to_string(c, "x(22)")
+                            output_list.str = output_list.str + to_string(c, "x(22)")
                             output_list.ending_bal = to_string(c, "x(22)")
                             output_list = Output_list()
                             output_list_data.append(output_list)
@@ -704,34 +708,34 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                 output_list.nr = counter
 
 
-                str = " " + "Grand TOTAL "
+                output_list.str = to_string("", "x(8)") + "Grand TOTAL "
                 c = convert_balance(prev_bal)
-                str = str + to_string(c, "x(22)")
+                output_list.str = output_list.str + to_string(c, "x(22)")
                 output_list.ref_no = "Grand TOTAL"
                 output_list.begin_bal = c
                 output_list.is_show_depart = False
 
                 if tot_debit >= 0:
-                    str = str + to_string(tot_debit, ">>>,>>>,>>>,>>>,>>9.99")
+                    output_list.str = output_list.str + to_string(tot_debit, ">>>,>>>,>>>,>>>,>>9.99")
                     output_list.tot_debit = to_string(tot_debit, ">>>,>>>,>>>,>>>,>>9.99")
                 else:
-                    str = str + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
+                    output_list.str = output_list.str + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
                     output_list.tot_debit = to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
 
                 if tot_credit >= 0:
-                    str = str + to_string(tot_credit, ">>>,>>>,>>>,>>>,>>9.99")
+                    output_list.str = output_list.str + to_string(tot_credit, ">>>,>>>,>>>,>>>,>>9.99")
                     output_list.tot_credit = to_string(tot_credit, ">>>,>>>,>>>,>>>,>>9.99")
                 else:
-                    str = str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
+                    output_list.str = output_list.str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
                     output_list.tot_credit = to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
                 c = convert_balance(tot_diff)
-                str = str + to_string(c, "x(22)")
+                output_list.str = output_list.str + to_string(c, "x(22)")
                 output_list.net_change = to_string(c, "x(22)")
                 tot_bal =  to_decimal(prev_bal) + to_decimal(tot_diff)
 
 
                 c = convert_balance(tot_bal)
-                str = str + to_string(c, "x(22)")
+                output_list.str = output_list.str + to_string(c, "x(22)")
                 output_list.ending_bal = to_string(c, "x(22)")
 
             if to_date == close_date:
@@ -825,7 +829,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                     output_list.nr = counter
 
 
-                    str = to_string(to_string(gl_main.code) , "x(16)") + substring(gl_main.bezeich, 0, 38)
+                    output_list.str = to_string(to_string(gl_main.code) , "x(16)") + substring(gl_main.bezeich, 0, 38)
 
                     for gl_acct in db_session.query(Gl_acct).filter(
                              (Gl_acct.main_nr == gl_main.nr) & (Gl_acct.fibukonto >= (from_fibu).lower()) & (Gl_acct.fibukonto <= (to_fibu).lower())).order_by(Gl_acct.fibukonto).all():
@@ -947,18 +951,18 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
 
 
                             c = convert_fibu(gl_acct.fibukonto)
-                            str = to_string(c, "x(16)") + to_string(gl_acct.bezeich, "x(38)")
+                            output_list.str = to_string(c, "x(16)") + to_string(gl_acct.bezeich, "x(38)")
                             c = convert_balance(p_bal)
 
                             if t_debit >= 0:
-                                str = str + to_string(c, "x(22)") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(c, "x(22)") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
                             else:
-                                str = str + to_string(c, "x(22)") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(c, "x(22)") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
 
                             if t_credit >= 0:
-                                str = str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
                             else:
-                                str = str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
 
                             if gl_acct.acc_type == 1 or gl_acct.acc_type == 4:
                                 diff =  - to_decimal(t_debit) + to_decimal(t_credit)
@@ -969,11 +973,11 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                                 tot_diff =  to_decimal(tot_diff) - to_decimal(t_credit) + to_decimal(t_debit)
                                 tt_diff =  to_decimal(tt_diff) - to_decimal(t_credit) + to_decimal(t_debit)
                             c = convert_balance(diff)
-                            str = str + to_string(c, "x(22)")
+                            output_list.str = output_list.str + to_string(c, "x(22)")
                             c = convert_balance(t_bal)
-                            str = str + to_string(c, "x(22)")
+                            output_list.str = output_list.str + to_string(c, "x(22)")
                             c = convert_balance(y_bal)
-                            str = str + to_string(c, "x(22)")
+                            output_list.str = output_list.str + to_string(c, "x(22)")
                             t_ybal =  to_decimal(t_ybal) + to_decimal(y_bal)
                             tt_ybal =  to_decimal(tt_ybal) + to_decimal(y_bal)
 
@@ -1005,26 +1009,26 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                     output_list.nr = counter
 
 
-                    str = " " + to_string("s U B T O T A L", "x(38)")
+                    output_list.str = to_string("", "x(16)")  + to_string("S U B T O T A L", "x(38)")
                     c = convert_balance(prev_bal)
                     tt_pbal2 =  to_decimal(tt_pbal2) + to_decimal(prev_bal)
                     output_list.is_show_depart = False
 
                     if tot_debit >= 0:
-                        str = str + to_string(c, "x(22)") + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + to_string(c, "x(22)") + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
                     else:
-                        str = str + to_string(c, "x(22)") + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + to_string(c, "x(22)") + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
 
                     if tot_credit >= 0:
-                        str = str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
                     else:
-                        str = str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
                     c = convert_balance(tot_diff)
-                    str = str + to_string(c, "x(22)")
+                    output_list.str = output_list.str + to_string(c, "x(22)")
                     c = convert_balance(tot_bal)
-                    str = str + to_string(c, "x(22)")
+                    output_list.str = output_list.str + to_string(c, "x(22)")
                     c = convert_balance(t_ybal)
-                    str = str + to_string(c, "x(22)")
+                    output_list.str = output_list.str + to_string(c, "x(22)")
                     output_list.budget =  to_decimal(tot_budget)
 
                     if output_list.budget != 0 and output_list.budget != None:
@@ -1068,7 +1072,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                     output_list.nr = counter
 
 
-                    str = to_string(to_string(gl_main.code) , "x(16)") + substring(gl_main.bezeich, 0, 38)
+                    output_list.str = to_string(to_string(gl_main.code) , "x(16)") + substring(gl_main.bezeich, 0, 38)
 
                     for gl_acct in db_session.query(Gl_acct).filter(
                              (Gl_acct.acc_type == acct_type) & (Gl_acct.main_nr == gl_main.nr) & (Gl_acct.fibukonto >= (from_fibu).lower()) & (Gl_acct.fibukonto <= (to_fibu).lower())).order_by(Gl_acct.fibukonto).all():
@@ -1190,18 +1194,18 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
 
 
                             c = convert_fibu(gl_acct.fibukonto)
-                            str = to_string(c, "x(16)") + to_string(gl_acct.bezeich, "x(38)")
+                            output_list.str = to_string(c, "x(16)") + to_string(gl_acct.bezeich, "x(38)")
                             c = convert_balance(p_bal)
 
                             if t_debit >= 0:
-                                str = str + to_string(c, "x(22)") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(c, "x(22)") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
                             else:
-                                str = str + to_string(c, "x(22)") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(c, "x(22)") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
 
                             if t_credit >= 0:
-                                str = str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
                             else:
-                                str = str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
+                                output_list.str = output_list.str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
 
                             if gl_acct.acc_type == 1 or gl_acct.acc_type == 4:
                                 diff =  - to_decimal(t_debit) + to_decimal(t_credit)
@@ -1212,11 +1216,11 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                                 tot_diff =  to_decimal(tot_diff) - to_decimal(t_credit) + to_decimal(t_debit)
                                 tt_diff =  to_decimal(tt_diff) - to_decimal(t_credit) + to_decimal(t_debit)
                             c = convert_balance(diff)
-                            str = str + to_string(c, "x(22)")
+                            output_list.str = output_list.str + to_string(c, "x(22)")
                             c = convert_balance(t_bal)
-                            str = str + to_string(c, "x(22)")
+                            output_list.str = output_list.str + to_string(c, "x(22)")
                             c = convert_balance(y_bal)
-                            str = str + to_string(c, "x(22)")
+                            output_list.str = output_list.str + to_string(c, "x(22)")
                             t_ybal =  to_decimal(t_ybal) + to_decimal(y_bal)
                             tt_ybal =  to_decimal(tt_ybal) + to_decimal(y_bal)
 
@@ -1248,26 +1252,26 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                     output_list.nr = counter
 
 
-                    str = " " + to_string("s U B T O T A L", "x(38)")
+                    output_list.str = to_string("", "x(16)")  + to_string("S U B T O T A L", "x(38)")
                     c = convert_balance(prev_bal)
                     tt_pbal2 =  to_decimal(tt_pbal2) + to_decimal(prev_bal)
                     output_list.is_show_depart = False
 
                     if tot_debit >= 0:
-                        str = str + to_string(c, "x(22)") + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + to_string(c, "x(22)") + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
                     else:
-                        str = str + to_string(c, "x(22)") + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + to_string(c, "x(22)") + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
 
                     if tot_credit >= 0:
-                        str = str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
                     else:
-                        str = str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
                     c = convert_balance(tot_diff)
-                    str = str + to_string(c, "x(22)")
+                    output_list.str = output_list.str + to_string(c, "x(22)")
                     c = convert_balance(tot_bal)
-                    str = str + to_string(c, "x(22)")
+                    output_list.str = output_list.str + to_string(c, "x(22)")
                     c = convert_balance(t_ybal)
-                    str = str + to_string(c, "x(22)")
+                    output_list.str = output_list.str + to_string(c, "x(22)")
                     output_list.budget =  to_decimal(tot_budget)
 
                     if output_list.budget != 0 and output_list.budget != None:
@@ -1286,23 +1290,23 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
             output_list.nr = counter
 
 
-            str = " " + to_string("T O T A L", "x(38)")
+            output_list.str = to_string("", "x(16)")  + to_string("T O T A L", "x(38)")
             c = convert_balance(tt_pbal2)
             output_list.is_show_depart = False
 
             if tt_debit >= 0:
-                str = str + to_string(c, "x(22)") + to_string(tt_debit, "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string(c, "x(22)") + to_string(tt_debit, "->>,>>>,>>>,>>>,>>9.99")
             else:
-                str = str + to_string(c, "x(22)") + to_string(tt_debit, "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string(c, "x(22)") + to_string(tt_debit, "->>,>>>,>>>,>>>,>>9.99")
 
             if tt_credit >= 0:
-                str = str + to_string(tt_credit, "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string(tt_credit, "->>,>>>,>>>,>>>,>>9.99")
             else:
-                str = str + to_string(tt_credit, "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string(tt_credit, "->>,>>>,>>>,>>>,>>9.99")
             c = convert_balance(tt_diff)
-            str = str + to_string(c, "x(22)")
+            output_list.str = output_list.str + to_string(c, "x(22)")
             c = convert_balance(tt_bal)
-            str = str + to_string(c, "x(22)")
+            output_list.str = output_list.str + to_string(c, "x(22)")
 
         if from_dept == 0:
             prof_loss_acct21()
@@ -1393,7 +1397,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                 output_list.nr = counter
 
 
-                str = to_string(to_string(gl_main.code) , "x(16)") + substring(gl_main.bezeich, 0, 38)
+                output_list.str = to_string(to_string(gl_main.code) , "x(16)") + substring(gl_main.bezeich, 0, 38)
 
                 for gl_acct in db_session.query(Gl_acct).filter(
                          (Gl_acct.main_nr == gl_main.nr) & (Gl_acct.fibukonto >= (from_fibu).lower()) & (Gl_acct.fibukonto <= (to_fibu).lower()) & (Gl_acct.deptnr == from_dept)).order_by(Gl_acct.fibukonto).all():
@@ -1499,8 +1503,6 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                     if p_bal != 0 or t_debit != 0 or t_credit != 0 or y_bal != 0:
                         output_list = Output_list()
                         output_list_data.append(output_list)
-
-
                         gl_department = get_cache (Gl_department, {"nr": [(eq, gl_acct.deptnr)]})
 
                         if gl_department:
@@ -1515,18 +1517,18 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
 
 
                         c = convert_fibu(gl_acct.fibukonto)
-                        str = to_string(c, "x(16)") + to_string(gl_acct.bezeich, "x(38)")
+                        output_list.str = to_string(c, "x(16)") + to_string(gl_acct.bezeich, "x(38)")
                         c = convert_balance(p_bal)
 
                         if t_debit >= 0:
-                            str = str + to_string(c, "x(22)") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + to_string(c, "x(22)") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
                         else:
-                            str = str + to_string(c, "x(22)") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + to_string(c, "x(22)") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99")
 
                         if t_credit >= 0:
-                            str = str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
                         else:
-                            str = str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99")
 
                         if gl_acct.acc_type == 1 or gl_acct.acc_type == 4:
                             diff =  - to_decimal(t_debit) + to_decimal(t_credit)
@@ -1537,11 +1539,11 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                             tot_diff =  to_decimal(tot_diff) - to_decimal(t_credit) + to_decimal(t_debit)
                             tt_diff =  to_decimal(tt_diff) - to_decimal(t_credit) + to_decimal(t_debit)
                         c = convert_balance(diff)
-                        str = str + to_string(c, "x(22)")
+                        output_list.str = output_list.str + to_string(c, "x(22)")
                         c = convert_balance(t_bal)
-                        str = str + to_string(c, "x(22)")
+                        output_list.str = output_list.str + to_string(c, "x(22)")
                         c = convert_balance(y_bal)
-                        str = str + to_string(c, "x(22)")
+                        output_list.str = output_list.str + to_string(c, "x(22)")
                         t_ybal =  to_decimal(t_ybal) + to_decimal(y_bal)
                         tt_ybal =  to_decimal(tt_ybal) + to_decimal(y_bal)
 
@@ -1571,26 +1573,26 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                 counter = counter + 1
                 output_list.nr = counter
 
-
-                str = " " + to_string("s U B T O T A L", "x(38)")
+                # output_list.str = " " + to_string("S2U B T O T A L", "x(38)")
+                output_list.str = to_string("", "x(16)") + to_string("S U B T O T A L", "x(38)")
                 c = convert_balance(prev_bal)
                 output_list.is_show_depart = False
 
                 if tot_debit >= 0:
-                    str = str + to_string(c, "x(22)") + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
+                    output_list.str = output_list.str + to_string(c, "x(22)") + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
                 else:
-                    str = str + to_string(c, "x(22)") + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
+                    output_list.str = output_list.str + to_string(c, "x(22)") + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99")
 
                 if tot_credit >= 0:
-                    str = str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
+                    output_list.str = output_list.str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
                 else:
-                    str = str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
+                    output_list.str = output_list.str + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
                 c = convert_balance(tot_diff)
-                str = str + to_string(c, "x(22)")
+                output_list.str = output_list.str + to_string(c, "x(22)")
                 c = convert_balance(tot_bal)
-                str = str + to_string(c, "x(22)")
+                output_list.str = output_list.str + to_string(c, "x(22)")
                 c = convert_balance(t_ybal)
-                str = str + to_string(c, "x(22)")
+                output_list.str = output_list.str + to_string(c, "x(22)")
                 output_list.budget =  to_decimal(tot_budget)
 
                 if output_list.budget != 0 and output_list.budget != None:
@@ -1609,23 +1611,23 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
             output_list.nr = counter
 
 
-            str = " " + to_string("T O T A L", "x(38)")
+            output_list.str = to_string("", "x(16)")  + to_string("T O T A L", "x(38)")
             c = convert_balance(tt_pbal)
             output_list.is_show_depart = False
 
             if tt_debit >= 0:
-                str = str + to_string(c, "x(22)") + to_string(tt_debit, "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string(c, "x(22)") + to_string(tt_debit, "->>,>>>,>>>,>>>,>>9.99")
             else:
-                str = str + to_string(c, "x(22)") + to_string(tt_debit, "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string(c, "x(22)") + to_string(tt_debit, "->>,>>>,>>>,>>>,>>9.99")
 
             if tt_credit >= 0:
-                str = str + to_string(tt_credit, "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string(tt_credit, "->>,>>>,>>>,>>>,>>9.99")
             else:
-                str = str + to_string(tt_credit, "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string(tt_credit, "->>,>>>,>>>,>>>,>>9.99")
             c = convert_balance(tt_diff)
-            str = str + to_string(c, "x(22)")
+            output_list.str = output_list.str + to_string(c, "x(22)")
             c = convert_balance(tt_bal)
-            str = str + to_string(c, "x(22)")
+            output_list.str = output_list.str + to_string(c, "x(22)")
 
 
     def convert_fibu(konto:string):
@@ -1839,18 +1841,18 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
             output_list.nr = counter
 
 
-            str = " " + "Expected GOP "
+            output_list.str = to_string("", "x(8)") + "Expected GOP "
             c = convert_balance(p_bal)
-            str = str + to_string(c, "x(22)")
+            output_list.str = output_list.str + to_string(c, "x(22)")
 
             if (gop_credit + sales) >= 0:
-                str = str + to_string((gop_debit + cost) , "->>,>>>,>>>,>>>,>>9.99") + to_string((gop_credit + sales) , "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string((gop_debit + cost) , "->>,>>>,>>>,>>>,>>9.99") + to_string((gop_credit + sales) , "->>,>>>,>>>,>>>,>>9.99")
             else:
-                str = str + to_string((gop_debit + cost) , "->>,>>>,>>>,>>>,>>9.99") + to_string((gop_credit + sales) , "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string((gop_debit + cost) , "->>,>>>,>>>,>>>,>>9.99") + to_string((gop_credit + sales) , "->>,>>>,>>>,>>>,>>9.99")
             c = convert_balance(diff)
-            str = str + to_string(c, "x(22)")
+            output_list.str = output_list.str + to_string(c, "x(22)")
             c = convert_balance(t_bal)
-            str = str + to_string(c, "x(22)")
+            output_list.str = output_list.str + to_string(c, "x(22)")
 
 
     def calcrevcost(t_bal:Decimal, p_bal:Decimal, y_bal:Decimal):
@@ -1980,23 +1982,23 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
             output_list.nr = counter
 
 
-            str = " " + to_string("balance - " + gl_acct.bezeich, "x(38)")
+            output_list.str = to_string("", "x(16)")  + to_string("balance - " + gl_acct.bezeich, "x(38)")
             c = convert_balance(p_bal)
-            str = str + to_string(c, "x(22)")
+            output_list.str = output_list.str + to_string(c, "x(22)")
 
             if (gop_debit + cost) >= 0:
-                str = str + to_string((gop_debit + cost) , "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string((gop_debit + cost) , "->>,>>>,>>>,>>>,>>9.99")
             else:
-                str = str + to_string((gop_debit + cost) , "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string((gop_debit + cost) , "->>,>>>,>>>,>>>,>>9.99")
 
             if (gop_credit + sales) >= 0:
-                str = str + to_string((gop_credit + sales) , "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string((gop_credit + sales) , "->>,>>>,>>>,>>>,>>9.99")
             else:
-                str = str + to_string((gop_credit + sales) , "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + to_string((gop_credit + sales) , "->>,>>>,>>>,>>>,>>9.99")
             c = convert_balance(diff)
-            str = str + to_string(c, "x(22)")
+            output_list.str = output_list.str + to_string(c, "x(22)")
             c = convert_balance(t_bal)
-            str = str + to_string(c, "x(22)")
+            output_list.str = output_list.str + to_string(c, "x(22)")
             output_list = Output_list()
             output_list_data.append(output_list)
 
@@ -2077,8 +2079,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
     if gl_jouhdr:
         from_date = t_from_date
         to_date = t_to_date
-
-
+        # print("create_glist")
         create_glist()
     else:
 
@@ -2092,29 +2093,31 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                 if gl_jouhdr:
                     from_datehis = t_from_date
                     to_datehis = t_date - timedelta(days=1)
-
-
+                    # print("create_glisthis")
                     create_glisthis()
                     from_date = t_date
                     to_date = t_to_date
 
-
+                    # print("create_glist")
                     create_glist()
                     break
         else:
             from_datehis = t_from_date
             to_datehis = t_to_date
 
-
+            # print("create_glisthis")
             create_glisthis()
 
     if sorttype == 1:
+        # print("create_list1")
         create_list1()
     else:
 
         if from_dept == 0:
+            # print("create_list2")
             create_list2()
         else:
+            # print("create_list2d")
             create_list2d()
 
     return generate_output()

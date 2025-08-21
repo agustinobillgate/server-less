@@ -1,7 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 21/8/2025
+# search receiever, perlu tambahan char \ufff
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
+from sqlalchemy import func
 from datetime import date
 from models import Bill, Debitor, Guest, Hoteldpt, H_bill
 
@@ -43,14 +47,23 @@ def printed_soa_create_databl(invno:int, from_name:string, to_name:string, from_
         Sbuff = S_list
         sbuff_data = s_list_data
         sbuff_data.clear()
-
+        from_name = from_name.strip()
+        to_name = to_name.strip()
+        to_name = to_name + "\uffff"
+        low_from = from_name.lower()
+        low_to   = (to_name).lower()  
         if invno != 0:
 
             debitor_obj_list = {}
             debitor = Debitor()
             bill = Bill()
             for debitor.name, debitor.gastnr, debitor.rechnr, debitor.debref, debitor.rgdatum, debitor.gastnrmember, debitor.saldo, debitor.betriebsnr, debitor._recid, bill.logidat, bill._recid in db_session.query(Debitor.name, Debitor.gastnr, Debitor.rechnr, Debitor.debref, Debitor.rgdatum, Debitor.gastnrmember, Debitor.saldo, Debitor.betriebsnr, Debitor._recid, Bill.logidat, Bill._recid).join(Bill,(Bill.rechnr == Debitor.rechnr) & (Bill.logidat >= from_date) & (Bill.logidat <= to_date)).filter(
-                     (Debitor.debref > 0) & (Debitor.debref == invno) & (Debitor.betriebsnr == 0) & (Debitor.name >= (from_name).lower()) & (Debitor.name <= (to_name).lower())).order_by(Debitor.debref).all():
+                     (Debitor.debref > 0) & (Debitor.debref == invno) & (Debitor.betriebsnr == 0) & 
+                    #  (Debitor.name >= (from_name).lower()) & 
+                    #  (Debitor.name <= (to_name).lower())
+                    (func.lower(Debitor.name) >= (from_name).lower()) & 
+                    (func.lower(Debitor.name) <= (to_name).lower())
+                     ).order_by(Debitor.debref).all():
                 if debitor_obj_list.get(debitor._recid):
                     continue
                 else:
@@ -92,8 +105,14 @@ def printed_soa_create_databl(invno:int, from_name:string, to_name:string, from_
             debitor_obj_list = {}
             debitor = Debitor()
             h_bill = H_bill()
+            
             for debitor.name, debitor.gastnr, debitor.rechnr, debitor.debref, debitor.rgdatum, debitor.gastnrmember, debitor.saldo, debitor.betriebsnr, debitor._recid, h_bill.service, h_bill._recid in db_session.query(Debitor.name, Debitor.gastnr, Debitor.rechnr, Debitor.debref, Debitor.rgdatum, Debitor.gastnrmember, Debitor.saldo, Debitor.betriebsnr, Debitor._recid, H_bill.service, H_bill._recid).join(H_bill,(H_bill.rechnr == Debitor.rechnr) & (H_bill.departement == Debitor.betriebsnr)).filter(
-                     (Debitor.debref > 0) & (Debitor.debref == invno) & (Debitor.betriebsnr > 0) & (Debitor.name >= (from_name).lower()) & (Debitor.name <= (to_name).lower())).order_by(Debitor.debref).all():
+                     (Debitor.debref > 0) & (Debitor.debref == invno) & (Debitor.betriebsnr > 0) & 
+                     #  (Debitor.name >= (from_name).lower()) & 
+                     #  (Debitor.name <= (to_name).lower())
+                    (func.lower(Debitor.name) >= (from_name).lower()) & 
+                    (func.lower(Debitor.name) <= (to_name).lower())
+                     ).order_by(Debitor.debref).all():
                 if debitor_obj_list.get(debitor._recid):
                     continue
                 else:
@@ -145,12 +164,17 @@ def printed_soa_create_databl(invno:int, from_name:string, to_name:string, from_
                     s_list.saldo =  to_decimal(s_list.saldo) + to_decimal(debitor.saldo)
                     curr_ref = debitor.debref
         else:
-
+            print("invno:0")
             debitor_obj_list = {}
             debitor = Debitor()
             bill = Bill()
             for debitor.name, debitor.gastnr, debitor.rechnr, debitor.debref, debitor.rgdatum, debitor.gastnrmember, debitor.saldo, debitor.betriebsnr, debitor._recid, bill.logidat, bill._recid in db_session.query(Debitor.name, Debitor.gastnr, Debitor.rechnr, Debitor.debref, Debitor.rgdatum, Debitor.gastnrmember, Debitor.saldo, Debitor.betriebsnr, Debitor._recid, Bill.logidat, Bill._recid).join(Bill,(Bill.rechnr == Debitor.rechnr) & (Bill.logidat >= from_date) & (Bill.logidat <= to_date)).filter(
-                     (Debitor.debref > 0) & (Debitor.betriebsnr == 0) & (Debitor.name >= (from_name).lower()) & (Debitor.name <= (to_name).lower())).order_by(Debitor.debref).all():
+                        (Debitor.debref > 0) & (Debitor.betriebsnr == 0) & 
+                        #  (Debitor.name >= (from_name).lower()) & 
+                        #  (Debitor.name <= (to_name).lower())
+                        (func.lower(Debitor.name) >= low_from) &
+                        (func.lower(Debitor.name) <= low_to)
+                    ).order_by(Debitor.debref).all():
                 if debitor_obj_list.get(debitor._recid):
                     continue
                 else:
@@ -191,7 +215,12 @@ def printed_soa_create_databl(invno:int, from_name:string, to_name:string, from_
             debitor = Debitor()
             h_bill = H_bill()
             for debitor.name, debitor.gastnr, debitor.rechnr, debitor.debref, debitor.rgdatum, debitor.gastnrmember, debitor.saldo, debitor.betriebsnr, debitor._recid, h_bill.service, h_bill._recid in db_session.query(Debitor.name, Debitor.gastnr, Debitor.rechnr, Debitor.debref, Debitor.rgdatum, Debitor.gastnrmember, Debitor.saldo, Debitor.betriebsnr, Debitor._recid, H_bill.service, H_bill._recid).join(H_bill,(H_bill.rechnr == Debitor.rechnr) & (H_bill.departement == Debitor.betriebsnr)).filter(
-                     (Debitor.debref > 0) & (Debitor.betriebsnr > 0) & (Debitor.name >= (from_name).lower()) & (Debitor.name <= (to_name).lower())).order_by(Debitor.debref).all():
+                        (Debitor.debref > 0) & (Debitor.betriebsnr > 0) & 
+                        #  (Debitor.name >= (from_name).lower()) & 
+                        #  (Debitor.name <= (to_name).lower())
+                        (func.lower(Debitor.name) >= (from_name).lower()) & 
+                        (func.lower(Debitor.name) <= (to_name).lower())
+                        ).order_by(Debitor.debref).all():
                 if debitor_obj_list.get(debitor._recid):
                     continue
                 else:
