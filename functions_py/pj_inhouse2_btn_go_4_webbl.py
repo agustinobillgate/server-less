@@ -1,10 +1,18 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 20/8/2025
+# pembagi nol
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.pj_inhouse2_btn_go_4_cldbl import pj_inhouse2_btn_go_4_cldbl
 from models import Queasy
+
+def safe_divide(numerator, denominator):
+    numerator, denominator = to_decimal(numerator), to_decimal(denominator)
+    return (numerator / denominator) if denominator not in (0, None) else to_decimal("0")
 
 def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_gastnr:int, froom:string, troom:string, exc_depart:bool, incl_gcomment:bool, incl_rsvcomment:bool, prog_name:string, disp_accompany:bool, disp_exclinact:bool, split_rsv_print:bool, exc_compli:bool):
     output_list_data = []
@@ -77,6 +85,8 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
         summary_list3_data.clear()
         summary_list4_data.clear()
         lnl_sum_data.clear()
+
+        
 
         if sorttype == 1 or sorttype == 3:
             outnr = 0
@@ -227,9 +237,14 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
         summary_list1.summ = ""
         summary_list1.room_type = "TOTAL OCCUPIED (%)"
-        summary_list1.qty = to_string(tot_rm / tot_avail * 100, "->>9.99")
+
+        # Rd 20/8/2025
+        # summary_list1.qty = to_string(tot_rm / tot_avail * 100, "->>9.99")
+        summary_list1.qty = to_string(safe_divide(tot_rm , (tot_avail * 100)), "->>9.99")
         summary_list1.nation = "AVRG GUEST/ROOM"
-        summary_list1.rm_qty = to_string((tot_a + tot_co) / tot_rm, ">>9.99")
+        # Rd 20/8/2025
+        # summary_list1.rm_qty = to_string((tot_a + tot_co) / tot_rm, ">>9.99")
+        summary_list1.rm_qty = to_string(safe_divide((tot_a + tot_co) , tot_rm), ">>9.99")
 
 
         summary_list1 = Summary_list1()
@@ -245,7 +260,8 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
         summary_list1.summ = ""
         summary_list1.room_type = "OCC. PAYING ROOMS (%)"
-        summary_list1.qty = to_string(tot_payrm / tot_avail * 100, "->>9.99")
+        # summary_list1.qty = to_string(tot_payrm / tot_avail * 100, "->>9.99")
+        summary_list1.qty = to_string(safe_divide(tot_payrm , (tot_avail * 100)), "->>9.99")
 
         for sum_list in query(sum_list_data):
             summary_list2 = Summary_list2()
@@ -342,7 +358,9 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
         output_list.stay = (cl_list.depart - cl_list.arrive).days
 
-
+    if datum is None or curr_date is None:
+        return generate_output()
+    
     create_inhouse_v2()
 
     return generate_output()

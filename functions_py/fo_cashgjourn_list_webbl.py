@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 21/8/2025
+# bill datum (fo_cashgjourn_cldbl)
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal

@@ -1,8 +1,7 @@
-#using conversion tools version: 1.0.0.117
 #-----------------------------------------
-# Rd, 25/7/2025
+# Rd, 21/8/2025
 # gitlab: 
-# 
+# rmBuff, range (int())
 #-----------------------------------------
 
 from functions.additional_functions import *
@@ -129,7 +128,9 @@ def ba_plan_create_dlistbl(rml_data:[Rml], from_date:date):
                     l = start
 
                     if l - 1 > 0:
-                        for m in range(l - k,l - 1 + 1) :
+                        # Rd 21/8/2025
+                        # for m in range(l - k,l - 1 + 1) :
+                        for m in range(int(l - k), int(l)):
 
                             if m > 0:
 
@@ -138,9 +139,14 @@ def ba_plan_create_dlistbl(rml_data:[Rml], from_date:date):
                                     rml.resnr[m - 1] = bk_reser.veran_nr
                                     rml.reslinnr[m - 1] = bk_reser.veran_resnr
 
+        # Rd 21/8/2025
+        # for rmbuff in db_session.query(Rmbuff).filter(
+        #          (entry(0 , rmBuff.lu_raum , ";") == (curr_rm).lower())).order_by(Rmbuff._recid).all():
+        #     create_dlist1(bk_reser.raum, rmBuff.raum)
+        
         for rmbuff in db_session.query(Rmbuff).filter(
-                 (entry(0 , rmBuff.lu_raum , ";") == (curr_rm).lower())).order_by(Rmbuff._recid).all():
-            create_dlist1(bk_reser.raum, rmBuff.raum)
+                 (entry(0 , Rmbuff.lu_raum , ";") == (curr_rm).lower())).order_by(Rmbuff._recid).all():
+            create_dlist1(bk_reser.raum, Rmbuff.raum)
 
 
     def create_dlist2(parent_rm:string, curr_rm:string):
@@ -233,7 +239,9 @@ def ba_plan_create_dlistbl(rml_data:[Rml], from_date:date):
                     l = start
 
                     if l - 1 > 0:
-                        for m in range(l - k,l - 1 + 1) :
+                        # for m in range(l - k,l - 1 + 1) :
+                        # Rd 21/8/2025
+                        for m in range(int(l - k), int(l)):
 
                             if m > 0:
 
@@ -244,11 +252,19 @@ def ba_plan_create_dlistbl(rml_data:[Rml], from_date:date):
 
         childrm = get_cache (Bk_raum, {"raum": [(eq, curr_rm)]})
 
-        for rmbuff in db_session.query(Rmbuff).filter(
-                 (rmBuff.raum == childRM.lu_raum)).order_by(Rmbuff._recid).all():
-            create_dlist2(bk_reser.raum, rmBuff.raum)
+        # Rd 21/8/2025
+        # for rmbuff in db_session.query(Rmbuff).filter(
+        #          (rmBuff.raum == childRM.lu_raum)).order_by(Rmbuff._recid).all():
+        #     create_dlist2(bk_reser.raum, rmBuff.raum)
+        if childrm:
+            for rmbuff in db_session.query(Rmbuff).filter(
+                    (Rmbuff.raum == childrm.lu_raum)).order_by(Rmbuff._recid).all():
+                create_dlist2(bk_reser.raum, Rmbuff.raum)
 
-
+    
+    
+    
+    
     bk_reser_obj_list = {}
     bk_reser = Bk_reser()
     bk_veran = Bk_veran()
@@ -263,17 +279,22 @@ def ba_plan_create_dlistbl(rml_data:[Rml], from_date:date):
         create_dlist1(bk_reser.raum, bk_reser.raum)
 
         childrm = get_cache (Bk_raum, {"raum": [(eq, bk_reser.raum)]})
+        # Rd 21/8/2025
+        if childrm:
+            if matches(childrm.lu_raum,r"*;*"):
+                maxpar = num_entries(childrm.lu_raum, ";")
+                for i in range(1,maxpar + 1) :
 
-        if matches(childRM.lu_raum,r"*;*"):
-            maxpar = num_entries(childRM.lu_raum, ";")
-            for i in range(1,maxpar + 1) :
+                    rmbuff = get_cache (Bk_raum, {"raum": [(eq, entry(i - 1, childrm.lu_raum, ";"))]})
+                    create_dlist2(bk_reser.raum, rmbuff.raum)
+            else:
 
-                rmbuff = get_cache (Bk_raum, {"raum": [(eq, entry(i - 1, childrm.lu_raum, ";"))]})
-                create_dlist2(bk_reser.raum, rmBuff.raum)
-        else:
-
-            for rmbuff in db_session.query(Rmbuff).filter(
-                     (rmBuff.raum == childRM.lu_raum)).order_by(Rmbuff._recid).all():
-                create_dlist2(bk_reser.raum, rmBuff.raum)
+                # Rd 21/8/2025
+                # for rmbuff in db_session.query(Rmbuff).filter(
+                #          (rmBuff.raum == childRM.lu_raum)).order_by(Rmbuff._recid).all():
+                #     create_dlist2(bk_reser.raum, rmBuff.raum)
+                for rmbuff in db_session.query(Rmbuff).filter(
+                        (Rmbuff.raum == childrm.lu_raum)).order_by(Rmbuff._recid).all():
+                    create_dlist2(bk_reser.raum, Rmbuff.raum)
 
     return generate_output()

@@ -1,6 +1,10 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 20/8/2025
+# search filter name, perlu tambahan char \ufff
+#------------------------------------------
 from functions.additional_functions import *
+from sqlalchemy import func, and_
 from decimal import Decimal
 from datetime import date
 from models import Guest, Zimkateg, Res_line
@@ -77,10 +81,22 @@ def res_tanoshowbl(fdate:date, sorttype:int, fname:string, tname:string):
             t_ytu =  to_decimal(t_ytu) + to_decimal(rmnite) * to_decimal(res_line.zipreis)
 
     else:
-
         res_line_obj_list = {}
+        # for res_line, guest, zimkateg in db_session.query(Res_line, Guest, Zimkateg).join(Guest,(Guest.gastnr == Res_line.gastnr) & (Guest.karteityp == 1)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+        #          (Res_line.active_flag == 2) & (Res_line.resstatus == 10) & (Res_line.ankunft >= bdate) & (Res_line.ankunft <= fdate) & (Res_line.resname >= (fname).lower()) & (Res_line.resname <= (tname).lower()) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resname, Res_line.ankunft, Res_line.name).all():
+
         for res_line, guest, zimkateg in db_session.query(Res_line, Guest, Zimkateg).join(Guest,(Guest.gastnr == Res_line.gastnr) & (Guest.karteityp == 1)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
-                 (Res_line.active_flag == 2) & (Res_line.resstatus == 10) & (Res_line.ankunft >= bdate) & (Res_line.ankunft <= fdate) & (Res_line.resname >= (fname).lower()) & (Res_line.resname <= (tname).lower()) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resname, Res_line.ankunft, Res_line.name).all():
+                (Res_line.active_flag == 2) & (Res_line.resstatus == 10) & 
+                (Res_line.ankunft >= bdate) & (Res_line.ankunft <= fdate) & 
+                # (func.lower(Res_line.resname) >= fname.lower()) & 
+                # (func.lower(Res_line.resname) <  tname.lower() + "\uffff") &
+                ((Res_line.resname) >= fname) & 
+                ((Res_line.resname) <  tname + "\uffff") &
+                (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resname, Res_line.ankunft, Res_line.name).all():
+            
+            # if (res_line.resname.lower() < fname.lower()) & (res_line.resname.lower() > tname.lower()):
+            #     continue
+
             if res_line_obj_list.get(res_line._recid):
                 continue
             else:

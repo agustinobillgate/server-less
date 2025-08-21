@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 20/8/2025
+# kolom artikel: TOTAL & GRAND TOTAL
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -244,6 +247,8 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
                         cl_list = Cl_list()
                         cl_list_data.append(cl_list)
 
+                        # Rd 20/8/2025
+                        cl_list.artnr = ""
                         cl_list.flag = "**"
                         cl_list.bezeich = "T O T A L"
                         cl_list.dnet =  to_decimal(dnet)
@@ -281,6 +286,8 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
                         cl_list = Cl_list()
                         cl_list_data.append(cl_list)
 
+                         # Rd 20/8/2025
+                        cl_list.artnr = ""
                         cl_list.flag = "*"
                         cl_list.bezeich = to_string(hoteldpt.num) + " - " + hoteldpt.depart
                         dnet =  to_decimal("0")
@@ -489,6 +496,8 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
             cl_list = Cl_list()
             cl_list_data.append(cl_list)
 
+            # Rd 20/8/2025
+            cl_list.artnr = ""
             cl_list.flag = "**"
             cl_list.bezeich = "T O T A L"
             cl_list.dnet =  to_decimal(dnet)
@@ -679,6 +688,8 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
         cl_list = Cl_list()
         cl_list_data.append(cl_list)
 
+        # Rd 20/8/2025
+        cl_list.artnr = ""
         cl_list.flag = "***"
         cl_list.bezeich = "GRAND TOTAL"
         cl_list.dnet =  to_decimal(t_dnet)

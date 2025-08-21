@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 21/8/2025
+# bill datum (fo_cashgjourn_cldbl)
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -108,7 +111,9 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
                     output_list_data.append(output_list)
 
                     output_list.flag = "*"
-                    output_list.str = to_string("", "x(27)") + to_string((translateExtended ("User:", lvcarea, "") + " " + bediener.username) , "x(22)")
+                    # Rd 21/8/2025, if bediener available
+                    if bediener:
+                        output_list.str = to_string("", "x(27)") + to_string((translateExtended ("User:", lvcarea, "") + " " + bediener.username) , "x(22)")
                 else:
                     output_list = Output_list()
                     output_list_data.append(output_list)
@@ -356,11 +361,21 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
 
                 output_list.flag = "SUM"
 
+                # Rd 21/8/2025
+                # if not long_digit:
+                #     output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(sum_list.artnr, "9999") + to_string(sum_list.bezeich, "x(40)") + to_string(" ", "x(17)") + to_string(sum_list.amt, "->,>>>,>>>,>>9.99")
+                #     output_list.amt_foreign =  to_decimal(sum_list.f_amt)
+                # else:
+                #     output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(sum_list.artnr, "9999") + to_string(sum_list.bezeich, "x(40)") + to_string(" ", "x(17)") + to_string(sum_list.amt, "->>>>,>>>,>>>,>>9")
+                #     output_list.amt_foreign =  to_decimal(sum_list.f_amt)
+                #  output_list.str = to_string("", "x(27)") + to_string(translateExtended ("Grand TOTAL", lvcarea, "") , "x(56)") + " " + to_string(tot, "->,>>>,>>>,>>9.99")
                 if not long_digit:
-                    output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(sum_list.artnr, "9999") + to_string(sum_list.bezeich, "x(40)") + to_string(" ", "x(17)") + to_string(sum_list.amt, "->,>>>,>>>,>>9.99")
+
+                    output_list.str = to_string("", "x(27)") + to_string(translateExtended (sum_list.bezeich, lvcarea, "") , "x(56)") + " " + to_string(sum_list.amt, "->,>>>,>>>,>>9.99") + to_string(chr_unicode(10))
                     output_list.amt_foreign =  to_decimal(sum_list.f_amt)
                 else:
-                    output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(sum_list.artnr, "9999") + to_string(sum_list.bezeich, "x(40)") + to_string(" ", "x(17)") + to_string(sum_list.amt, "->>>>,>>>,>>>,>>9")
+                #     output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(sum_list.artnr, "9999") + to_string(sum_list.bezeich, "x(56)") + to_string(" ", "x(17)") + to_string(sum_list.amt, "->>>>,>>>,>>>,>>9")
+                    output_list.str = to_string("", "x(27)") + to_string(translateExtended (0, lvcarea, "") , "x(56)") + " " + to_string(0, "->,>>>,>>>,>>9.99") + to_string(chr_unicode(10))
                     output_list.amt_foreign =  to_decimal(sum_list.f_amt)
 
         for output_list in query(output_list_data, filters=(lambda output_list: output_list.amt_foreign != 0)):
@@ -404,6 +419,10 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
         for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.selected), sort_by=[("name",False)]):
 
             bediener = get_cache (Bediener, {"_recid": [(eq, bline_list.bl_recid)]})
+            # Rd 21/8/2025
+            if bediener is None:
+                continue
+
             it_exist = False
 
             if not summary_flag:
@@ -411,7 +430,10 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
                 output_list_data.append(output_list)
 
                 output_list.flag = "*"
-                output_list.str = to_string("", "x(27)") + to_string((translateExtended ("User:", lvcarea, "") + " " + bediener.username) , "x(22)")
+                # Rd 21/8/2025
+                # if available bediener
+                if bediener:
+                    output_list.str = to_string("", "x(27)") + to_string((translateExtended ("User:", lvcarea, "") + " " + bediener.username) , "x(22)")
             sub_tot =  to_decimal("0")
             curr_art = 0
             art_tot =  to_decimal("0")
@@ -431,7 +453,11 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
                     sum_list.bezeich = artikel.bezeich
 
                 for billjournal in db_session.query(Billjournal).filter(
-                         (Billjournal.userinit == bediener.userinit) & (Billjournal.artnr == artikel.artnr) & (Billjournal.anzahl != 0) & (Billjournal.departement == artikel.departement) & (Billjournal.bill_datum == from_date) & (Billjournal.betriebsnr == curr_shift) & (((Billjournal.bediener_nr == 0) & (onlyjournal == False)) | ((Billjournal.bediener_nr != 0) & (excljournal == False)))).order_by(Billjournal.zeit, Billjournal.rechnr).all():
+                         (Billjournal.userinit == bediener.userinit) & (Billjournal.artnr == artikel.artnr) & 
+                         (Billjournal.anzahl != 0) & (Billjournal.departement == artikel.departement) & 
+                         (Billjournal.bill_datum == from_date) & (Billjournal.betriebsnr == curr_shift) & 
+                         (((Billjournal.bediener_nr == 0) & (onlyjournal == False)) | ((Billjournal.bediener_nr != 0) & 
+                                                                                       (excljournal == False)))).order_by(Billjournal.zeit, Billjournal.rechnr).all():
 
                     if curr_art == 0:
                         curr_art = artikel.artnr
@@ -555,9 +581,18 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
                             pass
 
                         if not long_digit:
-                            output_list.str = to_string(bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(17)") + to_string(amt, "->,>>>,>>>,>>9.99") + to_string(zeit, "HH:MM:SS") + to_string(bediener.userinit, "x(3)")
+                            # Rd 21/8/2025, bill-datum, zeit
+                            # output_list.str = to_string(bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(17)") + to_string(amt, "->,>>>,>>>,>>9.99") + to_string(zeit, "HH:MM:SS") + to_string(bediener.userinit, "x(3)")
+                            output_list.str = to_string(billjournal.bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + \
+                                            to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(17)") + \
+                                                to_string(amt, "->,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(bediener.userinit, "x(3)")
                         else:
-                            output_list.str = to_string(bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(17)") + to_string(amt, "->>>>,>>>,>>>,>>9") + to_string(zeit, "HH:MM:SS") + to_string(bediener.userinit, "x(3)")
+                            # Rd 21/8/2025, bill-datum, zeit
+                            # output_list.str = to_string(bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(17)") + to_string(amt, "->>>>,>>>,>>>,>>9") + to_string(zeit, "HH:MM:SS") + to_string(bediener.userinit, "x(3)")
+                            output_list.str = to_string(billjournal.bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + \
+                                                to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(17)") + \
+                                                to_string(amt, "->>>>,>>>,>>>,>>9") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(bediener.userinit, "x(3)")
+
                     qty = qty + billjournal.anzahl
 
                     if artikel.pricetab or artikel.betriebsnr != 0:
@@ -613,7 +648,6 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
                 output_list_data.append(output_list)
 
                 output_list.flag = "SUM"
-
                 if not long_digit:
                     output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(sum_list.artnr, "9999") + to_string(sum_list.bezeich, "x(40)") + to_string(" ", "x(17)") + to_string(sum_list.amt, "->,>>>,>>>,>>9.99")
                     output_list.amt_foreign =  to_decimal(sum_list.f_amt)
@@ -627,7 +661,10 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
             output_list.flag = "***"
 
             if not long_digit:
-                output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(0, ">>>>") + to_string("TOTAL", "x(40)") + to_string(" ", "x(17)") + to_string(tot_cash, "->,>>>,>>>,>>9.99")
+                # Rd 21/8/20225
+                # output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(0, ">>>>") + to_string("TOTAL", "x(40)") + to_string(" ", "x(17)") + to_string(tot_cash, "->,>>>,>>>,>>9.99")
+                output_list.str = to_string("", "x(27)") + to_string(translateExtended (sum_list.bezeich, lvcarea, "") , "x(56)") + " " + to_string(sum_list.amt, "->,>>>,>>>,>>9.99") + to_string(chr_unicode(10))
+
                 output_list.amt_foreign =  to_decimal("0")
             else:
                 output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(0, ">>>>") + to_string("TOTAL", "x(40)") + to_string(" ", "x(17)") + to_string(tot_cash, "->>>>,>>>,>>>,>>9")
@@ -650,12 +687,18 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
                 output_list_data.append(output_list)
 
                 output_list.flag = "SUM"
-
                 if not long_digit:
-                    output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(sum_list.artnr, "9999") + to_string(sum_list.bezeich, "x(40)") + to_string(" ", "x(17)") + to_string(sum_list.amt, "->,>>>,>>>,>>9.99")
+                    # output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(sum_list.artnr, "9999") + \
+                    #     to_string(sum_list.bezeich.strip(), "x(40)") + to_string(" ", "x(17)") + to_string(sum_list.amt, "->,>>>,>>>,>>9.99")
+                    # Rd 21/8/2025
+                    output_list.str = to_string("", "x(27)") + to_string(translateExtended (sum_list.bezeich, lvcarea, "") , "x(56)") + " " + to_string(sum_list.amt, "->,>>>,>>>,>>9.99") + to_string(chr_unicode(10))
                     output_list.amt_foreign =  to_decimal(sum_list.f_amt)
                 else:
-                    output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(sum_list.artnr, "9999") + to_string(sum_list.bezeich, "x(40)") + to_string(" ", "x(17)") + to_string(sum_list.amt, "->>>>,>>>,>>>,>>9")
+                    # Rd 21/8/2025
+
+                    # output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(sum_list.artnr, "9999") + \
+                    # to_string(sum_list.bezeich.strip(), "x(40)") + to_string(" ", "x(17)") + to_string(sum_list.amt, "->>>>,>>>,>>>,>>9")
+                    output_list.str = to_string("", "x(27)") + to_string(translateExtended ("", lvcarea, "") , "x(56)") + " " + to_string(sum_list.amt, "->,>>>,>>>,>>9.99") + to_string(chr_unicode(10))
                     output_list.amt_foreign =  to_decimal(sum_list.f_amt)
 
         for output_list in query(output_list_data, filters=(lambda output_list: output_list.amt_foreign != 0)):
@@ -666,6 +709,7 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
                 output_list.str_foreign = to_string(output_list.amt_foreign, "->,>>>,>>>,>>9.99")
 
 
+    #----------------------------------------------
     if from_date == None:
         from_date = get_output(htpdate(110))
     double_currency = get_output(htplogic(240))

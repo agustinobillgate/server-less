@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 20/8/2025
+# 'Cl_list' object has no attribute 'curr_zinr'
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -244,10 +248,22 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     tot_c = tot_c + res_line.kind1 + res_line.kind2
                     tot_co = tot_co + res_line.gratis
 
-                if not disp_accompany:
+                if not disp_accompany :
 
-                    cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.curr_zinr == res_line.zinr and cl_list.resnr == res_line.resnr and date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
-
+                    # Rd 20/8/2025
+                    # curr_zinr ->variable
+                    # cl_list = query(cl_list_data, filters=(lambda cl_list: 
+                    #                                        cl_list.curr_zinr == res_line.zinr and 
+                    #                                        cl_list.resnr == res_line.resnr and 
+                    #                                        date_mdy(cl_list.arrive) == res_line.ankunft and 
+                    #                                        cl_list.zipreis == 0 and 
+                    #                                        (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
+                    cl_list = query(cl_list_data, filters=(lambda cl_list: 
+                                        curr_zinr == res_line.zinr and 
+                                        cl_list.resnr == res_line.resnr and 
+                                        date_mdy(cl_list.arrive) == res_line.ankunft and 
+                                        cl_list.zipreis == 0 and 
+                                        (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
                     if cl_list:
                         cl_list_data.remove(cl_list)
                         pass
@@ -423,7 +439,11 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
 
                 if not disp_accompany:
 
-                    cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.curr_zinr == res_line.zinr and cl_list.resnr == res_line.resnr and date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
+                    # Rd 20/8/22025
+                    # cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.curr_zinr == res_line.zinr and cl_list.resnr == res_line.resnr and 
+                    #                                        date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
+                    cl_list = query(cl_list_data, filters=(lambda cl_list: curr_zinr == res_line.zinr and cl_list.resnr == res_line.resnr and 
+                                                           date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
 
                     if cl_list:
                         cl_list_data.remove(cl_list)
@@ -599,8 +619,11 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     tot_co = tot_co + res_line.gratis
 
                 if not disp_accompany:
-
-                    cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.curr_zinr == res_line.zinr and cl_list.resnr == res_line.resnr and date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
+                    # Rd 20/8/22025
+                    # cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.curr_zinr == res_line.zinr and cl_list.resnr == res_line.resnr and 
+                    #                                        date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
+                    cl_list = query(cl_list_data, filters=(lambda cl_list: curr_zinr == res_line.zinr and cl_list.resnr == res_line.resnr and 
+                                                           date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
 
                     if cl_list:
                         cl_list_data.remove(cl_list)
@@ -776,8 +799,11 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     tot_co = tot_co + res_line.gratis
 
                 if not disp_accompany:
-
-                    cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.curr_zinr == res_line.zinr and cl_list.resnr == res_line.resnr and date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
+                    # Rd 20/8/22025
+                    # cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.curr_zinr == res_line.zinr and cl_list.resnr == res_line.resnr and 
+                    #                                        date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
+                    cl_list = query(cl_list_data, filters=(lambda cl_list: curr_zinr == res_line.zinr and cl_list.resnr == res_line.resnr and 
+                                                           date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
 
                     if cl_list:
                         cl_list_data.remove(cl_list)
@@ -953,8 +979,11 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     tot_co = tot_co + res_line.gratis
 
                 if not disp_accompany:
-
-                    cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.curr_zinr == res_line.zinr and cl_list.resnr == res_line.resnr and date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
+                    # Rd 20/8/22025
+                    # cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.curr_zinr == res_line.zinr and cl_list.resnr == res_line.resnr and 
+                    #                                        date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
+                    cl_list = query(cl_list_data, filters=(lambda cl_list: curr_zinr == res_line.zinr and cl_list.resnr == res_line.resnr and 
+                                                           date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
 
                     if cl_list:
                         cl_list_data.remove(cl_list)
@@ -1017,3 +1046,4 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
     create_departure0()
 
     return generate_output()
+
