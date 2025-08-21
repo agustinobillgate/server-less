@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 21/8/20225
+# beda sorting
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -38,9 +41,11 @@ def gcf_birthdatebl(from_date:int, to_date:int, from_age:int, to_age:int, sortty
         nonlocal birth_list_data
 
         if sorttype == 1:
-
+                # Rd 21/8/2025, sor by name
+                #     for guest in db_session.query(Guest).filter(
+                #              (Guest.karteityp == 0) & (Guest.gastnr > 0) & (Guest.name > "") & (Guest.vorname1 >= "") & (Guest.geburtdatum1 != None)).order_by(Guest._recid).all():
             for guest in db_session.query(Guest).filter(
-                     (Guest.karteityp == 0) & (Guest.gastnr > 0) & (Guest.name > "") & (Guest.vorname1 >= "") & (Guest.geburtdatum1 != None)).order_by(Guest._recid).all():
+                     (Guest.karteityp == 0) & (Guest.gastnr > 0) & (Guest.name > "") & (Guest.vorname1 >= "") & (Guest.geburtdatum1 != None)).order_by(Guest.name.asc()).all():
 
                 if (get_month(guest.geburtdatum1) * 100 + get_day(guest.geburtdatum1)) >= from_date and (get_month(guest.geburtdatum1) * 100 + get_day(guest.geburtdatum1)) <= to_date and (- get_year(guest.geburtdatum1) + get_year(get_current_date())) >= from_age and (- get_year(guest.geburtdatum1) + get_year(get_current_date())) <= to_age:
                     birth_list = Birth_list()
