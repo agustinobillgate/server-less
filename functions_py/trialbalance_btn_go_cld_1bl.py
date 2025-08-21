@@ -211,7 +211,8 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
 
 
                         c = convert_fibu(gl_acct.fibukonto)
-                        output_list.str = " " + to_string(c, "x(16)") + substring(gl_acct.bezeich, 0, 20)
+                        # output_list.str = "        " + to_string(c, "x(16)") + substring(gl_acct.bezeich, 0, 20)
+                        output_list.str = to_string("", "x(8)") + to_string(c, "x(16)") + substring(gl_acct.bezeich, 0, 20)
                         output_list.ref_no = to_string(c, "x(32)")
                         output_list.begin_bal = gl_acct.bezeich
                         output_list.tot_debit = ""
@@ -405,7 +406,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                             output_list.nr = counter
 
 
-                            output_list.str = " " + "T O T A L "
+                            output_list.str = to_string("", "x(8)")  + "T O T A L "
                             c = convert_balance(p_bal)
                             output_list.str = output_list.str + to_string(c, "x(22)")
                             output_list.ref_no = "T O T A L"
@@ -470,7 +471,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
 
 
                         c = convert_fibu(gl_acct.fibukonto)
-                        output_list.str = " " + to_string(c, "x(16)") + substring(gl_acct.bezeich, 0, 20)
+                        output_list.str = to_string("", "x(8)")  + to_string(c, "x(16)") + substring(gl_acct.bezeich, 0, 20)
                         output_list.ref_no = to_string(c, "x(32)")
                         output_list.begin_bal = gl_acct.bezeich
                         output_list.tot_debit = ""
@@ -656,7 +657,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                             output_list.nr = counter
 
 
-                            output_list.str = " " + "T O T A L "
+                            output_list.str = to_string("", "x(8)") + "T O T A L "
                             c = convert_balance(p_bal)
                             output_list.str = output_list.str + to_string(c, "x(22)")
                             output_list.ref_no = "T O T A L"
@@ -707,7 +708,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                 output_list.nr = counter
 
 
-                output_list.str = " " + "Grand TOTAL "
+                output_list.str = to_string("", "x(8)") + "Grand TOTAL "
                 c = convert_balance(prev_bal)
                 output_list.str = output_list.str + to_string(c, "x(22)")
                 output_list.ref_no = "Grand TOTAL"
@@ -1840,7 +1841,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
             output_list.nr = counter
 
 
-            output_list.str = " " + "Expected GOP "
+            output_list.str = to_string("", "x(8)") + "Expected GOP "
             c = convert_balance(p_bal)
             output_list.str = output_list.str + to_string(c, "x(22)")
 

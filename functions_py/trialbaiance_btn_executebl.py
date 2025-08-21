@@ -86,7 +86,7 @@ def trialbaiance_btn_executebl(acct_type:int, from_fibu:string, to_fibu:string, 
  
             tb_list_detail.marks = output_list.ch
             tb_list_detail.date = date_mdy(trim(substring(output_list.str, 0, 8)))
-
+            # print("Date:", substring(output_list.str, 0, 8) )
             tb_list_detail.ref_no = refno
             tb_list_detail.begining_bal = begining_bal
             tb_list_detail.tot_debit = tot_debit
