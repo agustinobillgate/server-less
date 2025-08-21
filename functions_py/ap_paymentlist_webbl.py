@@ -105,7 +105,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
                         ap_paymentlist = Ap_paymentlist()
                         ap_paymentlist_data.append(ap_paymentlist)
 
-                        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+                        ap_paymentlist.pay_amount =  to_decimal(t_credit)
                         ap_paymentlist.flag_string = 1
 
 
@@ -142,7 +142,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        # ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        # ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.flag_string = 1
 
@@ -150,7 +150,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        # ap_paymentlist.ap_amount =  to_decimal(tot_credit)
+        # ap_paymentlist.pay_amount =  to_decimal(tot_credit)
         ap_paymentlist.pay_amount =  to_decimal(tot_credit)
         ap_paymentlist.flag_string = 1
 
@@ -225,7 +225,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
                     ap_paymentlist = Ap_paymentlist()
                     ap_paymentlist_data.append(ap_paymentlist)
 
-                    ap_paymentlist.ap_amount =  to_decimal(t_credit)
+                    ap_paymentlist.pay_amount =  to_decimal(t_credit)
                     ap_paymentlist.flag_string = 1
 
 
@@ -261,7 +261,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -272,7 +272,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(tot_credit)
+        ap_paymentlist.pay_amount =  to_decimal(tot_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -350,7 +350,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
                         ap_paymentlist = Ap_paymentlist()
                         ap_paymentlist_data.append(ap_paymentlist)
 
-                        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+                        ap_paymentlist.pay_amount =  to_decimal(t_credit)
                         ap_paymentlist.flag_string = 1
                         t_credit =  to_decimal("0")
 
@@ -385,7 +385,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -458,7 +458,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
                         ap_paymentlist = Ap_paymentlist()
                         ap_paymentlist_data.append(ap_paymentlist)
 
-                        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+                        ap_paymentlist.pay_amount =  to_decimal(t_credit)
                         ap_paymentlist.flag_string = 1
                         t_credit =  to_decimal("0")
 
@@ -490,14 +490,14 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.flag_string = 1
 
 
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(tot_credit)
+        ap_paymentlist.pay_amount =  to_decimal(tot_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -571,7 +571,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
                     ap_paymentlist = Ap_paymentlist()
                     ap_paymentlist_data.append(ap_paymentlist)
 
-                    ap_paymentlist.ap_amount =  to_decimal(t_credit)
+                    ap_paymentlist.pay_amount =  to_decimal(t_credit)
                     ap_paymentlist.flag_string = 1
                     t_credit =  to_decimal("0")
 
@@ -609,7 +609,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -622,7 +622,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(tot_credit)
+        ap_paymentlist.pay_amount =  to_decimal(tot_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -700,7 +700,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
                         ap_paymentlist = Ap_paymentlist()
                         ap_paymentlist_data.append(ap_paymentlist)
 
-                        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+                        ap_paymentlist.pay_amount =  to_decimal(t_credit)
                         ap_paymentlist.flag_string = 1
                         t_credit =  to_decimal("0")
 
@@ -732,7 +732,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -805,7 +805,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
                         ap_paymentlist = Ap_paymentlist()
                         ap_paymentlist_data.append(ap_paymentlist)
 
-                        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+                        ap_paymentlist.pay_amount =  to_decimal(t_credit)
                         ap_paymentlist.flag_string = 1
                         t_credit =  to_decimal("0")
 
@@ -837,14 +837,14 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.flag_string = 1
 
 
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(tot_credit)
+        ap_paymentlist.pay_amount =  to_decimal(tot_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -918,7 +918,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
                     ap_paymentlist = Ap_paymentlist()
                     ap_paymentlist_data.append(ap_paymentlist)
 
-                    ap_paymentlist.ap_amount =  to_decimal(t_credit)
+                    ap_paymentlist.pay_amount =  to_decimal(t_credit)
                     ap_paymentlist.flag_string = 1
                     t_credit =  to_decimal("0")
 
@@ -956,7 +956,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -969,7 +969,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(tot_credit)
+        ap_paymentlist.pay_amount =  to_decimal(tot_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -1047,7 +1047,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
                         ap_paymentlist = Ap_paymentlist()
                         ap_paymentlist_data.append(ap_paymentlist)
 
-                        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+                        ap_paymentlist.pay_amount =  to_decimal(t_credit)
                         ap_paymentlist.flag_string = 1
                         t_credit =  to_decimal("0")
 
@@ -1079,7 +1079,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -1152,7 +1152,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
                         ap_paymentlist = Ap_paymentlist()
                         ap_paymentlist_data.append(ap_paymentlist)
 
-                        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+                        ap_paymentlist.pay_amount =  to_decimal(t_credit)
                         ap_paymentlist.flag_string = 1
                         t_credit =  to_decimal("0")
 
@@ -1184,14 +1184,14 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.flag_string = 1
 
 
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(tot_credit)
+        ap_paymentlist.pay_amount =  to_decimal(tot_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -1265,7 +1265,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
                     ap_paymentlist = Ap_paymentlist()
                     ap_paymentlist_data.append(ap_paymentlist)
 
-                    ap_paymentlist.ap_amount =  to_decimal(t_credit)
+                    ap_paymentlist.pay_amount =  to_decimal(t_credit)
                     ap_paymentlist.flag_string = 1
                     t_credit =  to_decimal("0")
 
@@ -1303,7 +1303,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -1316,7 +1316,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(tot_credit)
+        ap_paymentlist.pay_amount =  to_decimal(tot_credit)
         ap_paymentlist.flag_string = 1
 
 
@@ -1394,7 +1394,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
                         ap_paymentlist = Ap_paymentlist()
                         ap_paymentlist_data.append(ap_paymentlist)
 
-                        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+                        ap_paymentlist.pay_amount =  to_decimal(t_credit)
                         ap_paymentlist.flag_string = 1
                         t_credit =  to_decimal("0")
 
@@ -1426,7 +1426,7 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
         ap_paymentlist = Ap_paymentlist()
         ap_paymentlist_data.append(ap_paymentlist)
 
-        ap_paymentlist.ap_amount =  to_decimal(t_credit)
+        ap_paymentlist.pay_amount =  to_decimal(t_credit)
         ap_paymentlist.flag_string = 1
 
     if sort_type == 1:
