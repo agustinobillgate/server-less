@@ -583,7 +583,7 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         s_list.nr = 1
         s_list.reihenfolge = 1
         s_list.lager_nr = l_lager.lager_nr
-        s_list.bezeich = translateExtended ("transFER TO SIDE STORE", lvcarea, "")
+        s_list.bezeich = translateExtended ("TRANSFER TO SIDE STORE", lvcarea, "")
         s_list.flag = flag
 
         l_op_obj_list = {}
@@ -628,7 +628,7 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         s_list.nr = 2
         s_list.reihenfolge = 1
         s_list.lager_nr = l_lager.lager_nr
-        s_list.bezeich = translateExtended ("KITCHEN transFER IN", lvcarea, "")
+        s_list.bezeich = translateExtended ("KITCHEN TRANSFER IN", lvcarea, "")
         s_list.flag = flag
         s_list = S_list()
         s_list_data.append(s_list)
@@ -636,7 +636,7 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         s_list.nr = 3
         s_list.reihenfolge = 1
         s_list.lager_nr = l_lager.lager_nr
-        s_list.bezeich = translateExtended ("KITCHEN transFER OUT", lvcarea, "")
+        s_list.bezeich = translateExtended ("KITCHEN TRANSFER OUT", lvcarea, "")
         s_list.flag = flag
 
         for h_compli in db_session.query(H_compli).filter(
@@ -683,7 +683,7 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         s_list.nr = 1
         s_list.reihenfolge = 1
         s_list.lager_nr = l_lager.lager_nr
-        s_list.bezeich = translateExtended ("transFER TO SIDE STORE", lvcarea, "")
+        s_list.bezeich = translateExtended ("TRANSFER TO SIDE STORE", lvcarea, "")
         s_list.flag = flag
 
         l_op_obj_list = {}
@@ -728,7 +728,7 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         s_list.nr = 2
         s_list.reihenfolge = 1
         s_list.lager_nr = l_lager.lager_nr
-        s_list.bezeich = translateExtended ("KITCHEN transFER IN", lvcarea, "")
+        s_list.bezeich = translateExtended ("KITCHEN TRANSFER IN", lvcarea, "")
         s_list.flag = flag
         s_list = S_list()
         s_list_data.append(s_list)
@@ -736,7 +736,7 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         s_list.nr = 3
         s_list.reihenfolge = 1
         s_list.lager_nr = l_lager.lager_nr
-        s_list.bezeich = translateExtended ("KITCHEN transFER OUT", lvcarea, "")
+        s_list.bezeich = translateExtended ("KITCHEN TRANSFER OUT", lvcarea, "")
         s_list.flag = flag
 
         for h_compli in db_session.query(H_compli).filter(

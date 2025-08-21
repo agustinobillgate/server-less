@@ -339,7 +339,7 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             s_list.flag = 112
             s_list.reihenfolge = flag
             s_list.lager_nr = l_lager.lager_nr
-            s_list.bezeich = "KITCHEN transFER IN"
+            s_list.bezeich = "KITCHEN TRANSFER IN"
 
 
             s_list = S_list()
@@ -348,7 +348,7 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             s_list.flag = 113
             s_list.reihenfolge = flag
             s_list.lager_nr = l_lager.lager_nr
-            s_list.bezeich = "KITCHEN transFER OUT"
+            s_list.bezeich = "KITCHEN TRANSFER OUT"
 
             for h_compli in db_session.query(H_compli).filter(
                      (H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.betriebsnr > 0) & (H_compli.p_artnr == 1)).order_by(H_compli.departement).all():
@@ -1002,7 +1002,7 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             s_list.flag = 112
             s_list.reihenfolge = flag
             s_list.lager_nr = l_lager.lager_nr
-            s_list.bezeich = "KITCHEN transFER IN"
+            s_list.bezeich = "KITCHEN TRANSFER IN"
 
 
             s_list = S_list()
@@ -1010,7 +1010,7 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
             s_list.reihenfolge = flag
             s_list.lager_nr = l_lager.lager_nr
-            s_list.bezeich = "KITCHEN transFER OUT"
+            s_list.bezeich = "KITCHEN TRANSFER OUT"
             s_list.flag = 113
 
             for h_compli in db_session.query(H_compli).filter(

@@ -46,8 +46,6 @@ def gacct_balance_btn_go_list_create_output_webbl(idflag:string, gacct_balance_l
         nonlocal doneflag, counter, htl_no, temp_char, ankunft, bill_datum, depart, queasy, paramtext
         nonlocal idflag
         nonlocal bqueasy, pqueasy, tqueasy
-
-
         nonlocal gacct_balance_list, bqueasy, pqueasy, tqueasy
 
         out_str = ""
@@ -113,8 +111,6 @@ def gacct_balance_btn_go_list_create_output_webbl(idflag:string, gacct_balance_l
 
     if pqueasy:
         doneflag = False
-
-
     else:
 
         tqueasy = db_session.query(Tqueasy).filter(
@@ -122,8 +118,6 @@ def gacct_balance_btn_go_list_create_output_webbl(idflag:string, gacct_balance_l
 
         if tqueasy:
             doneflag = False
-
-
         else:
             doneflag = True
 
