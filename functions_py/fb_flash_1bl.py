@@ -891,7 +891,7 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
         fbflash_list = Fbflash_list()
         fbflash_list_data.append(fbflash_list)
 
-        fbflash_list.trans_to_storage = translateExtended ("transFER TO SIDE STORE", lvcarea, "")
+        fbflash_list.trans_to_storage = translateExtended ("TRANSFER TO SIDE STORE", lvcarea, "")
         betrag =  to_decimal("0")
         t_betrag1 =  to_decimal("0")
 
@@ -1380,7 +1380,7 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
         fbflash_list = Fbflash_list()
         fbflash_list_data.append(fbflash_list)
 
-        fbflash_list.trans_to_storage = translateExtended ("transFER TO SIDE STORE", lvcarea, "")
+        fbflash_list.trans_to_storage = translateExtended ("TRANSFER TO SIDE STORE", lvcarea, "")
         betrag =  to_decimal("0")
         t_betrag1 =  to_decimal("0")
 
