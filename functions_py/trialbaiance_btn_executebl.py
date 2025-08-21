@@ -44,7 +44,7 @@ def trialbaiance_btn_executebl(acct_type:int, from_fibu:string, to_fibu:string, 
     if sorttype == 1:
 
         for output_list in query(output_list_data):
-            print(output_list.str)
+            # print(output_list.str)
             refno = output_list.ref_no
             begining_bal = output_list.begin_bal
             tot_debit = output_list.tot_debit
@@ -103,7 +103,7 @@ def trialbaiance_btn_executebl(acct_type:int, from_fibu:string, to_fibu:string, 
     else:
 
         for output_list in query(output_list_data):
-            print(output_list.str)
+            # print(output_list.str)
             refno = substring(output_list.str, 0, 16)
             begining_bal = (replace_str(substring(output_list.str, 54, 22) , ",", ""))
             tot_debit = (replace_str(substring(output_list.str, 76, 22) , ",", ""))

@@ -216,7 +216,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                         output_list.begin_bal = gl_acct.bezeich
                         output_list.tot_debit = ""
                         output_list.is_show_depart = True
-
+                       
                         gl_department = get_cache (Gl_department, {"nr": [(eq, gl_acct.deptnr)]})
 
                         if gl_department:
@@ -1008,7 +1008,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                     output_list.nr = counter
 
 
-                    output_list.str = " " + to_string("S U B T O T A L", "x(38)")
+                    output_list.str = to_string("", "x(16)")  + to_string("S U B T O T A L", "x(38)")
                     c = convert_balance(prev_bal)
                     tt_pbal2 =  to_decimal(tt_pbal2) + to_decimal(prev_bal)
                     output_list.is_show_depart = False
@@ -1251,7 +1251,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                     output_list.nr = counter
 
 
-                    output_list.str = " " + to_string("s U B T O T A L", "x(38)")
+                    output_list.str = to_string("", "x(16)")  + to_string("S U B T O T A L", "x(38)")
                     c = convert_balance(prev_bal)
                     tt_pbal2 =  to_decimal(tt_pbal2) + to_decimal(prev_bal)
                     output_list.is_show_depart = False
@@ -1289,7 +1289,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
             output_list.nr = counter
 
 
-            output_list.str = " " + to_string("T O T A L", "x(38)")
+            output_list.str = to_string("", "x(16)")  + to_string("T O T A L", "x(38)")
             c = convert_balance(tt_pbal2)
             output_list.is_show_depart = False
 
@@ -1502,8 +1502,6 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                     if p_bal != 0 or t_debit != 0 or t_credit != 0 or y_bal != 0:
                         output_list = Output_list()
                         output_list_data.append(output_list)
-
-
                         gl_department = get_cache (Gl_department, {"nr": [(eq, gl_acct.deptnr)]})
 
                         if gl_department:
@@ -1574,8 +1572,8 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                 counter = counter + 1
                 output_list.nr = counter
 
-
-                output_list.str = " " + to_string("s U B T O T A L", "x(38)")
+                # output_list.str = " " + to_string("S2U B T O T A L", "x(38)")
+                output_list.str = to_string("", "x(16)") + to_string("S U B T O T A L", "x(38)")
                 c = convert_balance(prev_bal)
                 output_list.is_show_depart = False
 
@@ -1612,7 +1610,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
             output_list.nr = counter
 
 
-            output_list.str = " " + to_string("T O T A L", "x(38)")
+            output_list.str = to_string("", "x(16)")  + to_string("T O T A L", "x(38)")
             c = convert_balance(tt_pbal)
             output_list.is_show_depart = False
 
@@ -1983,7 +1981,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
             output_list.nr = counter
 
 
-            output_list.str = " " + to_string("balance - " + gl_acct.bezeich, "x(38)")
+            output_list.str = to_string("", "x(16)")  + to_string("balance - " + gl_acct.bezeich, "x(38)")
             c = convert_balance(p_bal)
             output_list.str = output_list.str + to_string(c, "x(22)")
 
@@ -2080,7 +2078,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
     if gl_jouhdr:
         from_date = t_from_date
         to_date = t_to_date
-        print("create_glist")
+        # print("create_glist")
         create_glist()
     else:
 
@@ -2094,31 +2092,31 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                 if gl_jouhdr:
                     from_datehis = t_from_date
                     to_datehis = t_date - timedelta(days=1)
-                    print("create_glisthis")
+                    # print("create_glisthis")
                     create_glisthis()
                     from_date = t_date
                     to_date = t_to_date
 
-                    print("create_glist")
+                    # print("create_glist")
                     create_glist()
                     break
         else:
             from_datehis = t_from_date
             to_datehis = t_to_date
 
-            print("create_glisthis")
+            # print("create_glisthis")
             create_glisthis()
 
     if sorttype == 1:
-        print("create_list1")
+        # print("create_list1")
         create_list1()
     else:
 
         if from_dept == 0:
-            print("create_list2")
+            # print("create_list2")
             create_list2()
         else:
-            print("create_list2d")
+            # print("create_list2d")
             create_list2d()
 
     return generate_output()
