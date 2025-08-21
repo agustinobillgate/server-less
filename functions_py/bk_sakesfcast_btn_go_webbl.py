@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd, 21/8/2025
+# gitlab: 
+# rmBuff, range (int())
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -264,9 +268,14 @@ def bk_sakesfcast_btn_go_webbl(checklist:bool, sorttype:int, fdate:date, tdate:d
 
         output_list.bezeich = f_list.bname
         output_list.room = f_list.room
-        output_list.id = f_list.ID
-        output_list.ba_event = f_list.EVENT
-        output_list.datum = f_list.cDATE
+        # Rd 21/8/2025
+        # output_list.id = f_list.ID
+        # output_list.ba_event = f_list.EVENT
+        # output_list.datum = f_list.cDATE
+        output_list.id = f_list.id
+        output_list.ba_event = f_list.event
+        output_list.datum = f_list.cdate
+
         output_list.pax = f_list.pax
         output_list.rmrev =  to_decimal(f_list.rmrev)
         output_list.fbrev =  to_decimal(f_list.fbrev)
