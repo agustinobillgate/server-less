@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 20/8/2025
-#
+# search filter name, perlu tambahan char \ufff
 #------------------------------------------
 from functions.additional_functions import *
 from sqlalchemy import func, and_
