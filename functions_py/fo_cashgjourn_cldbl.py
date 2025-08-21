@@ -111,7 +111,9 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
                     output_list_data.append(output_list)
 
                     output_list.flag = "*"
-                    output_list.str = to_string("", "x(27)") + to_string((translateExtended ("User:", lvcarea, "") + " " + bediener.username) , "x(22)")
+                    # Rd 21/8/2025, if bediener available
+                    if bediener:
+                        output_list.str = to_string("", "x(27)") + to_string((translateExtended ("User:", lvcarea, "") + " " + bediener.username) , "x(22)")
                 else:
                     output_list = Output_list()
                     output_list_data.append(output_list)
@@ -407,6 +409,10 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
         for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.selected), sort_by=[("name",False)]):
 
             bediener = get_cache (Bediener, {"_recid": [(eq, bline_list.bl_recid)]})
+            # Rd 21/8/2025
+            if bediener is None:
+                continue
+
             it_exist = False
 
             if not summary_flag:
@@ -414,7 +420,10 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
                 output_list_data.append(output_list)
 
                 output_list.flag = "*"
-                output_list.str = to_string("", "x(27)") + to_string((translateExtended ("User:", lvcarea, "") + " " + bediener.username) , "x(22)")
+                # Rd 21/8/2025
+                # if available bediener
+                if bediener:
+                    output_list.str = to_string("", "x(27)") + to_string((translateExtended ("User:", lvcarea, "") + " " + bediener.username) , "x(22)")
             sub_tot =  to_decimal("0")
             curr_art = 0
             art_tot =  to_decimal("0")
@@ -434,7 +443,11 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
                     sum_list.bezeich = artikel.bezeich
 
                 for billjournal in db_session.query(Billjournal).filter(
-                         (Billjournal.userinit == bediener.userinit) & (Billjournal.artnr == artikel.artnr) & (Billjournal.anzahl != 0) & (Billjournal.departement == artikel.departement) & (Billjournal.bill_datum == from_date) & (Billjournal.betriebsnr == curr_shift) & (((Billjournal.bediener_nr == 0) & (onlyjournal == False)) | ((Billjournal.bediener_nr != 0) & (excljournal == False)))).order_by(Billjournal.zeit, Billjournal.rechnr).all():
+                         (Billjournal.userinit == bediener.userinit) & (Billjournal.artnr == artikel.artnr) & 
+                         (Billjournal.anzahl != 0) & (Billjournal.departement == artikel.departement) & 
+                         (Billjournal.bill_datum == from_date) & (Billjournal.betriebsnr == curr_shift) & 
+                         (((Billjournal.bediener_nr == 0) & (onlyjournal == False)) | ((Billjournal.bediener_nr != 0) & 
+                                                                                       (excljournal == False)))).order_by(Billjournal.zeit, Billjournal.rechnr).all():
 
                     if curr_art == 0:
                         curr_art = artikel.artnr
@@ -662,7 +675,7 @@ def fo_cashgjourn_cldbl(pvilanguage:int, case_type:int, curr_shift:int, summary_
                 output_list_data.append(output_list)
 
                 output_list.flag = "SUM"
-
+                print(sum_list)
                 if not long_digit:
                     output_list.str = to_string(" ", "x(8)") + to_string(" ", "x(6)") + to_string(0, ">>>>>>>>>") + to_string(sum_list.artnr, "9999") + to_string(sum_list.bezeich, "x(40)") + to_string(" ", "x(17)") + to_string(sum_list.amt, "->,>>>,>>>,>>9.99")
                     output_list.amt_foreign =  to_decimal(sum_list.f_amt)
