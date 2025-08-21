@@ -1,7 +1,7 @@
 #-----------------------------------------
 # Rd, 21/8/2025
 # gitlab: 
-# 
+# rmBuff, range (int())
 #-----------------------------------------
 
 from functions.additional_functions import *
