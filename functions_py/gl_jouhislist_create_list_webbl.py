@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 22/8/2025
-
+# " " -> "        "  , str -> output_list.str
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
