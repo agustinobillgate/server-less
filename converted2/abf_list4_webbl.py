@@ -678,10 +678,10 @@ def abf_list4_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, incl_accom:bool
 
             invoice = db_session.query(Invoice).filter(
                      (Invoice.resnr == res_line.resnr) & (Invoice.reslinnr == 0)).first()
-            else:
+        else:
 
-                invoice = db_session.query(Invoice).filter(
-                         (Invoice.zinr == res_line.zinr) & (Invoice.resnr == res_line.resnr) & (Invoice.reslinnr == res_line.reslinnr) & (Invoice.billtyp == 0) & (Invoice.billnr == 1) & (Invoice.flag == 0)).first()
+            invoice = db_session.query(Invoice).filter(
+                        (Invoice.zinr == res_line.zinr) & (Invoice.resnr == res_line.resnr) & (Invoice.reslinnr == res_line.reslinnr) & (Invoice.billtyp == 0) & (Invoice.billnr == 1) & (Invoice.flag == 0)).first()
 
         if not dont_post:
 
