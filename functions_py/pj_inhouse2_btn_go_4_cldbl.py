@@ -1,5 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 22/8/2025
+# beda sorting
+# sorttype = 1 -> room
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -52,6 +56,8 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
         nonlocal setup_list, str_list, cl_list, s_list, zinr_list, t_buff_queasy
         nonlocal setup_list_data, str_list_data, cl_list_data, s_list_data, zinr_list_data, t_buff_queasy_data
+        # for cl in cl_list_data:
+        #     print(cl.rmno)
 
         return {"tot_payrm": tot_payrm, "tot_rm": tot_rm, "tot_a": tot_a, "tot_c": tot_c, "tot_co": tot_co, "tot_avail": tot_avail, "tot_rmqty": tot_rmqty, "inactive": inactive, "cl-list": cl_list_data, "s-list": s_list_data, "t-buff-queasy": t_buff_queasy_data}
 
@@ -132,13 +138,39 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
         reservation = Reservation()
         guest = Guest()
         gmember = Guest()
-        for res_line.setup, res_line.zinr, res_line.resnr, res_line.name, res_line.zipreis, res_line.ankunft, res_line.abreise, res_line.zimmeranz, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.gratis, res_line.arrangement, res_line.flight_nr, res_line.ankzeit, res_line.resstatus, res_line.betriebsnr, res_line.reslinnr, res_line.zimmer_wunsch, res_line.zimmerfix, res_line.gastnrmember, res_line.bemerk, res_line.gastnr, res_line._recid, zimkateg.kurzbez, zimkateg.bezeichnung, zimkateg._recid, reservation.segmentcode, reservation.resdat, reservation.useridanlage, reservation.resnr, reservation._recid, guest.name, guest.vorname1, guest.anrede1, guest.anredefirma, guest.gastnr, guest.karteityp, guest._recid, gmember.name, gmember.vorname1, gmember.anrede1, gmember.anredefirma, gmember.gastnr, gmember.karteityp, gmember._recid in db_session.query(Res_line.setup, Res_line.zinr, Res_line.resnr, Res_line.name, Res_line.zipreis, Res_line.ankunft, Res_line.abreise, Res_line.zimmeranz, Res_line.erwachs, Res_line.kind1, Res_line.kind2, Res_line.gratis, Res_line.arrangement, Res_line.flight_nr, Res_line.ankzeit, Res_line.resstatus, Res_line.betriebsnr, Res_line.reslinnr, Res_line.zimmer_wunsch, Res_line.zimmerfix, Res_line.gastnrmember, Res_line.bemerk, Res_line.gastnr, Res_line._recid, Zimkateg.kurzbez, Zimkateg.bezeichnung, Zimkateg._recid, Reservation.segmentcode, Reservation.resdat, Reservation.useridanlage, Reservation.resnr, Reservation._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.anredefirma, Guest.gastnr, Guest.karteityp, Guest._recid, Gmember.name, Gmember.vorname1, Gmember.anrede1, Gmember.anredefirma, Gmember.gastnr, Gmember.karteityp, Gmember._recid).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
-                 (Res_line.active_flag >= actflag1) & (Res_line.active_flag <= actflag2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.ankunft <= datum) & (Res_line.abreise >= datum) & (Res_line.zinr >= (froom).lower()) & (Res_line.zinr <= (troom).lower())).order_by(Res_line.zinr, Res_line.erwachs.desc(), Res_line.name).all():
+        print("Sort by Room.")
+        for res_line.setup, res_line.zinr, res_line.resnr, res_line.name, res_line.zipreis, res_line.ankunft, res_line.abreise, res_line.zimmeranz, \
+            res_line.erwachs, res_line.kind1, res_line.kind2, res_line.gratis, res_line.arrangement, res_line.flight_nr, res_line.ankzeit, \
+            res_line.resstatus, res_line.betriebsnr, res_line.reslinnr, res_line.zimmer_wunsch, res_line.zimmerfix, res_line.gastnrmember, \
+            res_line.bemerk, res_line.gastnr, res_line._recid, zimkateg.kurzbez, zimkateg.bezeichnung, zimkateg._recid, reservation.segmentcode, \
+            reservation.resdat, reservation.useridanlage, reservation.resnr, reservation._recid, guest.name, guest.vorname1, guest.anrede1, \
+            guest.anredefirma, guest.gastnr, guest.karteityp, guest._recid, gmember.name, gmember.vorname1, gmember.anrede1, gmember.anredefirma, \
+            gmember.gastnr, gmember.karteityp, gmember._recid \
+            in db_session.query(Res_line.setup, Res_line.zinr, Res_line.resnr, Res_line.name, Res_line.zipreis, Res_line.ankunft, Res_line.abreise, 
+                                Res_line.zimmeranz, Res_line.erwachs, Res_line.kind1, Res_line.kind2, Res_line.gratis, Res_line.arrangement, Res_line.flight_nr, \
+                                Res_line.ankzeit, Res_line.resstatus, Res_line.betriebsnr, Res_line.reslinnr, Res_line.zimmer_wunsch, Res_line.zimmerfix, \
+                                Res_line.gastnrmember, Res_line.bemerk, Res_line.gastnr, Res_line._recid, Zimkateg.kurzbez, Zimkateg.bezeichnung, \
+                                Zimkateg._recid, Reservation.segmentcode, Reservation.resdat, Reservation.useridanlage, Reservation.resnr, \
+                                Reservation._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.anredefirma, Guest.gastnr, Guest.karteityp, \
+                                Guest._recid, Gmember.name, Gmember.vorname1, Gmember.anrede1, Gmember.anredefirma, Gmember.gastnr, Gmember.karteityp, \
+                                Gmember._recid).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) \
+                        ).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
+                                (Res_line.active_flag >= actflag1) & 
+                                (Res_line.active_flag <= actflag2) & 
+                                (Res_line.resstatus != 9) & 
+                                (Res_line.resstatus != 10) & 
+                                (Res_line.resstatus != 12) & 
+                                (Res_line.ankunft <= datum) & 
+                                (Res_line.abreise >= datum) & 
+                                (Res_line.zinr >= (froom).lower()) & 
+                                (Res_line.zinr <= (troom).lower()) \
+                        # ).order_by(Res_line.zinr).all():
+                        ).order_by(Res_line.zinr, Res_line.erwachs.desc(), Res_line.name).all():
             if res_line_obj_list.get(res_line._recid):
                 continue
             else:
                 res_line_obj_list[res_line._recid] = True
-
+            # print(res_line.zinr)
             if exc_depart and res_line.abreise == datum:
                 pass
             else:
@@ -395,7 +427,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                     cl_list_data.remove(cl_list)
                     pass
                     tot_rm = tot_rm - 1
-
+     
         for cl_list in query(cl_list_data, sort_by=[("nation",False),("bezeich",False)]):
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.rmcat == cl_list.kurzbez), first=True)
@@ -436,6 +468,10 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
             s_list.child = s_list.child + cl_list.c
             s_list.rmqty = s_list.rmqty + cl_list.qty
 
+        # sort by rmno -> query diatas merubah sort order.
+        for cl_list in query(cl_list_data, sort_by=[("rmno",False)]):
+            pass
+
         if (tot_a + tot_co) != 0:
 
             for s_list in query(s_list_data, filters=(lambda s_list: s_list.nat != "")):
@@ -445,6 +481,8 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 if nation:
                     s_list.nat = nation.bezeich
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
+
+
 
     def create_genstat_inhouse():
 
@@ -1192,7 +1230,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
 
     def create_genstat_inhouse1():
-
+        # sorttype = 2
         nonlocal tot_payrm, tot_rm, tot_a, tot_c, tot_co, tot_avail, tot_rmqty, inactive, cl_list_data, s_list_data, t_buff_queasy_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, tot_room, all_room, all_remark, queasy, htparam, zkstat, zinrstat, paramtext, guest, reservation, zimmer, zimkateg, res_line, guestseg, segment, mc_guest, mc_types, nation, waehrung, reslin_queasy, mealcoup, genstat
         nonlocal sorttype, datum, curr_date, curr_gastnr, froom, troom, exc_depart, incl_gcomment, incl_rsvcomment, prog_name, disp_accompany, disp_exclinact, split_rsv_print, exc_compli
 
@@ -1571,7 +1609,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
 
     def create_inhouse2():
-
+        # sorttype = 1
         nonlocal tot_payrm, tot_rm, tot_a, tot_c, tot_co, tot_avail, tot_rmqty, inactive, cl_list_data, s_list_data, t_buff_queasy_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, tot_room, all_room, all_remark, queasy, htparam, zkstat, zinrstat, paramtext, guest, reservation, zimmer, zimkateg, res_line, guestseg, segment, mc_guest, mc_types, nation, waehrung, reslin_queasy, mealcoup, genstat
         nonlocal sorttype, datum, curr_date, curr_gastnr, froom, troom, exc_depart, incl_gcomment, incl_rsvcomment, prog_name, disp_accompany, disp_exclinact, split_rsv_print, exc_compli
 
@@ -1623,8 +1661,27 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
         guest = Guest()
         gmember = Guest()
         zimmer = Zimmer()
-        for res_line.setup, res_line.zinr, res_line.resnr, res_line.name, res_line.zipreis, res_line.ankunft, res_line.abreise, res_line.zimmeranz, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.gratis, res_line.arrangement, res_line.flight_nr, res_line.ankzeit, res_line.resstatus, res_line.betriebsnr, res_line.reslinnr, res_line.zimmer_wunsch, res_line.zimmerfix, res_line.gastnrmember, res_line.bemerk, res_line.gastnr, res_line._recid, zimkateg.kurzbez, zimkateg.bezeichnung, zimkateg._recid, reservation.segmentcode, reservation.resdat, reservation.useridanlage, reservation.resnr, reservation._recid, guest.name, guest.vorname1, guest.anrede1, guest.anredefirma, guest.gastnr, guest.karteityp, guest._recid, gmember.name, gmember.vorname1, gmember.anrede1, gmember.anredefirma, gmember.gastnr, gmember.karteityp, gmember._recid, zimmer.etage, zimmer.bezeich, zimmer.sleeping, zimmer._recid in db_session.query(Res_line.setup, Res_line.zinr, Res_line.resnr, Res_line.name, Res_line.zipreis, Res_line.ankunft, Res_line.abreise, Res_line.zimmeranz, Res_line.erwachs, Res_line.kind1, Res_line.kind2, Res_line.gratis, Res_line.arrangement, Res_line.flight_nr, Res_line.ankzeit, Res_line.resstatus, Res_line.betriebsnr, Res_line.reslinnr, Res_line.zimmer_wunsch, Res_line.zimmerfix, Res_line.gastnrmember, Res_line.bemerk, Res_line.gastnr, Res_line._recid, Zimkateg.kurzbez, Zimkateg.bezeichnung, Zimkateg._recid, Reservation.segmentcode, Reservation.resdat, Reservation.useridanlage, Reservation.resnr, Reservation._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.anredefirma, Guest.gastnr, Guest.karteityp, Guest._recid, Gmember.name, Gmember.vorname1, Gmember.anrede1, Gmember.anredefirma, Gmember.gastnr, Gmember.karteityp, Gmember._recid, Zimmer.etage, Zimmer.bezeich, Zimmer.sleeping, Zimmer._recid).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).join(Zimmer,(Zimmer.zinr == Res_line.zinr) & (Zimmer.sleeping)).filter(
-                 (Res_line.active_flag >= actflag1) & (Res_line.active_flag <= actflag2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.ankunft <= datum) & (Res_line.abreise >= datum) & (Res_line.zinr >= (froom).lower()) & (Res_line.zinr <= (troom).lower())).order_by(Res_line.zinr, Res_line.erwachs.desc(), Res_line.name).all():
+        for res_line.setup, res_line.zinr, res_line.resnr, res_line.name, res_line.zipreis, res_line.ankunft, res_line.abreise, res_line.zimmeranz, res_line.erwachs, \
+            res_line.kind1, res_line.kind2, res_line.gratis, res_line.arrangement, res_line.flight_nr, res_line.ankzeit, res_line.resstatus, res_line.betriebsnr, \
+            res_line.reslinnr, res_line.zimmer_wunsch, res_line.zimmerfix, res_line.gastnrmember, res_line.bemerk, res_line.gastnr, res_line._recid, \
+            zimkateg.kurzbez, zimkateg.bezeichnung, zimkateg._recid, reservation.segmentcode, reservation.resdat, reservation.useridanlage, reservation.resnr, \
+            reservation._recid, guest.name, guest.vorname1, guest.anrede1, guest.anredefirma, guest.gastnr, guest.karteityp, guest._recid, gmember.name, \
+            gmember.vorname1, gmember.anrede1, gmember.anredefirma, gmember.gastnr, gmember.karteityp, gmember._recid, zimmer.etage, zimmer.bezeich, \
+            zimmer.sleeping, zimmer._recid \
+            in db_session.query(Res_line.setup, Res_line.zinr, Res_line.resnr, Res_line.name, Res_line.zipreis, Res_line.ankunft, Res_line.abreise, \
+                                Res_line.zimmeranz, Res_line.erwachs, Res_line.kind1, Res_line.kind2, Res_line.gratis, Res_line.arrangement, \
+                                Res_line.flight_nr, Res_line.ankzeit, Res_line.resstatus, Res_line.betriebsnr, Res_line.reslinnr, Res_line.zimmer_wunsch, \
+                                Res_line.zimmerfix, Res_line.gastnrmember, Res_line.bemerk, Res_line.gastnr, Res_line._recid, Zimkateg.kurzbez, \
+                                Zimkateg.bezeichnung, Zimkateg._recid, Reservation.segmentcode, Reservation.resdat, Reservation.useridanlage, \
+                                Reservation.resnr, Reservation._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.anredefirma, Guest.gastnr, \
+                                Guest.karteityp, Guest._recid, Gmember.name, Gmember.vorname1, Gmember.anrede1, Gmember.anredefirma, Gmember.gastnr, \
+                                Gmember.karteityp, Gmember._recid, Zimmer.etage, Zimmer.bezeich, Zimmer.sleeping, Zimmer._recid)\
+                                    .join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Reservation,(Reservation.resnr == Res_line.resnr))\
+                                    .join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember))\
+                                    .join(Zimmer,(Zimmer.zinr == Res_line.zinr) & (Zimmer.sleeping)).filter(
+                 (Res_line.active_flag >= actflag1) & (Res_line.active_flag <= actflag2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & 
+                 (Res_line.resstatus != 12) & (Res_line.ankunft <= datum) & (Res_line.abreise >= datum) & (Res_line.zinr >= (froom).lower()) & 
+                (Res_line.zinr <= (troom).lower())).order_by(Res_line.zinr, Res_line.erwachs.desc(), Res_line.name).all():
             if res_line_obj_list.get(res_line._recid):
                 continue
             else:
@@ -1936,7 +1993,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
 
     def create_genstat_inhouse2():
-
+        # sorttype = 1
         nonlocal tot_payrm, tot_rm, tot_a, tot_c, tot_co, tot_avail, tot_rmqty, inactive, cl_list_data, s_list_data, t_buff_queasy_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, tot_room, all_room, all_remark, queasy, htparam, zkstat, zinrstat, paramtext, guest, reservation, zimmer, zimkateg, res_line, guestseg, segment, mc_guest, mc_types, nation, waehrung, reslin_queasy, mealcoup, genstat
         nonlocal sorttype, datum, curr_date, curr_gastnr, froom, troom, exc_depart, incl_gcomment, incl_rsvcomment, prog_name, disp_accompany, disp_exclinact, split_rsv_print, exc_compli
 
@@ -2307,7 +2364,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
 
     def create_inhouse3():
-
+        # sorttype = 
         nonlocal tot_payrm, tot_rm, tot_a, tot_c, tot_co, tot_avail, tot_rmqty, inactive, cl_list_data, s_list_data, t_buff_queasy_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, tot_room, all_room, all_remark, queasy, htparam, zkstat, zinrstat, paramtext, guest, reservation, zimmer, zimkateg, res_line, guestseg, segment, mc_guest, mc_types, nation, waehrung, reslin_queasy, mealcoup, genstat
         nonlocal sorttype, datum, curr_date, froom, troom, exc_depart, incl_gcomment, incl_rsvcomment, prog_name, disp_accompany, disp_exclinact, split_rsv_print, exc_compli
 
@@ -3122,33 +3179,42 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
     bed_setup()
 
     if sorttype == 1:
-
+        # by Room
         if disp_exclinact:
 
             if datum >= curr_date:
+                print("create_inhouse2")
                 create_inhouse2()
             else:
+                print("create_genstat_inhouse2")
                 create_genstat_inhouse2()
         else:
 
             if datum >= curr_date:
+                print("create_inhouse")
                 create_inhouse()
             else:
+                print("create_genstat_inhouse")
                 create_genstat_inhouse()
     else:
 
         if disp_exclinact:
 
             if datum >= curr_date:
+                print("create_inhouse3")
                 create_inhouse3()
             else:
+                print("create_genstat_inhouse3")
                 create_genstat_inhouse3()
         else:
 
             if datum >= curr_date:
+                print("create_inhouse1")
                 create_inhouse1()
             else:
+                print("create_genstat_inhouse1")
                 create_genstat_inhouse1()
+    
     create_buf_queasy()
 
     if datum < curr_date:

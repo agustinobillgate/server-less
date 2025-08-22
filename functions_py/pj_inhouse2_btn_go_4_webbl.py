@@ -60,7 +60,9 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
         nonlocal cl_list, s_list, segm_list, argt_list, sum_list, t_buff_queasy, output_list, lnl_sum, summary_list1, summary_list2, summary_list3, summary_list4, c_list
         nonlocal cl_list_data, s_list_data, segm_list_data, argt_list_data, sum_list_data, t_buff_queasy_data, output_list_data, lnl_sum_data, summary_list1_data, summary_list2_data, summary_list3_data, summary_list4_data
-
+        # print("Sorttype:", sorttype)
+        # for rec in output_list_data:
+        #     print(rec.rmno)
         return {"output-list": output_list_data, "summary-list1": summary_list1_data, "summary-list2": summary_list2_data, "summary-list3": summary_list3_data, "summary-list4": summary_list4_data, "lnl-sum": lnl_sum_data, "t-buff-queasy": t_buff_queasy_data}
 
     def create_inhouse_v2():
@@ -87,8 +89,9 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
         summary_list4_data.clear()
         lnl_sum_data.clear()
 
-        
 
+        # for cl in cl_list_data:
+        #     print(cl.rmno)
         if sorttype == 1 or sorttype == 3:
             outnr = 0
 
@@ -104,7 +107,6 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
                     create_outlist()
 
         else:
-
             for cl_list in query(cl_list_data, sort_by=[("company",False)]):
 
                 if curr_company != cl_list.company:
@@ -180,6 +182,7 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
 
                 output_list.stay = (cl_list.depart - cl_list.arrive).days
+
 
         for s_list in query(s_list_data):
             summary_list1 = Summary_list1()
@@ -355,8 +358,6 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
         argt_list.tot_room = argt_list.tot_room + 1
         argt_list.tot_pax = argt_list.tot_pax + cl_list.a + cl_list.co
         argt_list.tot_breakfast = argt_list.tot_breakfast + cl_list.tot_bfast
-
-
         output_list.stay = (cl_list.depart - cl_list.arrive).days
 
     if datum is None or curr_date is None:
