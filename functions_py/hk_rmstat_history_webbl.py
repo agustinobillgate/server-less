@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 22/8/2025
+# data kosong di .py
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -46,14 +49,47 @@ def hk_rmstat_history_webbl(input_report_data:[Input_report]):
         nonlocal b1_list_data
 
         if input_report.usrID != "" and input_report.room != "":
-
-            bediener = get_cache (Bediener, {"userinit": [(eq, trim(entry(0, usrid, "-")))]})
+            # Rd 22/8/2025, input_report_data
+            # bediener = get_cache (Bediener, {"userinit": [(eq, trim(entry(0, usrid, "-")))]})
+            bediener = get_cache (Bediener, {"userinit": [(eq, trim(entry(0, input_report_data.usrid, "-")))]})
 
             res_history_obj_list = {}
             res_history = Res_history()
             ubuff = Bediener()
+
+            # Rd 22/8/2025, input_report_data
+            # for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
+            #          (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (Res_history.nr == bediener.nr) & (entry(1, Res_history.aenderung, " ") == input_report.room)).order_by(Res_history.datum, Res_history.zeit).all():
+            
             for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
-                     (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (Res_history.nr == bediener.nr) & (entry(1, Res_history.aenderung, " ") == input_report.room)).order_by(Res_history.datum, Res_history.zeit).all():
+                     (Res_history.datum >= input_report_data.from_date) & (Res_history.datum <= input_report_data.to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (Res_history.nr == bediener.nr) & (entry(1, Res_history.aenderung, " ") == input_report.room)).order_by(Res_history.datum, Res_history.zeit).all():
+                if res_history_obj_list.get(res_history._recid):
+                    continue
+                else:
+                    res_history_obj_list[res_history._recid] = True
+
+
+                assign_it()
+
+            return
+        # Rd 22/8/2025, input_report_data
+        # elif usrID != "" and input_report.room == "":
+        elif input_report_data.usrid != "" and input_report.room == "":
+
+            # Rd 22/8/2025, input_report_data
+            # bediener = get_cache (Bediener, {"userinit": [(eq, trim(entry(0, usrid, "-")))]})
+            bediener = get_cache (Bediener, {"userinit": [(eq, trim(entry(0, input_report_data.usrid, "-")))]})
+
+            res_history_obj_list = {}
+            res_history = Res_history()
+            ubuff = Bediener()
+
+            # Rd 22/8/2025, input_report_data
+            # for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
+            #          (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (Res_history.nr == bediener.nr)).order_by(Res_history.datum, Res_history.zeit).all():
+            for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
+                     (Res_history.datum >= input_report_data.from_date) & (Res_history.datum <= input_report_data.to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (Res_history.nr == bediener.nr)).order_by(Res_history.datum, Res_history.zeit).all():
+
                 if res_history_obj_list.get(res_history._recid):
                     continue
                 else:
@@ -64,32 +100,20 @@ def hk_rmstat_history_webbl(input_report_data:[Input_report]):
 
             return
 
-        elif usrID != "" and input_report.room == "":
-
-            bediener = get_cache (Bediener, {"userinit": [(eq, trim(entry(0, usrid, "-")))]})
-
-            res_history_obj_list = {}
-            res_history = Res_history()
-            ubuff = Bediener()
-            for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
-                     (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (Res_history.nr == bediener.nr)).order_by(Res_history.datum, Res_history.zeit).all():
-                if res_history_obj_list.get(res_history._recid):
-                    continue
-                else:
-                    res_history_obj_list[res_history._recid] = True
-
-
-                assign_it()
-
-            return
-
-        elif usrID == "" and input_report.room != "":
+        # Rd 22/8/2025, input_report_data
+        # elif usrID != "" and input_report.room == "":
+        elif input_report_data.usrid and input_report.room != "":
 
             res_history_obj_list = {}
             res_history = Res_history()
             ubuff = Bediener()
+
+            # Rd 22/8/2025, input_report_data
+            # for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
+            #          (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (entry(1, Res_history.aenderung, " ") == input_report.room)).order_by(Res_history.datum, Res_history.zeit).all():
+
             for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
-                     (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (entry(1, Res_history.aenderung, " ") == input_report.room)).order_by(Res_history.datum, Res_history.zeit).all():
+                     (Res_history.datum >= input_report_data.from_date) & (Res_history.datum <= input_report_data.to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (entry(1, Res_history.aenderung, " ") == input_report.room)).order_by(Res_history.datum, Res_history.zeit).all():
                 if res_history_obj_list.get(res_history._recid):
                     continue
                 else:
@@ -104,8 +128,13 @@ def hk_rmstat_history_webbl(input_report_data:[Input_report]):
             res_history_obj_list = {}
             res_history = Res_history()
             ubuff = Bediener()
+
+            # Rd 22/8/2025, input_report_data
+            # for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
+            #          (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3)).order_by(Res_history.datum, Res_history.zeit).all():
+
             for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
-                     (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3)).order_by(Res_history.datum, Res_history.zeit).all():
+                     (Res_history.datum >= input_report_data.from_date) & (Res_history.datum <= input_report_data.to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3)).order_by(Res_history.datum, Res_history.zeit).all():
                 if res_history_obj_list.get(res_history._recid):
                     continue
                 else:
