@@ -185,6 +185,7 @@ def abf_list1_3_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, show_bfast_ra
 
                 if rline:
                     abf_list.bemerk = abf_list.comments + rline.bemerk
+                   
 
                 if abf_list.comments != "":
                     abf_list.comments = abf_list.comments + chr_unicode(10)
