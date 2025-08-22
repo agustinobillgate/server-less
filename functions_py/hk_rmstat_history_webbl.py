@@ -4,6 +4,7 @@
 # data kosong di .py
 #------------------------------------------
 from functions.additional_functions import *
+from sqlalchemy import func
 from decimal import Decimal
 from datetime import date
 from models import Bediener, Res_history
@@ -48,7 +49,8 @@ def hk_rmstat_history_webbl(input_report_data:[Input_report]):
         nonlocal input_report, ubuff, b1_list
         nonlocal b1_list_data
 
-        if input_report.usrID != "" and input_report.room != "":
+        if input_report.usrid != "" and input_report.room != "":
+            print("11111")
             # Rd 22/8/2025, input_report_data
             # bediener = get_cache (Bediener, {"userinit": [(eq, trim(entry(0, usrid, "-")))]})
             bediener = get_cache (Bediener, {"userinit": [(eq, trim(entry(0, input_report_data.usrid, "-")))]})
@@ -62,20 +64,22 @@ def hk_rmstat_history_webbl(input_report_data:[Input_report]):
             #          (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (Res_history.nr == bediener.nr) & (entry(1, Res_history.aenderung, " ") == input_report.room)).order_by(Res_history.datum, Res_history.zeit).all():
             
             for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
-                     (Res_history.datum >= input_report_data.from_date) & (Res_history.datum <= input_report_data.to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (Res_history.nr == bediener.nr) & (entry(1, Res_history.aenderung, " ") == input_report.room)).order_by(Res_history.datum, Res_history.zeit).all():
-                if res_history_obj_list.get(res_history._recid):
-                    continue
-                else:
-                    res_history_obj_list[res_history._recid] = True
+                     (Res_history.datum >= input_report_data.from_date) & (Res_history.datum <= input_report_data.to_date) & (Res_history.action == "HouseKeeping")  & (Res_history.nr == bediener.nr) & (entry(1, Res_history.aenderung, " ") == input_report.room)).order_by(Res_history.datum, Res_history.zeit).all():
+                
+                if num_entries(res_history.aenderung, "|") > 3:
 
+                    if res_history_obj_list.get(res_history._recid):
+                        continue
+                    else:
+                        res_history_obj_list[res_history._recid] = True
 
-                assign_it()
+                    assign_it()
 
             return
         # Rd 22/8/2025, input_report_data
         # elif usrID != "" and input_report.room == "":
         elif input_report_data.usrid != "" and input_report.room == "":
-
+            print("22222")
             # Rd 22/8/2025, input_report_data
             # bediener = get_cache (Bediener, {"userinit": [(eq, trim(entry(0, usrid, "-")))]})
             bediener = get_cache (Bediener, {"userinit": [(eq, trim(entry(0, input_report_data.usrid, "-")))]})
@@ -86,24 +90,25 @@ def hk_rmstat_history_webbl(input_report_data:[Input_report]):
 
             # Rd 22/8/2025, input_report_data
             # for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
-            #          (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (Res_history.nr == bediener.nr)).order_by(Res_history.datum, Res_history.zeit).all():
+            #          (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == "HouseKeeping") & (num_entries(Res_history.aenderung, "|") > 3) & (Res_history.nr == bediener.nr)).order_by(Res_history.datum, Res_history.zeit).all():
             for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
-                     (Res_history.datum >= input_report_data.from_date) & (Res_history.datum <= input_report_data.to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (Res_history.nr == bediener.nr)).order_by(Res_history.datum, Res_history.zeit).all():
+                     (Res_history.datum >= input_report_data.from_date) & (Res_history.datum <= input_report_data.to_date) & (Res_history.action == "HouseKeeping")  & (Res_history.nr == bediener.nr)).order_by(Res_history.datum, Res_history.zeit).all():
 
-                if res_history_obj_list.get(res_history._recid):
-                    continue
-                else:
-                    res_history_obj_list[res_history._recid] = True
+                if  num_entries(res_history.aenderung, "|") > 3:
+                    if res_history_obj_list.get(res_history._recid):
+                        continue
+                    else:
+                        res_history_obj_list[res_history._recid] = True
 
 
-                assign_it()
+                    assign_it()
 
             return
 
         # Rd 22/8/2025, input_report_data
         # elif usrID != "" and input_report.room == "":
         elif input_report_data.usrid and input_report.room != "":
-
+            print("33333")
             res_history_obj_list = {}
             res_history = Res_history()
             ubuff = Bediener()
@@ -113,18 +118,19 @@ def hk_rmstat_history_webbl(input_report_data:[Input_report]):
             #          (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (entry(1, Res_history.aenderung, " ") == input_report.room)).order_by(Res_history.datum, Res_history.zeit).all():
 
             for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
-                     (Res_history.datum >= input_report_data.from_date) & (Res_history.datum <= input_report_data.to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3) & (entry(1, Res_history.aenderung, " ") == input_report.room)).order_by(Res_history.datum, Res_history.zeit).all():
-                if res_history_obj_list.get(res_history._recid):
-                    continue
-                else:
-                    res_history_obj_list[res_history._recid] = True
+                     (Res_history.datum >= input_report_data.from_date) & (Res_history.datum <= input_report_data.to_date) & (Res_history.action == "HouseKeeping")  & (entry(1, Res_history.aenderung, " ") == input_report.room)).order_by(Res_history.datum, Res_history.zeit).all():
+                
+                if num_entries(res_history.aenderung, "|") > 3:
+                    if res_history_obj_list.get(res_history._recid):
+                        continue
+                    else:
+                        res_history_obj_list[res_history._recid] = True
 
-
-                assign_it()
+                    assign_it()
 
             return
         else:
-
+            print("Else.")
             res_history_obj_list = {}
             res_history = Res_history()
             ubuff = Bediener()
@@ -134,14 +140,14 @@ def hk_rmstat_history_webbl(input_report_data:[Input_report]):
             #          (Res_history.datum >= from_date) & (Res_history.datum <= to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3)).order_by(Res_history.datum, Res_history.zeit).all():
 
             for res_history.datum, res_history.aenderung, res_history.zeit, res_history._recid, ubuff.nr, ubuff._recid, ubuff.username in db_session.query(Res_history.datum, Res_history.aenderung, Res_history.zeit, Res_history._recid, Ubuff.nr, Ubuff._recid, Ubuff.username).join(Ubuff,(Ubuff.nr == Res_history.nr)).filter(
-                     (Res_history.datum >= input_report_data.from_date) & (Res_history.datum <= input_report_data.to_date) & (Res_history.action == ("HouseKeeping").lower()) & (num_entries(Res_history.aenderung, "|") > 3)).order_by(Res_history.datum, Res_history.zeit).all():
-                if res_history_obj_list.get(res_history._recid):
-                    continue
-                else:
-                    res_history_obj_list[res_history._recid] = True
-
-
-                assign_it()
+                     (Res_history.datum >= input_report_data.from_date) & (Res_history.datum <= input_report_data.to_date) & (Res_history.action == "HouseKeeping") ).order_by(Res_history.datum, Res_history.zeit).all():
+                
+                if num_entries(res_history.aenderung, "|") > 3:
+                    if res_history_obj_list.get(res_history._recid):
+                        continue
+                    else:
+                        res_history_obj_list[res_history._recid] = True
+                    assign_it()
 
             return
 
@@ -169,9 +175,12 @@ def hk_rmstat_history_webbl(input_report_data:[Input_report]):
         if ubuff:
             b1_list.username = ubuff.username
 
-    input_report = query(input_report_data, filters=(lambda input_report: input_report.from_date != None and input_report.to_date != None), first=True)
 
+    aa = input_report_data[0]
+    input_report = query(input_report_data, filters=(lambda input_report: input_report.from_date is not None and input_report.to_date is not None), first=True)
+    print("-->", aa)
     if input_report:
+        print("input report")
         pvilanguage = input_report.pvILanguages
         stat_list[0] = translateExtended ("Vacant Clean Checked", lvcarea, "")
         stat_list[1] = translateExtended ("Vacant Clean Unchecked", lvcarea, "")
