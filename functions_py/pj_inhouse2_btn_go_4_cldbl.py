@@ -428,6 +428,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                     pass
                     tot_rm = tot_rm - 1
      
+        # Summary s_list
         for cl_list in query(cl_list_data, sort_by=[("nation",False),("bezeich",False)]):
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.rmcat == cl_list.kurzbez), first=True)
