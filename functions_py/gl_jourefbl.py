@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 2/8/2025
 # GL by voucher kosong
+# " " -> "        "  , str -> output_list.str
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -93,7 +94,7 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:string):
                     output_list_data.append(output_list)
 
                     output_list.refno = gl_jhdrhis.refno
-                    str = " " + to_string(gl_jhdrhis.refno, "x(30)") + to_string(gl_jhdrhis.bezeich, "x(30)")
+                    output_list.str = "        " + to_string(gl_jhdrhis.refno, "x(30)") + to_string(gl_jhdrhis.bezeich, "x(30)")
 
                     gl_jourhis_obj_list = {}
                     gl_jourhis = Gl_jourhis()
@@ -113,7 +114,11 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:string):
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        str = to_string(gl_jhdrhis.datum) + to_string(c, "x(30)") + to_string(gl_acct.bezeich, "x(30)") + to_string(gl_jourhis.debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(gl_jourhis.credit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(gl_jourhis.userinit, "x(2)") + to_string(gl_jourhis.sysdate) + to_string(gl_jourhis.chginit, "x(2)") + to_string(chgdate, "x(8)") + to_string(get_bemerk (gl_jourhis.bemerk) , "x(100)") + to_string(gl_jourhis.jnr, ">>>,>>>,>>9")
+                        output_list.str = to_string(gl_jhdrhis.datum) + to_string(c, "x(30)") + to_string(gl_acct.bezeich, "x(30)") + to_string(gl_jourhis.debit, "->>>,>>>,>>>,>>>,>>9.99") + \
+                                to_string(gl_jourhis.credit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(gl_jourhis.userinit, "x(2)") + to_string(gl_jourhis.sysdate) + \
+                                to_string(gl_jourhis.chginit, "x(2)") + to_string(chgdate, "x(8)") + to_string(get_bemerk (gl_jourhis.bemerk) , "x(100)") + \
+                                to_string(gl_jourhis.jnr, ">>>,>>>,>>9")
+                        
                         t_debit =  to_decimal(t_debit) + to_decimal(gl_jourhis.debit)
                         t_credit =  to_decimal(t_credit) + to_decimal(gl_jourhis.credit)
                         tot_debit =  to_decimal(tot_debit) + to_decimal(gl_jourhis.debit)
@@ -122,8 +127,8 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:string):
                     output_list_data.append(output_list)
 
                     for i in range(1,54 + 1) :
-                        str = str + " "
-                    str = str + "T O T A L " + to_string(t_debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>>,>>>,>>>,>>>,>>9.99")
+                        output_list.str = output_list.str + " "
+                    output_list.str = output_list.str + "T O T A L     " + to_string(t_debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>>,>>>,>>>,>>>,>>9.99")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -140,7 +145,7 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:string):
                         output_list_data.append(output_list)
 
                         output_list.refno = gl_jouhdr.refno
-                        str = " " + to_string(gl_jouhdr.refno, "x(30)") + to_string(gl_jouhdr.bezeich, "x(30)")
+                        output_list.str = "        " + to_string(gl_jouhdr.refno, "x(30)") + to_string(gl_jouhdr.bezeich, "x(30)")
 
                         gl_journal_obj_list = {}
                         gl_journal = Gl_journal()
@@ -160,7 +165,7 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:string):
                             output_list = Output_list()
                             output_list_data.append(output_list)
 
-                            str = to_string(gl_jouhdr.datum) + to_string(c, "x(30)") + to_string(gl_acct.bezeich, "x(30)") + to_string(gl_journal.debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(gl_journal.credit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(gl_journal.userinit, "x(2)") + to_string(gl_journal.sysdate) + to_string(gl_journal.chginit, "x(2)") + to_string(chgdate, "x(8)") + to_string(get_bemerk (gl_journal.bemerk) , "x(100)") + to_string(gl_journal.jnr, ">>>,>>>,>>9")
+                            output_list.str = to_string(gl_jouhdr.datum) + to_string(c, "x(30)") + to_string(gl_acct.bezeich, "x(30)") + to_string(gl_journal.debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(gl_journal.credit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(gl_journal.userinit, "x(2)") + to_string(gl_journal.sysdate) + to_string(gl_journal.chginit, "x(2)") + to_string(chgdate, "x(8)") + to_string(get_bemerk (gl_journal.bemerk) , "x(100)") + to_string(gl_journal.jnr, ">>>,>>>,>>9")
                             t_debit =  to_decimal(t_debit) + to_decimal(gl_journal.debit)
                             t_credit =  to_decimal(t_credit) + to_decimal(gl_journal.credit)
                             tot_debit =  to_decimal(tot_debit) + to_decimal(gl_journal.debit)
@@ -169,8 +174,8 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:string):
                         output_list_data.append(output_list)
 
                         for i in range(1,54 + 1) :
-                            str = str + " "
-                        str = str + "T O T A L " + to_string(t_debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>>,>>>,>>>,>>>,>>9.99")
+                            output_list.str = output_list.str + " "
+                        output_list.str = output_list.str + "T O T A L     " + to_string(t_debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>>,>>>,>>>,>>>,>>9.99")
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
@@ -178,8 +183,8 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:string):
             output_list_data.append(output_list)
 
             for i in range(1,48 + 1) :
-                str = str + " "
-            str = str + "GRAND T O T A L " + to_string(tot_debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(tot_credit, "->>>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "GRAND T O T A L     " + to_string(tot_debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(tot_credit, "->>>,>>>,>>>,>>>,>>9.99")
         else:
 
             for gl_jouhdr in db_session.query(Gl_jouhdr).filter(
@@ -191,7 +196,7 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:string):
                 output_list_data.append(output_list)
 
                 output_list.refno = gl_jouhdr.refno
-                str = " " + to_string(gl_jouhdr.refno, "x(30)") + to_string(gl_jouhdr.bezeich, "x(30)")
+                output_list.str = "        " + to_string(gl_jouhdr.refno, "x(30)") + to_string(gl_jouhdr.bezeich, "x(30)")
 
                 gl_journal_obj_list = {}
                 gl_journal = Gl_journal()
@@ -211,7 +216,7 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:string):
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    str = to_string(gl_jouhdr.datum) + to_string(c, "x(30)") + to_string(gl_acct.bezeich, "x(30)") + to_string(gl_journal.debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(gl_journal.credit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(gl_journal.userinit, "x(2)") + to_string(gl_journal.sysdate) + to_string(gl_journal.chginit, "x(2)") + to_string(chgdate, "x(8)") + to_string(get_bemerk (gl_journal.bemerk) , "x(100)") + to_string(gl_journal.jnr, ">>>,>>>,>>9")
+                    output_list.str = to_string(gl_jouhdr.datum) + to_string(c, "x(30)") + to_string(gl_acct.bezeich, "x(30)") + to_string(gl_journal.debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(gl_journal.credit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(gl_journal.userinit, "x(2)") + to_string(gl_journal.sysdate) + to_string(gl_journal.chginit, "x(2)") + to_string(chgdate, "x(8)") + to_string(get_bemerk (gl_journal.bemerk) , "x(100)") + to_string(gl_journal.jnr, ">>>,>>>,>>9")
                     t_debit =  to_decimal(t_debit) + to_decimal(gl_journal.debit)
                     t_credit =  to_decimal(t_credit) + to_decimal(gl_journal.credit)
                     tot_debit =  to_decimal(t_debit) + to_decimal(gl_journal.debit)
@@ -220,8 +225,8 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:string):
                 output_list_data.append(output_list)
 
                 for i in range(1,54 + 1) :
-                    str = str + " "
-                str = str + "T O T A L " + to_string(t_debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>>,>>>,>>>,>>>,>>9.99")
+                    output_list.str = output_list.str + " "
+                output_list.str = output_list.str + "T O T A L " + to_string(t_debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>>,>>>,>>>,>>>,>>9.99")
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
@@ -229,8 +234,8 @@ def gl_jourefbl(sorttype:int, from_date:date, to_date:date, from_refno:string):
             output_list_data.append(output_list)
 
             for i in range(1,54 + 1) :
-                str = str + " "
-            str = str + "T O T A L " + to_string(tot_debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(tot_credit, "->>>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "T O T A L " + to_string(tot_debit, "->>>,>>>,>>>,>>>,>>9.99") + to_string(tot_credit, "->>>,>>>,>>>,>>>,>>9.99")
 
 
     def convert_fibu(konto:string):
