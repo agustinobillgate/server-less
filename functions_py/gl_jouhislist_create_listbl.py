@@ -213,7 +213,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
 
                 output_list.fibukonto = gl_jourhis.fibukonto
                 output_list.jnr = gl_jhdrhis.jnr
-                print(gl_jhdrhis.datum, gl_jhdrhis.refno)
+                # print(gl_jhdrhis.datum, gl_jhdrhis.refno)
                 output_list.str = to_string(gl_jhdrhis.datum) +\
                         to_string(gl_jhdrhis.refno, "x(15)") +\
                         to_string(gl_jhdrhis.bezeich, "x(40)") +\
@@ -349,7 +349,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
 
                 output_list.fibukonto = gl_jourhis.fibukonto
                 output_list.jnr = gl_jhdrhis.jnr
-                print(gl_jhdrhis.datum, gl_jhdrhis.refno)
+                # print(gl_jhdrhis.datum, gl_jhdrhis.refno)
                 output_list.str = to_string(gl_jhdrhis.datum) +\
                         to_string(gl_jhdrhis.refno, "x(15)") +\
                         to_string(gl_jhdrhis.bezeich, "x(40)") +\
