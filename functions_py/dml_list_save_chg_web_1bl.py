@@ -82,7 +82,7 @@ def dml_list_save_chg_web_1bl(c_list_data:[C_list], user_init:string, curr_dept:
             counter = to_int(substring(c_list.dml_nr, 10, 2))
         # Rd 31/7/2025
         # remark unix command
-        # get_output(dml_list_save_it_3bl(curr_dept, c_list.artnr, c_list.qty, selected_date, user_init, c_list.price, c_list.lief_nr, c_list.approved, c_list.remark, curr_select, dml_no, counter))
+        get_output(dml_list_save_it_3bl(curr_dept, c_list.artnr, c_list.qty, selected_date, user_init, c_list.price, c_list.lief_nr, c_list.approved, c_list.remark, curr_select, dml_no, counter))
 
         if c_list.approved:
 

@@ -78,4 +78,7 @@
   <prgs:resource consumes="application/json" name="_messageLoadCustom" path="/messageLoadCustom" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-get-messages-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-get-messages-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_telop1List" path="/telop1List" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-telop1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-telop1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

@@ -501,4 +501,13 @@
   <prgs:resource consumes="application/json" name="_foInvoiceReturnQty" path="/foInvoiceReturnQty" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fo-invoice-return-qty-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fo-invoice-return-qty-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkGCFPayment2" path="/checkGCFPayment2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-check-gcfpayment2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-check-gcfpayment2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_depositAdmin2" path="/depositAdmin2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-deposit-admin_2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-deposit-admin_2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitBillLeasingPrepare" path="/splitBillLeasingPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-split-bill-web_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-split-bill-web_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

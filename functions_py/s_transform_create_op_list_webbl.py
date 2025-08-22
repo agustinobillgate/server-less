@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 4/8/2025
+# gitlab: 961
+# Requery script di .p, konversi lagi.
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -77,20 +82,21 @@ def s_transform_create_op_list_webbl(op_list_data:[Op_list], qty:Decimal, price:
 
     create_op_list()
 
-    l_artikel_obj_list = {}
-    for l_artikel, sys_user in db_session.query(L_artikel, Sys_user).join(Sys_user,(Sys_user.userinit == op_list.userinit ORDER)).filter(
-             ((L_artikel.artnr.in_(list(set([op_list.artnr for op_list in op_list_data])))))).order_by(op_list.pos.desc()).all():
-        if l_artikel_obj_list.get(l_artikel._recid):
-            continue
-        else:
-            l_artikel_obj_list[l_artikel._recid] = True
+    # hasil requery
+    for op_list in query(op_list_data, sort_by=[("pos",True)]):
 
+        l_artikel = get_cache (L_artikel, {"artnr": [(eq, op_list.artnr)]})
 
+        sys_user = get_cache (Bediener, {"userinit": [(eq, op_list.userinit)]})
         t_op_list = T_op_list()
         t_op_list_data.append(t_op_list)
 
         buffer_copy(op_list, t_op_list)
-        t_op_list.bezeich = l_artikel.bezeich
-        t_op_list.username = sys_user.username
+
+        if l_artikel:
+            t_op_list.bezeich = l_artikel.bezeich
+
+        if sys_user:
+            t_op_list.username = sys_user.username
 
     return generate_output()

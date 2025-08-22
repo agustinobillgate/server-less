@@ -1,4 +1,4 @@
-# version = 1.0.0.43
+# version = 1.0.0.48
 # import logging
 # logging.basicConfig()
 # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -11,6 +11,13 @@ from sqlalchemy.sql.elements import BinaryExpression, Cast
 from sqlalchemy import not_, func, text, Function, and_
 from sqlalchemy.dialects.postgresql import CITEXT
 from operator import gt, ge, lt, le, ne, eq
+import pyotp
+import smtplib
+from email.message import EmailMessage
+from email.utils import formataddr
+from email.header import Header
+import mimetypes
+from typing import Any, Dict, List, Type
 
 # from models import Sourcetext, Desttext
 # from functions.additional_class import ExtendedDate
@@ -36,10 +43,8 @@ import uuid
 import operator
 
 # import decimal
-from decimal import Decimal, DivisionByZero
+from decimal import Decimal, DivisionByZero, ROUND_HALF_UP, InvalidOperation
 from typing import TypeVar, Generic, Tuple
-
-from contextvars import ContextVar
 
 from contextvars import ContextVar
 
@@ -156,11 +161,62 @@ os.environ['AWS_DEFAULT_REGION'] = 'ap-southeast-1'
 """
 # local_storage = threading.local()
 local_storage = AsyncLocal()
+session_storage = AsyncLocal()
 
 s3_bucket_name = 'elasticbeanstalk-ap-southeast-1-341938954922'
 lambda_flag = False
-
 # pd.options.display.min_rows = 100
+
+
+
+def stash_all_local_storage(session_name):
+    if not hasattr(session_storage, "session_list"):
+        session_storage.session_list = {}
+    session_storage.session_list[session_name] = local_storage._ctx.get().copy()
+
+def restore_all_local_storage(session_name):
+    local_storage._ctx.set(session_storage.session_list[session_name].copy())
+
+def run_program_session(hotel_schema: str, function_name: str, input_data: tuple) -> dict:
+    output_data = {}
+
+    stash_all_local_storage("original")
+    local_storage.clear()
+
+    if hotel_schema in session_storage.session_list:
+        restore_all_local_storage(hotel_schema)
+        print("restore " + hotel_schema)
+    else:
+        initialize_local_storage()
+
+        set_db_and_schema(hotel_schema)
+        if not local_storage.db_session:
+            restore_all_local_storage("original")
+            # TODO: error handling
+            return {}
+    
+    module_name = "functions." + function_name
+    if importlib.util.find_spec(module_name):
+        module = importlib.import_module(module_name)
+        if hasattr(module, function_name):
+            obj = getattr(module, function_name)
+            output_data = obj(*input_data)
+    else:
+        restore_all_local_storage("original")
+
+        raise ImportError(f"Function {function_name} not found in module {module_name}")
+
+    if local_storage.db_session:
+        try:
+            local_storage.db_session.commit()
+        except Exception:
+            local_storage.db_session.rollback()
+            raise
+
+    stash_all_local_storage(hotel_schema)
+    restore_all_local_storage("original")
+
+    return output_data
 
 def initialize_local_storage():
     local_storage.combo_flag = False    
@@ -208,6 +264,7 @@ def update_function_cache(function_name, input_data, output_data):
     local_storage.function_cache[function_name][str(input_data)] = output_data
 
 def prepare_cache(model_list):
+    # amazonq-ignore-next-line
     for model in model_list:
         if model not in local_storage.simplified_model_list.keys():
             # local_storage.data_cache[model] = {}
@@ -449,59 +506,137 @@ def get_cache(model, filters, field_names=[]):
     return db_result
 """
 
-def create_model(model_name: string, create_fields: Dict[string, Type], default_values=None):
+
+# def create_model(model_name: string, create_fields: Dict[string, Type], default_values=None):
+#     if default_values is None:
+#         default_values = {}
+
+#     fields = {}
+#     post_init_defaults = {}
+
+#     def post_init_method(self):        
+#         for name, value in post_init_defaults.items():
+#             setattr(self, name, value)
+
+#     for name, field_type in create_fields.items():
+#         set_default_value = True
+#         if name in default_values:
+#             set_default_value = False
+
+#         if type(field_type) == list:
+#             inner_type = field_type[0]
+            
+#             fields[name] = List[inner_type]
+
+#             if len(field_type) == 2:
+#                 size = field_type[1]
+#             else:
+#                 size = 0
+
+#             if set_default_value:
+#                 default_values[name] = lambda: []
+
+#                 # amazonq-ignore-next-line
+#                 if inner_type == int: post_init_defaults[name] = [0] * size
+#                 elif inner_type == float: post_init_defaults[name] = [0.0] * size
+#                 elif re.match(".*decimal.*",string(inner_type),re.IGNORECASE): post_init_defaults[name] = [Decimal("0")] * size
+#                 elif inner_type == bool: post_init_defaults[name] = [False] * size
+#                 elif inner_type == str: post_init_defaults[name] = [""] * size
+#                 else: post_init_defaults[name] = [None] * size
+#                 # print(1, post_init_defaults.get("food_amount"))
+
+#         else:
+#             fields[name] = field_type
+#             if set_default_value:
+
+#                 if field_type == int: default_values[name] = 0
+#                 elif field_type == float: default_values[name] = 0.0
+#                 elif re.match(".*decimal.*",string(field_type),re.IGNORECASE): default_values[name] = Decimal("0")
+#                 elif field_type == bool: default_values[name] = False
+#                 elif field_type == string: default_values[name] = ""
+#                 else: default_values[name] = None         
+#                 # print(2, post_init_defaults.get("food_amount"))
+#     return [], dataclass(type(model_name, (object,), {
+#         '__annotations__': fields,
+#         '__post_init__': post_init_method,
+#         **{k: field(default_factory=lambda v=v: v) for k, v in default_values.items()}  # set default values
+#     }))
+
+def _scalar_default_for(t: Type[Any]) -> Any:
+    if t is int:
+        return 0
+    if t is float:
+        return 0.0
+    if t is bool:
+        return False
+    if t is str:
+        return ""
+    if t is Decimal:
+        return Decimal("0")
+    # fallback
+    return None
+
+def create_model(model_name: str, create_fields: Dict[str, Any], default_values: Dict[str, Any] | None = None):
+    """
+    create_fields schema:
+      - scalar:  {"pax": int, "table_no": str}
+      - fixed-size list: {"food_amount": [str, 4]}
+      - variable-size list: {"tags": [str]}  # size defaults to 0 (empty)
+    """
     if default_values is None:
         default_values = {}
 
-    fields = {}
-    post_init_defaults = {}
-
-    def post_init_method(self):
-        for name, value in post_init_defaults.items():
-            setattr(self, name, value)
+    annotations: Dict[str, Any] = {}
+    dataclass_fields: Dict[str, Any] = {}
 
     for name, field_type in create_fields.items():
-        set_default_value = True
-        if name in default_values:
-            set_default_value = False
+        user_overrode = name in default_values
 
-        if type(field_type) == list:
+        # list type: [inner_type, optional_size]
+        if isinstance(field_type, list):
+            if not field_type:
+                raise ValueError(f"{name}: list spec must be like [inner_type, optional_size]")
             inner_type = field_type[0]
-            
-            fields[name] = List[inner_type]
+            size = field_type[1] if len(field_type) >= 2 else 0
 
-            if len(field_type) == 2:
-                size = field_type[1]
+            annotations[name] = List[inner_type]
+
+            if user_overrode:
+                # respect provided default/default_factory
+                val = default_values[name]
+                if callable(val):
+                    dataclass_fields[name] = field(default_factory=val)
+                else:
+                    dataclass_fields[name] = field(default_factory=lambda v=val: list(v))
             else:
-                size = 0
-
-            if set_default_value:
-                default_values[name] = lambda: []
-
-                if inner_type == int: post_init_defaults[name] = [0] * size
-                elif inner_type == float: post_init_defaults[name] = [0.0] * size
-                elif re.match(".*decimal.*",string(inner_type),re.IGNORECASE): post_init_defaults[name] = [Decimal("0")] * size
-                elif inner_type == bool: post_init_defaults[name] = [False] * size
-                elif inner_type == str: post_init_defaults[name] = [""] * size
-                else: post_init_defaults[name] = [None] * size
-
+                # create a fresh list per instance
+                fill = _scalar_default_for(inner_type)
+                if size > 0:
+                    # for immutable scalars (int/float/bool/str/Decimal/None), *size is fine
+                    dataclass_fields[name] = field(
+                        default_factory=lambda fill=fill, size=size: [fill for _ in range(size)]
+                    )
+                else:
+                    dataclass_fields[name] = field(default_factory=list)
         else:
-            fields[name] = field_type
-            if set_default_value:
+            # scalar
+            annotations[name] = field_type
+            if user_overrode:
+                val = default_values[name]
+                if callable(val):
+                    dataclass_fields[name] = field(default_factory=val)
+                else:
+                    dataclass_fields[name] = field(default_factory=lambda v=val: v)
+            else:
+                dataclass_fields[name] = field(default_factory=lambda t=field_type: _scalar_default_for(t))
 
-                if field_type == int: default_values[name] = 0
-                elif field_type == float: default_values[name] = 0.0
-                elif re.match(".*decimal.*",string(field_type),re.IGNORECASE): default_values[name] = Decimal("0")
-                elif field_type == bool: default_values[name] = False
-                elif field_type == string: default_values[name] = ""
-                else: default_values[name] = None         
-        
-    return [], dataclass(type(model_name, (object,), {
-        '__annotations__': fields,
-        '__post_init__': post_init_method,
-        **{k: field(default_factory=lambda v=v: v) for k, v in default_values.items()}  # set default values
-    }))
+    # build the dataclass dynamically
+    cls_dict = {
+        "__annotations__": annotations,
+        **dataclass_fields
+    }
 
+    return [], dataclass(type(model_name, (object,), cls_dict))
 
 # def create_model_like(model, additional_fields=None, default_values=None):
 def create_model_like(model, additional_fields=None, default_values=None):
@@ -618,10 +753,22 @@ def create_model_like(model, additional_fields=None, default_values=None):
         for name, default in post_init_defaults.items():
             setattr(self, name, default)
 
+    def make_field(v):
+        if callable(v):
+            # Already a factory function
+            return field(default_factory=v)
+        elif isinstance(v, (list, dict, set)):
+            # Mutable default — wrap in factory
+            return field(default_factory=lambda v=v: v.copy())
+        else:
+            # Immutable default — safe to assign directly
+            return field(default=v)
+        
     DataclassModel = dataclass(type(model.__name__ + string(random.randint(111111,999999)), (object,), {
         '__annotations__': fields_,
         '__post_init__': combined_post_init,
-        **{k: field(default=v) for k, v in default_values.items()}  # set default values
+        # **{k: field(default=v) for k, v in default_values.items()}  # set default values
+        **{k: make_field(v) for k, v in default_values.items()}
     }))
     return [], DataclassModel
 
@@ -937,7 +1084,7 @@ def camelCase(input_str):
 
 def to_decimal(input_value):
     if type(input_value) == string:
-        input_value = input_value.replace(",","").strip(" ")
+        input_value = input_value.replace(",","").replace(" ","")
 
     if input_value == "":
         return 0
@@ -962,6 +1109,135 @@ def to_int(input_str):
         int_value = 0
 
     return int_value
+
+def num_to_string(value, fmt=""):
+    fmt = (fmt or "").strip().strip("-")
+    if fmt == "":
+        return "" if value is None else str(value)
+
+    # --- Pure alignment with '>' and optional leading '-' (sign slot) ---
+    if set(fmt) <= {">", "-"} and "9" not in fmt and "." not in fmt and "," not in fmt:
+        width = len(fmt)
+        s = str(value)
+        if fmt.startswith("-"):
+            sign = "-" if (isinstance(value, (int, float, Decimal)) and Decimal(str(value)) < 0) or (isinstance(value, str) and value.startswith("-")) else " "
+            magnitude = s[1:] if str(s).startswith("-") else s
+            rest = width - 1
+            return sign + magnitude.rjust(rest)
+        else:
+            return str(value).rjust(width)
+
+    # --- Determine if numeric pattern ---
+    is_numeric_pattern = any(ch in fmt for ch in "9>.,-")
+    if not is_numeric_pattern:
+        return str(value).rjust(len(fmt))
+
+    # Split integer/decimal patterns
+    if "." in fmt:
+        int_pat, frac_pat = fmt.split(".", 1)
+    else:
+        int_pat, frac_pat = fmt, ""
+
+    # Sign slot?
+    sign_slot = int_pat.startswith("-")
+    if sign_slot:
+        int_pat_body = int_pat[1:]
+    else:
+        int_pat_body = int_pat
+
+    # Try to parse numeric
+    try:
+        dec = Decimal(str(value))
+    except (InvalidOperation, ValueError):
+        total_width = len(fmt.replace(",", ""))
+        return str(value).rjust(total_width)
+
+    negative = dec < 0
+    dec = -dec if negative else dec
+
+    # Decimal places requested by pattern
+    frac_places = sum(1 for ch in frac_pat if ch in ("9", ">"))
+    q = Decimal(1).scaleb(-frac_places)
+    if frac_places > 0:
+        dec = dec.quantize(q, rounding=ROUND_HALF_UP)
+    else:
+        dec = dec.quantize(Decimal(1), rounding=ROUND_HALF_UP)
+
+    # Extract integer and fraction digits
+    int_digits = f"{int(dec):d}"
+    frac_digits = ""
+    if frac_places > 0:
+        frac_val = (dec - int(dec)).scaleb(frac_places)
+        frac_val = abs(frac_val)
+        frac_digits = f"{int(frac_val):0{frac_places}d}"
+
+    # Fill integer side from right to left
+    pat_chars = list(int_pat_body)
+    out_int_chars = []
+    src = list(int_digits)
+    src_i = len(src) - 1
+
+    for i in range(len(pat_chars) - 1, -1, -1):
+        ch = pat_chars[i]
+        if ch == ",":
+            # Suppress comma if no digits will be to the left
+            if src_i >= 0:
+                out_int_chars.append(",")
+            else:
+                out_int_chars.append(" ")
+            continue
+
+        if src_i >= 0:
+            d = src[src_i]
+            src_i -= 1
+            out_int_chars.append(d)
+        else:
+            if ch == "9":
+                out_int_chars.append("0")
+            elif ch == ">":
+                out_int_chars.append(" ")
+            else:
+                out_int_chars.append(ch)
+
+    out_int = "".join(reversed(out_int_chars))
+
+    # Overflow digits (if any)
+    if src_i >= 0:
+        overflow = "".join(src[:src_i + 1])
+        out_int = overflow + out_int
+
+    # Fractional part
+    out_frac = "." + frac_digits if frac_places > 0 else ""
+
+    # Sign handling
+    if sign_slot:
+        sign_char = "-" if negative else " "
+        out = sign_char + out_int + out_frac
+    else:
+        # implicit sign placement for negatives
+        out = out_int + out_frac
+        if negative:
+            # place '-' into the leftmost space just left of the first digit
+            first_digit_idx = None
+            for i, c in enumerate(out_int):
+                if c.isdigit():
+                    first_digit_idx = i
+                    break
+            if first_digit_idx is None:
+                out = "-" + out  # no digits? just prefix
+            else:
+                place = None
+                for i in range(first_digit_idx - 1, -1, -1):
+                    if out_int[i] == " ":
+                        place = i
+                        break
+                if place is not None:
+                    out_int = out_int[:place] + "-" + out_int[place + 1:]
+                    out = out_int + out_frac
+                else:
+                    out = "-" + out  # overflow if no room
+
+    return out
 
 
 def to_string(input_value, format_spec=""):
@@ -991,28 +1267,30 @@ def to_string(input_value, format_spec=""):
         # String formatting: x(15) in ABL is like {:15} in Python
         width = int(clean_format_spec[2:-1])
         formatted = f"{input_value:<{width}}"
-    elif (any(char.isdigit() for char in format_spec)) and ('.' in clean_format_spec or ',' in clean_format_spec or '>' in clean_format_spec or clean_format_spec[0] == "-" ):
-        decimal_places = ""
-        num_decimal = 0
-        total_width = len(clean_format_spec.split('.')[0])
+    elif (any(char.isdigit() for char in format_spec)):
+        return num_to_string(input_value, clean_format_spec)
+    # elif (any(char.isdigit() for char in format_spec)) and ('.' in clean_format_spec or ',' in clean_format_spec or '>' in clean_format_spec or clean_format_spec[0] == "-" ):
+    #     decimal_places = ""
+    #     num_decimal = 0
+    #     total_width = len(clean_format_spec.split('.')[0])
 
-        if '.' in clean_format_spec:
-            # Numeric formatting with potential right alignment
-            decimal_places = clean_format_spec.split('.')[-1]
-            num_decimal = len(decimal_places)
+    #     if '.' in clean_format_spec:
+    #         # Numeric formatting with potential right alignment
+    #         decimal_places = clean_format_spec.split('.')[-1]
+    #         num_decimal = len(decimal_places)
 
-        input_value = to_decimal(input_value)
+    #     input_value = to_decimal(input_value)
 
-        if ',' in format_spec:
-            formatted = f"{input_value:>{total_width},.{num_decimal}f}"
-        else:
-            formatted = f"{input_value:>{total_width}.{num_decimal}f}"
+    #     if ',' in format_spec:
+    #         formatted = f"{input_value:>{total_width},.{num_decimal}f}"
+    #     else:
+    #         formatted = f"{input_value:>{total_width}.{num_decimal}f}"
         
-        if ">" in format_spec:
-            formatted = formatted.strip(" ")
+    #     if ">" in format_spec:
+    #         formatted = formatted.strip(" ")
 
-        if format_spec[0] == "-" and formatted[0] != "-":
-            formatted = " " + formatted
+    #     if format_spec[0] == "-" and formatted[0] != "-":
+    #         formatted = " " + formatted
         
     elif type(input_value) == bool:
         if input_value:
@@ -1066,13 +1344,14 @@ def get_delimited_data(input_str,delimiter,key,has_value):
 def update_key_delimited_data(input_str,delimiter,key,value=""):
     foundFlag = False
 
-    list = input_str.split(delimiter)
+    data_list = input_str.split(delimiter)
     output = ""
-    for data in list:
+    for data in data_list:
         if data.startswith(key) and not foundFlag:
             output += key + value + ";"
             foundFlag = True
         else:
+            # amazonq-ignore-next-line
             output += data + ";"
     
     if not foundFlag:
@@ -1202,20 +1481,23 @@ def date_mdy(*args):
     month = 0
     year = 0
 
-    # input string dd/mm/yyyyy
     if len(args) == 1 and isinstance(args[0], string):
         input_str = args[0]        
-
-
         if input_str.strip(" ") == "":
             return None
 
-        date_str = input_str.split("/")
-        
-        day = to_int(date_str[0])
-        month = to_int(date_str[1])
-        year = to_int(date_str[2])
-
+        # input string dd/mm/yyyyy
+        if "/" in input_str:
+            date_str = input_str.split("/")
+            day = to_int(date_str[0])
+            month = to_int(date_str[1])
+            year = to_int(date_str[2])
+        # input string yyyy-mm-dd
+        elif "-" in input_str:
+            date_str = input_str.split("-")
+            year = to_int(date_str[0])
+            month = to_int(date_str[1])
+            day = to_int(date_str[2])
     #input integer m,d,y
     elif len(args) == 3 and isinstance(args[0], int) and isinstance(args[1], int) and isinstance(args[0], int):
         month = args[0]
@@ -1266,12 +1548,21 @@ def get_current_date():
     else:
         return None
 
+# def get_current_time():
+#     if(hasattr(local_storage,"timezone")):
+#         return datetime.now(pytz.timezone(local_storage.timezone)).time()
+#     else:
+#         return None
+
 def get_current_time():
-    if(hasattr(local_storage,"timezone")):
-        return datetime.now(pytz.timezone(local_storage.timezone)).time()
-    else:
-        return None
-    
+    try:
+        if hasattr(local_storage,"timezone") and local_storage.timezone:
+            return datetime.now(pytz.timezone(local_storage.timezone)).time()
+        else:
+            return datetime.now().time()
+    except pytz.exceptions.UnknownTimeZoneError:
+        return None  
+
 def get_current_datetime():
     if(hasattr(local_storage,"timezone")):
         return datetime.now(pytz.timezone(local_storage.timezone))
@@ -1431,6 +1722,7 @@ def get_db_url(hotelCode):
 
     return "postgresql://" + username + ":" + enc_pass + "@" + ip + ":" + str(port) + "/" + db_name
     # return "postgresql://postgres:shadow2010@localhost:5432/qctest"
+
 
 
 def set_db_and_schema(hotelCode):
@@ -1716,6 +2008,88 @@ def chr_unicode(input_char):
         output_char = ""
 
     return output_char
+
+def check_totp(secret_key):
+    otp_code = ""
+    try:
+        totp = pyotp.TOTP(secret_key)
+        otp_code = totp.now()
+    except Exception as e:
+        otp_code = ""
+    return otp_code
+
+def send_email_with_attachment(
+    smtp_server: str,
+    smtp_port: int,
+    sender_alias: str,
+    sender_email: str,
+    sender_password: str,
+    receiver_emails: list,
+    subject: str,
+    html_content: str = "",
+    plain_text: str = "",
+    attachments: list = None,
+    attachments_base64: list = None):
+
+    msg = EmailMessage()
+    msg['From'] = formataddr((str(Header(sender_alias, 'utf-8')), sender_email))
+    msg['To'] = ', '.join(receiver_emails)
+    msg['Subject'] = subject
+
+    # Add both plain text and HTML versions
+    msg.set_content(plain_text)
+    msg.add_alternative(html_content, subtype='html')
+
+    # Add file path attachments
+    if attachments:
+        for file_path in attachments:
+            try:
+                mime_type, _ = mimetypes.guess_type(file_path)
+                mime_type, mime_subtype = mime_type.split('/')
+                with open(file_path, 'rb') as f:
+                    msg.add_attachment(
+                        f.read(),
+                        maintype=mime_type,
+                        subtype=mime_subtype,
+                        filename=file_path.split('/')[-1]
+                    )
+            except Exception as e:
+                print(f"[ERROR] Failed to attach {file_path}: {e}")
+
+    # Add base64 attachments
+    if attachments_base64:
+        for item in attachments_base64:
+            try:
+                file_data = base64.b64decode(item['base64_data'])
+                mime_type, _ = mimetypes.guess_type(item['filename'])
+                if mime_type is None:
+                    mime_type = 'application/octet-stream'  # default fallback
+                mime_main, mime_sub = mime_type.split('/')               
+                msg.add_attachment(
+                    file_data,
+                    maintype=mime_main,
+                    subtype=mime_sub,
+                    filename=item['filename']
+                )
+            except Exception as e:
+                print(f"[ERROR] Failed to attach base64 data for {item.get('filename', 'Unknown')}: {e}")
+
+    use_ssl = True
+
+    if smtp_port == 587:
+        use_ssl = False
+
+    if use_ssl:
+        with smtplib.SMTP_SSL(smtp_server, smtp_port) as smtp:
+            smtp.login(sender_email, sender_password)
+            smtp.send_message(msg)
+    else:
+        with smtplib.SMTP(smtp_server, smtp_port) as smtp:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.login(sender_email, sender_password)
+            smtp.send_message(msg)
+
 
 #TODO
 def translateExtended(ipCOriText, ipCContext, ipCDelimiter):

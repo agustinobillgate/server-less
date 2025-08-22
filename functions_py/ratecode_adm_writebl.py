@@ -3,8 +3,9 @@
 # Rd 31/7/2025
 # gitlab: 512
 # requery, handle recid none
+# num_entries
 #-----------------------------------------
-from additional_functions import *
+from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.calc_servvat import calc_servvat
@@ -171,6 +172,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
                     buffer_copy(ratecode, rbuff,except_fields=["ratecode.code","ratecode.argtnr"])
                     rbuff.code = child_list.child_code
                     rbuff.argtnr = argtno
+                    db_session.commit()
 
                     if child_list.in_percent:
                         rbuff.zipreis =  to_decimal(rbuff.zipreis) * to_decimal((1) + to_decimal(child_list.adjust_value) * to_decimal(0.01))
@@ -188,6 +190,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
             while None != prtable:
                 prbuff = Prtable()
                 db_session.add(prbuff)
+                db_session.commit()
 
                 buffer_copy(prtable, prbuff,except_fields=["prcode"])
                 prbuff.prcode = child_list.child_code
@@ -223,7 +226,6 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
         for curr_1 in range(1,num_entries(p_list.rmcat_str, ",")  + 1) :
             mesval = trim(entry(curr_1 - 1, p_list.rmcat_str, ","))
-
             if mesval != "":
 
                 zimkateg = get_cache (Zimkateg, {"kurzbez": [(eq, mesval)]})
@@ -262,14 +264,19 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
         nonlocal tb3, tb3buff, p_list, t_ratecode, q_list, early_discount, kickback_discount, stay_pay, child_list, child_ratecode, product_list, rbuff, q_curr
         nonlocal tb3_data, tb3buff_data, t_ratecode_data, q_list_data, child_list_data, child_ratecode_data, product_list_data
 
+        # Rd 14/8/2025
+        # for queasy in db_session.query(Queasy).filter(
+        #          (Queasy.key == 2) & not_ (Queasy.logi2) & 
+        #          (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode).lower())).order_by(Queasy._recid).all():
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 2) & not_ (Queasy.logi2) & (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode).lower())).order_by(Queasy._recid).all():
-            child_list = Child_list()
-            child_list_data.append(child_list)
+            (Queasy.key == 2) & not_ (Queasy.logi2)).order_by(Queasy._recid).all():
+            if (num_entries(queasy.char3, ";") > 2) & (entry(1, queasy.char3, ";") == (prcode).lower()):
+                child_list = Child_list()
+                child_list_data.append(child_list)
 
-            child_list.child_code = queasy.char1
-            child_list.in_percent = substring(entry(2, queasy.char3, ";") , 0, 1) == "%"
-            child_list.adjust_value = to_decimal(substring(entry(2, queasy.char3, ";") , 1)) / 100
+                child_list.child_code = queasy.char1
+                child_list.in_percent = substring(entry(2, queasy.char3, ";") , 0, 1) == "%"
+                child_list.adjust_value = to_decimal(substring(entry(2, queasy.char3, ";") , 1)) / 100
 
 
     def create_records():
@@ -285,7 +292,6 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
         for curr_1 in range(1,num_entries(p_list.rmcat_str, ",")  + 1) :
             mesval = trim(entry(curr_1 - 1, p_list.rmcat_str, ","))
-
             if mesval != "":
 
                 zimkateg = get_cache (Zimkateg, {"kurzbez": [(eq, mesval)]})
@@ -321,6 +327,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
         ratecode = Ratecode()
         db_session.add(ratecode)
+        db_session.commit()
 
         buffer_copy(p_list, ratecode,except_fields=["p_list.argtnr","p_list.zikatnr"])
         ratecode.marknr = markno
@@ -447,6 +454,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
         for child_ratecode in query(child_ratecode_data):
             ratecode = Ratecode()
             db_session.add(ratecode)
+            db_session.commit()
 
             buffer_copy(child_ratecode, ratecode)
             child_ratecode_data.remove(child_ratecode)
@@ -468,7 +476,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
         rbuff = None
         Rbuff =  create_buffer("Rbuff",Ratecode)
 
-        for tb3buff in query(tb3buff_data):
+        # for tb3buff in query(tb3buff_data):
 
             # for ratecode in db_session.query(Ratecode).filter(
             #          (Ratecode.marknr == markno) & (Ratecode.code == (prcode).lower()) & (Ratecode.argtnr == argtno) & 
@@ -479,6 +487,8 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
             
             # Rd 31/7/2025
             # requery _recid null
+
+        for tb3buff in tb3buff_data:
             recid = tb3buff.s_recid
             if not recid or str(recid).strip() == '':
                 recid = None
@@ -511,6 +521,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
                     else:
                         rbuff = Ratecode()
                         db_session.add(rbuff)
+                        db_session.commit()
 
                         buffer_copy(ratecode, rbuff,except_fields=["startperiode"])
                         ratecode.endperiode = tb3buff.startperiode - timedelta(days=1)
@@ -692,6 +703,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
                                                         queasy.number3 = to_int(entry(loopj - 1, p_list.child_str, ","))
                                                         queasy.logi2 = True
                                                         queasy.char2 = p_list.code
+                                                        db_session.commit()
 
                                                         arrangement = get_cache (Arrangement, {"argtnr": [(eq, p_list.argtnr)]})
 
@@ -743,6 +755,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
                                                     queasy.number2 = to_int(entry(loopi - 1, p_list.adult_str, ","))
                                                     queasy.logi2 = True
                                                     queasy.char2 = p_list.code
+                                                    db_session.commit()
 
                                                     arrangement = get_cache (Arrangement, {"argtnr": [(eq, p_list.argtnr)]})
 
@@ -821,6 +834,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
                                                 queasy.number2 = to_int(entry(loopi - 1, p_list.adult_str, ","))
                                                 queasy.number3 = to_int(entry(loopj - 1, p_list.child_str, ","))
                                                 queasy.logi2 = True
+                                                db_session.commit()
 
                                                 arrangement = get_cache (Arrangement, {"argtnr": [(eq, p_list.argtnr)]})
 
@@ -871,6 +885,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
                                             queasy.number1 = roomnr
                                             queasy.number2 = to_int(entry(loopi - 1, p_list.adult_str, ","))
                                             queasy.logi2 = True
+                                            db_session.commit()
 
                                             arrangement = get_cache (Arrangement, {"argtnr": [(eq, p_list.argtnr)]})
 
@@ -918,10 +933,10 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
         check_overlapping()
 
     if error_flag:
-
         return generate_output()
+    
     create_records()
-
+    
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
     if bediener:
@@ -932,6 +947,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
         res_history.datum = get_current_date()
         res_history.zeit = get_current_time_in_seconds()
         res_history.action = "RateCode"
+        db_session.commit()
 
         zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, p_list.zikatnr)]})
 

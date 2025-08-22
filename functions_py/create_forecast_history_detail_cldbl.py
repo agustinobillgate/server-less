@@ -182,7 +182,9 @@ def create_forecast_history_detail_cldbl(fr_date:date, to_date:date, excl_comp:b
                     t_list.zipreis =  to_decimal(t_list.zipreis) + to_decimal(genstat.zipreis)
                     t_list.flag_history = True
                     t_list.segmentcode = genstat.segmentcode
-                    t_list.argtcode = genstat.Argt
+                    # Rd 19/8/2025
+                    # t_list.argtcode = genstat.Argt
+                    t_list.argtcode = genstat.argt
 
 
     def create_umsatz_excl_compliment():

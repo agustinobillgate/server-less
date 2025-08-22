@@ -1,0 +1,354 @@
+#using conversion tools version: 1.0.0.117
+#-----------------------------------------
+# Rd 15/8/2025
+# erwach -> erwachs
+#-----------------------------------------
+from functions.additional_functions import *
+from decimal import Decimal
+from datetime import date
+from functions.htpdate import htpdate
+from models import Res_line, Zimmer, Reservation, Segment, Outorder
+
+def hk_countsheetbl(pvilanguage:int):
+
+    prepare_cache ([Res_line, Zimmer, Reservation, Segment])
+
+    ci_date = None
+    out_list_data = []
+    netage:int = 0
+    nseq:int = 0
+    nsum:int = 0
+    i:int = 0
+    loop:int = 0
+    nstat:int = 0
+    nstr:string = ""
+    stat:List[string] = ["VC", "VU", "VD", "ED", "OD", "OC", "OO", "OM", "CO", "HU", "EA", "DnD"]
+    tot_stat:List[int] = create_empty_list(12,0)
+    lvcarea:string = "hk-countsheet"
+    res_line = zimmer = reservation = segment = outorder = None
+
+    out_list = reslin1 = out_list_buff = None
+
+    out_list_data, Out_list = create_model("Out_list", {"seq":int, "etage":int, "stat":int, "i":int, "flag":int, "anz":int, "name":string, "str":string, "sum":int, "str1":string, "room":string, "pax":string})
+
+    Reslin1 = create_buffer("Reslin1",Res_line)
+    Out_list_buff = Out_list
+    out_list_buff_data = out_list_data
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal ci_date, out_list_data, netage, nseq, nsum, i, loop, nstat, nstr, stat, tot_stat, lvcarea, res_line, zimmer, reservation, segment, outorder
+        nonlocal pvilanguage
+        nonlocal reslin1, out_list_buff
+
+
+        nonlocal out_list, reslin1, out_list_buff
+        nonlocal out_list_data
+
+        return {"ci_date": ci_date, "out-list": out_list_data}
+
+    def create_list():
+
+        nonlocal ci_date, out_list_data, netage, nseq, nsum, i, loop, nstat, nstr, stat, tot_stat, lvcarea, res_line, zimmer, reservation, segment, outorder
+        nonlocal pvilanguage
+        nonlocal reslin1, out_list_buff
+
+
+        nonlocal out_list, reslin1, out_list_buff
+        nonlocal out_list_data
+
+        reihe:int = 0
+        n:int = 0
+        from_etage:int = 9999
+        anz_etage:int = 0
+        sum:int = 0
+        pax:int = 0
+        hu_flag:bool = False
+        om_flag:bool = False
+
+        for zimmer in db_session.query(Zimmer).order_by(Zimmer._recid).all():
+
+            if zimmer.etage > anz_etage:
+                anz_etage = zimmer.etage
+
+            if zimmer.etage < from_etage:
+                from_etage = zimmer.etage
+        for n in range(from_etage,anz_etage + 1) :
+
+            zimmer = get_cache (Zimmer, {"etage": [(eq, n)]})
+
+            if zimmer:
+                out_list = Out_list()
+                out_list_data.append(out_list)
+
+                reihe = reihe + 1
+                out_list.seq = reihe
+                out_list.str = ""
+                out_list.stat = 9999
+
+
+                out_list = Out_list()
+                out_list_data.append(out_list)
+
+                reihe = reihe + 1
+                out_list.seq = reihe
+                out_list.str = translateExtended ("FLOOR", lvcarea, "") + " " + to_string(n)
+                out_list.str1 = "FLOOR"
+                out_list.stat = 9999
+
+                for zimmer in db_session.query(Zimmer).filter(
+                         (Zimmer.etage == n)).order_by(Zimmer.etage, Zimmer.zistatus, (Zimmer.zinr)).all():
+                    hu_flag = False
+                    om_flag = False
+
+                    if zimmer.zistatus >= 3 and zimmer.zistatus <= 5:
+
+                        res_line = get_cache (Res_line, {"active_flag": [(eq, 1)],"zinr": [(eq, zimmer.zinr)],"zipreis": [(eq, 0)],"resstatus": [(eq, 6)]})
+
+                        if res_line:
+                            hu_flag = True
+
+                            reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+
+                            segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+
+                            if segment.betriebsnr != 2:
+
+                                out_list = query(out_list_data, filters=(lambda out_list: out_list.etage == zimmer.etage and out_list.stat == 8 and out_list.flag == 0), first=True)
+
+                                if not out_list:
+                                    out_list = Out_list()
+                                    out_list_data.append(out_list)
+
+                                    reihe = reihe + 1
+                                    out_list.seq = reihe
+                                    out_list.etage = zimmer.etage
+                                    out_list.stat = 8
+                                    out_list.name = stat[8]
+                                    out_list.flag = 0
+
+
+                                tot_stat[8] = tot_stat[8] + 1
+                                out_list.i = out_list.i + 1
+                                out_list.anz = out_list.anz + 1
+                                out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(res_line.gratis, ">> ")
+                                out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
+                                out_list.pax = out_list.pax + to_string(res_line.gratis, ">> ")
+                            else:
+
+                                out_list = query(out_list_data, filters=(lambda out_list: out_list.etage == zimmer.etage and out_list.stat == 9 and out_list.flag == 0), first=True)
+
+                                if not out_list:
+                                    out_list = Out_list()
+                                    out_list_data.append(out_list)
+
+                                    reihe = reihe + 1
+                                    out_list.seq = reihe
+                                    out_list.etage = zimmer.etage
+                                    out_list.stat = 9
+                                    out_list.name = stat[9]
+                                    out_list.flag = 0
+
+
+                                tot_stat[9] = tot_stat[9] + 1
+                                out_list.i = out_list.i + 1
+                                out_list.anz = out_list.anz + 1
+                                out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(res_line.gratis, ">> ")
+                                out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
+                                out_list.pax = out_list.pax + to_string(res_line.gratis, ">> ")
+
+                    elif zimmer.zistatus == 8:
+                        hu_flag = False
+                        om_flag = False
+
+                        res_line = get_cache (Res_line, {"active_flag": [(eq, 1)],"zinr": [(eq, zimmer.zinr)]})
+
+                        if res_line:
+                            hu_flag = True
+
+                            out_list = query(out_list_data, filters=(lambda out_list: out_list.etage == zimmer.etage and out_list.stat == 12 and out_list.flag == 0), first=True)
+
+                            if not out_list:
+                                out_list = Out_list()
+                                out_list_data.append(out_list)
+
+                                reihe = reihe + 1
+                                out_list.seq = reihe
+                                out_list.etage = zimmer.etage
+                                out_list.stat = 12
+                                out_list.name = stat[11]
+
+                            elif out_list.i == 10:
+                                out_list.flag = 1
+                                sum = out_list.anz
+                                out_list = Out_list()
+                                out_list_data.append(out_list)
+
+                                reihe = reihe + 1
+                                out_list.seq = reihe
+                                out_list.etage = zimmer.etage
+                                out_list.stat = 12
+                                out_list.anz = sum
+
+
+                            tot_stat[11] = tot_stat[11] + 1
+                            out_list.i = out_list.i + 1
+                            out_list.anz = out_list.anz + 1
+                            out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(res_line.erwach, ">> ")
+                            out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
+                            # Rd 15/8/2025
+                            # out_list.pax = out_list.pax + to_string(res_line.erwach, ">>> ")
+                            out_list.pax = out_list.pax + to_string(res_line.erwachs, ">>> ")
+
+
+                    elif zimmer.zistatus >= 0 and zimmer.zistatus <= 2:
+
+                        outorder = get_cache (Outorder, {"betriebsnr": [(gt, 0)],"gespstart": [(le, ci_date)],"gespende": [(ge, ci_date)],"zinr": [(eq, zimmer.zinr)]})
+
+                        if outorder:
+                            om_flag = True
+
+                            out_list = query(out_list_data, filters=(lambda out_list: out_list.etage == zimmer.etage and out_list.stat == 7 and out_list.flag == 0), first=True)
+
+                            if not out_list:
+                                out_list = Out_list()
+                                out_list_data.append(out_list)
+
+                                reihe = reihe + 1
+                                out_list.flag = 0
+                                out_list.seq = reihe
+                                out_list.etage = zimmer.etage
+                                out_list.stat = 7
+                                out_list.name = stat[7]
+
+
+                            tot_stat[7] = tot_stat[7] + 1
+                            out_list.i = out_list.i + 1
+                            out_list.anz = out_list.anz + 1
+                            out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + " "
+                            out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
+
+                    if not hu_flag and not om_flag:
+
+                        out_list = query(out_list_data, filters=(lambda out_list: out_list.etage == zimmer.etage and out_list.stat == zimmer.zistatus and out_list.flag == 0), first=True)
+
+                        if not out_list:
+                            out_list = Out_list()
+                            out_list_data.append(out_list)
+
+                            reihe = reihe + 1
+                            out_list.flag = 0
+                            out_list.seq = reihe
+                            out_list.etage = zimmer.etage
+                            out_list.stat = zimmer.zistatus
+                            out_list.name = stat[zimmer.zistatus + 1 - 1]
+
+
+                        tot_stat[zimmer.zistatus + 1 - 1] = tot_stat[zimmer.zistatus + 1 - 1] + 1
+                        out_list.i = out_list.i + 1
+                        out_list.anz = out_list.anz + 1
+
+                        if zimmer.zistatus >= 3 and zimmer.zistatus <= 5:
+                            pax = 0
+
+                            for res_line in db_session.query(Res_line).filter(
+                                     (Res_line.active_flag == 1) & (Res_line.zinr == zimmer.zinr) & (Res_line.resstatus != 12)).order_by(Res_line._recid).all():
+                                pax = pax + res_line.erwachs
+                            out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(pax, ">> ")
+                            out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
+                            out_list.pax = out_list.pax + to_string(pax, ">>> ")
+                        else:
+                            out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + " "
+                            out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
+
+                    reslin1 = db_session.query(Reslin1).filter(
+                             (Reslin1.active_flag == 0) & ((Reslin1.resstatus == 1) | (Reslin1.resstatus == 2) | (Reslin1.resstatus == 3) | (Reslin1.resstatus == 4)) & (Reslin1.ankunft == ci_date) & (Reslin1.zinr == zimmer.zinr)).first()
+
+                    if reslin1:
+                        pax = 0
+
+                        out_list = query(out_list_data, filters=(lambda out_list: out_list.etage == zimmer.etage and out_list.flag == 0 and out_list.name.lower()  == ("EA").lower()), first=True)
+
+                        if not out_list:
+                            out_list = Out_list()
+                            out_list_data.append(out_list)
+
+                            reihe = reihe + 1
+                            out_list.seq = reihe
+                            out_list.flag = 0
+                            out_list.etage = zimmer.etage
+                            out_list.stat = 11
+                            out_list.name = "EA"
+
+
+                        tot_stat[10] = tot_stat[10] + 1
+                        out_list.i = out_list.i + 1
+                        out_list.anz = out_list.anz + 1
+
+                        for reslin1 in db_session.query(Reslin1).filter(
+                                 (Reslin1.active_flag == 0) & ((Reslin1.resstatus == 1) | (Reslin1.resstatus == 2) | (Reslin1.resstatus == 3) | (Reslin1.resstatus == 4) | (Reslin1.resstatus == 13)) & (Reslin1.zinr == zimmer.zinr) & (Reslin1.ankunft == ci_date)).order_by(Reslin1._recid).all():
+                            pax = pax + reslin1.erwachs
+                        out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(pax, ">> ")
+                        out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
+                        out_list.pax = out_list.pax + to_string(pax, ">>> ")
+
+        for out_list in query(out_list_data, filters=(lambda out_list: out_list.flag == 0)):
+            out_list.sum = out_list.anz
+
+        for out_list in query(out_list_data, sort_by=[("seq",False)]):
+
+            if length(out_list.str) > 120:
+                netage = out_list.etage
+                nseq = out_list.seq
+                nsum = out_list.anz
+                nstr = out_list.str
+                out_list.str = substring(nstr, 0, 120)
+                out_list.sum = 0
+
+
+                loop = truncate(length(nstr) / 120, 0)
+                for i in range(1,loop + 1) :
+                    nseq = nseq + 1
+                    out_list_buff = Out_list_buff()
+                    out_list_buff_data.append(out_list_buff)
+
+                    out_list_buff.seq = nseq
+                    out_list_buff.etage = netage
+                    out_list_buff.stat = nstat
+                    out_list_buff.str = substring(nstr, i * 120 + 1 - 1, (i + 1) * 120)
+                    out_list_buff.flag = 3
+
+                    if i == loop:
+                        out_list_buff.sum = nsum
+
+                for out_list_buff in query(out_list_buff_data, filters=(lambda out_list_buff: out_list_buff.seq > (nseq - loop) and out_list_buff.flag != 3)):
+                    nseq = nseq + 1
+                    out_list_buff.seq = nseq
+        reihe = nseq
+        out_list = Out_list()
+        out_list_data.append(out_list)
+
+        reihe = reihe + 1
+        out_list.seq = reihe
+
+
+        out_list = Out_list()
+        out_list_data.append(out_list)
+
+        reihe = reihe + 1
+        out_list.seq = reihe
+        out_list.str = translateExtended ("SUMMARY :", lvcarea, "") + " "
+
+
+        out_list.room = translateExtended ("SUMMARY :", lvcarea, "") + " "
+        for n in range(1,12 + 1) :
+
+            if tot_stat[n - 1] != 0:
+                out_list.str = out_list.str + stat[n - 1] + "=" + to_string(tot_stat[n - 1]) + " "
+                out_list.room = out_list.room + stat[n - 1] + "=" + to_string(tot_stat[n - 1]) + " "
+
+    ci_date = get_output(htpdate(110))
+    create_list()
+
+    return generate_output()

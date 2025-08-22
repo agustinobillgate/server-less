@@ -2,7 +2,7 @@
 #-----------------------------------------
 # Rd 21/7/2025
 # Gitlab: 252
-# Add safe_divide
+# Add safe_divide, if argm, if room
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -1452,6 +1452,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
         str_cut:string = ""
         Bargt = Argt_list
         bargt_data = argt_list_data
+        # Rd 13/8/2025
+        argm = ""
         argm_name = ""
         print_list2_data.clear()
 
@@ -1476,7 +1478,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             if a > 0:
                 argm = substring(argm_name, r + 1 - 1, a)
 
-            if length(argm) > 0:
+            # Rd 13/8/2025, if argm
+            if argm and length(argm) > 0:
                 argm = substring(argm, 1, (length(argm) - 1))
         else:
             print_list2 = Print_list2()
@@ -1486,7 +1489,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             if a > 0:
                 argm = substring(argm_name, r - 1, a)
 
-            if length(argm) > 0:
+            # Rd 13/8/2025, if argm and
+            if argm and length(argm) > 0:
                 argm = substring(argm, 1, (length(argm) - 1))
 
 
@@ -1535,7 +1539,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             if a > 0:
                 room = substring(room_name, r + 1 - 1, a)
 
-            if length(room) > 0:
+            # Rd 13/8/2025, if room
+            if room and length(room) > 0:
                 room = substring(room, 1, (length(room) - 1))
         else:
             print_list3 = Print_list3()
@@ -1545,7 +1550,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             if a > 0:
                 room = substring(room_name, r - 1, a)
 
-            if length(room) > 0:
+             # Rd 13/8/2025, if room
+            if room and length(room) > 0:
                 room = substring(room, 1, (length(room) - 1))
 
 
@@ -1554,7 +1560,6 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
         nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
-
 
         nonlocal room_list, segm_list, argt_list, zikat_list, outlook_list, print_list, print_list2, print_list3, argt6_list, rline1, active_rm_list, dayuse_list, s_list, a_list, z_list, o_list, bsegm, bargt, broom, s_list, a_list, z_list, o_list, s_list, z_list
         nonlocal room_list_data, print_list_data, print_list2_data, print_list3_data, argt6_list_data, active_rm_list_data, dayuse_list_data
@@ -2469,15 +2474,23 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                 room_list.revpar2 =  to_decimal(room_list.revpar) / to_decimal(exchg_rate)
 
 
-            room_list.avrglodg_inclcomp =  to_decimal(room_list.lodg[4]) / to_decimal(room_list.room[6])
-            room_list.avrglodg_exclcomp =  to_decimal(room_list.lodg[4]) / to_decimal((room_list.room[6]) - to_decimal(room_list.room_comp))
+            # Rd 13/8,
+            # room_list.avrglodg_inclcomp =  to_decimal(room_list.lodg[4]) / to_decimal(room_list.room[6])
+            room_list.avrglodg_inclcomp =  safe_divide(room_list.lodg[4],room_list.room[6])
+            room_list.avrglodg_exclcomp =  safe_divide(room_list.lodg[4], (room_list.room[6] - room_list.room_comp))
 
         if troom_exccomp != 0:
             tavg_rmrev =  to_decimal(t_lodg[4]) / to_decimal(troom_exccomp)
         tavg_rmrev2 =  to_decimal(tavg_rmrev) / to_decimal(exchg_rate)
         avrg_rate =  to_decimal(tot_avrg) / to_decimal(jml_date)
-        t_avrglodg_inclcomp =  to_decimal(t_lodg[4]) / to_decimal(rm_array[6])
-        t_avrglodg_exclcomp =  to_decimal(t_lodg[4]) / to_decimal((rm_array[6]) - to_decimal(t_room_comp))
+
+        # Rd, 14/8/2025
+        # safe_divide
+        # t_avrglodg_inclcomp =  to_decimal(t_lodg[4]) / to_decimal(rm_array[6])
+        # t_avrglodg_exclcomp =  to_decimal(t_lodg[4]) / to_decimal((rm_array[6]) - to_decimal(t_room_comp))
+        t_avrglodg_inclcomp =  safe_divide(t_lodg[4], rm_array[6])
+        t_avrglodg_exclcomp =  safe_divide(t_lodg[4], (rm_array[6]) - to_decimal(t_room_comp))
+
         mtd_occ =  to_decimal(rm_array[6]) / to_decimal((tot_room) * to_decimal(tmpint)) * to_decimal("100")
         t_rmocc_exclcomp = ( to_decimal(rm_array[6]) - to_decimal(t_room_comp)) / to_decimal((tot_room) * to_decimal(tmpint)) * to_decimal("100")
 
@@ -2503,7 +2516,6 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
         room_list.lodg[5] = t_lodg[5]
         room_list.lodg[6] = t_lodg[6]
         room_list.rmocc_exclcomp =  to_decimal(t_rmocc_exclcomp)
-
 
         room_list.avrglodg_inclcomp =  to_decimal(t_avrglodg_inclcomp)
         room_list.avrglodg_exclcomp =  to_decimal(t_avrglodg_exclcomp)
@@ -2991,6 +3003,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             create_browse()
         else:
             create_browse1()
+            
         segm_code_name()
         room_code_name()
         argt_code_name()

@@ -1,0 +1,14 @@
+Master/commonBL/new-drrbl.p
+Master/commonBL/glreport-jsi-btn-goBL.p
+Master/bgBL/rest-journal-btn-go2webbl.p
+Master/bgBL/prepare-fa-artlist2-webBL.p
+Master/bgBL/main-fs-assign-page1BL.p
+Master/bgBL/main-fs-display-browser1BL.p
+Master/commonBL/link-ratecodeBL.p
+Master/commonBL/check-gcfpayment2-webBL.p
+Master/bgBL/fa-artlist-subgrpBL.p
+Master/bgBL/fa-depn-step-twoBL.p
+Master/bgBL/stock-outlist-btn-go1-cldbl.p
+
+Master/bgBL/prepare-gcf-history-centralizedBL.p
+Master/bgBL/repeat-glist-centralized-webbl.p

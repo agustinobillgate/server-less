@@ -1,8 +1,8 @@
 #using conversion tools version: 1.0.0.105
 #-----------------------------------------
 # 17-July-25, update INT64() -> int(), 
+# if available res_line
 #-----------------------------------------
-
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -142,46 +142,52 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
             res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, roomnumber)]})
 
-            reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+            # Rd 13/8/2025
+            # if res_line available
+            if res_line:
+                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-            buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+                buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
 
-            guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+                guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
 
-            gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+                gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
 
-            if guest and reservation:
-                output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                output_list.checkin = res_line.ankunft
-                output_list.checkout = res_line.abreise
-                output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
-                output_list.nationality = guest.nation1
-                output_list.resnr = res_line.resnr
-                output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
+                if guest and reservation:
+                    output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                    output_list.checkin = res_line.ankunft
+                    output_list.checkout = res_line.abreise
+                    output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                    output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
+                    output_list.nationality = guest.nation1
+                    output_list.resnr = res_line.resnr
+                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
 
-                if reservation.resart != 0:
+                    if reservation.resart != 0:
 
-                    sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                        sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
 
-                    if sourccod:
-                        output_list.book_source = sourccod.bezeich
+                        if sourccod:
+                            output_list.book_source = sourccod.bezeich
 
-            segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
 
-            if segment:
-                output_list.segcode = segment.bezeich
-            else:
-                output_list.segcode = ""
+                if segment:
+                    output_list.segcode = segment.bezeich
+                else:
+                    output_list.segcode = ""
 
-        if matches(substring(str, 77, 12),r"*T O T A L*"):
+        # Rd 13/8/2025
+        # if matches(substring(str, 77, 12),r"*T O T A L*"):
+        if matches(substring(output_list.str, 77, 12),r"*T O T A L*"):
             output_list.guestname = ""
             output_list.segcode = ""
             output_list.checkin = None
             output_list.checkout = None
             output_list.str = substring(output_list.str, 0, 122)
 
-        if matches(substring(str, 77, 12),r"*Grand TOTAL*"):
+        # if matches(substring(str, 77, 12),r"*Grand TOTAL*"):
+        if matches(substring(output_list.str, 77, 12),r"*Grand TOTAL*"):
             output_list.guestname = ""
             output_list.segcode = ""
             output_list.checkin = None
@@ -215,37 +221,40 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                 res_line = get_cache (Res_line, {"resnr": [(eq, int(temp_resnr))],"reslinnr": [(eq, 1)]})
 
-                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                # Rd, 13/8/2025
+                # if available res_line
+                if res_line:
+                    reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-                buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+                    buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
 
-                guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+                    guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
 
-                gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+                    gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
 
-                if guest and reservation:
-                    output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                    output_list.checkin = res_line.ankunft
-                    output_list.checkout = res_line.abreise
-                    output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                    output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
-                    output_list.nationality = guest.nation1
-                    output_list.resnr = res_line.resnr
-                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
+                    if guest and reservation:
+                        output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                        output_list.checkin = res_line.ankunft
+                        output_list.checkout = res_line.abreise
+                        output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                        output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
+                        output_list.nationality = guest.nation1
+                        output_list.resnr = res_line.resnr
+                        output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
 
-                    if reservation.resart != 0:
+                        if reservation.resart != 0:
 
-                        sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                            sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
 
-                        if sourccod:
-                            output_list.book_source = sourccod.bezeich
+                            if sourccod:
+                                output_list.book_source = sourccod.bezeich
 
-                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                    segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
 
-                if segment:
-                    output_list.segcode = segment.bezeich
-                else:
-                    output_list.segcode = ""
+                    if segment:
+                        output_list.segcode = segment.bezeich
+                    else:
+                        output_list.segcode = ""
 
             elif temp_gastnr != 0:
 
@@ -551,7 +560,10 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         output_list_list.clear()
 
         for artikel in db_session.query(Artikel).filter(
-                 (Artikel.artnr >= from_art) & (Artikel.artnr <= to_art) & (Artikel.departement >= from_dept) & (Artikel.departement <= to_dept)).order_by((Artikel.departement * 10000 + Artikel.artnr)).all():
+                 (Artikel.artnr >= from_art) & 
+                 (Artikel.artnr <= to_art) & 
+                 (Artikel.departement >= from_dept) & 
+                 (Artikel.departement <= to_dept)).order_by((Artikel.departement * 10000 + Artikel.artnr)).all():
 
             if last_dept != artikel.departement:
 
@@ -605,37 +617,40 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                                             res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill.zinr)]})
 
-                                            reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                            # Rd 13/8/2025
+                                            # if res_line
+                                            if res_line:
+                                                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-                                            guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+                                                guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
 
-                                            buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+                                                buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
 
-                                            gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+                                                gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
 
-                                            if guest and reservation:
-                                                output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                output_list.checkin = res_line.ankunft
-                                                output_list.checkout = res_line.abreise
-                                                output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
-                                                output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
-                                                output_list.nationality = guest.nation1
-                                                output_list.resnr = res_line.resnr
-                                                output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
+                                                if guest and reservation:
+                                                    output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                                                    output_list.checkin = res_line.ankunft
+                                                    output_list.checkout = res_line.abreise
+                                                    output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                                                    output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
+                                                    output_list.nationality = guest.nation1
+                                                    output_list.resnr = res_line.resnr
+                                                    output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
 
-                                                if reservation.resart != 0:
+                                                    if reservation.resart != 0:
 
-                                                    sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+                                                        sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
 
-                                                    if sourccod:
-                                                        output_list.book_source = sourccod.bezeich
+                                                        if sourccod:
+                                                            output_list.book_source = sourccod.bezeich
 
-                                                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                                                    segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
 
-                                                if segment:
-                                                    output_list.segcode = segment.bezeich
-                                                else:
-                                                    output_list.segcode = ""
+                                                    if segment:
+                                                        output_list.segcode = segment.bezeich
+                                                    else:
+                                                        output_list.segcode = ""
 
                                         elif bill:
 
@@ -2482,11 +2497,9 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         custom_record()
 
     if from_date == None:
-
         return generate_output()
 
     if to_date == None:
-
         return generate_output()
 
     for queasy in db_session.query(Queasy).filter(

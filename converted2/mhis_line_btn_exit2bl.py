@@ -30,9 +30,9 @@ def mhis_line_btn_exit2bl(rec_id:int, m_list_datum:date, m_list_cost:Decimal, re
 
 
     mhis_line1 = get_cache (Mhis_line, {"_recid": [(eq, rec_id)]})
-    mhis_line1.datum = m_list_datum
-    mhis_line1.cost =  to_decimal(m_list_cost)
-    mhis_line1.remark = remark_screen_value
-    pass
+    if mhis_line1:
+        mhis_line1.datum = m_list_datum
+        mhis_line1.cost =  to_decimal(m_list_cost)
+        mhis_line1.remark = remark_screen_value
 
     return generate_output()

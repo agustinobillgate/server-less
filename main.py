@@ -1,4 +1,4 @@
-docker_version = "1.0.0.24.689"
+docker_version = "1.0.0.24.691"
 
 #Version 1.0.0.26
 
@@ -54,7 +54,7 @@ from urllib.parse import urlparse
 from pprint import pprint
 import watchtower, logging, traceback
 from functions.additional_functions import *
-from functions.check_userkeybl import *
+# from functions.check_userkeybl import *
 from decimal import Decimal
 import asyncio
 from models.base import get_database_session
@@ -78,8 +78,6 @@ from sqlalchemy.orm import sessionmaker
 from mangum import Mangum
 
 from models.guestbook import Guestbook
-# print("1:", docker_version)
-
 log_agent = vhp_module = service_name = hotel_code = inputUsername = orig_infostr = existing_json_data = ""
 is_existing_json = False
 
@@ -253,7 +251,6 @@ update_field_mapping = {
     "bankname":"bankName",
     "duedate": "dueDate",
     
-    
     "cid": "CID",
     "mid": "MID",
     "printed1a": "printed1A",
@@ -279,7 +276,6 @@ update_field_mapping = {
     "art": "Art",
     "kontnr-res":"Kontnr-res",
     
-
     #updated 1.0.0.20
     "roomnumber": "roomNumber",
     "checkoutdate": "checkoutDate",
@@ -449,18 +445,15 @@ update_field_mapping = {
     "urlws": "urlWS",
     "licensenr": "licenseNr",
     
-    
     "location": "Location",
     "maintask": "Maintask",
     # "tstatus": "tStatus",
     
     "main-nm": "Main-nm",
-    
 
     #updated 1.0.0.42r (4-Juli-2025) egRepdurationDisp
     "email": "Email",
     
-
     #updated 11-Juli-2025
     "outchar": "outChar",
     "outint" : "outInt",
@@ -549,13 +542,11 @@ update_field_mapping = {
     "engId": "EngID",
     # "activeflag":"ActiveFlag", #egMainschedulePrepare
     # "activeflag":"activeFlag", #egMainschedulePrepare
-
     # _3monthly_forecast_webbl
     "rmsold":"rmSold",
     "houseuse":"houseUse",
     "rmrevenue":"rmRevenue",
     "avrgrevenue":"avrgRevenue",
-
     "activate_deposit":"activateDeposit",
 
     # pr_list_btn_go_1bl
@@ -569,7 +560,6 @@ update_field_mapping = {
     "deptname": ["deptName","DeptName"],
     "main_nr": ["Main-nr", "main-nr"],
 
-    
     # "PI-status":["pi-status", "pi-Status"],
     "pi_status":["pi-status", "PI-status"],
     "pi_type":["pi-type", "PI-type"],
@@ -581,7 +571,6 @@ update_field_mapping = {
     "avail-addvat":"avail-addVAT",
     "availAddvat": ["availAddVat","availAddVAT","availAddVat"],
    
-
     "readequipment":"readEquipment",
     "datum":"Datum",
     "gruppenname":"Gruppenname",
@@ -811,7 +800,8 @@ update_field_mapping = {
     "persons":"Persons",
 
     "chgdate":"chgDate",
-
+    "totpok":"totpOK",
+    "ratecode":"rateCode",
 
     }
 docker_version += ".r"
@@ -840,8 +830,6 @@ update_table_name("vhpSS","egStaffPrepare","userSkill","UserSkill")
 update_table_name("vhpSC","rmAtproductCreateUmsatz1","b1list","b1List")
 update_table_name("vhpSC","rmAtproductCreateUmsatz1","rmatproduct","rmAtproduct")
 
-
-
 #updated 1.0.0.22
 update_table_name("HouseKeeping","getStoreRoomDiscrepancyList","hkdiscrepancy-list","hk-discrepancy-list")
 
@@ -850,11 +838,8 @@ update_table_name("vhpENG","egMainschedulePrepare","Delete-Flag","delete-flag")
 update_table_name("vhpENG","egRephistorymoveCreateBrowse","smove","sMove")
 update_table_name("vhpENG","egRephistorymoveBtnGo","smove","sMove")
 
-
 #updated 1.0.0.23
-
 update_table_name("vhpSS","egStaffPrepare","dept","Dept")
-
 update_table_name("vhpAR","soaRelease","deptno","deptNo")
 # update_table_name("vhpAR","soaRelease","DeptNo","deptNo")
 
@@ -868,13 +853,10 @@ update_table_name("vhpINV","chgStoreRequestLoadData","deptno","deptNo")
 update_table_name("vhpENG","egPropertyListBtnGo","type","TYPE")
 update_table_name("vhpENG","egPropertyListBtnGo","spec","Spec")
 
-
-
 #updated 1.0.0.32, 16-4-2025
 update_table_name("vhpENG","egChgReqPrepare","tFstat","tFStat")
 update_table_name("vhpENG","egChgReqPrepare","svendor","sVendor")
 update_table_name("vhpENG","egPropertyLoad","svendor","tEgProperty")
-
 
 update_table_name("vhpENG","egReprequestcancelPrepare","mainaction","MainAction")
 update_table_name("vhpENG","egReprequestcancelPrepare","tmaintain","tMaintain")
@@ -901,8 +883,6 @@ update_table_name("vhpENG","egSelLookmaintainPrepare","mainaction","MainAction")
 # update_table_name("vhpINV","storeReqInsPrepare","appflag","appFlag")
 
 #updated 1.0.0.36r (19-Mei-2025) egSubTaskPrepare
-
-
 #updated 1.0.0.37r (23-Mei-2025) vhpFOR/monthlyFcastDDown1List1",
 
 update_table_name("vhpFOR","monthlyFcastDDown1List1","adult","Adult")
@@ -915,17 +895,13 @@ update_table_name("vhpENG","egReqlistLoad","Action","action")
 update_table_name("vhpENG","egReqlistLoad","sMaintain","smaintain")
 
 #updated 1.0.0.39r (27-Mei-2025) fb_flashbl
-
-
 #updated 1.0.0.40r (3-Juli-2025) 
 update_table_name("vhpENG","egRepmaintainDisp","tlocation","tLocation")
 update_table_name("vhpENG","egRepmaintainDisp","tstatus","tStatus")
 
-
 update_table_name("vhpENG","egMaincalendardelPrepare","tlocation","tLocation")
 update_table_name("vhpENG","egMaincalendardelPrepare","tstatus","tStatus")
 update_table_name("vhpENG","egMaincalendardelPrepare","tmaintask","tMaintask")
-
 
 update_table_name("vhpENG","egRepdurationDisp","tstatus","tStatus")
 update_table_name("vhpENG","egRepdurationDisp","tmaintask","tMaintask")
@@ -941,7 +917,6 @@ update_table_name("vhpENG","egRepmaintainPrepare","tmaintask","tMaintask")
 update_table_name("vhpENG","egRepmaintainPrepare","tfrequency","tFrequency")
 update_table_name("vhpENG","egRepmaintainPrepare","tstatus","tStatus")
 
-
 update_table_name("vhpENG","egRepdurationPrepare","tlocation","tLocation")
 update_table_name("vhpENG","egRepdurationPrepare","tmaintask","tMaintask")
 
@@ -950,7 +925,6 @@ update_table_name("vhpENG","egPropertyPrepare","location","Location")
 update_table_name("vhpENG","egPropertyPrepare","maintask","Maintask")
 
 update_table_name("vhpSS","dynaratecodeUpdateCreateDynarateList","dynarateList","dynaRateList")
-
 update_table_name("vhpAP","getAPListAddItemList","ttstock","ttStock")
 
 #update 1.0.0.42 (11-Juli-2025)
@@ -974,7 +948,6 @@ update_table_name("vhpFA","prChgPrepare1","t-l-artikel","tLArtikel")
 
 update_table_name("vhpOU","splitbillPrepare","menu","MENU")
 # update_table_name("vhpINV","storeReqInsPrepare","op-list","opList"
-
 # update_table_name("vhpOU","restInvWaiterTransfer1", "t-kellner", "t-kellner1")
 
 
@@ -1023,277 +996,74 @@ class CustomJSONEncoder(json.JSONEncoder):
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
 
-
-# def update_input_format(obj,input_data):
-#     # Update the input object if variable has "-"
-#     # Update date data from string into data                                      
-#     param_list = parameter_and_inner_types(obj)
-#     param_name_list = []
-#     lower_param_names = [param.lower() for param in list(input_data.keys())]
-
-#     for param_name,param_data_type in param_list.items():
-#         param_name_list.append(param_name)
-
-#         if not param_name in input_data:
-
-#             if camelCase(param_name) in input_data:
-#                 input_data[param_name] = input_data[camelCase(param_name)]
-#                 input_data.pop(camelCase(param_name))
-#             elif param_name in lower_param_names:
-#                 curr_input_param_name = ""
-#                 for input_param_name in input_data.keys():
-#                     if input_param_name.lower() == param_name:
-#                         curr_input_param_name = input_param_name
-#                         break
-
-#                 input_data[param_name] = input_data[curr_input_param_name]
-#                 input_data.pop(curr_input_param_name)
-
-#             elif isinstance(param_data_type, list):
-#                 #updated 1.0.0.21
-#                 outer_input_param_name = camelCase(param_name.removesuffix("_data"))
-#                 inner_input_param_name = param_name.removesuffix("_data").replace("_","-")
-#                 # outer_input_param_name = camelCase(param_name.removesuffix("_list"))
-#                 # inner_input_param_name = param_name.removesuffix("_list").replace("_","-")
-
-#                 tmp_input_data = input_data
-
-#                 #updated 1.0.0.4
-#                 if not outer_input_param_name in input_data:
-#                     for field_name in input_data:
-#                         if outer_input_param_name.lower() == field_name.lower():
-#                             outer_input_param_name = field_name
-#                             break
-
-#                 if outer_input_param_name in input_data:
-#                     if not inner_input_param_name in input_data[outer_input_param_name]:
-#                         for field_name in input_data[outer_input_param_name]:
-#                             if inner_input_param_name.lower() == field_name.lower():
-#                                 input_data[outer_input_param_name][inner_input_param_name] = input_data[outer_input_param_name]
-#                                 input_data[outer_input_param_name].pop(field_name)
-#                                 break
-
-#                     if inner_input_param_name in input_data[outer_input_param_name]:
-#                         input_data[param_name] = input_data[outer_input_param_name][inner_input_param_name]
-#                         input_data.pop(outer_input_param_name)
-
-#                 # if outer_input_param_name in input_data:
-#                 #     input_data[param_name] = input_data[outer_input_param_name][inner_input_param_name]
-#                 #     input_data.pop(outer_input_param_name)
-#                 # else:
-#                 #     #updated 1.0.0.3
-#                 #     outer_input_param_name = outer_input_param_name[0].upper() + outer_input_param_name[1:]
-#                 #     inner_input_param_name = inner_input_param_name[0].upper() + inner_input_param_name[1:]
-
-#                 #     if outer_input_param_name in input_data:
-#                 #         input_data[param_name] = input_data[outer_input_param_name][inner_input_param_name]
-#                 #         input_data.pop(outer_input_param_name)
-
-#         if not param_name in input_data:
-#             if not isinstance(param_data_type, list) :
-#                 if param_data_type == bool:
-#                     input_data[param_name] = False
-#                 elif param_data_type == str:
-#                     input_data[param_name] = ""
-#                 elif param_data_type == int:
-#                     input_data[param_name] = 0
-#                 elif param_data_type == float:
-#                     input_data[param_name] = 0.0
-#             #updated 1.0.0.19
-#                 # elif param_data_type == decimal:
-#                 elif param_data_type == Decimal:
-#                     input_data[param_name] = 0.0
-#                 else:
-#                     input_data[param_name] = None
-                
-
-#         input_value = input_data[param_name]
-
-#         if param_data_type == date:
-#             input_data[param_name] = get_date_input(input_value)
-#         elif param_data_type == bool and type(input_value) == str:
-#             input_data[param_name] = convert_to_bool(input_value)
-#         elif param_data_type == int and type(input_value) == str:
-#             input_data[param_name] = convert_to_int(input_value.strip(" "))
-#         elif param_data_type == str and type(input_value) == int:
-#             input_data[param_name] = to_string(input_value)
-#         #updated 1.0.0.1
-#         #updated 1.0.0.19
-#         # elif param_data_type == decimal:
-#         elif param_data_type == Decimal:
-#             input_data[param_name] = to_decimal(input_value)
-
-#         elif isinstance(param_data_type, list):
-#             if param_data_type[0] == bool:  
-#                 for i in range(len(input_data[param_name])):
-#                     input_data[param_name][i] =  convert_to_bool(input_data[param_name][i])
-#             elif param_data_type[0] == date:
-#                 for i in range(len(input_data[param_name])):
-#                     input_data[param_name][i] =  get_date_input(input_data[param_name][i])
-#                     # input_data[param_name][i] =  ExtendedDate.from_date(get_date_input(input_data[param_name][i]))
-#             elif param_data_type[0] == int:
-#                 for i in range(len(input_data[param_name])):
-#                     input_data[param_name][i] =  convert_to_int(input_data[param_name][i])
-
-
-#             #updated 1.0.0.1
-#             #updated 1.0.0.19
-#             # elif not type(param_data_type[0]) in {int, decimal, float, complex, str, list, tuple, range, dict, set, 
-#             #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
-#             #     not param_data_type[0] in {int, decimal, float, complex, str, list, tuple, range, dict, set, 
-#             #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)}:
-#             elif not type(param_data_type[0]) in {int,  Decimal, float, complex, str, list, tuple, range, dict, set, 
-#                                                   frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
-#                 not param_data_type[0] in {int, Decimal, float, complex, str, list, tuple, range, dict, set, 
-#                                                   frozenset, bool, bytes, bytearray, memoryview, type(None)}:
-                                                    
-#                 data_list = input_data[param_name]
-#                 if not isinstance(data_list,list):
-#                     input_data[param_name] = [data_list]
-#                     data_list = input_data[param_name]   
-                
-#                 if len(data_list) > 0:
-#                     fieldNameList = []
-#                     boolFormatList = []
-#                     dateFormatList = []
-
-#                     #updated 1.0.0.10
-#                     bytesFormatList = []
-                    
-                    
-#                     check_recid = False
-
-#                     for field in fields(param_data_type[0]):
-
-#                         field.name = field.name.lower()
-#                         if field.name == "_recid":
-#                             check_recid = True
-#                         else:
-#                             if field.type == date:
-#                                 dateFormatList.append(field.name)
-#                             elif field.type == bool:
-#                                 boolFormatList.append(field.name)
-#                             #updated 1.0.0.10
-#                             elif field.type == bytes:
-#                                 bytesFormatList.append(field.name)           
-
-
-#                             # updated 1.0.0.5
-#                             if not field.name in data_list[0]:
-#                                 if field.name.replace("_","-") in data_list[0]:
-#                                     fieldNameList.append(field.name)
-#                                 else:
-#                                     for field_name in data_list[0].keys():
-#                                         if field.name == field_name.lower():
-#                                             fieldNameList.append(field_name)
-#                                             break
-
-#                             # if (not field.name in data_list[0] and 
-#                             #         # field.name.replace("_","-") in data_list):
-#                             #         field.name.replace("_","-") in data_list[0]):
-#                             #     fieldNameList.append(field.name)
-                            
-#                     if check_recid or len(fieldNameList) > 0 or len(dateFormatList) > 0 or len(boolFormatList) > 0:
-#                         for data in data_list:
-#                             if check_recid:
-#                                 if data.get("_recid") == 0 or not "_recid" in data:
-#                                     data["_recid"] = None
-
-#                             # Rd
-#                             # for name in fieldNameList:
-#                             #     #updated 1.0.0.5
-#                             #     data_field_name = name.replace("_","-")
-#                             #     data[name.lower()] = data[data_field_name]
-#                             #     data.pop(data_field_name)
-
-#                             for name in fieldNameList:
-#                                 for key in list(data.keys()):
-#                                     if key.lower() == name.lower() or key.lower() == name.replace("_", "-").lower():
-#                                         data[name.lower()] = data[key]
-#                                         data.pop(key)
-#                                         break
-                            
-#                             for name in dateFormatList:
-#                                 # data[name] = get_date_temp_table(data[name])
-#                                 data[name] = get_date_temp_table(data.get(name))
-
-#                             for name in boolFormatList:
-#                                 data[name] = convert_to_bool(data.get(name))
-#                                 # data[name] = convert_to_bool(data[name])
-
-#                             #updated 1.0.0.10
-#                             for name in bytesFormatList:
-#                                 data[name] = base64.b64decode(data.get(name))
-                
-#                     ignore_key_list = []
-#                     param_key_list = [field.name for field in fields(param_data_type[0])]
-#                     for key in data_list[0].keys():
-#                         if not key in param_key_list:
-#                             ignore_key_list.append(key)
-
-#                     for i in range(0,len(data_list)):
-#                         for key in ignore_key_list:                            
-#                             # data_list[i].pop(key)
-#                             # Rd
-#                             data_list[i].pop(key, None)
-
-#                         data_list[i] = param_data_type[0](**data_list[i])        
-
-#     input_data_keys = list(input_data.keys())
-
-#     for input_param_name in input_data_keys:
-#         if not input_param_name in param_name_list:
-#             input_data.pop(input_param_name)
-
-
-#     # for param_name in input_data.keys():
-#     #     if not param_name in param_list(obj)
-
-
-def update_input_format(obj, input_data):
-    from decimal import Decimal
-    import base64
-    from datetime import date
-    from dataclasses import fields
-
-    def camelCase(s):
-        parts = s.split('_')
-        return parts[0] + ''.join(word.capitalize() for word in parts[1:])
-
+def update_input_format(obj,input_data):
+    # Update the input object if variable has "-"
+    # Update date data from string into data                                      
     param_list = parameter_and_inner_types(obj)
     param_name_list = []
-    lower_param_names = [param.lower() for param in input_data]
+    lower_param_names = [param.lower() for param in list(input_data.keys())]
 
-    for param_name, param_data_type in param_list.items():
+    for param_name,param_data_type in param_list.items():
         param_name_list.append(param_name)
 
-        if param_name not in input_data:
+        if not param_name in input_data:
+
             if camelCase(param_name) in input_data:
-                input_data[param_name] = input_data.pop(camelCase(param_name))
+                input_data[param_name] = input_data[camelCase(param_name)]
+                input_data.pop(camelCase(param_name))
             elif param_name in lower_param_names:
-                for k in input_data:
-                    if k.lower() == param_name:
-                        input_data[param_name] = input_data.pop(k)
+                curr_input_param_name = ""
+                for input_param_name in input_data.keys():
+                    if input_param_name.lower() == param_name:
+                        curr_input_param_name = input_param_name
                         break
+
+                input_data[param_name] = input_data[curr_input_param_name]
+                input_data.pop(curr_input_param_name)
+
             elif isinstance(param_data_type, list):
-                outer_key = camelCase(param_name.removesuffix('_data'))
-                inner_key = param_name.removesuffix('_data').replace('_', '-')
+                #updated 1.0.0.21
+                outer_input_param_name = camelCase(param_name.removesuffix("_data"))
+                inner_input_param_name = param_name.removesuffix("_data").replace("_","-")
+                # outer_input_param_name = camelCase(param_name.removesuffix("_list"))
+                # inner_input_param_name = param_name.removesuffix("_list").replace("_","-")
 
-                for k in list(input_data.keys()):
-                    if k.lower() == outer_key.lower():
-                        outer_key = k
-                        break
+                tmp_input_data = input_data
 
-                if outer_key in input_data:
-                    for k in list(input_data[outer_key].keys()):
-                        if k.lower() == inner_key.lower():
-                            input_data[param_name] = input_data[outer_key].pop(k)
+                #updated 1.0.0.4
+                if not outer_input_param_name in input_data:
+                    for field_name in input_data:
+                        if outer_input_param_name.lower() == field_name.lower():
+                            outer_input_param_name = field_name
                             break
-                    input_data.pop(outer_key, None)
 
-        # Fill default values
-        if param_name not in input_data:
-            if not isinstance(param_data_type, list):
+                if outer_input_param_name in input_data:
+                    if not inner_input_param_name in input_data[outer_input_param_name]:
+                        for field_name in input_data[outer_input_param_name]:
+                            # print("Field:", inner_input_param_name, field_name)
+                            if inner_input_param_name.lower() == field_name.lower():
+                                input_data[outer_input_param_name][inner_input_param_name] = input_data[outer_input_param_name]
+                                input_data[outer_input_param_name].pop(field_name)
+                                break
+
+                    if inner_input_param_name in input_data[outer_input_param_name]:
+                        input_data[param_name] = input_data[outer_input_param_name][inner_input_param_name]
+                        input_data.pop(outer_input_param_name)
+
+                # if outer_input_param_name in input_data:
+                #     input_data[param_name] = input_data[outer_input_param_name][inner_input_param_name]
+                #     input_data.pop(outer_input_param_name)
+                # else:
+                #     #updated 1.0.0.3
+                #     outer_input_param_name = outer_input_param_name[0].upper() + outer_input_param_name[1:]
+                #     inner_input_param_name = inner_input_param_name[0].upper() + inner_input_param_name[1:]
+
+                #     if outer_input_param_name in input_data:
+                #         input_data[param_name] = input_data[outer_input_param_name][inner_input_param_name]
+                #         input_data.pop(outer_input_param_name)
+
+        if not param_name in input_data:
+            if not isinstance(param_data_type, list) :
                 if param_data_type == bool:
                     input_data[param_name] = False
                 elif param_data_type == str:
@@ -1302,72 +1072,143 @@ def update_input_format(obj, input_data):
                     input_data[param_name] = 0
                 elif param_data_type == float:
                     input_data[param_name] = 0.0
+            #updated 1.0.0.19
+                # elif param_data_type == decimal:
                 elif param_data_type == Decimal:
                     input_data[param_name] = 0.0
                 else:
                     input_data[param_name] = None
+                
 
         input_value = input_data[param_name]
 
-        # Convert types
         if param_data_type == date:
             input_data[param_name] = get_date_input(input_value)
-        elif param_data_type == bool and isinstance(input_value, str):
+        elif param_data_type == bool and type(input_value) == str:
             input_data[param_name] = convert_to_bool(input_value)
-        elif param_data_type == int and isinstance(input_value, str):
-            input_data[param_name] = convert_to_int(input_value.strip())
-        elif param_data_type == str and isinstance(input_value, int):
+        elif param_data_type == int and type(input_value) == str:
+            input_data[param_name] = convert_to_int(input_value.strip(" "))
+        elif param_data_type == str and type(input_value) == int:
             input_data[param_name] = to_string(input_value)
+        #updated 1.0.0.1
+        #updated 1.0.0.19
+        # elif param_data_type == decimal:
         elif param_data_type == Decimal:
             input_data[param_name] = to_decimal(input_value)
 
-        # Handle list of complex types
-        elif isinstance(param_data_type, list) and len(param_data_type) > 0:
-            inner_type = param_data_type[0]
-            if inner_type in [bool, int, date]:
+        elif isinstance(param_data_type, list):
+            if param_data_type[0] == bool:  
                 for i in range(len(input_data[param_name])):
-                    if inner_type == bool:
-                        input_data[param_name][i] = convert_to_bool(input_data[param_name][i])
-                    elif inner_type == int:
-                        input_data[param_name][i] = convert_to_int(input_data[param_name][i])
-                    elif inner_type == date:
-                        input_data[param_name][i] = get_date_input(input_data[param_name][i])
-            elif not isinstance(inner_type, type) or inner_type not in {int, float, str, bool, Decimal, bytes, list, dict, tuple, set}:
+                    input_data[param_name][i] =  convert_to_bool(input_data[param_name][i])
+            elif param_data_type[0] == date:
+                for i in range(len(input_data[param_name])):
+                    input_data[param_name][i] =  get_date_input(input_data[param_name][i])
+                    # input_data[param_name][i] =  ExtendedDate.from_date(get_date_input(input_data[param_name][i]))
+            elif param_data_type[0] == int:
+                for i in range(len(input_data[param_name])):
+                    input_data[param_name][i] =  convert_to_int(input_data[param_name][i])
+
+
+            #updated 1.0.0.1
+            #updated 1.0.0.19
+            # elif not type(param_data_type[0]) in {int, decimal, float, complex, str, list, tuple, range, dict, set, 
+            #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
+            #     not param_data_type[0] in {int, decimal, float, complex, str, list, tuple, range, dict, set, 
+            #                                       frozenset, bool, bytes, bytearray, memoryview, type(None)}:
+            elif not type(param_data_type[0]) in {int,  Decimal, float, complex, str, list, tuple, range, dict, set, 
+                                                  frozenset, bool, bytes, bytearray, memoryview, type(None)} and \
+                not param_data_type[0] in {int, Decimal, float, complex, str, list, tuple, range, dict, set, 
+                                                  frozenset, bool, bytes, bytearray, memoryview, type(None)}:
+                                                    
                 data_list = input_data[param_name]
-                if not isinstance(data_list, list):
-                    data_list = [data_list]
-                    input_data[param_name] = data_list
+                if not isinstance(data_list,list):
+                    input_data[param_name] = [data_list]
+                    data_list = input_data[param_name]   
+                
+                if len(data_list) > 0:
+                    fieldNameList = []
+                    boolFormatList = []
+                    dateFormatList = []
 
-                if data_list and isinstance(data_list[0], dict):
-                    model_fields = {f.name: f.type for f in fields(inner_type)}
-                    param_keys = set(model_fields.keys())
+                    #updated 1.0.0.10
+                    bytesFormatList = []
+                    
+                    
+                    check_recid = False
 
-                    for i, record in enumerate(data_list):
-                        clean_data = {}
-                        for k, v in record.items():
-                            norm_key = k.replace("-", "_").lower()
-                            for actual_key in param_keys:
-                                if norm_key == actual_key.lower():
-                                    clean_data[actual_key] = v
-                                    break
-                        for key in list(clean_data):
-                            expected_type = model_fields.get(key)
-                            if expected_type == bool:
-                                clean_data[key] = convert_to_bool(clean_data.get(key))
-                            elif expected_type == date:
-                                clean_data[key] = get_date_temp_table(clean_data.get(key))
-                            elif expected_type == bytes and isinstance(clean_data.get(key), str):
-                                clean_data[key] = base64.b64decode(clean_data[key])
-                        try:
-                            data_list[i] = inner_type(**clean_data)
-                        except TypeError as e:
-                            raise Exception(f"Failed to create {inner_type} with {clean_data}") from e
+                    for field in fields(param_data_type[0]):
 
-    # Remove extra parameters not in the function signature
-    for key in list(input_data):
-        if key not in param_name_list:
-            input_data.pop(key)
+                        if field.name == "_recid":
+                            check_recid = True
+                        else:
+                            if field.type == date:
+                                dateFormatList.append(field.name)
+                            elif field.type == bool:
+                                boolFormatList.append(field.name)
+                            #updated 1.0.0.10
+                            elif field.type == bytes:
+                                bytesFormatList.append(field.name)           
 
+
+                            # updated 1.0.0.5
+                            if not field.name in data_list[0]:
+                                if field.name.replace("_","-") in data_list[0]:
+                                    fieldNameList.append(field.name)
+                                else:
+                                    for field_name in data_list[0].keys():
+                                        if field.name == field_name.lower():
+                                            fieldNameList.append(field_name)
+                                            break
+
+                            # if (not field.name in data_list[0] and 
+                            #         # field.name.replace("_","-") in data_list):
+                            #         field.name.replace("_","-") in data_list[0]):
+                            #     fieldNameList.append(field.name)
+                            
+                    if check_recid or len(fieldNameList) > 0 or len(dateFormatList) > 0 or len(boolFormatList) > 0:
+                        for data in data_list:
+                            if check_recid:
+                                if data.get("_recid") == 0 or not "_recid" in data:
+                                    data["_recid"] = None
+
+                            for name in fieldNameList:
+                                #updated 1.0.0.5
+                                data_field_name = name.replace("_","-")
+                                data[name.lower()] = data[data_field_name]
+                                data.pop(data_field_name)
+                            
+                            for name in dateFormatList:
+                                # data[name] = get_date_temp_table(data[name])
+                                data[name] = get_date_temp_table(data.get(name))
+
+                            for name in boolFormatList:
+                                data[name] = convert_to_bool(data.get(name))
+                                # data[name] = convert_to_bool(data[name])
+
+                            #updated 1.0.0.10
+                            for name in bytesFormatList:
+                                data[name] = base64.b64decode(data.get(name))
+                
+                    ignore_key_list = []
+                    param_key_list = [field.name for field in fields(param_data_type[0])]
+                    for key in data_list[0].keys():
+                        if not key in param_key_list:
+                            ignore_key_list.append(key)
+
+                    for i in range(0,len(data_list)):
+                        for key in ignore_key_list:                            
+                            data_list[i].pop(key)
+
+                        data_list[i] = param_data_type[0](**data_list[i])        
+
+    input_data_keys = list(input_data.keys())
+
+    for input_param_name in input_data_keys:
+        if not input_param_name in param_name_list:
+            input_data.pop(input_param_name)
+
+    # for param_name in input_data.keys():
+    #     if not param_name in param_list(obj)
 
 def update_output_format(output_data):
     key_list = list(output_data.keys())
@@ -1540,8 +1381,6 @@ def update_output_format(output_data):
             output_data[update_table_name_list[curr_module_function][camelCaseKey]] = output_data[camelCaseKey]
             output_data.pop(camelCaseKey)
 
-
-
 def decimal_converter(obj):
     if isinstance(obj, Decimal):
         return float(obj)  # or str(obj) if needed
@@ -1622,7 +1461,7 @@ def handle_get_post(request: Request, input_data: Dict[str, Any] = {}, body_str:
     url = str(request.url)
     headers = dict(request.headers)
 
-    print("Hd:", headers)
+    # print("Hd:", headers)
     # print("Request:", request)
 
     if not hasattr(local_storage,"app"):
@@ -1766,7 +1605,6 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                     function_name = ""
 
                     for mapping in mapping_service:
-                        # print(mapping)
                         if mapping['service'] == service_name:
                             function_name = mapping["function"]
                             break
@@ -1796,6 +1634,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
 
             module_name = "functions." + function_name
             # ok_flag = get_output(check_userkeybl(input_data["inputUsername"], input_data["inputUserkey"]))
+            of_flag = True
             version = ""
             if os.environ.get('AWS_EXECUTION_ENV'):
                 version = get_function_version(module_name, function_name, "/var/task/functions/")
@@ -1850,7 +1689,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                             orig_infostr = existing_request.orig_infostr 
                             local_storage.debugging = local_storage.debugging + ',Retrieve'
                             # print("Existing JSON:", json_data)
-                            print("Existing JSON:")
+                            # print("Existing JSON:")
                             is_existing_json = True
                             existing_json_data = json_data
                         else: 
@@ -1877,7 +1716,6 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                             try:
                                 print("Calling getAttr:", function_name)   
                                 obj = getattr(module, function_name)
-
                                 update_input_format(obj,input_data)
                                 # print("Start Call:", function_name)  
                                 output_data =  obj(**input_data)
@@ -1911,6 +1749,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                                     pass
                         else:
                             # db_session.close()
+                            print("Else Not Found:", module_name)
                             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
                     else:
                         # db_session.close()

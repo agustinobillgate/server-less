@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_hotelInfoSave" path="/hotelInfoSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-save-hotel-info-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-save-hotel-info-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rmcatAdminPrepare" path="/rmcatAdminPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-rmcat-admin-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-rmcat-admin-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rmcatAdmin" path="/rmcatAdmin" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rmcat-admin-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rmcat-admin-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_zimkategWrite" path="/zimkategWrite" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-write-zimkateg-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-write-zimkateg-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_outletConfigPrepare" path="/outletConfigPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-outlet-config-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-outlet-config-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_outletConfigSave" path="/outletConfigSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-save-outlet-config-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-save-outlet-config-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_outletLandingPrepare" path="/outletLandingPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-outlet-landing-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-outlet-landing-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_paramtextRead" path="/paramtextRead" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-read-paramtext-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-read-paramtext-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_paramtextWrite" path="/paramtextWrite" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-write-paramtext-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-write-paramtext-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_paramtextDelete" path="/paramtextDelete" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-delete-paramtext-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-delete-paramtext-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_outletSubgrpPrepare" path="/outletSubgrpPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-outlet-subgrp-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-outlet-subgrp-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_outletSubgrpSave" path="/outletSubgrpSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-save-outlet-subgrp-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-save-outlet-subgrp-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dashboardPrepare" path="/dashboardPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-dashboard-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-dashboard-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_hotelInfoPrepare" path="/hotelInfoPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-hotel-info-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-hotel-info-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rarticlePrepare" path="/rarticlePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-rarticle-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-rarticle-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rarticleSave" path="/rarticleSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-save-rarticle-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-save-rarticle-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rmViewRead" path="/rmViewRead" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-read-rm-view-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-read-rm-view-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rmViewWrite" path="/rmViewWrite" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-write-rm-view-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-write-rm-view-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rmViewDelete" path="/rmViewDelete" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-delete-rm-view-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-delete-rm-view-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_outletTbplanAdmin" path="/outletTbplanAdmin" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-outlet-tbplan-admin-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-outlet-tbplan-admin-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_outletTbplanPrepare" path="/outletTbplanPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-outlet-tbplan-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-outlet-tbplan-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_progressSave" path="/progressSave" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-save-progress-setup-wizardbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-save-progress-setup-wizardbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+</prgs:model>

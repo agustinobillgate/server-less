@@ -954,4 +954,35 @@
   <prgs:resource consumes="application/json" name="_leasingPaymentChgRate" path="/leasingPaymentChgRate" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-leasing-payment-chg-ratebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-leasing-payment-chg-ratebl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_readMcGuest" path="/readMcGuest" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-read-mc-guestbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-read-mc-guestbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_generalLockrecordValidation" path="/generalLockrecordValidation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-general-lockrecord-validationbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-general-lockrecord-validationbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ntFbloyaltyprog" path="/ntFbloyaltyprog" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-nt-fbloyaltyprog.pidl::com.progress.openedge.pdt.bpmbindings" name="web-nt-fbloyaltyprog" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_leasingChgRatePrepare" path="/leasingChgRatePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-leasing-chg-ratebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-leasing-chg-ratebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_leasingChgRateCreateJournal" path="/leasingChgRateCreateJournal" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-leasing-chg-rate-create-journalbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-leasing-chg-rate-create-journalbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_aboutUsReport" path="/aboutUsReport" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-about-us-report-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-about-us-report-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_repeatflagUpdate1" path="/repeatflagUpdate1" produces="application/json"/>
+  <prgs:resource consumes="application/json" name="_screenUnlock" path="/screenUnlock" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-unlock-screen-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-unlock-screen-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_screenChangePin" path="/screenChangePin" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-change-pin-screen-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-change-pin-screen-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_weakPinCreate" path="/weakPinCreate" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-create-weak-pin-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-create-weak-pin-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_leasingArAge" path="/leasingArAge" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-leasing-ar-age-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-leasing-ar-age-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

@@ -1,6 +1,7 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.118
 #-------------------------------------------
 # Rd 28/7/2025
+# Rd 14/8/2025
 # gitlab: 626
 # "progress": [
     #   "outputOkFlag",
@@ -9,8 +10,9 @@
     #   "origPax",
     #   "availHUmsatz"
     # ],
+# update dari fitria: 8/8/2025
+# elif last-date 
 #-------------------------------------------
-
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -18,7 +20,7 @@ from models import Htparam, Uebertrag, Bill_line, Bill, Res_line, Guest, Artikel
 
 def correct_guest_ledgerbl(fdate:date, tdate:date):
 
-    prepare_cache ([Htparam, Uebertrag, Bill_line, Res_line, Guest, Artikel])
+    prepare_cache ([Htparam, Uebertrag, Bill_line, Bill, Res_line, Guest, Artikel])
 
     success_flag = False
     billdate:date = None
@@ -77,90 +79,45 @@ def correct_guest_ledgerbl(fdate:date, tdate:date):
         nonlocal output_list_data, m_list_data, sum_list_data, s_list_data, ns_list_data, bill_alert_data, bill_list_data
 
         bline = None
+        rbilldate:date = None
+        first_date:date = None
+        last_date:date = None
         Bline =  create_buffer("Bline",Bill_line)
         bill_list_data.clear()
+        rbilldate = billdate - timedelta(days=30)
 
-        # bill = get_cache (Bill, {"rechnr": [(gt, 0)]})
-        # while None != bill:
-        #     bill_list = Bill_list()
-        #     bill_list_data.append(bill_list)
+        for bill in db_session.query(Bill).filter(
+                 (Bill.rechnr > 0) & ((Bill.flag == 0) | ((Bill.datum >= rbilldate) & (Bill.flag == 1)))).order_by(Bill.rechnr).all():
+            last_date = None
+            first_date = None
 
-        #     bill_list.resnr = bill.resnr
-        #     bill_list.zinr = bill.zinr
-        #     bill_list.rechnr = bill.rechnr
-        #     bill_list.billnr = bill.billnr
+            if bill.flag == 0:
+                last_date = heute
 
-        #     if bill.resnr > 0 and bill.reslinnr > 0:
+            if bill.flag == 1:
 
-        #         res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
-        #         bill_list.billtype = "G"
+                bill_alert = query(bill_alert_data, filters=(lambda bill_alert: bill_alert.rechnr == bill.rechnr), first=True)
 
-        #         if res_line:
-        #             bill_list.resnr = res_line.resnr
-        #             bill_list.reslinnr = res_line.reslinnr
-        #             bill_list.ankunft = res_line.ankunft
-        #             bill_list.abreise = res_line.abreise
-        #             bill_list.ankzeit = res_line.ankzeit
-        #             bill_list.zinr = res_line.zinr
-        #             bill_list.gname = res_line.name
+                if bill_alert:
+                    last_date = heute
 
-        #     elif bill.resnr > 0:
-        #         bill_list.billtype = "M"
+            for bill_line in db_session.query(Bill_line).filter(
+                     (Bill_line.rechnr == bill.rechnr)).order_by(Bill_line.bill_datum).all():
+                first_date = bill_line.bill_datum
+                break
 
+            if first_date == None:
+                continue
 
-        #     else:
-        #         bill_list.billtype = "N"
+            # Rd 14/8/2025
+            elif last_date == None:
+                continue
+            
+            elif first_date > billdate:
+                continue
 
-        #     if bill.flag == 0:
-        #         bill_list.last_date = heute
-
-        #     if bill_list.gname == "":
-
-        #         guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
-
-        #         if guest:
-        #             bill_list.gname = guest.name
-
-        #     if bill.flag == 1:
-
-        #         bill_alert = query(bill_alert_data, filters=(lambda bill_alert: bill_alert.rechnr == bill.rechnr), first=True)
-
-        #         if bill_alert:
-        #             bill_list.last_date = heute
-
-        #     bill_line = get_cache (Bill_line, {"rechnr": [(eq, bill_list.rechnr)]})
-
-        #     if bill_line:
-        #         bill_list.first_date = bill_line.bill_datum
-        #         bill_list.betrag =  to_decimal(bill_line.betrag)
-
-        #         if bill.flag == 1 and bill_list.last_date == None:
-
-        #             bill_line = db_session.query(Bill_line).filter(
-        #                      (Bill_line.rechnr == bill_list.rechnr)).order_by(Bill_line._recid.desc()).first()
-
-        #             if bill_line:
-        #                 bill_list.last_date = bill_line.bill_datum
-
-        #     if bill_list.first_date == None:
-        #         bill_list_data.remove(bill_list)
-
-        #     elif bill_list.first_date > billdate:
-        #         bill_list_data.remove(bill_list)
-
-        #     elif bill_list.last_date < billdate:
-        #         bill_list_data.remove(bill_list)
-
-        #     curr_recid = bill._recid
-        #     bill = db_session.query(Bill).filter(
-        #              (Bill.rechnr > 0) & (Bill._recid > curr_recid)).first()
-
-        # Load all Bill records with rechnr > 0 first
-        # bills = db_session.query(Bill).filter(Bill.rechnr > 0).order_by(Bill._recid).all()
-
-        # bills = get_cache (Bill, {"rechnr": [(gt, 0)]})
-        bills = db_session.query(Bill).filter(Bill.rechnr > 0).order_by(Bill._recid).all()
-        for bill in bills:
+            elif last_date < billdate:
+                continue
             bill_list = Bill_list()
             bill_list_data.append(bill_list)
 
@@ -170,11 +127,8 @@ def correct_guest_ledgerbl(fdate:date, tdate:date):
             bill_list.billnr = bill.billnr
 
             if bill.resnr > 0 and bill.reslinnr > 0:
-                res_line = get_cache(Res_line, {
-                    "resnr": [(eq, bill.resnr)],
-                    "reslinnr": [(eq, bill.parent_nr)]
-                })
 
+                res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
                 bill_list.billtype = "G"
 
                 if res_line:
@@ -188,48 +142,17 @@ def correct_guest_ledgerbl(fdate:date, tdate:date):
 
             elif bill.resnr > 0:
                 bill_list.billtype = "M"
+
+
             else:
                 bill_list.billtype = "N"
 
-            if bill.flag == 0:
-                bill_list.last_date = heute
-
             if bill_list.gname == "":
-                guest = get_cache(Guest, {"gastnr": [(eq, bill.gastnr)]})
+
+                guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+
                 if guest:
                     bill_list.gname = guest.name
-
-            if bill.flag == 1:
-                bill_alert = query(
-                    bill_alert_data,
-                    filters=lambda ba: ba.rechnr == bill.rechnr,
-                    first=True
-                )
-                if bill_alert:
-                    bill_list.last_date = heute
-
-            bill_line = get_cache(Bill_line, {"rechnr": [(eq, bill_list.rechnr)]})
-
-            if bill_line:
-                bill_list.first_date = bill_line.bill_datum
-                bill_list.betrag = to_decimal(bill_line.betrag)
-
-                if bill.flag == 1 and bill_list.last_date is None:
-                    bill_line = db_session.query(Bill_line).filter(
-                        Bill_line.rechnr == bill_list.rechnr
-                    ).order_by(Bill_line._recid.desc()).first()
-
-                    if bill_line:
-                        bill_list.last_date = bill_line.bill_datum
-
-            # Conditional removal (same as original)
-            if bill_list.first_date is None:
-                bill_list_data.remove(bill_list)
-            elif bill_list.first_date > billdate:
-                bill_list_data.remove(bill_list)
-            elif bill_list.last_date < billdate:
-                bill_list_data.remove(bill_list)
-
 
 
     def create_umsatz():
@@ -274,137 +197,136 @@ def correct_guest_ledgerbl(fdate:date, tdate:date):
                     create_data2()
 
 
-        # for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype.lower()  == ("M").lower()), sort_by=[("rechnr",False)]):
+        for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype.lower()  == ("M").lower()), sort_by=[("rechnr",False)]):
 
-        #     res_line = get_cache (Res_line, {"resnr": [(eq, bill_list.resnr)],"zinr": [(ne, "")],"resstatus": [(ne, 12)]})
-        #     m_list = M_list()
-        #     m_list_data.append(m_list)
+            res_line = get_cache (Res_line, {"resnr": [(eq, bill_list.resnr)],"zinr": [(ne, "")],"resstatus": [(ne, 12)]})
+            m_list = M_list()
+            m_list_data.append(m_list)
 
-        #     m_list.resnr = bill_list.resnr
+            m_list.resnr = bill_list.resnr
 
-        #     if res_line:
-        #         m_list.zinr = res_line.zinr
-        #         m_list.abreise = res_line.abreise
+            if res_line:
+                m_list.zinr = res_line.zinr
+                m_list.abreise = res_line.abreise
 
 
-        #     prevbal =  to_decimal("0")
-        #     debit =  to_decimal("0")
-        #     credit =  to_decimal("0")
-        #     balance =  to_decimal("0")
+            prevbal =  to_decimal("0")
+            debit =  to_decimal("0")
+            credit =  to_decimal("0")
+            balance =  to_decimal("0")
 
-        #     for bill_line in db_session.query(Bill_line).filter(
-        #              (Bill_line.rechnr == bill_list.rechnr) & (Bill_line.bill_datum <= billdate)).order_by(Bill_line.bezeich).all():
+            for bill_line in db_session.query(Bill_line).filter(
+                     (Bill_line.rechnr == bill_list.rechnr) & (Bill_line.bill_datum <= billdate)).order_by(Bill_line.bezeich).all():
 
-        #         s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == bill_line.artnr and s_list.dept == bill_line.departement and s_list.rechnr == bill_line.rechnr), first=True)
+                s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == bill_line.artnr and s_list.dept == bill_line.departement and s_list.rechnr == bill_line.rechnr), first=True)
 
-        #         if not s_list:
+                if not s_list:
 
-        #             artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+                    artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
 
-        #             if not artikel and num_entries(bill_line.bezeich, "*") > 1:
+                    if not artikel and num_entries(bill_line.bezeich, "*") > 1:
 
-        #                 artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, 0)]})
-        #             s_list = S_list()
-        #             s_list_data.append(s_list)
+                        artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, 0)]})
+                    s_list = S_list()
+                    s_list_data.append(s_list)
 
-        #             current_counter = current_counter + 1
-        #             s_list.i_counter = current_counter
-        #             s_list.gname = bill_list.gname
-        #             s_list.flag = 1
-        #             s_list.artnr = bill_line.artnr
-        #             s_list.dept = bill_line.departement
-        #             s_list.abreise = m_list.abreise
-        #             s_list.bill_datum = bill_line.bill_datum
-        #             s_list.zinr = m_list.zinr
-        #             s_list.rechnr = bill_list.rechnr
-        #             s_list.billtyp = "M"
-        #             s_list.billnr = 1
-        #             s_list.prevbal =  to_decimal("0")
-        #             s_list.balance =  to_decimal(balance)
+                    current_counter = current_counter + 1
+                    s_list.i_counter = current_counter
+                    s_list.gname = bill_list.gname
+                    s_list.flag = 1
+                    s_list.artnr = bill_line.artnr
+                    s_list.dept = bill_line.departement
+                    s_list.abreise = m_list.abreise
+                    s_list.bill_datum = bill_line.bill_datum
+                    s_list.zinr = m_list.zinr
+                    s_list.rechnr = bill_list.rechnr
+                    s_list.billtyp = "M"
+                    s_list.billnr = 1
+                    s_list.prevbal =  to_decimal("0")
+                    s_list.balance =  to_decimal(balance)
 
-        #             if artikel:
-        #                 s_list.bezeich = artikel.bezeich
-        #             else:
-        #                 s_list.bezeich = bill_line.bezeich
+                    if artikel:
+                        s_list.bezeich = artikel.bezeich
+                    else:
+                        s_list.bezeich = bill_line.bezeich
 
-        #         if bill_line.bill_datum < billdate:
-        #             s_list.prevbal =  to_decimal(s_list.prevbal) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #             prevbal =  to_decimal(prevbal) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #             s_list.balance =  to_decimal(s_list.balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #             t_prevbal =  to_decimal(t_prevbal) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #         else:
+                if bill_line.bill_datum < billdate:
+                    s_list.prevbal =  to_decimal(s_list.prevbal) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                    prevbal =  to_decimal(prevbal) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                    s_list.balance =  to_decimal(s_list.balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                    t_prevbal =  to_decimal(t_prevbal) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                else:
 
-        #             if bill_line.betrag > 0:
-        #                 s_list.debit =  to_decimal(s_list.debit) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #                 debit =  to_decimal(debit) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #                 t_debit =  to_decimal(t_debit) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #             else:
-        #                 s_list.credit =  to_decimal(s_list.credit) - to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #                 credit =  to_decimal(credit) - to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #                 t_credit =  to_decimal(t_credit) - to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #             s_list.balance =  to_decimal(s_list.balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #         balance =  to_decimal(balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #         t_balance =  to_decimal(t_balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                    if bill_line.betrag > 0:
+                        s_list.debit =  to_decimal(s_list.debit) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                        debit =  to_decimal(debit) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                        t_debit =  to_decimal(t_debit) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                    else:
+                        s_list.credit =  to_decimal(s_list.credit) - to_decimal(bill_line.betrag) / to_decimal(fact1)
+                        credit =  to_decimal(credit) - to_decimal(bill_line.betrag) / to_decimal(fact1)
+                        t_credit =  to_decimal(t_credit) - to_decimal(bill_line.betrag) / to_decimal(fact1)
+                    s_list.balance =  to_decimal(s_list.balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                balance =  to_decimal(balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                t_balance =  to_decimal(t_balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
 
-        # for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype.lower()  == ("N").lower()), sort_by=[("gname",False)]):
-        #     prevbal =  to_decimal("0")
-        #     debit =  to_decimal("0")
-        #     credit =  to_decimal("0")
-        #     balance =  to_decimal("0")
+        for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype.lower()  == ("N").lower()), sort_by=[("gname",False)]):
+            prevbal =  to_decimal("0")
+            debit =  to_decimal("0")
+            credit =  to_decimal("0")
+            balance =  to_decimal("0")
 
-        #     for bill_line in db_session.query(Bill_line).filter(
-        #              (Bill_line.rechnr == bill_list.rechnr) & (Bill_line.bill_datum <= billdate)).order_by(Bill_line.bill_datum, Bill_line.artnr, Bill_line.departement).all():
-        #         tot_bline = tot_bline + 1
+            for bill_line in db_session.query(Bill_line).filter(
+                     (Bill_line.rechnr == bill_list.rechnr) & (Bill_line.bill_datum <= billdate)).order_by(Bill_line.bill_datum, Bill_line.artnr, Bill_line.departement).all():
+                tot_bline = tot_bline + 1
 
-        #         artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+                artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
 
-        #         if not artikel:
+                if not artikel:
 
-        #             artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, 0)]})
+                    artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, 0)]})
 
-        #         s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == artikel.artnr and s_list.dept == artikel.departement and s_list.rechnr == bill_line.rechnr), first=True)
+                s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == artikel.artnr and s_list.dept == artikel.departement and s_list.rechnr == bill_line.rechnr), first=True)
 
-        #         if not s_list:
-        #             s_list = S_list()
-        #             s_list_data.append(s_list)
+                if not s_list:
+                    s_list = S_list()
+                    s_list_data.append(s_list)
 
-        #             current_counter = current_counter + 1
-        #             s_list.i_counter = current_counter
-        #             s_list.gname = bill_list.gname
-        #             s_list.flag = 2
-        #             s_list.artnr = bill_line.artnr
-        #             s_list.dept = bill_line.departement
-        #             s_list.rechnr = bill_list.rechnr
-        #             s_list.billtyp = "NS"
-        #             s_list.billnr = bill_list.billnr
-        #             s_list.prevbal =  to_decimal("0")
-        #             s_list.balance =  to_decimal("0")
-        #             s_list.bill_datum = bill_line.bill_datum
+                    current_counter = current_counter + 1
+                    s_list.i_counter = current_counter
+                    s_list.gname = bill_list.gname
+                    s_list.flag = 2
+                    s_list.artnr = bill_line.artnr
+                    s_list.dept = bill_line.departement
+                    s_list.rechnr = bill_list.rechnr
+                    s_list.billtyp = "NS"
+                    s_list.billnr = bill_list.billnr
+                    s_list.prevbal =  to_decimal("0")
+                    s_list.balance =  to_decimal("0")
+                    s_list.bill_datum = bill_line.bill_datum
 
-        #             if artikel:
-        #                 s_list.bezeich = artikel.bezeich
-        #             else:
-        #                 s_list.bezeich = "[!] " + bill_line.bezeich
+                    if artikel:
+                        s_list.bezeich = artikel.bezeich
+                    else:
+                        s_list.bezeich = "[!] " + bill_line.bezeich
 
-        #         if bill_line.bill_datum < billdate:
-        #             s_list.prevbal =  to_decimal(s_list.prevbal) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #             prevbal =  to_decimal(prevbal) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #             t_prevbal =  to_decimal(t_prevbal) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #             s_list.balance =  to_decimal(s_list.balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #         else:
+                if bill_line.bill_datum < billdate:
+                    s_list.prevbal =  to_decimal(s_list.prevbal) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                    prevbal =  to_decimal(prevbal) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                    t_prevbal =  to_decimal(t_prevbal) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                    s_list.balance =  to_decimal(s_list.balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                else:
 
-        #             if bill_line.betrag > 0:
-        #                 s_list.debit =  to_decimal(s_list.debit) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #                 debit =  to_decimal(debit) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #                 t_debit =  to_decimal(t_debit) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #             else:
-        #                 s_list.credit =  to_decimal(s_list.credit) - to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #                 credit =  to_decimal(credit) - to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #                 t_credit =  to_decimal(t_credit) - to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #             s_list.balance =  to_decimal(s_list.balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #         balance =  to_decimal(balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        #         t_balance =  to_decimal(t_balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
-        
+                    if bill_line.betrag > 0:
+                        s_list.debit =  to_decimal(s_list.debit) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                        debit =  to_decimal(debit) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                        t_debit =  to_decimal(t_debit) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                    else:
+                        s_list.credit =  to_decimal(s_list.credit) - to_decimal(bill_line.betrag) / to_decimal(fact1)
+                        credit =  to_decimal(credit) - to_decimal(bill_line.betrag) / to_decimal(fact1)
+                        t_credit =  to_decimal(t_credit) - to_decimal(bill_line.betrag) / to_decimal(fact1)
+                    s_list.balance =  to_decimal(s_list.balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                balance =  to_decimal(balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
+                t_balance =  to_decimal(t_balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
         outstanding =  to_decimal(t_prevbal) + to_decimal(t_debit) - to_decimal(t_credit)
 
 

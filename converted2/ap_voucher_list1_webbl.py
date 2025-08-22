@@ -41,6 +41,9 @@ def ap_voucher_list1_webbl(input_paylist_data:[Input_paylist]):
 
 
     input_paylist = query(input_paylist_data, first=True)
+    if input_paylist.fdate is None or input_paylist.tdate is None:
+        return generate_output
+    
     from_date = date_mdy(input_paylist.fdate)
     to_date = date_mdy(input_paylist.tdate)
 

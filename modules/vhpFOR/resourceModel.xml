@@ -1335,4 +1335,25 @@
   <prgs:resource consumes="application/json" name="_3monthlyForecastCustom" path="/3monthlyForecastCustom" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-3monthly-forecast-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-3monthly-forecast-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_arlDisp6" path="/arlDisp6" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-arl-list-disp-arlist6-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-arl-list-disp-arlist6-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_argtFrateFillRate1Custom" path="/argtFrateFillRate1Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-argt-frate-fill-rate_1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-argt-frate-fill-rate_1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcfHistoryPrepare1" path="/gcfHistoryPrepare1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-gcf-history_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-gcf-history_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcfHistoryCentralizedPrepare" path="/gcfHistoryCentralizedPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-gcf-history-centralizedbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-gcf-history-centralizedbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_repeatGlistCentralized" path="/repeatGlistCentralized" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-repeat-glist-centralized-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-repeat-glist-centralized-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_reservationLeasingDelete" path="/reservationLeasingDelete" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-del-reserve-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-del-reserve-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_leasingReservation" path="/leasingReservation" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-reservation-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-reservation-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

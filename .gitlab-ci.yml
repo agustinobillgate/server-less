@@ -1,0 +1,12 @@
+stages:
+    - deploy
+
+deploy_to_production:
+    stage: deploy
+    script:
+        - echo "Starting deploy to production..."
+        - ./bash/sync_and_restart.sh
+    only:
+        - production
+    tags:
+        - production-environment

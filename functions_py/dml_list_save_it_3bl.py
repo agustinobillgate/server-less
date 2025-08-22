@@ -2,23 +2,28 @@
 #-----------------------------------------
 # Rd 31/7/2025
 # gitlab: 566
-# remarks Unix Command
+# remarks Unix Command 
 #-----------------------------------------
+#using conversion tools version: 1.0.0.118
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from models import Reslin_queasy, Dml_artdep, Paramtext, Dml_art, Queasy
 
-def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, selected_date:date, user_init:str, cbuff_price:decimal, cbuff_lief_nr:int, cbuff_approved:bool, cbuff_remark:str, curr_select:str, dml_no:str, counter:int):
-    curr_time:str = ""
-    htl_name:str = ""
+def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, selected_date:date, user_init:string, cbuff_price:Decimal, cbuff_lief_nr:int, cbuff_approved:bool, cbuff_remark:string, curr_select:string, dml_no:string, counter:int):
+
+    prepare_cache ([Paramtext, Dml_art, Queasy])
+
+    curr_time:string = ""
+    htl_name:string = ""
     reslin_queasy = dml_artdep = paramtext = dml_art = queasy = None
 
     breslin = bdml_artdep = None
 
     Breslin = create_buffer("Breslin",Reslin_queasy)
     Bdml_artdep = create_buffer("Bdml_artdep",Dml_artdep)
+
 
     db_session = local_storage.db_session
 
@@ -35,47 +40,45 @@ def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, sele
     curr_time = to_string(get_current_time_in_seconds(), "HH:MM")
     curr_time = replace_str(curr_time, ":", "")
 
-    paramtext = db_session.query(Paramtext).filter(
-             (Paramtext.txtnr == 200)).first()
+    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 200)]})
 
     if paramtext:
         htl_name = paramtext.ptexte
 
-    # if OPSYS.lower()  == ("UNIX").lower() :
+    if OPSYS.lower()  == ("UNIX").lower() :
 
-    #     if SEARCH ("/usr1/vhp/tmpLOG/") == None:
-    #         UNIX SILENT VALUE ("mkdir " + "/usr1/vhp/tmpLOG/")
+        if SEARCH ("/usr1/vhp/tmpLOG/") == None:
+            UNIX SILENT VALUE ("mkdir " + "/usr1/vhp/tmpLOG/")
 
-    #     if curr_select.lower()  == ("new").lower() :
-    #         OUTPUT STREAM s1 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-New" + ".txt") APPEND UNBUFFERED
+        if curr_select.lower()  == ("new").lower() :
+            OUTPUT STREAM s1 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-New" + ".txt") APPEND UNBUFFERED
 
-    #         if cbuff_approved:
-    #             OUTPUT STREAM s2 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
-    #     else:
-    #         OUTPUT STREAM s1 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Modify" + ".txt") APPEND UNBUFFERED
+            if cbuff_approved:
+                OUTPUT STREAM s2 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
+        else:
+            OUTPUT STREAM s1 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Modify" + ".txt") APPEND UNBUFFERED
 
-    #         if cbuff_approved:
-    #             OUTPUT STREAM s2 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
-    # else:
+            if cbuff_approved:
+                OUTPUT STREAM s2 TO VALUE ("/usr1/vhp/tmpLOG/DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
+    else:
 
-    #     if SEARCH ("C:\\e1-vhp\\tmpLOG\\") == None:
-    #         UNIX SILENT VALUE ("mkdir " + "C:\\e1-vhp\\tmpLOG\\")
+        if SEARCH ("C:\\e1-vhp\\tmpLOG\\") == None:
+            UNIX SILENT VALUE ("mkdir " + "C:\\e1-vhp\\tmpLOG\\")
 
-    #     if curr_select.lower()  == ("new").lower() :
-    #         OUTPUT STREAM s1 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-New" + ".txt") APPEND UNBUFFERED
+        if curr_select.lower()  == ("new").lower() :
+            OUTPUT STREAM s1 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-New" + ".txt") APPEND UNBUFFERED
 
-    #         if cbuff_approved:
-    #             OUTPUT STREAM s2 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
-    #     else:
-    #         OUTPUT STREAM s1 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Modify" + ".txt") APPEND UNBUFFERED
+            if cbuff_approved:
+                OUTPUT STREAM s2 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
+        else:
+            OUTPUT STREAM s1 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Modify" + ".txt") APPEND UNBUFFERED
 
-    #         if cbuff_approved:
-    #             OUTPUT STREAM s2 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
+            if cbuff_approved:
+                OUTPUT STREAM s2 TO VALUE ("C:\\e1-vhp\\tmpLOG\\DML-LIST- " + htl_name + "-" + to_string(get_day(get_current_date())) + to_string(get_month(get_current_date()) , "99") + to_string(get_year(get_current_date())) + curr_time + to_string(curr_dept, "99") + "-Approved" + ".txt") APPEND UNBUFFERED
 
     if curr_dept == 0:
 
-        dml_art = db_session.query(Dml_art).filter(
-                 (Dml_art.artnr == cbuff_artnr) & (Dml_art.datum == selected_date)).first()
+        dml_art = get_cache (Dml_art, {"artnr": [(eq, cbuff_artnr)],"datum": [(eq, selected_date)]})
 
         if not dml_art:
             dml_art = Dml_art()
@@ -91,8 +94,7 @@ def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, sele
         dml_art.userinit = entry(0, dml_art.userinit, ";")
         dml_art.chginit = user_init + ";" + dml_no
 
-        queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 202) & (Queasy.number1 == 0) & (Queasy.number2 == cbuff_artnr) & (Queasy.number3 == counter) & (Queasy.date1 == selected_date)).first()
+        queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, 0)],"number2": [(eq, cbuff_artnr)],"number3": [(eq, counter)],"date1": [(eq, selected_date)]})
 
         if not queasy:
             queasy = Queasy()
@@ -142,7 +144,7 @@ def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, sele
                         if counter > 1:
 
                             reslin_queasy = db_session.query(Reslin_queasy).filter(
-                                     (func.lower(Reslin_queasy.key) == ("DML").lower()) & (to_int(entry(0, Reslin_queasy.char1, ";")) == cbuff_artnr) & (Reslin_queasy.date1 == selected_date) & (to_int(entry(1, Reslin_queasy.char1, ";")) == curr_dept) & (Reslin_queasy.number2 == counter)).first()
+                                     (Reslin_queasy.key == ("DML").lower()) & (to_int(entry(0, Reslin_queasy.char1, ";")) == cbuff_artnr) & (Reslin_queasy.date1 == selected_date) & (to_int(entry(1, Reslin_queasy.char1, ";")) == curr_dept) & (Reslin_queasy.number2 == counter)).first()
 
                             if not reslin_queasy and cbuff_qty != 0:
                                 reslin_queasy = Reslin_queasy()
@@ -175,8 +177,7 @@ def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, sele
                                         else:
                                         pass
 
-                                    queasy = db_session.query(Queasy).filter(
-                                             (Queasy.key == 202) & (Queasy.number1 == curr_dept) & (Queasy.number2 == cbuff_artnr) & (Queasy.number3 == counter) & (Queasy.date1 == selected_date)).first()
+                                    queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, curr_dept)],"number2": [(eq, cbuff_artnr)],"number3": [(eq, counter)],"date1": [(eq, selected_date)]})
 
                                     if not queasy:
                                         queasy = Queasy()
@@ -199,8 +200,7 @@ def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, sele
                                         pass
                             else:
 
-                                dml_artdep = db_session.query(Dml_artdep).filter(
-                                         (Dml_artdep.artnr == cbuff_artnr) & (Dml_artdep.datum == selected_date) & (Dml_artdep.departement == curr_dept)).first()
+                                dml_artdep = get_cache (Dml_artdep, {"artnr": [(eq, cbuff_artnr)],"datum": [(eq, selected_date)],"departement": [(eq, curr_dept)]})
 
                                 if not dml_artdep and cbuff_qty != 0:
                                     dml_artdep = Dml_artdep()
@@ -214,8 +214,7 @@ def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, sele
                                     dml_artdep.einzelpreis =  to_decimal(cbuff_price)
                                     dml_artdep.chginit = user_init + ";" + dml_no
 
-                                    queasy = db_session.query(Queasy).filter(
-                                             (Queasy.key == 202) & (Queasy.number1 == curr_dept) & (Queasy.number2 == cbuff_artnr) & (Queasy.number3 == counter) & (Queasy.date1 == selected_date)).first()
+                                    queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, curr_dept)],"number2": [(eq, cbuff_artnr)],"number3": [(eq, counter)],"date1": [(eq, selected_date)]})
 
                                     if not queasy:
                                         queasy = Queasy()
@@ -258,12 +257,12 @@ def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, sele
                             else:
 
                                 breslin = db_session.query(Breslin).filter(
-                                         (func.lower(Breslin.key) == ("DML").lower()) & (entry(1, Breslin.char3, ";") == (dml_no).lower())).first()
+                                         (Breslin.key == ("DML").lower()) & (entry(1, Breslin.char3, ";") == (dml_no).lower())).first()
 
                                 if breslin:
 
                                     reslin_queasy = db_session.query(Reslin_queasy).filter(
-                                             (func.lower(Reslin_queasy.key) == ("DML").lower()) & (to_int(entry(0, Reslin_queasy.char1, ";")) == cbuff_artnr) & (Reslin_queasy.date1 == selected_date) & (to_int(entry(1, Reslin_queasy.char1, ";")) == curr_dept) & (entry(1, Reslin_queasy.char3, ";") == (dml_no).lower())).first()
+                                             (Reslin_queasy.key == ("DML").lower()) & (to_int(entry(0, Reslin_queasy.char1, ";")) == cbuff_artnr) & (Reslin_queasy.date1 == selected_date) & (to_int(entry(1, Reslin_queasy.char1, ";")) == curr_dept) & (entry(1, Reslin_queasy.char3, ";") == (dml_no).lower())).first()
 
                                     if reslin_queasy:
 
@@ -273,8 +272,7 @@ def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, sele
                                             reslin_queasy.char2 = entry(0, reslin_queasy.char2, ";")
                                             reslin_queasy.char3 = user_init + ";" + dml_no
 
-                                            queasy = db_session.query(Queasy).filter(
-                                                     (Queasy.key == 202) & (Queasy.number1 == curr_dept) & (Queasy.number2 == cbuff_artnr) & (Queasy.number3 == counter) & (Queasy.date1 == selected_date)).first()
+                                            queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, curr_dept)],"number2": [(eq, cbuff_artnr)],"number3": [(eq, counter)],"date1": [(eq, selected_date)]})
 
                                             if not queasy:
                                                 queasy = Queasy()
@@ -350,8 +348,7 @@ def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, sele
                                                         else:
                                                         pass
 
-                                                    queasy = db_session.query(Queasy).filter(
-                                                             (Queasy.key == 202) & (Queasy.number1 == curr_dept) & (Queasy.number2 == cbuff_artnr) & (Queasy.number3 == counter) & (Queasy.date1 == selected_date)).first()
+                                                    queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, curr_dept)],"number2": [(eq, cbuff_artnr)],"number3": [(eq, counter)],"date1": [(eq, selected_date)]})
 
                                                     if not queasy:
                                                         queasy = Queasy()
@@ -374,8 +371,7 @@ def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, sele
                                                         pass
                                         else:
 
-                                            dml_artdep = db_session.query(Dml_artdep).filter(
-                                                     (Dml_artdep.artnr == cbuff_artnr) & (Dml_artdep.datum == selected_date) & (Dml_artdep.departement == curr_dept)).first()
+                                            dml_artdep = get_cache (Dml_artdep, {"artnr": [(eq, cbuff_artnr)],"datum": [(eq, selected_date)],"departement": [(eq, curr_dept)]})
 
                                             if dml_artdep:
 
@@ -385,8 +381,7 @@ def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, sele
                                                     dml_artdep.userinit = entry(0, dml_artdep.userinit, ";")
                                                     dml_artdep.chginit = user_init + ";" + dml_no
 
-                                                    queasy = db_session.query(Queasy).filter(
-                                                             (Queasy.key == 202) & (Queasy.number1 == curr_dept) & (Queasy.number2 == cbuff_artnr) & (Queasy.number3 == counter) & (Queasy.date1 == selected_date)).first()
+                                                    queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, curr_dept)],"number2": [(eq, cbuff_artnr)],"number3": [(eq, counter)],"date1": [(eq, selected_date)]})
 
                                                     if not queasy:
                                                         queasy = Queasy()
@@ -447,8 +442,7 @@ def dml_list_save_it_3bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:decimal, sele
                                                                         dml_artdep.anzahl =  to_decimal(cbuff_qty)
                                                                         dml_artdep.einzelpreis =  to_decimal(cbuff_price)
 
-                                                                        queasy = db_session.query(Queasy).filter(
-                                                                                 (Queasy.key == 202) & (Queasy.number1 == curr_dept) & (Queasy.number2 == cbuff_artnr) & (Queasy.number3 == counter) & (Queasy.date1 == selected_date)).first()
+                                                                        queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, curr_dept)],"number2": [(eq, cbuff_artnr)],"number3": [(eq, counter)],"date1": [(eq, selected_date)]})
 
                                                                         if not queasy:
                                                                             queasy = Queasy()

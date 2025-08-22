@@ -1,9 +1,9 @@
 #using conversion tools version: 1.0.0.117
-
 #-----------------------------------------
 # Rd, 23/7/20225
 # gitlab:656
 # requery for each, close_date dikeluarkan
+# 21/8/2025, Last Receiving date kosong
 #-----------------------------------------
 
 from functions.additional_functions import *
@@ -362,7 +362,6 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
                 str_list2 = Str_list2()
                 str_list2_data.append(str_list2)
 
-
                 if first_rec:
                     str_list2.m_unit = l_artikel.masseinheit
                     str_list2.datum = to_string(l_ophis.datum)
@@ -392,7 +391,6 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
                      (L_ophis.artnr == s_artnr) & (L_ophis.op_art == 3) & (L_ophis.datum == last_date)).order_by(L_ophis._recid).all():
                 str_list2 = Str_list2()
                 str_list2_data.append(str_list2)
-
 
                 if first_rec:
                     str_list2.m_unit = l_artikel.masseinheit
@@ -450,7 +448,8 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
         stock_movelist = Stock_movelist()
         stock_movelist_data.append(stock_movelist)
 
-        stock_movelist.datum = date_mdy(str_list2.datum)
+        # stock_movelist.datum = date_mdy(str_list2.datum)
+        stock_movelist.datum = str_list2.datum
         stock_movelist.lscheinnr = str_list2.lscheinnr
         stock_movelist.init_qty =  to_decimal(to_decimal(str_list2.init_qty) )
         stock_movelist.init_val =  to_decimal(to_decimal(str_list2.init_val) )

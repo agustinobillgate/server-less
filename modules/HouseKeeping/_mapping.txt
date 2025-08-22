@@ -71,3 +71,4 @@ changeRoomStatusCustom,hk_change_room_status_webbl
 rmstatHistory,hk_rmstat_history_webbl
 getOOOHistListCustom,ooohist_list_webbl
 getOverview1,hk_count_1_webbl
+getRoomMaidCustom,hk_zimaid_webbl
