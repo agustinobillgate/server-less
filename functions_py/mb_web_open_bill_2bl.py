@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 22/8/2025
+# bemerk -> bemerkung
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -136,7 +139,10 @@ def mb_web_open_bill_2bl(bil_recid:int, foreign_rate:bool, double_currency:bool,
             chr_unicode(10) + t_guest.adresse1 +\
             chr_unicode(10) + t_guest.wohnort + " " + t_guest.plz +\
             chr_unicode(10) + t_guest.land
-    rescomment = t_guest.bemerk
+    
+    # Rd 22/8/2025
+    # rescomment = t_guest.bemerk
+    rescomment = t_guest.bemerkung
     art_no = t_guest.zahlungsart
     guest_taxcode = to_string(t_guest.firmen_nr)
 

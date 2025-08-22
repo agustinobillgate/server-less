@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 22/8/2025
+# validate fname, gname is ? -> ""
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Guest, Bill
@@ -12,6 +15,12 @@ def read_guestbl(case_type:int, gastno:int, gname:string, fname:string):
     guest = bill = None
 
     t_guest = None
+    
+    # Rd, 22/8/2025
+    if gname is None:
+        gname = ""
+    if fname is None:
+        fname = ""
 
     t_guest_data, T_guest = create_model_like(Guest)
 

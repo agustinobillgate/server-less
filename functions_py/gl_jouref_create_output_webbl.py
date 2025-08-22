@@ -33,7 +33,7 @@ def gl_jouref_create_output_webbl(idflag:string, output_list_data:[Output_list])
 
         return {"doneflag": doneflag, "output-list": output_list_data}
 
-    queasy = get_cache (Queasy, {"key": [(eq, 280)],"char1": [(eq, "journalist by voucher")],"char3": [(eq, idflag)]})
+    queasy = get_cache (Queasy, {"key": [(eq, 280)],"char1": [(eq, "Journalist by voucher")],"char3": [(eq, idflag)]})
     while None != queasy:
         counter = counter + 1
 
