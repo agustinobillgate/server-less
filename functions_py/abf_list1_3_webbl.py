@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 22/8/2025
+# add zimmeranz = res_line, defaulnya ambil = 1, 
+# di python tidak bisa ambil default
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -185,6 +190,9 @@ def abf_list1_3_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, show_bfast_ra
 
                 if rline:
                     abf_list.bemerk = abf_list.comments + rline.bemerk
+                    # Rd, 22/8/2025, krn hasil total adult di web,
+                    abf_list.zimmeranz = rline.zimmeranz
+
                    
 
                 if abf_list.comments != "":
