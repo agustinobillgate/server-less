@@ -1,0 +1,127 @@
+{
+    "Htparam": {
+        "read": [
+            "fchar",
+            "fdate",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [],
+        "write": []
+    },
+    "Arrangement": {
+        "read": [
+            "argtnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Artikel": {
+        "read": [
+            "betriebsnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Argt_line": {
+        "read": [
+            "betrag",
+            "betriebsnr",
+            "vt_percnt",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reslin_queasy": {
+        "read": [],
+        "write": []
+    },
+    "Fixleist": {
+        "read": [
+            "artnr",
+            "departement",
+            "sequenz",
+            "dekade",
+            "lfakt",
+            "number",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest": {
+        "read": [
+            "adresse1",
+            "wohnort",
+            "plz",
+            "nation1",
+            "mobil_telefon",
+            "gastnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "segmentcode",
+            "name",
+            "useridanlage",
+            "bemerk",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Segment": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Ratecode": {
+        "read": [
+            "code",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Mc_guest": {
+        "read": [
+            "cardnum",
+            "nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Mc_types": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Mealcoup": {
+        "read": [
+            "verbrauch",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [
+            "ankauf",
+            "einheit",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bill": {
+        "read": [],
+        "write": []
+    },
+    "Master": {
+        "read": [],
+        "write": []
+    }
+}
