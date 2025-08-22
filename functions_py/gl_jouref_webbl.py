@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 2/8/2025
+# GL by voucher kosong
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
