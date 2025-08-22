@@ -3,6 +3,7 @@
 # Rd, 22/8/2025
 # beda sorting
 # sorttype = 1 -> room, function query() merubah sort order,
+# gmember.nation1 blm termasuk dalam for db_session, di tambahkan manual.
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -145,7 +146,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
             res_line.bemerk, res_line.gastnr, res_line._recid, zimkateg.kurzbez, zimkateg.bezeichnung, zimkateg._recid, reservation.segmentcode, \
             reservation.resdat, reservation.useridanlage, reservation.resnr, reservation._recid, guest.name, guest.vorname1, guest.anrede1, \
             guest.anredefirma, guest.gastnr, guest.karteityp, guest._recid, gmember.name, gmember.vorname1, gmember.anrede1, gmember.anredefirma, \
-            gmember.gastnr, gmember.karteityp, gmember._recid \
+            gmember.gastnr, gmember.karteityp, gmember._recid, gmember.nation1 \
             in db_session.query(Res_line.setup, Res_line.zinr, Res_line.resnr, Res_line.name, Res_line.zipreis, Res_line.ankunft, Res_line.abreise, 
                                 Res_line.zimmeranz, Res_line.erwachs, Res_line.kind1, Res_line.kind2, Res_line.gratis, Res_line.arrangement, Res_line.flight_nr, \
                                 Res_line.ankzeit, Res_line.resstatus, Res_line.betriebsnr, Res_line.reslinnr, Res_line.zimmer_wunsch, Res_line.zimmerfix, \
@@ -153,7 +154,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                                 Zimkateg._recid, Reservation.segmentcode, Reservation.resdat, Reservation.useridanlage, Reservation.resnr, \
                                 Reservation._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.anredefirma, Guest.gastnr, Guest.karteityp, \
                                 Guest._recid, Gmember.name, Gmember.vorname1, Gmember.anrede1, Gmember.anredefirma, Gmember.gastnr, Gmember.karteityp, \
-                                Gmember._recid).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) \
+                                Gmember._recid, Gmember.nation1).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) \
                         ).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
                                 (Res_line.active_flag >= actflag1) & 
                                 (Res_line.active_flag <= actflag2) & 
@@ -198,6 +199,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 cl_list.kurzbez = zimkateg.kurzbez
                 cl_list.bezeich = zimkateg.bezeichnung
                 cl_list.nat = gmember.nation1
+                # print("CNat:", cl_list.nat)
                 cl_list.resnr = res_line.resnr
                 cl_list.vip = vip_flag
                 cl_list.name = res_line.name
@@ -429,14 +431,11 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                     tot_rm = tot_rm - 1
      
         # Summary s_list
-        for cl_list in query(cl_list_data, sort_by=[("nation",False),("bezeich",False)]):
+        for cl_list in query(cl_list_data, sort_by=[("nat",False),("bezeich",False)]):
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.rmcat == cl_list.kurzbez), first=True)
-
             if not s_list:
-
                 s_list = query(s_list_data, filters=(lambda s_list: s_list.rmcat == ""), first=True)
-
                 if s_list:
                     s_list.rmcat = cl_list.kurzbez
                     s_list.bezeich = cl_list.bezeich
@@ -450,9 +449,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
             s_list.anz = s_list.anz + cl_list.qty
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.nat == cl_list.nat), first=True)
-
             if not s_list:
-
                 s_list = query(s_list_data, filters=(lambda s_list: s_list.nat == ""), first=True)
 
                 if s_list:
@@ -461,17 +458,11 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
             if not s_list:
                 s_list = S_list()
                 s_list_data.append(s_list)
+                s_list.nat = cl_list.nat
 
-
-                if s_list:
-                    s_list.nat = cl_list.nat
             s_list.adult = s_list.adult + cl_list.a + cl_list.co
             s_list.child = s_list.child + cl_list.c
             s_list.rmqty = s_list.rmqty + cl_list.qty
-
-        # sort by rmno -> query diatas merubah sort order.
-        for cl_list in query(cl_list_data, sort_by=[("rmno",False)]):
-            pass
 
         if (tot_a + tot_co) != 0:
 
@@ -483,7 +474,10 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                     s_list.nat = nation.bezeich
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
 
-
+        # sort by rmno -> query diatas merubah sort order.-------------------
+        for cl_list in query(cl_list_data, sort_by=[("rmno",False)]):
+            pass
+        #--------------------------------------------------------------------
 
     def create_genstat_inhouse():
 
@@ -538,7 +532,18 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
         reservation = Reservation()
         guest = Guest()
         gmember = Guest()
-        for genstat.resstatus, genstat.res_date, genstat.resnr, genstat.res_int, genstat.zinr, genstat.zipreis, genstat.erwachs, genstat.kind1, genstat.kind2, genstat.kind3, genstat.gratis, genstat.argt, genstat.segmentcode, genstat.gastnr, genstat._recid, zimkateg.kurzbez, zimkateg.bezeichnung, zimkateg._recid, reservation.segmentcode, reservation.resdat, reservation.useridanlage, reservation.resnr, reservation._recid, guest.name, guest.vorname1, guest.anrede1, guest.anredefirma, guest.gastnr, guest.karteityp, guest._recid, gmember.name, gmember.vorname1, gmember.anrede1, gmember.anredefirma, gmember.gastnr, gmember.karteityp, gmember._recid in db_session.query(Genstat.resstatus, Genstat.res_date, Genstat.resnr, Genstat.res_int, Genstat.zinr, Genstat.zipreis, Genstat.erwachs, Genstat.kind1, Genstat.kind2, Genstat.kind3, Genstat.gratis, Genstat.argt, Genstat.segmentcode, Genstat.gastnr, Genstat._recid, Zimkateg.kurzbez, Zimkateg.bezeichnung, Zimkateg._recid, Reservation.segmentcode, Reservation.resdat, Reservation.useridanlage, Reservation.resnr, Reservation._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.anredefirma, Guest.gastnr, Guest.karteityp, Guest._recid, Gmember.name, Gmember.vorname1, Gmember.anrede1, Gmember.anredefirma, Gmember.gastnr, Gmember.karteityp, Gmember._recid).join(Zimkateg,(Zimkateg.zikatnr == Genstat.zikatnr)).join(Reservation,(Reservation.resnr == Genstat.resnr)).join(Guest,(Guest.gastnr == Genstat.gastnr)).join(Gmember,(Gmember.gastnr == Genstat.gastnrmember)).filter(
+        for genstat.resstatus, genstat.res_date, genstat.resnr, genstat.res_int, genstat.zinr, genstat.zipreis, genstat.erwachs, genstat.kind1, \
+            genstat.kind2, genstat.kind3, genstat.gratis, genstat.argt, genstat.segmentcode, genstat.gastnr, genstat._recid, zimkateg.kurzbez, \
+            zimkateg.bezeichnung, zimkateg._recid, reservation.segmentcode, reservation.resdat, reservation.useridanlage, reservation.resnr, \
+            reservation._recid, guest.name, guest.vorname1, guest.anrede1, guest.anredefirma, guest.gastnr, guest.karteityp, guest._recid, \
+            gmember.name, gmember.vorname1, gmember.anrede1, gmember.anredefirma, gmember.gastnr, gmember.karteityp, gmember._recid, gmember.nation1 \
+                in db_session.query(Genstat.resstatus, Genstat.res_date, Genstat.resnr, Genstat.res_int, Genstat.zinr, Genstat.zipreis, Genstat.erwachs, \
+                                    Genstat.kind1, Genstat.kind2, Genstat.kind3, Genstat.gratis, Genstat.argt, Genstat.segmentcode, Genstat.gastnr, \
+                                    Genstat._recid, Zimkateg.kurzbez, Zimkateg.bezeichnung, Zimkateg._recid, Reservation.segmentcode, Reservation.resdat, \
+                                    Reservation.useridanlage, Reservation.resnr, Reservation._recid, Guest.name, Guest.vorname1, Guest.anrede1, \
+                                    Guest.anredefirma, Guest.gastnr, Guest.karteityp, Guest._recid, Gmember.name, Gmember.vorname1, Gmember.anrede1, \
+                                    Gmember.anredefirma, Gmember.gastnr, Gmember.karteityp, Gmember._recid, Gmember.nation1)\
+                                .join(Zimkateg,(Zimkateg.zikatnr == Genstat.zikatnr)).join(Reservation,(Reservation.resnr == Genstat.resnr)).join(Guest,(Guest.gastnr == Genstat.gastnr)).join(Gmember,(Gmember.gastnr == Genstat.gastnrmember)).filter(
                  (Genstat.datum == datum) & (Genstat.zinr >= (froom).lower()) & (Genstat.zinr <= (troom).lower())).order_by(Genstat.zinr, Genstat.erwachs.desc(), Gmember.name).all():
             if genstat_obj_list.get(genstat._recid):
                 continue
@@ -856,6 +861,11 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 if nation:
                     s_list.nat = nation.bezeich
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
+
+        # sort by rmno -> query diatas merubah sort order.-------------------
+        for cl_list in query(cl_list_data, sort_by=[("rmno",False)]):
+            pass
+        #--------------------------------------------------------------------
 
     def create_inhouse1():
 
@@ -1229,6 +1239,11 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 if nation:
                     s_list.nat = nation.bezeich
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
+
+        # sort by rmno -> query diatas merubah sort order.-------------------
+        for cl_list in query(cl_list_data, sort_by=[("rmno",False)]):
+            pass
+        #--------------------------------------------------------------------
 
     def create_genstat_inhouse1():
         # sorttype = 2
@@ -1608,6 +1623,11 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 if nation:
                     s_list.nat = nation.bezeich
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
+
+        # sort by rmno -> query diatas merubah sort order.-------------------
+        for cl_list in query(cl_list_data, sort_by=[("rmno",False)]):
+            pass
+        #--------------------------------------------------------------------
 
     def create_inhouse2():
         # sorttype = 1
@@ -1993,6 +2013,11 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                     s_list.nat = nation.bezeich
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
 
+        # sort by rmno -> query diatas merubah sort order.-------------------
+        for cl_list in query(cl_list_data, sort_by=[("rmno",False)]):
+            pass
+        #--------------------------------------------------------------------
+
     def create_genstat_inhouse2():
         # sorttype = 1
         nonlocal tot_payrm, tot_rm, tot_a, tot_c, tot_co, tot_avail, tot_rmqty, inactive, cl_list_data, s_list_data, t_buff_queasy_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, tot_room, all_room, all_remark, queasy, htparam, zkstat, zinrstat, paramtext, guest, reservation, zimmer, zimkateg, res_line, guestseg, segment, mc_guest, mc_types, nation, waehrung, reslin_queasy, mealcoup, genstat
@@ -2364,6 +2389,11 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                     s_list.nat = nation.bezeich
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
 
+        # sort by rmno -> query diatas merubah sort order.-------------------
+        for cl_list in query(cl_list_data, sort_by=[("rmno",False)]):
+            pass
+        #--------------------------------------------------------------------
+
     def create_inhouse3():
         # sorttype = 
         nonlocal tot_payrm, tot_rm, tot_a, tot_c, tot_co, tot_avail, tot_rmqty, inactive, cl_list_data, s_list_data, t_buff_queasy_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, tot_room, all_room, all_remark, queasy, htparam, zkstat, zinrstat, paramtext, guest, reservation, zimmer, zimkateg, res_line, guestseg, segment, mc_guest, mc_types, nation, waehrung, reslin_queasy, mealcoup, genstat
@@ -2688,12 +2718,10 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
         for cl_list in query(cl_list_data, sort_by=[("nation",False),("bezeich",False)]):
 
+            # summary by room category
             s_list = query(s_list_data, filters=(lambda s_list: s_list.rmcat == cl_list.kurzbez), first=True)
-
             if not s_list:
-
                 s_list = query(s_list_data, filters=(lambda s_list: s_list.rmcat == ""), first=True)
-
                 if s_list:
                     s_list.rmcat = cl_list.kurzbez
                     s_list.bezeich = cl_list.bezeich
@@ -2706,10 +2734,10 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 s_list.bezeich = cl_list.bezeich
             s_list.anz = s_list.anz + cl_list.qty
 
+            # summary by nation
+            print("Nat:", cl_list.nat)
             s_list = query(s_list_data, filters=(lambda s_list: s_list.nat == cl_list.nat), first=True)
-
             if not s_list:
-
                 s_list = query(s_list_data, filters=(lambda s_list: s_list.nat == ""), first=True)
 
                 if s_list:
@@ -2719,22 +2747,25 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 s_list = S_list()
                 s_list_data.append(s_list)
 
-
                 if s_list:
                     s_list.nat = cl_list.nat
+
             s_list.adult = s_list.adult + cl_list.a + cl_list.co
             s_list.child = s_list.child + cl_list.c
             s_list.rmqty = s_list.rmqty + cl_list.qty
 
         if (tot_a + tot_co) != 0:
-
             for s_list in query(s_list_data, filters=(lambda s_list: s_list.nat != "")):
-
                 nation = get_cache (Nation, {"kurzbez": [(eq, s_list.nat)]})
-
                 if nation:
                     s_list.nat = nation.bezeich
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
+
+
+        # sort by rmno -> query diatas merubah sort order.-------------------
+        for cl_list in query(cl_list_data, sort_by=[("rmno",False)]):
+            pass
+        #--------------------------------------------------------------------
 
     def create_genstat_inhouse3():
 
@@ -3113,6 +3144,11 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 if nation:
                     s_list.nat = nation.bezeich
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
+
+        # sort by rmno -> query diatas merubah sort order.-------------------
+        for cl_list in query(cl_list_data, sort_by=[("rmno",False)]):
+            pass
+        #--------------------------------------------------------------------
 
     def create_buf_queasy():
 
