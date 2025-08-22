@@ -2,7 +2,7 @@
 #------------------------------------------
 # Rd, 22/8/2025
 # beda sorting
-# sorttype = 1 -> room
+# sorttype = 1 -> room, function query() merubah sort order,
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
