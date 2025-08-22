@@ -2,7 +2,12 @@
 #----------------------------------------
 # Rd 3/8/2025
 # dept -> ordered_item.dept
+
+# Rulita, 22/08/2025
+# Added : find first h_artikel
+# ticketID : 1DA62E
 #----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -64,7 +69,7 @@ def ts_restinv_disp_bill_line_web_1bl(double_currency:bool, rechnr:int, curr_dep
 
     t_h_bill_line = ordered_item = summary_bill = t_h_artikel = None
 
-    t_h_bill_line_data, T_h_bill_line = create_model_like(H_bill_line, {"rec_id":int, "request_str":string, "flag_code":int, "kds_stat":int, "kds_stat_str":string, "posting_id":int, "t_time":string}, {"kds_stat": -1})
+    t_h_bill_line_data, T_h_bill_line = create_model_like(H_bill_line, {"rec_id":int, "request_str":string, "flag_code":int, "kds_stat":int, "kds_stat_str":string, "posting_id":int, "t_time":string, "artart":int}, {"kds_stat": -1})
     ordered_item_data, Ordered_item = create_model("Ordered_item", {"dept":int, "artnr":int, "rec_id":int, "qty":int, "epreis":Decimal, "net_bet":Decimal, "tax":Decimal, "service":Decimal, "bill_date":date, "betrag":Decimal})
     summary_bill_data, Summary_bill = create_model("Summary_bill", {"subtotal":Decimal, "total_service":Decimal, "total_tax":Decimal, "grand_total":Decimal, "gt_not_round":Decimal})
     t_h_artikel_data, T_h_artikel = create_model_like(H_artikel, {"rec_id":int})
@@ -173,6 +178,14 @@ def ts_restinv_disp_bill_line_web_1bl(double_currency:bool, rechnr:int, curr_dep
             if h_journal:
                 t_h_bill_line.posting_id = h_journal.kellner_nr
 
+            # Rulita Added find first h_artikel TiketID:1DA62E
+
+            h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_bill_line.artnr)], "departement": [(eq, h_bill_line.departement)]})
+
+            if h_artikel:
+                t_h_bill_line.artnr = h_artikel.artnr
+
+            # Rulita End added h_artikel TiketID:1DA62E
 
             show_submenu()
             request_str = get_output(ts_restinv_disp_requestbl(h_bill_line._recid))
@@ -208,6 +221,14 @@ def ts_restinv_disp_bill_line_web_1bl(double_currency:bool, rechnr:int, curr_dep
             if h_journal:
                 t_h_bill_line.posting_id = h_journal.kellner_nr
 
+            # Rulita Added find first h_artikel TiketID:1DA62E
+
+            h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_bill_line.artnr)], "departement": [(eq, h_bill_line.departement)]})
+
+            if h_artikel:
+                t_h_bill_line.artnr = h_artikel.artnr
+
+            # Rulita End added h_artikel TiketID:1DA62E
 
             show_submenu()
             request_str = get_output(ts_restinv_disp_requestbl(h_bill_line._recid))
