@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 25/8/2025
+# data kosong di .py
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -27,25 +30,47 @@ def cancel_stockin_btn_go1bl(pvilanguage:int, all_supp:bool, sorttype:int, from_
 
     str_list_data = get_output(cancel_stockin_btn_go_cldbl(pvilanguage, all_supp, sorttype, from_grp, store, from_date, to_date, show_price, from_supp))
     cancel_stockin_list_data.clear()
-
     for str_list in query(str_list_data):
+        # print(str_list.amount)
         cancel_stockin_list = Cancel_stockin_list()
         cancel_stockin_list_data.append(cancel_stockin_list)
 
-        cancel_stockin_list.datum = date_mdy(substring(str_list.s, 0, 8))
-        cancel_stockin_list.lager = substring(str_list.s, 8, 2)
+        # cancel_stockin_list.datum = date_mdy(substring(str_list.s, 0, 8))
+        cancel_stockin_list.datum = str_list.billdate
+
+        # cancel_stockin_list.lager = substring(str_list.s, 8, 2)
+        cancel_stockin_list.lager = str_list.lager_nr
         cancel_stockin_list.lief_nr = str_list.lief_nr
-        cancel_stockin_list.lief = substring(str_list.s, 83, 24)
-        cancel_stockin_list.art = substring(str_list.s, 10, 7)
-        cancel_stockin_list.bezeich = substring(str_list.s, 17, 32)
-        cancel_stockin_list.unit = substring(str_list.s, 49, 6)
-        cancel_stockin_list.epreis = to_decimal(substring(str_list.s, 143, 14))
-        cancel_stockin_list.in_qty = to_decimal(substring(str_list.s, 55, 13))
-        cancel_stockin_list.amount = to_decimal(substring(str_list.s, 68, 15))
-        cancel_stockin_list.docunr = substring(str_list.s, 107, 16)
-        cancel_stockin_list.dlvnote = substring(str_list.s, 123, 20)
-        cancel_stockin_list.note = substring(str_list.s, 157, 26)
-        cancel_stockin_list.reason = substring(str_list.s, 183, 24)
+
+        # cancel_stockin_list.lief = substring(str_list.s, 83, 24)
+        cancel_stockin_list.lief = str_list.lief
+
+
+        # cancel_stockin_list.art = substring(str_list.s, 10, 7)
+        cancel_stockin_list.art = str_list.art
+
+        # cancel_stockin_list.bezeich = substring(str_list.s, 17, 32)
+        cancel_stockin_list.bezeich = str_list.bezeich
+
+        # cancel_stockin_list.unit = substring(str_list.s, 49, 6)
+        cancel_stockin_list.unit = str_list.unit
+
+        # cancel_stockin_list.epreis = to_decimal(substring(str_list.s, 143, 14))
+        # cancel_stockin_list.in_qty = to_decimal(substring(str_list.s, 55, 13))
+        # cancel_stockin_list.amount = to_decimal(substring(str_list.s, 68, 15))
+        cancel_stockin_list.epreis = str_list.epreis
+        cancel_stockin_list.in_qty = str_list.in_qty
+        cancel_stockin_list.amount = to_decimal(str_list.amount)
+
+        # cancel_stockin_list.docunr = substring(str_list.s, 107, 16)
+        # cancel_stockin_list.dlvnote = substring(str_list.s, 123, 20)
+        # cancel_stockin_list.note = substring(str_list.s, 157, 26)
+        # cancel_stockin_list.reason = substring(str_list.s, 183, 24)
+        # cancel_stockin_list.invnr = str_list.invoice_nr
+        cancel_stockin_list.docunr = str_list.docu_nr
+        cancel_stockin_list.dlvnote = str_list.dlvnote
+        cancel_stockin_list.note = str_list.note
+        cancel_stockin_list.reason = str_list.reason
         cancel_stockin_list.invnr = str_list.invoice_nr
 
     return generate_output()
