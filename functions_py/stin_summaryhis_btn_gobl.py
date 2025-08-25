@@ -1,3 +1,8 @@
+#using conversion tools version: 1.0.0.118
+#------------------------------------------
+# Rd, 25/8/2025
+#
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -61,8 +66,45 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
             t_val =  to_decimal("0")
 
             l_artikel_obj_list = {}
-            for l_artikel in db_session.query(L_artikel).filter(
-                     ((L_artikel.artnr.in_(list(set([l_ophis.artnr for l_ophis in l_ophis_data if l_ophishis.lager_nr == l_lager.lager_nr] & (l_ophis.datum >= from_date) & (l_ophis.datum <= to_date) & (l_ophis.artnr >= from_art) & (l_ophis.artnr <= to_art) & (l_ophis.anzahl != 0) & (l_ophis.op_art == 1))))) & (L_artikel.zwkum >= from_grp) & (L_artikel.zwkum <= to_grp))).order_by(L_artikel.artnr).all():
+            # for l_artikel in db_session.query(L_artikel).filter(
+            #          ((L_artikel.artnr.in_(list(set([l_ophis.artnr for l_ophis in l_ophis_data if l_ophis.lager_nr == l_lager.lager_nr] & (l_ophis.datum >= from_date) & 
+            #                                         (l_ophis.datum <= to_date) & 
+            #                                         (l_ophis.artnr >= from_art) & 
+            #                                         (l_ophis.artnr <= to_art) & 
+            #                                         (l_ophis.anzahl != 0) & 
+            #                                         (l_ophis.op_art == 1))))) & 
+            #                                         (L_artikel.zwkum >= from_grp) & 
+            #                                         (L_artikel.zwkum <= to_grp))).order_by(L_artikel.artnr).all():
+             # Inner: FOR EACH l-ophis WHERE ... (for this lager)
+            for l_ophis in (
+                db_session.query(L_ophis)
+                .filter(
+                    L_ophis.lager_nr == l_lager.lager_nr,   # join to current l-lager
+                    L_ophis.datum    >= from_date,
+                    L_ophis.datum    <= to_date,
+                    L_ophis.artnr    >= from_art,
+                    L_ophis.artnr    <= to_art,
+                    L_ophis.anzahl   != 0,
+                    L_ophis.op_art   == 1,
+                )
+                .order_by(L_ophis.artnr.asc())
+                .all()
+            ):
+                # FIRST l-artikel WHERE artnr = l-ophis.artnr
+                #   AND zwkum BETWEEN from-grp AND to-grp BY l-artikel.artnr
+                l_artikel = (
+                    db_session.query(L_artikel)
+                    .filter(
+                        L_artikel.artnr == l_ophis.artnr,
+                        L_artikel.zwkum >= from_grp,
+                        L_artikel.zwkum <= to_grp,
+                    )
+                    .first()   # "FIRST"; returns None if not found
+                )
+
+                if l_artikel is None:
+                    # IF l-artikel NOT AVAILABLE THEN: CONTINUE (skip this l-ophis)
+                    continue
                 if l_artikel_obj_list.get(l_artikel._recid):
                     continue
                 else:
@@ -621,3 +663,14 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
         create_output()
 
     return generate_output()
+
+"""
+"error": "Traceback (most recent call last):\n  File \"/usr1/serverless/src/main.py\", line 1722, in handle_dynamic_data\n    
+output_data =  obj(**input_data)\n  File \"/usr1/serverless/src/functions/stin_summaryhis_btn_gobl.py\", 
+line 616, in stin_summaryhis_btn_gobl\n    
+create_list1()\n    ~~~~~~~~~~~~^^\n  File \"/usr1/serverless/src/functions/stin_summaryhis_btn_gobl.py\", line 70, 
+in create_list1\n    ((L_artikel.artnr.in_(list(set([l_ophis.artnr for l_ophis in l_ophis_data if l_ophishis.lager_nr == l_lager.lager_nr] 
+& (l_ophis.datum >= from_date) & (l_ophis.datum <= to_date) & (l_ophis.artnr >= from_art) 
+& (l_ophis.artnr <= to_art) & (l_ophis.anzahl != 0) & (l_ophis.op_art == 1))))) & (L_artikel.zwkum >= from_grp) & (L_artikel.zwkum <= to_grp))).order_by(L_artikel.artnr).all():\n                                                                 ^^^^^^^^^^^^\nNameError: name 'l_ophis_data' is not defined\n",
+        
+        """
