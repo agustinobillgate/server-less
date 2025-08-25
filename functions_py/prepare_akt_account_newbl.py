@@ -92,7 +92,6 @@ def prepare_akt_account_newbl(userinit:string):
         nonlocal userinit
         nonlocal gmember
 
-
         nonlocal mainres_list, resline, usr, gmember
         nonlocal mainres_list_data, resline_data, usr_data
 
@@ -117,7 +116,8 @@ def prepare_akt_account_newbl(userinit:string):
             if mainres_list.abreise < res_line.abreise:
                 mainres_list.abreise = res_line.abreise
 
-            if (resstatus <= 5 or resstatus == 11):
+            # Rd 25/8/2025
+            if (res_line.resstatus <= 5 or res_line.resstatus == 11):
                 mainres_list.arrival = True
 
             if mainres_list.arrival  and res_line.ankunft == ci_date:
