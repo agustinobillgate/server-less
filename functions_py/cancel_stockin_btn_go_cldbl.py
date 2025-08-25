@@ -80,7 +80,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -144,7 +145,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -268,7 +270,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -334,7 +337,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -459,7 +463,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -526,7 +531,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -650,7 +656,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -716,7 +723,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -839,7 +847,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -905,7 +914,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -1029,7 +1039,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -1096,7 +1107,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -1183,7 +1195,6 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
         nonlocal str_list_data, tot_anz, tot_amount, i, unit_price, long_digit, lvcarea, htparam, bediener, l_artikel, l_lieferant, l_op, l_ophdr, l_untergrup
         nonlocal pvilanguage, all_supp, sorttype, from_grp, store, from_date, to_date, show_price, from_supp
 
-
         nonlocal str_list
         nonlocal str_list_data
 
@@ -1204,8 +1215,14 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.datum, l_op.stornogrund, l_op.einzelpreis, l_op.anzahl, l_op.warenwert, l_op.docu_nr, l_op.artnr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.deci1, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.stornogrund, L_op.einzelpreis, L_op.anzahl, L_op.warenwert, L_op.docu_nr, L_op.artnr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.deci1, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
-                     (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr == l_lieferant.lief_nr) & (L_op.loeschflag == 2) & (L_op.op_art == 1)).order_by(L_op.datum, L_op.artnr).all():
+            for l_op.lscheinnr, l_op.datum, l_op.stornogrund, l_op.einzelpreis, l_op.anzahl, l_op.warenwert, l_op.docu_nr, l_op.artnr, l_op.lager_nr, \
+                l_op._recid, l_op.lief_nr, l_op.deci1, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel._recid \
+                    in db_session.query(L_op.lscheinnr, L_op.datum, L_op.stornogrund, L_op.einzelpreis, L_op.anzahl, L_op.warenwert, L_op.docu_nr, \
+                                        L_op.artnr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.deci1, L_artikel.artnr, L_artikel.bezeich, \
+                                            L_artikel.traubensorte, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
+                     (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr == l_lieferant.lief_nr) & 
+                     (L_op.loeschflag == 2) & (L_op.op_art == 1)).order_by(L_op.datum, L_op.artnr).all():
+                
                 if l_op_obj_list.get(l_op._recid):
                     continue
                 else:
@@ -1218,7 +1235,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -1265,7 +1283,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("Reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -1357,7 +1376,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -1422,7 +1442,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -1548,7 +1569,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -1614,7 +1636,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -1736,7 +1759,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -1783,7 +1807,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -1871,7 +1896,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -1937,7 +1963,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -2063,7 +2090,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -2129,7 +2157,8 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
-                    if entry(0, str1, ":") == ("reason").lower() :
+                    # if entry(0, str1, ":") == ("reason").lower() :
+                    if entry(0, str1, ":") == "Reason" :
                         reason = entry(1, str1, ":")
                     else:
                         usrtime = str1
@@ -2334,7 +2363,7 @@ def cancel_stockin_btn_go_cldbl(pvilanguage:int, all_supp:bool, sorttype:int, fr
 
 
         str_list.note = to_string(usrtime, "x(26)")
-        str_list.reason = to_string(reason, "x(24)")
+        str_list.reason = to_string(str_list.reason, "x(24)")
 
 
     def create_grand_total(tot_anz:Decimal, tot_amount:Decimal):

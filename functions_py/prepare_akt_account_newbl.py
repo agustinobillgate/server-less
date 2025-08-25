@@ -1,6 +1,11 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 25/8/2025
+# name 'resstatus' is not defined
+#------------------------------------------
 
 from functions.additional_functions import *
+from sqlalchemy import func
 from decimal import Decimal
 from datetime import date
 from models import Res_line, Guest, Htparam, Zimkateg, Bediener, Reservation
@@ -51,9 +56,11 @@ def prepare_akt_account_newbl(userinit:string):
 
         mainres_list_data.clear()
 
+        # for guest in db_session.query(Guest).filter(
+        #          (Guest.gastnr > 0) & (Guest.phonetik3 == (userinit).lower())).order_by(Guest.karteityp, Guest.name).all():
+        print("UserInit:", userinit)
         for guest in db_session.query(Guest).filter(
-                 (Guest.gastnr > 0) & (Guest.phonetik3 == (userinit).lower())).order_by(Guest.karteityp, Guest.name).all():
-
+                 (Guest.gastnr > 0) & (Guest.phonetik3 == userinit)).order_by(Guest.karteityp, Guest.name).all():
             for reservation in db_session.query(Reservation).filter(
                      (Reservation.gastnr == guest.gastnr) & (Reservation.activeflag == 0)).order_by(Reservation.resnr).all():
                 mainres_list = Mainres_list()
@@ -88,7 +95,6 @@ def prepare_akt_account_newbl(userinit:string):
         nonlocal userinit
         nonlocal gmember
 
-
         nonlocal mainres_list, resline, usr, gmember
         nonlocal mainres_list_data, resline_data, usr_data
 
@@ -101,7 +107,8 @@ def prepare_akt_account_newbl(userinit:string):
         mainres_list.resident = False
 
         for res_line in db_session.query(Res_line).filter(
-                 (Res_line.resnr == mainres_list.resnr) & (Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+                 (Res_line.resnr == mainres_list.resnr) & (Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & 
+                 (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
             resline_exist = True
 
             if res_line.resstatus != 11 and res_line.resstatus != 13:
@@ -113,7 +120,8 @@ def prepare_akt_account_newbl(userinit:string):
             if mainres_list.abreise < res_line.abreise:
                 mainres_list.abreise = res_line.abreise
 
-            if (resstatus <= 5 or resstatus == 11):
+            # Rd 25/8/2025
+            if (res_line.resstatus <= 5 or res_line.resstatus == 11):
                 mainres_list.arrival = True
 
             if mainres_list.arrival  and res_line.ankunft == ci_date:
@@ -142,7 +150,6 @@ def prepare_akt_account_newbl(userinit:string):
                 continue
             else:
                 res_line_obj_list[res_line._recid] = True
-
 
             resline = Resline()
             resline_data.append(resline)
