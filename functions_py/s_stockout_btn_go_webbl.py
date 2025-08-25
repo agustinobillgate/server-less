@@ -1,9 +1,11 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Bala 04/08/2025
-# gitlab:
-# if l_ophdr
-#-----------------------------------------
+
+#------------------------------------------------
+# Rulita, 22/08/2025
+# Modify buffer_l_ol added condition 
+# ticket: 5BE11A
+#------------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -326,7 +328,7 @@ def s_stockout_btn_go_webbl(op_list_data:[Op_list], pvilanguage:int, out_type:in
 
         Buffer_l_op =  create_buffer("Buffer_l_op",L_op)
 
-        buffer_l_op = get_cache (L_op, {"lscheinnr": [(eq, lscheinnr)],"artnr": [(eq, artnr)]})
+        buffer_l_op = get_cache (L_op, {"lscheinnr": [(eq, lscheinnr)],"artnr": [(eq, artnr)],"op_art": [(eq, 14)]})    #Rulita TiketID 5BE11A
 
         if buffer_l_op:
             to_stock = buffer_l_op.pos
@@ -361,26 +363,23 @@ def s_stockout_btn_go_webbl(op_list_data:[Op_list], pvilanguage:int, out_type:in
             return generate_output()
 
     l_ophdr = get_cache (L_ophdr, {"_recid": [(eq, rec_id)]})
+    check_min_oh()
+    its_ok = check_qty()
 
-    # Bala
-    if l_ophdr:
-        check_min_oh()
-        its_ok = check_qty()
+    if not its_ok:
 
-        if not its_ok:
+        return generate_output()
+    pass
+    l_ophdr.datum = transdate
+    l_ophdr.lager_nr = curr_lager
 
-            return generate_output()
-        pass
-        l_ophdr.datum = transdate
-        l_ophdr.lager_nr = curr_lager
-
-        if not transfered:
-            l_ophdr.fibukonto = cost_acct
-            l_ophdr.betriebsnr = jobnr
-        pass
-        curr_pos = l_op_pos()
-        curr_pos = curr_pos - 1
-        zeit = get_current_time_in_seconds()
+    if not transfered:
+        l_ophdr.fibukonto = cost_acct
+        l_ophdr.betriebsnr = jobnr
+    pass
+    curr_pos = l_op_pos()
+    curr_pos = curr_pos - 1
+    zeit = get_current_time_in_seconds()
 
     for op_list in query(op_list_data, filters=(lambda op_list: op_list.anzahl != 0)):
         zeit = zeit + 1
