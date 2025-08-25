@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.118
 #------------------------------------------
 # Rd, 25/8/2025
-#
+# pindah find first diluar for each
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -103,8 +103,8 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                 )
 
                 if l_artikel is None:
-                    # IF l-artikel NOT AVAILABLE THEN: CONTINUE (skip this l-ophis)
                     continue
+                
                 if l_artikel_obj_list.get(l_artikel._recid):
                     continue
                 else:

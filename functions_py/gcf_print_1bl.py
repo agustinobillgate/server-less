@@ -484,11 +484,14 @@ def gcf_print_1bl(pvilanguage:int, fl_list:bool, city:string, sorttype:int, from
 
                 if segm_all:
                     guestseg = get_cache (Guestseg, {"gastnr": [(eq, guest.gastnr)]})
-                    segment = get_cache (Segment, {"segmentcode": [(eq, guestseg.segmentcode)]})
-                    if segment:
-                        gcf_print2.segment = segment.bezeich
-                    else:
-                        gcf_print2.segment = ""
+
+                    # Rd 25/8/2025
+                    if guestseg:
+                        segment = get_cache (Segment, {"segmentcode": [(eq, guestseg.segmentcode)]})
+                        if segment:
+                            gcf_print2.segment = segment.bezeich
+                        else:
+                            gcf_print2.segment = ""
 
     if fl_list:
         create_gcflist1()

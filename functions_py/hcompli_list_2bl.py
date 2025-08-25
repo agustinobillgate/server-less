@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 25/8/2025
+# list kosong
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -1599,7 +1602,9 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
                     h_journal = db_session.query(H_journal).filter(
                              (H_journal.bill_datum == c_list.datum) & (H_journal.departement == c_list.dept) & (H_journal.segmentcode == c_list.p_artnr) & (H_journal.rechnr == c_list.rechnr) & (H_journal.zeit >= 0) & (H_journal._recid > curr_recid)).first()
 
-
+    # Rd 25/8/2025
+    gname = gname.strip()
+    
     journal_list()
 
     return generate_output()
