@@ -1,7 +1,10 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
+#------------------------------------------------
 # Rd 18/7/25
-#-----------------------------------------
+# Rulita, 26/08/25
+# Issue Fixing variable fdate change to tmp_fdate
+# Issue Fixing variable tdate change to tmp_tdate
+#------------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -142,10 +145,12 @@ def sales_perform_btn_go_webbl(from_date:string, to_date:string, usr_init:string
         nonlocal slist, sbuff, buff_slist
         nonlocal slist_data
 
+        # Rulita chg fdate to tmp_fdate
+        # Rulita chg tdate to tmp_tdate
         do_it:bool = False
-        fdate:date = None
+        tmp_fdate:date = None   
         fdate_1styear:date = None
-        tdate:date = None
+        tmp_tdate:date = None
         loopi:date = None
         stat_buff = None
         bud_buff = None
@@ -153,10 +158,12 @@ def sales_perform_btn_go_webbl(from_date:string, to_date:string, usr_init:string
         Stat_buff =  create_buffer("Stat_buff",Salestat)
         Bud_buff =  create_buffer("Bud_buff",Salesbud)
         Bgenstat =  create_buffer("Bgenstat",Genstat)
-        htparam.fdate = date_mdy(to_int(substring(from_date, 0, 2)) , 1, to_int(substring(from_date, 2, 4)))
+        
+        
+        tmp_fdate = date_mdy(to_int(substring(from_date, 0, 2)) , 1, to_int(substring(from_date, 2, 4)))
 
         if to_int(substring(to_date, 0, 2)) == 12:
-            tdate = date_mdy(1, 1, to_int(substring(to_date, 2, 4)) + timedelta(days=1) - 1)
+            tmp_tdate = date_mdy(1, 1, to_int(substring(to_date, 2, 4)) + timedelta(days=1) - 1)
         else:
             # tdate = date_mdy(to_int(substring(to_date, 0, 2)) + timedelta(days=1, 1, to_int(substring(to_date, 2, 4))) - 1)
             month = to_int(substring(to_date, 0, 2))
@@ -167,9 +174,9 @@ def sales_perform_btn_go_webbl(from_date:string, to_date:string, usr_init:string
             temp_date = date(year, month, day) + timedelta(days=1) - timedelta(days=1)
 
             # Assign final date using date_mdy
-            tdate = date_mdy(temp_date.month, temp_date.day, temp_date.year)
+            tmp_tdate = date_mdy(temp_date.month, temp_date.day, temp_date.year)
 
-        for loopi in date_range(htparam.fdate,tdate) :
+        for loopi in date_range(tmp_fdate,tmp_tdate) :
 
             if show_breakdown:
 
@@ -207,7 +214,7 @@ def sales_perform_btn_go_webbl(from_date:string, to_date:string, usr_init:string
         genstat = Genstat()
         guest = Guest()
         for genstat.resstatus, genstat.datum, genstat.logis, genstat.zipreis, genstat.gratis, genstat.erwachs, genstat.kind1, genstat.kind2, genstat._recid, guest.phonetik3, guest._recid in db_session.query(Genstat.resstatus, Genstat.datum, Genstat.logis, Genstat.zipreis, Genstat.gratis, Genstat.erwachs, Genstat.kind1, Genstat.kind2, Genstat._recid, Guest.phonetik3, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr)).filter(
-                 (Genstat.datum >= fdate_1styear) & (Genstat.datum <= tdate) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat.datum, Guest.name, Guest.gastnr).all():
+                 (Genstat.datum >= fdate_1styear) & (Genstat.datum <= tmp_tdate) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat.datum, Guest.name, Guest.gastnr).all():
             if genstat_obj_list.get(genstat._recid):
                 continue
             else:
