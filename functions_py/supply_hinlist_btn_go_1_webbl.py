@@ -141,8 +141,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -257,8 +257,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -373,8 +373,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -523,8 +523,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -639,8 +639,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -753,8 +753,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -871,8 +871,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -992,8 +992,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -1113,8 +1113,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -1234,8 +1234,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -1351,8 +1351,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -1465,8 +1465,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -1581,8 +1581,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -1700,8 +1700,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                # str_list = Str_list()
+                # str_list_data.append(str_list)
 
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
@@ -1812,8 +1812,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                     t_price =  to_decimal("0")
 
 
-                    str_list = Str_list()
-                    str_list_data.append(str_list)
+                    # str_list = Str_list()
+                    # str_list_data.append(str_list)
 
 
             elif sorttype == 2:
@@ -1839,8 +1839,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                     t_price =  to_decimal("0")
 
 
-                    str_list = Str_list()
-                    str_list_data.append(str_list)
+                    # str_list = Str_list()
+                    # str_list_data.append(str_list)
 
 
             elif sorttype == 3:
