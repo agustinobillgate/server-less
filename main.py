@@ -1712,6 +1712,8 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                     if importlib.util.find_spec(module_name):
                         print("Masuk Module:", module_name)
                         module = importlib.import_module(module_name)
+                        # Rd, just to re-test, develop mode only
+                        module = importlib.reload(module)   
                         if hasattr(module, function_name):
                             try:
                                 print("Calling getAttr:", function_name)   
