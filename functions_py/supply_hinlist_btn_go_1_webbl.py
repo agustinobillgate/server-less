@@ -375,7 +375,16 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             l_ophis = L_ophis()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, \
+                l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, \
+                    l_lieferant.firma, l_lieferant.plz, l_lieferant._recid \
+                in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, \
+                                    L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, \
+                                    L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, \
+                                    L_lieferant.plz, L_lieferant._recid)\
+                .join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp))\
+                .join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr))\
+                .filter(
                      (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & 
                      (L_ophis.op_art == 1) & 
                      (L_ophis.anzahl != 0) & 
@@ -772,6 +781,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                     .join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & 
                                     (L_artikel.endkum >= from_grp) & 
                                     (L_artikel.endkum <= to_grp)) \
+                    .join(L_lieferant, L_lieferant.lief_nr == L_ophis.lief_nr) \
                     .filter(
                      (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & 
                      (L_ophis.lief_nr == l_lieferant.lief_nr) & 
@@ -781,7 +791,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                     # Rd 26/8/2025
                      (not_ ((length(L_ophis.fibukonto) > 8) & 
                             (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED" ), length(L_ophis.fibukonto)) == "CANCELLED")))
-                     ).order_by(l_lieferant.firma, L_ophis.datum, L_artikel.bezeich).all():
+                     ).order_by(L_lieferant.firma, L_ophis.datum, L_artikel.bezeich).all():
                 if l_ophis_obj_list.get(l_ophis._recid):
                     continue
                 else:
@@ -798,16 +808,23 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             l_ophis_obj_list = {}
             l_ophis = L_ophis()
             l_artikel = L_artikel()
-            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).filter(
-                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & 
-                     (L_ophis.lief_nr == l_lieferant.lief_nr) & 
-                     (L_ophis.anzahl != 0) & (L_ophis.op_art == 1) & 
-                     (L_ophis.lager_nr == store) & 
-                    #  (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))
-                    # Rd 26/8/2025
-                     (not_ ((length(L_ophis.fibukonto) > 8) & 
-                                                (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED" ), length(L_ophis.fibukonto)) == "CANCELLED")))
-                     ).order_by(l_lieferant.firma, L_ophis.datum, L_artikel.bezeich).all():
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, \
+                l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid \
+                in db_session.query(L_ophis.lscheinnr, L_ophis.datum, \
+                                L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, \
+                                L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid)\
+                        .join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp))\
+                        .join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr))\
+                        .filter(
+                            (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & 
+                            (L_ophis.lief_nr == l_lieferant.lief_nr) & 
+                            (L_ophis.anzahl != 0) & (L_ophis.op_art == 1) & 
+                            (L_ophis.lager_nr == store) & 
+                            #  (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))
+                            # Rd 26/8/2025
+                            (not_ ((length(L_ophis.fibukonto) > 8) & 
+                                                        (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED" ), length(L_ophis.fibukonto)) == "CANCELLED")))
+                            ).order_by(L_lieferant.firma, L_ophis.datum, L_artikel.bezeich).all():
                 if l_ophis_obj_list.get(l_ophis._recid):
                     continue
                 else:
