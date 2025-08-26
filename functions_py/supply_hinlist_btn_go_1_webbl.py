@@ -1,5 +1,8 @@
-#using conversion tools version: 1.0.0.118
-
+#using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 26/8/2025
+# data kosong
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -10,7 +13,9 @@ taxcode_list_data, Taxcode_list = create_model("Taxcode_list", {"taxcode":string
 def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:string, sorttype:int, from_grp:int, to_grp:int, store:int, all_supp:bool, all_doc:bool, from_date:date, to_date:date, taxcode_list_data:[Taxcode_list]):
 
     prepare_cache ([L_kredit, Htparam, L_lieferant, L_ophis, L_artikel, L_untergrup, Gl_acct, L_ophhis, Queasy])
-
+    # Rd 26/8/2025
+    from_supp = from_supp.strip()
+    from_doc = from_doc.strip()
     err_code = 0
     str_list_data = []
     supp_nr:int = 0
@@ -97,25 +102,25 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if lscheinnr == "":
                     lscheinnr = l_ophis.lscheinnr
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
+        else:
 
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                l_lieferant = L_lieferant()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            l_lieferant = L_lieferant()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
 
 
-                    count_data = count_data + 1
+                count_data = count_data + 1
 
-                    if lscheinnr == "":
-                        lscheinnr = l_ophis.lscheinnr
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+                if lscheinnr == "":
+                    lscheinnr = l_ophis.lscheinnr
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -127,7 +132,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -137,18 +141,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list.description = "GRAND TOTAL"
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
-
-
-            else:
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
@@ -156,11 +148,24 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
+
+
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
+
+            str_list.description = "GRAND TOTAL"
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def create_list1ar():
@@ -213,25 +218,25 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if lscheinnr == "":
                     lscheinnr = l_ophis.lscheinnr
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
+        else:
 
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                l_lieferant = L_lieferant()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (L_ophis.docu_nr == (from_doc).lower()) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            l_lieferant = L_lieferant()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (L_ophis.docu_nr == (from_doc).lower()) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
 
 
-                    count_data = count_data + 1
+                count_data = count_data + 1
 
-                    if lscheinnr == "":
-                        lscheinnr = l_ophis.lscheinnr
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+                if lscheinnr == "":
+                    lscheinnr = l_ophis.lscheinnr
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -243,7 +248,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -253,18 +257,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list.description = "GRAND TOTAL"
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
-
-
-            else:
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
@@ -272,11 +264,24 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
+
+
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
+
+            str_list.description = "GRAND TOTAL"
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def create_list11():
@@ -329,25 +334,25 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if lief_nr == 0:
                     lief_nr = l_lieferant.lief_nr
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
+        else:
 
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                l_lieferant = L_lieferant()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_lieferant.firma, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            l_lieferant = L_lieferant()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_lieferant.firma, L_ophis.datum, L_artikel.bezeich).all():
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
 
 
-                    count_data = count_data + 1
+                count_data = count_data + 1
 
-                    if lief_nr == 0:
-                        lief_nr = l_lieferant.lief_nr
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+                if lief_nr == 0:
+                    lief_nr = l_lieferant.lief_nr
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -359,7 +364,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -369,18 +373,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list.description = "GRAND TOTAL"
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
-
-
-            else:
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
@@ -388,11 +380,24 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
+
+
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
+
+            str_list.description = "GRAND TOTAL"
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def create_list11a():
@@ -400,7 +405,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
         nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
-
 
         nonlocal str_list, taxcode_list, buff_l_kredit
         nonlocal str_list_data
@@ -427,13 +431,67 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
         tot_amt =  to_decimal("0")
 
         if store == 0:
+           
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            l_lieferant = L_lieferant()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, \
+                l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, \
+                    l_lieferant.firma, l_lieferant.plz, l_lieferant._recid \
+                in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, \
+                                    L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, \
+                                    L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid)\
+                            .join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & 
+                                  (L_artikel.endkum >= from_grp) & 
+                                  (L_artikel.endkum <= to_grp)) \
+                            .join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr))\
+                .filter(
+                        (L_ophis.datum >= from_date) & 
+                        (L_ophis.datum <= to_date) & 
+                        (L_ophis.lief_nr > 0) & 
+                        (L_ophis.op_art == 1) & 
+                        (L_ophis.anzahl != 0)
+                ).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
+                
+                """
+                        (
+                            not_   (length(L_ophis.fibukonto) > 8) & 
+                                (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED" ), length(L_ophis.fibukonto)) == "CANCELLED")
+                        )
+
+                """
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
+
+ 
+                count_data = count_data + 1
+
+                if lscheinnr == "":
+                    lscheinnr = l_ophis.lscheinnr
+                
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+        else:
 
             l_ophis_obj_list = {}
             l_ophis = L_ophis()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
-                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid \
+                in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr))\
+                .filter(
+                     (L_ophis.datum >= from_date) & 
+                     (L_ophis.datum <= to_date) & 
+                     (L_ophis.lief_nr > 0) & 
+                     (L_ophis.op_art == 1) & 
+                     (L_ophis.anzahl != 0) & 
+                     (L_ophis.lager_nr == store) & 
+                     (not_ (length(L_ophis.fibukonto) > 8) & 
+                            (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED" ) + 1 - 1, 
+                                       length(L_ophis.fibukonto)) == "CANCELLED")))\
+                    .order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
                 if l_ophis_obj_list.get(l_ophis._recid):
                     continue
                 else:
@@ -445,25 +503,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if lscheinnr == "":
                     lscheinnr = l_ophis.lscheinnr
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
-
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                l_lieferant = L_lieferant()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
-
-
-                    count_data = count_data + 1
-
-                    if lscheinnr == "":
-                        lscheinnr = l_ophis.lscheinnr
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -475,7 +514,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -485,18 +523,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list.description = "GRAND TOTAL"
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
-
-
-            else:
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
@@ -504,11 +530,24 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
+
+
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
+
+            str_list.description = "GRAND TOTAL"
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def create_list11ar():
@@ -561,25 +600,25 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if lscheinnr == "":
                     lscheinnr = l_ophis.lscheinnr
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
+        else:
 
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                l_lieferant = L_lieferant()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (L_ophis.docu_nr == (from_doc).lower()) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            l_lieferant = L_lieferant()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (L_ophis.docu_nr == (from_doc).lower()) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
 
 
-                    count_data = count_data + 1
+                count_data = count_data + 1
 
-                    if lscheinnr == "":
-                        lscheinnr = l_ophis.lscheinnr
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+                if lscheinnr == "":
+                    lscheinnr = l_ophis.lscheinnr
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -591,7 +630,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -601,18 +639,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list.description = "GRAND TOTAL"
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
-
-
-            else:
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
@@ -620,11 +646,24 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
+
+
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
+
+            str_list.description = "GRAND TOTAL"
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def create_list22():
@@ -676,24 +715,24 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if lief_nr == 0:
                     lief_nr = l_lieferant.lief_nr
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
+        else:
 
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr == l_lieferant.lief_nr) & (L_ophis.anzahl != 0) & (L_ophis.op_art == 1) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(l_lieferant.firma, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr == l_lieferant.lief_nr) & (L_ophis.anzahl != 0) & (L_ophis.op_art == 1) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(l_lieferant.firma, L_ophis.datum, L_artikel.bezeich).all():
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
 
 
-                    count_data = count_data + 1
+                count_data = count_data + 1
 
-                    if lief_nr == 0:
-                        lief_nr = l_lieferant.lief_nr
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+                if lief_nr == 0:
+                    lief_nr = l_lieferant.lief_nr
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -705,7 +744,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -715,18 +753,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list.description = "GRAND TOTAL"
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
-
-
-            else:
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
@@ -734,11 +760,24 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
+
+
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
+
+            str_list.description = "GRAND TOTAL"
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def create_list1b():
@@ -792,26 +831,26 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if utt_bezeich == "":
                     utt_bezeich = l_untergrup.bezeich
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
+        else:
 
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                l_lieferant = L_lieferant()
-                l_untergrup = L_untergrup()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_untergrup.bezeich, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            l_lieferant = L_lieferant()
+            l_untergrup = L_untergrup()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_untergrup.bezeich, L_ophis.datum, L_artikel.bezeich).all():
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
 
 
-                    count_data = count_data + 1
+                count_data = count_data + 1
 
-                    if utt_bezeich == "":
-                        utt_bezeich = l_untergrup.bezeich
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+                if utt_bezeich == "":
+                    utt_bezeich = l_untergrup.bezeich
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -823,7 +862,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -833,33 +871,34 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
+                str_list = Str_list()
+                str_list_data.append(str_list)
+
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
 
 
-            else:
-                str_list = Str_list()
-                str_list_data.append(str_list)
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+            str_list = Str_list()
+            str_list_data.append(str_list)
 
-                str_list.description = "TOTAL SUB-GROUP: " + utt_bezeich
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
+            str_list.description = "TOTAL SUB-GROUP: " + utt_bezeich
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def create_list11b():
@@ -913,26 +952,26 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if utt_bezeich == "":
                     utt_bezeich = l_untergrup.bezeich
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
+        else:
 
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                l_lieferant = L_lieferant()
-                l_untergrup = L_untergrup()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_untergrup.bezeich, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            l_lieferant = L_lieferant()
+            l_untergrup = L_untergrup()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_untergrup.bezeich, L_ophis.datum, L_artikel.bezeich).all():
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
 
 
-                    count_data = count_data + 1
+                count_data = count_data + 1
 
-                    if utt_bezeich == "":
-                        utt_bezeich = l_untergrup.bezeich
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+                if utt_bezeich == "":
+                    utt_bezeich = l_untergrup.bezeich
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -944,7 +983,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -954,33 +992,34 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
+                str_list = Str_list()
+                str_list_data.append(str_list)
+
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
 
 
-            else:
-                str_list = Str_list()
-                str_list_data.append(str_list)
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+            str_list = Str_list()
+            str_list_data.append(str_list)
 
-                str_list.description = "TOTAL SUB-GROUP: " + utt_bezeich
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
+            str_list.description = "TOTAL SUB-GROUP: " + utt_bezeich
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def create_list1br():
@@ -1034,26 +1073,26 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if utt_bezeich == "":
                     utt_bezeich = l_untergrup.bezeich
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
+        else:
 
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                l_lieferant = L_lieferant()
-                l_untergrup = L_untergrup()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (L_ophis.docu_nr == (from_doc).lower()) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_untergrup.bezeich, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            l_lieferant = L_lieferant()
+            l_untergrup = L_untergrup()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (L_ophis.docu_nr == (from_doc).lower()) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_untergrup.bezeich, L_ophis.datum, L_artikel.bezeich).all():
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
 
 
-                    count_data = count_data + 1
+                count_data = count_data + 1
 
-                    if utt_bezeich == "":
-                        utt_bezeich = l_untergrup.bezeich
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+                if utt_bezeich == "":
+                    utt_bezeich = l_untergrup.bezeich
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -1065,7 +1104,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -1075,33 +1113,34 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
+                str_list = Str_list()
+                str_list_data.append(str_list)
+
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
 
 
-            else:
-                str_list = Str_list()
-                str_list_data.append(str_list)
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+            str_list = Str_list()
+            str_list_data.append(str_list)
 
-                str_list.description = "TOTAL SUB-GROUP: " + utt_bezeich
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
+            str_list.description = "TOTAL SUB-GROUP: " + utt_bezeich
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def create_list11br():
@@ -1155,26 +1194,26 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if utt_bezeich == "":
                     utt_bezeich = l_untergrup.bezeich
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
+        else:
 
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                l_lieferant = L_lieferant()
-                l_untergrup = L_untergrup()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (L_ophis.docu_nr == (from_doc).lower()) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_untergrup.bezeich, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            l_lieferant = L_lieferant()
+            l_untergrup = L_untergrup()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (L_ophis.docu_nr == (from_doc).lower()) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_untergrup.bezeich, L_ophis.datum, L_artikel.bezeich).all():
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
 
 
-                    count_data = count_data + 1
+                count_data = count_data + 1
 
-                    if utt_bezeich == "":
-                        utt_bezeich = l_untergrup.bezeich
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+                if utt_bezeich == "":
+                    utt_bezeich = l_untergrup.bezeich
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -1186,7 +1225,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -1196,33 +1234,34 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
+                str_list = Str_list()
+                str_list_data.append(str_list)
+
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
 
 
-            else:
-                str_list = Str_list()
-                str_list_data.append(str_list)
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+            str_list = Str_list()
+            str_list_data.append(str_list)
 
-                str_list.description = "TOTAL SUB-GROUP: " + utt_bezeich
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
+            str_list.description = "TOTAL SUB-GROUP: " + utt_bezeich
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def create_list1as():
@@ -1274,24 +1313,24 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if lscheinnr == "":
                     lscheinnr = l_ophis.lscheinnr
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
+        else:
 
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr == l_lieferant.lief_nr) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr == l_lieferant.lief_nr) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
 
 
-                    count_data = count_data + 1
+                count_data = count_data + 1
 
-                    if lscheinnr == "":
-                        lscheinnr = l_ophis.lscheinnr
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+                if lscheinnr == "":
+                    lscheinnr = l_ophis.lscheinnr
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -1303,7 +1342,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -1313,18 +1351,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list.description = "GRAND TOTAL"
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
-
-
-            else:
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
@@ -1332,11 +1358,24 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
+
+
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
+
+            str_list.description = "GRAND TOTAL"
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def create_list11as():
@@ -1388,24 +1427,24 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if lscheinnr == "":
                     lscheinnr = l_ophis.lscheinnr
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
+        else:
 
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr == l_lieferant.lief_nr) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr == l_lieferant.lief_nr) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
 
 
-                    count_data = count_data + 1
+                count_data = count_data + 1
 
-                    if lscheinnr == "":
-                        lscheinnr = l_ophis.lscheinnr
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+                if lscheinnr == "":
+                    lscheinnr = l_ophis.lscheinnr
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -1417,7 +1456,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -1427,18 +1465,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
-                str_list.description = "GRAND TOTAL"
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
-
-
-            else:
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
@@ -1446,11 +1472,24 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
+
+
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
+
+            str_list.description = "GRAND TOTAL"
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def create_list1bs():
@@ -1503,25 +1542,25 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if utt_bezeich == "":
                     utt_bezeich = l_untergrup.bezeich
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
+        else:
 
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                l_untergrup = L_untergrup()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr == l_lieferant.lief_nr) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_untergrup.bezeich, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            l_untergrup = L_untergrup()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr == l_lieferant.lief_nr) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_untergrup.bezeich, L_ophis.datum, L_artikel.bezeich).all():
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
 
 
-                    count_data = count_data + 1
+                count_data = count_data + 1
 
-                    if utt_bezeich == "":
-                        utt_bezeich = l_untergrup.bezeich
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+                if utt_bezeich == "":
+                    utt_bezeich = l_untergrup.bezeich
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -1533,7 +1572,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -1543,33 +1581,34 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
+                str_list = Str_list()
+                str_list_data.append(str_list)
+
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
 
 
-            else:
-                str_list = Str_list()
-                str_list_data.append(str_list)
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+            str_list = Str_list()
+            str_list_data.append(str_list)
 
-                str_list.description = "TOTAL SUB-GROUP: " + utt_bezeich
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
+            str_list.description = "TOTAL SUB-GROUP: " + utt_bezeich
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def create_list11bs():
@@ -1622,25 +1661,25 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 if utt_bezeich == "":
                     utt_bezeich = l_untergrup.bezeich
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-            else:
+        else:
 
-                l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                l_artikel = L_artikel()
-                l_untergrup = L_untergrup()
-                for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
-                         (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr == l_lieferant.lief_nr) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_untergrup.bezeich, L_ophis.datum, L_artikel.bezeich).all():
-                    if l_ophis_obj_list.get(l_ophis._recid):
-                        continue
-                    else:
-                        l_ophis_obj_list[l_ophis._recid] = True
+            l_ophis_obj_list = {}
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+            l_untergrup = L_untergrup()
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr == l_lieferant.lief_nr) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length(("CANCELLED").lower() ) + 1 - 1, length(L_ophis.fibukonto)) == ("CANCELLED").lower()))).order_by(L_untergrup.bezeich, L_ophis.datum, L_artikel.bezeich).all():
+                if l_ophis_obj_list.get(l_ophis._recid):
+                    continue
+                else:
+                    l_ophis_obj_list[l_ophis._recid] = True
 
 
-                    count_data = count_data + 1
+                count_data = count_data + 1
 
-                    if utt_bezeich == "":
-                        utt_bezeich = l_untergrup.bezeich
-                    lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
+                if utt_bezeich == "":
+                    utt_bezeich = l_untergrup.bezeich
+                lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
 
         if show_total:
 
@@ -1652,7 +1691,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
-                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -1662,33 +1700,34 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list = Str_list()
                 str_list_data.append(str_list)
 
+                str_list = Str_list()
+                str_list_data.append(str_list)
+
                 str_list.description = "GRAND TOTAL"
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
                 str_list.price =  to_decimal("0")
 
 
-            else:
-                str_list = Str_list()
-                str_list_data.append(str_list)
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
 
-                str_list = Str_list()
-                str_list_data.append(str_list)
+            str_list = Str_list()
+            str_list_data.append(str_list)
 
-                str_list.description = "TOTAL SUB-GROUP: " + utt_bezeich
-                str_list.qty =  to_decimal(tot_anz)
-                str_list.inc_qty =  to_decimal(tot_anz)
-                str_list.amount =  to_decimal(tot_amount)
-                str_list.warenwert =  to_decimal(tot_amount)
-                str_list.amountexcl =  to_decimal(tot_amountexcl)
-                str_list.tax_amount =  to_decimal(tot_tax)
-                str_list.tot_amt =  to_decimal(tot_amt)
-                str_list.price =  to_decimal("0")
+            str_list.description = "TOTAL SUB-GROUP: " + utt_bezeich
+            str_list.qty =  to_decimal(tot_anz)
+            str_list.inc_qty =  to_decimal(tot_anz)
+            str_list.amount =  to_decimal(tot_amount)
+            str_list.amountexcl =  to_decimal(tot_amountexcl)
+            str_list.tax_amount =  to_decimal(tot_tax)
+            str_list.tot_amt =  to_decimal(tot_amt)
+            str_list.price =  to_decimal("0")
 
 
     def convert_fibu(konto:string):
@@ -1761,7 +1800,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                     str_list.inc_qty =  to_decimal(t_anz)
                     str_list.qty =  to_decimal(t_anz)
                     str_list.amount =  to_decimal(t_amt)
-                    str_list.warenwert =  to_decimal(t_amt)
                     str_list.amountexcl =  to_decimal(t_amountexcl)
                     str_list.tax_amount =  to_decimal(t_tax)
                     str_list.tot_amt =  to_decimal(t_inv)
@@ -1772,6 +1810,11 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                     t_tax =  to_decimal("0")
                     t_inv =  to_decimal("0")
                     t_price =  to_decimal("0")
+
+
+                    str_list = Str_list()
+                    str_list_data.append(str_list)
+
 
             elif sorttype == 2:
 
@@ -1784,7 +1827,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                     str_list.inc_qty =  to_decimal(t_anz)
                     str_list.qty =  to_decimal(t_anz)
                     str_list.amount =  to_decimal(t_amt)
-                    str_list.warenwert =  to_decimal(t_amt)
                     str_list.amountexcl =  to_decimal(t_amountexcl)
                     str_list.tax_amount =  to_decimal(t_tax)
                     str_list.tot_amt =  to_decimal(t_inv)
@@ -1796,6 +1838,11 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                     t_inv =  to_decimal("0")
                     t_price =  to_decimal("0")
 
+
+                    str_list = Str_list()
+                    str_list_data.append(str_list)
+
+
             elif sorttype == 3:
 
                 if utt_bezeich != l_untergrup.bezeich:
@@ -1806,7 +1853,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                     str_list.inc_qty =  to_decimal(t_anz)
                     str_list.qty =  to_decimal(t_anz)
                     str_list.amount =  to_decimal(t_amt)
-                    str_list.warenwert =  to_decimal(t_amt)
                     str_list.amountexcl =  to_decimal(t_amountexcl)
                     str_list.tax_amount =  to_decimal(t_tax)
                     str_list.tot_amt =  to_decimal(t_inv)
@@ -1820,6 +1866,9 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
 
                     utt_bezeich = l_untergrup.bezeich
+                    str_list = Str_list()
+                    str_list_data.append(str_list)
+
         t_anz =  to_decimal(t_anz) + to_decimal(l_ophis.anzahl)
         tot_anz =  to_decimal(tot_anz) + to_decimal(l_ophis.anzahl)
 
@@ -1832,11 +1881,11 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             tot_amountexcl =  to_decimal(tot_amountexcl) + to_decimal(l_ophis.warenwert)
 
 
-            else:
-                t_amt =  to_decimal(t_amt) + to_decimal(l_ophis.warenwert)
-                tot_amount =  to_decimal(tot_amount) + to_decimal(l_ophis.warenwert)
-                t_amountexcl =  to_decimal(t_amountexcl) + to_decimal(l_ophis.warenwert)
-                tot_amountexcl =  to_decimal(tot_amountexcl) + to_decimal(l_ophis.warenwert)
+        else:
+            t_amt =  to_decimal(t_amt) + to_decimal(l_ophis.warenwert)
+            tot_amount =  to_decimal(tot_amount) + to_decimal(l_ophis.warenwert)
+            t_amountexcl =  to_decimal(t_amountexcl) + to_decimal(l_ophis.warenwert)
+            tot_amountexcl =  to_decimal(tot_amountexcl) + to_decimal(l_ophis.warenwert)
 
         str_list = query(str_list_data, filters=(lambda str_list: str_list.docu_nr == l_ophis.docu_nr and str_list.artnr == l_ophis.artnr and str_list.lager_nr == l_ophis.lager_nr and str_list.lscheinnr == l_ophis.lscheinnr and str_list.epreis == l_ophis.einzelpreis), first=True)
 
@@ -1850,7 +1899,6 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.addvat_value =  to_decimal(queasy.deci1)
                 str_list.warenwert =  to_decimal(str_list.warenwert) + to_decimal((l_ophis.warenwert) + to_decimal((l_ophis.warenwert) * to_decimal((queasy.deci1) / to_decimal(100))) )
                 str_list.amountexcl =  to_decimal(str_list.amountexcl) + to_decimal(l_ophis.warenwert)
-                str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal((l_ophis.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
             else:
@@ -1872,114 +1920,115 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_ophis.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_ophis.lscheinnr) & (Queasy.number2 == l_ophis.artnr) & (to_decimal(Queasy.char2) == l_ophis.einzelpreis)).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_ophis.lscheinnr) & (Queasy.number2 == l_ophis.artnr) & (to_int(Queasy.char2) == l_ophis.einzelpreis)).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
+                str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
+
+
+        else:
+            str_list = Str_list()
+            str_list_data.append(str_list)
+
+
+            if l_ophhis:
+                str_list.invoice_nr = l_ophhis.fibukonto
+            str_list.lief_nr = l_ophis.lief_nr
+            str_list.artnr = l_ophis.artnr
+            str_list.lager_nr = l_ophis.lager_nr
+            str_list.docu_nr = l_ophis.docu_nr
+            str_list.lscheinnr = l_ophis.lscheinnr
+            str_list.epreis =  to_decimal(l_ophis.einzelpreis)
+
+            buff_l_kredit = get_cache (L_kredit, {"lscheinnr": [(eq, l_ophis.lscheinnr)]})
+
+            if buff_l_kredit:
+                str_list.ap_voucher = buff_l_kredit.rechnr
+            else:
+                str_list.ap_voucher = 0
+
+            queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_ophis.lscheinnr)],"number1": [(eq, l_ophis.artnr)]})
+
+            if queasy:
+                str_list.addvat_value =  to_decimal(queasy.deci1)
+                str_list.warenwert =  to_decimal(l_ophis.warenwert) + (to_decimal(l_ophis.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
+                str_list.amountexcl =  to_decimal(l_ophis.warenwert)
 
 
             else:
-                str_list = Str_list()
-                str_list_data.append(str_list)
+                str_list.warenwert =  to_decimal(l_ophis.warenwert)
+                str_list.amountexcl =  to_decimal(l_ophis.warenwert)
+
+            queasy = get_cache (Queasy, {"key": [(eq, 335)],"char1": [(eq, l_ophis.lscheinnr)],"number1": [(eq, l_ophis.artnr)]})
+
+            if queasy:
+                str_list.serial_number = queasy.char2
+                str_list.invoice_date = queasy.date2
+            else:
+                str_list.serial_number = ""
+                str_list.invoice_date = None
+
+            queasy = get_cache (Queasy, {"key": [(eq, 340)],"char1": [(eq, l_ophis.lscheinnr)],"number1": [(eq, l_ophis.artnr)],"deci1": [(eq, l_ophis.einzelpreis)]})
+
+            if queasy:
+                str_list.remark_artikel = queasy.char2
+            else:
+                str_list.remark_artikel = ""
+
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 336) & (Queasy.char1 == l_ophis.lscheinnr) & (Queasy.number2 == l_ophis.artnr) & (to_int(Queasy.char2) == l_ophis.einzelpreis)).first()
+
+            if queasy:
+                str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
+                str_list.vat_amount =  to_decimal(queasy.deci3)
+                str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
 
 
-                if l_ophhis:
-                    str_list.invoice_nr = l_ophhis.fibukonto
-                str_list.lief_nr = l_ophis.lief_nr
-                str_list.artnr = l_ophis.artnr
-                str_list.lager_nr = l_ophis.lager_nr
-                str_list.docu_nr = l_ophis.docu_nr
-                str_list.lscheinnr = l_ophis.lscheinnr
-                str_list.epreis =  to_decimal(l_ophis.einzelpreis)
+            str_list.fibu, str_list.fibu_bez = convert_fibu(l_ophis.fibukonto)
+            str_list.datum = l_ophis.datum
+            str_list.st = l_ophis.lager_nr
+            str_list.article = l_artikel.artnr
+            str_list.description = l_artikel.bezeich
+            str_list.d_unit = l_artikel.traubensorte
+            str_list.qty =  to_decimal(l_ophis.anzahl)
+            str_list.inc_qty =  to_decimal(l_ophis.anzahl)
+            str_list.amount =  to_decimal(l_ophis.warenwert)
+            str_list.supplier = l_lieferant.firma
+            str_list.tax_code = l_artikel.lief_artnr[2]
 
-                buff_l_kredit = get_cache (L_kredit, {"lscheinnr": [(eq, l_ophis.lscheinnr)]})
+            if l_lieferant.plz != " ":
 
-                if buff_l_kredit:
-                    str_list.ap_voucher = buff_l_kredit.rechnr
-                else:
-                    str_list.ap_voucher = 0
+                if matches(l_lieferant.plz,r"*#*"):
+                    for loopi in range(1,num_entries(l_lieferant.plz, "#")  + 1) :
 
-                queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_ophis.lscheinnr)],"number1": [(eq, l_ophis.artnr)]})
-
-                if queasy:
-                    str_list.addvat_value =  to_decimal(queasy.deci1)
-                    str_list.warenwert =  to_decimal(l_ophis.warenwert) + (to_decimal(l_ophis.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
-                    str_list.amountexcl =  to_decimal(l_ophis.warenwert)
-                    str_list.addvat_amount = ( to_decimal(l_ophis.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
+                        if entry(loopi + 1 - 1, l_lieferant.plz, "#") != " ":
+                            str_list.gstid = entry(loopi + 1 - 1, l_lieferant.plz, "#")
 
 
-                else:
-                    str_list.warenwert =  to_decimal(l_ophis.warenwert)
-                    str_list.amountexcl =  to_decimal(l_ophis.warenwert)
+                            return generate_inner_output()
 
-                queasy = get_cache (Queasy, {"key": [(eq, 335)],"char1": [(eq, l_ophis.lscheinnr)],"number1": [(eq, l_ophis.artnr)]})
+            taxcode_list = query(taxcode_list_data, filters=(lambda taxcode_list: taxcode_list.taxcode == str_list.tax_code), first=True)
 
-                if queasy:
-                    str_list.serial_number = queasy.char2
-                    str_list.invoice_date = queasy.date2
-                else:
-                    str_list.serial_number = ""
-                    str_list.invoice_date = None
+            if taxcode_list:
+                str_list.tax_amount =  to_decimal(l_ophis.warenwert) * to_decimal(taxcode_list.taxamount)
+                t_tax =  to_decimal(t_tax) + to_decimal((l_ophis.warenwert) * to_decimal(taxcode_list.taxamount) )
+                tot_tax =  to_decimal(tot_tax) + to_decimal((l_ophis.warenwert) * to_decimal(taxcode_list.taxamount) )
+                str_list.tot_amt =  to_decimal(l_ophis.warenwert) + to_decimal(str_list.tax_amount)
+                t_inv =  to_decimal(t_inv) + to_decimal((l_ophis.warenwert) + to_decimal(str_list.tax_amount) )
+                tot_amt =  to_decimal(tot_amt) + to_decimal((l_ophis.warenwert) + to_decimal(str_list.tax_amount) )
 
-                queasy = get_cache (Queasy, {"key": [(eq, 340)],"char1": [(eq, l_ophis.lscheinnr)],"number1": [(eq, l_ophis.artnr)],"deci1": [(eq, l_ophis.einzelpreis)]})
-
-                if queasy:
-                    str_list.remark_artikel = queasy.char2
-                else:
-                    str_list.remark_artikel = ""
-
-                queasy = db_session.query(Queasy).filter(
-                         (Queasy.key == 336) & (Queasy.char1 == l_ophis.lscheinnr) & (Queasy.number2 == l_ophis.artnr) & (to_decimal(Queasy.char2) == l_ophis.einzelpreis)).first()
-
-                if queasy:
-                    str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
-                    str_list.vat_amount =  to_decimal(queasy.deci3)
+            if l_ophis.docu_nr == l_ophis.lscheinnr:
+                str_list.docu_no = translateExtended ("Direct Purchase ", lvcarea, "")
+            else:
+                str_list.docu_no = l_ophis.docu_nr
+            str_list.deliv_no = l_ophis.lscheinnr
+            str_list.price =  to_decimal(l_ophis.einzelpreis)
+            t_price =  to_decimal(t_price) + to_decimal(str_list.price)
 
 
-                str_list.fibu, str_list.fibu_bez = convert_fibu(l_ophis.fibukonto)
-                str_list.datum = l_ophis.datum
-                str_list.st = l_ophis.lager_nr
-                str_list.article = l_artikel.artnr
-                str_list.description = l_artikel.bezeich
-                str_list.d_unit = l_artikel.traubensorte
-                str_list.qty =  to_decimal(l_ophis.anzahl)
-                str_list.inc_qty =  to_decimal(l_ophis.anzahl)
-                str_list.amount =  to_decimal(l_ophis.warenwert)
-                str_list.supplier = l_lieferant.firma
-                str_list.tax_code = l_artikel.lief_artnr[2]
-
-                if l_lieferant.plz != " ":
-
-                    if matches(l_lieferant.plz,r"*#*"):
-                        for loopi in range(1,num_entries(l_lieferant.plz, "#")  + 1) :
-
-                            if entry(loopi + 1 - 1, l_lieferant.plz, "#") != " ":
-                                str_list.gstid = entry(loopi + 1 - 1, l_lieferant.plz, "#")
-
-
-                                return generate_inner_output()
-
-                taxcode_list = query(taxcode_list_data, filters=(lambda taxcode_list: taxcode_list.taxcode == str_list.tax_code), first=True)
-
-                if taxcode_list:
-                    str_list.tax_amount =  to_decimal(l_ophis.warenwert) * to_decimal(taxcode_list.taxamount)
-                    t_tax =  to_decimal(t_tax) + to_decimal((l_ophis.warenwert) * to_decimal(taxcode_list.taxamount) )
-                    tot_tax =  to_decimal(tot_tax) + to_decimal((l_ophis.warenwert) * to_decimal(taxcode_list.taxamount) )
-                    str_list.tot_amt =  to_decimal(l_ophis.warenwert) + to_decimal(str_list.tax_amount)
-                    t_inv =  to_decimal(t_inv) + to_decimal((l_ophis.warenwert) + to_decimal(str_list.tax_amount) )
-                    tot_amt =  to_decimal(tot_amt) + to_decimal((l_ophis.warenwert) + to_decimal(str_list.tax_amount) )
-
-                if l_ophis.docu_nr == l_ophis.lscheinnr:
-                    str_list.docu_no = translateExtended ("Direct Purchase ", lvcarea, "")
-                else:
-                    str_list.docu_no = l_ophis.docu_nr
-                str_list.deliv_no = l_ophis.lscheinnr
-                str_list.price =  to_decimal(l_ophis.einzelpreis)
-                t_price =  to_decimal(t_price) + to_decimal(str_list.price)
-
-
-                tot_price =  to_decimal(tot_price) + to_decimal(str_list.price)
+            tot_price =  to_decimal(tot_price) + to_decimal(str_list.price)
 
         return generate_inner_output()
 
@@ -2014,10 +2063,12 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             return generate_output()
 
         if all_supp:
+            print("create_list11")
             create_list11()
         else:
 
             if supp_nr != 0:
+                print("create_list22")
                 create_list22()
 
     elif sorttype == 2:
@@ -2032,20 +2083,26 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             if from_supp != "" and supp_nr != 0:
 
                 if from_grp == 0:
+                    print("create_list1as")
                     create_list1as()
                 else:
+                    print("create_list11as")
                     create_list11as()
             else:
 
                 if from_grp == 0:
+                    print("create_list1a")
                     create_list1a()
                 else:
+                    print("create_list11a")
                     create_list11a()
         else:
 
             if from_grp == 0:
+                print("create_list1ar")
                 create_list1ar()
             else:
+                print("create_list11ar")
                 create_list11ar()
 
     elif sorttype == 3:
@@ -2059,20 +2116,26 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             if from_supp != "" and supp_nr != 0:
 
                 if from_grp == 0:
+                    print("create_list1bs")
                     create_list1bs()
                 else:
+                    print("create_list11bs")
                     create_list11bs()
             else:
 
                 if from_grp == 0:
+                    print("create_list1b")
                     create_list1b()
                 else:
+                    print("create_list11b")
                     create_list11b()
         else:
 
             if from_grp == 0:
+                print("create_list1br")
                 create_list1br()
             else:
+                print("create_list11br")
                 create_list11br()
 
     return generate_output()

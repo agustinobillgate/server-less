@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 26/8/2025
+# data kosong
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -11,6 +15,10 @@ taxcode_list_data, Taxcode_list = create_model("Taxcode_list", {"taxcode":string
 def supply_hinlist_btn_go_1bl(pvilanguage:int, from_supp:string, from_doc:string, sorttype:int, from_grp:int, to_grp:int, store:int, all_supp:bool, all_doc:bool, from_date:date, to_date:date, taxcode_list_data:[Taxcode_list]):
 
     prepare_cache ([Htparam, L_lieferant, L_ophis, L_artikel, L_untergrup])
+
+    # Rd 26/8/2025
+    from_doc = from_doc.strip()
+    from_supp = from_supp.strip()
 
     err_code = 0
     str_list_data = []
@@ -3533,38 +3541,44 @@ def supply_hinlist_btn_go_1bl(pvilanguage:int, from_supp:string, from_doc:string
             return generate_output()
 
         if all_supp:
+            print("create_list11")
             create_list11()
         else:
 
             if supp_nr != 0:
+                print("create_list22")
                 create_list22()
 
     elif sorttype == 2:
-
+        # Rd
         if not all_doc and from_doc == "":
             err_code = 3
-
             return generate_output()
 
         if all_doc:
-
             if from_supp != "" and supp_nr != 0:
 
                 if from_grp == 0:
+                    print("create_list1as")
                     create_list1as()
                 else:
+                    print("create_list11as")
                     create_list11as()
             else:
 
                 if from_grp == 0:
+                    print("create_list1a")
                     create_list1a()
                 else:
+                    print("create_list11a")
                     create_list11a()
         else:
 
             if from_grp == 0:
+                print("create_list1ar")
                 create_list1ar()
             else:
+                print("create_list11ar")
                 create_list11ar()
 
     elif sorttype == 3:
@@ -3578,20 +3592,26 @@ def supply_hinlist_btn_go_1bl(pvilanguage:int, from_supp:string, from_doc:string
             if from_supp != "" and supp_nr != 0:
 
                 if from_grp == 0:
+                    print("create_list1bs")
                     create_list1bs()
                 else:
+                    print("create_list11bs")
                     create_list11bs()
             else:
 
                 if from_grp == 0:
+                    print("create_list1b")
                     create_list1b()
                 else:
+                    print("create_list11b")
                     create_list11b()
         else:
 
             if from_grp == 0:
+                print("create_list1br")
                 create_list1br()
             else:
+                print("create_list11br")
                 create_list11br()
 
     return generate_output()

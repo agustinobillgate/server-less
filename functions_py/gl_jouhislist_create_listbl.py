@@ -154,6 +154,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
                     output_list_data.append(output_list)
 
                     c = convert_fibu(gl_acct.fibukonto)
+                    # output_list.str = " " + to_string(c, "x(15)") + to_string(gl_acct.bezeich, "x(40)")
                     output_list.str = "        " + to_string(c, "x(15)") + to_string(gl_acct.bezeich, "x(40)")
                     konto = gl_acct.fibukonto
 
