@@ -4,7 +4,7 @@
 # Rd 27/8/22025
 # for to_list in query(to_list_data, sort_by=[("ratecode",False),("name",False)]):
 # ->        for to_list in list(query(to_list_data, sort_by=[("ratecode", False), ("name", False)])):
-# query -> di bungkus list(...), spy snapshot posisi saat awal, tidak infinite loop
+# query -> di bungkus list(...), spy snapshot posisi saat awal, tidak infinite loop 
 #-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
