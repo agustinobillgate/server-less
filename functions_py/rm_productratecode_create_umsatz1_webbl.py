@@ -2,7 +2,7 @@
 #-----------------------------------------
 # Rd 31/7/2025
 # gitlab: 1003
-# 
+# mirip: rm_productrate_create_umsatz2_webbl
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -128,6 +128,7 @@ def rm_productratecode_create_umsatz1_webbl(disptype:int, mi_ftd:bool, f_date:da
         genstat_obj_list = {}
         genstat = Genstat()
         guest = Guest()
+        counter_ = 0
         for genstat.zikatnr, genstat.datum, genstat.resstatus, genstat.gratis, genstat.ratelocal, genstat.erwachs, genstat.logis, genstat.kind1, genstat.kind2, genstat.zipreis, genstat._recid, guest.gastnr, guest.karteityp, guest.phonetik3, guest._recid in db_session.query(Genstat.zikatnr, Genstat.datum, Genstat.resstatus, Genstat.gratis, Genstat.ratelocal, Genstat.erwachs, Genstat.logis, Genstat.kind1, Genstat.kind2, Genstat.zipreis, Genstat._recid, Guest.gastnr, Guest.karteityp, Guest.phonetik3, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr)).filter(
                  (Genstat.datum >= from_date) & (Genstat.datum <= to_date) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat._recid).all():
             if genstat_obj_list.get(genstat._recid):
@@ -189,15 +190,32 @@ def rm_productratecode_create_umsatz1_webbl(disptype:int, mi_ftd:bool, f_date:da
                             mc_room = mc_room + 1
                         yc_room = yc_room + 1
 
-                to_list = query(to_list_data, filters=(lambda to_list: to_list.name.lower()  == (curr_ratecode).lower()  and to_list.ratecode.lower()  == (curr_code).lower()), first=True)
+                # Rd 7/8/2025
+                # Snapshow list
+                # to_list = query(to_list_data, filters=(lambda to_list: to_list.name.lower()  == (curr_ratecode).lower()  and to_list.ratecode.lower()  == (curr_code).lower()), first=True)
+                tmp_to_list = query(
+                    to_list_data,
+                    filters=lambda tl: tl.name.lower() == curr_ratecode.lower() and tl.ratecode == curr_code,
+                    first=True
+                )
 
-                if not to_list:
+                # if not to_list:
+                #     to_list = To_list()
+                #     to_list_data.append(to_list)
+
+                #     to_list.ratecode = curr_code
+                #     to_list.name = curr_ratecode
+
+                if tmp_to_list is None:
+                    counter_ += 1
                     to_list = To_list()
-                    to_list_data.append(to_list)
-
                     to_list.ratecode = curr_code
                     to_list.name = curr_ratecode
-
+                    to_list_data.append(to_list)
+                else:
+                    to_list = tmp_to_list
+                counter_ += 1
+                # print("Curr:", to_list.name, curr_code, counter_)
                 if genstat.datum == to_date:
 
                     if genstat.resstatus != 13:
@@ -297,7 +315,7 @@ def rm_productratecode_create_umsatz1_webbl(disptype:int, mi_ftd:bool, f_date:da
 
                     to_list.ratecode = curr_code
                     to_list.name = "UNKNOWN"
-
+        # print("Exit For.")
         for to_list in query(to_list_data):
 
             if (to_list.room - to_list.c_room) != 0:
@@ -369,7 +387,9 @@ def rm_productratecode_create_umsatz1_webbl(disptype:int, mi_ftd:bool, f_date:da
         Buff_list = To_list
         buff_list_data = to_list_data
 
-        for to_list in query(to_list_data, sort_by=[("ratecode",False),("name",False)]):
+        # Rd 27/8/2025
+        # for to_list in query(to_list_data, sort_by=[("ratecode",False),("name",False)]):
+        for to_list in list(query(to_list_data, sort_by=[("ratecode", False), ("name", False)])):
 
             zimkateg = get_cache (Zimkateg, {"kurzbez": [(eq, to_list.ratecode)]})
 
