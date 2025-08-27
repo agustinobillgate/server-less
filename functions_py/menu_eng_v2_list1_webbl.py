@@ -4,6 +4,7 @@
 #Rulita, 27/28/2025
 #From fb_cost_analyst.qty = to_int(substring(output_list.s, 9, 6))
 #TO fb_cost_analyst.qty = to_decimal(substring(output_list.s, 9, 6))
+#added safe devide 
 #===================================================================
 
 #------------------------------------------
@@ -16,6 +17,8 @@ from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from functions.fb_cost_count_recipe_costbl import fb_cost_count_recipe_costbl
 from models import Htparam, H_artikel, Hoteldpt, Artikel, H_umsatz, H_journal, H_compli, Wgrpdep
+
+from functions import log_program
 
 subgr_list_data, Subgr_list = create_model("Subgr_list", {"selected":bool, "subnr":int, "bezeich":string}, {"selected": True})
 payload_list_data, Payload_list = create_model("Payload_list", {"include_compliment":bool, "compliment_only":bool})
@@ -191,11 +194,14 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
                                 t_cost =  to_decimal(t_cost) + to_decimal(cost)
                                 t_anz = t_anz + anz
                                 t_sales =  to_decimal(t_sales) + to_decimal(h_umsatz.betrag) / to_decimal(fact)
-
+                                
+                                #Rulita added safe devide
                                 if vat_included:
-                                    h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                    h_list.epreis = ( safe_divide(to_decimal(h_list.t_sales) , to_decimal(h_list.anzahl))) * to_decimal(exchg_rate) / to_decimal(fact)
                                 else:
-                                    h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                    h_list.epreis = ( safe_divide(to_decimal(h_list.t_sales) , to_decimal(h_list.anzahl))) * to_decimal(exchg_rate) / to_decimal(fact1)
 
                                 curr_recid = h_umsatz._recid
                                 h_umsatz = db_session.query(H_umsatz).filter(
@@ -600,12 +606,13 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
                             t_anz = t_anz + anz
                             t_sales =  to_decimal(t_sales) + to_decimal(h_umsatz.betrag) / to_decimal(fact)
 
+                            #Rulita added safe devide
                             if vat_included:
                                 # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
-                                h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                h_list.epreis = ( safe_divide(to_decimal(h_list.t_sales) , to_decimal(h_list.anzahl))) * to_decimal(exchg_rate) / to_decimal(fact)
                             else:
                                 # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
-                                h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                h_list.epreis = ( safe_divide(to_decimal(h_list.t_sales) , to_decimal(h_list.anzahl))) * to_decimal(exchg_rate) / to_decimal(fact1)
 
                             curr_recid = h_umsatz._recid
                             h_umsatz = db_session.query(H_umsatz).filter(
