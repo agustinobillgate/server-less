@@ -1,11 +1,17 @@
 #using conversion tools version: 1.0.0.117
 #-------------------------------------------
 # Rd 22/7/2025
+# Rd 27/8/22025
+# for to_list in query(to_list_data, sort_by=[("ratecode",False),("name",False)]):
+# ->        for to_list in list(query(to_list_data, sort_by=[("ratecode", False), ("name", False)])):
+# query -> di bungkus list(...), spy snapshot posisi saat awal, tidak infinite loop 
 #-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Guest, Genstat, Res_line, Ratecode, Queasy
+
+
 
 def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, t_date:date, to_date:date, cardtype:int, incl_comp:bool, sales_id:string, excl_expired_rate:bool):
 
@@ -78,7 +84,6 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
         nonlocal to_list_data, ind, price_decimal, st_room, stc_room, st_pax, st_logis, st_avrgrate, st_proz, stm_room, stmc_room, stm_pax, stm_logis, stm_avrgrate, stm_proz, sty_room, styc_room, sty_pax, sty_logis, sty_avrgrate, sty_proz, room, c_room, pax, logis, rmrate, avrgrate, proz, m_room, mc_room, m_pax, m_logis, m_rmrate, m_avrgrate, m_proz, y_room, yc_room, y_pax, y_logis, y_rmrate, y_avrgrate, y_proz, i, exist_rate, guest, genstat, res_line, ratecode, queasy
         nonlocal disptype, mi_ftd, f_date, t_date, to_date, cardtype, incl_comp, sales_id, excl_expired_rate
 
-
         nonlocal to_list, buff_list
         nonlocal to_list_data
 
@@ -120,8 +125,19 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
         genstat_obj_list = {}
         genstat = Genstat()
         guest = Guest()
-        for genstat.res_char, genstat.resnr, genstat.res_int, genstat.datum, genstat.resstatus, genstat.gastnr, genstat.gratis, genstat.ratelocal, genstat.erwachs, genstat.logis, genstat.kind1, genstat.kind2, genstat.zipreis, genstat._recid, guest.karteityp, guest.phonetik3, guest.gastnr, guest.name, guest.vorname1, guest._recid in db_session.query(Genstat.res_char, Genstat.resnr, Genstat.res_int, Genstat.datum, Genstat.resstatus, Genstat.gastnr, Genstat.gratis, Genstat.ratelocal, Genstat.erwachs, Genstat.logis, Genstat.kind1, Genstat.kind2, Genstat.zipreis, Genstat._recid, Guest.karteityp, Guest.phonetik3, Guest.gastnr, Guest.name, Guest.vorname1, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr)).filter(
-                 (Genstat.datum >= from_date) & (Genstat.datum <= to_date) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat._recid).all():
+        counter_ = 0
+        for genstat.res_char, genstat.resnr, genstat.res_int, genstat.datum, genstat.resstatus, genstat.gastnr, genstat.gratis, \
+            genstat.ratelocal, genstat.erwachs, genstat.logis, genstat.kind1, genstat.kind2, genstat.zipreis, genstat._recid, \
+            guest.karteityp, guest.phonetik3, guest.gastnr, guest.name, guest.vorname1, guest._recid \
+            in db_session.query(Genstat.res_char, Genstat.resnr, Genstat.res_int, Genstat.datum, Genstat.resstatus, Genstat.gastnr, \
+                                Genstat.gratis, Genstat.ratelocal, Genstat.erwachs, Genstat.logis, Genstat.kind1, Genstat.kind2, \
+                                Genstat.zipreis, Genstat._recid, Guest.karteityp, Guest.phonetik3, Guest.gastnr, Guest.name, \
+                                Guest.vorname1, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr))\
+                .filter(
+                 (Genstat.datum >= from_date) & (Genstat.datum <= to_date) & 
+                 (Genstat.zinr != "") & 
+                 (Genstat.res_logic[inc_value(1)])).order_by(Genstat._recid).all():
+            
             if genstat_obj_list.get(genstat._recid):
                 continue
             else:
@@ -187,16 +203,30 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
                             mc_room = mc_room + 1
                         yc_room = yc_room + 1
 
-                to_list = query(to_list_data, filters=(lambda to_list: to_list.gastnr == genstat.gastnr and to_list.ratecode.lower()  == (curr_code).lower()), first=True)
+                # to_list = query(to_list_data, filters=(lambda to_list: to_list.gastnr == genstat.gastnr and to_list.ratecode.lower()  == (curr_code).lower()), first=True)
+                tmp_to_list = query(
+                    to_list_data,
+                    filters=lambda tl: tl.gastnr == genstat.gastnr and tl.ratecode == curr_code,
+                    first=True
+                )
+                # if not to_list:
+                #     to_list = To_list()
+                #     to_list_data.append(to_list)
 
-                if not to_list:
+                #     to_list.ratecode = curr_code
+                #     to_list.gastnr = guest.gastnr
+                #     to_list.name = guest.name + ", " + guest.vorname1 + " " +\
+                #             guest.anrede1 + guest.anredefirma
+                if tmp_to_list is None:
+                    counter_ += 1
                     to_list = To_list()
-                    to_list_data.append(to_list)
-
+                    to_list.room = 0
                     to_list.ratecode = curr_code
-                    to_list.gastnr = guest.gastnr
-                    to_list.name = guest.name + ", " + guest.vorname1 + " " +\
-                            guest.anrede1 + guest.anredefirma
+                    to_list.gastnr = genstat.gastnr
+                    to_list.name = f"{guest.name}, {guest.vorname1} {guest.anrede1}{guest.anredefirma}"
+                    to_list_data.append(to_list)
+                else:
+                    to_list = tmp_to_list
 
                 if genstat.datum == to_date:
 
@@ -289,8 +319,10 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
                         to_list.mc_room = to_list.mc_room + 1
                     to_list.yc_room = to_list.yc_room + 1
 
-        for to_list in query(to_list_data):
-
+        
+        # for to_list in query(to_list_data):
+        for to_list in to_list_data:
+            print("TL:", to_list.name)
             if (to_list.room - to_list.c_room) != 0:
                 to_list.avrgrate =  to_decimal(to_list.logis) / to_decimal((to_list.room) - to_decimal(to_list.c_room))
 
@@ -346,12 +378,10 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
         to_list.y_proz =  to_decimal(y_proz)
         to_list.y_avrgrate =  to_decimal(y_avrgrate)
 
-
     def create_output():
 
         nonlocal to_list_data, ind, price_decimal, st_room, stc_room, st_pax, st_logis, st_avrgrate, st_proz, stm_room, stmc_room, stm_pax, stm_logis, stm_avrgrate, stm_proz, sty_room, styc_room, sty_pax, sty_logis, sty_avrgrate, sty_proz, room, c_room, pax, logis, rmrate, avrgrate, proz, m_room, mc_room, m_pax, m_logis, m_rmrate, m_avrgrate, m_proz, y_room, yc_room, y_pax, y_logis, y_rmrate, y_avrgrate, y_proz, i, exist_rate, guest, genstat, res_line, ratecode, queasy
         nonlocal disptype, mi_ftd, f_date, t_date, to_date, cardtype, incl_comp, sales_id, excl_expired_rate
-
 
         nonlocal to_list, buff_list
         nonlocal to_list_data
@@ -360,8 +390,8 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
         Buff_list = To_list
         buff_list_data = to_list_data
 
-        for to_list in query(to_list_data, sort_by=[("ratecode",False),("name",False)]):
-
+        # for to_list in query(to_list_data, sort_by=[("ratecode",False),("name",False)]):
+        for to_list in list(query(to_list_data, sort_by=[("ratecode", False), ("name", False)])):
             queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, to_list.ratecode)]})
 
             if to_list.ratecode.lower()  != (curr_code).lower()  and (curr_code).lower()  != "":
@@ -370,8 +400,6 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
                 buff_list_data.append(buff_list)
 
                 buff_list.counter = i
-
-
                 i = i + 1
                 st_avrgrate =  to_decimal("0")
 
@@ -407,7 +435,6 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
                 buff_list.y_proz =  to_decimal(sty_proz)
                 buff_list.y_avrgrate =  to_decimal(sty_avrgrate)
 
-
                 init_val()
                 i = i + 1
                 buff_list = Buff_list()
@@ -428,6 +455,7 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
 
                 elif queasy:
                     buff_list.name = queasy.char2
+
             curr_code = to_list.ratecode
 
             if curr_code == "" or curr_code == to_list.ratecode:
