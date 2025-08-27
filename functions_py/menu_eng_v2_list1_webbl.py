@@ -1,4 +1,11 @@
 #using conversion tools version: 1.0.0.117
+
+#===================================================================
+#Rulita, 27/28/2025
+#From fb_cost_analyst.qty = to_int(substring(output_list.s, 9, 6))
+#TO fb_cost_analyst.qty = to_decimal(substring(output_list.s, 9, 6))
+#===================================================================
+
 #------------------------------------------
 # Rd, 28/8/2025
 # safe_divide, reslin -> reslin_queasy
@@ -1624,27 +1631,26 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
         fb_cost_analyst = Fb_cost_analyst()
         fb_cost_analyst_data.append(fb_cost_analyst)
 
-        fb_cost_analyst.flag = output_list.flag
-        fb_cost_analyst.bezeich = output_list.bezeich
-        fb_cost_analyst.artnr = to_int(substring(output_list.s, 0, 9))
-        fb_cost_analyst.qty = to_int(substring(output_list.s, 9, 6))
-        fb_cost_analyst.proz1 = to_decimal(substring(output_list.s, 15, 7))
-        fb_cost_analyst.epreis = to_decimal(substring(output_list.s, 22, 17))
-        fb_cost_analyst.cost = to_decimal(substring(output_list.s, 39, 17))
-        fb_cost_analyst.margin = to_decimal(substring(output_list.s, 56, 13))
-        fb_cost_analyst.t_sales = to_decimal(substring(output_list.s, 69, 17))
-        fb_cost_analyst.t_cost = to_decimal(substring(output_list.s, 86, 17))
-        fb_cost_analyst.t_margin = to_decimal(substring(output_list.s, 103, 13))
-        fb_cost_analyst.proz2 = to_decimal(substring(output_list.s, 116, 7))
-        fb_cost_analyst.item_profit =  to_decimal(fb_cost_analyst.epreis) - to_decimal(fb_cost_analyst.cost)
-        fb_cost_analyst.total_profit =  to_decimal(fb_cost_analyst.t_sales) - to_decimal(fb_cost_analyst.t_cost)
+        fb_cost_analyst.flag            = output_list.flag
+        fb_cost_analyst.bezeich         = output_list.bezeich
+        fb_cost_analyst.artnr           = to_int(substring(output_list.s, 0, 9))
+        fb_cost_analyst.qty             = to_decimal(substring(output_list.s, 9, 6))            #Rulita chg to_int to to_decimal
+        fb_cost_analyst.proz1           = to_decimal(substring(output_list.s, 15, 7))
+        fb_cost_analyst.epreis          = to_decimal(substring(output_list.s, 22, 17))
+        fb_cost_analyst.cost            = to_decimal(substring(output_list.s, 39, 17))
+        fb_cost_analyst.margin          = to_decimal(substring(output_list.s, 56, 13))
+        fb_cost_analyst.t_sales         = to_decimal(substring(output_list.s, 69, 17))
+        fb_cost_analyst.t_cost          = to_decimal(substring(output_list.s, 86, 17))
+        fb_cost_analyst.t_margin        = to_decimal(substring(output_list.s, 103, 13))
+        fb_cost_analyst.proz2           = to_decimal(substring(output_list.s, 116, 7))
+        fb_cost_analyst.item_profit     =  to_decimal(fb_cost_analyst.epreis) - to_decimal(fb_cost_analyst.cost)
+        fb_cost_analyst.total_profit    =  to_decimal(fb_cost_analyst.t_sales) - to_decimal(fb_cost_analyst.t_cost)
 
-
-        gtotal_sold =  to_decimal(gtotal_sold) + to_decimal(fb_cost_analyst.qty)
-        gtotal_sold_perc =  to_decimal(gtotal_sold_perc) + to_decimal(fb_cost_analyst.proz1)
-        gtotal_cost =  to_decimal(gtotal_cost) + to_decimal(fb_cost_analyst.t_cost)
-        gtotal_revenue =  to_decimal(gtotal_revenue) + to_decimal(fb_cost_analyst.t_sales)
-        gtotal_profit =  to_decimal(gtotal_profit) + to_decimal(fb_cost_analyst.total_profit)
+        gtotal_sold         =  to_decimal(gtotal_sold) + to_decimal(fb_cost_analyst.qty)
+        gtotal_sold_perc    =  to_decimal(gtotal_sold_perc) + to_decimal(fb_cost_analyst.proz1)
+        gtotal_cost         =  to_decimal(gtotal_cost) + to_decimal(fb_cost_analyst.t_cost)
+        gtotal_revenue      =  to_decimal(gtotal_revenue) + to_decimal(fb_cost_analyst.t_sales)
+        gtotal_profit       =  to_decimal(gtotal_profit) + to_decimal(fb_cost_analyst.total_profit)
 
         if fb_cost_analyst.artnr != 0:
             count_foodcost =  to_decimal(count_foodcost) + to_decimal("1")
