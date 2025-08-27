@@ -129,7 +129,7 @@ newUserExit,neubenutzer_exitbl
 flplanAR,flplan_arbl
 checkEsignature,check_esignaturebl
 loadDateTimeServer,load_datetime_serverbl
-loadDateTimeServer1,load_datetime-server_1bl
+loadDateTimeServer1,load_datetime_server_1bl
 e1Serial,e1_serialbl
 getQueasyRecord,selforder_get_queasybl
 readNitehist,read_nitehistbl
