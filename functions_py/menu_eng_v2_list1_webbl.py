@@ -6,6 +6,10 @@
 #TO fb_cost_analyst.qty = to_decimal(substring(output_list.s, 9, 6))
 #===================================================================
 
+#------------------------------------------
+# Rd, 28/8/2025
+# safe_divide, reslin -> reslin_queasy
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -15,6 +19,9 @@ from models import Htparam, H_artikel, Hoteldpt, Artikel, H_umsatz, H_journal, H
 
 subgr_list_data, Subgr_list = create_model("Subgr_list", {"selected":bool, "subnr":int, "bezeich":string}, {"selected": True})
 payload_list_data, Payload_list = create_model("Payload_list", {"include_compliment":bool, "compliment_only":bool})
+def safe_divide(numerator, denominator):
+    numerator, denominator = to_decimal(numerator), to_decimal(denominator)
+    return (numerator / denominator) if denominator not in (0, None) else to_decimal("0")
 
 def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Payload_list], sorttype:int, from_dept:int, to_dept:int, dstore:int, ldry_dept:int, all_sub:bool, from_date:date, to_date:date, fact1:int, exchg_rate:Decimal, vat_included:bool, mi_subgrp:bool, detailed:bool, curr_sort:int, short_flag:bool):
 
@@ -228,9 +235,12 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
                                 t_sales =  to_decimal(t_sales) + to_decimal(h_compli.epreis)
 
                                 if vat_included:
-                                    h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                    h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
                                 else:
-                                    h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                    h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                    
 
                             if h_list.epreis != 0:
                                 h_list.margin =  to_decimal(h_list.cost) / to_decimal(h_list.epreis) * to_decimal("100")
@@ -315,13 +325,15 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
                             if vat_included:
 
                                 if h_list.anzahl != 0 and fact != 0:
-                                    h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                    h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
                                 else:
                                     h_list.epreis =  to_decimal("0")
                             else:
 
                                 if h_list.anzahl != 0 and fact1 != 0:
-                                    h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                    h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
                                 else:
                                     h_list.epreis =  to_decimal("0")
 
@@ -458,9 +470,11 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
                                 t_sales =  to_decimal(t_sales) + to_decimal(h_umsatz.betrag) / to_decimal(fact)
 
                                 if vat_included:
-                                    h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                    h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
                                 else:
-                                    h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                    h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
 
                                 curr_recid = h_umsatz._recid
                                 h_umsatz = db_session.query(H_umsatz).filter(
@@ -500,9 +514,11 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
                                 t_sales =  to_decimal(t_sales) + to_decimal(h_compli.epreis)
 
                                 if vat_included:
-                                    h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                    h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
                                 else:
-                                    h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                    h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
 
                             if h_list.epreis != 0:
                                 h_list.margin =  to_decimal(h_list.cost) / to_decimal(h_list.epreis) * to_decimal("100")
@@ -585,9 +601,11 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
                             t_sales =  to_decimal(t_sales) + to_decimal(h_umsatz.betrag) / to_decimal(fact)
 
                             if vat_included:
-                                h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
                             else:
-                                h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
 
                             curr_recid = h_umsatz._recid
                             h_umsatz = db_session.query(H_umsatz).filter(
@@ -722,9 +740,11 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
                                 t_sales =  to_decimal(t_sales) + to_decimal(h_umsatz.betrag) / to_decimal(fact)
 
                                 if vat_included:
-                                    h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                    h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
                                 else:
-                                    h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                    h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
 
                                 curr_recid = h_umsatz._recid
                                 h_umsatz = db_session.query(H_umsatz).filter(
@@ -764,8 +784,10 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
                                 t_sales =  to_decimal(t_sales) + to_decimal(h_compli.epreis)
 
                                 if vat_included:
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
                                     h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
                                 else:
+                                    # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
                                     h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
 
                             if h_list.epreis != 0:
@@ -849,9 +871,11 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
                             t_sales =  to_decimal(t_sales) + to_decimal(h_umsatz.betrag) / to_decimal(fact)
 
                             if vat_included:
-                                h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
                             else:
-                                h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                h_list.epreis = ( safe_divide(h_list.t_sales, h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
 
                             curr_recid = h_umsatz._recid
                             h_umsatz = db_session.query(H_umsatz).filter(
