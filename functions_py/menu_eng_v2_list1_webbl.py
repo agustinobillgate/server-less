@@ -4,6 +4,7 @@
 #Rulita, 27/28/2025
 #From fb_cost_analyst.qty = to_int(substring(output_list.s, 9, 6))
 #TO fb_cost_analyst.qty = to_decimal(substring(output_list.s, 9, 6))
+#added safe devide 
 #===================================================================
 
 from functions.additional_functions import *
@@ -12,6 +13,8 @@ from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from functions.fb_cost_count_recipe_costbl import fb_cost_count_recipe_costbl
 from models import Htparam, H_artikel, Hoteldpt, Artikel, H_umsatz, H_journal, H_compli, Wgrpdep
+
+from functions import log_program
 
 subgr_list_data, Subgr_list = create_model("Subgr_list", {"selected":bool, "subnr":int, "bezeich":string}, {"selected": True})
 payload_list_data, Payload_list = create_model("Payload_list", {"include_compliment":bool, "compliment_only":bool})
@@ -52,6 +55,10 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
     output_list2_data, Output_list2 = create_model("Output_list2", {"flag":string, "artnr":string, "dept":string, "bezeich":string, "zknr":string, "grpname":string, "anzahl":string, "proz1":string, "epreis":string, "cost":string, "margin":string, "item_prof":string, "t_sales":string, "t_cost":string, "t_margin":string, "profit":string, "proz2":string, "profit_cat":string, "popularity_cat":string, "menu_item_class":string, "s":string, "deb":Decimal})
 
     db_session = local_storage.db_session
+
+    def safe_divide(numerator, denominator):
+        numerator, denominator = to_decimal(numerator), to_decimal(denominator)
+        return (numerator / denominator) if denominator not in (0, None) else to_decimal("0")
 
     def generate_output():
         nonlocal output_list2_data, t_anz, t_anz_deb, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, gtotal_sold, gtotal_sold_perc, gtotal_cost, gtotal_revenue, gtotal_profit, avrg_item_profit, food_cost, menu_pop_factor, count_foodcost, price_type, htparam, h_artikel, hoteldpt, artikel, h_umsatz, h_journal, h_compli, wgrpdep
@@ -584,10 +591,11 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
                             t_anz = t_anz + anz
                             t_sales =  to_decimal(t_sales) + to_decimal(h_umsatz.betrag) / to_decimal(fact)
 
+                            #Rulita added safe devide
                             if vat_included:
-                                h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
+                                h_list.epreis = ( safe_divide(to_decimal(h_list.t_sales) , to_decimal(h_list.anzahl))) * to_decimal(exchg_rate) / to_decimal(fact)
                             else:
-                                h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact1)
+                                h_list.epreis = ( safe_divide(to_decimal(h_list.t_sales) , to_decimal(h_list.anzahl))) * to_decimal(exchg_rate) / to_decimal(fact1)
 
                             curr_recid = h_umsatz._recid
                             h_umsatz = db_session.query(H_umsatz).filter(
