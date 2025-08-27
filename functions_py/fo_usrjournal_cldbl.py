@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 27/8/2025
+# kolom kosong, output_list.str
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
