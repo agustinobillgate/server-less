@@ -78,7 +78,6 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
         nonlocal to_list_data, ind, price_decimal, st_room, stc_room, st_pax, st_logis, st_avrgrate, st_proz, stm_room, stmc_room, stm_pax, stm_logis, stm_avrgrate, stm_proz, sty_room, styc_room, sty_pax, sty_logis, sty_avrgrate, sty_proz, room, c_room, pax, logis, rmrate, avrgrate, proz, m_room, mc_room, m_pax, m_logis, m_rmrate, m_avrgrate, m_proz, y_room, yc_room, y_pax, y_logis, y_rmrate, y_avrgrate, y_proz, i, exist_rate, guest, genstat, res_line, ratecode, queasy
         nonlocal disptype, mi_ftd, f_date, t_date, to_date, cardtype, incl_comp, sales_id, excl_expired_rate
 
-
         nonlocal to_list, buff_list
         nonlocal to_list_data
 
@@ -120,8 +119,18 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
         genstat_obj_list = {}
         genstat = Genstat()
         guest = Guest()
-        for genstat.res_char, genstat.resnr, genstat.res_int, genstat.datum, genstat.resstatus, genstat.gastnr, genstat.gratis, genstat.ratelocal, genstat.erwachs, genstat.logis, genstat.kind1, genstat.kind2, genstat.zipreis, genstat._recid, guest.karteityp, guest.phonetik3, guest.gastnr, guest.name, guest.vorname1, guest._recid in db_session.query(Genstat.res_char, Genstat.resnr, Genstat.res_int, Genstat.datum, Genstat.resstatus, Genstat.gastnr, Genstat.gratis, Genstat.ratelocal, Genstat.erwachs, Genstat.logis, Genstat.kind1, Genstat.kind2, Genstat.zipreis, Genstat._recid, Guest.karteityp, Guest.phonetik3, Guest.gastnr, Guest.name, Guest.vorname1, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr)).filter(
-                 (Genstat.datum >= from_date) & (Genstat.datum <= to_date) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat._recid).all():
+        for genstat.res_char, genstat.resnr, genstat.res_int, genstat.datum, genstat.resstatus, genstat.gastnr, genstat.gratis, \
+            genstat.ratelocal, genstat.erwachs, genstat.logis, genstat.kind1, genstat.kind2, genstat.zipreis, genstat._recid, \
+            guest.karteityp, guest.phonetik3, guest.gastnr, guest.name, guest.vorname1, guest._recid \
+            in db_session.query(Genstat.res_char, Genstat.resnr, Genstat.res_int, Genstat.datum, Genstat.resstatus, Genstat.gastnr, \
+                                Genstat.gratis, Genstat.ratelocal, Genstat.erwachs, Genstat.logis, Genstat.kind1, Genstat.kind2, \
+                                Genstat.zipreis, Genstat._recid, Guest.karteityp, Guest.phonetik3, Guest.gastnr, Guest.name, \
+                                Guest.vorname1, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr))\
+                .filter(
+                 (Genstat.datum >= from_date) & (Genstat.datum <= to_date) & 
+                 (Genstat.zinr != "") & 
+                 (Genstat.res_logic[inc_value(1)])).order_by(Genstat._recid).all():
+            
             if genstat_obj_list.get(genstat._recid):
                 continue
             else:
@@ -187,16 +196,20 @@ def rm_productrate_create_umsatz2_webbl(disptype:int, mi_ftd:bool, f_date:date, 
                             mc_room = mc_room + 1
                         yc_room = yc_room + 1
 
-                to_list = query(to_list_data, filters=(lambda to_list: to_list.gastnr == genstat.gastnr and to_list.ratecode.lower()  == (curr_code).lower()), first=True)
+                # to_list = query(to_list_data, filters=(lambda to_list: to_list.gastnr == genstat.gastnr and to_list.ratecode.lower()  == (curr_code).lower()), first=True)
+                tmp_to_list = query(
+                    to_list_data,
+                    filters=lambda tl: tl.gastnr == genstat.gastnr and tl.ratecode == curr_code,
+                    first=True
+                )
+                # if not to_list:
+                #     to_list = To_list()
+                #     to_list_data.append(to_list)
 
-                if not to_list:
-                    to_list = To_list()
-                    to_list_data.append(to_list)
-
-                    to_list.ratecode = curr_code
-                    to_list.gastnr = guest.gastnr
-                    to_list.name = guest.name + ", " + guest.vorname1 + " " +\
-                            guest.anrede1 + guest.anredefirma
+                #     to_list.ratecode = curr_code
+                #     to_list.gastnr = guest.gastnr
+                #     to_list.name = guest.name + ", " + guest.vorname1 + " " +\
+                #             guest.anrede1 + guest.anredefirma
 
                 if genstat.datum == to_date:
 
