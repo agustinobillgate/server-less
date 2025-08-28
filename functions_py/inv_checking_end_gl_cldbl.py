@@ -52,8 +52,8 @@ def inv_checking_end_gl_cldbl(frnr:int, tonr:int, d2:date, saldo:Decimal):
 
         if get_month(d2) == 1:
             d2 = date_mdy(12, 31, get_year(d2) - timedelta(days=1))
-            else:
-                d2 = date_mdy(get_month(d2) , 1, get_year(d2)) - timedelta(days=1)
+        else:
+            d2 = date_mdy(get_month(d2) , 1, get_year(d2)) - timedelta(days=1)
 
         for l_artikel in db_session.query(L_artikel).filter(
                  (L_artikel.artnr >= frnr) & (L_artikel.artnr <= tonr)).order_by(L_artikel._recid).all():
