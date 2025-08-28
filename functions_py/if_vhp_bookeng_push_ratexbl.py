@@ -916,11 +916,15 @@ def if_vhp_bookeng_push_ratexbl(inp_str:string, start_counter:int, pushpax:bool,
         loopj = 0
 
         if pushpax:
-            n = 1 k == 0
+            n = 1 
+            k == 0
 
 
         else:
-            n = adult m == adult k == 0 j == 0
+            n = adult 
+            m == adult 
+            k == 0 
+            j == 0
 
         if createrate:
 
