@@ -4,6 +4,7 @@ import time
 from typing import List, Dict
 # from analyze_loops import analyze_file
 from datetime import datetime
+import datetime
 
 class SQLAlchemyAnalyzer(ast.NodeVisitor):
     def __init__(self, filename):
@@ -239,27 +240,123 @@ def write_analysis_to_file(loops: List[Dict], outputs: List[Dict], input_file: s
         for type_name, count in loop_types.items():
             f.write(f"- {type_name}: {count}\n")
 
-# Main execution
-script_path = "../functions_py/supply_hinlist_btn_go_1_webbl.py"
+# # Main execution
+# script_path = "../functions_py/supply_hinlist_btn_go_1_webbl.py"
+# output_dir = "./output/ast/"
+# os.makedirs(output_dir, exist_ok=True)
+
+# # Get the script name without extension and create output filename
+# script_name = os.path.splitext(os.path.basename(script_path))[0]
+# output_path = os.path.join(output_dir, f"loop_analysis_{script_name}.txt")
+
+# if os.path.exists(script_path):
+#     try:
+#         loops, outputs = analyze_file(script_path)
+#         write_analysis_to_file(loops, outputs, script_path, output_path)
+#         print(f"Analysis completed. Results written to {output_path}")
+#     except Exception as e:
+#         print(f"Error: {str(e)}")
+# else:
+#     print(f"File not found: {script_path}")
+
+# # Remove duplicate script_path assignment
+# analyze_sqlalchemy_queries(script_path)
+
+
+# ========= Settings =========
+folder_py = "../functions_py"   # change to ".." if you want to scan the whole repo root
 output_dir = "./output/ast/"
+combined_filename = "loop_analysis_ALL.txt"
+separator = "\n" + "="*100 + "\n"
+
 os.makedirs(output_dir, exist_ok=True)
+combined_output_path = os.path.join(output_dir, combined_filename)
 
-# Get the script name without extension and create output filename
-script_name = os.path.splitext(os.path.basename(script_path))[0]
-output_path = os.path.join(output_dir, f"loop_analysis_{script_name}.txt")
-
-if os.path.exists(script_path):
+def safe_str(obj):
+    """Make best-effort string without blowing up on weird objects."""
     try:
-        loops, outputs = analyze_file(script_path)
-        write_analysis_to_file(loops, outputs, script_path, output_path)
-        print(f"Analysis completed. Results written to {output_path}")
-    except Exception as e:
-        print(f"Error: {str(e)}")
-else:
-    print(f"File not found: {script_path}")
+        return str(obj)
+    except Exception:
+        try:
+            return repr(obj)
+        except Exception:
+            return "<unprintable>"
 
-# Remove duplicate script_path assignment
-analyze_sqlalchemy_queries(script_path)
+def analyze_single_file(file_path):
+    """
+    Calls user-provided analysis helpers if available:
+      - analyze_file(file_path) -> (loops, outputs)
+      - analyze_sqlalchemy_queries(file_path) -> any
+    Returns a string section to append to the consolidated report.
+    """
+    lines = []
+    header = [
+        separator,
+        f"FILE: {file_path}",
+        f"ANALYZED AT: {datetime.datetime.now().isoformat(timespec='seconds')}",
+        "-"*100
+    ]
+    lines.extend(header)
+
+    # 1) Loop & output analysis
+    try:
+        loops, outputs = analyze_file(file_path)  # expects your existing function
+        lines.append("Loop Analysis (raw):")
+        lines.append(safe_str(loops))
+        lines.append("")
+        lines.append("Outputs (raw):")
+        lines.append(safe_str(outputs))
+    except NameError:
+        lines.append("WARN: analyze_file() is not defined in this runtime.")
+    except Exception as e:
+        lines.append(f"ERROR running analyze_file(): {e}")
+
+    lines.append("-"*100)
+
+    # 2) SQLAlchemy query analysis (optional)
+    try:
+        result = analyze_sqlalchemy_queries(file_path)  # expects your existing function
+        lines.append("SQLAlchemy Query Analysis (raw):")
+        lines.append(safe_str(result))
+    except NameError:
+        lines.append("NOTE: analyze_sqlalchemy_queries() not defined; skipping.")
+    except Exception as e:
+        lines.append(f"ERROR running analyze_sqlalchemy_queries(): {e}")
+
+    lines.append(separator)
+    return "\n".join(lines)
+
+def iter_py_files(root_dir):
+    """Yield absolute paths of .py files under root_dir, recursively."""
+    for base, _, files in os.walk(root_dir):
+        for fname in files:
+            if fname.lower().endswith(".py"):
+                yield os.path.join(base, fname)
+
+def main():
+    # Prepare report header
+    with open(combined_output_path, "w", encoding="utf-8") as f:
+        f.write(f"Consolidated Loop & Query Analysis Report\n")
+        f.write(f"Root scanned: {os.path.abspath(folder_py)}\n")
+        f.write(f"Generated: {datetime.datetime.now().isoformat(timespec='seconds')}\n")
+        f.write(separator)
+
+    # Walk and analyze each .py
+    count = 0
+    for py_path in iter_py_files(folder_py):
+        section = analyze_single_file(py_path)
+        with open(combined_output_path, "a", encoding="utf-8") as f:
+            f.write(section)
+        count += 1
+
+    # Tail note
+    with open(combined_output_path, "a", encoding="utf-8") as f:
+        f.write(f"\nAnalyzed {count} Python file(s).\n")
+
+    print(f"Analysis completed. Results written to {combined_output_path}")
+
+if __name__ == "__main__":
+    main()
 
 
 
