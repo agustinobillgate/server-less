@@ -1,0 +1,1249 @@
+Time Range / Timedelta Usage Report
+Generated: 2025-08-28T11:22:26
+====================================================================================================
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\_3month_fsegment_webbl.py
+  103: timedelta(...) from datetime import: timedelta
+              if to_date < (ci_date - timedelta(days=1)):
+  106: timedelta(...) from datetime import: timedelta
+                  tdate = ci_date - timedelta(days=1)
+  122: relativedelta(...) call: relativedelta
+              fr_date_last_year = fr_date - relativedelta(years=1)
+  123: relativedelta(...) call: relativedelta
+              to_date_last_year = to_date - relativedelta(years=1)
+  124: relativedelta(...) call: relativedelta
+              to_date_last_year_end = (to_date_last_year + relativedelta(months=1)).replace(day=1) - timedelta(days=1)
+  124: timedelta(...) from datetime import: timedelta
+              to_date_last_year_end = (to_date_last_year + relativedelta(months=1)).replace(day=1) - timedelta(days=1)
+  216: timedelta(...) from datetime import: timedelta
+                              datum2 = res_line.abreise - timedelta(days=1)
+  309: timedelta(...) from datetime import: timedelta
+                  datum = date_mdy(1, 1, get_year(in_date) + 1) - timedelta(days=1)
+  311: timedelta(...) from datetime import: timedelta
+                  datum = date_mdy(get_month(in_date) + 1, 1, get_year(in_date)) - timedelta(days=1)
+  347: timedelta(...) from datetime import: timedelta
+                  for ldatum in date_range(ci_date + timedelta(days=1),datum) :
+  404: timedelta(...) from datetime import: timedelta
+              to_date = date(get_year(from_date) + 1, 3, 1) - timedelta(days=1)
+  408: relativedelta(...) call: relativedelta
+              to_date = (from_date + relativedelta(months=+4)).replace(day=1) - timedelta(days=1)
+  408: timedelta(...) from datetime import: timedelta
+              to_date = (from_date + relativedelta(months=+4)).replace(day=1) - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\_3monthly_forecast_webbl.py
+  132: Generic call to function named 'timedelta': timedelta(...)
+                  end_date = bill_date - timedelta(days=1)
+  160: Generic call to function named 'timedelta': timedelta(...)
+              tdate = date_mdy(1, 1, tyy + 1) - timedelta(days=1)
+  164: Generic call to function named 'timedelta': timedelta(...)
+              tdate = date_mdy(tmm + 1, 1, tyy) - timedelta(days=1)
+  171: Generic call to function named 'timedelta': timedelta(...)
+                  if tdate < (bill_date - timedelta(days=1)):
+  174: Generic call to function named 'timedelta': timedelta(...)
+                      datum2 = bill_date - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\_3monthly_forecastbl.py
+  114: Generic call to function named 'timedelta': timedelta(...)
+                  end_date = bill_date - timedelta(days=1)
+  142: Generic call to function named 'timedelta': timedelta(...)
+              tdate = date_mdy(1, 1, tyy + timedelta(days=1)) - timedelta(days=1)
+  142: Generic call to function named 'timedelta': timedelta(...)
+              tdate = date_mdy(1, 1, tyy + timedelta(days=1)) - timedelta(days=1)
+  146: Generic call to function named 'timedelta': timedelta(...)
+              tdate = date_mdy(tmm + 1, 1, tyy) - timedelta(days=1)
+  153: Generic call to function named 'timedelta': timedelta(...)
+                  if tdate < (bill_date - timedelta(days=1)):
+  156: Generic call to function named 'timedelta': timedelta(...)
+                      datum2 = bill_date - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\abf_list1_3_webbl.py
+  319: Generic call to function named 'timedelta': timedelta(...)
+                      start_date = genstat.datum + timedelta(days=delta)
+  324: Generic call to function named 'timedelta': timedelta(...)
+                      if fdate > (start_date + timedelta(days=(intervall - 1))):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\abf_list4_webbl.py
+  736: Generic call to function named 'timedelta': timedelta(...)
+                      start_date = res_line.ankunft + timedelta(days=delta)
+  741: Generic call to function named 'timedelta': timedelta(...)
+                      if fdate > (start_date + timedelta(days=(intervall - 1))):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\additional_functions.py
+  973: timedelta(...) from datetime import: timedelta
+                  res_date += timedelta(days=1)
+  977: timedelta(...) from datetime import: timedelta
+                  res_date -= timedelta(days=1)
+  1418: timedelta(...) from datetime import: timedelta
+              return start_date + timedelta(**kwargs)
+  1421: relativedelta(...) call: relativedelta
+              return start_date + relativedelta(months=interval_value)
+  1424: relativedelta(...) call: relativedelta
+              return start_date + relativedelta(years=interval_value)
+  1432: timedelta(...) from datetime import: timedelta
+              interval = delta / timedelta(weeks=1)
+  1434: timedelta(...) from datetime import: timedelta
+              interval = delta / timedelta(days=1)
+  1436: timedelta(...) from datetime import: timedelta
+              interval = delta / timedelta(hours=1)
+  1438: timedelta(...) from datetime import: timedelta
+              interval = delta / timedelta(minutes=1)
+  1440: timedelta(...) from datetime import: timedelta
+              interval = delta / timedelta(seconds=1)
+  1442: timedelta(...) from datetime import: timedelta
+              interval = delta / timedelta(microseconds=1)
+  1444: timedelta(...) from datetime import: timedelta
+              interval = delta / timedelta(milliseconds=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ar_printsoa1_1_webbl.py
+  850: Generic call to function named 'timedelta': timedelta(...)
+                          due_date = eof_month + timedelta(days=val_param)
+  1255: Generic call to function named 'timedelta': timedelta(...)
+                  lastdate = newdate - timedelta(days=1)
+  1258: Generic call to function named 'timedelta': timedelta(...)
+                  lastdate = newdate - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\arl_list_disp_arlist5_webbl.py
+  517: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=365)
+  576: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=365)
+  632: Generic call to function named 'timedelta': timedelta(...)
+                  tmpdate = ci_date + timedelta(days=30)
+  673: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=365)
+  1277: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=365)
+  1755: Generic call to function named 'timedelta': timedelta(...)
+                  fdate2 = ci_date + timedelta(days=365)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\availability1_1bl.py
+  208: Generic call to function named 'timedelta': timedelta(...)
+                  datum_browse = datum_browse + timedelta(days=1)
+  240: Generic call to function named 'timedelta': timedelta(...)
+                  datum_browse = datum_browse + timedelta(days=1)
+  336: Generic call to function named 'timedelta': timedelta(...)
+                  datum_browse = datum_browse + timedelta(days=1)
+  456: Generic call to function named 'timedelta': timedelta(...)
+              tdate = tmp_fdate + timedelta(days=20)
+  517: Generic call to function named 'timedelta': timedelta(...)
+                                                  edate = tdate + timedelta(days=1)
+  527: Generic call to function named 'timedelta': timedelta(...)
+                                                      bdate = bdate + timedelta(days=1)
+  539: Generic call to function named 'timedelta': timedelta(...)
+                                                      bdate = bdate + timedelta(days=1)
+  548: Generic call to function named 'timedelta': timedelta(...)
+                                                      bdate = bdate + timedelta(days=1)
+  551: Generic call to function named 'timedelta': timedelta(...)
+                                              eposdate = (fixleist.lfakt + timedelta(days=fixleist.dekade))
+  559: Generic call to function named 'timedelta': timedelta(...)
+                                                  edate = tdate + timedelta(days=1)
+  572: Generic call to function named 'timedelta': timedelta(...)
+                                                      bdate = bdate + timedelta(days=1)
+  588: Generic call to function named 'timedelta': timedelta(...)
+                                          edate = tdate + timedelta(days=1)
+  596: Generic call to function named 'timedelta': timedelta(...)
+                                              bdate = bdate + timedelta(days=1)
+  623: Generic call to function named 'timedelta': timedelta(...)
+                          ndate = tmp_fdate + timedelta(days=i)
+  721: Generic call to function named 'timedelta': timedelta(...)
+              tdate = curr_date + timedelta(days=20)
+  791: Generic call to function named 'timedelta': timedelta(...)
+                  datum_browse = datum_browse + timedelta(days=1)
+  826: Generic call to function named 'timedelta': timedelta(...)
+                          datum_browse = datum_browse + timedelta(days=1)
+  869: Generic call to function named 'timedelta': timedelta(...)
+                  datum_browse = datum_browse + timedelta(days=1)
+  1048: Generic call to function named 'timedelta': timedelta(...)
+                  datum_rmcat = datum_rmcat + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\availability_webbl.py
+  172: Generic call to function named 'timedelta': timedelta(...)
+                                                  edate = tdate + timedelta(days=1)
+  181: Generic call to function named 'timedelta': timedelta(...)
+                                                  bdate = bdate + timedelta(days=1)
+  191: Generic call to function named 'timedelta': timedelta(...)
+                                                  bdate = bdate + timedelta(days=1)
+  198: Generic call to function named 'timedelta': timedelta(...)
+                                                  bdate = bdate + timedelta(days=1)
+  201: Generic call to function named 'timedelta': timedelta(...)
+                                              eposdate = (fixleist.lfakt + timedelta(days=fixleist.dekade))
+  209: Generic call to function named 'timedelta': timedelta(...)
+                                                  edate = tdate + timedelta(days=1)
+  220: Generic call to function named 'timedelta': timedelta(...)
+                                                  bdate = bdate + timedelta(days=1)
+  236: Generic call to function named 'timedelta': timedelta(...)
+                                          edate = tdate + timedelta(days=1)
+  242: Generic call to function named 'timedelta': timedelta(...)
+                                          bdate = bdate + timedelta(days=1)
+  270: Generic call to function named 'timedelta': timedelta(...)
+                          ndate = ffdate + timedelta(days=i)
+  366: Generic call to function named 'timedelta': timedelta(...)
+              tdate = curr_date + timedelta(days=20)
+  435: Generic call to function named 'timedelta': timedelta(...)
+                  datum_browse = datum_browse + timedelta(days=1)
+  471: Generic call to function named 'timedelta': timedelta(...)
+                          datum_browse = datum_browse + timedelta(days=1)
+  515: Generic call to function named 'timedelta': timedelta(...)
+                  datum_browse = datum_browse + timedelta(days=1)
+  692: Generic call to function named 'timedelta': timedelta(...)
+                  datum_rmcat = datum_rmcat + timedelta(days=1)
+  695: Generic call to function named 'timedelta': timedelta(...)
+          tmp_date = curr_date - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ba_plan_create_wlist_prevbl.py
+  252: Generic call to function named 'timedelta': timedelta(...)
+                   ((Bk_reser.datum >= from_date) & (Bk_reser.datum <= from_date + timedelta(days=11))) & ((Bk_reser.resstatus == 8) | (Bk_reser.resstatus <= 2))).order_by(Bk_reser._recid).all():
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\cancel_cobl.py
+  143: Generic call to function named 'timedelta': timedelta(...)
+              tmp_date = res_line.abreise - timedelta(days=1)
+  204: Generic call to function named 'timedelta': timedelta(...)
+                      upto_date = res_line2.abreise - timedelta(days=1)
+  338: Generic call to function named 'timedelta': timedelta(...)
+          departure = res_line.ankunft + timedelta(days=res_line.anztage)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\check_bonus_nightbl.py
+  72: Generic call to function named 'timedelta': timedelta(...)
+                          w_day = wd_array[get_weekday(datum - timedelta(days=1)) - 1]
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\comp_productbl.py
+  65: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(1, 1, yy + 1) - timedelta(days=1)
+  67: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(mm + 1, 1, yy) - timedelta(days=1)
+  108: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(1, 1, jml + 1) - timedelta(days=1)
+  110: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(mm + 1, 1, jml) - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\copy_bares_btn_exitbl.py
+  119: Generic call to function named 'timedelta': timedelta(...)
+                  adjusted_date = s_list.datum - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\correct_guest_ledgerbl.py
+  87: Generic call to function named 'timedelta': timedelta(...)
+              rbilldate = billdate - timedelta(days=30)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\cr_anfcastbl.py
+  333: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(mm, 1, tmp_yy) - timedelta(days=1)
+  340: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  343: Generic call to function named 'timedelta': timedelta(...)
+                  datum2 = ci_date - timedelta(days=1)
+  612: Generic call to function named 'timedelta': timedelta(...)
+                                  datum2 = res_line.abreise - timedelta(days=1)
+  837: Generic call to function named 'timedelta': timedelta(...)
+                  katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date - timedelta(days=1))],"endperiode": [(ge, bill_date - timedelta(days=1))],"betriebsnr": [(eq, w_day)]})
+  837: Generic call to function named 'timedelta': timedelta(...)
+                  katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date - timedelta(days=1))],"endperiode": [(ge, bill_date - timedelta(days=1))],"betriebsnr": [(eq, w_day)]})
+  841: Generic call to function named 'timedelta': timedelta(...)
+                      katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date - timedelta(days=1))],"endperiode": [(ge, bill_date - timedelta(days=1))],"betriebsnr": [(eq, 0)]})
+  841: Generic call to function named 'timedelta': timedelta(...)
+                      katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date - timedelta(days=1))],"endperiode": [(ge, bill_date - timedelta(days=1))],"betriebsnr": [(eq, 0)]})
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\cr_availability1_webbl.py
+  127: Generic call to function named 'timedelta': timedelta(...)
+              tdate = curr_date + timedelta(days=num_day)
+  302: Generic call to function named 'timedelta': timedelta(...)
+              tdate = ffdate + timedelta(days=num_day)
+  370: Generic call to function named 'timedelta': timedelta(...)
+                                                  edate = tdate + timedelta(days=1)
+  378: Generic call to function named 'timedelta': timedelta(...)
+                                                  bdate = bdate + timedelta(days=1)
+  388: Generic call to function named 'timedelta': timedelta(...)
+                                                  bdate = bdate + timedelta(days=1)
+  395: Generic call to function named 'timedelta': timedelta(...)
+                                                  bdate = bdate + timedelta(days=1)
+  398: Generic call to function named 'timedelta': timedelta(...)
+                                              eposdate = (fixleist.lfakt + timedelta(days=fixleist.dekade))
+  406: Generic call to function named 'timedelta': timedelta(...)
+                                                  edate = tdate + timedelta(days=1)
+  417: Generic call to function named 'timedelta': timedelta(...)
+                                                  bdate = bdate + timedelta(days=1)
+  433: Generic call to function named 'timedelta': timedelta(...)
+                                          edate = tdate + timedelta(days=1)
+  439: Generic call to function named 'timedelta': timedelta(...)
+                                          bdate = bdate + timedelta(days=1)
+  469: Generic call to function named 'timedelta': timedelta(...)
+                              ndate = ffdate + timedelta(days=i)
+  497: Generic call to function named 'timedelta': timedelta(...)
+                              ndate = ffdate + timedelta(days=i)
+  585: Generic call to function named 'timedelta': timedelta(...)
+              tdate = curr_date + timedelta(days=num_day)
+  616: Generic call to function named 'timedelta': timedelta(...)
+                          datum = curr_date + timedelta(days=i - 1)
+  625: Generic call to function named 'timedelta': timedelta(...)
+                              if kontline and datum >= (ci_date + timedelta(days=kontline.ruecktage)):
+  711: Generic call to function named 'timedelta': timedelta(...)
+                              datum = datum + timedelta(days=1)
+  739: Generic call to function named 'timedelta': timedelta(...)
+                                  datum = datum + timedelta(days=1)
+  782: Generic call to function named 'timedelta': timedelta(...)
+                          datum = datum + timedelta(days=1)
+  813: Generic call to function named 'timedelta': timedelta(...)
+                              datum = datum + timedelta(days=1)
+  827: Generic call to function named 'timedelta': timedelta(...)
+                      to_date = from_date + timedelta(days=num_day)
+  836: Generic call to function named 'timedelta': timedelta(...)
+                              if datum >= (ci_date + timedelta(days=t_kontline.ruecktage)):
+  992: Generic call to function named 'timedelta': timedelta(...)
+                          datum = datum + timedelta(days=1)
+  1020: Generic call to function named 'timedelta': timedelta(...)
+                              datum = datum + timedelta(days=1)
+  1058: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=1)
+  1089: Generic call to function named 'timedelta': timedelta(...)
+                          datum = datum + timedelta(days=1)
+  1104: Generic call to function named 'timedelta': timedelta(...)
+                  to_date = from_date + timedelta(days=num_day)
+  1113: Generic call to function named 'timedelta': timedelta(...)
+                          if datum >= (ci_date + timedelta(days=t_kontline.ruecktage)):
+  1232: Generic call to function named 'timedelta': timedelta(...)
+                          datum = datum + timedelta(days=1)
+  1257: Generic call to function named 'timedelta': timedelta(...)
+                          datum1 = curr_date + timedelta(days=num_day)
+  1261: Generic call to function named 'timedelta': timedelta(...)
+                          abreise1 = res_line.abreise - timedelta(days=1)
+  1272: Generic call to function named 'timedelta': timedelta(...)
+                          i = (res_line.abreise - curr_date + timedelta(days=1)).days
+  1315: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=1)
+  1351: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=1)
+  1382: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=1)
+  1421: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=1)
+  1442: Generic call to function named 'timedelta': timedelta(...)
+              to_date = from_date + timedelta(days=num_day)
+  1452: Generic call to function named 'timedelta': timedelta(...)
+                      if datum >= (ci_date + timedelta(days=kontline.ruecktage)):
+  1498: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=1)
+  1519: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=1)
+  1575: Generic call to function named 'timedelta': timedelta(...)
+              co_date = date_mdy(mm, dd, yyyy) + timedelta(days=1)
+  1589: Generic call to function named 'timedelta': timedelta(...)
+              date_list.datum = curr_date + timedelta(days=i - 1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\cr_occfcast1_2_webbl.py
+  200: Generic call to function named 'timedelta': timedelta(...)
+              datum = curr_date - timedelta(days=1)
+  202: Generic call to function named 'timedelta': timedelta(...)
+                  datum = datum + timedelta(days=1)
+  224: Generic call to function named 'timedelta': timedelta(...)
+                      if allot_doit and (datum >= (ci_date + timedelta(days=kontline.ruecktage))):
+  229: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  232: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  461: Generic call to function named 'timedelta': timedelta(...)
+              d2 = d2 + timedelta(days=1)
+  943: Generic call to function named 'timedelta': timedelta(...)
+                                          if kontline and datum >= (ci_date + timedelta(days=kontline.ruecktage)):
+  1021: Generic call to function named 'timedelta': timedelta(...)
+              datum = curr_date - timedelta(days=1)
+  1023: Generic call to function named 'timedelta': timedelta(...)
+                  datum = datum + timedelta(days=1)
+  1068: Generic call to function named 'timedelta': timedelta(...)
+              datum = curr_date - timedelta(days=1)
+  1072: Generic call to function named 'timedelta': timedelta(...)
+                  datum = datum + timedelta(days=1)
+  1654: Generic call to function named 'timedelta': timedelta(...)
+              datum = curr_date - timedelta(days=1)
+  1656: Generic call to function named 'timedelta': timedelta(...)
+                  datum = datum + timedelta(days=1)
+  1678: Generic call to function named 'timedelta': timedelta(...)
+                      if allot_doit and (datum >= (ci_date + timedelta(days=kontline.ruecktage))):
+  2159: Generic call to function named 'timedelta': timedelta(...)
+                                      if kontline and datum >= (ci_date + timedelta(days=kontline.ruecktage)):
+  2249: Generic call to function named 'timedelta': timedelta(...)
+              datum = curr_date - timedelta(days=1)
+  2251: Generic call to function named 'timedelta': timedelta(...)
+                  datum = datum + timedelta(days=1)
+  2298: Generic call to function named 'timedelta': timedelta(...)
+              datum = curr_date - timedelta(days=1)
+  2302: Generic call to function named 'timedelta': timedelta(...)
+                  datum = datum + timedelta(days=1)
+  2598: Generic call to function named 'timedelta': timedelta(...)
+                           (Genstat.datum == curr_date - timedelta(days=1)) & (Genstat.res_logic[inc_value(1)]) & (Genstat.zinr != "") & (Genstat.resstatus != 13)).order_by(Genstat._recid).all():
+  2720: Generic call to function named 'timedelta': timedelta(...)
+                  end_date = ci_date - timedelta(days=1)
+  2908: Generic call to function named 'timedelta': timedelta(...)
+                  start_date = cidate + timedelta(days=delta)
+  2914: Generic call to function named 'timedelta': timedelta(...)
+                  tmpdate = start_date + timedelta(days=tmpint1)
+  2966: Generic call to function named 'timedelta': timedelta(...)
+                  if curr_date <= (cidate + timedelta(days=(intervall - 1))):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\cr_occfcast1_2_webbl_not_ok.py
+  200: Generic call to function named 'timedelta': timedelta(...)
+              datum = curr_date - timedelta(days=1)
+  202: Generic call to function named 'timedelta': timedelta(...)
+                  datum = datum + timedelta(days=1)
+  224: Generic call to function named 'timedelta': timedelta(...)
+                      if allot_doit and (datum >= (ci_date + timedelta(days=kontline.ruecktage))):
+  229: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  232: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  461: Generic call to function named 'timedelta': timedelta(...)
+              d2 = d2 + timedelta(days=1)
+  943: Generic call to function named 'timedelta': timedelta(...)
+                                          if kontline and datum >= (ci_date + timedelta(days=kontline.ruecktage)):
+  1021: Generic call to function named 'timedelta': timedelta(...)
+              datum = curr_date - timedelta(days=1)
+  1023: Generic call to function named 'timedelta': timedelta(...)
+                  datum = datum + timedelta(days=1)
+  1068: Generic call to function named 'timedelta': timedelta(...)
+              datum = curr_date - timedelta(days=1)
+  1072: Generic call to function named 'timedelta': timedelta(...)
+                  datum = datum + timedelta(days=1)
+  1649: Generic call to function named 'timedelta': timedelta(...)
+              datum = curr_date - timedelta(days=1)
+  1651: Generic call to function named 'timedelta': timedelta(...)
+                  datum = datum + timedelta(days=1)
+  1673: Generic call to function named 'timedelta': timedelta(...)
+                      if allot_doit and (datum >= (ci_date + timedelta(days=kontline.ruecktage))):
+  2154: Generic call to function named 'timedelta': timedelta(...)
+                                      if kontline and datum >= (ci_date + timedelta(days=kontline.ruecktage)):
+  2244: Generic call to function named 'timedelta': timedelta(...)
+              datum = curr_date - timedelta(days=1)
+  2246: Generic call to function named 'timedelta': timedelta(...)
+                  datum = datum + timedelta(days=1)
+  2293: Generic call to function named 'timedelta': timedelta(...)
+              datum = curr_date - timedelta(days=1)
+  2297: Generic call to function named 'timedelta': timedelta(...)
+                  datum = datum + timedelta(days=1)
+  2586: Generic call to function named 'timedelta': timedelta(...)
+                           (Genstat.datum == curr_date - timedelta(days=1)) & (Genstat.res_logic[inc_value(1)]) & (Genstat.zinr != "") & (Genstat.resstatus != 13)).order_by(Genstat._recid).all():
+  2708: Generic call to function named 'timedelta': timedelta(...)
+                  end_date = ci_date - timedelta(days=1)
+  2896: Generic call to function named 'timedelta': timedelta(...)
+                  start_date = cidate + timedelta(days=delta)
+  2902: Generic call to function named 'timedelta': timedelta(...)
+                  tmpdate = start_date + timedelta(days=tmpint1)
+  2954: Generic call to function named 'timedelta': timedelta(...)
+                  if curr_date <= (cidate + timedelta(days=(intervall - 1))):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\create_forecast_history_2bl.py
+  78: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  81: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  229: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  232: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  379: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  382: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  383: Generic call to function named 'timedelta': timedelta(...)
+              d2 = d2 + timedelta(days=1)
+  485: Generic call to function named 'timedelta': timedelta(...)
+                          datum2 = res_line.abreise - timedelta(days=1)
+  627: Generic call to function named 'timedelta': timedelta(...)
+                              if kontline and datum >= (ci_date + timedelta(days=kontline.ruecktage)):
+  679: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  682: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  683: Generic call to function named 'timedelta': timedelta(...)
+              d2 = d2 + timedelta(days=1)
+  783: Generic call to function named 'timedelta': timedelta(...)
+                          datum2 = res_line.abreise - timedelta(days=1)
+  925: Generic call to function named 'timedelta': timedelta(...)
+                              if kontline and datum >= (ci_date + timedelta(days=kontline.ruecktage)):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\create_forecast_history_detail_cldbl.py
+  79: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  82: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  231: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  234: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  381: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  384: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  385: Generic call to function named 'timedelta': timedelta(...)
+              d2 = d2 + timedelta(days=1)
+  497: Generic call to function named 'timedelta': timedelta(...)
+                          datum2 = res_line.abreise - timedelta(days=1)
+  639: Generic call to function named 'timedelta': timedelta(...)
+                              if kontline and datum >= (ci_date + timedelta(days=kontline.ruecktage)):
+  691: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  694: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  695: Generic call to function named 'timedelta': timedelta(...)
+              d2 = d2 + timedelta(days=1)
+  797: Generic call to function named 'timedelta': timedelta(...)
+                          datum2 = res_line.abreise - timedelta(days=1)
+  939: Generic call to function named 'timedelta': timedelta(...)
+                              if kontline and datum >= (ci_date + timedelta(days=kontline.ruecktage)):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\cust_turnover_2bl.py
+  119: Generic call to function named 'timedelta': timedelta(...)
+              if tdate < (ci_date - timedelta(days=1)):
+  122: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  123: Generic call to function named 'timedelta': timedelta(...)
+              d2 = d2 + timedelta(days=1)
+  216: Generic call to function named 'timedelta': timedelta(...)
+                          datum2 = res_line.abreise - timedelta(days=1)
+  679: Generic call to function named 'timedelta': timedelta(...)
+              if tdate < (ci_date - timedelta(days=1)):
+  682: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  683: Generic call to function named 'timedelta': timedelta(...)
+              d2 = d2 + timedelta(days=1)
+  776: Generic call to function named 'timedelta': timedelta(...)
+                          datum2 = res_line.abreise - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\cust_turnover_sorting_detail_cldbl.py
+  894: Generic call to function named 'timedelta': timedelta(...)
+              if tdate < (ci_date - timedelta(days=1)):
+  897: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  898: Generic call to function named 'timedelta': timedelta(...)
+              d2 = d2 + timedelta(days=1)
+  1029: Generic call to function named 'timedelta': timedelta(...)
+                          datum2 = res_line.abreise - timedelta(days=1)
+  1159: Generic call to function named 'timedelta': timedelta(...)
+                  ly_fdate = date_mdy(get_month(fdate) , 28, get_year(fdate) - timedelta(days=1))
+  1161: Generic call to function named 'timedelta': timedelta(...)
+                  ly_fdate = date_mdy(get_month(fdate) , get_day(fdate) , get_year(fdate) - timedelta(days=1))
+  1164: Generic call to function named 'timedelta': timedelta(...)
+                  ly_tdate = date_mdy(get_month(tdate) , 28, get_year(tdate) - timedelta(days=1))
+  1166: Generic call to function named 'timedelta': timedelta(...)
+                  ly_tdate = date_mdy(get_month(tdate) , get_day(tdate) , get_year(tdate) - timedelta(days=1))
+  1521: Generic call to function named 'timedelta': timedelta(...)
+              if tdate < (ci_date - timedelta(days=1)):
+  1524: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  1525: Generic call to function named 'timedelta': timedelta(...)
+              d2 = d2 + timedelta(days=1)
+  1656: Generic call to function named 'timedelta': timedelta(...)
+                          datum2 = res_line.abreise - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\del_reslinebl.py
+  173: Generic call to function named 'timedelta': timedelta(...)
+                      curr_date = curr_date + timedelta(days=1)
+  233: Generic call to function named 'timedelta': timedelta(...)
+                  upto_date = res_line.abreise - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\deposit_admin_1_webbl.py
+  1413: Generic call to function named 'timedelta': timedelta(...)
+                  start_date = res_line.ankunft + timedelta(days=delta)
+  1418: Generic call to function named 'timedelta': timedelta(...)
+                  if curr_date <= (start_date + timedelta(days=(intervall - 1))):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\deposit_admin_1bl.py
+  701: Generic call to function named 'timedelta': timedelta(...)
+              tmp_date = res_line.abreise - timedelta(days=1)
+  776: Generic call to function named 'timedelta': timedelta(...)
+              tmp_date = res_line.abreise - timedelta(days=1)
+  837: Generic call to function named 'timedelta': timedelta(...)
+                  start_date = res_line.ankunft + timedelta(days=delta)
+  842: Generic call to function named 'timedelta': timedelta(...)
+                  if curr_date <= (start_date + timedelta(days=(intervall - 1))):
+  1565: Generic call to function named 'timedelta': timedelta(...)
+              tmp_date = res_line.abreise - timedelta(days=1)
+  1640: Generic call to function named 'timedelta': timedelta(...)
+              tmp_date = res_line.abreise - timedelta(days=1)
+  1701: Generic call to function named 'timedelta': timedelta(...)
+                  start_date = res_line.ankunft + timedelta(days=delta)
+  1706: Generic call to function named 'timedelta': timedelta(...)
+                  if curr_date <= (start_date + timedelta(days=(intervall - 1))):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\deposit_admin_2_webbl.py
+  1275: Generic call to function named 'timedelta': timedelta(...)
+              tmpdate = res_line.abreise - timedelta(days=1)
+  1354: Generic call to function named 'timedelta': timedelta(...)
+              tmpdate = res_line.abreise - timedelta(days=1)
+  1415: Generic call to function named 'timedelta': timedelta(...)
+                  start_date = res_line.ankunft + timedelta(days=delta)
+  1420: Generic call to function named 'timedelta': timedelta(...)
+                  if curr_date <= (start_date + timedelta(days=(intervall - 1))):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\fa_upgradelist_btn_cancelbl.py
+  84: Generic call to function named 'timedelta': timedelta(...)
+              deleted_date = date(1900, 1, 1) + timedelta(days=deleted_date)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\fo_parexcel_listbl.py
+  537: Generic call to function named 'timedelta': timedelta(...)
+          from_date = get_current_date() - timedelta(days=1)
+  552: Generic call to function named 'timedelta': timedelta(...)
+          pto_date = from_date - timedelta(days=1)
+  553: Generic call to function named 'timedelta': timedelta(...)
+          tmp_month = to_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\foumsz_create_listbl.py
+  812: Generic call to function named 'timedelta': timedelta(...)
+              to_date = from_date + timedelta(days=31)
+  814: Generic call to function named 'timedelta': timedelta(...)
+              to_date = to_date - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\gacct_balance_btn_go_listbl.py
+  77: Generic call to function named 'timedelta': timedelta(...)
+              rbilldate = billdate - timedelta(days=30)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\gl_htp_checkbl.py
+  50: Generic call to function named 'timedelta': timedelta(...)
+                  date2 = date1 - timedelta(days=1)
+  61: Generic call to function named 'timedelta': timedelta(...)
+                  date2 = date1 - timedelta(days=1)
+  87: Generic call to function named 'timedelta': timedelta(...)
+                  date2 = date1 - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\glores_review_webbl.py
+  217: Generic call to function named 'timedelta': timedelta(...)
+                          datum = datum + timedelta(days=1)
+  230: Generic call to function named 'timedelta': timedelta(...)
+                          datum = datum + timedelta(days=1)
+  254: Generic call to function named 'timedelta': timedelta(...)
+                          datum = datum + timedelta(days=1)
+  342: Generic call to function named 'timedelta': timedelta(...)
+                              datum = datum + timedelta(days=1)
+  348: Generic call to function named 'timedelta': timedelta(...)
+                          datum = datum + timedelta(days=1)
+  355: Generic call to function named 'timedelta': timedelta(...)
+                          datum = datum + timedelta(days=1)
+  368: Generic call to function named 'timedelta': timedelta(...)
+                          datum = datum + timedelta(days=1)
+  388: Generic call to function named 'timedelta': timedelta(...)
+                          datum = datum + timedelta(days=1)
+  397: Generic call to function named 'timedelta': timedelta(...)
+                          if datum >= (ci_date + timedelta(days=k_list.ruecktage)):
+  418: Generic call to function named 'timedelta': timedelta(...)
+                          datum = datum + timedelta(days=1)
+  427: Generic call to function named 'timedelta': timedelta(...)
+                          if datum >= (ci_date + timedelta(days=k_list.ruecktage)):
+  448: Generic call to function named 'timedelta': timedelta(...)
+                          datum = datum + timedelta(days=1)
+  562: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=2)
+  564: Generic call to function named 'timedelta': timedelta(...)
+                  datum = from_date + timedelta(days=1)
+  572: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=2)
+  586: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=1)
+  606: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=2)
+  608: Generic call to function named 'timedelta': timedelta(...)
+                  datum = from_date + timedelta(days=1)
+  616: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=2)
+  630: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=1)
+  658: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=2)
+  660: Generic call to function named 'timedelta': timedelta(...)
+                  datum = from_date + timedelta(days=1)
+  668: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=2)
+  690: Generic call to function named 'timedelta': timedelta(...)
+                      datum = datum + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\if_custom_pushall_availbl.py
+  451: Generic call to function named 'timedelta': timedelta(...)
+                  if allotment and kontline.betriebsnr == 0 and curr_date >= (ci_date + timedelta(days=kontline.ruecktage)):
+  499: Generic call to function named 'timedelta': timedelta(...)
+                          if allotment and curr_date >= (ci_date + timedelta(days=kline.ruecktage)):
+  549: Generic call to function named 'timedelta': timedelta(...)
+                          if allotment and curr_date >= (ci_date + timedelta(days=kline.ruecktage)):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\if_vhp_bookeng_push_ratebl.py
+  630: Generic call to function named 'timedelta': timedelta(...)
+              ankunft = fdate + timedelta(days=2)
+  766: Generic call to function named 'timedelta': timedelta(...)
+                               (Currqsy.key == 170) & (Currqsy.date1 < fdate - timedelta(days=2)) & (Currqsy.betriebsnr == becode) & (Currqsy._recid > curr_recid)).first()
+  957: Generic call to function named 'timedelta': timedelta(...)
+                      elif bqueasy.number3 > 0 and bqueasy.number3 > (ankunft - timedelta(days=ci_date)):
+  960: Generic call to function named 'timedelta': timedelta(...)
+                      elif bqueasy.deci3 > 0 and bqueasy.deci3 < (ankunft - timedelta(days=ci_date)):
+  1292: Generic call to function named 'timedelta': timedelta(...)
+                  elif bqueasy and bqueasy.number3 > 0 and bqueasy.number3 > (ankunft - timedelta(days=ci_date)):
+  1295: Generic call to function named 'timedelta': timedelta(...)
+                  elif bqueasy and bqueasy.deci3 > 0 and bqueasy.deci3 < (ankunft - timedelta(days=ci_date)):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\if_vhp_bookeng_push_ratexbl.py
+  630: Generic call to function named 'timedelta': timedelta(...)
+              ankunft = fdate + timedelta(days=2)
+  766: Generic call to function named 'timedelta': timedelta(...)
+                               (Currqsy.key == 170) & (Currqsy.date1 < fdate - timedelta(days=2)) & (Currqsy.betriebsnr == becode) & (Currqsy._recid > curr_recid)).first()
+  957: Generic call to function named 'timedelta': timedelta(...)
+                      elif bqueasy.number3 > 0 and bqueasy.number3 > (ankunft - timedelta(days=ci_date)):
+  960: Generic call to function named 'timedelta': timedelta(...)
+                      elif bqueasy.deci3 > 0 and bqueasy.deci3 < (ankunft - timedelta(days=ci_date)):
+  1292: Generic call to function named 'timedelta': timedelta(...)
+                  elif bqueasy and bqueasy.number3 > 0 and bqueasy.number3 > (ankunft - timedelta(days=ci_date)):
+  1295: Generic call to function named 'timedelta': timedelta(...)
+                  elif bqueasy and bqueasy.deci3 > 0 and bqueasy.deci3 < (ankunft - timedelta(days=ci_date)):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\if_vhp_bookeng_store_resbl.py
+  370: Generic call to function named 'timedelta': timedelta(...)
+                  upto_date = room_list.abreise - timedelta(days=1)
+  637: Generic call to function named 'timedelta': timedelta(...)
+                  upto_date = room_list.abreise - timedelta(days=1)
+  733: Generic call to function named 'timedelta': timedelta(...)
+                  upto_date = res_line.abreise - timedelta(days=1)
+  1090: Generic call to function named 'timedelta': timedelta(...)
+                          upto_date = room_list.abreise - timedelta(days=1)
+  1325: Generic call to function named 'timedelta': timedelta(...)
+                      mc_guest.tdate = tahun + timedelta(days=32850)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\inv_checking_end_gl_cldbl.py
+  54: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = date_mdy(12, 31, get_year(d2) - timedelta(days=1))
+  56: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = date_mdy(get_month(d2) , 1, get_year(d2)) - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\kitchen_display_getdata_cld_1bl.py
+  292: Generic call to function named 'timedelta': timedelta(...)
+                       (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == h_bill.departement) & (H_bill_line.bill_datum >= bill_date - timedelta(days=1)) & (H_bill_line.bill_datum <= bill_date + timedelta(days=1)) & (H_bill_line.anzahl < 0)).order_by(H_bill_line._recid).all():
+  292: Generic call to function named 'timedelta': timedelta(...)
+                       (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == h_bill.departement) & (H_bill_line.bill_datum >= bill_date - timedelta(days=1)) & (H_bill_line.bill_datum <= bill_date + timedelta(days=1)) & (H_bill_line.anzahl < 0)).order_by(H_bill_line._recid).all():
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\leadtime_rsv_4bl.py
+  172: Generic call to function named 'timedelta': timedelta(...)
+              if todate < (ci_date - timedelta(days=1)):
+  175: Generic call to function named 'timedelta': timedelta(...)
+                  datum2 = ci_date - timedelta(days=1)
+  323: Generic call to function named 'timedelta': timedelta(...)
+                  datum2 = datum2 + timedelta(days=1)
+  408: Generic call to function named 'timedelta': timedelta(...)
+                              for ldatum in date_range(res_line.ankunft, (res_line.abreise - timedelta(days=1))) :
+  919: Generic call to function named 'timedelta': timedelta(...)
+                  datum2 = datum2 + timedelta(days=1)
+  1488: Generic call to function named 'timedelta': timedelta(...)
+                              tmp_date = res_line.abreise - timedelta(days=1)
+  1820: Generic call to function named 'timedelta': timedelta(...)
+                              tmp_date = res_line.abreise - timedelta(days=1)
+  2199: Generic call to function named 'timedelta': timedelta(...)
+              if todate < (ci_date - timedelta(days=1)):
+  2202: Generic call to function named 'timedelta': timedelta(...)
+                  datum2 = ci_date - timedelta(days=1)
+  2348: Generic call to function named 'timedelta': timedelta(...)
+                  datum2 = datum2 + timedelta(days=1)
+  2810: Generic call to function named 'timedelta': timedelta(...)
+                  datum2 = datum2 + timedelta(days=1)
+  3358: Generic call to function named 'timedelta': timedelta(...)
+                              tmp_date = res_line.abreise - timedelta(days=1)
+  3693: Generic call to function named 'timedelta': timedelta(...)
+                              tmp_date = res_line.abreise - timedelta(days=1)
+  4042: Generic call to function named 'timedelta': timedelta(...)
+              if todate < (ci_date - timedelta(days=1)):
+  4045: Generic call to function named 'timedelta': timedelta(...)
+                  datum2 = ci_date - timedelta(days=1)
+  4188: Generic call to function named 'timedelta': timedelta(...)
+                  datum2 = datum2 + timedelta(days=1)
+  4652: Generic call to function named 'timedelta': timedelta(...)
+                  datum2 = datum2 + timedelta(days=1)
+  5194: Generic call to function named 'timedelta': timedelta(...)
+                              tmp_date = res_line.abreise - timedelta(days=1)
+  5518: Generic call to function named 'timedelta': timedelta(...)
+                              tmp_date = res_line.abreise - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\leasing_cancel_rsvbl.py
+  437: Generic call to function named 'timedelta': timedelta(...)
+                  periode = date_mdy(1, get_day(periode_rsv1) , get_year(periode_rsv1) + 1) - timedelta(days=1)
+  449: Generic call to function named 'timedelta': timedelta(...)
+                          periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(periode_rsv1), get_year(periode_rsv1) ]) - timedelta(days=1)
+  454: Generic call to function named 'timedelta': timedelta(...)
+                      periode = date_mdy(get_month(periode_rsv1) + 1, get_day(periode_rsv1) , get_year(periode_rsv1)) - timedelta(days=1)
+  459: Generic call to function named 'timedelta': timedelta(...)
+                  periode = date_mdy(get_month(periode_rsv1), get_day(periode_rsv1) , get_year(periode_rsv1)) - timedelta(days=1)
+  469: Generic call to function named 'timedelta': timedelta(...)
+                          periode = date_mdy(1, get_day(periode_rsv1) , get_year(periode_rsv1) + 1) - timedelta(days=1) 
+  486: Generic call to function named 'timedelta': timedelta(...)
+                              periode = date_mdy(get_month(periode_rsv1) + 1, get_day(periode_rsv1) , get_year(periode_rsv1)) - timedelta(days=1)
+  489: Generic call to function named 'timedelta': timedelta(...)
+                          periode = date_mdy(get_month(periode_rsv1) + 1, get_day(periode_rsv1) , get_year(periode_rsv1)) - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\mk_resline_go_2bl.py
+  111: Generic call to function named 'timedelta': timedelta(...)
+                  to_date = reslin_list.abreise - timedelta(days=1)
+  180: Generic call to function named 'timedelta': timedelta(...)
+                      curr_date = curr_date + timedelta(days=1)
+  206: Generic call to function named 'timedelta': timedelta(...)
+                      tmpdate = res_line2.abreise - timedelta(days=1)
+  339: Generic call to function named 'timedelta': timedelta(...)
+                          tmpdate = res_line2.abreise - timedelta(days=1)
+  754: Generic call to function named 'timedelta': timedelta(...)
+                  end_datum = rline.abreise - timedelta(days=1)
+  1623: Generic call to function named 'timedelta': timedelta(...)
+                      tmpdate = reslin_list.abreise - timedelta(days=1)
+  2110: Generic call to function named 'timedelta': timedelta(...)
+                      upto_date = res_line.abreise - timedelta(days=1)
+  2140: Generic call to function named 'timedelta': timedelta(...)
+                      upto_date = reslin_list.abreise - timedelta(days=1)
+  2192: Generic call to function named 'timedelta': timedelta(...)
+                          upto_date = reslin_list.abreise - timedelta(days=1)
+  2245: Generic call to function named 'timedelta': timedelta(...)
+                          upto_date = reslin_list.abreise - timedelta(days=1)
+  2322: Generic call to function named 'timedelta': timedelta(...)
+                          end_date = res_line.abreise - timedelta(days=1)
+  2326: Generic call to function named 'timedelta': timedelta(...)
+                              datum = start_date + timedelta(days=i)
+  2448: Generic call to function named 'timedelta': timedelta(...)
+                          upto_date = res_line.abreise - timedelta(days=1)
+  2478: Generic call to function named 'timedelta': timedelta(...)
+                          upto_date = reslin_list.abreise - timedelta(days=1)
+  2696: Generic call to function named 'timedelta': timedelta(...)
+                  outorder.gespstart = reslin_list.ankunft - timedelta(days=outorder.gespende +\
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\nationstat_webbl.py
+  71: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(mm, 1, yy) - timedelta(days=1)
+  173: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(mm, 1, yy) - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\new_drrbl.py
+  3330: Generic call to function named 'timedelta': timedelta(...)
+          uebertrag = get_cache (Uebertrag, {"datum": [(eq, to_date - timedelta(days=1))]})
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\nt_centralized_guestbl.py
+  43: Generic call to function named 'timedelta': timedelta(...)
+              cidate = htparam.fdate - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\prepare_ins_storerequest_webbl.py
+  170: Generic call to function named 'timedelta': timedelta(...)
+              final_date = date(base_year, 1, 1) + timedelta(days=year_offset)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\prepare_mainresbl.py
+  139: Generic call to function named 'timedelta': timedelta(...)
+                  f_mainres.cutoff_date = res_line.ankunft - timedelta(days=f_mainres.cutoff_days)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\prepare_mk_po1_webbl.py
+  208: Generic call to function named 'timedelta': timedelta(...)
+              l_orderhdr.lieferdatum = billdate + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\print_hbilllnl_cldbl.py
+  2234: Generic call to function named 'timedelta': timedelta(...)
+                      bill_date = bill_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\quick_post_create_billbl.py
+  130: Generic call to function named 'timedelta': timedelta(...)
+                      bill_date = bill_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ratecode_adm_fill_ratecodebl.py
+  257: Generic call to function named 'timedelta': timedelta(...)
+                              ratecode.endperiode = tb3_buff.startperiode - timedelta(days=1)
+  274: Generic call to function named 'timedelta': timedelta(...)
+                              ratecode.endperiode = tb3_buff.startperiode - timedelta(days=1)
+  275: Generic call to function named 'timedelta': timedelta(...)
+                              child_ratecode.startperiode = tb3_buff.endperiode + timedelta(days=1)
+  282: Generic call to function named 'timedelta': timedelta(...)
+                          ratecode.startperiode = tb3_buff.endperiode + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ratecode_adm_writebl.py
+  408: Generic call to function named 'timedelta': timedelta(...)
+                                  ratecode.endperiode = tb3buff.startperiode - timedelta(days=1)
+  433: Generic call to function named 'timedelta': timedelta(...)
+                                  ratecode.endperiode = tb3buff.startperiode - timedelta(days=1)
+  434: Generic call to function named 'timedelta': timedelta(...)
+                                  child_ratecode.startperiode = tb3buff.endperiode + timedelta(days=1)
+  441: Generic call to function named 'timedelta': timedelta(...)
+                              ratecode.startperiode = tb3buff.endperiode + timedelta(days=1)
+  518: Generic call to function named 'timedelta': timedelta(...)
+                              ratecode.endperiode = tb3buff.startperiode - timedelta(days=1)
+  527: Generic call to function named 'timedelta': timedelta(...)
+                              ratecode.endperiode = tb3buff.startperiode - timedelta(days=1)
+  528: Generic call to function named 'timedelta': timedelta(...)
+                              rbuff.startperiode = tb3buff.endperiode + timedelta(days=1)
+  537: Generic call to function named 'timedelta': timedelta(...)
+                              ratecode.startperiode = tb3buff.endperiode + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ratecode_rate.py
+  106: Generic call to function named 'timedelta': timedelta(...)
+                  to_date = abreise - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\reactivate1_1bl.py
+  118: Generic call to function named 'timedelta': timedelta(...)
+                  res_line.abreise = res_line.ankunft + timedelta(days=1)
+  175: Generic call to function named 'timedelta': timedelta(...)
+                          rline.abreise = rline.ankunft + timedelta(days=1)
+  290: Generic call to function named 'timedelta': timedelta(...)
+              tmpdate = rline.abreise - timedelta(days=1)
+  360: Generic call to function named 'timedelta': timedelta(...)
+                  upto_date = res_line.abreise - timedelta(days=1)
+  454: Generic call to function named 'timedelta': timedelta(...)
+                      t_resline.abreise = resline.ankunft + timedelta(days=1)
+  496: Generic call to function named 'timedelta': timedelta(...)
+                          t_resline.abreise = rbuff.ankunft + timedelta(days=1)
+  638: Generic call to function named 'timedelta': timedelta(...)
+                  upto_date = res_line.abreise - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\repeat_glist_1bl.py
+  205: Generic call to function named 'timedelta': timedelta(...)
+                              datum2 = res_line.abreise - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\repeat_glist_1bl_fitria.py
+  203: Generic call to function named 'timedelta': timedelta(...)
+                              datum2 = res_line.abreise - timedelta(days=1)
+  396: String literal containing 'timedelta'
+      """
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\repeat_glist_1bl_rd.py
+  205: Generic call to function named 'timedelta': timedelta(...)
+                              datum2 = res_line.abreise - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\res_checkin2bl.py
+  513: Generic call to function named 'timedelta': timedelta(...)
+                  end_datum = rline.abreise - timedelta(days=1)
+  582: Generic call to function named 'timedelta': timedelta(...)
+                      curr_date = curr_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\res_checkoutbl.py
+  634: Generic call to function named 'timedelta': timedelta(...)
+                          upto_date = abreise_date - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\res_cutoffbl.py
+  81: Generic call to function named 'timedelta': timedelta(...)
+                  t_rescutoff.cutoffdate = res_line.ankunft - timedelta(days=reservation.point_resnr)
+  132: Generic call to function named 'timedelta': timedelta(...)
+                  t_rescutoff.cutoffdate = res_line.ankunft - timedelta(days=reservation.point_resnr)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\revenue_report_1bl.py
+  126: Generic call to function named 'timedelta': timedelta(...)
+                      lm_fdate = from_date - timedelta(days=30)
+  127: Generic call to function named 'timedelta': timedelta(...)
+                  tmp_day = to_date + timedelta(days=1)
+  130: Generic call to function named 'timedelta': timedelta(...)
+                      lm_tdate = date_mdy(get_month(to_date) , 1, get_year(to_date)) - timedelta(days=1)
+  132: Generic call to function named 'timedelta': timedelta(...)
+                      lm_tdate = to_date - timedelta(days=30)
+  134: Generic call to function named 'timedelta': timedelta(...)
+                  lm_fdate = from_date - timedelta(days=31)
+  135: Generic call to function named 'timedelta': timedelta(...)
+                  lm_tdate = to_date - timedelta(days=31)
+  369: Generic call to function named 'timedelta': timedelta(...)
+              tmp_day = to_date + timedelta(days=1)
+  377: Generic call to function named 'timedelta': timedelta(...)
+                      lm_fdate = from_date - timedelta(days=30)
+  380: Generic call to function named 'timedelta': timedelta(...)
+                      lm_tdate = date_mdy(get_month(to_date) , 1, get_year(to_date)) - timedelta(days=1)
+  382: Generic call to function named 'timedelta': timedelta(...)
+                      lm_tdate = to_date - timedelta(days=30)
+  384: Generic call to function named 'timedelta': timedelta(...)
+                  lm_fdate = from_date - timedelta(days=31)
+  385: Generic call to function named 'timedelta': timedelta(...)
+                  lm_tdate = to_date - timedelta(days=31)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\rm_drecap2_webbl.py
+  330: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  333: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  446: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = d2 + timedelta(days=1)
+  691: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  694: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  818: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = d2 + timedelta(days=1)
+  1072: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  1075: Generic call to function named 'timedelta': timedelta(...)
+                  d2 = ci_date - timedelta(days=1)
+  1264: Generic call to function named 'timedelta': timedelta(...)
+                      datum1 = (ci_date - timedelta(days=1))
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\rm_fbyguest_btn_gobl.py
+  89: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  92: Generic call to function named 'timedelta': timedelta(...)
+                  tdate = ci_date - timedelta(days=1)
+  138: Generic call to function named 'timedelta': timedelta(...)
+              htparam.fdate = tdate + timedelta(days=1)
+  164: Generic call to function named 'timedelta': timedelta(...)
+                          queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
+  164: Generic call to function named 'timedelta': timedelta(...)
+                          queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
+  298: Generic call to function named 'timedelta': timedelta(...)
+                      queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
+  298: Generic call to function named 'timedelta': timedelta(...)
+                      queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
+  413: Generic call to function named 'timedelta': timedelta(...)
+              tdate = ci_date - timedelta(days=1)
+  446: Generic call to function named 'timedelta': timedelta(...)
+              htparam.fdate = tdate + timedelta(days=1)
+  472: Generic call to function named 'timedelta': timedelta(...)
+                          queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
+  472: Generic call to function named 'timedelta': timedelta(...)
+                          queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
+  611: Generic call to function named 'timedelta': timedelta(...)
+                      queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
+  611: Generic call to function named 'timedelta': timedelta(...)
+                      queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\rm_fbyroomtype_btn_go_1bl.py
+  138: Generic call to function named 'timedelta': timedelta(...)
+              if to_date < (ci_date - timedelta(days=1)):
+  141: Generic call to function named 'timedelta': timedelta(...)
+                  tdate = ci_date - timedelta(days=1)
+  170: Generic call to function named 'timedelta': timedelta(...)
+              htparam.fdate = tdate + timedelta(days=1)
+  195: Generic call to function named 'timedelta': timedelta(...)
+                              queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
+  195: Generic call to function named 'timedelta': timedelta(...)
+                              queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
+  315: Generic call to function named 'timedelta': timedelta(...)
+                          queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
+  315: Generic call to function named 'timedelta': timedelta(...)
+                          queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
+  413: Generic call to function named 'timedelta': timedelta(...)
+              tdate = ci_date - timedelta(days=1)
+  439: Generic call to function named 'timedelta': timedelta(...)
+              htparam.fdate = tdate + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\rmcomp_segment_web_1bl.py
+  173: Generic call to function named 'timedelta': timedelta(...)
+                  if date2 < (ci_date - timedelta(days=1)):
+  176: Generic call to function named 'timedelta': timedelta(...)
+                      d2 = (ci_date - timedelta(days=1))
+  193: Generic call to function named 'timedelta': timedelta(...)
+              tmpdate = d1 + timedelta(days=1)
+  559: Generic call to function named 'timedelta': timedelta(...)
+                  tdate = tdate - timedelta(days=1)
+  617: Generic call to function named 'timedelta': timedelta(...)
+                  if date2 < (ci_date - timedelta(days=1)):
+  620: Generic call to function named 'timedelta': timedelta(...)
+                      d2 = (ci_date - timedelta(days=1))
+  637: Generic call to function named 'timedelta': timedelta(...)
+              tmpdate = d1 + timedelta(days=1)
+  984: Generic call to function named 'timedelta': timedelta(...)
+                  tdate = tdate - timedelta(days=1)
+  1071: Generic call to function named 'timedelta': timedelta(...)
+              if date2 <= (ci_date - timedelta(days=1)):
+  1176: Generic call to function named 'timedelta': timedelta(...)
+                          datum2 = res_line.abreise - timedelta(days=1)
+  1506: Generic call to function named 'timedelta': timedelta(...)
+              if date2 <= (ci_date - timedelta(days=1)):
+  1621: Generic call to function named 'timedelta': timedelta(...)
+                          datum2 = res_line.abreise - timedelta(days=1)
+  2397: Generic call to function named 'timedelta': timedelta(...)
+                  tmpdate = ci_date - timedelta(days=1)
+  2406: Generic call to function named 'timedelta': timedelta(...)
+                  tmpdate = ci_date - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\rmrev_bdown_create_billbalance5_cldbl.py
+  1325: Generic call to function named 'timedelta': timedelta(...)
+                      if res_line.ankunft + timedelta(days=(argtline.intervall - 1)) >= genstat.datum:
+  1469: Generic call to function named 'timedelta': timedelta(...)
+                  start_date = res_line.ankunft + timedelta(days=delta)
+  1474: Generic call to function named 'timedelta': timedelta(...)
+                  if tdate <= (start_date + timedelta(days=(intervall - 1))):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\rmrev_bdown_create_billbalance_4a_webbl.py
+  1767: Generic call to function named 'timedelta': timedelta(...)
+                  start_date = res_line.ankunft + timedelta(days=delta)
+  1772: Generic call to function named 'timedelta': timedelta(...)
+                  if curr_date <= (start_date + timedelta(days=(intervall - 1))):
+  1822: Generic call to function named 'timedelta': timedelta(...)
+                  if curr_date <= (start_date + timedelta(days=(intervall - 1))):
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\roomplan2_1bl.py
+  114: Generic call to function named 'timedelta': timedelta(...)
+              to_date = curr_date + timedelta(days=27)
+  155: Generic call to function named 'timedelta': timedelta(...)
+                          depart = res_line.abreise - timedelta(days=1)
+  214: Generic call to function named 'timedelta': timedelta(...)
+                      datum2 = t_res_line.abreise - timedelta(days=1)
+  218: Generic call to function named 'timedelta': timedelta(...)
+                  i = (datum1 - curr_date + timedelta(days=1)).days
+  257: Generic call to function named 'timedelta': timedelta(...)
+                      datum1 = datum1 + timedelta(days=1)
+  312: Generic call to function named 'timedelta': timedelta(...)
+                      depart = t_res_line2.abreise - timedelta(days=1)
+  319: Generic call to function named 'timedelta': timedelta(...)
+                  i = (datum1 - curr_date + timedelta(days=1)).days
+  349: Generic call to function named 'timedelta': timedelta(...)
+                  i = (datum1 - curr_date + timedelta(days=1)).days
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\sales_perform_btn_go_webbl.py
+  166: Generic call to function named 'timedelta': timedelta(...)
+                  tmp_tdate = date_mdy(1, 1, to_int(substring(to_date, 2, 4)) + timedelta(days=1) - 1)
+  174: Generic call to function named 'timedelta': timedelta(...)
+                  temp_date = date(year, month, day) + timedelta(days=1) - timedelta(days=1)
+  174: Generic call to function named 'timedelta': timedelta(...)
+                  temp_date = date(year, month, day) + timedelta(days=1) - timedelta(days=1)
+  645: Generic call to function named 'timedelta': timedelta(...)
+                          to_date = date_mdy(1, 1, slist.yr + timedelta(days=1)) - timedelta(days=1)
+  645: Generic call to function named 'timedelta': timedelta(...)
+                          to_date = date_mdy(1, 1, slist.yr + timedelta(days=1)) - timedelta(days=1)
+  647: Generic call to function named 'timedelta': timedelta(...)
+                          to_date = date_mdy(slist.mnth + 1, 1, slist.yr) - timedelta(days=1)
+  670: Generic call to function named 'timedelta': timedelta(...)
+                          to_date = date_mdy(1, 1, slist.yr + timedelta(days=1)) - timedelta(days=1)
+  670: Generic call to function named 'timedelta': timedelta(...)
+                          to_date = date_mdy(1, 1, slist.yr + timedelta(days=1)) - timedelta(days=1)
+  672: Generic call to function named 'timedelta': timedelta(...)
+                          to_date = date_mdy(slist.mnth + 1, 1, slist.yr) - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\sales_perform_btn_gobl.py
+  143: Generic call to function named 'timedelta': timedelta(...)
+                  tdate = datetime(year + 1, 1, 1) - timedelta(days=1)
+  146: Generic call to function named 'timedelta': timedelta(...)
+                  tdate = datetime(year, month + 1, 1) - timedelta(days=1)
+  423: Generic call to function named 'timedelta': timedelta(...)
+                      to_date = date_mdy(1, 1, slist.yr + timedelta(days=1)) - timedelta(days=1)
+  423: Generic call to function named 'timedelta': timedelta(...)
+                      to_date = date_mdy(1, 1, slist.yr + timedelta(days=1)) - timedelta(days=1)
+  425: Generic call to function named 'timedelta': timedelta(...)
+                      to_date = date_mdy(slist.mnth + 1, 1, slist.yr) - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\sourcestat_listbl.py
+  46: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(mm, 1, yy) - timedelta(days=1)
+  54: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(1, 1, yy + 1) - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\telop1_webbl.py
+  63: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+  71: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+  2877: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+  2885: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\telop_webbl.py
+  82: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+  89: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+  1008: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+  1015: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+  1526: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+  1533: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+  2101: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+  2108: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+  2629: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+  2637: Generic call to function named 'timedelta': timedelta(...)
+                      fdate2 = ci_date + timedelta(days=30)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\top50_tareport_webbl.py
+  80: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(1, 1, yy + 1) - timedelta(days=1)
+  82: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(mm + 1, 1, yy) - timedelta(days=1)
+  104: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(1, 1, jml + timedelta(days=1)) - timedelta(days=1)
+  104: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(1, 1, jml + timedelta(days=1)) - timedelta(days=1)
+  106: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(mm + 1, 1, jml) - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\trialbalance_btn_go_cld_1bl.py
+  102: Generic call to function named 'timedelta': timedelta(...)
+              lastmonthdate = firstdate - timedelta(days=1)
+  1715: Generic call to function named 'timedelta': timedelta(...)
+              tmp_todate = t_to_date + timedelta(days=1)
+  2072: Generic call to function named 'timedelta': timedelta(...)
+          lastprevmonthdate = firstmonthdate - timedelta(days=1)
+  2095: Generic call to function named 'timedelta': timedelta(...)
+                          to_datehis = t_date - timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ts_disc1_btn_exitbl.py
+  66: Generic call to function named 'timedelta': timedelta(...)
+                      bill_date = bill_date + timedelta(days=1)
+  241: Generic call to function named 'timedelta': timedelta(...)
+                      bill_date = bill_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ts_restinv_btn_ccard2bl.py
+  92: Generic call to function named 'timedelta': timedelta(...)
+                      bill_date = bill_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ts_restinv_btn_transfer_paytype1bl.py
+  100: Generic call to function named 'timedelta': timedelta(...)
+                      bill_date = bill_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ts_restinv_btn_transfer_paytype56bl.py
+  133: Generic call to function named 'timedelta': timedelta(...)
+                      bill_date = bill_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ts_restinv_btn_transfer_paytypegt1_2bl.py
+  86: Generic call to function named 'timedelta': timedelta(...)
+                      bill_date = bill_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ts_restinv_fill_coverbl.py
+  73: Generic call to function named 'timedelta': timedelta(...)
+                      bill_date = bill_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ts_restinv_pay_cash2bl.py
+  78: Generic call to function named 'timedelta': timedelta(...)
+                      bill_date = bill_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ts_restinv_pay_cash7bl.py
+  81: Generic call to function named 'timedelta': timedelta(...)
+                      bill_date = bill_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\ts_restinv_waiter_transferbl.py
+  112: Generic call to function named 'timedelta': timedelta(...)
+                  bill_date = bill_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\update_global_allotment_browsebl.py
+  65: Generic call to function named 'timedelta': timedelta(...)
+              to_date = from_date + timedelta(days=35)
+  66: Generic call to function named 'timedelta': timedelta(...)
+              to_date = date_mdy(get_month(to_date) , 1, get_year(to_date)) - timedelta(days=1)
+  120: Generic call to function named 'timedelta': timedelta(...)
+                  curr_date = curr_date + timedelta(days=1)
+  143: Generic call to function named 'timedelta': timedelta(...)
+                      curr_date = curr_date + timedelta(days=1)
+  166: Generic call to function named 'timedelta': timedelta(...)
+                      curr_date = curr_date + timedelta(days=1)
+  176: Generic call to function named 'timedelta': timedelta(...)
+                  curr_date = curr_date + timedelta(days=1)
+  199: Generic call to function named 'timedelta': timedelta(...)
+                          curr_date = curr_date + timedelta(days=1)
+  222: Generic call to function named 'timedelta': timedelta(...)
+                          curr_date = curr_date + timedelta(days=1)
+  245: Generic call to function named 'timedelta': timedelta(...)
+                          curr_date = curr_date + timedelta(days=1)
+  260: Generic call to function named 'timedelta': timedelta(...)
+                      curr_date = curr_date + timedelta(days=1)
+  283: Generic call to function named 'timedelta': timedelta(...)
+                          curr_date = curr_date + timedelta(days=1)
+  292: Generic call to function named 'timedelta': timedelta(...)
+                  curr_date = curr_date + timedelta(days=1)
+  301: Generic call to function named 'timedelta': timedelta(...)
+                  curr_date = curr_date + timedelta(days=1)
+  313: Generic call to function named 'timedelta': timedelta(...)
+                          if (curr_date >= ci_date + timedelta(days=kontline.ruecktage)):
+  324: Generic call to function named 'timedelta': timedelta(...)
+                      curr_date = curr_date + timedelta(days=1)
+  346: Generic call to function named 'timedelta': timedelta(...)
+                          if allot_list and (curr_date >= ci_date + timedelta(days=kontline.ruecktage)) and curr_date >= res_line.ankunft and curr_date < res_line.abreise:
+  353: Generic call to function named 'timedelta': timedelta(...)
+                          curr_date = curr_date + timedelta(days=1)
+  362: Generic call to function named 'timedelta': timedelta(...)
+                  curr_date = curr_date + timedelta(days=1)
+  371: Generic call to function named 'timedelta': timedelta(...)
+                  curr_date = curr_date + timedelta(days=1)
+----------------------------------------------------------------------------------------------------
+FILE: D:\VHP-Projects\vhp-serverless\functions_py\view_staycostbl.py
+  158: Generic call to function named 'timedelta': timedelta(...)
+                  co_date = res_line.abreise - timedelta(days=1)
+  667: Generic call to function named 'timedelta': timedelta(...)
+                          start_date = res_line.ankunft + timedelta(days=delta)
+  673: Generic call to function named 'timedelta': timedelta(...)
+                          tmpdate = start_date + timedelta(days=tmpint)
+----------------------------------------------------------------------------------------------------

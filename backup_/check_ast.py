@@ -26,7 +26,14 @@ def safe_parse_file(path: str):
         lineno = getattr(e, "lineno", None) or 0
         offset = getattr(e, "offset", None) or 0
         line_text = src_for_line[lineno - 1] if 1 <= lineno <= len(src_for_line) else ""
-
+        return {
+            "file": path,
+            "type": e.__class__.__name__,
+            "msg": getattr(e, "msg", str(e)),
+            "lineno": lineno,
+            "offset": offset,
+            "line_text": line_text,
+        }
     except (SyntaxError, IndentationError, TabError) as e:
         try:
             src_lines = open(path, "r", encoding="utf-8").read().splitlines()
