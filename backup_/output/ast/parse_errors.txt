@@ -1,0 +1,43 @@
+AST Parse Errors Report
+Generated: 2025-08-28T09:13:05
+====================================================================================================
+../functions_py\cr_occfcast1_2_webbl_fitria.py:222:13 SyntaxError: invalid syntax
+            else:
+            ^
+====================================================================================================
+../functions_py\dml_list_save_it_3bl.py:51:18 SyntaxError: invalid syntax
+            UNIX SILENT VALUE ("mkdir " + "/usr1/vhp/tmpLOG/")
+                 ^
+====================================================================================================
+../functions_py\gl_parxls1_2bl.py:169:116 SyntaxError: positional argument follows keyword argument
+            pfrom_date = date_mdy(get_month(from_date) - timedelta(days=1, get_day(from_date) , get_year(from_date)))
+                                                                                                                   ^
+====================================================================================================
+../functions_py\if_vhp_bookeng_push_ratebl.py:919:19 SyntaxError: invalid syntax
+            n = 1 k == 0
+                  ^
+====================================================================================================
+../functions_py\if_vhp_bookeng_push_ratexbl.py:919:19 SyntaxError: invalid syntax
+            n = 1 k == 0
+                  ^
+====================================================================================================
+../functions_py\inv_checking_end_gl_cldbl.py:55:13 SyntaxError: invalid syntax
+            else:
+            ^
+====================================================================================================
+../functions_py\nt_loyaltyprog.py:1843:40 SyntaxError: invalid syntax. Perhaps you forgot a comma?
+        tz = to_int(entry(1, to_string(get_current_time_in_seconds()ZONE, 'hh:mm:ss') , chr(58)))
+                                       ^
+====================================================================================================
+../functions_py\po_list_btn_go2cldbl.py:3955:9 SyntaxError: invalid syntax
+        elif stattype == 1 and usrname == "":
+        ^
+====================================================================================================
+../functions_py\precheckin_sendemailbl.py:261:23 SyntaxError: invalid syntax
+            OS_DELETE VALUE (php_path)
+                      ^
+====================================================================================================
+../functions_py\prepare_ins_storerequest_webbl_fixed.py:63:5 IndentationError: expected an indented block after function definition on line 57
+    if payload_list:
+    ^
+====================================================================================================
