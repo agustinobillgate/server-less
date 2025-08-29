@@ -26,6 +26,9 @@ def ap_paymentlist_webbl(all_supp:bool, remark_flag:bool, from_supp:string, from
     ap_paymentlist_data, Ap_paymentlist = create_model("Ap_paymentlist", {"srecid":int, "remark":string, "billdate":date, "docu_nr":string, "ap_amount":Decimal, "pay_amount":Decimal, "pay_date":date, "id":string, "pay_art":string, "supplier":string, "deliv_note":string, "bank_name":string, "bank_an":string, "bank_acc":string, "flag_string":int})
 
     db_session = local_storage.db_session
+    # Rd 29/8/2025
+    from_remark = from_remark.strip()
+    from_supp = from_supp.strip()
 
     def generate_output():
         nonlocal lief_nr1, ap_exist, err_code, ap_paymentlist_data, t_list_data, l_lieferant, l_kredit, artikel, bediener
