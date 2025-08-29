@@ -1230,7 +1230,6 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
         nonlocal apage_list, apage_list1, debtrec, debt, age_list
         nonlocal apage_list_data, apage_list1_data, age_list_data
 
-
         apage_list = Apage_list()
         apage_list_data.append(apage_list)
 

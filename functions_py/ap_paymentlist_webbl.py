@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 21/8/2025
 # Total nol, untuk flag-string = 1, menggunakan pay_amount
+# Total Beda
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
