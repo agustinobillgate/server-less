@@ -63,7 +63,7 @@ def printed_soa_create_databl(invno:int, from_name:string, to_name:string, from_
                     #  (Debitor.name <= (to_name).lower())
                     (func.lower(Debitor.name) >= (from_name).lower()) & 
                     (func.lower(Debitor.name) <= (to_name).lower())
-                     ).order_by(Debitor.debref).all():
+                     ).order_by(Debitor.debref, Debitor.name.desc()).all():
                 if debitor_obj_list.get(debitor._recid):
                     continue
                 else:
@@ -112,7 +112,7 @@ def printed_soa_create_databl(invno:int, from_name:string, to_name:string, from_
                      #  (Debitor.name <= (to_name).lower())
                     (func.lower(Debitor.name) >= (from_name).lower()) & 
                     (func.lower(Debitor.name) <= (to_name).lower())
-                     ).order_by(Debitor.debref).all():
+                     ).order_by(Debitor.debref, Debitor.name.desc()).all():
                 if debitor_obj_list.get(debitor._recid):
                     continue
                 else:
