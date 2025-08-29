@@ -10,6 +10,7 @@ from datetime import date
 from functions.htpint import htpint
 from models import L_kredit, L_lieferant, Queasy
 
+
 def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:string, day1:int, day2:int, day3:int, curr_disp:int, round_zero:bool, segm:int):
 
     prepare_cache ([L_kredit, L_lieferant, Queasy])
@@ -814,7 +815,7 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
             fill_in_list()
         outlist = "-------------------------------------------------------------------------------------------------------------------------------------------------"
         fill_in_list()
-        outlist = to_string(translateExtended ("           T O T A L A/P:", lvcarea, "") , "x(26)") + "                  " + to_string(t_saldo, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt0, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt1, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt2, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt3, "->>,>>>,>>>,>>9.99")
+        outlist = to_string(translateExtended ("           T O T A L  A/P:", lvcarea, "") , "x(26)") + "                  " + to_string(t_saldo, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt0, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt1, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt2, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt3, "->>,>>>,>>>,>>9.99")
         fill_in_list()
         outlist = ""
         fill_in_list()
@@ -879,6 +880,7 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
 
     elif curr_disp == 4:
         age_list3()
+
     create_total()
     create_outputlist1()
 
