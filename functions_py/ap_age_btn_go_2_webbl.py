@@ -2,12 +2,14 @@
 #------------------------------------------
 # Rd, 18/8/2025
 # kolom terpotong
+# " " -> "  "
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpint import htpint
 from models import L_kredit, L_lieferant, Queasy
+
 
 def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:string, day1:int, day2:int, day3:int, curr_disp:int, round_zero:bool, segm:int):
 
@@ -771,7 +773,7 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
             elif curr_name != age_list.supplier:
 
                 if tot_debt != 0:
-                    outlist = " " + to_string(counter, ">>>9") + " " + to_string(supplier, "x(34)") + " " + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + " " + to_string(debt0, "->>,>>>,>>>,>>9.99") + " " + to_string(debt1, "->>,>>>,>>>,>>9.99") + " " + to_string(debt2, "->>,>>>,>>>,>>9.99") + " " + to_string(debt3, "->>,>>>,>>>,>>9.99") + " "
+                    outlist = "  " + to_string(counter, ">>>9") + "  " + to_string(supplier, "x(34)") + "  " + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt0, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt1, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt2, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt3, "->>,>>>,>>>,>>9.99") + "  "
                     fill_in_list()
                 else:
                     counter = counter - 1
@@ -809,15 +811,15 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
             age_list_data.remove(age_list)
 
         if counter > 0 and tot_debt != 0:
-            outlist = " " + to_string(counter, ">>>9") + " " + to_string(supplier, "x(34)") + " " + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + " " + to_string(debt0, "->>,>>>,>>>,>>9.99") + " " + to_string(debt1, "->>,>>>,>>>,>>9.99") + " " + to_string(debt2, "->>,>>>,>>>,>>9.99") + " " + to_string(debt3, "->>,>>>,>>>,>>9.99") + " "
+            outlist = "  " + to_string(counter, ">>>9") + "  " + to_string(supplier, "x(34)") + "  " + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt0, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt1, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt2, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt3, "->>,>>>,>>>,>>9.99") + "  "
             fill_in_list()
         outlist = "-------------------------------------------------------------------------------------------------------------------------------------------------"
         fill_in_list()
-        outlist = to_string(translateExtended (" T O T A L A/P:", lvcarea, "") , "x(26)") + " " + to_string(t_saldo, "->>,>>>,>>>,>>9.99") + " " + to_string(t_debt0, "->>,>>>,>>>,>>9.99") + " " + to_string(t_debt1, "->>,>>>,>>>,>>9.99") + " " + to_string(t_debt2, "->>,>>>,>>>,>>9.99") + " " + to_string(t_debt3, "->>,>>>,>>>,>>9.99")
+        outlist = to_string(translateExtended ("           T O T A L  A/P:", lvcarea, "") , "x(26)") + "                  " + to_string(t_saldo, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt0, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt1, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt2, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt3, "->>,>>>,>>>,>>9.99")
         fill_in_list()
         outlist = ""
         fill_in_list()
-        outlist = to_string(translateExtended (" Statistic Percentage (%) :", lvcarea, "") , "x(33)") + " " + "100.00" + " " + to_string((t_debt0 / t_saldo * 100) , "->>9.99") + " " + to_string((t_debt1 / t_saldo * 100) , "->>9.99") + " " + to_string((t_debt2 / t_saldo * 100) , "->>9.99") + " " + to_string((t_debt3 / t_saldo * 100) , "->>9.99")
+        outlist = to_string(translateExtended ("        Statistic Percentage (%) :", lvcarea, "") , "x(33)") + "                      " + "100.00" + "             " + to_string((t_debt0 / t_saldo * 100) , "->>9.99") + "  " + to_string((t_debt1 / t_saldo * 100) , "->>9.99") + "  " + to_string((t_debt2 / t_saldo * 100) , "->>9.99") + "  " + to_string((t_debt3 / t_saldo * 100) , "->>9.99")
         fill_in_list()
         outlist = ""
         fill_in_list()
@@ -878,6 +880,7 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
 
     elif curr_disp == 4:
         age_list3()
+
     create_total()
     create_outputlist1()
 

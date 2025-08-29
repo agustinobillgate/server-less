@@ -106,14 +106,25 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
             l_kredit_obj_list = {}
             l_kredit = L_kredit()
             l_lieferant = L_lieferant()
-            for l_kredit.counter, l_kredit.rgdatum, l_kredit.lief_nr, l_kredit.name, l_kredit.rechnr, l_kredit.bemerk, l_kredit.lscheinnr, l_kredit.netto, l_kredit.saldo, l_kredit.zahlkonto, l_kredit._recid, l_lieferant.segment1, l_lieferant.firma, l_lieferant._recid in db_session.query(L_kredit.counter, L_kredit.rgdatum, L_kredit.lief_nr, L_kredit.name, L_kredit.rechnr, L_kredit.bemerk, L_kredit.lscheinnr, L_kredit.netto, L_kredit.saldo, L_kredit.zahlkonto, L_kredit._recid, L_lieferant.segment1, L_lieferant.firma, L_lieferant._recid).join(L_lieferant,(L_lieferant.lief_nr == L_kredit.lief_nr)).filter(
-                     (L_kredit.rgdatum <= to_date) & (L_kredit.opart <= 1) & (L_kredit.counter >= 0)).order_by(L_lieferant.firma, L_kredit.zahlkonto).all():
+            counter_ = 0
+            for l_kredit.counter, l_kredit.rgdatum, l_kredit.lief_nr, l_kredit.name, l_kredit.rechnr, l_kredit.bemerk, \
+                l_kredit.lscheinnr, l_kredit.netto, l_kredit.saldo, l_kredit.zahlkonto, l_kredit._recid, l_lieferant.segment1, \
+                l_lieferant.firma, l_lieferant._recid \
+                in db_session.query(L_kredit.counter, L_kredit.rgdatum, L_kredit.lief_nr, L_kredit.name, L_kredit.rechnr, \
+                                    L_kredit.bemerk, L_kredit.lscheinnr, L_kredit.netto, L_kredit.saldo, L_kredit.zahlkonto, \
+                                    L_kredit._recid, L_lieferant.segment1, L_lieferant.firma, L_lieferant._recid)\
+                .join(L_lieferant,(L_lieferant.lief_nr == L_kredit.lief_nr))\
+                .filter(
+                     (L_kredit.rgdatum <= to_date) & 
+                     (L_kredit.opart <= 1) & 
+                     (L_kredit.counter >= 0))\
+                .order_by(L_lieferant.firma, L_kredit.zahlkonto).all():
+                
                 if l_kredit_obj_list.get(l_kredit._recid):
                     continue
                 else:
                     l_kredit_obj_list[l_kredit._recid] = True
-
-
+                
                 do_it = True
 
                 if segm != 0 and l_lieferant.segment1 != segm:
@@ -122,7 +133,6 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
                 if do_it:
 
                     if l_kredit.counter > 0:
-
                         age_list = query(age_list_data, filters=(lambda age_list: age_list.counter == l_kredit.counter), first=True)
 
                     if (l_kredit.counter == 0) or (not age_list):
@@ -161,8 +171,24 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
             l_kredit_obj_list = {}
             l_kredit = L_kredit()
             l_lieferant = L_lieferant()
-            for l_kredit.counter, l_kredit.rgdatum, l_kredit.lief_nr, l_kredit.name, l_kredit.rechnr, l_kredit.bemerk, l_kredit.lscheinnr, l_kredit.netto, l_kredit.saldo, l_kredit.zahlkonto, l_kredit._recid, l_lieferant.segment1, l_lieferant.firma, l_lieferant._recid in db_session.query(L_kredit.counter, L_kredit.rgdatum, L_kredit.lief_nr, L_kredit.name, L_kredit.rechnr, L_kredit.bemerk, L_kredit.lscheinnr, L_kredit.netto, L_kredit.saldo, L_kredit.zahlkonto, L_kredit._recid, L_lieferant.segment1, L_lieferant.firma, L_lieferant._recid).join(L_lieferant,(L_lieferant.lief_nr == L_kredit.lief_nr)).filter(
-                     (L_kredit.lief_nr > 0) & (L_kredit.rgdatum <= to_date) & (L_kredit.opart == 2) & (L_kredit.zahlkonto == 0)).order_by(L_kredit.counter).all():
+            # print("nAge1:", len(age_list_data))
+            # for aa in age_list_data:
+            #     print(aa)
+
+            for l_kredit.counter, l_kredit.rgdatum, l_kredit.lief_nr, l_kredit.name, l_kredit.rechnr, l_kredit.bemerk, l_kredit.lscheinnr, \
+                l_kredit.netto, l_kredit.saldo, l_kredit.zahlkonto, l_kredit._recid, l_lieferant.segment1, l_lieferant.firma, \
+                l_lieferant._recid \
+                in db_session.query(L_kredit.counter, L_kredit.rgdatum, L_kredit.lief_nr, L_kredit.name, L_kredit.rechnr, L_kredit.bemerk, \
+                                    L_kredit.lscheinnr, L_kredit.netto, L_kredit.saldo, L_kredit.zahlkonto, L_kredit._recid, L_lieferant.segment1, \
+                                    L_lieferant.firma, L_lieferant._recid)\
+                .join(L_lieferant,(L_lieferant.lief_nr == L_kredit.lief_nr))\
+                .filter(
+                     (L_kredit.lief_nr > 0) & 
+                     (L_kredit.rgdatum <= to_date) & 
+                     (L_kredit.opart == 2) & 
+                     (L_kredit.zahlkonto == 0))\
+                .order_by(L_kredit.counter).all():
+
                 if l_kredit_obj_list.get(l_kredit._recid):
                     continue
                 else:
@@ -206,6 +232,7 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
 
                         elif debtrec.rgdatum >= from_date:
                             age_list.credit =  to_decimal(age_list.credit) - to_decimal(debtrec.saldo)
+            print("nAge2:", len(age_list_data))
         else:
 
             l_kredit_obj_list = {}
@@ -262,6 +289,9 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
                         if l_kredit.rgdatum >= from_date and l_kredit.zahlkonto != 0:
                             age_list.credit =  to_decimal(age_list.credit) - to_decimal(l_kredit.saldo)
             counter = 0
+            # print("nAge3:", len(age_list_data))
+            # for aa in age_list_data:
+            #     print(aa)
 
             l_kredit_obj_list = {}
             l_kredit = L_kredit()
@@ -311,9 +341,11 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
 
                         elif debtrec.rgdatum >= from_date:
                             age_list.credit =  to_decimal(age_list.credit) - to_decimal(debtrec.saldo)
+            print("nAge4:", len(age_list_data))
         counter = 0
         curr_lief_nr = 0
         curr_name = ""
+        
 
 
     def age_list1():
@@ -331,13 +363,23 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
             l_kredit_obj_list = {}
             l_kredit = L_kredit()
             l_lieferant = L_lieferant()
-            for l_kredit.counter, l_kredit.rgdatum, l_kredit.lief_nr, l_kredit.name, l_kredit.rechnr, l_kredit.bemerk, l_kredit.lscheinnr, l_kredit.netto, l_kredit.saldo, l_kredit.zahlkonto, l_kredit._recid, l_lieferant.segment1, l_lieferant.firma, l_lieferant._recid in db_session.query(L_kredit.counter, L_kredit.rgdatum, L_kredit.lief_nr, L_kredit.name, L_kredit.rechnr, L_kredit.bemerk, L_kredit.lscheinnr, L_kredit.netto, L_kredit.saldo, L_kredit.zahlkonto, L_kredit._recid, L_lieferant.segment1, L_lieferant.firma, L_lieferant._recid).join(L_lieferant,(L_lieferant.lief_nr == L_kredit.lief_nr)).filter(
-                     (L_kredit.rgdatum <= to_date) & (L_kredit.opart <= 1) & (L_kredit.counter >= 0) & (L_kredit.steuercode == 1)).order_by(L_lieferant.firma, L_kredit.zahlkonto).all():
+            for l_kredit.counter, l_kredit.rgdatum, l_kredit.lief_nr, l_kredit.name, l_kredit.rechnr, l_kredit.bemerk, \
+                l_kredit.lscheinnr, l_kredit.netto, l_kredit.saldo, l_kredit.zahlkonto, l_kredit._recid, l_lieferant.segment1, \
+                l_lieferant.firma, l_lieferant._recid \
+                in db_session.query(L_kredit.counter, L_kredit.rgdatum, L_kredit.lief_nr, L_kredit.name, L_kredit.rechnr, \
+                                    L_kredit.bemerk, L_kredit.lscheinnr, L_kredit.netto, L_kredit.saldo, L_kredit.zahlkonto, \
+                                    L_kredit._recid, L_lieferant.segment1, L_lieferant.firma, L_lieferant._recid)\
+                            .join(L_lieferant,(L_lieferant.lief_nr == L_kredit.lief_nr))\
+                            .filter(
+                                    (L_kredit.rgdatum <= to_date) & 
+                                    (L_kredit.opart <= 1) & 
+                                    (L_kredit.counter >= 0) & 
+                                    (L_kredit.steuercode == 1))\
+                            .order_by(L_lieferant.firma, L_kredit.zahlkonto).all():
                 if l_kredit_obj_list.get(l_kredit._recid):
                     continue
                 else:
                     l_kredit_obj_list[l_kredit._recid] = True
-
 
                 do_it = True
 
@@ -1046,7 +1088,9 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
                 if curr_lief_nr == 0:
 
                     if round_zero:
-                        curr_rgdatum = to_string(age_list.rgdatum, "99/99/99")
+                        # curr_rgdatum = to_string(age_list.rgdatum, "99/99/99")
+                        curr_rgdatum = to_string(age_list.rgdatum, "%d/%m/%y")
+
                         curr_po = age_list.rechnr
                         curr_lschein = age_list.lschein
                         firma = age_list.firma
@@ -1063,7 +1107,9 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
 
                         counter = counter + 1
                     else:
-                        curr_rgdatum = to_string(age_list.rgdatum, "99/99/99")
+                        # curr_rgdatum = to_string(age_list.rgdatum, "99/99/99")
+                        curr_rgdatum = to_string(age_list.rgdatum, "%d/%m/%y")
+
                         curr_po = age_list.rechnr
                         curr_lschein = age_list.lschein
                         firma = age_list.firma
@@ -1081,7 +1127,7 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
                 elif curr_name != age_list.firma:
 
                     if p_bal != 0 or debit != 0 or credit != 0:
-                        outlist = " " + to_string(counter, ">>>9 ") + to_string(firma, "x(30)") + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + to_string(p_bal, "->>,>>>,>>>,>>9.99") + to_string(debit, "->>,>>>,>>>,>>9.99") + to_string(credit, "->>,>>>,>>>,>>9.99") + to_string(debt0, "->>,>>>,>>>,>>9.99") + to_string(debt1, "->>,>>>,>>>,>>9.99") + to_string(debt2, "->>,>>>,>>>,>>9.99") + to_string(debt3, "->>,>>>,>>>,>>9.99")
+                        outlist = "  " + to_string(counter, ">>>>9") + to_string(firma, "x(30)") + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + to_string(p_bal, "->>,>>>,>>>,>>9.99") + to_string(debit, "->>,>>>,>>>,>>9.99") + to_string(credit, "->>,>>>,>>>,>>9.99") + to_string(debt0, "->>,>>>,>>>,>>9.99") + to_string(debt1, "->>,>>>,>>>,>>9.99") + to_string(debt2, "->>,>>>,>>>,>>9.99") + to_string(debt3, "->>,>>>,>>>,>>9.99")
                         fill_in_list(True, curr_po, curr_lschein, curr_rgdatum, "")
                         curr_po = age_list.rechnr
                         curr_lschein = age_list.lschein
@@ -1138,7 +1184,7 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
 
                 if not detailed:
                     curr_name = age_list.firma
-                age_list_data.remove(age_list)
+                # age_list_data.remove(age_list)
         else:
 
             if not mi_bill:
@@ -1151,7 +1197,7 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
                 add_detail_date()
 
         if counter > 0 and (p_bal != 0 or debit != 0 or credit != 0) and not detailed:
-            outlist = " " + to_string(counter, ">>>9 ") + to_string(firma, "x(30)") + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + to_string(p_bal, "->>,>>>,>>>,>>9.99") + to_string(debit, "->>,>>>,>>>,>>9.99") + to_string(credit, "->>,>>>,>>>,>>9.99") + to_string(debt0, "->>,>>>,>>>,>>9.99") + to_string(debt1, "->>,>>>,>>>,>>9.99") + to_string(debt2, "->>,>>>,>>>,>>9.99") + to_string(debt3, "->>,>>>,>>>,>>9.99")
+            outlist = "  " + to_string(counter, ">>>>9") + to_string(firma, "x(30)") + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + to_string(p_bal, "->>,>>>,>>>,>>9.99") + to_string(debit, "->>,>>>,>>>,>>9.99") + to_string(credit, "->>,>>>,>>>,>>9.99") + to_string(debt0, "->>,>>>,>>>,>>9.99") + to_string(debt1, "->>,>>>,>>>,>>9.99") + to_string(debt2, "->>,>>>,>>>,>>9.99") + to_string(debt3, "->>,>>>,>>>,>>9.99")
             fill_in_list(True, curr_po, curr_lschein, curr_rgdatum, "")
         else:
             counter = counter - 1
@@ -1159,15 +1205,15 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
         fill_in_list(False, "", "", "--------", "")
 
         if round_zero:
-            outlist = " " + to_string(translateExtended ("T O T A L A/P:", lvcarea, "") , "x(30)") + to_string(round(t_saldo, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_prev, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debit, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_credit, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debt0, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debt1, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debt2, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debt3, 0) , "->>,>>>,>>>,>>9.99")
+            outlist = "       " + to_string(translateExtended ("T O T A L  A/P:", lvcarea, "") , "x(30)") + to_string(round(t_saldo, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_prev, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debit, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_credit, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debt0, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debt1, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debt2, 0) , "->>,>>>,>>>,>>9.99") + to_string(round(t_debt3, 0) , "->>,>>>,>>>,>>9.99")
         else:
-            outlist = " " + to_string(translateExtended ("T O T A L A/P:", lvcarea, "") , "x(30)") + to_string(t_saldo, "->>,>>>,>>>,>>9.99") + to_string(t_prev, "->>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>9.99") + to_string(t_debt0, "->>,>>>,>>>,>>9.99") + to_string(t_debt1, "->>,>>>,>>>,>>9.99") + to_string(t_debt2, "->>,>>>,>>>,>>9.99") + to_string(t_debt3, "->>,>>>,>>>,>>9.99")
+            outlist = "       " + to_string(translateExtended ("T O T A L  A/P:", lvcarea, "") , "x(30)") + to_string(t_saldo, "->>,>>>,>>>,>>9.99") + to_string(t_prev, "->>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>9.99") + to_string(t_debt0, "->>,>>>,>>>,>>9.99") + to_string(t_debt1, "->>,>>>,>>>,>>9.99") + to_string(t_debt2, "->>,>>>,>>>,>>9.99") + to_string(t_debt3, "->>,>>>,>>>,>>9.99")
         fill_in_list(False, "", "", "", "")
         outlist = "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
         fill_in_list(False, "", "", "--------", "")
-        outlist = " " + to_string(translateExtended ("Statistic Percentage (%) :", lvcarea, "") , "x(30)") + " 100.00"
+        outlist = "       " + to_string(translateExtended ("Statistic Percentage (%) :", lvcarea, "") , "x(30)") + " 100.00"
         for i in range(1,54 + 1) :
-            outlist = outlist + " "
+            outlist = outlist + "  "
         outlist = outlist + to_string((t_debt0 / t_saldo * 100) , " ->>9.99") + to_string((t_debt1 / t_saldo * 100) , " ->>9.99") + to_string((t_debt2 / t_saldo * 100) , " ->>9.99") + to_string((t_debt3 / t_saldo * 100) , " ->>9.99")
         fill_in_list(False, "", "", "", "")
         outlist = ""
@@ -1242,7 +1288,9 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
             t_debt3 =  to_decimal(t_debt3) + to_decimal(age_list.debt3)
             curr_po = age_list.rechnr
             curr_lschein = age_list.lschein
-            curr_rgdatum = to_string(age_list.rgdatum, "99/99/99")
+            # curr_rgdatum = to_string(age_list.rgdatum, "99/99/99")
+            curr_rgdatum = to_string(age_list.rgdatum, "%d/%m/%y")
+
             firma = age_list.firma
             voucher_no = to_string(age_list.voucher_no)
             tot_debt = to_decimal(round(age_list.tot_debt , 0))
@@ -1268,7 +1316,9 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
             t_debt3 =  to_decimal(t_debt3) + to_decimal(age_list.debt3)
             curr_po = age_list.rechnr
             curr_lschein = age_list.lschein
-            curr_rgdatum = to_string(age_list.rgdatum, "99/99/99")
+            # curr_rgdatum = to_string(age_list.rgdatum, "99/99/99")
+            curr_rgdatum = to_string(age_list.rgdatum, "%d/%m/%y")
+
             firma = age_list.firma
             voucher_no = to_string(age_list.voucher_no)
             tot_debt =  to_decimal(age_list.tot_debt)
@@ -1283,7 +1333,7 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
             bemerk = age_list.bemerk
 
         if p_bal != 0 or debit != 0 or credit != 0:
-            outlist = " " + to_string(counter, ">>>9 ") + to_string(firma, "x(30)") + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + to_string(p_bal, "->>,>>>,>>>,>>9.99") + to_string(debit, "->>,>>>,>>>,>>9.99") + to_string(credit, "->>,>>>,>>>,>>9.99") + to_string(debt0, "->>,>>>,>>>,>>9.99") + to_string(debt1, "->>,>>>,>>>,>>9.99") + to_string(debt2, "->>,>>>,>>>,>>9.99") + to_string(debt3, "->>,>>>,>>>,>>9.99")
+            outlist = "  " + to_string(counter, ">>>>9") + to_string(firma, "x(30)") + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + to_string(p_bal, "->>,>>>,>>>,>>9.99") + to_string(debit, "->>,>>>,>>>,>>9.99") + to_string(credit, "->>,>>>,>>>,>>9.99") + to_string(debt0, "->>,>>>,>>>,>>9.99") + to_string(debt1, "->>,>>>,>>>,>>9.99") + to_string(debt2, "->>,>>>,>>>,>>9.99") + to_string(debt3, "->>,>>>,>>>,>>9.99")
             fill_in_list(True, curr_po, curr_lschein, curr_rgdatum, voucher_no)
             curr_po = age_list.rechnr
             curr_lschein = age_list.lschein
@@ -1293,7 +1343,7 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
 
         else:
             counter = counter - 1
-        age_list_data.remove(age_list)
+        # age_list_data.remove(age_list)
 
 
     def create_apage_list1():
@@ -1307,7 +1357,6 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
         nonlocal apage_list_data, apage_list1_data, age_list_data
 
         if by_supplier:
-
             for l_lieferant in db_session.query(L_lieferant).order_by(L_lieferant.firma).all():
                 sub_prev_bal =  to_decimal("0")
                 sub_credit =  to_decimal("0")
@@ -1335,31 +1384,31 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
                     apage_list1.day2 = substring(apage_list.str, 145, 18)
                     apage_list1.day3 = substring(apage_list.str, 163, 18)
                     apage_list1.bemerk = apage_list.bemerk
-                    sub_prev_bal =  to_decimal(sub_prev_bal) + to_decimal(to_decimal(trim(apage_list1.prev_bal)) )
-                    sub_credit =  to_decimal(sub_credit) + to_decimal(to_decimal(trim(apage_list1.credit)) )
-                    sub_debit =  to_decimal(sub_debit) + to_decimal(to_decimal(trim(apage_list1.debit)) )
-                    sub_end_bal =  to_decimal(sub_end_bal) + to_decimal(to_decimal(trim(apage_list1.end_bal)) )
-                    sub_day =  to_decimal(sub_day) + to_decimal(to_decimal(trim(apage_list1.day)) )
-                    sub_day1 =  to_decimal(sub_day1) + to_decimal(to_decimal(trim(apage_list1.day1)) )
-                    sub_day2 =  to_decimal(sub_day2) + to_decimal(to_decimal(trim(apage_list1.day2)) )
-                    sub_day3 =  to_decimal(sub_day3) + to_decimal(to_decimal(trim(apage_list1.day3)) )
+                    sub_prev_bal =  to_decimal(sub_prev_bal) + to_decimal(apage_list1.prev_bal)
+                    sub_credit =  to_decimal(sub_credit) + to_decimal(apage_list1.credit)
+                    sub_debit =  to_decimal(sub_debit) + to_decimal(apage_list1.debit)
+                    sub_end_bal =  to_decimal(sub_end_bal) + to_decimal(apage_list1.end_bal)
+                    sub_day =  to_decimal(sub_day) + to_decimal(to_int(apage_list1.day))
+                    sub_day1 =  to_decimal(sub_day1) + to_decimal(to_int(apage_list1.day1))
+                    sub_day2 =  to_decimal(sub_day2) + to_decimal(to_int(apage_list1.day2))
+                    sub_day3 =  to_decimal(sub_day3) + to_decimal(to_int(apage_list1.day3))
                     data_exist = 1
 
                 if data_exist != 0:
                     apage_list1 = Apage_list1()
                     apage_list1_data.append(apage_list1)
 
-                    apage_list1.str = to_string(translateExtended ("T O T A L A/P:", lvcarea, "") , "x(30)") +\
-                            to_string(round(sub_prev_bal, 0) , "->>,>>>,>>>,>>9.99") +\
-                            to_string(round(sub_credit , 0) , "->>,>>>,>>>,>>9.99") +\
-                            to_string(round(sub_debit , 0) , "->>,>>>,>>>,>>9.99") +\
-                            to_string(round(sub_end_bal , 0) , "->>,>>>,>>>,>>9.99") +\
-                            to_string(round(sub_day , 0) , "->>,>>>,>>>,>>9.99") +\
-                            to_string(round(sub_day1 , 0) , "->>,>>>,>>>,>>9.99") +\
-                            to_string(round(sub_day2 , 0) , "->>,>>>,>>>,>>9.99") +\
-                            to_string(round(sub_day3 , 0) , "->>,>>>,>>>,>>9.99")
-                    apage_list1.nr = " "
-                    apage_list1.firma = to_string(translateExtended ("T O T A L A/P:", lvcarea, "") , "x(30)")
+                    apage_list1.str = to_string(translateExtended ("T O T A L  A/P:", lvcarea, "") , "x(30)") +\
+                                        to_string(round(sub_prev_bal, 0) , "->>,>>>,>>>,>>9.99") +\
+                                        to_string(round(sub_credit , 0) , "->>,>>>,>>>,>>9.99") +\
+                                        to_string(round(sub_debit , 0) , "->>,>>>,>>>,>>9.99") +\
+                                        to_string(round(sub_end_bal , 0) , "->>,>>>,>>>,>>9.99") +\
+                                        to_string(round(sub_day , 0) , "->>,>>>,>>>,>>9.99") +\
+                                        to_string(round(sub_day1 , 0) , "->>,>>>,>>>,>>9.99") +\
+                                        to_string(round(sub_day2 , 0) , "->>,>>>,>>>,>>9.99") +\
+                                        to_string(round(sub_day3 , 0) , "->>,>>>,>>>,>>9.99")
+                    apage_list1.nr = "       "
+                    apage_list1.firma = to_string(translateExtended ("T O T A L  A/P:", lvcarea, "") , "x(30)")
                     apage_list1.prev_bal = to_string(round(sub_prev_bal, 0) , "->>,>>>,>>>,>>9.99")
                     apage_list1.credit = to_string(round(sub_credit , 0) , "->>,>>>,>>>,>>9.99")
                     apage_list1.debit = to_string(round(sub_debit , 0) , "->>,>>>,>>>,>>9.99")
@@ -1369,7 +1418,7 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
                     apage_list1.day2 = to_string(round(sub_day2 , 0) , "->>,>>>,>>>,>>9.99")
                     apage_list1.day3 = to_string(round(sub_day3 , 0) , "->>,>>>,>>>,>>9.99")
 
-            apage_list = query(apage_list_data, filters=(lambda apage_list: not matches(apage_list.str,r"*---*") and substring(apage_list.str, 7, 9) == ("T O T A L").lower()), first=True)
+            apage_list = query(apage_list_data, filters=(lambda apage_list: not matches(apage_list.str,r"*---*") and substring(apage_list.str, 7, 9) == ("T O T A L")), first=True)
 
             if apage_list:
                 apage_list1 = Apage_list1()
@@ -1377,7 +1426,7 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
 
                 buffer_copy(apage_list, apage_list1)
                 apage_list1.nr = substring(apage_list.str, 0, 7)
-                apage_list1.firma = to_string(translateExtended ("Grand T O T A L A/P:", lvcarea, "") , "x(30)")
+                apage_list1.firma = to_string(translateExtended ("Grand T O T A L  A/P:", lvcarea, "") , "x(30)")
                 apage_list1.prev_bal = substring(apage_list.str, 55, 18)
                 apage_list1.credit = substring(apage_list.str, 73, 18)
                 apage_list1.debit = substring(apage_list.str, 91, 18)
@@ -1387,8 +1436,6 @@ def ap_age1_3_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:str
                 apage_list1.day2 = substring(apage_list.str, 145, 18)
                 apage_list1.day3 = substring(apage_list.str, 163, 18)
                 apage_list1.bemerk = apage_list.bemerk
-
-
         else:
 
             for apage_list in query(apage_list_data, filters=(lambda apage_list: not matches(apage_list.str,r"*---*"))):
