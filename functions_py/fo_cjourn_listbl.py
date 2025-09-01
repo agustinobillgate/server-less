@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 1/9/2025
+# beda sorting
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -61,7 +65,8 @@ def fo_cjourn_listbl(from_art:int, to_art:int, from_dept:int, to_dept:int, from_
         cjourn_list_data.clear()
 
         for artikel in db_session.query(Artikel).filter(
-                 (Artikel.artnr >= from_art) & (Artikel.artnr <= to_art) & (Artikel.departement >= from_dept) & (Artikel.departement <= to_dept) & (Artikel.endkum != ekumnr)).order_by((Artikel.departement * 10000 + Artikel.artnr)).all():
+                 (Artikel.artnr >= from_art) & (Artikel.artnr <= to_art) & (Artikel.departement >= from_dept) & 
+                 (Artikel.departement <= to_dept) & (Artikel.endkum != ekumnr)).order_by((Artikel.departement * 10000 + Artikel.artnr)).all():
 
             htl_list = query(htl_list_data, filters=(lambda htl_list: htl_list.num == artikel.departement), first=True)
 
@@ -83,18 +88,21 @@ def fo_cjourn_listbl(from_art:int, to_art:int, from_dept:int, to_dept:int, from_
             buffer_copy(artikel, art_list)
 
         for billjournal in db_session.query(Billjournal).filter(
-                 (Billjournal.stornogrund != "") & (Billjournal.bill_datum >= from_date) & (Billjournal.bill_datum <= to_date) & (Billjournal.artnr >= from_art) & (Billjournal.artnr <= to_art)).order_by((Billjournal.departement * 10000 + Billjournal.artnr), Billjournal.sysdate, Billjournal.zeit).all():
+                 (Billjournal.stornogrund != "") & (Billjournal.bill_datum >= from_date) & 
+                 (Billjournal.bill_datum <= to_date) & (Billjournal.artnr >= from_art) & 
+                 (Billjournal.artnr <= to_art)).order_by(((Billjournal.departement * 10000) + Billjournal.artnr), Billjournal.sysdate, Billjournal.zeit).all():
 
             art_list = query(art_list_data, filters=(lambda art_list: art_list.artnr == billjournal.artnr and art_list.departement == billjournal.departement), first=True)
 
             if art_list:
                 i = i + 1
 
-                if curr_art != billjournal.artnr and curr_dept != billjournal.departement and i != 1:
+                # if curr_art != billjournal.artnr and curr_dept != billjournal.departement and i != 1:
+                if curr_art != billjournal.artnr  and i != 1:
                     cjourn_list = Cjourn_list()
                     cjourn_list_data.append(cjourn_list)
 
-                    cjourn_list.canc_reason = "T O T A L "
+                    cjourn_list.canc_reason = "T O T A L   "
                     cjourn_list.qty = qty
                     cjourn_list.amount =  to_decimal(sub_tot)
                     qty = 0
@@ -136,7 +144,7 @@ def fo_cjourn_listbl(from_art:int, to_art:int, from_dept:int, to_dept:int, from_
         cjourn_list = Cjourn_list()
         cjourn_list_data.append(cjourn_list)
 
-        cjourn_list.canc_reason = "T O T A L "
+        cjourn_list.canc_reason = "T O T A L   "
         cjourn_list.qty = qty
         cjourn_list.amount =  to_decimal(sub_tot)
 
