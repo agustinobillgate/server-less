@@ -2,7 +2,8 @@
 #------------------------------------------
 # Rd, 20/8/2025
 # pembagi nol
-# beda sorting
+# beda sorting, 
+# 1/9/22025 kolom kosong
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -121,7 +122,7 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
                     outnr = 0
 
-                    for c_list in query(c_list_data, filters=(lambda c_list: c_list.company.lower()  == (curr_company).lower())):
+                    for c_list in query(c_list_data, filters=(lambda c_list: c_list.company  == curr_company)):
                         outnr = outnr + 1
                         output_list = Output_list()
                         output_list_data.append(output_list)
@@ -138,6 +139,7 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
                             output_list.mobil_tel = trim(entry(0, c_list.mobil_tel, ";"))
 
                         if num_entries(c_list.curr, ";") > 1:
+                            # print("c_list.curr:", c_list.curr)
                             output_list.email = to_string(entry(1, c_list.curr, ";") , "x(40)")
                         output_list.ac = to_string(c_list.a) + "/" + to_string(c_list.c)
 
@@ -315,6 +317,7 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
             output_list.mobil_tel = trim(entry(0, cl_list.mobil_tel, ";"))
 
         if num_entries(cl_list.curr, ";") > 1:
+            # print("c_list.curr:", c_list.curr)
             output_list.email = to_string(entry(1, cl_list.curr, ";") , "x(40)")
         output_list.ac = to_string(cl_list.a) + "/" + to_string(cl_list.c)
 
