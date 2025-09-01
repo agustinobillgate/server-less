@@ -51,21 +51,15 @@ def eg_repmaintain_all_locationbl(all_room:bool, tlocation_data:[Tlocation], tma
         qbuff1_data = tlocation_data
         troom_data.clear()
 
-
         qbuff1 = query(qbuff1_data, filters=(lambda qbuff1_data: qbuff1_data.loc_selected  and qbuff1_data.loc_guest), first=True)
         if qbuff1:
-            # for qb1 in qbuff1:
-            #     print("QB1:", qb1)
             #-------------------------
             # for qbuff in db_session.query(Qbuff).order_by(Qbuff._recid).all():
             for qbuff in db_session.query(Zimmer).order_by(Zimmer._recid).all():
-                # print("Zinr:", qbuff.zinr)
                 troom = Troom()
                 troom.room_nm = qbuff.zinr
                 troom.room_selected = False
                 troom_data.append(troom)
-        else:
-            print("tidak ada.")
 
 
     def create_property():

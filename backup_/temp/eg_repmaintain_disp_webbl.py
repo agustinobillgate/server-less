@@ -35,8 +35,7 @@ def eg_repmaintain_disp_webbl(all_room:bool, all_status:bool, all_location:bool,
     smaintain_data, Smaintain = create_model("Smaintain", {"maintainnr":int, "estworkdate":date, "workdate":date, "donedate":date, "stat_nr":int, "stat_nm":string, "freq":string, "category_str":string, "maintask":string, "location":string, "zinr":string, "property":string, "comments":string, "pic":string, "str":string})
 
     db_session = local_storage.db_session
-    print("fdate:", fdate )
-    print("tdate:", tdate )
+    print("tmaintask_data:", tmaintask_data[0])
 
     def generate_output():
         nonlocal smaintain_data, int_str, eg_maintain
@@ -46,8 +45,7 @@ def eg_repmaintain_disp_webbl(all_room:bool, all_status:bool, all_location:bool,
         nonlocal t_eg_maintain, smaintain, tstatus, tlocation, tmaintask, troom, tproperty, tpic, tfrequency
         nonlocal t_eg_maintain_data, smaintain_data
 
-        return {"tStatus": tstatus_data, "tLocation": tlocation_data, "troom": troom_data, "tproperty": tproperty_data, "tpic": tpic_data, 
-                "smaintain": smaintain_data}
+        return {"tStatus": tstatus_data, "tLocation": tlocation_data, "troom": troom_data, "tproperty": tproperty_data, "tpic": tpic_data, "smaintain": smaintain_data}
 
     def create_temp():
 
@@ -103,7 +101,9 @@ def eg_repmaintain_disp_webbl(all_room:bool, all_status:bool, all_location:bool,
 
         for tpic in query(tpic_data):
             tpic.pic_selected = True
+
     t_eg_maintain_data = get_output(eg_repmaintain_open_querybl(fdate, tdate))
+
     if main_date == 1:
 
         for t_eg_maintain in query(t_eg_maintain_data):
