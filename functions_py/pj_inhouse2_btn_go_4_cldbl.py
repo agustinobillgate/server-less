@@ -67,10 +67,8 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
         nonlocal tot_payrm, tot_rm, tot_a, tot_c, tot_co, tot_avail, tot_rmqty, inactive, cl_list_data, s_list_data, t_buff_queasy_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, tot_room, all_room, all_remark, queasy, htparam, zkstat, zinrstat, paramtext, guest, reservation, zimmer, zimkateg, res_line, guestseg, segment, mc_guest, mc_types, nation, waehrung, reslin_queasy, mealcoup, genstat
         nonlocal sorttype, datum, curr_date, curr_gastnr, froom, troom, exc_depart, incl_gcomment, incl_rsvcomment, prog_name, disp_accompany, disp_exclinact, split_rsv_print, exc_compli
 
-
         nonlocal setup_list, str_list, cl_list, s_list, zinr_list, t_buff_queasy
         nonlocal setup_list_data, str_list_data, cl_list_data, s_list_data, zinr_list_data, t_buff_queasy_data
-
 
         setup_list = Setup_list()
         setup_list_data.append(setup_list)
@@ -91,7 +89,6 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
         nonlocal tot_payrm, tot_rm, tot_a, tot_c, tot_co, tot_avail, tot_rmqty, inactive, cl_list_data, s_list_data, t_buff_queasy_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, tot_room, all_room, all_remark, queasy, htparam, zkstat, zinrstat, paramtext, guest, reservation, zimmer, zimkateg, res_line, guestseg, segment, mc_guest, mc_types, nation, waehrung, reslin_queasy, mealcoup, genstat
         nonlocal sorttype, datum, curr_date, curr_gastnr, froom, troom, exc_depart, incl_gcomment, incl_rsvcomment, prog_name, disp_accompany, disp_exclinact, split_rsv_print, exc_compli
-
 
         nonlocal setup_list, str_list, cl_list, s_list, zinr_list, t_buff_queasy
         nonlocal setup_list_data, str_list_data, cl_list_data, s_list_data, zinr_list_data, t_buff_queasy_data
@@ -146,7 +143,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
             res_line.bemerk, res_line.gastnr, res_line._recid, zimkateg.kurzbez, zimkateg.bezeichnung, zimkateg._recid, reservation.segmentcode, \
             reservation.resdat, reservation.useridanlage, reservation.resnr, reservation._recid, guest.name, guest.vorname1, guest.anrede1, \
             guest.anredefirma, guest.gastnr, guest.karteityp, guest._recid, gmember.name, gmember.vorname1, gmember.anrede1, gmember.anredefirma, \
-            gmember.gastnr, gmember.karteityp, gmember._recid, gmember.nation1 \
+            gmember.gastnr, gmember.karteityp, gmember._recid, gmember.nation1, gmember.email_adr, gmember.geburtdatum1, gmember.telefon, gmember.mobil_telefon \
             in db_session.query(Res_line.setup, Res_line.zinr, Res_line.resnr, Res_line.name, Res_line.zipreis, Res_line.ankunft, Res_line.abreise, 
                                 Res_line.zimmeranz, Res_line.erwachs, Res_line.kind1, Res_line.kind2, Res_line.gratis, Res_line.arrangement, Res_line.flight_nr, \
                                 Res_line.ankzeit, Res_line.resstatus, Res_line.betriebsnr, Res_line.reslinnr, Res_line.zimmer_wunsch, Res_line.zimmerfix, \
@@ -154,7 +151,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                                 Zimkateg._recid, Reservation.segmentcode, Reservation.resdat, Reservation.useridanlage, Reservation.resnr, \
                                 Reservation._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.anredefirma, Guest.gastnr, Guest.karteityp, \
                                 Guest._recid, Gmember.name, Gmember.vorname1, Gmember.anrede1, Gmember.anredefirma, Gmember.gastnr, Gmember.karteityp, \
-                                Gmember._recid, Gmember.nation1).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) \
+                                Gmember._recid, Gmember.nation1, Gmember.email_adr, Gmember.geburtdatum1, Gmember.telefon, Gmember.mobil_telefon).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) \
                         ).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
                                 (Res_line.active_flag >= actflag1) & 
                                 (Res_line.active_flag <= actflag2) & 
@@ -536,15 +533,28 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
             genstat.kind2, genstat.kind3, genstat.gratis, genstat.argt, genstat.segmentcode, genstat.gastnr, genstat._recid, zimkateg.kurzbez, \
             zimkateg.bezeichnung, zimkateg._recid, reservation.segmentcode, reservation.resdat, reservation.useridanlage, reservation.resnr, \
             reservation._recid, guest.name, guest.vorname1, guest.anrede1, guest.anredefirma, guest.gastnr, guest.karteityp, guest._recid, \
-            gmember.name, gmember.vorname1, gmember.anrede1, gmember.anredefirma, gmember.gastnr, gmember.karteityp, gmember._recid, gmember.nation1 \
+            gmember.name, gmember.vorname1, gmember.anrede1, gmember.anredefirma, gmember.gastnr, gmember.karteityp, \
+            gmember._recid, gmember.nation1, gmember.email_adr, gmember.geburtdatum1, gmember.telefon, gmember.mobil_telefon \
                 in db_session.query(Genstat.resstatus, Genstat.res_date, Genstat.resnr, Genstat.res_int, Genstat.zinr, Genstat.zipreis, Genstat.erwachs, \
                                     Genstat.kind1, Genstat.kind2, Genstat.kind3, Genstat.gratis, Genstat.argt, Genstat.segmentcode, Genstat.gastnr, \
                                     Genstat._recid, Zimkateg.kurzbez, Zimkateg.bezeichnung, Zimkateg._recid, Reservation.segmentcode, Reservation.resdat, \
                                     Reservation.useridanlage, Reservation.resnr, Reservation._recid, Guest.name, Guest.vorname1, Guest.anrede1, \
                                     Guest.anredefirma, Guest.gastnr, Guest.karteityp, Guest._recid, Gmember.name, Gmember.vorname1, Gmember.anrede1, \
-                                    Gmember.anredefirma, Gmember.gastnr, Gmember.karteityp, Gmember._recid, Gmember.nation1)\
-                                .join(Zimkateg,(Zimkateg.zikatnr == Genstat.zikatnr)).join(Reservation,(Reservation.resnr == Genstat.resnr)).join(Guest,(Guest.gastnr == Genstat.gastnr)).join(Gmember,(Gmember.gastnr == Genstat.gastnrmember)).filter(
-                 (Genstat.datum == datum) & (Genstat.zinr >= (froom).lower()) & (Genstat.zinr <= (troom).lower())).order_by(Genstat.zinr, Genstat.erwachs.desc(), Gmember.name).all():
+                                    Gmember.anredefirma, Gmember.gastnr, Gmember.karteityp, Gmember._recid, Gmember.nation1, Gmember.email_adr, Gmember.geburtdatum1, Gmember.telefon, Gmember.mobil_telefon)\
+                .join(Zimkateg,(Zimkateg.zikatnr == Genstat.zikatnr))\
+                .join(Reservation,(Reservation.resnr == Genstat.resnr))\
+                .join(Guest,(Guest.gastnr == Genstat.gastnr))\
+                .join(Gmember,(Gmember.gastnr == Genstat.gastnrmember))\
+                .filter(
+                    (Genstat.datum == datum) & 
+                    (Genstat.zinr >= (froom).lower()) & 
+                    (Genstat.zinr <= (troom).lower()) &
+                    (Genstat.datum == datum) & 
+                    (Genstat.zinr >= (froom).lower()) & 
+                    (Genstat.zinr <= (troom).lower())
+                    ) \
+                .order_by(Genstat.zinr, Genstat.erwachs.desc(), Gmember.name).all():
+        
             if genstat_obj_list.get(genstat._recid):
                 continue
             else:
@@ -1314,14 +1324,23 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
             genstat.kind3, genstat.gratis, genstat.argt, genstat.segmentcode, genstat.gastnr, genstat._recid, zimkateg.kurzbez, zimkateg.bezeichnung, zimkateg._recid, \
             reservation.segmentcode, reservation.resdat, reservation.useridanlage, reservation.resnr, reservation._recid, guest.name, guest.vorname1, guest.anrede1, \
             guest.anredefirma, guest.gastnr, guest.karteityp, guest._recid, gmember.name, gmember.vorname1, gmember.anrede1, gmember.anredefirma, gmember.gastnr, \
-            gmember.karteityp, gmember._recid, gmember.nation1 \
+            gmember.karteityp, gmember._recid, gmember.nation1, gmember.email_adr, gmember.geburtdatum1, gmember.telefon, gmember.mobil_telefon \
             in db_session.query(Genstat.resstatus, Genstat.res_date, Genstat.resnr, Genstat.res_int, Genstat.zinr, Genstat.zipreis, Genstat.erwachs, Genstat.kind1, \
                                 Genstat.kind2, Genstat.kind3, Genstat.gratis, Genstat.argt, Genstat.segmentcode, Genstat.gastnr, Genstat._recid, Zimkateg.kurzbez, \
                                 Zimkateg.bezeichnung, Zimkateg._recid, Reservation.segmentcode, Reservation.resdat, Reservation.useridanlage, Reservation.resnr, \
                                 Reservation._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.anredefirma, Guest.gastnr, Guest.karteityp, Guest._recid, \
-                                Gmember.name, Gmember.vorname1, Gmember.anrede1, Gmember.anredefirma, Gmember.gastnr, Gmember.karteityp, Gmember._recid, Gmember.nation1)\
-                        .join(Zimkateg,(Zimkateg.zikatnr == Genstat.zikatnr)).join(Reservation,(Reservation.resnr == Genstat.resnr)).join(Guest,(Guest.gastnr == Genstat.gastnr)).join(Gmember,(Gmember.gastnr == Genstat.gastnrmember)).filter(
-                 (Genstat.datum == datum) & (Genstat.zinr >= (froom).lower()) & (Genstat.zinr <= (troom).lower())).order_by(Guest.karteityp.desc(), Guest.name, Guest.gastnr, Gmember.name, Genstat.zinr).all():
+                                Gmember.name, Gmember.vorname1, Gmember.anrede1, Gmember.anredefirma, Gmember.gastnr, Gmember.karteityp, Gmember._recid, \
+                                Gmember.nation1, Gmember.email_adr, Gmember.geburtdatum1, Gmember.telefon, Gmember.mobil_telefon)\
+                        .join(Zimkateg,(Zimkateg.zikatnr == Genstat.zikatnr))\
+                        .join(Reservation,(Reservation.resnr == Genstat.resnr))\
+                        .join(Guest,(Guest.gastnr == Genstat.gastnr))\
+                        .join(Gmember,(Gmember.gastnr == Genstat.gastnrmember))\
+                        .filter(
+                            (Genstat.datum == datum) &  (Genstat.zinr >= (froom).lower()) &  (Genstat.zinr <= (troom).lower()) &
+                            (Genstat.datum == datum) & 
+                            (Genstat.zinr >= (froom).lower()) & 
+                            (Genstat.zinr <= (troom).lower())) \
+                        .order_by(Guest.karteityp.desc(), Guest.name, Guest.gastnr, Gmember.name, Genstat.zinr).all():
             if genstat_obj_list.get(genstat._recid):
                 continue
             else:
@@ -2099,14 +2118,22 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
             genstat.argt, genstat.segmentcode, genstat.gastnr, genstat._recid, zimkateg.kurzbez, zimkateg.bezeichnung, zimkateg._recid, reservation.segmentcode, reservation.resdat, \
             reservation.useridanlage, reservation.resnr, reservation._recid, guest.name, guest.vorname1, guest.anrede1, guest.anredefirma, guest.gastnr, guest.karteityp, guest._recid, \
             gmember.name, gmember.vorname1, gmember.anrede1, gmember.anredefirma, gmember.gastnr, gmember.karteityp, gmember._recid, zimmer.etage, zimmer.bezeich, \
-            zimmer.sleeping, zimmer._recid, gmember.nation1 \
+            zimmer.sleeping, zimmer._recid, gmember.nation1, gmember.email_adr, gmember.geburtdatum1, gmember.telefon, gmember.mobil_telefon \
             in db_session.query(Genstat.resstatus, Genstat.res_date, Genstat.resnr, Genstat.res_int, Genstat.zinr, Genstat.zipreis, Genstat.erwachs, Genstat.kind1, Genstat.kind2, \
                                 Genstat.kind3, Genstat.gratis, Genstat.argt, Genstat.segmentcode, Genstat.gastnr, Genstat._recid, Zimkateg.kurzbez, Zimkateg.bezeichnung, Zimkateg._recid, \
                                 Reservation.segmentcode, Reservation.resdat, Reservation.useridanlage, Reservation.resnr, Reservation._recid, Guest.name, Guest.vorname1, Guest.anrede1, \
                                 Guest.anredefirma, Guest.gastnr, Guest.karteityp, Guest._recid, Gmember.name, Gmember.vorname1, Gmember.anrede1, Gmember.anredefirma, \
-                                Gmember.gastnr, Gmember.karteityp, Gmember._recid, Zimmer.etage, Zimmer.bezeich, Zimmer.sleeping, Zimmer._recid, Gmember.nation1)\
-                            .join(Zimkateg,(Zimkateg.zikatnr == Genstat.zikatnr)).join(Reservation,(Reservation.resnr == Genstat.resnr)).join(Guest,(Guest.gastnr == Genstat.gastnr)).join(Gmember,(Gmember.gastnr == Genstat.gastnrmember)).join(Zimmer,(Zimmer.zinr == Genstat.zinr) & (Zimmer.sleeping)).filter(
-                 (Genstat.datum == datum) & (Genstat.zinr >= (froom).lower()) & (Genstat.zinr <= (troom).lower())).order_by(Genstat.zinr, Genstat.erwachs.desc(), Gmember.name).all():
+                                Gmember.gastnr, Gmember.karteityp, Gmember._recid, Zimmer.etage, Zimmer.bezeich, Zimmer.sleeping, Zimmer._recid, Gmember.nation1, Gmember.email_adr, Gmember.geburtdatum1, Gmember.telefon, Gmember.mobil_telefon)\
+                            .join(Zimkateg,(Zimkateg.zikatnr == Genstat.zikatnr))\
+                            .join(Reservation,(Reservation.resnr == Genstat.resnr))\
+                            .join(Guest,(Guest.gastnr == Genstat.gastnr))\
+                            .join(Gmember,(Gmember.gastnr == Genstat.gastnrmember))\
+                            .join(Zimmer,(Zimmer.zinr == Genstat.zinr) & (Zimmer.sleeping))\
+                        .filter(
+                            (Genstat.datum == datum) & 
+                            (Genstat.zinr >= (froom).lower()) & 
+                            (Genstat.zinr <= (troom).lower()))\
+                        .order_by(Genstat.zinr, Genstat.erwachs.desc(), Gmember.name).all():
             if genstat_obj_list.get(genstat._recid):
                 continue
             else:
@@ -2870,16 +2897,24 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
             genstat.gratis, genstat.argt, genstat.segmentcode, genstat.gastnr, genstat._recid, zimkateg.kurzbez, zimkateg.bezeichnung, zimkateg._recid, reservation.segmentcode, \
             reservation.resdat, reservation.useridanlage, reservation.resnr, reservation._recid, guest.name, guest.vorname1, guest.anrede1, guest.anredefirma, guest.gastnr, \
             guest.karteityp, guest._recid, gmember.name, gmember.vorname1, gmember.anrede1, gmember.anredefirma, gmember.gastnr, gmember.karteityp, gmember._recid, zimmer.etage, \
-            zimmer.bezeich, zimmer.sleeping, zimmer._recid in db_session.query(Genstat.resstatus, Genstat.res_date, Genstat.resnr, Genstat.res_int, Genstat.zinr, Genstat.zipreis, \
-                                                                                Genstat.erwachs, Genstat.kind1, Genstat.kind2, Genstat.kind3, Genstat.gratis, Genstat.argt, \
-                                                                                Genstat.segmentcode, Genstat.gastnr, Genstat._recid, Zimkateg.kurzbez, Zimkateg.bezeichnung, \
-                                                                                Zimkateg._recid, Reservation.segmentcode, Reservation.resdat, Reservation.useridanlage, \
-                                                                                Reservation.resnr, Reservation._recid, Guest.name, Guest.vorname1, Guest.anrede1, \
-                                                                                Guest.anredefirma, Guest.gastnr, Guest.karteityp, Guest._recid, Gmember.name, Gmember.vorname1,\
-                                                                                Gmember.anrede1, Gmember.anredefirma, Gmember.gastnr, Gmember.karteityp, Gmember._recid, \
-                                                                                Zimmer.etage, Zimmer.bezeich, Zimmer.sleeping, Zimmer._recid, Gmember.nation1)\
-                                                                        .join(Zimkateg,(Zimkateg.zikatnr == Genstat.zikatnr)).join(Reservation,(Reservation.resnr == Genstat.resnr)).join(Guest,(Guest.gastnr == Genstat.gastnr)).join(Gmember,(Gmember.gastnr == Genstat.gastnrmember)).join(Zimmer,(Zimmer.zinr == Genstat.zinr) & (Zimmer.sleeping)).filter(
-                 (Genstat.datum == datum) & (Genstat.zinr >= (froom).lower()) & (Genstat.zinr <= (troom).lower())).order_by(Guest.karteityp.desc(), Guest.name, Guest.gastnr, Gmember.name, Genstat.zinr).all():
+            zimmer.bezeich, zimmer.sleeping, zimmer._recid, gmember.nation1, gmember.email_adr, gmember.geburtdatum1, gmember.telefon, gmember.mobil_telefon \
+                in db_session.query(Genstat.resstatus, Genstat.res_date, Genstat.resnr, Genstat.res_int, Genstat.zinr, Genstat.zipreis, \
+                                        Genstat.erwachs, Genstat.kind1, Genstat.kind2, Genstat.kind3, Genstat.gratis, Genstat.argt, \
+                                        Genstat.segmentcode, Genstat.gastnr, Genstat._recid, Zimkateg.kurzbez, Zimkateg.bezeichnung, \
+                                        Zimkateg._recid, Reservation.segmentcode, Reservation.resdat, Reservation.useridanlage, \
+                                        Reservation.resnr, Reservation._recid, Guest.name, Guest.vorname1, Guest.anrede1, \
+                                        Guest.anredefirma, Guest.gastnr, Guest.karteityp, Guest._recid, Gmember.name, Gmember.vorname1,\
+                                        Gmember.anrede1, Gmember.anredefirma, Gmember.gastnr, Gmember.karteityp, Gmember._recid, \
+                                        Zimmer.etage, Zimmer.bezeich, Zimmer.sleeping, Zimmer._recid, Gmember.nation1, Gmember.email_adr,\
+                                        Gmember.geburtdatum1, Gmember.telefon, Gmember.mobil_telefon)\
+                                .join(Zimkateg,(Zimkateg.zikatnr == Genstat.zikatnr)).join(Reservation,(Reservation.resnr == Genstat.resnr))\
+                                .join(Guest,(Guest.gastnr == Genstat.gastnr))\
+                                .join(Gmember,(Gmember.gastnr == Genstat.gastnrmember)).join(Zimmer,(Zimmer.zinr == Genstat.zinr) & (Zimmer.sleeping))\
+                                .filter(
+                                        (Genstat.datum == datum) & 
+                                        (Genstat.zinr >= (froom).lower()) & 
+                                        (Genstat.zinr <= (troom).lower()))\
+                                .order_by(Guest.karteityp.desc(), Guest.name, Guest.gastnr, Gmember.name, Genstat.zinr).all():
             if genstat_obj_list.get(genstat._recid):
                 continue
             else:
