@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 29/8/2025
+# data kosong
+# gitlab: 1032
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -15,7 +20,16 @@ tstatus_data, Tstatus = create_model("Tstatus", {"stat_nr":int, "stat_nm":string
 tlocation_data, Tlocation = create_model("Tlocation", {"loc_nr":int, "loc_nm":string, "loc_selected":bool, "loc_guest":bool}, {"loc_selected": True})
 tcategory_data, Tcategory = create_model("Tcategory", {"categ_nr":int, "categ_nm":string, "categ_selected":bool})
 
-def eg_reprequestcancel_open_query_1_webbl(fdate:date, tdate:date, tsource_data:[Tsource], tsubtask_data:[Tsubtask], tpic_data:[Tpic], tproperty_data:[Tproperty], tmaintask_data:[Tmaintask], troom_data:[Troom], tstatus_data:[Tstatus], tlocation_data:[Tlocation], tcategory_data:[Tcategory]):
+def eg_reprequestcancel_open_query_1_webbl(fdate:date, tdate:date, 
+                                            tsource_data:[Tsource], 
+                                            tsubtask_data:[Tsubtask], 
+                                            tpic_data:[Tpic], 
+                                            tproperty_data:[Tproperty], 
+                                            tmaintask_data:[Tmaintask], 
+                                            troom_data:[Troom], 
+                                            tstatus_data:[Tstatus], 
+                                            tlocation_data:[Tlocation], 
+                                            tcategory_data:[Tcategory]):
     copyrequest_data = []
     int_str:List[string] = ["Low", "Medium", "High"]
     eg_request = None
@@ -64,18 +78,20 @@ def eg_reprequestcancel_open_query_1_webbl(fdate:date, tdate:date, tsource_data:
         nonlocal t_eg_request, tstatus, tlocation, tmaintask, troom, tproperty, tpic, tsubtask, tsource, tcategory, srequest, copyrequest, comproperty, comstatus, compic, comsource, comsubtask, comcategory, commaintask, comlocation, comroom
         nonlocal t_eg_request_data, srequest_data, copyrequest_data
 
-        return {"copyRequest": copyrequest_data}
+        return {"copyRequest": copyrequest_data, "status": tstatus_data}
 
+    print("ST:", fdate, tstatus_data)
 
     for eg_request in db_session.query(Eg_request).filter(
              (Eg_request.cancel_date >= fdate) & (Eg_request.cancel_date <= tdate) & (Eg_request.delete_flag)).order_by(Eg_request._recid).all():
         t_eg_request = T_eg_request()
         t_eg_request_data.append(t_eg_request)
-
         buffer_copy(eg_request, t_eg_request)
+        # print(t_eg_request)
 
-    for t_eg_request in query(t_eg_request_data):
-
+    # for t_eg_request in query(t_eg_request_data):
+    for t_eg_request in t_eg_request_data:
+        # print(t_eg_request.propertynr)
         if t_eg_request.propertynr == 0:
             srequest = Srequest()
             srequest_data.append(srequest)
@@ -136,8 +152,9 @@ def eg_reprequestcancel_open_query_1_webbl(fdate:date, tdate:date, tsource_data:
                 srequest.reason = t_eg_request.char1
 
     for srequest in query(srequest_data):
-        tStatus = query(tstatus_data, (lambda tStatus: tStatus.stat_nr == srequest.reqstatus and tStatus.stat_selected), first=True)
-        if not tStatus:
+        print("SR:", srequest.reqstatus)
+        tstatus = query(tstatus_data, (lambda tstatus: tstatus.stat_nr == srequest.reqstatus and tstatus.stat_selected), first=True)
+        if not tstatus:
             continue
 
         tsource = query(tsource_data, (lambda tsource: tsource.source_nr == srequest.source and tsource.source_selected), first=True)
@@ -148,7 +165,9 @@ def eg_reprequestcancel_open_query_1_webbl(fdate:date, tdate:date, tsource_data:
         if not tcategory:
             continue
 
-        tSubtask = query(tSubtask_data, (lambda tSubtask: tSubtask.sub_nr == srequest.sub_task and tSubtask.sub_selected), first=True)
+        # Rd 29/8/2025
+        # tSubtask = query(tSubtask_data, (lambda tSubtask: tSubtask.sub_nr == srequest.sub_task and tSubtask.sub_selected), first=True)
+        tSubtask = query(tsubtask_data, (lambda tSubtask: tSubtask.sub_nr == srequest.sub_task and tSubtask.sub_selected), first=True)
         if not tSubtask:
             continue
 
@@ -173,7 +192,7 @@ def eg_reprequestcancel_open_query_1_webbl(fdate:date, tdate:date, tsource_data:
 
         copyrequest.reqnr = srequest.reqnr
         copyrequest.opendate = srequest.opendate
-        copyrequest.status_str = tStatus.stat_nm
+        copyrequest.status_str = tstatus.stat_nm
         copyrequest.source_str = tsource.source_nm
         copyrequest.process_date = srequest.process_date
         copyrequest.closed_date = srequest.closed_date

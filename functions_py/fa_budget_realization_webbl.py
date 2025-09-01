@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 1/9/2025
+# COA -> coa
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -31,7 +35,7 @@ def fa_budget_realization_webbl(payload_list_data:[Payload_list]):
 
     fa_budget_realization = fix_asset_list = payload_list = None
 
-    fa_budget_realization_data, Fa_budget_realization = create_model("Fa_budget_realization", {"asset":string, "asset_date":date, "descrip_str":string, "account_no":string, "price_str":string, "anzahl_str":string, "amount_str":string, "budget_str":string, "variance_str":string, "budget_date":date, "order_number":string, "budget_number":string, "tot_budget_item":string, "COA":string, "budget_amount":string, "asset_loc":string, "asset_name":string, "asset_qty":string, "asset_price":string, "asset_amount":string, "payment_date":date})
+    fa_budget_realization_data, Fa_budget_realization = create_model("Fa_budget_realization", {"asset":string, "asset_date":date, "descrip_str":string, "account_no":string, "price_str":string, "anzahl_str":string, "amount_str":string, "budget_str":string, "variance_str":string, "budget_date":date, "order_number":string, "budget_number":string, "tot_budget_item":string, "coa":string, "budget_amount":string, "asset_loc":string, "asset_name":string, "asset_qty":string, "asset_price":string, "asset_amount":string, "payment_date":date})
     fix_asset_list_data, Fix_asset_list = create_model("Fix_asset_list", {"nr_budget":int, "desc_budget":string, "date_budget":date, "amount_budget":Decimal, "is_active_budget":bool, "safe_to_del_or_mod":bool, "remain_budget":Decimal})
 
     db_session = local_storage.db_session
