@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 29/8/2025
 # data kosong
+# gitlab: 1032
 #------------------------------------------
 
 from functions.additional_functions import *
