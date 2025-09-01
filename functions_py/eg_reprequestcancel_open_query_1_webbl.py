@@ -80,7 +80,6 @@ def eg_reprequestcancel_open_query_1_webbl(fdate:date, tdate:date,
         return {"copyRequest": copyrequest_data, "status": tstatus_data}
 
     print("ST:", fdate, tstatus_data)
-    return generate_output()
 
     for eg_request in db_session.query(Eg_request).filter(
              (Eg_request.cancel_date >= fdate) & (Eg_request.cancel_date <= tdate) & (Eg_request.delete_flag)).order_by(Eg_request._recid).all():
