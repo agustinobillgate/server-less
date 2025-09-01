@@ -37,6 +37,8 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
     query_string:string = ""
     queasy = None
 
+    froom = froom.strip()
+
     cl_list = s_list = segm_list = argt_list = sum_list = t_buff_queasy = output_list = lnl_sum = summary_list1 = summary_list2 = summary_list3 = summary_list4 = c_list = None
 
     cl_list_data, Cl_list = create_model("Cl_list", {"flag":int, "karteityp":int, "nr":int, "vip":string, "resnr":int, "name":string, "groupname":string, "rmno":string, "qty":int, "arrive":date, "depart":date, "rmcat":string, "ratecode":string, "zipreis":Decimal, "kurzbez":string, "bezeich":string, "a":int, "c":int, "co":int, "pax":string, "nat":string, "nation":string, "argt":string, "company":string, "flight":string, "etd":string, "paym":int, "segm":string, "telefon":string, "mobil_tel":string, "created":date, "createid":string, "bemerk":string, "bemerk01":string, "bemerk02":string, "bemerk03":string, "bemerk04":string, "bemerk05":string, "bemerk06":string, "bemerk07":string, "bemerk08":string, "bemerk1":string, "ci_time":string, "curr":string, "spreq":string, "tot_bfast":int, "local_reg":string, "rsv_comment":string, "other_comment":string, "g_comment":string, "zinr_bez":string, "flag_guest":int, "etage":int, "birthdate":date})
