@@ -130,12 +130,12 @@ def res_tacancelbl(pvilanguage:int, stattype:int, sorttype:int, fdate:date, fnam
         for res_tacancel in query(res_tacancel_data):
 
             if t_mnite != 0:
-                res_tacancel.pmnite = res_tacancel.mnite / t_mnite * 100
-                res_tacancel.pmtu = res_tacancel.mtu / t_mtu * 100
+                res_tacancel.pmnite = to_int(res_tacancel.mnite / t_mnite * 100)
+                res_tacancel.pmtu = to_int(res_tacancel.mtu / t_mtu * 100)
 
             if t_ynite != 0:
-                res_tacancel.pynite = res_tacancel.ynite / t_ynite * 100
-                res_tacancel.pytu = res_tacancel.ytu / t_ytu * 100
+                res_tacancel.pynite = to_int(res_tacancel.ynite / t_ynite * 100)
+                res_tacancel.pytu = to_int(res_tacancel.ytu / t_ytu * 100)
 
 
     def disp_noshow1():
@@ -227,12 +227,12 @@ def res_tacancelbl(pvilanguage:int, stattype:int, sorttype:int, fdate:date, fnam
         for res_tacancel in query(res_tacancel_data):
 
             if t_mnite != 0:
-                res_tacancel.pmnite = res_tacancel.mnite / t_mnite * 100
-                res_tacancel.pmtu = res_tacancel.mtu / t_mtu * 100
+                res_tacancel.pmnite = to_int(res_tacancel.mnite / t_mnite * 100)
+                res_tacancel.pmtu = to_int(res_tacancel.mtu / t_mtu * 100)
 
             if t_ynite != 0:
-                res_tacancel.pynite = res_tacancel.ynite / t_ynite * 100
-                res_tacancel.pytu = res_tacancel.ytu / t_ytu * 100
+                res_tacancel.pynite = to_int(res_tacancel.ynite / t_ynite * 100)
+                res_tacancel.pytu = to_int(res_tacancel.ytu / t_ytu * 100)
 
 
     if stattype == 1:
