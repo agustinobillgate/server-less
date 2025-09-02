@@ -32,7 +32,7 @@ def eg_repmaintain_open_querybl(fdate:date, tdate:date):
              (Eg_maintain.estworkdate >= fdate) & 
              (Eg_maintain.estworkdate <= tdate) & 
              not_ (Eg_maintain.delete_flag)).order_by(Eg_maintain._recid).all():
-        
+
         t_eg_maintain = T_eg_maintain()
         t_eg_maintain_data.append(t_eg_maintain)
 

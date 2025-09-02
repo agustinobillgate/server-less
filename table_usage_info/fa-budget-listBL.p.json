@@ -1,0 +1,46 @@
+{
+    "Queasy": {
+        "read": [
+            "number1",
+            "char1",
+            "date1",
+            "deci1",
+            "logi1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fa_op": {
+        "read": [
+            "nr",
+            "anzahl",
+            "warenwert",
+            "datum",
+            "einzelpreis",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fa_artikel": {
+        "read": [
+            "fibukonto",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Mathis": {
+        "read": [
+            "name",
+            "asset",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fa_order": {
+        "read": [
+            "activereason",
+            "_recid"
+        ],
+        "write": []
+    }
+}

@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.118
+#------------------------------------------
+# Rd, 2/9/2025
+# re-donwload & konversi ulang
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -162,13 +166,15 @@ def fa_budget_listbl(ytd_flag:bool, from_date:date, to_date:date, ytd_date:date,
             for fa_order, fa_op, fa_artikel, mathis in db_session.query(Fa_order, Fa_op, Fa_artikel, Mathis).join(Fa_op,(Fa_op.loeschflag <= 1) & (Fa_op.opart == 1) & (Fa_op.anzahl > 0) & (Fa_op.docu_nr == Fa_order.order_nr) & (Fa_op.datum >= from_date) & (Fa_op.datum <= to_date)).join(Fa_artikel,(Fa_artikel.nr == Fa_op.nr)).join(Mathis,(Mathis.nr == Fa_op.nr)).filter(
                      (Fa_order.activereason != ("0").lower()) & (Fa_order.activereason != "") & (Fa_order.activereason != None)).order_by(Fa_order.activereason, Fa_op.nr, Fa_op.datum).all():
                 fix_asset_list = query(fix_asset_list_data, (lambda fix_asset_list: to_string(fix_asset_list.nr_budget) == fa_order.activereason), first=True)
-                if not fix_asset_list:
-                    continue
+                
+                # Rd, error konversi,
+                # if not fix_asset_list:
+                #     continue
 
-                if fa_order_obj_list.get(fa_order._recid):
-                    continue
-                else:
-                    fa_order_obj_list[fa_order._recid] = True
+                # if fa_order_obj_list.get(fa_order._recid):
+                #     continue
+                # else:
+                #     fa_order_obj_list[fa_order._recid] = True
 
 
                 count_i = count_i + 1
