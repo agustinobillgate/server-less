@@ -264,86 +264,86 @@ def fa_budget_listbl(ytd_flag:bool, from_date:date, to_date:date, ytd_date:date,
                 fa_budget_period.descrip_str = "GRAND TOTAL"
 
 
-            else:
+        else:
 
-                fa_order_obj_list = {}
-                for fa_order, fa_op, fa_artikel, mathis in db_session.query(Fa_order, Fa_op, Fa_artikel, Mathis).join(Fa_op,(Fa_op.loeschflag <= 1) & (Fa_op.opart == 1) & (Fa_op.anzahl > 0) & (Fa_op.docu_nr == Fa_order.order_nr) & (Fa_op.datum >= from_date) & (Fa_op.datum <= to_date)).join(Fa_artikel,(Fa_artikel.nr == Fa_op.nr)).join(Mathis,(Mathis.nr == Fa_op.nr)).filter(
-                         (Fa_order.activereason != ("0").lower()) & (Fa_order.activereason != "") & (Fa_order.activereason != None)).order_by(Fa_order.activereason, Fa_op.nr, Fa_op.datum).all():
-                    fix_asset_list = query(fix_asset_list_data, (lambda fix_asset_list: to_string(fix_asset_list.nr_budget) == fa_order.activereason), first=True)
-                    if not fix_asset_list:
-                        continue
+            fa_order_obj_list = {}
+            for fa_order, fa_op, fa_artikel, mathis in db_session.query(Fa_order, Fa_op, Fa_artikel, Mathis).join(Fa_op,(Fa_op.loeschflag <= 1) & (Fa_op.opart == 1) & (Fa_op.anzahl > 0) & (Fa_op.docu_nr == Fa_order.order_nr) & (Fa_op.datum >= from_date) & (Fa_op.datum <= to_date)).join(Fa_artikel,(Fa_artikel.nr == Fa_op.nr)).join(Mathis,(Mathis.nr == Fa_op.nr)).filter(
+                        (Fa_order.activereason != ("0").lower()) & (Fa_order.activereason != "") & (Fa_order.activereason != None)).order_by(Fa_order.activereason, Fa_op.nr, Fa_op.datum).all():
+                fix_asset_list = query(fix_asset_list_data, (lambda fix_asset_list: to_string(fix_asset_list.nr_budget) == fa_order.activereason), first=True)
+                if not fix_asset_list:
+                    continue
 
-                    if fa_order_obj_list.get(fa_order._recid):
-                        continue
-                    else:
-                        fa_order_obj_list[fa_order._recid] = True
-
-
-                    count_i = count_i + 1
-
-                    if fa_order.activereason.lower()  != (nr_budget).lower() :
-
-                        if nr_budget != "":
-                            fa_budget_period = Fa_budget_period()
-                            fa_budget_period_data.append(fa_budget_period)
-
-                            fa_budget_period.budget_str = to_string(period_budget, "->>>,>>>,>>>,>>>,>>9.99")
-                            fa_budget_period.budget_date = budget_date_last
-                            fa_budget_period.descrip_str = to_string(budget_nr_last) + " - " + budget_desc_last
-                            fa_budget_period.account_no = to_string(budget_nr_last, ">,>>9")
-                            fa_budget_period.anzahl_str = to_string(period_qty, "->>,>>>,>>9")
-                            fa_budget_period.amount_str = to_string(period_amount, "->>>,>>>,>>>,>>>,>>9.99")
-                            fa_budget_period.variance_str = to_string(period_variance, "->>>,>>>,>>>,>>>,>>9.99")
+                if fa_order_obj_list.get(fa_order._recid):
+                    continue
+                else:
+                    fa_order_obj_list[fa_order._recid] = True
 
 
-                            grand_total_qty = grand_total_qty + period_qty
-                            grand_total_amount =  to_decimal(grand_total_amount) + to_decimal(period_amount)
-                            grand_total_budget =  to_decimal(grand_total_budget) + to_decimal(period_budget)
-                            grand_total_variance =  to_decimal(grand_total_variance) + to_decimal(period_variance)
-                            period_budget =  to_decimal("0")
-                            period_qty = 0
-                            period_amount =  to_decimal("0")
-                            period_variance =  to_decimal("0")
-                        period_budget =  to_decimal(fix_asset_list.amount_budget)
-                        nr_budget = fa_order.activereason
-                        budget_date_last = fix_asset_list.date_budget
-                        budget_nr_last = fix_asset_list.nr_budget
-                        budget_desc_last = fix_asset_list.desc_budget
+                count_i = count_i + 1
 
-                    if fa_artnr != fa_op.nr:
-                        period_qty = period_qty + fa_op.anzahl
-                        period_amount =  to_decimal(period_amount) + to_decimal(fa_op.warenwert)
-                        period_variance = ( to_decimal(period_budget) - to_decimal(period_amount))
-                        fa_artnr = fa_op.nr
+                if fa_order.activereason.lower()  != (nr_budget).lower() :
 
-                if count_i > 0:
-                    fa_budget_period = Fa_budget_period()
-                    fa_budget_period_data.append(fa_budget_period)
+                    if nr_budget != "":
+                        fa_budget_period = Fa_budget_period()
+                        fa_budget_period_data.append(fa_budget_period)
 
-                    fa_budget_period.budget_str = to_string(period_budget, "->>>,>>>,>>>,>>>,>>9.99")
-                    fa_budget_period.budget_date = budget_date_last
-                    fa_budget_period.descrip_str = to_string(budget_nr_last) + " - " + budget_desc_last
-                    fa_budget_period.account_no = to_string(budget_nr_last, ">,>>9")
-                    fa_budget_period.anzahl_str = to_string(period_qty, "->>,>>>,>>9")
-                    fa_budget_period.amount_str = to_string(period_amount, "->>>,>>>,>>>,>>>,>>9.99")
-                    fa_budget_period.variance_str = to_string(period_variance, "->>>,>>>,>>>,>>>,>>9.99")
+                        fa_budget_period.budget_str = to_string(period_budget, "->>>,>>>,>>>,>>>,>>9.99")
+                        fa_budget_period.budget_date = budget_date_last
+                        fa_budget_period.descrip_str = to_string(budget_nr_last) + " - " + budget_desc_last
+                        fa_budget_period.account_no = to_string(budget_nr_last, ">,>>9")
+                        fa_budget_period.anzahl_str = to_string(period_qty, "->>,>>>,>>9")
+                        fa_budget_period.amount_str = to_string(period_amount, "->>>,>>>,>>>,>>>,>>9.99")
+                        fa_budget_period.variance_str = to_string(period_variance, "->>>,>>>,>>>,>>>,>>9.99")
 
 
-                    fa_budget_period = Fa_budget_period()
-                    fa_budget_period_data.append(fa_budget_period)
+                        grand_total_qty = grand_total_qty + period_qty
+                        grand_total_amount =  to_decimal(grand_total_amount) + to_decimal(period_amount)
+                        grand_total_budget =  to_decimal(grand_total_budget) + to_decimal(period_budget)
+                        grand_total_variance =  to_decimal(grand_total_variance) + to_decimal(period_variance)
+                        period_budget =  to_decimal("0")
+                        period_qty = 0
+                        period_amount =  to_decimal("0")
+                        period_variance =  to_decimal("0")
+                    period_budget =  to_decimal(fix_asset_list.amount_budget)
+                    nr_budget = fa_order.activereason
+                    budget_date_last = fix_asset_list.date_budget
+                    budget_nr_last = fix_asset_list.nr_budget
+                    budget_desc_last = fix_asset_list.desc_budget
 
-                    grand_total_qty = grand_total_qty + period_qty
-                    grand_total_amount =  to_decimal(grand_total_amount) + to_decimal(period_amount)
-                    grand_total_budget =  to_decimal(grand_total_budget) + to_decimal(period_budget)
-                    grand_total_variance =  to_decimal(grand_total_variance) + to_decimal(period_variance)
-                    fa_budget_period = Fa_budget_period()
-                    fa_budget_period_data.append(fa_budget_period)
+                if fa_artnr != fa_op.nr:
+                    period_qty = period_qty + fa_op.anzahl
+                    period_amount =  to_decimal(period_amount) + to_decimal(fa_op.warenwert)
+                    period_variance = ( to_decimal(period_budget) - to_decimal(period_amount))
+                    fa_artnr = fa_op.nr
 
-                    fa_budget_period.anzahl_str = to_string(grand_total_qty, "->>,>>>,>>9")
-                    fa_budget_period.amount_str = to_string(grand_total_amount, "->>>,>>>,>>>,>>>,>>9.99")
-                    fa_budget_period.variance_str = to_string(grand_total_variance, "->>>,>>>,>>>,>>>,>>9.99")
-                    fa_budget_period.budget_str = to_string(grand_total_budget, "->>>,>>>,>>>,>>>,>>9.99")
-                    fa_budget_period.descrip_str = "T O T A L"
+            if count_i > 0:
+                fa_budget_period = Fa_budget_period()
+                fa_budget_period_data.append(fa_budget_period)
+
+                fa_budget_period.budget_str = to_string(period_budget, "->>>,>>>,>>>,>>>,>>9.99")
+                fa_budget_period.budget_date = budget_date_last
+                fa_budget_period.descrip_str = to_string(budget_nr_last) + " - " + budget_desc_last
+                fa_budget_period.account_no = to_string(budget_nr_last, ">,>>9")
+                fa_budget_period.anzahl_str = to_string(period_qty, "->>,>>>,>>9")
+                fa_budget_period.amount_str = to_string(period_amount, "->>>,>>>,>>>,>>>,>>9.99")
+                fa_budget_period.variance_str = to_string(period_variance, "->>>,>>>,>>>,>>>,>>9.99")
+
+
+                fa_budget_period = Fa_budget_period()
+                fa_budget_period_data.append(fa_budget_period)
+
+                grand_total_qty = grand_total_qty + period_qty
+                grand_total_amount =  to_decimal(grand_total_amount) + to_decimal(period_amount)
+                grand_total_budget =  to_decimal(grand_total_budget) + to_decimal(period_budget)
+                grand_total_variance =  to_decimal(grand_total_variance) + to_decimal(period_variance)
+                fa_budget_period = Fa_budget_period()
+                fa_budget_period_data.append(fa_budget_period)
+
+                fa_budget_period.anzahl_str = to_string(grand_total_qty, "->>,>>>,>>9")
+                fa_budget_period.amount_str = to_string(grand_total_amount, "->>>,>>>,>>>,>>>,>>9.99")
+                fa_budget_period.variance_str = to_string(grand_total_variance, "->>>,>>>,>>>,>>>,>>9.99")
+                fa_budget_period.budget_str = to_string(grand_total_budget, "->>>,>>>,>>>,>>>,>>9.99")
+                fa_budget_period.descrip_str = "T O T A L"
 
 
     for queasy in db_session.query(Queasy).filter(
