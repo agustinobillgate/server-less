@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 1/9/2025
 # COA -> coa
+# Rd, 2/9/2025, ada garbage konversi
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -53,7 +54,6 @@ def fa_budget_realization_webbl(payload_list_data:[Payload_list]):
 
         nonlocal fa_budget_realization_data, count_i, period_qty, start_jan, period_amount, period_budget, period_variance, nr_budget, fa_artnr, grand_total_qty, grand_total_amount, grand_total_budget, grand_total_variance, tot_qty_item, tot_price_item, tot_amount_item, queasy, fa_op, fa_artikel, mathis, fa_ordheader, fa_order
 
-
         nonlocal fa_budget_realization, fix_asset_list, payload_list
         nonlocal fa_budget_realization_data, fix_asset_list_data
 
@@ -68,14 +68,15 @@ def fa_budget_realization_webbl(payload_list_data:[Payload_list]):
         fa_order_obj_list = {}
         for fa_order, fa_op, fa_artikel, mathis, fa_ordheader in db_session.query(Fa_order, Fa_op, Fa_artikel, Mathis, Fa_ordheader).join(Fa_op,(Fa_op.loeschflag <= 1) & (Fa_op.opart == 1) & (Fa_op.anzahl > 0) & (Fa_op.docu_nr == Fa_order.order_nr) & (Fa_op.datum >= payload_list.from_date) & (Fa_op.datum <= payload_list.to_date)).join(Fa_artikel,(Fa_artikel.nr == Fa_op.nr)).join(Mathis,(Mathis.nr == Fa_op.nr)).join(Fa_ordheader,(Fa_ordheader.order_nr == Fa_op.docu_nr)).filter(
                  (Fa_order.activereason != ("0").lower()) & (Fa_order.activereason != "") & (Fa_order.activereason != None)).order_by(Fa_order.activereason, Fa_op.nr, Fa_op.datum).all():
-            fix_asset_list = query(fix_asset_list_data, (lambda fix_asset_list: to_string(fix_asset_list.nr_budget) == fa_order.activereason), first=True)
-            if not fix_asset_list:
-                continue
+            
+            # fix_asset_list = query(fix_asset_list_data, (lambda fix_asset_list: to_string(fix_asset_list.nr_budget) == fa_order.activereason), first=True)
+            # if not fix_asset_list:
+            #     continue
 
-            if fa_order_obj_list.get(fa_order._recid):
-                continue
-            else:
-                fa_order_obj_list[fa_order._recid] = True
+            # if fa_order_obj_list.get(fa_order._recid):
+            #     continue
+            # else:
+            #     fa_order_obj_list[fa_order._recid] = True
 
 
             count_i = count_i + 1
