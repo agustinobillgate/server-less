@@ -1,4 +1,10 @@
 #using conversion tools version: 1.0.0.118
+#------------------------------------------
+# Rd, 2/9/2025
+# gitlab: #1040, grpFlag
+#   (func.length(func.trim(Reservation.groupname)) >= igrpname))\
+#   (func.length(func.trim(Reservation.groupname)) >= igrpname)
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -11,6 +17,9 @@ from functions.prepare_gcf_history_1bl import prepare_gcf_history_1bl
 from models import Guest, History, Paramtext, Htparam, Res_line, Waehrung, Reservation, Zimkateg, Bresline, Guestseg, Master, Messages, Kontline, Gentable, Mc_guest, Reslin_queasy, Zimmer, Queasy, Fixleist
 
 t_payload_list_data, T_payload_list = create_model("T_payload_list", {"argt_str":string})
+
+
+
 
 def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:bool, last_sort:int, lresnr:int, long_stay:int, ci_date:date, grpflag:bool, room:string, lname:string, sorttype:int, fdate1:date, fdate2:date, fdate:date, excl_rmshare:bool, voucher_no:string, nation_str:string):
 
@@ -69,6 +78,11 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
     Gbuffmember = create_buffer("Gbuffmember",Guest)
     Gmember = create_buffer("Gmember",Guest)
 
+    # Rd 2/9/2025
+    lname = lname.strip()
+    nation_str = nation_str.strip()
+    room = room.strip()
+    voucher_no = voucher_no.strip()
 
     db_session = local_storage.db_session
 
@@ -143,6 +157,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
         to_name:string = ""
         igrpname:int = 0
         igrpname = to_int(grpflag)
+        print("GrpFlag: ", grpflag, igrpname)
         rmlen = length(room)
 
         if lname != "":
@@ -166,8 +181,20 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                     if lname == "":
 
                         res_line_obj_list = {}
-                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
-                                 (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+                        
+                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg)\
+                            .join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr))\
+                            .join(Reservation,(Reservation.resnr == Res_line.resnr) &                                                                                                                                                                    
+                                  (func.length(func.trim(Reservation.groupname)) >= igrpname))\
+                            .join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr))\
+                            .filter(
+                                                (Res_line.active_flag == 1) & 
+                                                (Res_line.resstatus != 12) & 
+                                                (Res_line.resstatus != 99) & 
+                                                ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & 
+                                                (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date))\
+                            .order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+
                             setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                             if not setup_list:
                                 continue
@@ -184,7 +211,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                     elif lname != "" and substring(lname, 0, 1) != ("*").lower() :
 
                         res_line_obj_list = {}
-                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                                  (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (matches(Res_line.name,("*" + lname + "*"))) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                             setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                             if not setup_list:
@@ -202,7 +229,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                     elif lname != "" and substring(lname, 0, 1) == ("*").lower() :
 
                         res_line_obj_list = {}
-                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                                  (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (matches(Res_line.name,(lname))) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                             setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                             if not setup_list:
@@ -220,10 +247,24 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 elif room == "":
 
                     if lname == "":
-
+                        print("lname: ", lname)
                         res_line_obj_list = {}
-                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
-                                 (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg)\
+                            .join(Gbuff,(Gbuff.gastnr == Res_line.gastnr))\
+                            .join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr))\
+                            .join(Reservation,(Reservation.resnr == Res_line.resnr) & 
+                                     #   (func.length(func.trim(Reservation.groupname)) >= igrpname))\
+                                        (func.length(func.trim(Reservation.groupname)) >= igrpname)
+                                )\
+                            .join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr))\
+                            .filter(
+                                 (Res_line.active_flag == 1) & 
+                                 (Res_line.resstatus != 12) & 
+                                 (Res_line.resstatus != 99) & 
+                                 ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & 
+                                 (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date))\
+                            .order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
+                            
                             setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                             if not setup_list:
                                 continue
@@ -240,7 +281,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                     elif lname != "" and substring(lname, 0, 1) != ("*").lower() :
 
                         res_line_obj_list = {}
-                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                                  (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (matches(Res_line.name,("*" + lname + "*"))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by(Res_line.name).all():
                             setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                             if not setup_list:
@@ -258,7 +299,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                     elif lname != "" and substring(lname, 0, 1) == ("*").lower() :
 
                         res_line_obj_list = {}
-                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                                  (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (matches(Res_line.name,(lname))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by(Res_line.name).all():
                             setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                             if not setup_list:
@@ -303,7 +344,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                     if room == "":
 
                         res_line_obj_list = {}
-                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                                  (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                             setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                             if not setup_list:
@@ -321,7 +362,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                     elif room != "":
 
                         res_line_obj_list = {}
-                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                                  (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                             setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                             if not setup_list:
@@ -339,7 +380,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 elif lname != "" and substring(lname, 0, 1) != ("*").lower() :
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (matches(Res_line.name,("*" + lname + "*"))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name, Res_line.zinr).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -357,7 +398,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 elif substring(lname, 0, 1) == ("*").lower() :
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (matches(Res_line.name,(lname))) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name, Res_line.zinr).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -402,7 +443,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                     if room == "":
 
                         res_line_obj_list = {}
-                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                                  (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                             setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                             if not setup_list:
@@ -420,7 +461,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                     elif room != "":
 
                         res_line_obj_list = {}
-                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                        for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                                  (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                             setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                             if not setup_list:
@@ -438,7 +479,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 elif lname != "" and substring(lname, 0, 1) != ("*").lower() :
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (matches(Res_line.name,("*" + lname + "*"))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -456,7 +497,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 elif substring(lname, 0, 1) == ("*").lower() :
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (matches(Res_line.name,(lname))) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.name, Res_line.zinr).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -519,7 +560,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if lname == "":
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -537,7 +578,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             elif substring(lname, 0, 1) != ("*").lower()  and lname != "":
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (matches(Res_line.name,("*" + lname + "*")))).order_by(Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -554,7 +595,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & (matches(Res_line.name,(lname))) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -578,7 +619,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if lname == "":
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -596,7 +637,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             elif substring(lname, 0, 1) == ("*").lower()  and lname != "":
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname) & (matches(Reservation.name,(lname)))).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname) & (matches(Reservation.name,(lname)))).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -613,7 +654,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname) & (matches(Reservation.name,("*" + lname + "*")))).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname) & (matches(Reservation.name,("*" + lname + "*")))).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -634,7 +675,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if lresnr == 0:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & (Res_line.ankunft >= ci_date) & (Res_line.ankunft <= tmpdate) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -651,7 +692,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & ((Res_line.resnr == lresnr) | (Res_line.l_zuordnung[inc_value(4)] == lresnr)) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -673,7 +714,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 fdate2 = ci_date + timedelta(days=365)
 
             res_line_obj_list = {}
-            for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+            for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.ankunft, Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                 setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                 if not setup_list:
@@ -723,7 +764,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if lname == "":
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (Reservation.name >= (lname).lower()) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (Reservation.name >= (lname).lower()) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date) & (Res_line.resname >= (lname).lower())).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -741,7 +782,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             elif lname != "" and substring(lname, 0, 1) != ("*").lower() :
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (matches(Reservation.name,("*" + lname + "*"))) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (matches(Reservation.name,("*" + lname + "*"))) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -759,7 +800,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             elif lname != "" and substring(lname, 0, 1) == ("*").lower() :
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (matches(Reservation.name,(lname))) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (matches(Reservation.name,(lname))) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -781,7 +822,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 if room == "":
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Reservation.name, Reservation.resnr, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -799,7 +840,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 elif room != "":
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -817,7 +858,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             elif substring(lname, 0, 1) == ("*").lower() :
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (matches(Reservation.name,(lname))) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (matches(Reservation.name,(lname))) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -835,7 +876,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             elif substring(lname, 0, 1) != ("*").lower() :
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (matches(Reservation.name,("*" + lname + "*"))) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (matches(Reservation.name,("*" + lname + "*"))) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -857,7 +898,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 if room == "":
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -875,7 +916,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 elif room != "":
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -893,7 +934,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             elif substring(lname, 0, 1) == ("*").lower() :
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (matches(Reservation.name,(lname))) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (matches(Reservation.name,(lname))) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -911,7 +952,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             elif substring(lname, 0, 1) != ("*").lower() :
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (matches(Reservation.name,("*" + lname + "*"))) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (matches(Reservation.name,("*" + lname + "*"))) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Reservation.name, Reservation.groupname, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -943,7 +984,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if lresnr == 0:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -960,7 +1001,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & ((Res_line.resnr == lresnr) | (Res_line.l_zuordnung[inc_value(4)] == lresnr))).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -980,7 +1021,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if lresnr == 0:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -997,7 +1038,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & ((Res_line.resnr == lresnr) | (Res_line.l_zuordnung[inc_value(4)] == lresnr))).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1017,7 +1058,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if lresnr == 0:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate)).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1034,7 +1075,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((Res_line.resnr == lresnr) | (Res_line.l_zuordnung[inc_value(4)] == lresnr))).order_by(Res_line.l_zuordnung[inc_value(4)], Res_line.resnr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1071,7 +1112,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if fdate != None:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft >= fdate) & (Res_line.abreise >= ci_date)).order_by(Res_line.ankunft, Reservation.name, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1088,7 +1129,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by(Res_line.ankunft, Reservation.name, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1110,7 +1151,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 if room == "":
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (Res_line.resstatus != 9) & (Res_line.resstatus != 99) & (Res_line.resstatus != 10) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -1128,7 +1169,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 elif room != "":
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -1146,7 +1187,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             elif lname != "" and substring(lname, 0, 1) != ("*").lower() :
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.name >= (lname).lower()) & (Res_line.name <= (to_name).lower())).order_by(Res_line.name, Res_line.zinr).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1164,7 +1205,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             elif lname != "" and substring(lname, 0, 1) == ("*").lower() :
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (matches(Res_line.name,(lname)))).order_by(Res_line.name, Res_line.zinr).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1186,7 +1227,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 if room == "":
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -1204,7 +1245,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 elif room != "":
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -1222,7 +1263,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             elif lname != "" and substring(lname, 0, 1) != ("*").lower() :
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.name >= (lname).lower()) & (Res_line.name <= (to_name).lower())).order_by(Res_line.name, Res_line.zinr).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1240,7 +1281,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             elif lname != "" and substring(lname, 0, 1) == ("*").lower() :
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (matches(Res_line.name,(lname)))).order_by(Res_line.name, Res_line.zinr).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1279,7 +1320,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if room != "":
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.zinr == (room).lower()) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1295,7 +1336,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.zinr == (room).lower()) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1316,7 +1357,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 if room != "":
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date) & (substring(Res_line.zinr, 0, to_int(rmlen)) == (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -1332,7 +1373,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 else:
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.zinr >= (room).lower()) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -1350,7 +1391,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 if room != "":
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date) & (substring(Res_line.zinr, 0, to_int(rmlen)) == (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -1366,7 +1407,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 else:
 
                     res_line_obj_list = {}
-                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                    for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                              (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date) & (Res_line.zinr >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                         setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                         if not setup_list:
@@ -1385,7 +1426,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if room != "":
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (Res_line.resname >= (lname).lower()) & (substring(Res_line.zinr, 0, to_int(rmlen)) == (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1401,7 +1442,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (Res_line.resname >= (lname).lower()) & (Res_line.zinr >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1420,7 +1461,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if room != "":
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (Res_line.resname >= (lname).lower()) & (substring(Res_line.zinr, 0, to_int(rmlen)) == (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1436,7 +1477,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & (Res_line.resname >= (lname).lower()) & (Res_line.zinr >= (room).lower())).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1471,7 +1512,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if voucher_no != "" and voucher_no != None:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (matches(Res_line.zimmer_wunsch,("*Voucher*")))).order_by(Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1497,7 +1538,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if voucher_no != "" and voucher_no != None:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1523,7 +1564,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if voucher_no != "" and voucher_no != None:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1549,7 +1590,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if voucher_no != "" and voucher_no != None:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1591,7 +1632,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if nation_str == " ":
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1607,7 +1648,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1628,7 +1669,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if nation_str == " ":
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1644,7 +1685,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1665,7 +1706,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if nation_str == " ":
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1681,7 +1722,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1702,7 +1743,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if nation_str == " ":
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1718,7 +1759,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1759,7 +1800,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if t_payload_list.argt_str == " " or t_payload_list.argt_str == None:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1775,7 +1816,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft >= fdate1) & (Res_line.ankunft <= fdate2) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (Res_line.arrangement == t_payload_list.argt_str)).order_by((Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1794,7 +1835,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if t_payload_list.argt_str == " " or t_payload_list.argt_str == None:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1810,7 +1851,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date) & (Res_line.arrangement == t_payload_list.argt_str)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1829,7 +1870,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if t_payload_list.argt_str == " " or t_payload_list.argt_str == None:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1845,7 +1886,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 99) & (Res_line.arrangement == t_payload_list.argt_str)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1864,7 +1905,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if t_payload_list.argt_str == " " or t_payload_list.argt_str == None:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower()))).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
@@ -1880,7 +1921,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             else:
 
                 res_line_obj_list = {}
-                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (func.length(func.trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
                          (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.resstatus != 99) & (Res_line.abreise == fdate) & ((substring(Res_line.zinr, 0, to_int(rmlen))) >= ((room).lower())) & (Res_line.arrangement == t_payload_list.argt_str)).order_by(Res_line.zinr, (Res_line.kontakt_nr * Res_line.resnr), Res_line.resstatus, Res_line.name).all():
                     setup_list = query(setup_list_data, (lambda setup_list: setup_list.nr == res_line.setup + 1), first=True)
                     if not setup_list:
