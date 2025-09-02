@@ -1,0 +1,144 @@
+{
+    "Guest": {
+        "read": [
+            "name",
+            "adresse1",
+            "wohnort",
+            "plz",
+            "gastnr",
+            "zimmeranz",
+            "_recid",
+            "firmen_nr",
+            "steuernr",
+            "karteityp",
+            "mobil_telefon",
+            "geburtdatum1"
+        ],
+        "write": []
+    },
+    "History": {
+        "read": [],
+        "write": []
+    },
+    "Paramtext": {
+        "read": [
+            "txtnr",
+            "notes",
+            "ptexte",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "finteger",
+            "fchar",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [
+            "wabkurz",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "grpflag",
+            "name",
+            "segmentcode",
+            "resdat",
+            "useridanlage",
+            "groupname",
+            "depositbez",
+            "depositbez2",
+            "bestat_datum",
+            "briefnr",
+            "gastnr",
+            "resnr",
+            "bemerk",
+            "vesrdepot",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "kurzbez",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bresline": {
+        "read": [
+            "kontakt_nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guestseg": {
+        "read": [],
+        "write": []
+    },
+    "Master": {
+        "read": [],
+        "write": []
+    },
+    "Messages": {
+        "read": [],
+        "write": []
+    },
+    "Kontline": {
+        "read": [
+            "kontcode",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Gentable": {
+        "read": [],
+        "write": []
+    },
+    "Mc_guest": {
+        "read": [],
+        "write": []
+    },
+    "Reslin_queasy": {
+        "read": [
+            "deci1",
+            "deci2",
+            "deci3",
+            "char3",
+            "char1",
+            "char2",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimmer": {
+        "read": [
+            "zinr",
+            "zistatus",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "char1",
+            "char3",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fixleist": {
+        "read": [],
+        "write": []
+    }
+}

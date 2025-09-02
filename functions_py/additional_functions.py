@@ -1609,7 +1609,8 @@ def length(input_data):
 
 def trim(input_str, char=" "):
     if is_sqlalchemy_data(input_str):
-        return func.trim(char, input_str)
+        return func.trim(input_str, char)
+        # return func.trim(char, input_str)
 
     return input_str.strip(char)
 

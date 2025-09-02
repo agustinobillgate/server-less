@@ -2,6 +2,7 @@
 #-----------------------------------------
 # Rd, 18/7/25
 # #864
+# Rd, 2/9/2025, data tidak sama dgn OE
 #-----------------------------------------
 
 from functions.additional_functions import *
@@ -97,8 +98,15 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         if sorttype == 1:
 
             res_line_obj_list = {}
-            for res_line, reservation, sourccod, guest, gmember in db_session.query(Res_line, Reservation, Sourccod, Guest, Gmember).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
-                     (Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != tentres) & (Res_line.ankunft == curr_date)).order_by(Reservation.groupname, Res_line.name, Res_line.zinr).all():
+            for res_line, reservation, sourccod, guest, gmember in db_session.query(Res_line, Reservation, Sourccod, Guest, Gmember)\
+                .join(Reservation,(Reservation.resnr == Res_line.resnr))\
+                .join(Sourccod,(Sourccod.source_code == Reservation.resart))\
+                .join(Guest,(Guest.gastnr == Reservation.gastnr))\
+                .join(Gmember,(Gmember.gastnr == Res_line.gastnrmember))\
+                .filter(
+                     (Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != tentres) & 
+                     (Res_line.ankunft == curr_date))\
+                .order_by(Reservation.groupname, Res_line.name, Res_line.zinr).all():
                 zikat_list = query(zikat_list_data, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
                 if not zikat_list:
                     continue
@@ -116,7 +124,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 else:
                     res_line_obj_list[res_line._recid] = True
 
-
+                
                 add_cllist()
 
                 if not incl_accompany:
@@ -132,8 +140,18 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         elif sorttype == 2:
 
             res_line_obj_list = {}
-            for res_line, reservation, sourccod, guest, gmember in db_session.query(Res_line, Reservation, Sourccod, Guest, Gmember).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
-                     (Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != tentres) & (Res_line.ankunft == curr_date)).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, Res_line.name).all():
+            for res_line, reservation, sourccod, guest, gmember in db_session.query(Res_line, Reservation, Sourccod, Guest, Gmember)\
+                .join(Reservation,(Reservation.resnr == Res_line.resnr))\
+                .join(Sourccod,(Sourccod.source_code == Reservation.resart))\
+                .join(Guest,(Guest.gastnr == Reservation.gastnr))\
+                .join(Gmember,(Gmember.gastnr == Res_line.gastnrmember))\
+                .filter(
+                     (Res_line.active_flag <= 1) & 
+                     (Res_line.resstatus != 12) & 
+                     (Res_line.resstatus != tentres) & 
+                     (Res_line.ankunft == curr_date))\
+                .order_by(Res_line.zinr, Reservation.name, Reservation.groupname, Res_line.name).all():
+
                 zikat_list = query(zikat_list_data, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
                 if not zikat_list:
                     continue
@@ -1514,7 +1532,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
             ),
             reverse=True  # descending sort for both fields
         )
-
+        t_cl_list_data_sorted = t_cl_list_data
         for t_cl_list in t_cl_list_data_sorted:
             if total_flag and t_cl_list.gastnr > 0:
 
