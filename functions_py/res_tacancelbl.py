@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 2/9/2025
+# data oe & py tidak sama
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -19,6 +23,9 @@ def res_tacancelbl(pvilanguage:int, stattype:int, sorttype:int, fdate:date, fnam
     guest = zimkateg = res_line = None
 
     res_tacancel = None
+
+    # Rd 2/9/2025
+    fname = fname.strip()
 
     res_tacancel_data, Res_tacancel = create_model("Res_tacancel", {"resnr":int, "name":string, "mnite":int, "pmnite":int, "ynite":int, "pynite":int, "mtu":Decimal, "pmtu":int, "ytu":Decimal, "pytu":int, "wohnort":string})
 
