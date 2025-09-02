@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 19/8/2025
 # date, timedelta
+# Rd 2/9/2025, data kosong,
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -58,7 +59,6 @@ def comp_productbl(pvilanguage:int, curr_date:string):
     jml = yy - 1
     r_list_data.clear()
     from_date = date_mdy(1, 1, yy)
-
     if mm == 12:
         # Rd 19/8/2025
         # to_date = date_mdy(1, 1, yy + timedelta(days=1)) - timedelta(days=1)
@@ -67,18 +67,14 @@ def comp_productbl(pvilanguage:int, curr_date:string):
         to_date = date_mdy(mm + 1, 1, yy) - timedelta(days=1)
 
     for guestat1 in db_session.query(Guestat1).filter(
-             (Guestat1.datum >= from_date) & (Guestat1.datum <= to_date)).order_by(Guestat1.gastnr).all():
+             (Guestat1.datum >= from_date) & 
+             (Guestat1.datum <= to_date)).order_by(Guestat1.gastnr).all():
         do_it = False
-
         if curr_guest != guestat1.gastnr:
-
             guest = get_cache (Guest, {"karteityp": [(eq, 1)],"gastnr": [(eq, guestat1.gastnr)]})
-
             if guest:
                 curr_guest = guest.gastnr
                 curr_name = guest.name
-
-
             else:
                 curr_guest = 0
 
@@ -100,8 +96,9 @@ def comp_productbl(pvilanguage:int, curr_date:string):
             i = get_month(guestat1.datum)
             c_list.room[i - 1] = c_list.room[i - 1] + guestat1.zimmeranz
             c_list.ytd = c_list.ytd + guestat1.zimmeranz
-    from_date = date_mdy(1, 1, jml)
 
+
+    from_date = date_mdy(1, 1, jml)
     if mm == 12:
         # Rd 19/8/2025
         # to_date = date_mdy(1, 1, jml + timedelta(days=1)) - timedelta(days=1)
@@ -110,34 +107,28 @@ def comp_productbl(pvilanguage:int, curr_date:string):
         to_date = date_mdy(mm + 1, 1, jml) - timedelta(days=1)
     curr_guest = 0
     curr_name = ""
-
     for guestat1 in db_session.query(Guestat1).filter(
-             (Guestat1.datum >= from_date) & (Guestat1.datum <= to_date)).order_by(Guestat1.gastnr).all():
+             (Guestat1.datum >= from_date) & 
+             (Guestat1.datum <= to_date)).order_by(Guestat1.gastnr).all():
         created = True
-
         c_list = query(c_list_data, filters=(lambda c_list: c_list.gastnr == guestat1.gastnr), first=True)
-
         if not c_list:
-
             guest = get_cache (Guest, {"karteityp": [(eq, 1)],"gastnr": [(eq, guestat1.gastnr)]})
-
             if guest:
                 c_list = C_list()
                 c_list_data.append(c_list)
-
                 c_list.gastnr = guest.gastnr
                 c_list.bezeich = guest.name
-
-
             else:
                 created = False
 
         if created:
-
-            c_list = query(c_list_data, filters=(lambda c_list: c_list.gastnr == curr_guest), first=True)
-
+            # print(guestat1.zimmeranz)
+            # Rd 2/9/2025
+            c_list = query(c_list_data, filters=(lambda c_list: c_list.gastnr == guestat1.gastnr), first=True)
             if c_list:
                 c_list.lytd = c_list.lytd + guestat1.zimmeranz
+                # print("->",  c_list.lytd)
     counter = 0
 
     for c_list in query(c_list_data, sort_by=[("ytd",True),("bezeich",False)]):
@@ -155,7 +146,7 @@ def comp_productbl(pvilanguage:int, curr_date:string):
             compproduct_list.ytd = c_list.ytd
             compproduct_list.lytd = c_list.lytd
             tytd = tytd + c_list.ytd
-            tlytd = tlytd + c_list.lytd
+            tlytd = tlytd + c_list.lytd 
 
 
             for i in range(1,12 + 1) :
@@ -169,7 +160,7 @@ def comp_productbl(pvilanguage:int, curr_date:string):
     compproduct_list.num = 9999
     compproduct_list.bezeich = translateExtended ("T O T A L", lvcarea, "")
     compproduct_list.ytd = tytd
-    compproduct_list.ytd = tlytd
+    compproduct_list.lytd = tlytd
 
 
     for i in range(1,12 + 1) :
