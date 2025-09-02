@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 2/9/2025
+# total segmentcode terisi 0, di OE spasi
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -641,10 +645,14 @@ def compli_glist_1bl(pvilanguage:int, from_date:date, to_date:date, sorttype:int
     complig_list = Complig_list()
     complig_list_data.append(complig_list)
 
-    complig_list.name = translateExtended ("SUMMARY BY segmentcode", lvcarea, "")
-    complig_list.rname = "SUMMARY BY segmentcode"
+    complig_list.name = translateExtended ("SUMMARY BY SEGMENTCODE", lvcarea, "")
+    complig_list.rname = "SUMMARY BY SEGMENTCODE"
     complig_list.fsort = int_sort
     complig_list.zinr = ""
+    # Rd 2/9/2025
+    # menyamakan dengan OE, di segmencode kosong (tidak nol)
+    complig_list.pax = ""
+    complig_list.zimmeranz = ""
 
     for cl_list in query(cl_list_data):
         int_sort = int_sort + 1
