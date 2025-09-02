@@ -2,6 +2,10 @@
 #------------------------------------------
 # Rd, 20/8/2025
 # search filter name, perlu tambahan char \ufff
+#
+# Rulita, 01/09/2025
+# Fixing rounded persentage Accumulated No Show Guest
+# Shenario test 22, 25, 26
 #------------------------------------------
 from functions.additional_functions import *
 from sqlalchemy import func, and_
@@ -129,15 +133,19 @@ def res_tanoshowbl(fdate:date, sorttype:int, fname:string, tname:string):
     for outlist in query(outlist_data):
 
         if t_mnite != 0:
-            outlist.pmnite = outlist.mnite / t_mnite * 100
+            # Rulita Fixing persentage rounded
+            outlist.pmnite = round(outlist.mnite / t_mnite * 100)
 
             if t_mtu != 0:
-                outlist.pmtu = outlist.mtu / t_mtu * 100
+                # Rulita Fixing persentage rounded
+                outlist.pmtu = round(outlist.mtu / t_mtu * 100)
 
         if t_ynite != 0:
-            outlist.pynite = outlist.ynite / t_ynite * 100
+            # Rulita Fixing persentage rounded
+            outlist.pynite = round(outlist.ynite / t_ynite * 100)
 
             if t_ytu != 0:
-                outlist.pytu = outlist.ytu / t_ytu * 100
+                # Rulita Fixing persentage rounded
+                outlist.pytu = round(outlist.ytu / t_ytu * 100)
 
     return generate_output()
