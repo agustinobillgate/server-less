@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 2/9/2025
+# beda sorting
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -20,7 +24,7 @@ def fa_movelistbl(c_procedure:string, bl_all:bool, user_init:string, typ_of:stri
 
     Fa_buff = create_buffer("Fa_buff",Fa_artikel)
     Inventory = create_buffer("Inventory",Fa_artikel)
-
+    typ_of = typ_of.strip()
 
     db_session = local_storage.db_session
 
@@ -40,8 +44,6 @@ def fa_movelistbl(c_procedure:string, bl_all:bool, user_init:string, typ_of:stri
         nonlocal retmessage, output_list_data, mathis, fa_artikel, fa_op, htparam
         nonlocal c_procedure, bl_all, user_init, typ_of, main_query, sub_query, int_query, fdate, tdate
         nonlocal fa_buff, inventory
-
-
         nonlocal output_list, tmp_mathis, fa_buff, inventory
         nonlocal output_list_data, tmp_mathis_data
 
@@ -49,11 +51,12 @@ def fa_movelistbl(c_procedure:string, bl_all:bool, user_init:string, typ_of:stri
 
             fa_op_obj_list = {}
             for fa_op, mathis in db_session.query(Fa_op, Mathis).join(Mathis,(Mathis.nr == Fa_op.nr) & (Mathis.flag == 1)).filter(
-                     (Fa_op.opart == 2) & (Fa_op.datum >= fdate) & (Fa_op.datum <= tdate)).order_by(Fa_op.datum).all():
-                if fa_op_obj_list.get(fa_op._recid):
-                    continue
-                else:
-                    fa_op_obj_list[fa_op._recid] = True
+                     (Fa_op.opart == 2) & (Fa_op.datum >= fdate) & (Fa_op.datum <= tdate)).order_by(Fa_op.datum, Fa_op._recid).all():
+                
+                # if fa_op_obj_list.get(fa_op._recid):
+                #     continue
+                # else:
+                #     fa_op_obj_list[fa_op._recid] = True
 
 
                 output_list = Output_list()
@@ -63,8 +66,13 @@ def fa_movelistbl(c_procedure:string, bl_all:bool, user_init:string, typ_of:stri
                 output_list.asset_no = mathis.asset
                 output_list.datum = fa_op.datum
                 output_list.zeit = to_string(fa_op.zeit, "HH:MM:SS")
-                output_list.move_from = entry(2, fa_op.docu_nr, ";;")
-                output_list.move_to = entry(4, fa_op.docu_nr, ";;")
+
+                # Rd 2/9/20225
+                # di .p
+                # output-list.move-from   = ENTRY(3, fa-op.docu-nr, ";;")
+                # output-list.move-to     = ENTRY(5, fa-op.docu-nr, ";;")
+                output_list.move_from = entry(1, fa_op.docu_nr, ";;")
+                output_list.move_to = entry(2, fa_op.docu_nr, ";;")
                 output_list.usrid = fa_op.id
                 output_list.qty = fa_op.anzahl
                 output_list.price =  to_decimal(fa_op.einzelpreis)
@@ -83,6 +91,7 @@ def fa_movelistbl(c_procedure:string, bl_all:bool, user_init:string, typ_of:stri
                         fa_artikel_obj_list = {}
                         for fa_artikel, mathis in db_session.query(Fa_artikel, Mathis).join(Mathis,(Mathis.nr == Fa_artikel.nr)).filter(
                                  (Fa_artikel.gnr == main_query) & (Fa_artikel.subgrp == sub_query)).order_by(Fa_artikel.nr).all():
+                            
                             if fa_artikel_obj_list.get(fa_artikel._recid):
                                 continue
                             else:
@@ -120,8 +129,13 @@ def fa_movelistbl(c_procedure:string, bl_all:bool, user_init:string, typ_of:stri
                             output_list.asset_no = tmp_mathis.asset
                             output_list.datum = fa_op.datum
                             output_list.zeit = to_string(fa_op.zeit, "HH:MM:SS")
-                            output_list.move_from = entry(2, fa_op.docu_nr, ";;")
-                            output_list.move_to = entry(4, fa_op.docu_nr, ";;")
+
+                            # Rd 2/9/20225
+                            # di .p
+                            # output-list.move-from   = ENTRY(3, fa-op.docu-nr, ";;")
+                            # output-list.move-to     = ENTRY(5, fa-op.docu-nr, ";;")
+                            output_list.move_from = entry(1, fa_op.docu_nr, ";;")
+                            output_list.move_to = entry(2, fa_op.docu_nr, ";;")
                             output_list.usrid = fa_op.id
                             output_list.qty = fa_op.anzahl
                             output_list.price =  to_decimal(fa_op.einzelpreis)
@@ -142,8 +156,14 @@ def fa_movelistbl(c_procedure:string, bl_all:bool, user_init:string, typ_of:stri
                         output_list.asset_no = mathis.asset
                         output_list.datum = fa_op.datum
                         output_list.zeit = to_string(fa_op.zeit, "HH:MM:SS")
-                        output_list.move_from = entry(2, fa_op.docu_nr, ";;")
-                        output_list.move_to = entry(4, fa_op.docu_nr, ";;")
+
+                        # Rd 2/9/20225
+                        # di .p
+                        # output-list.move-from   = ENTRY(3, fa-op.docu-nr, ";;")
+                        # output-list.move-to     = ENTRY(5, fa-op.docu-nr, ";;")
+
+                        output_list.move_from = entry(1, fa_op.docu_nr, ";;")
+                        output_list.move_to = entry(2, fa_op.docu_nr, ";;")
                         output_list.usrid = fa_op.id
                         output_list.qty = fa_op.anzahl
                         output_list.price =  to_decimal(fa_op.einzelpreis)
