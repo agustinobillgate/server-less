@@ -37,7 +37,6 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
 
     L_store = create_buffer("L_store",L_lager)
 
-
     db_session = local_storage.db_session
 
     def generate_output():
@@ -45,11 +44,34 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         nonlocal pvilanguage, from_grp, food, main_storage, f_store, t_store, date1, date2, foreign_nr, exchg_rate, double_currency
         nonlocal l_store
 
-
         nonlocal s_list, fb_flash, l_store
         nonlocal s_list_data, fb_flash_data
 
         return {"fb-flash": fb_flash_data}
+    
+    def formatting_int(data, format):
+        if type(data) == str:
+            data = int(data)
+
+        digit_count = format.count('9')
+    
+        number_str = str(data)
+        
+        if len(number_str) > digit_count:
+            raise ValueError(f"Number has too many digits for the given mask ({len(number_str)} > {digit_count})")
+ 
+        number_str = number_str.zfill(digit_count)
+        
+        result = ''
+        digit_index = 0
+
+        for char in format:
+            if char == '9':
+                result += number_str[digit_index]
+                digit_index += 1
+            else:
+                result += char
+        return result
 
     def create_food():
 
@@ -96,24 +118,35 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
 
         if htparam:
             bl_eknr = htparam.finteger
+            
         fb_flash = Fb_flash()
         fb_flash_data.append(fb_flash)
+        fb_flash.t_consumed = ""
+        fb_flash.mtd_consumed = ""
 
         fb_flash = Fb_flash()
         fb_flash_data.append(fb_flash)
+        fb_flash.c_alloc = "** FOOD **"
+        fb_flash.t_consumed = ""
+        fb_flash.mtd_consumed = ""
 
-        fb_flash.c_alloc = "** food **"
         fb_flash = Fb_flash()
         fb_flash_data.append(fb_flash)
+        fb_flash.t_consumed = ""
+        fb_flash.mtd_consumed = ""
 
+        l_store = L_store
 
-        for l_store in db_session.query(L_store).filter(
-                 (L_store.lager_nr != main_storage) & (L_store.lager_nr >= f_store) & (L_store.lager_nr <= t_store) & (L_store.betriebsnr > 0)).order_by(L_store.lager_nr).all():
+        for l_store.bezeich, l_store.betriebsnr, l_store.lager_nr in db_session.query(L_store.bezeich, L_store.betriebsnr, L_store.lager_nr).filter((L_store.lager_nr != main_storage) & (L_store.lager_nr >= f_store) & (L_store.lager_nr <= t_store) & (L_store.betriebsnr > 0)).order_by(L_store.lager_nr).all():
+            
             s_list_data.clear()
+
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
-
             fb_flash.c_alloc = l_store.bezeich
+            fb_flash.t_consumed = ""
+            fb_flash.mtd_consumed = ""
+
             dstore = l_store.betriebsnr
             curr_store = l_store.lager_nr
             step_food1(fl_eknr, bl_eknr)
@@ -168,9 +201,9 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
             if s_list:
                 d_betrag =  to_decimal(d_betrag) + to_decimal(s_list.betrag)
                 m_betrag =  to_decimal(m_betrag) + to_decimal(s_list.t_betrag)
+
                 fb_flash = Fb_flash()
                 fb_flash_data.append(fb_flash)
-
                 fb_flash.c_alloc = s_list.bezeich
                 fb_flash.t_consumed =  to_decimal(betrag)
                 fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
@@ -179,19 +212,22 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
 
-            fb_flash.bezeich = "GROSS CONSUMPTION cost"
+            fb_flash.bezeich = "GROSS CONSUMPTION COST"
             fb_flash.t_consumed =  to_decimal(d_betrag)
             fb_flash.mtd_consumed =  to_decimal(m_betrag)
 
-
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
-
             fb_flash.bezeich = "LESS BY:"
+            fb_flash.t_consumed = ""
+            fb_flash.mtd_consumed = ""
+
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
+            fb_flash.bezeich = "COMPLIMENT COST"
+            fb_flash.t_consumed = ""
+            fb_flash.mtd_consumed = ""
 
-            fb_flash.bezeich = "COMPLIMENT cost"
             betrag =  to_decimal("0")
             t_betrag1 =  to_decimal("0")
 
@@ -221,8 +257,10 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
 
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
-
             fb_flash.bezeich = "DEPARTMENT EXPENSES"
+            fb_flash.t_consumed = ""
+            fb_flash.mtd_consumed = ""
+
             betrag =  to_decimal("0")
             t_betrag1 =  to_decimal("0")
 
@@ -278,7 +316,7 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
 
-            fb_flash.bezeich = "NET CONSUMPTION cost"
+            fb_flash.bezeich = "NET CONSUMPTION COST"
             fb_flash.t_consumed =  to_decimal(d_betrag)
             fb_flash.mtd_consumed =  to_decimal(m_betrag)
 
@@ -286,16 +324,15 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
 
-            fb_flash.c_alloc = "Nett food Sales"
+            fb_flash.c_alloc = "Nett Food Sales"
             fb_flash.t_consumed =  to_decimal(f_sales)
             fb_flash.mtd_consumed =  to_decimal(tf_sales)
 
 
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
-
             fb_flash.flag = 99
-            fb_flash.c_alloc = "R a t i o cost:Sales (%)"
+            fb_flash.c_alloc = "R a t i o Cost:Sales (%)"
 
             if f_sales != 0:
                 fb_flash.t_consumed = ( to_decimal(d_betrag) / to_decimal(f_sales) * to_decimal(100))
@@ -306,8 +343,11 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
                 fb_flash.mtd_consumed = ( to_decimal(m_betrag) / to_decimal(tf_sales)) * to_decimal("100")
             else:
                 fb_flash.mtd_consumed =  to_decimal("0")
+
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
+            fb_flash.t_consumed = ""
+            fb_flash.mtd_consumed = ""
 
         done = True
 
@@ -349,30 +389,42 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 258)]})
         bl_eknr = htparam.finteger
-        fb_flash = Fb_flash()
-        fb_flash_data.append(fb_flash)
 
         fb_flash = Fb_flash()
         fb_flash_data.append(fb_flash)
+        fb_flash.t_consumed = ""
+        fb_flash.mtd_consumed = ""
 
+        fb_flash = Fb_flash()
+        fb_flash_data.append(fb_flash)
         fb_flash.c_alloc = "** BEVERAGE **"
+        fb_flash.t_consumed = ""
+        fb_flash.mtd_consumed = ""
+
         fb_flash = Fb_flash()
         fb_flash_data.append(fb_flash)
+        fb_flash.t_consumed = ""
+        fb_flash.mtd_consumed = ""
 
+        l_store = L_store
+        
+        for l_store.bezeich, l_store.betriebsnr, l_store.lager_nr in db_session.query(L_store.bezeich, L_store.betriebsnr, L_store.lager_nr).filter((L_store.lager_nr != main_storage) & (L_store.lager_nr >= f_store) & (L_store.lager_nr <= t_store) & (L_store.betriebsnr > 0)).order_by(L_store.lager_nr).all():
 
-        for l_store in db_session.query(L_store).filter(
-                 (L_store.lager_nr != main_storage) & (L_store.lager_nr >= f_store) & (L_store.lager_nr <= t_store) & (L_store.betriebsnr > 0)).order_by(L_store.lager_nr).all():
             s_list_data.clear()
+
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
-
+            fb_flash.t_consumed = ""
+            fb_flash.mtd_consumed = ""
             fb_flash.c_alloc = l_store.bezeich
+
             dstore = l_store.betriebsnr
             curr_store = l_store.lager_nr
             step_bev1(fl_eknr, bl_eknr)
 
             if l_store.betriebsnr > 0:
                 step_bev1a()
+
             step_bev2(fl_eknr, bl_eknr)
             beverage_to_food()
             food_to_beverage()
@@ -380,6 +432,7 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
             step_three_bev(fl_eknr, bl_eknr)
             func_food_bev(fl_eknr, bl_eknr)
             step_four(f_eknr, b_eknr, l_store.lager_nr)
+
             d_betrag =  to_decimal("0")
             m_betrag =  to_decimal("0")
             d1_betrag =  to_decimal("0")
@@ -398,7 +451,6 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
                 fb_flash.bezeich = s_list.bezeich
                 fb_flash.t_consumed =  to_decimal(s_list.betrag)
                 fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
-
 
             betrag =  to_decimal("0")
             t_betrag1 =  to_decimal("0")
@@ -432,22 +484,22 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
 
-            fb_flash.bezeich = "GROSS CONSUMPTION cost"
+            fb_flash.bezeich = "GROSS CONSUMPTION COST"
             fb_flash.t_consumed =  to_decimal(d_betrag)
             fb_flash.mtd_consumed =  to_decimal(m_betrag)
 
 
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
-
             fb_flash.bezeich = "LESS BY:"
-
+            fb_flash.t_consumed = ""
+            fb_flash.mtd_consumed = ""
 
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
-
-            fb_flash.bezeich = "COMPLIMENT cost"
-
+            fb_flash.bezeich = "COMPLIMENT COST"
+            fb_flash.t_consumed = ""
+            fb_flash.mtd_consumed = ""
 
             betrag =  to_decimal("0")
             t_betrag1 =  to_decimal("0")
@@ -459,9 +511,9 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
                 m1_betrag =  to_decimal(m1_betrag) + to_decimal(s_list.t_betrag)
                 d_betrag =  to_decimal(d_betrag) - to_decimal(s_list.betrag)
                 m_betrag =  to_decimal(m_betrag) - to_decimal(s_list.t_betrag)
+
                 fb_flash = Fb_flash()
                 fb_flash_data.append(fb_flash)
-
                 fb_flash.c_alloc = s_list.bezeich
                 fb_flash.t_consumed =  to_decimal(s_list.betrag)
                 fb_flash.mtd_consumed =  to_decimal(s_list.t_betrag)
@@ -477,8 +529,10 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
 
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
-
             fb_flash.bezeich = "DEPARTMENT EXPENSES"
+            fb_flash.t_consumed = ""
+            fb_flash.mtd_consumed = ""
+
             betrag =  to_decimal("0")
             t_betrag1 =  to_decimal("0")
 
@@ -534,7 +588,7 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
 
-            fb_flash.bezeich = "NET CONSUMPTION cost"
+            fb_flash.bezeich = "NET CONSUMPTION COST"
             fb_flash.t_consumed =  to_decimal(d_betrag)
             fb_flash.mtd_consumed =  to_decimal(m_betrag)
 
@@ -551,15 +605,18 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
             fb_flash_data.append(fb_flash)
 
             fb_flash.flag = 99
-            fb_flash.c_alloc = "R a t i o cost:Sales (%)"
+            fb_flash.c_alloc = "R a t i o Cost:Sales (%)"
 
             if b_sales != 0:
                 fb_flash.t_consumed =  to_decimal(d_betrag) / to_decimal(b_sales) * to_decimal("100")
 
             if tb_sales != 0:
                 fb_flash.mtd_consumed = ( to_decimal(m_betrag) / to_decimal(tb_sales)) * to_decimal("100")
+
             fb_flash = Fb_flash()
             fb_flash_data.append(fb_flash)
+            fb_flash.t_consumed = ""
+            fb_flash.mtd_consumed = ""
 
         done = True
 
@@ -587,12 +644,16 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         s_list.flag = flag
 
         l_op_obj_list = {}
-        for l_op, l_artikel in db_session.query(L_op, L_artikel).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == fl_eknr)).filter(
-                 (L_op.loeschflag <= 1) & (L_op.op_art == 4) & (L_op.herkunftflag == 1) & ((L_op.lager_nr == curr_store) | (L_op.pos == curr_store)) & (L_op.datum >= date1) & (L_op.datum <= date2)).order_by(L_op._recid).all():
-            if l_op_obj_list.get(l_op._recid):
-                continue
-            else:
-                l_op_obj_list[l_op._recid] = True
+
+        l_op = L_op()
+        l_artikel = L_artikel()
+
+        for l_op.lager_nr, l_op.datum, l_op.pos, l_op.warenwert, l_artikel.artnr in db_session.query(L_op.lager_nr, L_op.datum, L_op.pos, L_op.warenwert, L_artikel.artnr).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == fl_eknr)).filter((L_op.loeschflag <= 1) & (L_op.op_art == 4) & (L_op.herkunftflag == 1) & ((L_op.lager_nr == curr_store) | (L_op.pos == curr_store)) & (L_op.datum >= date1) & (L_op.datum <= date2)).order_by(L_op._recid).all():
+            
+            # if l_op_obj_list.get(l_op._recid):
+            #     continue
+            # else:
+            #     l_op_obj_list[l_op._recid] = True
 
             if l_op.lager_nr == curr_store:
                 s_list.t_betrag =  to_decimal(s_list.t_betrag) - to_decimal(l_op.warenwert)
@@ -639,8 +700,9 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         s_list.bezeich = translateExtended ("KITCHEN TRANSFER OUT", lvcarea, "")
         s_list.flag = flag
 
-        for h_compli in db_session.query(H_compli).filter(
-                 (H_compli.datum >= date1) & (H_compli.datum <= date2) & (H_compli.betriebsnr > 0) & (H_compli.p_artnr == 1)).order_by(H_compli.departement).all():
+        h_compli = H_compli()
+
+        for h_compli.betriebsnr, h_compli.datum, h_compli.epreis, h_compli.departement in db_session.query(H_compli.betriebsnr, H_compli.datum, H_compli.epreis, H_compli.departement).filter((H_compli.datum >= date1) & (H_compli.datum <= date2) & (H_compli.betriebsnr > 0) & (H_compli.p_artnr == 1)).order_by(H_compli.departement).all():
 
             hoteldpt = get_cache (Hoteldpt, {"num": [(eq, h_compli.betriebsnr)]})
 
@@ -687,12 +749,16 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         s_list.flag = flag
 
         l_op_obj_list = {}
-        for l_op, l_artikel in db_session.query(L_op, L_artikel).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == bl_eknr)).filter(
-                 (L_op.loeschflag <= 1) & (L_op.op_art == 4) & (L_op.herkunftflag == 1) & ((L_op.lager_nr == curr_store) | (L_op.pos == curr_store)) & (L_op.datum >= date1) & (L_op.datum <= date2)).order_by(L_op._recid).all():
-            if l_op_obj_list.get(l_op._recid):
-                continue
-            else:
-                l_op_obj_list[l_op._recid] = True
+
+        l_op = L_op()
+        l_artikel = L_artikel()
+
+        for l_op.lager_nr, l_op.datum, l_op.pos, l_op.warenwert, l_artikel.artnr in db_session.query(L_op.lager_nr, L_op.datum, L_op.pos, L_op.warenwert, L_artikel.artnr).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == bl_eknr)).filter((L_op.loeschflag <= 1) & (L_op.op_art == 4) & (L_op.herkunftflag == 1) & ((L_op.lager_nr == curr_store) | (L_op.pos == curr_store)) & (L_op.datum >= date1) & (L_op.datum <= date2)).order_by(L_op._recid).all():
+            
+            # if l_op_obj_list.get(l_op._recid):
+            #     continue
+            # else:
+            #     l_op_obj_list[l_op._recid] = True
 
             if l_op.lager_nr == curr_store:
                 s_list.t_betrag =  to_decimal(s_list.t_betrag) - to_decimal(l_op.warenwert)
@@ -739,8 +805,9 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         s_list.bezeich = translateExtended ("KITCHEN TRANSFER OUT", lvcarea, "")
         s_list.flag = flag
 
-        for h_compli in db_session.query(H_compli).filter(
-                 (H_compli.datum >= date1) & (H_compli.datum <= date2) & (H_compli.betriebsnr > 0) & (H_compli.p_artnr == 2)).order_by(H_compli.departement).all():
+        h_compli = H_compli()
+
+        for h_compli.betriebsnr, h_compli.datum, h_compli.epreis, h_compli.departement in db_session.query(H_compli.betriebsnr, H_compli.datum, H_compli.epreis, H_compli.departement).filter((H_compli.datum >= date1) & (H_compli.datum <= date2) & (H_compli.betriebsnr > 0) & (H_compli.p_artnr == 2)).order_by(H_compli.departement).all():
 
             hoteldpt = get_cache (Hoteldpt, {"num": [(eq, h_compli.betriebsnr)]})
 
@@ -786,13 +853,16 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         s_list.flag = flag
 
         l_op_obj_list = {}
-        for l_op, l_artikel in db_session.query(L_op, L_artikel).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == fl_eknr)).filter(
-                 (L_op.pos > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.datum >= date1) & (L_op.datum <= date2) & (L_op.lager_nr == curr_store)).order_by(L_op._recid).all():
-            if l_op_obj_list.get(l_op._recid):
-                continue
-            else:
-                l_op_obj_list[l_op._recid] = True
 
+        l_op = L_op()
+        l_artikel = L_artikel()
+
+        for l_op.warenwert, l_op.datum, l_artikel.artnr in db_session.query(L_op.warenwert, L_op.datum, L_artikel.artnr).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == fl_eknr)).filter((L_op.pos > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.datum >= date1) & (L_op.datum <= date2) & (L_op.lager_nr == curr_store)).order_by(L_op._recid).all():
+            
+            # if l_op_obj_list.get(l_op._recid):
+            #     continue
+            # else:
+            #     l_op_obj_list[l_op._recid] = True
 
             s_list.t_betrag =  to_decimal(s_list.t_betrag) + to_decimal(l_op.warenwert)
 
@@ -822,12 +892,16 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         s_list.flag = flag
 
         l_op_obj_list = {}
-        for l_op, l_artikel in db_session.query(L_op, L_artikel).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == bl_eknr)).filter(
-                 (L_op.pos > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.datum >= date1) & (L_op.datum <= date2) & (L_op.lager_nr == curr_store)).order_by(L_op._recid).all():
-            if l_op_obj_list.get(l_op._recid):
-                continue
-            else:
-                l_op_obj_list[l_op._recid] = True
+
+        l_op = L_op()
+        l_artikel = L_artikel()
+
+        for l_op.warenwert, l_op.datum, l_artikel.artnr in db_session.query(L_op.warenwert, L_op.datum, L_artikel.artnr).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == bl_eknr)).filter((L_op.pos > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.datum >= date1) & (L_op.datum <= date2) & (L_op.lager_nr == curr_store)).order_by(L_op._recid).all():
+
+            # if l_op_obj_list.get(l_op._recid):
+            #     continue
+            # else:
+            #     l_op_obj_list[l_op._recid] = True
 
 
             s_list.t_betrag =  to_decimal(s_list.t_betrag) + to_decimal(l_op.warenwert)
@@ -858,8 +932,12 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
                 s_list_data.append(s_list)
 
                 s_list.reihenfolge = 3
-                s_list.bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
+                # s_list.bezeich = to_string(gl_acct.fibukonto.lstrip("0"), coa_format) + " " +\
+                #         gl_acct.bezeich.upper()
+                s_list.bezeich = formatting_int(gl_acct.fibukonto.lstrip("0"), coa_format)+ " " +\
                         gl_acct.bezeich.upper()
+                s_list.bezeich = s_list.bezeich.replace("\\N", "\n")
+                
                 s_list.flag = 1
 
 
@@ -885,8 +963,12 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
                 s_list_data.append(s_list)
 
                 s_list.reihenfolge = 3
-                s_list.bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
+                # s_list.bezeich = to_string(gl_acct.fibukonto.lstrip("0"), coa_format) + " " +\
+                #         gl_acct.bezeich.upper()
+                s_list.bezeich = formatting_int(gl_acct.fibukonto.lstrip("0"), coa_format)+ " " +\
                         gl_acct.bezeich.upper()
+                s_list.bezeich = s_list.bezeich.replace("\\N", "\n")
+                
                 s_list.flag = 2
 
 
@@ -915,21 +997,22 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         Gl_acc1 =  create_buffer("Gl_acc1",Gl_acct)
 
         if dstore == 0:
-
             return
+        
+        hoteldpt = Hoteldpt()
 
-        for hoteldpt in db_session.query(Hoteldpt).filter(
-                 (Hoteldpt.num > 0) & ((Hoteldpt.num == l_store.betriebsnr) | (Hoteldpt.betriebsnr == l_store.lager_nr))).order_by(Hoteldpt.num).all():
+        for hoteldpt.num in db_session.query(Hoteldpt.num).filter((Hoteldpt.num > 0) & ((Hoteldpt.num == l_store.betriebsnr) | (Hoteldpt.betriebsnr == l_store.lager_nr))).order_by(Hoteldpt.num).all():
 
             h_compli_obj_list = {}
             h_compli = H_compli()
             h_art = H_artikel()
-            for h_compli.betriebsnr, h_compli.epreis, h_compli.departement, h_compli.datum, h_compli.artnr, h_compli.anzahl, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.prozent, h_art._recid in db_session.query(H_compli.betriebsnr, H_compli.epreis, H_compli.departement, H_compli.datum, H_compli.artnr, H_compli.anzahl, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.prozent, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter(
-                     (H_compli.datum >= date1) & (H_compli.datum <= date2) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.datum, H_compli.rechnr).all():
-                if h_compli_obj_list.get(h_compli._recid):
-                    continue
-                else:
-                    h_compli_obj_list[h_compli._recid] = True
+
+            for h_compli.betriebsnr, h_compli.epreis, h_compli.departement, h_compli.datum, h_compli.artnr, h_compli.anzahl, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.prozent, h_art._recid in db_session.query(H_compli.betriebsnr, H_compli.epreis, H_compli.departement, H_compli.datum, H_compli.artnr, H_compli.anzahl, H_compli._recid, H_artikel.artnrfront, H_artikel.departement, H_artikel.prozent, H_artikel._recid).join(H_artikel,(H_artikel.departement == H_compli.departement) & (H_artikel.artnr == H_compli.p_artnr) & (H_artikel.artart == 11)).filter((H_compli.datum >= date1) & (H_compli.datum <= date2) & (H_compli.departement == hoteldpt.num[0]) & (H_compli.betriebsnr == 0)).order_by(H_compli.datum, H_compli.rechnr).all():
+
+                # if h_compli_obj_list.get(h_compli._recid):
+                #     continue
+                # else:
+                #     h_compli_obj_list[h_compli._recid] = True
 
                 if double_currency and curr_datum != h_compli.datum:
                     curr_datum = h_compli.datum
@@ -950,8 +1033,12 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
 
                 gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, artikel.fibukonto)]})
                 com_artnr = artikel.artnr
-                com_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
+                # com_bezeich = to_string(gl_acct.fibukonto.lstrip("0"), coa_format) + " " +\
+                #         gl_acct.bezeich.upper()
+                com_bezeich = formatting_int(gl_acct.fibukonto.lstrip("0"), coa_format)+ " " +\
                         gl_acct.bezeich.upper()
+                com_bezeich = com_bezeich.replace("\\N", "\n")
+
                 com_fibu = gl_acct.fibukonto
 
                 h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_compli.artnr)],"departement": [(eq, h_compli.departement)]})
@@ -992,7 +1079,6 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
 
 
     def step_three_food(fl_eknr:int, bl_eknr:int):
-
         nonlocal fb_flash_data, lvcarea, done, dstore, curr_store, long_digit, f_sales, b_sales, tf_sales, tb_sales, bev_food, food_bev, coa_format, htparam, l_lager, l_artikel, l_op, h_compli, hoteldpt, gl_acct, h_artikel, exrate, artikel, h_cost, l_ophdr, umsatz
         nonlocal pvilanguage, from_grp, food, main_storage, f_store, t_store, date1, date2, foreign_nr, exchg_rate, double_currency
         nonlocal l_store
@@ -1008,17 +1094,26 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         Gl_acct1 =  create_buffer("Gl_acct1",Gl_acct)
 
         l_op_obj_list = {}
-        for l_op, l_ophdr, gl_acct, l_lager, l_artikel in db_session.query(L_op, L_ophdr, Gl_acct, L_lager, L_artikel).join(L_ophdr,(L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto) & ((Gl_acct.acc_type == 5) | (Gl_acct.acc_type == 3) | (Gl_acct.acc_type == 4))).join(L_lager,(L_lager.lager_nr == L_op.lager_nr)).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == fl_eknr)).filter(
-                 (L_op.pos > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.lager_nr == curr_store) & (L_op.datum >= date1) & (L_op.datum <= date2)).order_by(L_op._recid).all():
-            if l_op_obj_list.get(l_op._recid):
-                continue
-            else:
-                l_op_obj_list[l_op._recid] = True
 
+        l_op = L_op()
+        l_ophdr = L_ophdr()
+        gl_acct = Gl_acct()
+        l_lager = L_lager()
+        l_artikel = L_artikel()
+
+        for l_op.stornogrund, l_op.datum, l_op.warenwert, l_ophdr.lscheinnr, gl_acct.fibukonto, gl_acct.bezeich, l_lager.lager_nr, l_artikel.artnr in db_session.query(L_op.stornogrund, L_op.datum, L_op.warenwert, L_ophdr.lscheinnr, Gl_acct.fibukonto, Gl_acct.bezeich, L_lager.lager_nr, L_artikel.artnr).join(L_ophdr,(L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto) & ((Gl_acct.acc_type == 5) | (Gl_acct.acc_type == 3) | (Gl_acct.acc_type == 4))).join(L_lager,(L_lager.lager_nr == L_op.lager_nr)).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == fl_eknr)).filter((L_op.pos > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.lager_nr == curr_store) & (L_op.datum >= date1) & (L_op.datum <= date2)).order_by(L_op._recid).all():
+
+            # if l_op_obj_list.get(l_op._recid):
+            #     continue
+            # else:
+            #     l_op_obj_list[l_op._recid] = True
 
             fibukonto = gl_acct.fibukonto
-            bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
+            # bezeich = to_string(gl_acct.fibukonto.lstrip("0"), coa_format) + " " +\
+            #         gl_acct.bezeich.upper()
+            bezeich = formatting_int(gl_acct.fibukonto.lstrip("0"), coa_format)+ " " +\
                     gl_acct.bezeich.upper()
+            bezeich = bezeich.replace("\\N", "\n")
 
             if l_op.stornogrund != "":
 
@@ -1026,8 +1121,10 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
 
                 if gl_acct1:
                     fibukonto = gl_acct1.fibukonto
-                    bezeich = to_string(gl_acct1.fibukonto, coa_format) + " " +\
-                        gl_acct1.bezeich.upper()
+                    # bezeich = to_string(gl_acct1.fibukonto.lstrip("0"), coa_format) + " " +\
+                    #     gl_acct1.bezeich.upper()
+                    bezeich = formatting_int(gl_acct1.fibukonto.lstrip("0"), coa_format)+ " " +\
+                            gl_acct1.bezeich.upper()
 
             if fibukonto.lower()  == (food_bev).lower() :
                 pass
@@ -1046,6 +1143,7 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
                     s_list.fibukonto = fibukonto
                     s_list.bezeich = bezeich
                     s_list.flag = flag
+                    
                 s_list.t_betrag =  to_decimal(s_list.t_betrag) + to_decimal(l_op.warenwert)
 
                 if l_op.datum == date2:
@@ -1069,26 +1167,38 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         Gl_acct1 =  create_buffer("Gl_acct1",Gl_acct)
 
         l_op_obj_list = {}
-        for l_op, l_ophdr, gl_acct, l_lager, l_artikel in db_session.query(L_op, L_ophdr, Gl_acct, L_lager, L_artikel).join(L_ophdr,(L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto) & ((Gl_acct.acc_type == 5) | (Gl_acct.acc_type == 3) | (Gl_acct.acc_type == 4))).join(L_lager,(L_lager.lager_nr == L_op.lager_nr)).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == bl_eknr)).filter(
-                 (L_op.pos > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.lager_nr == curr_store) & (L_op.datum >= date1) & (L_op.datum <= date2)).order_by(L_op._recid).all():
-            if l_op_obj_list.get(l_op._recid):
-                continue
-            else:
-                l_op_obj_list[l_op._recid] = True
+
+        l_op = L_op()
+        l_ophdr = L_ophdr()
+        gl_acct = Gl_acct()
+        l_lager = L_lager()
+        l_artikel = L_artikel()
+
+        for l_op.stornogrund, l_op.datum, l_op.warenwert, l_ophdr.lscheinnr, gl_acct.fibukonto, gl_acct.bezeich, l_lager.lager_nr, l_artikel.artnr in db_session.query(L_op.stornogrund, L_op.datum, L_op.warenwert, L_ophdr.lscheinnr, Gl_acct.fibukonto, Gl_acct.bezeich, L_lager.lager_nr, L_artikel.artnr).join(L_ophdr,(L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto) & ((Gl_acct.acc_type == 5) | (Gl_acct.acc_type == 3) | (Gl_acct.acc_type == 4))).join(L_lager,(L_lager.lager_nr == L_op.lager_nr)).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == bl_eknr)).filter((L_op.pos > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.lager_nr == curr_store) & (L_op.datum >= date1) & (L_op.datum <= date2)).order_by(L_op._recid).all():
+
+            # if l_op_obj_list.get(l_op._recid):
+            #     continue
+            # else:
+            #     l_op_obj_list[l_op._recid] = True
 
 
             fibukonto = gl_acct.fibukonto
-            bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
+            # bezeich = to_string(gl_acct.fibukonto.lstrip("0"), coa_format) + " " +\
+            #         gl_acct.bezeich.upper()
+            bezeich = formatting_int(gl_acct.fibukonto.lstrip("0"), coa_format)+ " " +\
                     gl_acct.bezeich.upper()
-
+            bezeich = bezeich.replace("\\N", "\n")
+            
             if l_op.stornogrund != "":
 
                 gl_acct1 = get_cache (Gl_acct, {"fibukonto": [(eq, l_op.stornogrund)]})
 
                 if gl_acct1:
                     fibukonto = gl_acct1.fibukonto
-                    bezeich = to_string(gl_acct1.fibukonto, coa_format) + " " +\
-                        gl_acct1.bezeich.upper()
+                    # bezeich = to_string(gl_acct1.fibukonto, coa_format) + " " +\
+                    #     gl_acct1.bezeich.upper()
+                    bezeich = formatting_int(gl_acct1.fibukonto.lstrip("0"), coa_format)+ " " +\
+                            gl_acct1.bezeich.upper()
 
             if fibukonto.lower()  == (food_bev).lower() :
                 pass
@@ -1107,6 +1217,7 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
                     s_list.fibukonto = fibukonto
                     s_list.bezeich = bezeich
                     s_list.flag = flag
+
                 s_list.t_betrag =  to_decimal(s_list.t_betrag) + to_decimal(l_op.warenwert)
 
                 if l_op.datum == date2:
@@ -1124,12 +1235,16 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         nonlocal s_list_data, fb_flash_data
 
         l_op_obj_list = {}
-        for l_op, l_artikel in db_session.query(L_op, L_artikel).join(L_artikel,(L_artikel.artnr == L_op.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).filter(
-                 (L_op.op_art == 3) & (L_op.loeschflag <= 1) & (L_op.datum >= date1) & (L_op.datum <= date2) & ((L_op.stornogrund == (bev_food).lower()) | (L_op.stornogrund == (food_bev).lower())) & (L_op.lager_nr == curr_store)).order_by(L_op._recid).all():
-            if l_op_obj_list.get(l_op._recid):
-                continue
-            else:
-                l_op_obj_list[l_op._recid] = True
+
+        l_op = L_op()
+        l_artikel = L_artikel()
+
+        for l_op.stornogrund, l_op.datum, l_op.warenwert, l_artikel.artnr in db_session.query(L_op.stornogrund, L_op.datum, L_op.warenwert, L_artikel.artnr).join(L_artikel,(L_artikel.artnr == L_op.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).filter((L_op.op_art == 3) & (L_op.loeschflag <= 1) & (L_op.datum >= date1) & (L_op.datum <= date2) & ((L_op.stornogrund == (bev_food).lower()) | (L_op.stornogrund == (food_bev).lower())) & (L_op.lager_nr == curr_store)).order_by(L_op._recid).all():
+
+            # if l_op_obj_list.get(l_op._recid):
+            #     continue
+            # else:
+            #     l_op_obj_list[l_op._recid] = True
 
             if l_op.stornogrund.lower()  == (food_bev).lower() :
 
@@ -1173,33 +1288,34 @@ def fb_flash1_btn_go_webbl(pvilanguage:int, from_grp:int, food:int, main_storage
         serv_taxable = htparam.flogical
 
         if dstore == 0:
-
             return
+        
+        hoteldpt = Hoteldpt()
+        artikel = Artikel()
+        umsatz = Umsatz()
 
-        for hoteldpt in db_session.query(Hoteldpt).filter(
-                 ((Hoteldpt.num == dstore) | (Hoteldpt.betriebsnr == store_nr))).order_by(Hoteldpt.num).all():
+        # TODO: Too much nested loop. Need simplify method using join - Oscar
+        for hoteldpt.num in db_session.query(Hoteldpt.num).filter(((Hoteldpt.num == dstore) | (Hoteldpt.betriebsnr == store_nr))).order_by(Hoteldpt.num).all():
 
-            for artikel in db_session.query(Artikel).filter(
-                     (Artikel.artart == 0) & (Artikel.departement == hoteldpt.num) & ((Artikel.endkum == f_eknr) | (Artikel.endkum == b_eknr) | (Artikel.umsatzart == 3) | (Artikel.umsatzart == 5) | (Artikel.umsatzart == 6))).order_by(Artikel._recid).all():
+            for artikel.departement, artikel.artnr, artikel.endkum, artikel.umsatzart in db_session.query(Artikel.departement, Artikel.artnr, Artikel.endkum, Artikel.umsatzart).filter((Artikel.artart == 0) & (Artikel.departement == hoteldpt.num[0]) & ((Artikel.endkum == f_eknr) | (Artikel.endkum == b_eknr) | (Artikel.umsatzart == 3) | (Artikel.umsatzart == 5) | (Artikel.umsatzart == 6))).order_by(Artikel._recid).all():
 
-                for umsatz in db_session.query(Umsatz).filter(
-                         (Umsatz.datum >= date1) & (Umsatz.datum <= date2) & (Umsatz.departement == artikel.departement) & (Umsatz.artnr == artikel.artnr)).order_by(Umsatz._recid).all():
+                for umsatz.betrag, umsatz.datum in db_session.query(Umsatz.betrag, Umsatz.datum).filter((Umsatz.datum >= date1) & (Umsatz.datum <= date2) & (Umsatz.departement == artikel.departement) & (Umsatz.artnr == artikel.artnr)).order_by(Umsatz._recid).all():
+
                     h_service, h_mwst, vat2, fact = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, umsatz.datum))
                     h_mwst =  to_decimal(h_mwst) + to_decimal(vat2)
-
 
                     amount =  to_decimal(umsatz.betrag) / to_decimal(fact)
 
                     if artikel.endkum == f_eknr or artikel.umsatzart == 3 or artikel.umsatzart == 5:
-
                         if umsatz.datum == date2:
                             f_sales =  to_decimal(f_sales) + to_decimal(amount)
+
                         tf_sales =  to_decimal(tf_sales) + to_decimal(amount)
 
                     elif artikel.endkum == b_eknr or artikel.umsatzart == 6:
-
                         if umsatz.datum == date2:
                             b_sales =  to_decimal(b_sales) + to_decimal(amount)
+
                         tb_sales =  to_decimal(tb_sales) + to_decimal(amount)
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 246)]})
