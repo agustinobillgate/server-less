@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 21/8/2025
 # bill datum (fo_cashgjourn_cldbl)
+# kolom tgl, artikel kosong
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -35,6 +36,9 @@ def fo_cashgjourn_list_webbl(pvilanguage:int, case_type:int, curr_shift:int, sum
 
 
     from_date, double_currency, foreign_curr, bline_list_data, output_list_data = get_output(fo_cashgjourn_cldbl(pvilanguage, case_type, curr_shift, summary_flag, onlyjournal, excljournal, from_date, bline_list_data))
+    # for ou in output_list_data:
+    #     print(ou.str)
+    
     fo_cashjour_list_data.clear()
 
     for output_list in query(output_list_data):
@@ -47,10 +51,20 @@ def fo_cashgjourn_list_webbl(pvilanguage:int, case_type:int, curr_shift:int, sum
         fo_cashjour_list.artnr = to_int(substring(output_list.str, 23, 4))
         fo_cashjour_list.bezeich = substring(output_list.str, 27, 40)
         fo_cashjour_list.dept = substring(output_list.str, 67, 17)
-        fo_cashjour_list.l_amount = to_decimal(substring(output_list.str, 84, 17))
+        fo_cashjour_list.l_amount = to_decimal(substring(output_list.str, 83, 17))
         fo_cashjour_list.f_amount =  to_decimal(to_decimal(output_list.str_foreign) )
         fo_cashjour_list.gname = output_list.gname
-        fo_cashjour_list.zeit = substring(output_list.str, 101, 8)
-        fo_cashjour_list.id = substring(output_list.str, 109, 3)
+        fo_cashjour_list.zeit = substring(output_list.str, 100, 8)
+        if fo_cashjour_list.zeit.strip() == "0":
+            fo_cashjour_list.zeit = ""
+        fo_cashjour_list.id = substring(output_list.str, 108, 3)
 
     return generate_output()
+
+
+"""
+         1         2         3         4         5         6         7         8         9         0         1
+12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+24/09/24          524330020Company Ledger                          Front Office           -50,000.0015:55:3041
+       8      .         .
+"""
