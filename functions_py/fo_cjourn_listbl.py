@@ -141,6 +141,7 @@ def fo_cjourn_listbl(from_art:int, to_art:int, from_dept:int, to_dept:int, from_
 
                 if htl_list:
                     cjourn_list.dept = htl_list.depart
+
         cjourn_list = Cjourn_list()
         cjourn_list_data.append(cjourn_list)
 
