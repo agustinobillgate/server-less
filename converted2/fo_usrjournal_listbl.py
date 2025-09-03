@@ -1,8 +1,4 @@
 #using conversion tools version: 1.0.0.117
-#------------------------------------------
-# Rd, 27/8/2025
-# kolom kosong, output_list.str
-#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -35,7 +31,7 @@ def fo_usrjournal_listbl(incl_trans:bool, excl_trans:bool, trans_only:bool, from
     for output_list in query(output_list_data):
         fo_usrjourn_list = Fo_usrjourn_list()
         fo_usrjourn_list_data.append(fo_usrjourn_list)
-        print(output_list.str)
+
         fo_usrjourn_list.datum = date_mdy(substring(output_list.str, 0, 8))
         fo_usrjourn_list.zinr = substring(output_list.str, 8, 6)
         fo_usrjourn_list.rechnr = to_int(substring(output_list.str, 14, 9))
@@ -51,15 +47,3 @@ def fo_usrjournal_listbl(incl_trans:bool, excl_trans:bool, trans_only:bool, from
         fo_usrjourn_list.rec_id = to_int(substring(output_list.str, 131, 122))
 
     return generate_output()
-
-"""
-
-
-
-
-
-
-
-
-
-"""
