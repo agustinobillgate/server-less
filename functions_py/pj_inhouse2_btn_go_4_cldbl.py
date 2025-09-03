@@ -217,8 +217,9 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 cl_list.paym = reservation.segmentcode
                 cl_list.created = reservation.resdat
                 cl_list.createid = reservation.useridanlage
-                cl_list.etage = zimmer.etage
-                cl_list.zinr_bez = zimmer.bezeich
+                if zimmer:
+                    cl_list.etage = zimmer.etage
+                    cl_list.zinr_bez = zimmer.bezeich
                 cl_list.birthdate = gmember.geburtdatum1
                 cl_list.telefon = gmember.telefon
                 cl_list.mobil_tel = gmember.mobil_telefon
@@ -381,7 +382,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
                     queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, curr_date)],"date2": [(ge, curr_date)]})
 
-                    if zimmer.sleeping and res_line.resstatus != 13:
+                    if zimmer and zimmer.sleeping and res_line.resstatus != 13:
 
                         if not queasy:
                             tot_rm = tot_rm + res_line.zimmeranz
@@ -391,7 +392,7 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                             tot_rm = tot_rm + res_line.zimmeranz
                             tot_rmqty = tot_rmqty + res_line.zimmeranz
 
-                    if zimmer.sleeping and (res_line.zipreis > 0 or res_line.zipreis == 0) and res_line.resstatus != 13 and res_line.erwachs > 0:
+                    if zimmer and zimmer.sleeping and (res_line.zipreis > 0 or res_line.zipreis == 0) and res_line.resstatus != 13 and res_line.erwachs > 0:
 
                         if not queasy:
                             tot_payrm = tot_payrm + res_line.zimmeranz
@@ -612,8 +613,9 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 cl_list.paym = genstat.segmentcode
                 cl_list.created = reservation.resdat
                 cl_list.createid = reservation.useridanlage
-                cl_list.etage = zimmer.etage
-                cl_list.zinr_bez = zimmer.bezeich
+                if zimmer:
+                    cl_list.etage = zimmer.etage
+                    cl_list.zinr_bez = zimmer.bezeich
                 cl_list.birthdate = gmember.geburtdatum1
                 cl_list.telefon = gmember.telefon
                 cl_list.mobil_tel = gmember.mobil_telefon
@@ -1005,8 +1007,9 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 cl_list.paym = reservation.segmentcode
                 cl_list.created = reservation.resdat
                 cl_list.createid = reservation.useridanlage
-                cl_list.etage = zimmer.etage
-                cl_list.zinr_bez = zimmer.bezeich
+                if zimmer:
+                    cl_list.etage = zimmer.etage
+                    cl_list.zinr_bez = zimmer.bezeich
                 cl_list.birthdate = gmember.geburtdatum1
                 cl_list.telefon = gmember.telefon
                 cl_list.mobil_tel = gmember.mobil_telefon
@@ -1408,8 +1411,9 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 cl_list.paym = genstat.segmentcode
                 cl_list.created = reservation.resdat
                 cl_list.createid = reservation.useridanlage
-                cl_list.etage = zimmer.etage
-                cl_list.zinr_bez = zimmer.bezeich
+                if zimmer:
+                    cl_list.etage = zimmer.etage
+                    cl_list.zinr_bez = zimmer.bezeich
                 cl_list.birthdate = gmember.geburtdatum1
                 cl_list.telefon = gmember.telefon
                 cl_list.mobil_tel = gmember.mobil_telefon
@@ -1798,8 +1802,9 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 cl_list.paym = reservation.segmentcode
                 cl_list.created = reservation.resdat
                 cl_list.createid = reservation.useridanlage
-                cl_list.etage = zimmer.etage
-                cl_list.zinr_bez = zimmer.bezeich
+                if zimmer:
+                    cl_list.etage = zimmer.etage
+                    cl_list.zinr_bez = zimmer.bezeich
                 cl_list.birthdate = gmember.geburtdatum1
                 cl_list.telefon = gmember.telefon
                 cl_list.mobil_tel = gmember.mobil_telefon
@@ -2191,8 +2196,9 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 cl_list.paym = genstat.segmentcode
                 cl_list.created = reservation.resdat
                 cl_list.createid = reservation.useridanlage
-                cl_list.etage = zimmer.etage
-                cl_list.zinr_bez = zimmer.bezeich
+                if zimmer:
+                    cl_list.etage = zimmer.etage
+                    cl_list.zinr_bez = zimmer.bezeich
                 cl_list.birthdate = gmember.geburtdatum1
                 cl_list.telefon = gmember.telefon
                 cl_list.mobil_tel = gmember.mobil_telefon
@@ -2582,8 +2588,9 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 cl_list.paym = reservation.segmentcode
                 cl_list.created = reservation.resdat
                 cl_list.createid = reservation.useridanlage
-                cl_list.etage = zimmer.etage
-                cl_list.zinr_bez = zimmer.bezeich
+                if zimmer:
+                    cl_list.etage = zimmer.etage
+                    cl_list.zinr_bez = zimmer.bezeich
                 cl_list.birthdate = gmember.geburtdatum1
                 cl_list.telefon = gmember.telefon
                 cl_list.mobil_tel = gmember.mobil_telefon
@@ -2981,8 +2988,9 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 cl_list.paym = genstat.segmentcode
                 cl_list.created = reservation.resdat
                 cl_list.createid = reservation.useridanlage
-                cl_list.etage = zimmer.etage
-                cl_list.zinr_bez = zimmer.bezeich
+                if zimmer:
+                    cl_list.etage = zimmer.etage
+                    cl_list.zinr_bez = zimmer.bezeich
                 cl_list.birthdate = gmember.geburtdatum1
                 cl_list.telefon = gmember.telefon
                 cl_list.mobil_tel = gmember.mobil_telefon
