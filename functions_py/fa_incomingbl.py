@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd 3/9/2025, 
+# asumsi data blm sama, tidak lolos filter po_no, devnote_no
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -17,7 +20,10 @@ def fa_incomingbl(fromdate:date, todate:date, searchby:int, devnote_no:string, p
     q2_list_data, Q2_list = create_model("Q2_list", {"lscheinnr":string, "name":string, "location":string, "einzelpreis":Decimal, "anzahl":int, "warenwert":Decimal, "firma":string, "datum":date, "docu_nr":string, "lief_nr":int, "rec_id":int})
 
     db_session = local_storage.db_session
-
+    # Rd, 3/9/20225
+    po_no = po_no.strip()
+    devnote_no = devnote_no.strip()
+    
     def generate_output():
         nonlocal q2_list_data, l_lieferant, mathis, fa_op
         nonlocal fromdate, todate, searchby, devnote_no, po_no, supp_no

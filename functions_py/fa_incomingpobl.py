@@ -25,6 +25,11 @@ def fa_incomingpobl(fromdate:date, todate:date, searchby:int, devnote_no:string,
 
     db_session = local_storage.db_session
 
+    # Rd, 3/9/20225
+    po_no = po_no.strip()
+    devnote_no = devnote_no.strip()
+
+
     def generate_output():
         nonlocal op_list_data, fa_ordheader, l_lieferant, mathis, fa_op, bediener, fa_order
         nonlocal fromdate, todate, searchby, devnote_no, po_no, supp_no
