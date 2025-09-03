@@ -1,10 +1,11 @@
 #using conversion tools version: 1.0.0.118
+
 #------------------------------------------
 # Rd, 19/8/2025
 # asumsi data blm sama, tidak lolos filter po_no, devnote_no
+# Rd 3/9/2025, update .p, download, konversi
 #------------------------------------------
 
-from sqlalchemy import func
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -23,6 +24,11 @@ def fa_incomingpobl(fromdate:date, todate:date, searchby:int, devnote_no:string,
     fa_ordheaderlist_data, Fa_ordheaderlist = create_model_like(Fa_ordheader, {"create_name":string, "modify_name":string, "total_amount1":Decimal})
 
     db_session = local_storage.db_session
+
+    # Rd, 3/9/20225
+    po_no = po_no.strip()
+    devnote_no = devnote_no.strip()
+
 
     def generate_output():
         nonlocal op_list_data, fa_ordheader, l_lieferant, mathis, fa_op, bediener, fa_order
@@ -45,7 +51,9 @@ def fa_incomingpobl(fromdate:date, todate:date, searchby:int, devnote_no:string,
 
         temp_number:string = ""
         op_list_data.clear()
+
         if (devnote_no == "" and po_no == "" and supp_no == 0) or searchby == 0 or (searchby == 1 and devnote_no == "") or (searchby == 2 and po_no == "") or (searchby == 3 and supp_no == 0):
+
             fa_op_obj_list = {}
             for fa_op, l_lieferant, mathis in db_session.query(Fa_op, L_lieferant, Mathis).join(L_lieferant,(L_lieferant.lief_nr == Fa_op.lief_nr)).join(Mathis,(Mathis.nr == Fa_op.nr)).filter(
                      (Fa_op.loeschflag <= 1) & (Fa_op.warenwert > 0) & (Fa_op.datum >= fromdate) & (Fa_op.datum <= todate)).order_by(Fa_op.docu_nr, Fa_op.lscheinnr, Fa_op.zeit).all():
@@ -62,30 +70,10 @@ def fa_incomingpobl(fromdate:date, todate:date, searchby:int, devnote_no:string,
                 create_op_list()
 
         elif searchby == 1 and devnote_no != "":
+
             fa_op_obj_list = {}
-
-            # Rd 19/8/220255
-            # lower
-
-            # for fa_op, l_lieferant, mathis in db_session.query(Fa_op, L_lieferant, Mathis)  \
-            #         .join(L_lieferant,(L_lieferant.lief_nr == Fa_op.lief_nr)).join(Mathis,(Mathis.nr == Fa_op.nr))  \
-            #         .filter(
-            #          (Fa_op.loeschflag <= 1) & 
-            #          (Fa_op.warenwert > 0) & 
-            #          (Fa_op.datum >= fromdate) & 
-            #          (Fa_op.datum <= todate) & 
-            #          (Fa_op.lscheinnr == (devnote_no).lower())) \
-            #         .order_by(Fa_op.docu_nr, Fa_op.lscheinnr, Fa_op.zeit).all():
-            
-            for fa_op, l_lieferant, mathis in db_session.query(Fa_op, L_lieferant, Mathis)  \
-                    .join(L_lieferant,(L_lieferant.lief_nr == Fa_op.lief_nr)).join(Mathis,(Mathis.nr == Fa_op.nr))  \
-                    .filter(
-                     (Fa_op.loeschflag <= 1) & 
-                     (Fa_op.warenwert > 0) & 
-                     (Fa_op.datum >= fromdate) & 
-                     (Fa_op.datum <= todate) & 
-                     (Fa_op.lscheinnr == devnote_no)) \
-                    .order_by(Fa_op.docu_nr, Fa_op.lscheinnr, Fa_op.zeit).all():
+            for fa_op, l_lieferant, mathis in db_session.query(Fa_op, L_lieferant, Mathis).join(L_lieferant,(L_lieferant.lief_nr == Fa_op.lief_nr)).join(Mathis,(Mathis.nr == Fa_op.nr)).filter(
+                     (Fa_op.loeschflag <= 1) & (Fa_op.warenwert > 0) & (Fa_op.datum >= fromdate) & (Fa_op.datum <= todate) & (Fa_op.lscheinnr == (devnote_no).lower())).order_by(Fa_op.docu_nr, Fa_op.lscheinnr, Fa_op.zeit).all():
                 fa_ordheaderlist = query(fa_ordheaderlist_data, (lambda fa_ordheaderlist: fa_ordheaderlist.order_nr == fa_op.docu_nr), first=True)
                 if not fa_ordheaderlist:
                     continue
@@ -100,19 +88,11 @@ def fa_incomingpobl(fromdate:date, todate:date, searchby:int, devnote_no:string,
 
 
         elif searchby == 2 and po_no != "":
+
             fa_op_obj_list = {}
-            po_no = po_no.strip()
-            # for hh in fa_ordheaderlist_data:
-            #     print("HH:", hh.order_nr)
-            for fa_op, l_lieferant, mathis in db_session.query(Fa_op, L_lieferant, Mathis).join(L_lieferant,(L_lieferant.lief_nr == Fa_op.lief_nr)).join(Mathis,(Mathis.nr == Fa_op.nr))    \
-                .filter(
-                     (Fa_op.loeschflag <= 1) & (Fa_op.warenwert > 0) & 
-                     (Fa_op.datum >= fromdate) & (Fa_op.datum <= todate) & 
-                     (Fa_op.lscheinnr != "")).order_by(Fa_op.docu_nr, Fa_op.lscheinnr, Fa_op.zeit).all():
-                # print(fa_op.docu_nr)
-                # fa_ordheaderlist = query(fa_ordheaderlist_data, (lambda fa_ordheaderlist: fa_ordheaderlist.order_nr.lower()  == fa_op.docu_nr and fa_ordheaderlist.order_nr.lower()  == (po_no).lower()), first=True)
-                fa_ordheaderlist = query(fa_ordheaderlist_data, (lambda fa_ordheaderlist: fa_ordheaderlist.order_nr  == fa_op.docu_nr and fa_ordheaderlist.order_nr  == po_no), first=True)
-                
+            for fa_op, l_lieferant, mathis in db_session.query(Fa_op, L_lieferant, Mathis).join(L_lieferant,(L_lieferant.lief_nr == Fa_op.lief_nr)).join(Mathis,(Mathis.nr == Fa_op.nr)).filter(
+                     (Fa_op.loeschflag <= 1) & (Fa_op.warenwert > 0) & (Fa_op.datum >= fromdate) & (Fa_op.datum <= todate) & (Fa_op.lscheinnr != "")).order_by(Fa_op.docu_nr, Fa_op.lscheinnr, Fa_op.zeit).all():
+                fa_ordheaderlist = query(fa_ordheaderlist_data, (lambda fa_ordheaderlist: fa_ordheaderlist.order_nr.lower()  == fa_op.docu_nr and fa_ordheaderlist.order_nr.lower()  == (po_no).lower()), first=True)
                 if not fa_ordheaderlist:
                     continue
 
@@ -126,8 +106,8 @@ def fa_incomingpobl(fromdate:date, todate:date, searchby:int, devnote_no:string,
 
 
         elif searchby == 3 and supp_no != 0:
+
             fa_op_obj_list = {}
-            supp_no = supp_no.strip()
             for fa_op, l_lieferant, mathis in db_session.query(Fa_op, L_lieferant, Mathis).join(L_lieferant,(L_lieferant.lief_nr == Fa_op.lief_nr)).join(Mathis,(Mathis.nr == Fa_op.nr)).filter(
                      (Fa_op.loeschflag <= 1) & (Fa_op.warenwert > 0) & (Fa_op.datum >= fromdate) & (Fa_op.datum <= todate) & (Fa_op.lscheinnr != "")).order_by(Fa_op.docu_nr, Fa_op.lscheinnr, Fa_op.zeit).all():
                 fa_ordheaderlist = query(fa_ordheaderlist_data, (lambda fa_ordheaderlist: fa_ordheaderlist.order_nr == fa_op.docu_nr and fa_ordheaderlist.supplier_nr == supp_no), first=True)

@@ -1,4 +1,4 @@
-version = "1.0.0.118"
+version = "1.0.0.117"
 
 import os, re, importlib,csv, json, shutil
 from functions.additional_functions import *
@@ -2032,20 +2032,18 @@ def convert_run(line):
 
         function_name = function_name.split("(")[0].strip(" ")
 
+
+
     run_parameters = ""
     output_params = ""
 
     converted_func_name = convert_name(function_name.replace(".p","").replace(".i","")).lower().replace("__","_")
-    adjusted_converted_func_name  = converted_func_name
-
-    if adjusted_converted_func_name[0].isdigit():
-        adjusted_converted_func_name = "_" + adjusted_converted_func_name
 
     if re.match(r".*\.(p|i)",function_name, re.IGNORECASE) and not no_import_flag:
         if not converted_func_name in import_file_list:
-            import_file_list.append(adjusted_converted_func_name)
+            import_file_list.append(converted_func_name)
 
-        update_import("from functions." + converted_func_name + " import " + adjusted_converted_func_name)
+        update_import("from functions." + converted_func_name + " import " + converted_func_name)
 
         # if re.match(r".*\.i",function_name, re.IGNORECASE):
         #     update_import("from functions." + converted_func_name + " import *")
@@ -2061,13 +2059,12 @@ def convert_run(line):
             run_parameters = line.replace(function_name + " (","(").strip(" ").strip("(").strip(")")
         if run_parameters != "":
             output_params, run_parameters = convert_run_param(run_parameters)
-
     if no_import_flag:
-        run_str = adjusted_converted_func_name
+        run_str = converted_func_name
     elif run_value_flag:
-        run_str = adjusted_converted_func_name + ",(" + run_parameters + ")"
+        run_str = converted_func_name + ",(" + run_parameters + ")"
     else:
-        run_str = adjusted_converted_func_name + "(" + run_parameters + ")"
+        run_str = converted_func_name + "(" + run_parameters + ")"
 
     if run_value_flag:
         is_other_module = True
@@ -2077,7 +2074,6 @@ def convert_run(line):
         run_str = "get_output(" + run_str + ")"
 
     run_str =  output_params + run_str
-
 
     if is_combo:
         append_body("local_storage.combo_flag = True",True)
@@ -3375,8 +3371,6 @@ def convert_line(line):
         converted = True
 
     elif curr_clean_line == "ELSE" or curr_clean_line == "else":
-        if line_case[-1] == "PROCEDURE":
-            line_case.append("IF-IF")
         check_if_do_statement = True
         append_body("else:")
         append_body("\n")
@@ -4342,9 +4336,6 @@ def create_py_file(file_path, file_name):
             for i in range(1, num_vars_include_file + 1):
                 main_func_params.append("var" + str(i))
 
-    if py_file_name[0].isdigit():
-        py_file_name = "_" + py_file_name
-
     def_main_func = "def " + py_file_name + "(" + ", ".join(main_func_params) + "):"
 
     py_vars_str = ""
@@ -4808,6 +4799,7 @@ def convert_files(read_table_usage_info=False):
     create_table_field_list()
 
     # file_path = "/Users/christoferyie/Documents/Projects/VHP Serverless/convert" 
+    # file_path = "./"
 
     # file_path = file_path.rstrip("/") + "/"
 
@@ -4826,6 +4818,7 @@ def convert_files(read_table_usage_info=False):
     file_path = os.path.join(".", "")
     source_file_path = os.path.join(file_path, "check-p-files2/")
     target_file_path = os.path.join(file_path, "converted2/")
+
 
     temp_table_and_db_loop_list = []
 
@@ -4987,6 +4980,7 @@ break_list_path = os.getcwd() + "/break_list.txt"
 with open(break_list_path, 'w') as output_file_all:
     break_list_str = "\n".join(list(break_list.keys()))
     output_file_all.write(f"{break_list_str}")
+
 
 # file_path = "/mnt/d/docker/app_konversi/input/vhp-serverless/image/src/output/"
 # rmtypeBE
