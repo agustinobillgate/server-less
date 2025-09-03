@@ -47,7 +47,7 @@ def fo_usrjournal_listbl(incl_trans:bool, excl_trans:bool, trans_only:bool, from
         fo_usrjourn_list.gname = output_list.gname
         fo_usrjourn_list.zeit = substring(output_list.str, 109, 8)
         fo_usrjourn_list.id = substring(output_list.str, 117, 4)
-        fo_usrjourn_list.sysdate = date_mdy(substring(output_list.str, 121, 8))
+        fo_usrjourn_list.sysdate = substring(output_list.str, 121, 8)
         fo_usrjourn_list.rec_id = to_int(substring(output_list.str, 129, 122))
 
     return generate_output()
