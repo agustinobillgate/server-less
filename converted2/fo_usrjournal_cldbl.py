@@ -1,9 +1,4 @@
 #using conversion tools version: 1.0.0.117
-#------------------------------------------
-# Rd, 27/8/2025
-# kolom kosong, output_list.str
-# str -> output_list.str
-#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -41,6 +36,7 @@ def fo_usrjournal_cldbl(mi_incl:bool, mi_excl:bool, mi_tran:bool, from_date:date
 
         nonlocal output_list_data, def_rate, x_rate, waehrung, guest, billjournal, artikel, hoteldpt, bill, h_bill, bk_veran, reservation
         nonlocal mi_incl, mi_excl, mi_tran, from_date, to_date, from_dept, to_dept, from_art, to_art, usr_init, long_digit, foreign_flag
+
 
         nonlocal output_list
         nonlocal output_list_data
@@ -84,9 +80,9 @@ def fo_usrjournal_cldbl(mi_incl:bool, mi_excl:bool, mi_tran:bool, from_date:date
 
 
                     if not long_digit:
-                        output_list.str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
+                        str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
+                        str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
                     a_qty = 0
                     a_tot =  to_decimal("0")
 
@@ -99,14 +95,11 @@ def fo_usrjournal_cldbl(mi_incl:bool, mi_excl:bool, mi_tran:bool, from_date:date
                 output_list = Output_list()
                 output_list_data.append(output_list)
 
+
                 if not long_digit:
-                    tmp_date = billjournal.bill_datum
-                    tmp_date1 = tmp_date.strftime("%d/%m/%y")
-                    output_list.str = tmp_date1 + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(22)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(billjournal.userinit, "x(4)") + to_string(billjournal.sysdate) + to_string(billjournal._recid)
+                    str = to_string(billjournal.bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, "9,999,999") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(22)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(billjournal.userinit, "x(4)") + to_string(billjournal.sysdate) + to_string(billjournal._recid)
                 else:
-                    tmp_date = billjournal.bill_datum
-                    tmp_date1 = tmp_date.strftime("%d/%m/%y")
-                    output_list.str = tmp_date1 + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(22)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, " ->>>,>>>,>>>,>>9") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(billjournal.userinit, "x(4)") + to_string(billjournal.sysdate) + to_string(billjournal._recid)
+                    str = to_string(billjournal.bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, "9,999,999") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(22)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, " ->>>,>>>,>>>,>>9") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(billjournal.userinit, "x(4)") + to_string(billjournal.sysdate) + to_string(billjournal._recid)
 
                 if not matches(billjournal.bezeich, ("*<*")) and not matches(billjournal.bezeich, ("*>*")):
 
@@ -192,9 +185,9 @@ def fo_usrjournal_cldbl(mi_incl:bool, mi_excl:bool, mi_tran:bool, from_date:date
 
 
         if not long_digit:
-            output_list.str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
+            str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
         else:
-            output_list.str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
+            str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
 
 
     def journal_list2():
@@ -245,9 +238,9 @@ def fo_usrjournal_cldbl(mi_incl:bool, mi_excl:bool, mi_tran:bool, from_date:date
 
 
                     if not long_digit:
-                        output_list.str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
+                        str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
+                        str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
                     a_qty = 0
                     a_tot =  to_decimal("0")
 
@@ -262,13 +255,9 @@ def fo_usrjournal_cldbl(mi_incl:bool, mi_excl:bool, mi_tran:bool, from_date:date
 
 
                 if not long_digit:
-                    tmp_date = billjournal.bill_datum
-                    tmp_date1 = tmp_date.strftime("%d/%m/%y")
-                    output_list.str = tmp_date1 + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(22)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(billjournal.userinit, "x(4)") + to_string(billjournal.sysdate) + to_string(billjournal._recid)
+                    str = to_string(billjournal.bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, "9,999,999") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(22)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(billjournal.userinit, "x(4)") + to_string(billjournal.sysdate) + to_string(billjournal._recid)
                 else:
-                    tmp_date = billjournal.bill_datum
-                    tmp_date1 = tmp_date.strftime("%d/%m/%y")
-                    output_list.str = tmp_date1 + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(22)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, " ->>>,>>>,>>>,>>9") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(billjournal.userinit, "x(4)") + to_string(billjournal.sysdate) + to_string(billjournal._recid)
+                    str = to_string(billjournal.bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, "9,999,999") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(22)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, " ->>>,>>>,>>>,>>9") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(billjournal.userinit, "x(4)") + to_string(billjournal.sysdate) + to_string(billjournal._recid)
 
                 if not matches(billjournal.bezeich, ("*<*")) and not matches(billjournal.bezeich, ("*>*")):
 
@@ -354,9 +343,9 @@ def fo_usrjournal_cldbl(mi_incl:bool, mi_excl:bool, mi_tran:bool, from_date:date
 
 
         if not long_digit:
-            output_list.str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
+            str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
         else:
-            output_list.str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
+            str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
 
 
     def journal_list3():
@@ -407,9 +396,9 @@ def fo_usrjournal_cldbl(mi_incl:bool, mi_excl:bool, mi_tran:bool, from_date:date
 
 
                     if not long_digit:
-                        output_list.str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
+                        str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
                     else:
-                        output_list.str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
+                        str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
                     a_qty = 0
                     a_tot =  to_decimal("0")
 
@@ -424,13 +413,9 @@ def fo_usrjournal_cldbl(mi_incl:bool, mi_excl:bool, mi_tran:bool, from_date:date
 
 
                 if not long_digit:
-                    tmp_date = billjournal.bill_datum
-                    tmp_date1 = tmp_date.strftime("%d/%m/%y")
-                    output_list.str = tmp_date1 + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(22)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(billjournal.userinit, "x(4)") + to_string(billjournal.sysdate) + to_string(billjournal._recid)
+                    str = to_string(billjournal.bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, "9,999,999") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(22)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(billjournal.userinit, "x(4)") + to_string(billjournal.sysdate) + to_string(billjournal._recid)
                 else:
-                    tmp_date = billjournal.bill_datum
-                    tmp_date1 = tmp_date.strftime("%d/%m/%y")
-                    output_list.str = tmp_date1 + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, ">>>>>>>>9") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(22)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, " ->>>,>>>,>>>,>>9") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(billjournal.userinit, "x(4)") + to_string(billjournal.sysdate) + to_string(billjournal._recid)
+                    str = to_string(billjournal.bill_datum) + to_string(billjournal.zinr, "x(6)") + to_string(billjournal.rechnr, "9,999,999") + to_string(billjournal.artnr, "9999") + to_string(billjournal.bezeich, "x(40)") + to_string(hoteldpt.depart, "x(22)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, " ->>>,>>>,>>>,>>9") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(billjournal.userinit, "x(4)") + to_string(billjournal.sysdate) + to_string(billjournal._recid)
 
                 if not matches(billjournal.bezeich, ("*<*")) and not matches(billjournal.bezeich, ("*>*")):
 
@@ -516,15 +501,16 @@ def fo_usrjournal_cldbl(mi_incl:bool, mi_excl:bool, mi_tran:bool, from_date:date
 
 
         if not long_digit:
-            output_list.str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
+            str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
         else:
-            output_list.str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
+            str = to_string("", "x(67)") + to_string("T O T A L ", "x(22)") + to_string(a_qty, "-9999") + to_string(a_tot, "->,>>>,>>>,>>9.99")
 
 
     if foreign_flag:
         def_rate = get_output(htpchar(144))
 
         if def_rate == "":
+
             return generate_output()
 
         waehrung = get_cache (Waehrung, {"wabkurz": [(eq, def_rate)]})
@@ -533,20 +519,19 @@ def fo_usrjournal_cldbl(mi_incl:bool, mi_excl:bool, mi_tran:bool, from_date:date
             x_rate =  to_decimal(waehrung.ankauf)
 
             if x_rate <= 0:
+
                 return generate_output()
         else:
+
             return generate_output()
 
     if mi_incl :
-        print("journal_list1")
         journal_list1()
 
     elif mi_excl :
-        print("journal_list2")
         journal_list2()
 
     elif mi_tran :
-        print("journal_list3")
         journal_list3()
 
     return generate_output()
