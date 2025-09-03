@@ -43,16 +43,24 @@ def fo_usrjournal_listbl(incl_trans:bool, excl_trans:bool, trans_only:bool, from
         fo_usrjourn_list.bezeich = substring(output_list.str, 27, 40)
         fo_usrjourn_list.dept = substring(output_list.str, 67, 22)
         fo_usrjourn_list.qty = to_int(substring(output_list.str, 89, 5))
-        fo_usrjourn_list.amount = to_decimal(substring(output_list.str, 94, 17))
+        fo_usrjourn_list.amount = to_decimal(substring(output_list.str, 93, 17))
         fo_usrjourn_list.gname = output_list.gname
-        fo_usrjourn_list.zeit = substring(output_list.str, 111, 8)
-        fo_usrjourn_list.id = substring(output_list.str, 119, 4)
-        fo_usrjourn_list.sysdate = date_mdy(substring(output_list.str, 123, 8))
-        fo_usrjourn_list.rec_id = to_int(substring(output_list.str, 131, 122))
+        fo_usrjourn_list.zeit = substring(output_list.str, 109, 8)
+        fo_usrjourn_list.id = substring(output_list.str, 117, 4)
+        fo_usrjourn_list.sysdate = date_mdy(substring(output_list.str, 121, 8))
+        fo_usrjourn_list.rec_id = to_int(substring(output_list.str, 129, 122))
 
     return generate_output()
 
 """
+24/09/24              00001Visa[Deposit #96252]1234                Front Office          0001   -1,000,000.0008:26:0441  07/05/25680218
+24/09/24           23880001Release A/R Payment 135000;-132300;3000 Front Office          0001            0.0010:41:0141  07/03/25680211
+24/09/24           23880001Release A/R Payment 135000;-1350;3005   Front Office          0001            0.0010:41:0441  07/03/25680212
+                                                                   T O T A L             0003   -1,000,000.00
+24/09/24          524340011Traveloka Eat                           Front Office          0001     -300,000.0013:55:4641  07/03/25680214
+                                                                   T O T A L             0001     -300,000.00
+24/09/24          524330020Company Ledger                          Front Office          0001      -50,000.0015:55:3041  07/04/25680217
+                                                                   T O T A L             0001      -50,000.00
 
 
 
