@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 4/9/2025
+# beda sorting dengan OE
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal

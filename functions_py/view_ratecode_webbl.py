@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 4/9/2025
+# dari Guest Master Data
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -24,6 +27,9 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
     select_list_data, Select_list = create_model("Select_list", {"argtnr":int, "zikatnr":int})
 
     db_session = local_storage.db_session
+
+    # Rd 4/9/2025
+    market_combo = market_combo.strip()
 
     def generate_output():
         nonlocal comments, t_viewrates_data, t_viewrates_line_data, ci_date, current_counter, lvcarea, queasy, htparam, prmarket, prtable, arrangement, zimkateg, waehrung, ratecode, reslin_queasy, artikel, argt_line, guest, guest_pr
