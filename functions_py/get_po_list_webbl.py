@@ -33,6 +33,11 @@ def get_po_list_webbl(usrname:string, po_number:string, last_doc_nr:string, app_
 
     db_session = local_storage.db_session
 
+    # Rd 4/9/2025
+    po_number = po_number.strip()
+    usrname = usrname.strip()
+    last_doc_nr = last_doc_nr.strip()
+
     def generate_output():
         nonlocal p_267, first_docu_nr, curr_docu_nr, last_docu_nr, q2_list_data, param267, loeschflag, l_order, gl_acct, l_artikel
         nonlocal usrname, po_number, last_doc_nr, app_sort, dml_only, t_liefno, deptnr, all_supp, stattype, sorttype, from_date, to_date, billdate, pr_only, excl_dml_pr
