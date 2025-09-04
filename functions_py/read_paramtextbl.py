@@ -16,6 +16,7 @@ def read_paramtextbl(case_type:int, p_txtno:int):
 
     t_paramtext_data, T_paramtext = create_model_like(Paramtext)
 
+
     db_session = local_storage.db_session
 
     def generate_output():
@@ -54,12 +55,13 @@ def read_paramtextbl(case_type:int, p_txtno:int):
 
         if from_number == 9201:
             to_number = 9299
-
+        print("F/T:", from_number, to_number)
         for paramtext in db_session.query(Paramtext).filter(
                  (Paramtext.txtnr >= from_number) & (Paramtext.txtnr <= to_number)).order_by(Paramtext.txtnr).all():
             do_it = True
 
             if from_number == 9201:
+                tmp_notes = paramtext.notes
                 do_it = (paramtext.notes != "")
 
             if do_it:
