@@ -158,15 +158,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.argt = res_line.arrangement
                     cl_list.flight = substring(res_line.flight_nr, 11, 6)
                     cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                    print("F:", res_line.flight_nr)
                     cl_list.email_adr = gmember.email_adr
                     cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                     cl_list.zipreis =  to_decimal(res_line.zipreis)
                     
                     cl_list.ci_time = to_string(seconds_into_time(res_line.ankzeit, "%H:%M"))
                     cl_list.co_time = to_string(seconds_into_time(res_line.abreisezeit, "%H:%M"))
-                    print("CiTime:", cl_list.co_time, res_line.resnr, res_line.abreisezeit, seconds_into_time(res_line.abreisezeit, "%H:%M"))
-
+                    
 
                     cl_list.birthd = gmember.geburtdatum1
                     cl_list.ktpid = gmember.ausweis_nr1
