@@ -197,9 +197,10 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     elif gmember.telefon == "" and gmember.mobil_telefon != "":
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
-                    if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
-                        cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
-                        cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                    if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
+                        # cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
+                        # cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                        cl_list.etd = to_string(seconds_into_time(res_line.abreisezeit, "%H%M"))
 
                     if cl_list.nat == "":
                         cl_list.nat = "?"
@@ -361,8 +362,12 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                             guest.anredefirma + " " + guest.anrede1)
                     cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                     cl_list.zipreis =  to_decimal(res_line.zipreis)
-                    cl_list.ci_time = to_string(res_line.ankzeit, "HH:MM")
-                    cl_list.co_time = to_string(res_line.abreisezeit, "HH:MM")
+                    # cl_list.ci_time = to_string(res_line.ankzeit, "HH:MM")
+                    # cl_list.co_time = to_string(res_line.abreisezeit, "HH:MM")
+                    cl_list.ci_time = to_string(res_line.ankzeit)
+                    print(res_line.ankzeit)
+                    cl_list.co_time = to_string(res_line.abreisezeit)
+ 
                     cl_list.birthd = gmember.geburtdatum1
                     cl_list.ktpid = gmember.ausweis_nr1
 
@@ -391,9 +396,11 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     elif gmember.telefon == "" and gmember.mobil_telefon != "":
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
-                    if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
-                        cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
-                        cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                    if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
+                        # cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
+                        # cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                        cl_list.etd = to_string(seconds_into_time(res_line.abreisezeit, "%H%M"))
+
 
                     if cl_list.nat == "":
                         cl_list.nat = "?"
@@ -577,9 +584,11 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     elif gmember.telefon == "" and gmember.mobil_telefon != "":
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
-                    if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
-                        cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
-                        cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                    if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
+                        # cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
+                        # cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                        cl_list.etd = to_string(seconds_into_time(res_line.abreisezeit, "%H%M"))
+
 
                     if cl_list.nat == "":
                         cl_list.nat = "?"
@@ -762,9 +771,11 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     elif gmember.telefon == "" and gmember.mobil_telefon != "":
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
-                    if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
-                        cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
-                        cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                    if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
+                        # cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
+                        # cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                        cl_list.etd = to_string(seconds_into_time(res_line.abreisezeit, "%H%M"))
+
 
                     if cl_list.nat == "":
                         cl_list.nat = "?"
@@ -947,9 +958,11 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     elif gmember.telefon == "" and gmember.mobil_telefon != "":
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
-                    if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
-                        cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
-                        cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                    if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
+                        # cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
+                        # cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                        cl_list.etd = to_string(seconds_into_time(res_line.abreisezeit, "%H%M"))
+
 
                     if cl_list.nat == "":
                         cl_list.nat = "?"
