@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 4/9/2025
+# format tanggal yyyy-mm-dd -> dd/mm/yy
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -40,6 +44,9 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
     cl_list_data, Cl_list = create_model("Cl_list", {"flag":int, "nr":int, "vip":string, "resnr":int, "name":string, "groupname":string, "rmno":string, "qty":int, "arrive":string, "depart":string, "rmcat":string, "kurzbez":string, "bezeich":string, "a":int, "c":int, "co":int, "pax":string, "nat":string, "nation":string, "argt":string, "company":string, "flight":string, "etd":string, "outstand":Decimal, "bemerk":string, "bemerk01":string, "bemerk02":string, "bemerk03":string, "bemerk04":string, "bemerk05":string, "bemerk06":string, "bemerk07":string, "bemerk08":string, "email":string, "email_adr":string, "tot_night":int, "ratecode":string, "full_name":string, "address":string, "memberno":string, "membertype":string, "zipreis":Decimal, "ci_time":string, "co_time":string, "local_reg":string, "spreq":string, "birthd":date, "ktpid":string})
 
     db_session = local_storage.db_session
+
+    # Rd, 4/9/2025
+    froom = froom.strip()
 
     def generate_output():
         nonlocal tot_rm, tot_a, tot_c, tot_co, str_list_data, s_list_data, cl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, lvcarea, all_remark, curr_zinr, htparam, guest, reservation, res_line, history, guestseg, segment, reslin_queasy, nation, bill, mc_guest, mc_types
@@ -140,8 +147,11 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -319,8 +329,11 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+                    
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -501,8 +514,11 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -680,8 +696,12 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -859,8 +879,11 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -1116,8 +1139,12 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -1285,8 +1312,12 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -1454,8 +1485,12 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -1623,8 +1658,12 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -1792,8 +1831,12 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -2039,8 +2082,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -2215,8 +2263,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -2391,8 +2444,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -2567,8 +2625,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -2743,8 +2806,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    cl_list.arrive = to_string(res_line.ankunft)
+                    cl_list.depart = to_string(res_line.abreise)
+                    
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -2972,8 +3040,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                 cl_list.vip = vip_flag
                 cl_list.name = res_line.name
                 cl_list.rmno = res_line.zinr
-                cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                
+                # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                cl_list.arrive = to_string(res_line.ankunft)
+                cl_list.depart = to_string(res_line.abreise)
+            
                 cl_list.a = res_line.erwachs
                 cl_list.c = res_line.kind1 + res_line.kind2
                 cl_list.co = res_line.gratis
@@ -3124,8 +3197,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                 cl_list.vip = vip_flag
                 cl_list.name = res_line.name
                 cl_list.rmno = res_line.zinr
-                cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                
+                # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                cl_list.arrive = to_string(res_line.ankunft)
+                cl_list.depart = to_string(res_line.abreise)
+            
                 cl_list.a = res_line.erwachs
                 cl_list.c = res_line.kind1 + res_line.kind2
                 cl_list.co = res_line.gratis
@@ -3276,8 +3354,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                 cl_list.vip = vip_flag
                 cl_list.name = res_line.name
                 cl_list.rmno = res_line.zinr
-                cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                                
+                # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                cl_list.arrive = to_string(res_line.ankunft)
+                cl_list.depart = to_string(res_line.abreise)
+            
                 cl_list.a = res_line.erwachs
                 cl_list.c = res_line.kind1 + res_line.kind2
                 cl_list.co = res_line.gratis
@@ -3428,8 +3511,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                 cl_list.vip = vip_flag
                 cl_list.name = res_line.name
                 cl_list.rmno = res_line.zinr
-                cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                                
+                # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                cl_list.arrive = to_string(res_line.ankunft)
+                cl_list.depart = to_string(res_line.abreise)
+            
                 cl_list.a = res_line.erwachs
                 cl_list.c = res_line.kind1 + res_line.kind2
                 cl_list.co = res_line.gratis
@@ -3580,8 +3668,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                 cl_list.vip = vip_flag
                 cl_list.name = res_line.name
                 cl_list.rmno = res_line.zinr
-                cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                                
+                # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                cl_list.arrive = to_string(res_line.ankunft)
+                cl_list.depart = to_string(res_line.abreise)
+            
                 cl_list.a = res_line.erwachs
                 cl_list.c = res_line.kind1 + res_line.kind2
                 cl_list.co = res_line.gratis
