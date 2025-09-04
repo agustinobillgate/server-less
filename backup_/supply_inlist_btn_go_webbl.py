@@ -11,7 +11,6 @@ from models import L_lieferant, L_kredit, L_artikel, L_op, L_ophdr, Queasy, L_un
 
 taxcode_list_data, Taxcode_list = create_model("Taxcode_list", {"taxcode":string, "taxamount":Decimal})
 
-
 #---- Quick& Dirty-----
 # perlu update di additional_functions later
 def to_decimal(input_value):
@@ -23,7 +22,6 @@ def to_decimal(input_value):
     except:
         return Decimal("0")
     
-
 def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:int, l_kredit_recid:int, ap_recid:int, long_digit:bool, show_price:bool, store:int, all_supp:bool, sorttype:int, from_grp:int, to_grp:int, from_date:date, to_date:date, taxcode_list_data:[Taxcode_list]):
 
     prepare_cache ([L_lieferant, L_kredit, L_artikel, L_op, L_ophdr, Queasy, L_untergrup, Htparam, L_ophis, L_ophhis, Gl_acct])
@@ -46,7 +44,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
 
     str_list = taxcode_list = buff_l_kredit = None
 
-    str_list_data, Str_list = create_model("Str_list", {"h_recid":int, "l_recid":int, "lief_nr":int, "billdate":date, "artnr":int, "lager_nr":int, "docu_nr":string, "lscheinnr":string, "invoice_nr":string, "qty":Decimal, "epreis":Decimal, "warenwert":Decimal, "date":date, "st":int, "supplier":string, "article":int, "description":string, "d_unit":string, "price":Decimal, "inc_qty":Decimal, "amount":Decimal, "docu_no":string, "deliv_note":string, "id":string, "fibu":string, "gstid":string, "tax_code":string, "tax_amount":Decimal, "tot_amt":Decimal, "desc1":string, "fibu_bez":string, "pos":int, "addvat_value":Decimal, "amountexcl":Decimal, "serial_number":string, "invoice_date":date, "remark_artikel":string, "ap_voucher":int, "disc_amount":Decimal, "addvat_amount":Decimal, "disc_amount2":Decimal, "vat_amount":Decimal, "direct_flag":bool}, {"lscheinnr": ""})
+    str_list_data, Str_list = create_model("Str_list", {"h_recid":int, "l_recid":int, "lief_nr":int, "billdate":date, "artnr":int, "lager_nr":int, "docu_nr":string, "lscheinnr":string, "invoice_nr":string, "qty":Decimal, "epreis":Decimal, "warenwert":Decimal, "date":date, "st":int, "supplier":string, "article":int, "description":string, "d_unit":string, "price":Decimal, "inc_qty":Decimal, "amount":Decimal, "docu_no":string, "deliv_note":string, "id":string, "fibu":string, "gstid":string, "tax_code":string, "tax_amount":Decimal, "tot_amt":Decimal, "desc1":string, "fibu_bez":string, "pos":int, "addvat_value":Decimal, "amountexcl":Decimal, "serial_number":string, "invoice_date":date, "remark_artikel":string, "ap_voucher":int, "disc_amount":Decimal, "addvat_amount":Decimal, "disc_amount2":Decimal, "vat_amount":Decimal}, {"lscheinnr": ""})
 
     Buff_l_kredit = create_buffer("Buff_l_kredit",L_kredit)
 
@@ -93,12 +91,41 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             l_op = L_op()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
-                     (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.anzahl != 0)).order_by(L_lieferant.firma, L_op.datum, L_artikel.bezeich).all():
-                if l_op_obj_list.get(l_op._recid):
+
+            # Rd 25/7/2025
+            # for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
+            #          (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.anzahl != 0)).order_by(L_lieferant.firma, L_op.datum, L_artikel.bezeich).all():
+
+            for (
+                    lscheinnr, datum, anzahl, artnr_lop, warenwert, einzelpreis, docu_nr, lager_nr, recid_lop,
+                    lief_nr, pos, stornogrund, fuellflag,
+                    artnr_artikel, bezeich, traubensorte, lief_artnr, recid_artikel,
+                    lief_nr_lieferant, firma, plz, recid_lieferant
+                ) in db_session.query(
+                    L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis,
+                    L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag,
+                    L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid,
+                    L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid
+                ).join(
+                    L_artikel, (L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)
+                ).join(
+                    L_lieferant, L_lieferant.lief_nr == L_op.lief_nr
+                ).filter(
+                    (L_op.datum >= from_date) &
+                    (L_op.datum <= to_date) &
+                    (L_op.lief_nr > 0) &
+                    (L_op.loeschflag <= 1) &
+                    (L_op.op_art == 1) &
+                    (L_op.anzahl != 0)
+                ).order_by(
+                    L_lieferant.firma,
+                    L_op.datum,
+                    L_artikel.bezeich
+                ).all():
+                if l_op_obj_list.get(recid_lop):
                     continue
                 else:
-                    l_op_obj_list[l_op._recid] = True
+                    l_op_obj_list[recid_lop] = True
 
 
                 t_anz, t_amt, t_amountexcl, t_tax, t_inv, lief_nr = assign_create_list11(t_anz, t_amt, t_amountexcl, t_tax, t_inv, lief_nr)
@@ -250,7 +277,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & 
+                     (Queasy.number2 == l_op.artnr) & 
+                     # Rd 26/8/2025
+                     # (to_decimal(Queasy.char2) == l_op.einzelpreis) & 
+                     (to_int(Queasy.char2) == l_op.einzelpreis) & 
+                     (Queasy.number1 == to_int(l_op._recid))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -316,7 +348,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & 
+                     (Queasy.number2 == l_op.artnr) & 
+                     # Rd 26/8/2025
+                     # (to_decimal(Queasy.char2) == l_op.einzelpreis) & 
+                     (to_int(Queasy.char2) == l_op.einzelpreis) & 
+                     (Queasy.number1 == to_int(l_op._recid))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -357,10 +394,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(str_list.tax_amount) )
 
             if l_op.docu_nr == l_op.lscheinnr:
-                str_list.direct_flag = True
                 str_list.docu_no = translateExtended ("Direct Purchase ", lvcarea, "")
-
-
             else:
                 str_list.docu_no = l_op.docu_nr
             str_list.deliv_note = l_op.lscheinnr
@@ -556,7 +590,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (
+                         Queasy.number2 == l_op.artnr) & 
+                        # Rd 26/8/2025
+                        # (to_decimal(Queasy.char2) == l_op.einzelpreis) & 
+                         (to_int(Queasy.char2) == l_op.einzelpreis) & 
+                         (Queasy.number1 == to_int(l_op._recid))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -622,7 +661,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & 
+                     (Queasy.number2 == l_op.artnr) & 
+                    # Rd 26/8/2025
+                    # (to_decimal(Queasy.char2) == l_op.einzelpreis) & 
+                     (to_int(Queasy.char2) == l_op.einzelpreis) & 
+                     (Queasy.number1 == to_int(l_op._recid))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -663,10 +707,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(str_list.tax_amount) )
 
             if l_op.docu_nr == l_op.lscheinnr:
-                str_list.direct_flag = True
                 str_list.docu_no = translateExtended ("Direct Purchase ", lvcarea, "")
-
-
             else:
                 str_list.docu_no = l_op.docu_nr
             str_list.deliv_note = l_op.lscheinnr
@@ -867,7 +908,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & 
+                     
+                    # Rd 26/8/2025
+                    #  (to_decimal(Queasy.char2) == l_op.einzelpreis) & 
+                     (to_int(Queasy.char2) == l_op.einzelpreis) & 
+                     (Queasy.number1 == to_int(l_op._recid))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -933,7 +979,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & 
+                     (Queasy.number2 == l_op.artnr) & 
+                    # Rd 26/8/2025
+                    # (to_decimal(Queasy.char2) == l_op.einzelpreis) & 
+                     (to_int(Queasy.char2) == l_op.einzelpreis) & 
+                     (Queasy.number1 == to_int(l_op._recid))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -974,10 +1025,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(str_list.tax_amount) )
 
             if l_op.docu_nr == l_op.lscheinnr:
-                str_list.direct_flag = True
                 str_list.docu_no = translateExtended ("Direct Purchase ", lvcarea, "")
-
-
             else:
                 str_list.docu_no = l_op.docu_nr
             str_list.deliv_note = l_op.lscheinnr
@@ -1097,7 +1145,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & 
+                     (Queasy.number2 == l_op.artnr) & 
+                     # Rd 26/8/2025
+                     # (to_decimal(Queasy.char2) == l_op.einzelpreis) & 
+                     (to_int(Queasy.char2) == l_op.einzelpreis) & 
+                     (Queasy.number1 == to_int(l_op._recid))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -1105,10 +1158,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
 
             if l_ophis.docu_nr == l_ophis.lscheinnr:
-                str_list.direct_flag = True
                 str_list.docu_no = "Direct Purchase"
-
-
             else:
                 str_list.docu_no = l_ophis.docu_nr
             str_list.deliv_note = l_ophis.lscheinnr
@@ -1293,7 +1343,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & 
+                     (Queasy.number2 == l_op.artnr) & 
+                     # Rd 26/8/2025
+                     # (to_decimal(Queasy.char2) == l_op.einzelpreis) & 
+                     (to_int(Queasy.char2) == l_op.einzelpreis) & 
+                     (Queasy.number1 == to_int(l_op._recid))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -1359,7 +1414,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & 
+                     (Queasy.number2 == l_op.artnr) & 
+                     # Rd 26/8/2025
+                     # (to_decimal(Queasy.char2) == l_op.einzelpreis) & 
+                     (to_int(Queasy.char2) == l_op.einzelpreis) & 
+                     (Queasy.number1 == to_int(l_op._recid))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -1399,9 +1459,6 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_tax =  to_decimal(tot_tax) + to_decimal((l_op.warenwert) * to_decimal(taxcode_list.taxamount) )
                 str_list.tot_amt =  to_decimal(l_op.warenwert) + to_decimal(str_list.tax_amount)
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(str_list.tax_amount) )
-
-            if l_op.docu_nr == l_op.lscheinnr:
-                str_list.direct_flag = True
 
         return generate_inner_output()
 
@@ -1592,7 +1649,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & 
+                     (Queasy.number2 == l_op.artnr) & 
+                     # Rd 26/8/2025
+                     # (to_decimal(Queasy.char2) == l_op.einzelpreis) & 
+                     (to_int(Queasy.char2) == l_op.einzelpreis) & 
+                     (Queasy.number1 == to_int(l_op._recid))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -1657,7 +1719,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & 
+                     (Queasy.number2 == l_op.artnr) & 
+                     # Rd 26/8/2025
+                     # (to_decimal(Queasy.char2) == l_op.einzelpreis) & 
+                     (to_int(Queasy.char2) == l_op.einzelpreis) & 
+                     (Queasy.number1 == to_int(l_op._recid))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -1698,10 +1765,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(str_list.tax_amount) )
 
             if l_op.docu_nr == l_op.lscheinnr:
-                str_list.direct_flag = True
                 str_list.docu_no = translateExtended ("Direct Purchase ", lvcarea, "")
-
-
             else:
                 str_list.docu_no = l_op.docu_nr
             str_list.deliv_note = l_op.lscheinnr
@@ -1899,7 +1963,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & 
+                     (Queasy.number2 == l_op.artnr) & 
+                     # Rd 26/8/2025
+                     # (to_decimal(Queasy.char2) == l_op.einzelpreis) & 
+                     (to_int(Queasy.char2) == l_op.einzelpreis) & 
+                     (Queasy.number1 == to_int(l_op._recid))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -1964,7 +2033,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & 
+                     (Queasy.number2 == l_op.artnr) & 
+                     # Rd 26/8/2025
+                     # (to_decimal(Queasy.char2) == l_op.einzelpreis) & 
+                     (to_int(Queasy.char2) == l_op.einzelpreis) & 
+                     (Queasy.number1 == to_int(l_op._recid))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -2005,10 +2079,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(str_list.tax_amount) )
 
             if l_op.docu_nr == l_op.lscheinnr:
-                str_list.direct_flag = True
                 str_list.docu_no = translateExtended ("Direct Purchase ", lvcarea, "")
-
-
             else:
                 str_list.docu_no = l_op.docu_nr
             str_list.deliv_note = l_op.lscheinnr
@@ -2112,3 +2183,16 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.price =  to_decimal(str_list.price) - to_decimal(str_list.vat_amount)
 
     return generate_output()
+
+"""
+"error": "Traceback (most recent call last):\n  File \"/usr1/serverless/src/main.py\", line 1722, in handle_dynamic_data\n    
+output_data =  obj(**input_data)\n  File \"/usr1/serverless/src/functions/supply_inlist_btn_go_webbl.py\", line 2126, 
+in supply_inlist_btn_go_webbl\n    create_list11a()\n    ~~~~~~~~~~~~~~^^\n  File \"/usr1/serverless/src/functions/supply_inlist_btn_go_webbl.py\", line 429, 
+in create_list11a\n    t_anz, t_amt, t_tax, t_inv, lscheinnr, t_amountexcl = assign_create_list11a(t_anz, t_amt, t_tax, t_inv, lscheinnr, t_amountexcl)\n   
+                                                       ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  
+                                                       File \"/usr1/serverless/src/functions/supply_inlist_btn_go_webbl.py\", line 650, 
+                                                       in assign_create_list11a\n   
+                                                         (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & 
+                                                         (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()\n                                                                                               ~~~~~~~~~~^^^^^^^^^^^^^^\n  File \"/usr1/serverless/src/functions/additional_functions.py\", line 1092, in to_decimal\n    if input_value == None or input_value == \"?\":\n       ^^^^^^^^^^^^^^^^^^^\n  File \"/usr1/serverless/src/venv/lib/python3.13/site-packages/sqlalchemy/sql/elements.py\", line 3960, in __bool__\n    raise TypeError(\"Boolean value of this clause is not defined\")\nTypeError: Boolean value of this clause is not defined\n",
+       
+       """

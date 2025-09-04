@@ -1,0 +1,116 @@
+{
+    "L_lieferant": {
+        "read": [
+            "lief_nr",
+            "firma",
+            "plz",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_kredit": {
+        "read": [
+            "name",
+            "lscheinnr",
+            "rechnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_artikel": {
+        "read": [
+            "artnr",
+            "bezeich",
+            "traubensorte",
+            "lief_artnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_op": {
+        "read": [
+            "lscheinnr",
+            "datum",
+            "anzahl",
+            "artnr",
+            "warenwert",
+            "einzelpreis",
+            "docu_nr",
+            "lager_nr",
+            "_recid",
+            "lief_nr",
+            "pos",
+            "stornogrund",
+            "fuellflag"
+        ],
+        "write": []
+    },
+    "L_ophdr": {
+        "read": [
+            "fibukonto",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "deci1",
+            "deci2",
+            "char3",
+            "char2",
+            "date2",
+            "deci3",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_untergrup": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "fdate",
+            "fchar",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_ophis": {
+        "read": [
+            "anzahl",
+            "warenwert",
+            "lief_nr",
+            "artnr",
+            "lscheinnr",
+            "datum",
+            "lager_nr",
+            "docu_nr",
+            "einzelpreis",
+            "fibukonto",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_ophhis": {
+        "read": [
+            "fibukonto",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bediener": {
+        "read": [],
+        "write": []
+    },
+    "Gl_acct": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    }
+}
