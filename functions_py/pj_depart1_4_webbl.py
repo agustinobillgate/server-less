@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 20/8/2025
 # 'Cl_list' object has no attribute 'curr_zinr'
+# date format arrival & strip froom
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -44,6 +45,10 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
     cl_list_data, Cl_list = create_model("Cl_list", {"flag":int, "nr":int, "vip":string, "resnr":int, "name":string, "groupname":string, "rmno":string, "qty":int, "arrive":string, "depart":string, "rmcat":string, "kurzbez":string, "bezeich":string, "a":int, "c":int, "co":int, "pax":string, "nat":string, "nation":string, "argt":string, "company":string, "flight":string, "etd":string, "outstand":Decimal, "bemerk":string, "bemerk01":string, "bemerk02":string, "bemerk03":string, "bemerk04":string, "bemerk05":string, "bemerk06":string, "bemerk07":string, "bemerk08":string, "email":string, "email_adr":string, "tot_night":int, "ratecode":string, "full_name":string, "address":string, "memberno":string, "membertype":string, "zipreis":Decimal, "ci_time":string, "co_time":string, "local_reg":string, "spreq":string, "birthd":date, "ktpid":string})
 
     db_session = local_storage.db_session
+    
+
+    # Rd 4/9/2025
+    froom = froom.strip()
 
     def generate_output():
         nonlocal tot_rm, tot_a, tot_c, tot_co, str_list_data, s_list_data, cl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, all_remark, curr_zinr, lvcarea, guest, reservation, res_line, history, guestseg, reslin_queasy, nation, bill, mc_guest, mc_types
@@ -52,6 +57,7 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
 
         nonlocal str_list, s_list, cl_list, setup_list, zikat_list
         nonlocal str_list_data, s_list_data, cl_list_data
+
 
         return {"tot_rm": tot_rm, "tot_a": tot_a, "tot_c": tot_c, "tot_co": tot_co, "str-list": str_list_data, "s-list": s_list_data, "cl-list": cl_list_data}
 
@@ -84,6 +90,7 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
         if disptype == 1:
 
             res_line_obj_list = {}
+            
             for res_line, reservation, guest, gmember in db_session.query(Res_line, Reservation, Guest, Gmember).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
                      ((Res_line.resstatus <= 2) | (Res_line.resstatus == 5) | (Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.resstatus == 8) | (Res_line.resstatus == 11)) & (Res_line.abreise >= fdate) & (Res_line.abreise <= tdate) & (((Res_line.zinr >= (froom).lower()) & (Res_line.zinr <= (troom).lower())) | ((Res_line.zinr >= (froom).lower() )))).order_by(Reservation.groupname, Res_line.name, Res_line.zinr).all():
                 zikat_list = query(zikat_list_data, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
@@ -143,8 +150,16 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    # cl_list.arrive = to_string(res_line.ankunft)
+                    # cl_list.depart = to_string(res_line.abreise)
+
+                    cl_list.arrive = to_string(res_line.ankunft, '%d/%m/%y')
+                    cl_list.depart = to_string(res_line.abreise, '%d/%m/%y')
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -188,20 +203,21 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     elif gmember.telefon == "" and gmember.mobil_telefon != "":
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
-                    if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
-                        cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
-                        cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                    if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
+                        # cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
+                        # cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                        cl_list.etd = to_string(seconds_into_time(res_line.abreisezeit, "%H%M"))
 
                     if cl_list.nat == "":
                         cl_list.nat = "?"
                     else:
 
-                        nation = get_cache (Nation, {"kurzbez": [(eq, cl_list.nat)]})
+                        nation = get_cache (Nation, {"kurzbez": [(eq, cl_list.nat.strip())]})
 
                         if nation:
                             cl_list.nation = nation.bezeich
 
-                    nation = get_cache (Nation, {"kurzbez": [(eq, gmember.nation2)]})
+                    nation = get_cache (Nation, {"kurzbez": [(eq, gmember.nation2.strip())]})
 
                     if nation:
                         cl_list.local_reg = nation.bezeich
@@ -269,6 +285,11 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                         pass
                         nr = nr - 1
 
+            print("DispType:1")
+            print("id before sort:", id(cl_list_data))
+            cl_list_data.sort(key=lambda r: (getattr(r, "name", None) is None,
+                                 (getattr(r, "name", "") or "").strip().casefold()))
+            print("id after  sort:", id(cl_list_data))
 
         elif disptype == 2:
 
@@ -332,8 +353,16 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    # cl_list.arrive = to_string(res_line.ankunft)
+                    # cl_list.depart = to_string(res_line.abreise)
+
+                    cl_list.arrive = to_string(res_line.ankunft, '%d/%m/%y')
+                    cl_list.depart = to_string(res_line.abreise, '%d/%m/%y')
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -347,8 +376,11 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                             guest.anredefirma + " " + guest.anrede1)
                     cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                     cl_list.zipreis =  to_decimal(res_line.zipreis)
-                    cl_list.ci_time = to_string(res_line.ankzeit, "HH:MM")
-                    cl_list.co_time = to_string(res_line.abreisezeit, "HH:MM")
+                    # cl_list.ci_time = to_string(res_line.ankzeit, "HH:MM")
+                    # cl_list.co_time = to_string(res_line.abreisezeit, "HH:MM")
+                    cl_list.ci_time = to_string(res_line.ankzeit)
+                    cl_list.co_time = to_string(res_line.abreisezeit)
+ 
                     cl_list.birthd = gmember.geburtdatum1
                     cl_list.ktpid = gmember.ausweis_nr1
 
@@ -377,20 +409,22 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     elif gmember.telefon == "" and gmember.mobil_telefon != "":
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
-                    if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
-                        cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
-                        cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                    if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
+                        # cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
+                        # cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                        cl_list.etd = to_string(seconds_into_time(res_line.abreisezeit, "%H%M"))
+
 
                     if cl_list.nat == "":
                         cl_list.nat = "?"
                     else:
 
-                        nation = get_cache (Nation, {"kurzbez": [(eq, cl_list.nat)]})
+                        nation = get_cache (Nation, {"kurzbez": [(eq, cl_list.nat.strip())]})
 
                         if nation:
                             cl_list.nation = nation.bezeich
 
-                    nation = get_cache (Nation, {"kurzbez": [(eq, gmember.nation2)]})
+                    nation = get_cache (Nation, {"kurzbez": [(eq, gmember.nation2.strip())]})
 
                     if nation:
                         cl_list.local_reg = nation.bezeich
@@ -513,8 +547,16 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    # cl_list.arrive = to_string(res_line.ankunft)
+                    # cl_list.depart = to_string(res_line.abreise)
+
+                    cl_list.arrive = to_string(res_line.ankunft, '%d/%m/%y')
+                    cl_list.depart = to_string(res_line.abreise, '%d/%m/%y')
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -558,20 +600,22 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     elif gmember.telefon == "" and gmember.mobil_telefon != "":
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
-                    if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
-                        cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
-                        cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                    if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
+                        # cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
+                        # cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                        cl_list.etd = to_string(seconds_into_time(res_line.abreisezeit, "%H%M"))
+
 
                     if cl_list.nat == "":
                         cl_list.nat = "?"
                     else:
 
-                        nation = get_cache (Nation, {"kurzbez": [(eq, cl_list.nat)]})
+                        nation = get_cache (Nation, {"kurzbez": [(eq, cl_list.nat.strip())]})
 
                         if nation:
                             cl_list.nation = nation.bezeich
 
-                    nation = get_cache (Nation, {"kurzbez": [(eq, gmember.nation2)]})
+                    nation = get_cache (Nation, {"kurzbez": [(eq, gmember.nation2.strip())]})
 
                     if nation:
                         cl_list.local_reg = nation.bezeich
@@ -693,8 +737,16 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    # cl_list.arrive = to_string(res_line.ankunft)
+                    # cl_list.depart = to_string(res_line.abreise)
+
+                    cl_list.arrive = to_string(res_line.ankunft, '%d/%m/%y')
+                    cl_list.depart = to_string(res_line.abreise, '%d/%m/%y')
+
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -738,20 +790,22 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     elif gmember.telefon == "" and gmember.mobil_telefon != "":
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
-                    if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
-                        cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
-                        cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                    if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
+                        # cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
+                        # cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                        cl_list.etd = to_string(seconds_into_time(res_line.abreisezeit, "%H%M"))
+
 
                     if cl_list.nat == "":
                         cl_list.nat = "?"
                     else:
 
-                        nation = get_cache (Nation, {"kurzbez": [(eq, cl_list.nat)]})
+                        nation = get_cache (Nation, {"kurzbez": [(eq, cl_list.nat.strip())]})
 
                         if nation:
                             cl_list.nation = nation.bezeich
 
-                    nation = get_cache (Nation, {"kurzbez": [(eq, gmember.nation2)]})
+                    nation = get_cache (Nation, {"kurzbez": [(eq, gmember.nation2.strip())]})
 
                     if nation:
                         cl_list.local_reg = nation.bezeich
@@ -873,8 +927,16 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     cl_list.name = res_line.name
                     cl_list.rmno = res_line.zinr
                     curr_zinr = res_line.zinr
-                    cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
-                    cl_list.depart = to_string(res_line.abreise, "99/99/99")
+                    
+                    # cl_list.arrive = to_string(res_line.ankunft, "99/99/99")
+                    # cl_list.depart = to_string(res_line.abreise, "99/99/99")
+
+                    # cl_list.arrive = to_string(res_line.ankunft)
+                    # cl_list.depart = to_string(res_line.abreise)
+
+                    cl_list.arrive = to_string(res_line.ankunft, '%d/%m/%y')
+                    cl_list.depart = to_string(res_line.abreise, '%d/%m/%y')
+                    
                     cl_list.a = res_line.erwachs
                     cl_list.c = res_line.kind1 + res_line.kind2
                     cl_list.co = res_line.gratis
@@ -918,20 +980,22 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     elif gmember.telefon == "" and gmember.mobil_telefon != "":
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
-                    if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
-                        cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
-                        cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                    if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
+                        # cl_list.etd = to_string(res_line.abreisezeit, "HH:MM")
+                        # cl_list.etd = substring(cl_list.etd, 0, 2) + substring(cl_list.etd, 3, 2)
+                        cl_list.etd = to_string(seconds_into_time(res_line.abreisezeit, "%H%M"))
+
 
                     if cl_list.nat == "":
                         cl_list.nat = "?"
                     else:
 
-                        nation = get_cache (Nation, {"kurzbez": [(eq, cl_list.nat)]})
+                        nation = get_cache (Nation, {"kurzbez": [(eq, cl_list.nat.strip())]})
 
                         if nation:
                             cl_list.nation = nation.bezeich
 
-                    nation = get_cache (Nation, {"kurzbez": [(eq, gmember.nation2)]})
+                    nation = get_cache (Nation, {"kurzbez": [(eq, gmember.nation2.strip())]})
 
                     if nation:
                         cl_list.local_reg = nation.bezeich
@@ -991,6 +1055,8 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                         nr = nr - 1
 
 
+        # Rd, 4/9/2025
+        # query ini merubah sorting
         for cl_list in query(cl_list_data, sort_by=[("nation",False),("bezeich",False)]):
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.rmcat == cl_list.kurzbez), first=True)
@@ -1011,11 +1077,11 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                 s_list.bezeich = cl_list.bezeich
             s_list.anz = s_list.anz + cl_list.qty
 
-            s_list = query(s_list_data, filters=(lambda s_list: s_list.nat == cl_list.nat), first=True)
+            s_list = query(s_list_data, filters=(lambda s_list: s_list.nat.strip() == cl_list.nat.strip()), first=True)
 
             if not s_list:
 
-                s_list = query(s_list_data, filters=(lambda s_list: s_list.nat == ""), first=True)
+                s_list = query(s_list_data, filters=(lambda s_list: s_list.nat.strip() == ""), first=True)
 
                 if s_list:
                     s_list.nat = cl_list.nat
@@ -1032,15 +1098,78 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
 
         if (tot_a + tot_co) != 0:
 
-            for s_list in query(s_list_data, filters=(lambda s_list: s_list.nat != "")):
+            for s_list in query(s_list_data, filters=(lambda s_list: s_list.nat.strip() != "")):
 
-                nation = get_cache (Nation, {"kurzbez": [(eq, s_list.nat)]})
+                nation = get_cache (Nation, {"kurzbez": [(eq, s_list.nat.strip())]})
 
                 if nation:
                     s_list.nat = nation.bezeich
                 else:
                     s_list.nat = translateExtended ("UNKNOWN", lvcarea, "")
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
+
+        # Rd, 4/9/2025
+        # cl_list_data di sort ulang
+        from datetime import datetime
+        def parse_dmy(val: str):
+            """Parse 'd/m/y' string into a date object."""
+            if not val:
+                return None
+            try:
+                # 4-digit year (e.g. 5/9/2025)
+                return datetime.strptime(val.strip(), "%d/%m/%Y").date()
+            except ValueError:
+                try:
+                    # 2-digit year (e.g. 5/9/25)
+                    return datetime.strptime(val.strip(), "%d/%m/%y").date()
+                except ValueError:
+                    return None   # if unparsable, treat as None
+
+        def parse_time(val: str):
+            if not val:
+                return None
+            try:
+                return datetime.strptime(val.strip(), "%H:%M").time()
+            except ValueError:
+                return None
+            
+        if disptype == 1:
+            pass
+            cl_list_data[:] = sorted(
+                cl_list_data,
+                key=lambda r: (getattr(r, "name", None) is None,
+                            (getattr(r, "name", "") or "").strip().casefold())
+            )
+        elif disptype == 2:
+            cl_list_data[:] = sorted(
+                cl_list_data,
+                key=lambda r: (getattr(r, "rmno", None) is None,
+                            (getattr(r, "rmno", "") or "").strip().casefold())
+            )
+            pass
+        elif disptype == 3:
+            cl_list_data[:] = sorted(
+                cl_list_data,
+                key=lambda r: (getattr(r, "full_name", None) is None,
+                            (getattr(r, "full_name", "") or "").strip().casefold())
+            )
+            pass
+        elif disptype == 4:
+            cl_list_data[:] = sorted(
+                cl_list_data,
+                key=lambda r: (
+                    parse_dmy(getattr(r, "depart", None)) or datetime.max.date(),
+                    parse_time(getattr(r, "etd", None)) or time.max
+                )
+            )
+            pass
+        elif disptype == 5:
+            cl_list_data[:] = sorted(
+                cl_list_data,
+                key=lambda r: (getattr(r, "resnr", None) is None,
+                            getattr(r, "resnr", 0))   # sort numerically, push None to the end
+            )
+            pass
 
 
     create_departure0()
