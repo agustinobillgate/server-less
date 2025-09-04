@@ -47,6 +47,8 @@ def po_list_btn_go2_1cldbl(t_liefno:int, last_docu_nr:string, sorttype:int, dept
 
     db_session = local_storage.db_session
 
+
+
     def generate_output():
         nonlocal first_docu_nr, curr_docu_nr, p_267, last_docu_nr1, q2_list_data, counter, curr_counter, last_to_sort, temp_docu_nr, temp_counter_nr, approval, p_71, loop, app_lvl, cost_list_bezeich, w_list_wabkurz, l_order, l_lieferant, l_artikel, queasy, htparam, l_orderhdr, parameters, waehrung
         nonlocal t_liefno, last_docu_nr, sorttype, deptnr, all_supp, stattype, usrname, from_date, to_date, billdate, dml_only, app_sort, pr_only, excl_dml_pr
@@ -4456,7 +4458,12 @@ def po_list_btn_go2_1cldbl(t_liefno:int, last_docu_nr:string, sorttype:int, dept
 
                 l_orderhdr_obj_list = {}
                 for l_orderhdr, l_lieferant, l_order1 in db_session.query(L_orderhdr, L_lieferant, L_order1).join(L_lieferant,(L_lieferant.lief_nr == L_orderhdr.lief_nr)).join(L_order1,(L_order1.docu_nr == L_orderhdr.docu_nr) & (L_order1.loeschflag == 0) & (L_order1.pos == 0)).filter(
-                         (L_orderhdr.bestelldatum >= from_date) & (L_orderhdr.bestelldatum <= to_date) & (L_orderhdr.lief_nr == l_supp.lief_nr) & (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr.docu_nr > (last_docu_nr).lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all():
+                         (L_orderhdr.bestelldatum >= from_date) & 
+                         (L_orderhdr.bestelldatum <= to_date) & 
+                         (L_orderhdr.lief_nr == l_supp.lief_nr) & 
+                         (L_orderhdr.lieferdatum >= billdate) & 
+                         (L_orderhdr.betriebsnr <= 1) & 
+                         (L_orderhdr.docu_nr > (last_docu_nr).lower())).order_by(L_orderhdr.bestelldatum, L_orderhdr.docu_nr, L_lieferant.firma).all():
                     if l_orderhdr_obj_list.get(l_orderhdr._recid):
                         continue
                     else:

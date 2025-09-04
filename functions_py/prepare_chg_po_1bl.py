@@ -3,12 +3,18 @@
 # Rd, 17-July-25
 # re download gitlab, 
 # update if not available return
+# l_order.txt -> l_order.txtnr
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpint import htpint
 from models import L_artikel, L_order, L_orderhdr, Waehrung, Htparam, L_lieferant, Queasy, Parameters
+
+def safe_divide(numerator, denominator):
+    numerator, denominator = to_decimal(numerator), to_decimal(denominator)
+    return (numerator / denominator) if denominator not in (0, None) else to_decimal("0")
+
 
 def prepare_chg_po_1bl(pvilanguage:int, docu_nr:string, lief_nr:int):
 
@@ -100,7 +106,10 @@ def prepare_chg_po_1bl(pvilanguage:int, docu_nr:string, lief_nr:int):
             s_order.lief_fax[2] = l_order.lief_fax[2]
             s_order.artnr = l_order.artnr
             s_order.geliefert =  to_decimal(l_order.geliefert)
-            s_order.txtnr = l_order.txt
+
+            # Rd 4/9/2025
+            # s_order.txtnr = l_order.txt
+            s_order.txtnr = l_order.txtnr
             s_order.anzahl =  to_decimal(l_order.anzahl)
             s_order.flag = l_order.flag
             s_order.quality = l_order.quality
@@ -149,7 +158,10 @@ def prepare_chg_po_1bl(pvilanguage:int, docu_nr:string, lief_nr:int):
 
 
             disc_list.brutto = ( to_decimal(s_order.warenwert) + to_decimal(disc_list.disc_val) + to_decimal(disc_list.disc2_val)) - to_decimal(disc_list.vat_val)
-            disc_list.price0 =  to_decimal(disc_list.brutto) / to_decimal(s_order.anzahl)
+            
+            # Rd, 4/9/2025
+            # disc_list.price0 =  to_decimal(disc_list.brutto) / to_decimal(s_order.anzahl)
+            disc_list.price0 =  safe_divide(disc_list.brutto, s_order.anzahl)
 
             if disc_list.price0 == None:
                 disc_list.price0 =  to_decimal("0")
