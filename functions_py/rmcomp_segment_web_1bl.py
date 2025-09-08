@@ -4,6 +4,7 @@
 # loadRmcompSegmentList1
 # debug, data output beda.
 # Optimasi
+# Rd 8-9-2025, beda data
 #-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -102,6 +103,9 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
 
     db_session = local_storage.db_session
 
+    # Rd 8/9/2025
+    sales_id = sales_id.strip()
+
     def generate_output():
         nonlocal rmcomp_segm_list_data, s_list_data, price_decimal, room, c_room, pax, logis, avrgrate, proz, m_room, mc_room, m_pax, m_logis, m_avrgrate, m_proz, y_room, yc_room, y_pax, y_logis, y_avrgrate, y_proz, revenue, gt_room, gtc_room, gt_pax, gt_logis, gt_avrgrate, gtm_room, gtmc_room, gtm_pax, gtm_logis, gtm_avrgrate, gtm_proz, gty_room, gtyc_room, gty_pax, gty_logis, gty_avrgrate, gty_proz, gty_revenue, st_room, stc_room, st_pax, st_logis, st_avrgrate, st_proz, stm_room, stmc_room, stm_pax, stm_logis, stm_avrgrate, stm_proz, sty_room, styc_room, sty_pax, sty_logis, sty_avrgrate, sty_proz, sty_revenue, rmrevsubt, rm_serv, rm_vat, othrev, datum, ci_date, mm, yy, from_date, fdate, beg_date, d1, d2, tdate, tmpdate, lvcarea, htparam, guest, genstat, zimmer, segment, arrangement, artikel, queasy, res_line, reservation, bill_line, reslin_queasy, umsatz
         nonlocal pvilanguage, sorttype, cardtype, incl_comp, mi_ftd, f_date, t_date, to_date, sales_id, vhp_limited
@@ -190,8 +194,8 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
 
         yy = get_year(d2)
         f_date = date_mdy(get_month(d2) , 1, get_year(d2))
-        tmpdate = d1 + timedelta(days=1)
-        bydate = (d2 - tmpdate).days
+        # tmpdate = d1 + timedelta(days=1)
+        bydate = (d2 - d1).days
         tdate = d2
 
         print("Bydate:", bydate, d1, d2)
@@ -235,10 +239,10 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
                 genstat.kind2, genstat._recid, guest.karteityp, guest.phonetik3, guest.name, guest.vorname1, guest._recid \
                     in recs:
                 
-                if genstat_obj_list.get(genstat._recid):
-                    continue
-                else:
-                    genstat_obj_list[genstat._recid] = True
+                # if genstat_obj_list.get(genstat._recid):
+                #     continue
+                # else:
+                #     genstat_obj_list[genstat._recid] = True
 
                 if genstat.datum != tdatum:
                     tdatum = genstat.datum
@@ -423,7 +427,6 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
                                 s_list.logis =  to_decimal(s_list.logis) + to_decimal(genstat.logis)
                                 logis =  to_decimal(logis) + to_decimal(genstat.logis)
                                 avrgrate =  to_decimal(avrgrate) + to_decimal(rmrev)
-
 
                             else:
 
@@ -635,7 +638,7 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
         yy = get_year(d2)
         f_date = date_mdy(get_month(d2) , 1, get_year(d2))
         tmpdate = d1 + timedelta(days=1)
-        bydate = (d2 - tmpdate).days
+        bydate = (d2 - d1).days
         tdate = d2
         while bydate != 0:
 
@@ -2240,7 +2243,7 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
             sty_avrgrate =  to_decimal(sty_logis) / to_decimal((sty_room) - to_decimal(styc_room))
 
         if price_decimal == 0:
-            rmcomp_segm_list.segment = translateExtended ("s u b T o t a l", lvcarea, "")
+            rmcomp_segm_list.segment = translateExtended ("S u b T o t a l", lvcarea, "")
             rmcomp_segm_list.room = to_string(st_room, "->>>,>>9")
             rmcomp_segm_list.pax = to_string(st_pax, "->>>,>>9")
             rmcomp_segm_list.logis = to_string(st_logis, "->>,>>>,>>>,>>>,>>9")
@@ -2260,7 +2263,7 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
 
 
         else:
-            rmcomp_segm_list.segment = translateExtended ("s u b T o t a l", lvcarea, "")
+            rmcomp_segm_list.segment = translateExtended ("S u b T o t a l", lvcarea, "")
             rmcomp_segm_list.room = to_string(st_room, "->>>,>>9")
             rmcomp_segm_list.pax = to_string(st_pax, "->>>,>>9")
             rmcomp_segm_list.logis = to_string(st_logis, "->>>,>>>,>>>,>>9.99")
@@ -2370,7 +2373,6 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
         mm = get_month(to_date)
         yy = get_year(to_date)
 
-
     else:
         mm = get_month(to_date)
         yy = get_year(to_date)
@@ -2390,7 +2392,6 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
         else:
             create_umsatz2(from_date, to_date)
             create_output2()
-
 
     elif (from_date < ci_date) and (to_date >= ci_date):
         if sorttype == 0 or sorttype == 1:
