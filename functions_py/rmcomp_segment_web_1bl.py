@@ -113,8 +113,6 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
 
         nonlocal rmcomp_segm_list, s_list, tmp_room, t_list, sbuff, sbuff, sbuff
         nonlocal rmcomp_segm_list_data, s_list_data, tmp_room_data, t_list_data
-        for s in s_list_data:
-            print(s.compname)
         return {"rmcomp-segm-list": rmcomp_segm_list_data, "s-list": s_list_data}
 
     def create_umsatz(date1:date, date2:date):
@@ -198,7 +196,7 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
         bydate = (d2 - d1).days + 1
         tdate = d2
 
-        print("Bydate:", bydate, d1, d2)
+        # print("Bydate:", bydate, d1, d2)
         while bydate != 0:
             genstat_obj_list = {}
             genstat = Genstat()
@@ -243,8 +241,7 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
                 #     continue
                 # else:
                 #     genstat_obj_list[genstat._recid] = True
-                aa = guest.name + " " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
-                print(aa)
+
                 if genstat.datum != tdatum:
                     tdatum = genstat.datum
                     do_dat = True
@@ -2380,7 +2377,7 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
         from_date = date_mdy(1, 1, yy)
         f_date = date_mdy(get_month(t_date) , 1, get_year(t_date))
 
-    print("From/To:", from_date, to_date, ci_date)
+    # print("From/To:", from_date, to_date, ci_date)
     if (from_date < ci_date) and (to_date < ci_date):
         if sorttype == 0 or sorttype == 1:
             create_umsatz(from_date, to_date)
