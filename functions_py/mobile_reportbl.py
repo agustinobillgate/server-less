@@ -2,6 +2,9 @@
 #------------------------------------------
 # Rd, 18/8/2025
 # update compare " " -> " ".strip()
+
+# Rulita, 08-09-2025
+# Issue, Perbaikkan sort by tgl dpert "order_by(Res_line.abreise)"
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -35,7 +38,6 @@ def mobile_reportbl(case_type:int, from_date:date, to_date:date):
         nonlocal rlist_data, loopi, str1, tot_cimb, tot_cifda, tot_scanmb, tot_scanfda, tot_signmb, tot_signfda, tot_rcmb, tot_rcfda, res_line
         nonlocal case_type, from_date, to_date
 
-
         nonlocal rlist
         nonlocal rlist_data
 
@@ -54,7 +56,7 @@ def mobile_reportbl(case_type:int, from_date:date, to_date:date):
     if case_type == 1:
 
         for res_line in db_session.query(Res_line).filter(
-                 (Res_line.ankunft >= from_date) & (Res_line.ankunft <= to_date) & (Res_line.resstatus != 99) & (Res_line.resstatus != 9) & (Res_line.resstatus != 8)).order_by(Res_line._recid).all():
+                 (Res_line.ankunft >= from_date) & (Res_line.ankunft <= to_date) & (Res_line.resstatus != 99) & (Res_line.resstatus != 9) & (Res_line.resstatus != 8)).order_by(Res_line.abreise).all():
             rlist = Rlist()
             rlist_data.append(rlist)
 
@@ -111,7 +113,7 @@ def mobile_reportbl(case_type:int, from_date:date, to_date:date):
     elif case_type == 2:
 
         for res_line in db_session.query(Res_line).filter(
-                 (Res_line.abreise >= from_date) & (Res_line.abreise <= to_date) & (Res_line.resstatus != 99) & (Res_line.resstatus != 9)).order_by(Res_line._recid).all():
+                 (Res_line.abreise >= from_date) & (Res_line.abreise <= to_date) & (Res_line.resstatus != 99) & (Res_line.resstatus != 9)).order_by(Res_line.abreise).all():
             rlist = Rlist()
             rlist_data.append(rlist)
 
@@ -184,7 +186,7 @@ def mobile_reportbl(case_type:int, from_date:date, to_date:date):
     elif case_type == 3:
 
         for res_line in db_session.query(Res_line).filter(
-                 (Res_line.abreise >= from_date) & (Res_line.abreise <= to_date) & (Res_line.resstatus == 10)).order_by(Res_line._recid).all():
+                 (Res_line.abreise >= from_date) & (Res_line.abreise <= to_date) & (Res_line.resstatus == 10)).order_by(Res_line.abreise).all():
             rlist = Rlist()
             rlist_data.append(rlist)
 
