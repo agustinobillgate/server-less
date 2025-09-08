@@ -1,10 +1,4 @@
 #using conversion tools version: 1.0.0.117
-#------------------------------------------
-# Rd, 8/9/2025
-# beda data di range tanggal
-# from functions import log_program_rd
-
-#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -306,6 +300,7 @@ def foreign_list1_webbl(dtype:int, fdate:date, from_date:date, to_date:date, ci_
         nonlocal tot_pax_inhouse, tot_pax_depart, tot_pax_arrival, tot_pax_arrived, tot_pax_departed, tot_anz_inhouse, tot_anz_depart, tot_anz_arrival, tot_anz_arrived, tot_anz_departed, curr_status, curr_date, tot_local, tot_foreign, t_foreign_list_data, summary_list_data, pax, queasy, guest, res_line, nation, genstat, zimmer, history
         nonlocal dtype, fdate, from_date, to_date, ci_date, all_nat, sorttype, def_nat
 
+
         nonlocal t_foreign_list, t_queasy, summary_list
         nonlocal t_foreign_list_data, t_queasy_data, summary_list_data
 
@@ -317,25 +312,12 @@ def foreign_list1_webbl(dtype:int, fdate:date, from_date:date, to_date:date, ci_
             genstat_obj_list = {}
             genstat = Genstat()
             guest = Guest()
-            log_program.write_log("rd", f"to_date : {to_date}")
-            for genstat.resstatus, genstat.resnr, genstat.res_int, genstat.erwachs, genstat.gratis, genstat.kind1, genstat.kind2, genstat.kind3, genstat.zinr, genstat.gastnr, genstat.zipreis, genstat.res_date, genstat._recid, guest.nation1, guest.ausweis_nr1, guest.geburtdatum1, guest.adresse1, guest.wohnort, guest.land, guest.email_adr, guest.bemerkung, guest.telefon, guest._recid \
-                in db_session.query(Genstat.resstatus, Genstat.resnr, Genstat.res_int, Genstat.erwachs, Genstat.gratis, Genstat.kind1, Genstat.kind2, \
-                    Genstat.kind3, Genstat.zinr, Genstat.gastnr, Genstat.zipreis, Genstat.res_date, Genstat._recid, Guest.nation1, Guest.ausweis_nr1, \
-                    Guest.geburtdatum1, Guest.adresse1, Guest.wohnort, Guest.land, Guest.email_adr, Guest.bemerkung, Guest.telefon, Guest._recid)\
-                .join(Guest,(Guest.gastnr == Genstat.gastnrmember) & (Guest.nation1 != (def_nat).lower()))\
-                .filter(
-                     (Genstat.datum >= from_date) & 
-                     (Genstat.datum <= to_date))\
-                .order_by(Guest.nation1, Genstat.zinr).all():
-                # log_program.write_log("rd", f"genstat : {genstat.res_date}")
+            for genstat.resstatus, genstat.resnr, genstat.res_int, genstat.erwachs, genstat.gratis, genstat.kind1, genstat.kind2, genstat.kind3, genstat.zinr, genstat.gastnr, genstat.zipreis, genstat.res_date, genstat._recid, guest.nation1, guest.ausweis_nr1, guest.geburtdatum1, guest.adresse1, guest.wohnort, guest.land, guest.email_adr, guest.bemerkung, guest.telefon, guest._recid in db_session.query(Genstat.resstatus, Genstat.resnr, Genstat.res_int, Genstat.erwachs, Genstat.gratis, Genstat.kind1, Genstat.kind2, Genstat.kind3, Genstat.zinr, Genstat.gastnr, Genstat.zipreis, Genstat.res_date, Genstat._recid, Guest.nation1, Guest.ausweis_nr1, Guest.geburtdatum1, Guest.adresse1, Guest.wohnort, Guest.land, Guest.email_adr, Guest.bemerkung, Guest.telefon, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnrmember) & (Guest.nation1 != (def_nat).lower())).filter(
+                     (Genstat.datum >= from_date) & (Genstat.datum <= to_date)).order_by(Guest.nation1, Genstat.zinr).all():
                 if genstat_obj_list.get(genstat._recid):
                     continue
                 else:
                     genstat_obj_list[genstat._recid] = True
-
-                # Rd, 8/9/2025, res_date None
-                if not genstat.res_date[0]:
-                    continue
 
                 if genstat.res_date[0] < to_date and genstat.res_date[1] == to_date and genstat.resstatus == 8:
                     pass
@@ -388,10 +370,6 @@ def foreign_list1_webbl(dtype:int, fdate:date, from_date:date, to_date:date, ci_
                     continue
                 else:
                     genstat_obj_list[genstat._recid] = True
-
-                # Rd, 8/9/2025, res_date None
-                if not genstat.res_date[0]:
-                    continue
 
                 if genstat.res_date[0] < to_date and genstat.res_date[1] == to_date and genstat.resstatus == 8:
                     pass
@@ -1007,7 +985,6 @@ def foreign_list1_webbl(dtype:int, fdate:date, from_date:date, to_date:date, ci_
             for curr_date in date_range(from_date,to_date) :
                 create_foreign_departure(curr_date)
                 create_foreign_departed_today(curr_date)
-
             create_foreign_arrival()
             create_foreign_arrived_today()
 
@@ -1017,7 +994,6 @@ def foreign_list1_webbl(dtype:int, fdate:date, from_date:date, to_date:date, ci_
         elif sorttype == 6:
             for curr_date in date_range(from_date,to_date) :
                 create_foreign_departed_today(curr_date)
-
     summary_list = Summary_list()
     summary_list_data.append(summary_list)
 
