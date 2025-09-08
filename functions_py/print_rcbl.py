@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 8/9/2025
+# kolom roomno ada yg kosong
+# from functions import log_program_rd
 
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -23,6 +28,10 @@ def print_rcbl(sorttype:int, last_sort:int, lname:string, fdate:date, lresnr:int
 
 
     db_session = local_storage.db_session
+
+    # Rd 8/9/2025
+    room = room.strip()
+    lname = lname.strip()
 
     def generate_output():
         nonlocal rc_list_data, msg_str, ci_date, inumofrec, guest, htparam, reservation, segment, zimkateg, res_line
