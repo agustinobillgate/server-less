@@ -2,13 +2,12 @@
 #------------------------------------------
 # Rd, 8/9/2025
 # jml data tidak sama
-# from functions import log_program_rd
-
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Sourccod, Sources
+# from functions import log_program_rd
 
 def sourcestat_listbl(from_month:string, ci_date:date, sorttype:int, hide_zero:bool):
 
@@ -40,7 +39,7 @@ def sourcestat_listbl(from_month:string, ci_date:date, sorttype:int, hide_zero:b
 
         return {"room-list": room_list_data}
 
-
+    from_month = from_month.strip()
     room_list_data.clear()
     mm = to_int(substring(from_month, 0, 2))
     yy = to_int(substring(from_month, 2, 4))
@@ -50,17 +49,15 @@ def sourcestat_listbl(from_month:string, ci_date:date, sorttype:int, hide_zero:b
         mm = mm + 1
         to_date = date_mdy(mm, 1, yy) - timedelta(days=1)
 
-
     else:
         from_date = date_mdy(mm, 1, yy)
-
         # Rd, 19/8/2025
         # to_date = date_mdy(1, 1, yy + timedelta(days=1)) - timedelta(days=1)
         to_date = date_mdy(1, 1, yy + 1) - timedelta(days=1)
 
     if to_date > ci_date:
         to_date = ci_date
-
+    
     for sourccod in db_session.query(Sourccod).order_by(Sourccod.bezeich).all():
         room_list = Room_list()
         room_list_data.append(room_list)
@@ -72,12 +69,21 @@ def sourcestat_listbl(from_month:string, ci_date:date, sorttype:int, hide_zero:b
             for sources in db_session.query(Sources).filter(
                      (Sources.source_code == sourccod.source_code) & (Sources.datum == datum)).order_by(Sources._recid).all():
 
+                # Rd, hasil konversi terbalik
+                # if sorttype == 1:
+                #     room_list.room[i - 1] = sources.zimmeranz
+                #     room_list.summe = room_list.summe + sources.zimmeranz
+                # else:
+                #     room_list.room[i - 1] = sources.persanz
+                #     room_list.summe = room_list.summe + sources.persanz
+
                 if sorttype == 1:
-                    room_list.room[i - 1] = sources.zimmeranz
-                    room_list.summe = room_list.summe + sources.zimmeranz
-                else:
                     room_list.room[i - 1] = sources.persanz
                     room_list.summe = room_list.summe + sources.persanz
+                else:
+                    room_list.room[i - 1] = sources.zimmeranz
+                    room_list.summe = room_list.summe + sources.zimmeranz
+
 
     if hide_zero :
 
