@@ -3,10 +3,13 @@
 # Rd, 26/8/2025
 # data kosong
 #------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_kredit, Htparam, L_lieferant, L_ophis, L_artikel, L_untergrup, Gl_acct, L_ophhis, Queasy
+
+from sqlalchemy import cast, Numeric
 
 taxcode_list_data, Taxcode_list = create_model("Taxcode_list", {"taxcode":string, "taxamount":Decimal})
 
@@ -142,6 +145,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -158,6 +162,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -172,6 +177,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -268,6 +274,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -284,6 +291,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -298,6 +306,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -415,6 +424,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -431,6 +441,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -445,6 +456,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -456,6 +468,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
         nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
+
 
         nonlocal str_list, taxcode_list, buff_l_kredit
         nonlocal str_list_data
@@ -569,6 +582,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -585,6 +599,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -599,6 +614,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -701,6 +717,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -717,6 +734,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -731,6 +749,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -847,6 +866,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -863,6 +883,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -877,6 +898,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -981,6 +1003,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -997,6 +1020,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -1014,6 +1038,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -1115,6 +1140,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -1131,6 +1157,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -1148,6 +1175,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -1251,6 +1279,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -1267,6 +1296,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -1284,6 +1314,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -1386,6 +1417,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -1402,6 +1434,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -1419,6 +1452,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -1515,6 +1549,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -1531,6 +1566,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -1545,6 +1581,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -1641,6 +1678,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -1657,6 +1695,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -1671,6 +1710,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -1769,6 +1809,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -1785,6 +1826,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -1802,6 +1844,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -1900,6 +1943,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(t_anz)
                 str_list.inc_qty =  to_decimal(t_anz)
                 str_list.amount =  to_decimal(t_amt)
+                str_list.warenwert =  to_decimal(t_amt)
                 str_list.amountexcl =  to_decimal(t_amountexcl)
                 str_list.tax_amount =  to_decimal(t_tax)
                 str_list.tot_amt =  to_decimal(t_inv)
@@ -1916,6 +1960,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.qty =  to_decimal(tot_anz)
                 str_list.inc_qty =  to_decimal(tot_anz)
                 str_list.amount =  to_decimal(tot_amount)
+                str_list.warenwert =  to_decimal(tot_amount)
                 str_list.amountexcl =  to_decimal(tot_amountexcl)
                 str_list.tax_amount =  to_decimal(tot_tax)
                 str_list.tot_amt =  to_decimal(tot_amt)
@@ -1933,6 +1978,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list.qty =  to_decimal(tot_anz)
             str_list.inc_qty =  to_decimal(tot_anz)
             str_list.amount =  to_decimal(tot_amount)
+            str_list.warenwert =  to_decimal(tot_amount)
             str_list.amountexcl =  to_decimal(tot_amountexcl)
             str_list.tax_amount =  to_decimal(tot_tax)
             str_list.tot_amt =  to_decimal(tot_amt)
@@ -2009,6 +2055,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                     str_list.inc_qty =  to_decimal(t_anz)
                     str_list.qty =  to_decimal(t_anz)
                     str_list.amount =  to_decimal(t_amt)
+                    str_list.warenwert =  to_decimal(t_amt)
                     str_list.amountexcl =  to_decimal(t_amountexcl)
                     str_list.tax_amount =  to_decimal(t_tax)
                     str_list.tot_amt =  to_decimal(t_inv)
@@ -2036,6 +2083,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                     str_list.inc_qty =  to_decimal(t_anz)
                     str_list.qty =  to_decimal(t_anz)
                     str_list.amount =  to_decimal(t_amt)
+                    str_list.warenwert =  to_decimal(t_amt)
                     str_list.amountexcl =  to_decimal(t_amountexcl)
                     str_list.tax_amount =  to_decimal(t_tax)
                     str_list.tot_amt =  to_decimal(t_inv)
@@ -2062,6 +2110,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                     str_list.inc_qty =  to_decimal(t_anz)
                     str_list.qty =  to_decimal(t_anz)
                     str_list.amount =  to_decimal(t_amt)
+                    str_list.warenwert =  to_decimal(t_amt)
                     str_list.amountexcl =  to_decimal(t_amountexcl)
                     str_list.tax_amount =  to_decimal(t_tax)
                     str_list.tot_amt =  to_decimal(t_inv)
@@ -2108,6 +2157,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.addvat_value =  to_decimal(queasy.deci1)
                 str_list.warenwert =  to_decimal(str_list.warenwert) + to_decimal((l_ophis.warenwert) + to_decimal((l_ophis.warenwert) * to_decimal((queasy.deci1) / to_decimal(100))) )
                 str_list.amountexcl =  to_decimal(str_list.amountexcl) + to_decimal(l_ophis.warenwert)
+                str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal((l_ophis.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
             else:
@@ -2129,12 +2179,12 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_ophis.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_ophis.lscheinnr) & (Queasy.number2 == l_ophis.artnr) & (to_int(Queasy.char2) == l_ophis.einzelpreis)).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_ophis.lscheinnr) & (Queasy.number2 == l_ophis.artnr) & (cast(Queasy.char2, Numeric) == l_ophis.einzelpreis)).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
-                str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
 
 
         else:
@@ -2164,6 +2214,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.addvat_value =  to_decimal(queasy.deci1)
                 str_list.warenwert =  to_decimal(l_ophis.warenwert) + (to_decimal(l_ophis.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
                 str_list.amountexcl =  to_decimal(l_ophis.warenwert)
+                str_list.addvat_amount = ( to_decimal(l_ophis.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
             else:
@@ -2187,12 +2238,12 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_ophis.lscheinnr) & (Queasy.number2 == l_ophis.artnr) & (to_int(Queasy.char2) == l_ophis.einzelpreis)).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_ophis.lscheinnr) & (Queasy.number2 == l_ophis.artnr) & (cast(Queasy.char2, Numeric) == l_ophis.einzelpreis)).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(queasy.deci3)
-                str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
 
 
             str_list.fibu, str_list.fibu_bez = convert_fibu(l_ophis.fibukonto)
@@ -2272,11 +2323,9 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             return generate_output()
 
         if all_supp:
-            print("create_list11")
             create_list11()
         else:
             if supp_nr != 0:
-                print("create_list22")
                 create_list22()
 
     elif sorttype == 2:
@@ -2291,26 +2340,20 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             if from_supp != "" and supp_nr != 0:
 
                 if from_grp == 0:
-                    print("create_list1as")
                     create_list1as()
                 else:
-                    print("create_list11as")
                     create_list11as()
             else:
 
                 if from_grp == 0:
-                    print("create_list1a")
                     create_list1a()
                 else:
-                    print("create_list11a")
                     create_list11a()
         else:
 
             if from_grp == 0:
-                print("create_list1ar")
                 create_list1ar()
             else:
-                print("create_list11ar")
                 create_list11ar()
 
     elif sorttype == 3:
@@ -2324,26 +2367,20 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             if from_supp != "" and supp_nr != 0:
 
                 if from_grp == 0:
-                    print("create_list1bs")
                     create_list1bs()
                 else:
-                    print("create_list11bs")
                     create_list11bs()
             else:
 
                 if from_grp == 0:
-                    print("create_list1b")
                     create_list1b()
                 else:
-                    print("create_list11b")
                     create_list11b()
         else:
 
             if from_grp == 0:
-                print("create_list1br")
                 create_list1br()
             else:
-                print("create_list11br")
                 create_list11br()
 
     return generate_output()
