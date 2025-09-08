@@ -9,6 +9,8 @@ from decimal import Decimal
 from datetime import date
 from models import L_lieferant, L_kredit, L_artikel, L_op, L_ophdr, Queasy, L_untergrup, Htparam, L_ophis, L_ophhis, Bediener, Gl_acct
 
+from sqlalchemy import cast, Numeric
+
 taxcode_list_data, Taxcode_list = create_model("Taxcode_list", {"taxcode":string, "taxamount":Decimal})
 
 
@@ -127,6 +129,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         str_list.qty =  to_decimal(t_anz)
         str_list.inc_qty =  to_decimal(t_anz)
         str_list.amount =  to_decimal(t_amt)
+        str_list.warenwert =  to_decimal(t_amt)
         str_list.amountexcl =  to_decimal(t_amountexcl)
         str_list.tax_amount =  to_decimal(t_tax)
         str_list.tot_amt =  to_decimal(t_inv)
@@ -142,6 +145,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         str_list.qty =  to_decimal(tot_anz)
         str_list.inc_qty =  to_decimal(tot_anz)
         str_list.amount =  to_decimal(tot_amount)
+        str_list.warenwert =  to_decimal(tot_amount)
         str_list.amountexcl =  to_decimal(tot_amountexcl)
         str_list.tax_amount =  to_decimal(tot_tax)
         str_list.tot_amt =  to_decimal(tot_amt)
@@ -177,6 +181,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.qty =  to_decimal(t_anz)
             str_list.inc_qty =  to_decimal(t_anz)
             str_list.amount =  to_decimal(t_amt)
+            str_list.warenwert =  to_decimal(t_amt)
             str_list.amountexcl =  to_decimal(t_amountexcl)
             str_list.tax_amount =  to_decimal(t_tax)
             str_list.tot_amt =  to_decimal(t_inv)
@@ -228,6 +233,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                     str_list.addvat_value =  to_decimal(queasy.deci1)
                     str_list.warenwert =  to_decimal(str_list.warenwert) + to_decimal((l_op.warenwert) + to_decimal((l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100))) )
                     str_list.amountexcl =  to_decimal(str_list.amountexcl) + to_decimal(l_op.warenwert)
+                    str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal((l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
                 else:
@@ -250,12 +256,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
-                str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
 
 
         else:
@@ -293,6 +299,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                     str_list.addvat_value =  to_decimal(queasy.deci1)
                     str_list.warenwert =  to_decimal(l_op.warenwert) + (to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
                     str_list.amountexcl =  to_decimal(l_op.warenwert)
+                    str_list.addvat_amount = ( to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
                 else:
@@ -316,12 +323,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(queasy.deci3)
-                str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
 
 
             str_list.fibu, str_list.fibu_bez = convert_fibu(l_op.stornogrund)
@@ -432,6 +439,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         str_list.qty =  to_decimal(t_anz)
         str_list.inc_qty =  to_decimal(t_anz)
         str_list.amount =  to_decimal(t_amt)
+        str_list.warenwert =  to_decimal(t_amt)
         str_list.amountexcl =  to_decimal(t_amountexcl)
         str_list.tax_amount =  to_decimal(t_tax)
         str_list.tot_amt =  to_decimal(t_inv)
@@ -447,6 +455,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         str_list.qty =  to_decimal(tot_anz)
         str_list.inc_qty =  to_decimal(tot_anz)
         str_list.amount =  to_decimal(tot_amount)
+        str_list.warenwert =  to_decimal(tot_amount)
         str_list.amountexcl =  to_decimal(tot_amountexcl)
         str_list.tax_amount =  to_decimal(tot_tax)
         str_list.tot_amt =  to_decimal(tot_amt)
@@ -482,6 +491,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.qty =  to_decimal(t_anz)
             str_list.inc_qty =  to_decimal(t_anz)
             str_list.amount =  to_decimal(t_amt)
+            str_list.warenwert =  to_decimal(t_amt)
             str_list.amountexcl =  to_decimal(t_amountexcl)
             str_list.tax_amount =  to_decimal(t_tax)
             str_list.tot_amt =  to_decimal(t_inv)
@@ -533,6 +543,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                     str_list.addvat_value =  to_decimal(queasy.deci1)
                     str_list.warenwert =  to_decimal(str_list.warenwert) + to_decimal((l_op.warenwert) + to_decimal((l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100))) )
                     str_list.amountexcl =  to_decimal(str_list.amountexcl) + to_decimal(l_op.warenwert)
+                    str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal((l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
                 else:
@@ -556,12 +567,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
-                str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
 
 
         else:
@@ -599,6 +610,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                     str_list.addvat_value =  to_decimal(queasy.deci1)
                     str_list.warenwert =  to_decimal(l_op.warenwert) + (to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
                     str_list.amountexcl =  to_decimal(l_op.warenwert)
+                    str_list.addvat_amount = ( to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
                 else:
@@ -622,12 +634,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(queasy.deci3)
-                str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
 
 
             str_list.fibu, str_list.fibu_bez = convert_fibu(l_op.stornogrund)
@@ -742,6 +754,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         str_list.qty =  to_decimal(t_anz)
         str_list.inc_qty =  to_decimal(t_anz)
         str_list.amount =  to_decimal(t_amt)
+        str_list.warenwert =  to_decimal(t_amt)
         str_list.amountexcl =  to_decimal(t_amountexcl)
         str_list.tax_amount =  to_decimal(t_tax)
         str_list.tot_amt =  to_decimal(t_inv)
@@ -758,6 +771,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         str_list.qty =  to_decimal(tot_anz)
         str_list.inc_qty =  to_decimal(tot_anz)
         str_list.amount =  to_decimal(tot_amount)
+        str_list.warenwert =  to_decimal(tot_amount)
         str_list.amountexcl =  to_decimal(tot_amountexcl)
         str_list.tax_amount =  to_decimal(tot_tax)
         str_list.tot_amt =  to_decimal(tot_amt)
@@ -792,6 +806,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.qty =  to_decimal(t_anz)
             str_list.inc_qty =  to_decimal(t_anz)
             str_list.amount =  to_decimal(t_amt)
+            str_list.warenwert =  to_decimal(t_amt)
             str_list.amountexcl =  to_decimal(t_amountexcl)
             str_list.supplier = "T O T A L"
             str_list.tax_amount =  to_decimal(t_tax)
@@ -845,6 +860,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                     str_list.addvat_value =  to_decimal(queasy.deci1)
                     str_list.warenwert =  to_decimal(str_list.warenwert) + to_decimal((l_op.warenwert) + to_decimal((l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100))) )
                     str_list.amountexcl =  to_decimal(str_list.amountexcl) + to_decimal(l_op.warenwert)
+                    str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal((l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
                 else:
@@ -867,12 +883,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
-                str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
 
 
         else:
@@ -910,6 +926,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                     str_list.addvat_value =  to_decimal(queasy.deci1)
                     str_list.warenwert = ( to_decimal(l_op.warenwert) + (to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100))) )
                     str_list.amountexcl =  to_decimal(l_op.warenwert)
+                    str_list.addvat_amount = ( to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
                 else:
@@ -933,12 +950,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(queasy.deci3)
-                str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
 
 
             str_list.fibu, str_list.fibu_bez = convert_fibu(l_op.stornogrund)
@@ -1097,12 +1114,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
-                str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
 
             if l_ophis.docu_nr == l_ophis.lscheinnr:
                 str_list.direct_flag = True
@@ -1181,6 +1198,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         str_list.qty =  to_decimal(t_anz)
         str_list.inc_qty =  to_decimal(t_anz)
         str_list.amount =  to_decimal(t_amt)
+        str_list.warenwert =  to_decimal(t_amt)
         str_list.amountexcl =  to_decimal(t_amountexcl)
         str_list.tax_amount =  to_decimal(t_tax)
         str_list.tot_amt =  to_decimal(t_inv)
@@ -1196,6 +1214,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         str_list.qty =  to_decimal(tot_anz)
         str_list.inc_qty =  to_decimal(tot_anz)
         str_list.amount =  to_decimal(tot_amount)
+        str_list.warenwert =  to_decimal(tot_amount)
         str_list.amountexcl =  to_decimal(tot_amountexcl)
         str_list.tax_amount =  to_decimal(tot_tax)
         str_list.tot_amt =  to_decimal(tot_amt)
@@ -1231,6 +1250,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.qty =  to_decimal(t_anz)
             str_list.inc_qty =  to_decimal(t_anz)
             str_list.amount =  to_decimal(t_amt)
+            str_list.warenwert =  to_decimal(t_amt)
             str_list.amountexcl =  to_decimal(t_amountexcl)
             str_list.tax_amount =  to_decimal(t_tax)
             str_list.tot_amt =  to_decimal(t_inv)
@@ -1273,6 +1293,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                     str_list.addvat_value =  to_decimal(queasy.deci1)
                     str_list.warenwert =  to_decimal(str_list.warenwert) + to_decimal((l_op.warenwert) + to_decimal((l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100))) )
                     str_list.amountexcl =  to_decimal(str_list.amountexcl) + to_decimal(l_op.warenwert)
+                    str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal((l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
                 else:
@@ -1293,12 +1314,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
-                str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
 
 
         else:
@@ -1336,6 +1357,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                     str_list.addvat_value =  to_decimal(queasy.deci1)
                     str_list.warenwert =  to_decimal(str_list.warenwert) + to_decimal((l_op.warenwert) + to_decimal((l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100))) )
                     str_list.amountexcl =  to_decimal(l_op.warenwert)
+                    str_list.addvat_amount = ( to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
                 else:
@@ -1359,12 +1381,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(queasy.deci3)
-                str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
 
 
             str_list.fibu, str_list.fibu_bez = convert_fibu(l_op.stornogrund)
@@ -1470,6 +1492,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         str_list.qty =  to_decimal(t_anz)
         str_list.inc_qty =  to_decimal(t_anz)
         str_list.amount =  to_decimal(t_amt)
+        str_list.warenwert =  to_decimal(t_amt)
         str_list.amountexcl =  to_decimal(t_amountexcl)
         str_list.tax_amount =  to_decimal(t_tax)
         str_list.tot_amt =  to_decimal(t_inv)
@@ -1485,6 +1508,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         str_list.qty =  to_decimal(tot_anz)
         str_list.inc_qty =  to_decimal(tot_anz)
         str_list.amount =  to_decimal(tot_amount)
+        str_list.warenwert =  to_decimal(tot_amount)
         str_list.amountexcl =  to_decimal(tot_amountexcl)
         str_list.tax_amount =  to_decimal(tot_tax)
         str_list.tot_amt =  to_decimal(tot_amt)
@@ -1520,6 +1544,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.qty =  to_decimal(t_anz)
             str_list.inc_qty =  to_decimal(t_anz)
             str_list.amount =  to_decimal(t_amt)
+            str_list.warenwert =  to_decimal(t_amt)
             str_list.amountexcl =  to_decimal(t_amountexcl)
             str_list.tax_amount =  to_decimal(t_tax)
             str_list.tot_amt =  to_decimal(t_inv)
@@ -1568,8 +1593,10 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_op.lscheinnr)],"number1": [(eq, l_op.artnr)]})
 
                 if queasy:
+                    str_list.addvat_value =  to_decimal(queasy.deci1)
                     str_list.warenwert =  to_decimal(str_list.warenwert) + to_decimal((l_op.warenwert) + to_decimal((l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100))) )
                     str_list.amountexcl =  to_decimal(str_list.amountexcl) + to_decimal(l_op.warenwert)
+                    str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal((l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
                 else:
@@ -1592,12 +1619,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
-                str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
 
 
         else:
@@ -1632,8 +1659,10 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_op.lscheinnr)],"number1": [(eq, l_op.artnr)]})
 
                 if queasy:
-                    str_list.warenwert =  to_decimal(l_op.warenwert) + (to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
+                    str_list.addvat_value =  to_decimal(queasy.deci1)
+                    str_list.warenwert = ( to_decimal(l_op.warenwert) + (to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100))) )
                     str_list.amountexcl =  to_decimal(l_op.warenwert)
+                    str_list.addvat_amount = ( to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
                 else:
@@ -1657,12 +1686,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(queasy.deci3)
-                str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
 
 
             str_list.fibu, str_list.fibu_bez = convert_fibu(l_op.stornogrund)
@@ -1775,6 +1804,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         str_list.qty =  to_decimal(t_anz)
         str_list.inc_qty =  to_decimal(t_anz)
         str_list.amount =  to_decimal(t_amt)
+        str_list.warenwert =  to_decimal(t_amt)
         str_list.amountexcl =  to_decimal(t_amountexcl)
         str_list.tax_amount =  to_decimal(t_tax)
         str_list.tot_amt =  to_decimal(t_inv)
@@ -1791,6 +1821,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         str_list.qty =  to_decimal(tot_anz)
         str_list.inc_qty =  to_decimal(tot_anz)
         str_list.amount =  to_decimal(tot_amount)
+        str_list.warenwert =  to_decimal(tot_amount)
         str_list.amountexcl =  to_decimal(tot_amountexcl)
         str_list.tax_amount =  to_decimal(tot_tax)
         str_list.tot_amt =  to_decimal(tot_amt)
@@ -1825,6 +1856,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.qty =  to_decimal(t_anz)
             str_list.inc_qty =  to_decimal(t_anz)
             str_list.amount =  to_decimal(t_amt)
+            str_list.warenwert =  to_decimal(t_amt)
             str_list.amountexcl =  to_decimal(t_amountexcl)
             str_list.tax_amount =  to_decimal(t_tax)
             str_list.tot_amt =  to_decimal(t_inv)
@@ -1875,8 +1907,10 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_op.lscheinnr)],"number1": [(eq, l_op.artnr)]})
 
                 if queasy:
+                    str_list.addvat_value =  to_decimal(queasy.deci1)
                     str_list.warenwert =  to_decimal(str_list.warenwert) + to_decimal((l_op.warenwert) + to_decimal((l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100))) )
                     str_list.amountexcl =  to_decimal(str_list.amountexcl) + to_decimal(l_op.warenwert)
+                    str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal((l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
                 else:
@@ -1899,12 +1933,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
-                str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
 
 
         else:
@@ -1939,8 +1973,10 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_op.lscheinnr)],"number1": [(eq, l_op.artnr)]})
 
                 if queasy:
-                    str_list.warenwert =  to_decimal(l_op.warenwert) + (to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
+                    str_list.addvat_value =  to_decimal(queasy.deci1)
+                    str_list.warenwert = ( to_decimal(l_op.warenwert) + (to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100))) )
                     str_list.amountexcl =  to_decimal(l_op.warenwert)
+                    str_list.addvat_amount = ( to_decimal(l_op.warenwert) * to_decimal((queasy.deci1) / to_decimal(100)) )
 
 
                 else:
@@ -1964,12 +2000,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (to_decimal(Queasy.char2) == l_op.einzelpreis) & (Queasy.number1 == to_int(l_op._recid))).first()
+                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(queasy.deci3)
-                str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
+                # str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
 
 
             str_list.fibu, str_list.fibu_bez = convert_fibu(l_op.stornogrund)

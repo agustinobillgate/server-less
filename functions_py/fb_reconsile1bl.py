@@ -12,6 +12,8 @@ from datetime import date
 from functions.calc_servvat import calc_servvat
 from models import Htparam, H_artikel, Gl_acct, L_bestand, L_lager, L_artikel, L_op, L_ophdr, Gl_main, H_compli, Hoteldpt, Exrate, Artikel, H_cost, Umsatz
 
+from functions import log_program
+
 def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:date, to_date:date, date1:date, date2:date, mi_opt_chk:bool, double_currency:bool, exchg_rate:Decimal, foreign_nr:int):
 
     prepare_cache ([Htparam, H_artikel, Gl_acct, L_bestand, L_lager, L_artikel, L_op, Gl_main, H_compli, Hoteldpt, Exrate, Artikel, H_cost, Umsatz])
@@ -46,6 +48,36 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
         nonlocal s_list_data, output_list_data
 
         return {"done": done, "output-list": output_list_data}
+    
+    def formatting_int(data, format):
+        if type(data) == str:
+            data = int(data)
+
+        digit_count = format.count('9')
+    
+        number_str = str(data)
+        
+        if len(number_str) > digit_count:
+            raise ValueError(f"Number has too many digits for the given mask ({len(number_str)} > {digit_count})")
+ 
+        number_str = number_str.zfill(digit_count)
+        
+        result = ''
+        digit_index = 0
+
+        for char in format:
+            if char == '9':
+                result += number_str[digit_index]
+                digit_index += 1
+            else:
+                result += char
+        return result
+    
+    def format_fixed_length(text: str, length: int) -> str:
+        if len(text) > length:
+            return text[:length]   # trim
+        else:
+            return text.ljust(length)
 
     def create_food():
 
@@ -127,11 +159,11 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
         food_bev = htparam.fchar
 
         create_output_list()
-        output_list.s = to_string("", "x(24)") + to_string(translateExtended ("** food **", lvcarea, "") , "x(33)")
+        output_list.s = to_string("", "x(24)") + to_string(translateExtended ("** FOOD **", lvcarea, "") , "x(33)")
         flag = 1
 
-        for l_lager in db_session.query(L_lager).filter(
-                 (L_lager.betriebsnr > 0)).order_by(L_lager._recid).all():
+        for l_lager in db_session.query(L_lager).filter((L_lager.betriebsnr > 0)).order_by(L_lager._recid).all():
+
             s_list_data.clear()
             betrag1 =  to_decimal("0")
             betrag2 =  to_decimal("0")
@@ -144,12 +176,15 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, bev_food)]})
             if gl_acct is None:
                 return generate_output()
+            
             s_list = S_list()
             s_list_data.append(s_list)
 
             s_list.reihenfolge = 1
             s_list.lager_nr = 9999
-            s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+            # s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+            s_list.l_bezeich = formatting_int(gl_acct.fibukonto.lstrip("0"), coa_format) + " " + gl_acct.bezeich.upper()
+            
             
             s_list.flag = 0
 
@@ -161,33 +196,32 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
             s_list.reihenfolge = 2
             s_list.lager_nr = 9999
-            s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
-                    gl_acct.bezeich.upper()
+            # s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+            s_list.l_bezeich = formatting_int(gl_acct.fibukonto.lstrip("0"), coa_format) + " " + gl_acct.bezeich.upper()
             s_list.flag = 0
 
 
             create_output_list()
             create_output_list()
-            output_list.s = to_string("", "x(24)") + to_string(l_lager.lager_nr, "99 ") + to_string(l_lager.bezeich, "x(30)")
+            # output_list.s = to_string("", "x(24)") + to_string(l_lager.lager_nr, "99 ") + " " + to_string(l_lager.bezeich, "x(30)")
+            output_list.s = to_string("", "x(24)") + to_string(l_lager.lager_nr, "99 ") + " " + format_fixed_length(l_lager.bezeich, 30)
 
             l_bestand_obj_list = {}
+            l_oh_obj_list = {}
             l_bestand = L_bestand()
             l_oh = L_bestand()
             l_artikel = L_artikel()
-            for l_bestand.anz_anf_best, l_bestand.anz_eingang, l_bestand._recid, l_oh.anz_anf_best, l_oh.anz_eingang, l_oh._recid, l_artikel.artnr, l_artikel._recid in db_session.query(L_bestand.anz_anf_best, L_bestand.anz_eingang, L_bestand._recid, L_oh.anz_anf_best, L_oh.anz_eingang, L_oh._recid, L_artikel.artnr, L_artikel._recid).join(L_oh,(L_oh.artnr == L_bestand.artnr) & (L_oh.lager_nr == 0)).join(L_artikel,(L_artikel.artnr == L_bestand.artnr) & (L_artikel.endkum == fl_eknr)).filter(
-                     (L_bestand.lager_nr == l_lager.lager_nr)).order_by(L_bestand._recid).all():
-                if l_bestand_obj_list.get(l_bestand._recid):
-                    continue
-                else:
-                    l_bestand_obj_list[l_bestand._recid] = True
 
+            for l_bestand.anz_anf_best, l_bestand.anz_eingang, l_bestand.anz_ausgang, l_bestand._recid, l_oh.anz_anf_best, l_oh.anz_eingang, l_oh.val_anf_best, l_oh.anz_ausgang, l_oh.wert_eingang, l_oh.wert_ausgang, l_oh._recid, l_artikel.artnr, l_artikel.vk_preis, l_artikel._recid in db_session.query(L_bestand.anz_anf_best, L_bestand.anz_eingang, L_bestand.anz_ausgang, L_bestand._recid, L_oh.anz_anf_best, L_oh.anz_eingang, L_oh.val_anf_best, L_oh.anz_ausgang, L_oh.wert_eingang, L_oh.wert_ausgang, L_oh._recid, L_artikel.artnr, L_artikel.vk_preis, L_artikel._recid).join(L_oh,(L_oh.artnr == L_bestand.artnr)).join(L_artikel,(L_artikel.artnr == L_bestand.artnr)).filter((L_bestand.lager_nr == l_lager.lager_nr) & (L_oh.lager_nr == 0) & (L_artikel.endkum == fl_eknr)).order_by(L_bestand._recid).all():
 
-                qty1 =  to_decimal(l_bestand.anz_anf_best) + to_decimal(l_bestand.anz_eingang) -\
-                        l_bestand.anz_ausgang
-                qty =  to_decimal(l_oh.anz_anf_best) + to_decimal(l_oh.anz_eingang) -\
-                        l_oh.anz_ausgang
-                wert =  to_decimal(l_oh.val_anf_best) + to_decimal(l_oh.wert_eingang) -\
-                        l_oh.wert_ausgang
+                # if l_bestand_obj_list.get(l_bestand._recid):
+                #     continue
+                # else:
+                #     l_bestand_obj_list[l_bestand._recid] = True
+
+                qty1 =  to_decimal(l_bestand.anz_anf_best) + to_decimal(l_bestand.anz_eingang) - to_decimal(l_bestand.anz_ausgang)
+                qty =  to_decimal(l_oh.anz_anf_best) + to_decimal(l_oh.anz_eingang) - to_decimal(l_oh.anz_ausgang)
+                wert =  to_decimal(l_oh.val_anf_best) + to_decimal(l_oh.wert_eingang) - to_decimal(l_oh.wert_ausgang)
 
                 s_list = query(s_list_data, filters=(lambda s_list: s_list.lager_nr == l_lager.lager_nr and s_list.reihenfolge == flag and s_list.flag == 0), first=True)
 
@@ -214,19 +248,20 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 if l_oh.anz_anf_best != 0:
                     s_list.anf_wert =  to_decimal(s_list.anf_wert) + to_decimal(l_bestand.anz_anf_best) *\
                             l_oh.val_anf_best / to_decimal(l_oh.anz_anf_best)
+                    
                     s1_list.anf_wert =  to_decimal(s1_list.anf_wert) + to_decimal(l_bestand.anz_anf_best) *\
                         (l_artikel.vk_preis - to_decimal(l_oh.val_anf_best) / to_decimal(l_oh.anz_anf_best) )
-
+                    
                 if qty != 0:
-                    s_list.end_wert =  to_decimal(s_list.end_wert) + to_decimal(wert) * to_decimal(qty1) / to_decimal(qty)
+                    log_program.write_log(f"debug-data-oscar-{s_list.lager_nr}", f"|{wert}|{qty1}|{qty}")
 
-                for l_op in db_session.query(L_op).filter(
-                         (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.op_art == 1) & (L_op.loeschflag <= 1) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
+                    s_list.end_wert =  to_decimal(s_list.end_wert) + (to_decimal(wert) * to_decimal(qty1)) / to_decimal(qty)
+
+                for l_op in db_session.query(L_op).filter((L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.op_art == 1) & (L_op.loeschflag <= 1) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
 
                     l_ophdr = get_cache (L_ophdr, {"lscheinnr": [(eq, l_op.lscheinnr)],"op_typ": [(eq, "sti")]})
 
                     if l_op.anzahl >= 0:
-
                         s_list = query(s_list_data, filters=(lambda s_list: s_list.lager_nr == l_lager.lager_nr and s_list.reihenfolge == flag and s_list.flag == 11), first=True)
 
                         if not s_list:
@@ -257,8 +292,7 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
                         s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_op.warenwert)
 
-                for l_op in db_session.query(L_op).filter(
-                         (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.pos > 0) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
+                for l_op in db_session.query(L_op).filter((L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.pos > 0) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
 
                     if substring(l_op.stornogrund, 0, 8) == ("00000000").lower() :
                         net_cost =  to_decimal(net_cost) + to_decimal(l_op.warenwert)
@@ -268,8 +302,9 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
                         if gl_acct1:
                             fibukonto = gl_acct1.fibukonto
-                            bezeich = to_string(gl_acct1.fibukonto, coa_format) + " " +\
-                                    gl_acct1.bezeich.upper()
+                            # bezeich = to_string(gl_acct1.fibukonto, coa_format) + " " +\
+                            #         gl_acct1.bezeich.upper()
+                            bezeich = formatting_int(gl_acct.fibukonto.lstrip("0"), coa_format) + " " + gl_acct.bezeich.upper()
                             type_of_acct = gl_acct1.acc_type
 
                             gl_main = get_cache (Gl_main, {"nr": [(eq, gl_acct1.main_nr)]})
@@ -280,7 +315,6 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                         elif fibukonto.lower()  == (bev_food).lower() :
                             pass
                         else:
-
                             if mi_opt_chk == False:
 
                                 s_list = query(s_list_data, filters=(lambda s_list: s_list.fibukonto.lower()  == (fibukonto).lower()  and s_list.reihenfolge == flag and s_list.flag == 5), first=True)
@@ -293,10 +327,7 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                                     s_list.reihenfolge = flag
                                     s_list.fibukonto = fibukonto
                                     s_list.bezeich = bezeich
-
-
                             else:
-
                                 s_list = query(s_list_data, filters=(lambda s_list: s_list.code == gl_main.code and s_list.reihenfolge == flag and s_list.flag == 5), first=True)
 
                                 if not s_list:
@@ -310,6 +341,7 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
                             if type_of_acct == 5 or type_of_acct == 3 or type_of_acct == 4:
                                 s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_op.warenwert)
+
             s_list = S_list()
             s_list_data.append(s_list)
 
@@ -321,18 +353,20 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.warenwert, l_op.stornogrund, l_op.anzahl, l_op.lager_nr, l_op.pos, l_op._recid, l_artikel.artnr, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.warenwert, L_op.stornogrund, L_op.anzahl, L_op.lager_nr, L_op.pos, L_op._recid, L_artikel.artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == fl_eknr)).filter(
-                     (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.loeschflag <= 1) & (L_op.op_art == 4) & (L_op.herkunftflag == 1) & ((L_op.lager_nr == l_lager.lager_nr) | (L_op.pos == l_lager.lager_nr))).order_by(L_op._recid).all():
-                if l_op_obj_list.get(l_op._recid):
-                    continue
-                else:
-                    l_op_obj_list[l_op._recid] = True
+
+            for l_op.lscheinnr, l_op.warenwert, l_op.stornogrund, l_op.anzahl, l_op.lager_nr, l_op.pos, l_op._recid, l_artikel.artnr, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.warenwert, L_op.stornogrund, L_op.anzahl, L_op.lager_nr, L_op.pos, L_op._recid, L_artikel.artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == fl_eknr)).filter((L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.loeschflag <= 1) & (L_op.op_art == 4) & (L_op.herkunftflag == 1) & ((L_op.lager_nr == l_lager.lager_nr) | (L_op.pos == l_lager.lager_nr))).order_by(L_op._recid).all():
+
+                # if l_op_obj_list.get(l_op._recid):
+                #     continue
+                # else:
+                #     l_op_obj_list[l_op._recid] = True
 
                 if l_op.lager_nr == l_lager.lager_nr:
                     s_list.betrag =  to_decimal(s_list.betrag) - to_decimal(l_op.warenwert)
 
                 if l_op.pos == l_lager.lager_nr:
                     s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_op.warenwert)
+
             s_list = S_list()
             s_list_data.append(s_list)
 
@@ -340,7 +374,6 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             s_list.reihenfolge = flag
             s_list.lager_nr = l_lager.lager_nr
             s_list.bezeich = "KITCHEN TRANSFER IN"
-
 
             s_list = S_list()
             s_list_data.append(s_list)
@@ -350,65 +383,58 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             s_list.lager_nr = l_lager.lager_nr
             s_list.bezeich = "KITCHEN TRANSFER OUT"
 
-            for h_compli in db_session.query(H_compli).filter(
-                     (H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.betriebsnr > 0) & (H_compli.p_artnr == 1)).order_by(H_compli.departement).all():
+            for h_compli in db_session.query(H_compli).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.betriebsnr > 0) & (H_compli.p_artnr == 1)).order_by(H_compli.departement).all():
 
                 hoteldpt = get_cache (Hoteldpt, {"num": [(eq, h_compli.betriebsnr)]})
 
                 if hoteldpt and hoteldpt.betriebsnr == l_lager.lager_nr:
-
                     s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 112), first=True)
                     s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(h_compli.epreis)
                 else:
-
                     hoteldpt = get_cache (Hoteldpt, {"num": [(eq, h_compli.departement)]})
 
                     if hoteldpt and hoteldpt.betriebsnr == l_lager.lager_nr:
-
                         s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 113), first=True)
                         s_list.betrag =  to_decimal(s_list.betrag) - to_decimal(h_compli.epreis)
 
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.warenwert, l_op.stornogrund, l_op.anzahl, l_op.lager_nr, l_op.pos, l_op._recid, l_artikel.artnr, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.warenwert, L_op.stornogrund, L_op.anzahl, L_op.lager_nr, L_op.pos, L_op._recid, L_artikel.artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).filter(
-                     (L_op.op_art == 3) & (L_op.loeschflag <= 1) & (L_op.datum >= date1) & (L_op.datum <= date2) & ((L_op.stornogrund == (bev_food).lower()) | (L_op.stornogrund == (food_bev).lower())) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op._recid).all():
-                if l_op_obj_list.get(l_op._recid):
-                    continue
-                else:
-                    l_op_obj_list[l_op._recid] = True
+
+            for l_op.lscheinnr, l_op.warenwert, l_op.stornogrund, l_op.anzahl, l_op.lager_nr, l_op.pos, l_op._recid, l_artikel.artnr, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.warenwert, L_op.stornogrund, L_op.anzahl, L_op.lager_nr, L_op.pos, L_op._recid, L_artikel.artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).filter((L_op.op_art == 3) & (L_op.loeschflag <= 1) & (L_op.datum >= date1) & (L_op.datum <= date2) & ((L_op.stornogrund == (bev_food).lower()) | (L_op.stornogrund == (food_bev).lower())) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op._recid).all():
+
+                # if l_op_obj_list.get(l_op._recid):
+                #     continue
+                # else:
+                #     l_op_obj_list[l_op._recid] = True
 
                 if l_op.stornogrund.lower()  == (food_bev).lower() :
-
                     s_list = query(s_list_data, filters=(lambda s_list: s_list.lager_nr == 9999 and s_list.reihenfolge == 2), first=True)
                     s_list.anf_wert =  to_decimal(s_list.anf_wert) + to_decimal(l_op.warenwert)
 
                 elif l_op.stornogrund.lower()  == (bev_food).lower() :
-
                     s_list = query(s_list_data, filters=(lambda s_list: s_list.lager_nr == 9999 and s_list.reihenfolge == 1), first=True)
                     s_list.anf_wert =  to_decimal(s_list.anf_wert) + to_decimal(l_op.warenwert)
 
-            for hoteldpt in db_session.query(Hoteldpt).filter(
-                     (Hoteldpt.num > 0) & ((Hoteldpt.num == l_lager.betriebsnr) | (Hoteldpt.betriebsnr == l_lager.lager_nr))).order_by(Hoteldpt.num).all():
+            for hoteldpt in db_session.query(Hoteldpt).filter((Hoteldpt.num > 0) & ((Hoteldpt.num == l_lager.betriebsnr) | (Hoteldpt.betriebsnr == l_lager.lager_nr))).order_by(Hoteldpt.num).all():
 
                 h_compli_obj_list = {}
                 h_compli = H_compli()
                 h_art = H_artikel()
-                for h_compli.betriebsnr, h_compli.epreis, h_compli.departement, h_compli.datum, h_compli.artnr, h_compli.anzahl, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.prozent, h_art._recid in db_session.query(H_compli.betriebsnr, H_compli.epreis, H_compli.departement, H_compli.datum, H_compli.artnr, H_compli.anzahl, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.prozent, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter(
-                         (H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
-                    if h_compli_obj_list.get(h_compli._recid):
-                        continue
-                    else:
-                        h_compli_obj_list[h_compli._recid] = True
+
+                for h_compli.betriebsnr, h_compli.epreis, h_compli.departement, h_compli.datum, h_compli.artnr, h_compli.anzahl, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.prozent, h_art._recid in db_session.query(H_compli.betriebsnr, H_compli.epreis, H_compli.departement, H_compli.datum, H_compli.artnr, H_compli.anzahl, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.prozent, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
+
+                    # if h_compli_obj_list.get(h_compli._recid):
+                    #     continue
+                    # else:
+                    #     h_compli_obj_list[h_compli._recid] = True
 
                     if double_currency and curr_datum != h_compli.datum:
                         curr_datum = h_compli.datum
 
                         if foreign_nr != 0:
-
                             exrate = get_cache (Exrate, {"artnr": [(eq, foreign_nr)],"datum": [(eq, curr_datum)]})
                         else:
-
                             exrate = get_cache (Exrate, {"datum": [(eq, curr_datum)]})
 
                         if exrate:
@@ -419,8 +445,10 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                     artikel = get_cache (Artikel, {"artnr": [(eq, h_art.artnrfront)],"departement": [(eq, 0)]})
 
                     gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, artikel.fibukonto)]})
+
                     if gl_acct is None:
                         return generate_output()
+                    
                     gl_main = get_cache (Gl_main, {"nr": [(eq, gl_acct.main_nr)]})
 
                     h_artikel = get_cache (H_artikel, {"departement": [(eq, h_compli.departement)],"artnr": [(eq, h_compli.artnr)]})
@@ -466,12 +494,12 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                                 s_list.flag = 4
                                 s_list.reihenfolge = flag
                                 s_list.fibukonto = gl_acct.fibukonto
-                                s_list.bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
-                                        gl_acct.bezeich.upper()
+                                # s_list.bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
+                                #         gl_acct.bezeich.upper()
+                                s_list.bezeich = formatting_int(gl_acct.fibukonto.lstrip("0"), coa_format) + " " + gl_acct.bezeich.upper()
 
 
                         else:
-
                             s_list = query(s_list_data, filters=(lambda s_list: s_list.code == gl_main.code and s_list.reihenfolge == 1 and s_list.flag == 4), first=True)
 
                             if not s_list:
@@ -483,20 +511,22 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                                 s_list.code = gl_main.code
                                 s_list.bezeich = gl_main.bezeich
 
-
                         s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(f_cost)
 
             if l_lager.betriebsnr != 0:
                 tf_sales, tb_sales = fb_sales(f_eknr, b_eknr)
+
             i = 0
             onhand =  to_decimal("0")
             create_output_list()
-            output_list.s = to_string(translateExtended ("1. Opening Inventory", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("1. Opening Inventory", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("1. Opening Inventory", lvcarea, ""), 24)
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 0 and s_list.reihenfolge == flag and s_list.lager_nr != 9999 and s_list.anf_wert != 0), first=True)
 
             if s_list:
                 onhand =  to_decimal(s_list.anf_wert)
+
             i = i + 1
             betrag1 =  to_decimal(betrag1) + to_decimal(onhand)
 
@@ -504,6 +534,7 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 output_list.s = output_list.s + to_string("", "x(33)") + to_string(onhand, "->>>,>>>,>>9.99")
             else:
                 output_list.s = output_list.s + to_string("", "x(33)") + to_string(onhand, "->>,>>>,>>>,>>9")
+
             i = 0
             onhand =  to_decimal("0")
 
@@ -511,11 +542,13 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
             if s_list:
                 onhand =  to_decimal(s_list.anf_wert)
+
             i = i + 1
             betrag1 =  to_decimal(betrag1) + to_decimal(onhand)
             create_output_list()
-            output_list.s = to_string(translateExtended (" OpenInv Adjustment", lvcarea, "") , "x(24)") +\
-                    to_string("", "x(33)")
+            # output_list.s = to_string(translateExtended(" OpenInv Adjustment", lvcarea, "") , "x(24)") +\
+            #         to_string("", "x(33)")
+            output_list.s = format_fixed_length(translateExtended(" OpenInv Adjustment", lvcarea, ""), 24)+ to_string("", "x(33)")
             output_list.nr = 1
             output_list.store = l_lager.lager_nr
             output_list.amount =  to_decimal(onhand)
@@ -527,7 +560,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             i = 0
             onhand =  to_decimal("0")
             create_output_list()
-            output_list.s = to_string(translateExtended ("2. Incoming Stocks", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("2. Incoming Stocks", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("2. Incoming Stocks", lvcarea, ""), 24)
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 11 and s_list.reihenfolge == flag), first=True)
 
@@ -540,10 +574,12 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 output_list.s = output_list.s + to_string("", "x(33)") + to_string(onhand, "->>>,>>>,>>9.99")
             else:
                 output_list.s = output_list.s + to_string("", "x(33)") + to_string(onhand, "->>,>>>,>>>,>>9")
+
             i = 0
             onhand =  to_decimal("0")
             create_output_list()
-            output_list.s = to_string(translateExtended ("3. Returned Stocks", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("3. Returned Stocks", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("3. Returned Stocks", lvcarea, ""), 24)
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 12 and s_list.reihenfolge == flag), first=True)
 
@@ -558,7 +594,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 output_list.s = output_list.s + to_string("", "x(33)") + to_string(onhand, "->>,>>>,>>>,>>9")
             i = 0
             create_output_list()
-            output_list.s = to_string(translateExtended ("4. Store Transfer", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("4. Store Transfer", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("4. Store Transfer", lvcarea, ""), 24)
 
             for s_list in query(s_list_data, filters=(lambda s_list: s_list.flag == 111 and s_list.reihenfolge == flag), sort_by=[("lager_nr",False)]):
                 i = i + 1
@@ -570,7 +607,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                     output_list.s = output_list.s + to_string("", "x(33)") + to_string(s_list.betrag, "->>,>>>,>>>,>>9")
             i = 0
             create_output_list()
-            output_list.s = to_string(translateExtended ("5. Kitchen Transfer In", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("5. Kitchen Transfer In", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("5. Kitchen Transfer In", lvcarea, ""), 24)
 
             for s_list in query(s_list_data, filters=(lambda s_list: s_list.flag == 112 and s_list.reihenfolge == flag), sort_by=[("lager_nr",False)]):
                 i = i + 1
@@ -582,7 +620,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                     output_list.s = output_list.s + to_string("", "x(33)") + to_string(s_list.betrag, "->>,>>>,>>>,>>9")
             i = 0
             create_output_list()
-            output_list.s = to_string(translateExtended (" Kitchen Transfer Out", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended (" Kitchen Transfer Out", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended (" Kitchen Transfer Out", lvcarea, ""), 24)
 
             for s_list in query(s_list_data, filters=(lambda s_list: s_list.flag == 113 and s_list.reihenfolge == flag), sort_by=[("lager_nr",False)]):
                 i = i + 1
@@ -595,17 +634,20 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.lager_nr == 9999 and s_list.reihenfolge == flag), first=True)
             create_output_list()
-            output_list.s = to_string(("6. " + s_list.l_bezeich) , "x(24)") + to_string("", "x(33)")
+
+            output_list.s = format_fixed_length( ("6. " + s_list.l_bezeich), 24) + to_string("", "x(33)")
 
             if not long_digit:
                 output_list.s = output_list.s + to_string(s_list.anf_wert, "->>>,>>>,>>9.99")
             else:
                 output_list.s = output_list.s + to_string(s_list.anf_wert, "->>,>>>,>>>,>>9")
+
             betrag4 =  to_decimal(betrag1) + to_decimal(betrag2) + to_decimal(betrag3) + to_decimal(s_list.anf_wert)
             create_output_list()
-            output_list.s = to_string(translateExtended ("7. Inventory Available", lvcarea, "") , "x(24)") +\
-                    to_string("(1 + 2 + 3 + 4 + 5 + 6)", "x(33)") +\
-                    to_string("", "x(15)")
+            # output_list.s = to_string(translateExtended ("7. Inventory Available", lvcarea, "") , "x(24)") +\
+            #         to_string("(1 + 2 + 3 + 4 + 5 + 6)", "x(33)") +\
+            #         to_string("", "x(15)")
+            output_list.s = format_fixed_length(translateExtended ("7. Inventory Available", lvcarea, ""), 24) + format_fixed_length("(1 + 2 + 3 + 4 + 5 + 6)", 33) + to_string("", "x(15)")
             output_list.nr = 2
             output_list.store = l_lager.lager_nr
             output_list.amount =  to_decimal(betrag4)
@@ -614,15 +656,18 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 output_list.s = output_list.s + to_string(betrag4, "->>>,>>>,>>9.99")
             else:
                 output_list.s = output_list.s + to_string(betrag4, "->>,>>>,>>>,>>9")
+
             i = 0
             onhand =  to_decimal("0")
             create_output_list()
-            output_list.s = to_string(translateExtended ("8. Closing Inventory", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("8. Closing Inventory", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("8. Closing Inventory", lvcarea, ""), 24)
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 0 and s_list.reihenfolge == flag and s_list.lager_nr != 9999 and s_list.end_wert != 0), first=True)
 
             if s_list:
                 onhand =  to_decimal(s_list.end_wert)
+
             i = i + 1
             betrag5 =  to_decimal(betrag5) + to_decimal(onhand)
 
@@ -632,8 +677,9 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 output_list.s = output_list.s + to_string("", "x(33)") + to_string(onhand, "->>,>>>,>>>,>>9")
             create_output_list()
             betrag56 =  to_decimal(betrag4) - to_decimal(betrag5)
-            output_list.s = to_string(translateExtended ("9. Tot. Cost Consumption", lvcarea, "") , "x(24)") +\
-                    to_string("(7 - 8)", "x(33)") + to_string("", "x(15)")
+            # output_list.s = to_string(translateExtended ("9. Tot. Cost Consumption", lvcarea, "") , "x(24)") +\
+            #         to_string("(7 - 8)", "x(33)") + to_string("", "x(15)")
+            output_list.s = format_fixed_length(translateExtended ("9. Tot. Cost Consumption", lvcarea, ""), 24) + format_fixed_length("(7 - 8)", 33) + to_string("", "x(15)")
             output_list.nr = 3
             output_list.store = l_lager.lager_nr
             output_list.amount =  to_decimal(betrag56)
@@ -642,10 +688,13 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 output_list.s = output_list.s + to_string(betrag56, "->>>,>>>,>>9.99")
             else:
                 output_list.s = output_list.s + to_string(betrag56, "->>,>>>,>>>,>>9")
+
             create_output_list()
-            output_list.s = to_string(translateExtended ("10 Less by Expenses", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("10 Less by Expenses", lvcarea, ""), 24)
+
             create_output_list()
-            output_list.s = to_string(translateExtended ("- Compliment Cost", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("-  Compliment Cost", lvcarea, ""), 24)
+
             counter = 0
 
             for s_list in query(s_list_data, filters=(lambda s_list: s_list.flag == 4 and s_list.reihenfolge == flag and s_list.betrag != 0), sort_by=[("bezeich",False)]):
@@ -657,11 +706,13 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                     output_list.s = to_string("", "x(24)")
 
                 if not long_digit:
-                    output_list.s = output_list.s + to_string(s_list.bezeich, "x(33)") + to_string(s_list.betrag, "->>>,>>>,>>9.99")
+                    output_list.s = output_list.s + format_fixed_length(s_list.bezeich, 33) + to_string(s_list.betrag, "->>>,>>>,>>9.99")
                 else:
-                    output_list.s = output_list.s + to_string(s_list.bezeich, "x(33)") + to_string(s_list.betrag, "->>,>>>,>>>,>>9")
+                    output_list.s = output_list.s + format_fixed_length(s_list.bezeich, 33) + to_string(s_list.betrag, "->>,>>>,>>>,>>9")
+                    
             create_output_list()
-            output_list.s = to_string(translateExtended ("- Department Expenses", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("- Department Expenses", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("-  Department Expenses", lvcarea, ""), 24)
             counter = 0
 
             for s_list in query(s_list_data, filters=(lambda s_list: s_list.flag == 5 and s_list.reihenfolge == flag and s_list.betrag != 0), sort_by=[("bezeich",False)]):
@@ -673,32 +724,43 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                     output_list.s = to_string("", "x(24)")
 
                 if not long_digit:
-                    output_list.s = output_list.s + to_string(s_list.bezeich, "x(33)") + to_string(s_list.betrag, "->>>,>>>,>>9.99")
+                    output_list.s = output_list.s + format_fixed_length(s_list.bezeich, 33) + to_string(s_list.betrag, "->>>,>>>,>>9.99")
                 else:
-                    output_list.s = output_list.s + to_string(s_list.bezeich, "x(33)") + to_string(s_list.betrag, "->>,>>>,>>>,>>9")
+                    output_list.s = output_list.s + format_fixed_length(s_list.bezeich, 33) + to_string(s_list.betrag, "->>,>>>,>>>,>>9")
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.reihenfolge == 2 and s_list.lager_nr == 9999), first=True)
             create_output_list()
             output_list.s = to_string("", "x(24)")
 
             if not long_digit:
-                output_list.s = output_list.s + to_string(s_list.l_bezeich, "x(33)") + to_string(s_list.anf_wert, "->>>,>>>,>>9.99")
+                output_list.s = output_list.s + to_string(s_list.l_bezeich, "x(24)") + to_string(s_list.anf_wert, "->>>,>>>,>>9.99")
             else:
-                output_list.s = output_list.s + to_string(s_list.l_bezeich, "x(33)") + to_string(s_list.anf_wert, "->>,>>>,>>>,>>9")
+                output_list.s = output_list.s + to_string(s_list.l_bezeich, "x(24)") + to_string(s_list.anf_wert, "->>,>>>,>>>,>>9")
             betrag6 =  to_decimal(betrag6) + to_decimal(s_list.anf_wert)
             create_output_list()
 
             if not long_digit:
-                output_list.s = to_string("", "x(24)") + to_string("", "x(24)") + to_string(translateExtended ("SUB TOTAL", lvcarea, "") , "x(9)") + to_string("", "x(15)") + to_string(betrag6, "->>>,>>>,>>9.99")
+                # output_list.s = to_string("", "x(24)") + to_string("", "x(24)") + to_string(translateExtended ("SUB TOTAL", lvcarea, "") , "x(9)") + to_string("", "x(15)") + to_string(betrag6, "->>>,>>>,>>9.99")
+
+                output_list.s = to_string("", "x(24)") + to_string("", "x(24)") + format_fixed_length(translateExtended ("SUB TOTAL", lvcarea, ""), 9) + to_string("", "x(15)") + to_string(betrag6, "->>>,>>>,>>9.99")
             else:
-                output_list.s = to_string("", "x(24)") + to_string("", "x(24)") + to_string(translateExtended ("SUB TOTAL", lvcarea, "") , "x(9)") + to_string("", "x(15)") + to_string(betrag6, "->>,>>>,>>>,>>9")
+                # output_list.s = to_string("", "x(24)") + to_string("", "x(24)") + to_string(translateExtended ("SUB TOTAL", lvcarea, "") , "x(9)") + to_string("", "x(15)") + to_string(betrag6, "->>,>>>,>>>,>>9")
+
+                output_list.s = to_string("", "x(24)") + to_string("", "x(24)") + format_fixed_length(translateExtended ("SUB TOTAL", lvcarea, ""), 9) + to_string("", "x(15)") + to_string(betrag6, "->>,>>>,>>>,>>9")
+
             consume2 =  to_decimal(betrag56) - to_decimal(betrag6)
             create_output_list()
 
             if not long_digit:
-                output_list.s = to_string(translateExtended ("11 Net Cost Consumed", lvcarea, "") , "x(24)") + to_string("(9 - 10)", "x(33)") + to_string("", "x(15)") + to_string(consume2, "->>>,>>>,>>9.99")
+                # output_list.s = to_string(translateExtended ("11 Net Cost Consumed", lvcarea, "") , "x(24)") + to_string("(9 - 10)", "x(33)") + to_string("", "x(15)") + to_string(consume2, "->>>,>>>,>>9.99")
+
+                output_list.s = format_fixed_length(translateExtended ("11 Net Cost Consumed", lvcarea, ""), 24) + format_fixed_length("(9 - 10)", 33) + to_string("", "x(15)") + to_string(consume2, "->>>,>>>,>>9.99")
+
             else:
-                output_list.s = to_string("11 Net Cost Consumed", "x(24)") + to_string("(9 - 10)", "x(33)") + to_string("", "x(15)") + to_string(consume2, "->>,>>>,>>>,>>9")
+                # output_list.s = to_string("11 Net Cost Consumed", "x(24)") + to_string("(9 - 10)", "x(33)") + to_string("", "x(15)") + to_string(consume2, "->>,>>>,>>>,>>9")
+
+                output_list.s = format_fixed_length(translateExtended ("11 Net Cost Consumed", lvcarea, ""), 24) + format_fixed_length("(9 - 10)", 33) + to_string("", "x(15)") + to_string(consume2, "->>,>>>,>>>,>>9")
+
             create_output_list()
             f_ratio =  to_decimal("0")
 
@@ -706,11 +768,15 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 f_ratio =  to_decimal(consume2) / to_decimal(tf_sales) * to_decimal("100")
 
             if not long_digit:
-                output_list.s = to_string(translateExtended (">> Net food Sales", lvcarea, "") , "x(24)") + to_string("", "x(16)") + to_string(tf_sales, "->,>>>,>>>,>>9.99") + to_string(" Cost:Sales", "x(15)") + to_string(f_ratio, "->,>>>,>>9.99 %")
-            else:
-                output_list.s = to_string("Net food Sales", "x(24)") + to_string("", "x(16)") + to_string(tf_sales, " ->>>,>>>,>>>,>>9") + to_string(" Cost:Sales", "x(15)") + to_string(f_ratio, "->,>>>,>>9.99 %")
-        done = True
+                # output_list.s = to_string(translateExtended (">> Net food Sales", lvcarea, "") , "x(24)") + to_string("", "x(16)") + to_string(tf_sales, "->,>>>,>>>,>>9.99") + to_string(" Cost:Sales", "x(15)") + to_string(f_ratio, "->,>>>,>>9.99 %")
 
+                output_list.s = format_fixed_length(translateExtended (">> Net Food Sales", lvcarea, ""), 24) + to_string("", "x(16)") + to_string(tf_sales, "->,>>>,>>>,>>9.99") + format_fixed_length(" Cost:Sales", 15) + f"{to_string(f_ratio, "->,>>>,>>9.99")} %"
+            else:
+                # output_list.s = to_string("Net food Sales", "x(24)") + to_string("", "x(16)") + to_string(tf_sales, " ->>>,>>>,>>>,>>9") + to_string(" Cost:Sales", "x(15)") + to_string(f_ratio, "->,>>>,>>9.99 %")
+
+                output_list.s = format_fixed_length("Net Food Sales", 24) + to_string("", "x(16)") +to_string(tf_sales, " ->>>,>>>,>>>,>>9") +  format_fixed_length(" Cost:Sales", 15) + f"{to_string(f_ratio, "->,>>>,>>9.99")} %"
+
+        done = True
 
     def create_beverage():
 
@@ -789,11 +855,12 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
         htparam = get_cache (Htparam, {"paramnr": [(eq, 275)]})
         food_bev = htparam.fchar
         create_output_list()
-        output_list.s = to_string("", "x(24)") + to_string(translateExtended ("** BEVERAGE **", lvcarea, "") , "x(33)")
+        # output_list.s = to_string("", "x(24)") + to_string(translateExtended ("** BEVERAGE **", lvcarea, "") , "x(33)")
+        output_list.s = to_string("", "x(24)") + format_fixed_length(translateExtended ("** BEVERAGE **", lvcarea, ""), 33)
         flag = 2
 
-        for l_lager in db_session.query(L_lager).filter(
-                 (L_lager.betriebsnr > 0)).order_by(L_lager._recid).all():
+        for l_lager in db_session.query(L_lager).filter((L_lager.betriebsnr > 0)).order_by(L_lager._recid).all():
+
             s_list_data.clear()
             betrag1 =  to_decimal("0")
             betrag2 =  to_decimal("0")
@@ -811,8 +878,9 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
             s_list.reihenfolge = 1
             s_list.lager_nr = 9999
-            s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
-                    gl_acct.bezeich.upper()
+            # s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
+            #         gl_acct.bezeich.upper()
+            s_list.l_bezeich = formatting_int(gl_acct.fibukonto.lstrip("0"), coa_format) + " " + gl_acct.bezeich.upper()
             s_list.flag = 0
 
             gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, food_bev)]})
@@ -823,26 +891,28 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
             s_list.reihenfolge = 2
             s_list.lager_nr = 9999
-            s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
-                    gl_acct.bezeich.upper()
+            # s_list.l_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
+            #         gl_acct.bezeich.upper()
+            s_list.l_bezeich = formatting_int(gl_acct.fibukonto.lstrip("0"), coa_format) + " " + gl_acct.bezeich.upper()
             s_list.flag = 0
 
 
             create_output_list()
             create_output_list()
-            output_list.s = to_string("", "x(24)") + to_string(l_lager.lager_nr, "99 ") + to_string(l_lager.bezeich, "x(30)")
+            # output_list.s = to_string("", "x(24)") + to_string(l_lager.lager_nr, "99 ") + " " + to_string(l_lager.bezeich, "x(30)")
+            output_list.s = to_string("", "x(24)") + to_string(l_lager.lager_nr, "99 ") + " " + format_fixed_length(l_lager.bezeich, 30)
 
             l_bestand_obj_list = {}
             l_bestand = L_bestand()
             l_oh = L_bestand()
             l_artikel = L_artikel()
-            for l_bestand.anz_anf_best, l_bestand.anz_eingang, l_bestand._recid, l_oh.anz_anf_best, l_oh.anz_eingang, l_oh._recid, l_artikel.artnr, l_artikel._recid in db_session.query(L_bestand.anz_anf_best, L_bestand.anz_eingang, L_bestand._recid, L_oh.anz_anf_best, L_oh.anz_eingang, L_oh._recid, L_artikel.artnr, L_artikel._recid).join(L_oh,(L_oh.artnr == L_bestand.artnr) & (L_oh.lager_nr == 0)).join(L_artikel,(L_artikel.artnr == L_bestand.artnr) & (L_artikel.endkum == bl_eknr)).filter(
-                     (L_bestand.lager_nr == l_lager.lager_nr)).order_by(L_bestand._recid).all():
-                if l_bestand_obj_list.get(l_bestand._recid):
-                    continue
-                else:
-                    l_bestand_obj_list[l_bestand._recid] = True
 
+            for l_bestand.anz_anf_best, l_bestand.anz_eingang, l_bestand.anz_ausgang, l_bestand._recid, l_oh.anz_anf_best, l_oh.anz_eingang, l_oh.anz_ausgang, l_oh.val_anf_best, l_oh.wert_eingang, l_oh.wert_ausgang, l_oh._recid, l_artikel.artnr, l_artikel._recid in db_session.query(L_bestand.anz_anf_best, L_bestand.anz_eingang, L_bestand.anz_ausgang, L_bestand._recid, L_oh.anz_anf_best, L_oh.anz_eingang, L_oh.anz_ausgang, L_oh.val_anf_best, L_oh.wert_eingang, L_oh.wert_ausgang, L_oh._recid, L_artikel.artnr, L_artikel._recid).join(L_oh,(L_oh.artnr == L_bestand.artnr) & (L_oh.lager_nr == 0)).join(L_artikel,(L_artikel.artnr == L_bestand.artnr) & (L_artikel.endkum == bl_eknr)).filter((L_bestand.lager_nr == l_lager.lager_nr)).order_by(L_bestand._recid).all():
+
+                # if l_bestand_obj_list.get(l_bestand._recid):
+                #     continue
+                # else:
+                #     l_bestand_obj_list[l_bestand._recid] = True
 
                 qty1 =  to_decimal(l_bestand.anz_anf_best) + to_decimal(l_bestand.anz_eingang) -\
                         l_bestand.anz_ausgang
@@ -882,8 +952,7 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 if qty != 0:
                     s_list.end_wert =  to_decimal(s_list.end_wert) + to_decimal(wert) * to_decimal(qty1) / to_decimal(qty)
 
-                for l_op in db_session.query(L_op).filter(
-                         (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.op_art == 1) & (L_op.loeschflag <= 1) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
+                for l_op in db_session.query(L_op).filter((L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.op_art == 1) & (L_op.loeschflag <= 1) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
 
                     l_ophdr = get_cache (L_ophdr, {"lscheinnr": [(eq, l_op.lscheinnr)],"op_typ": [(eq, "sti")]})
 
@@ -919,19 +988,18 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
                         s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_op.warenwert)
 
-                for l_op in db_session.query(L_op).filter(
-                         (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.pos > 0) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
+                for l_op in db_session.query(L_op).filter((L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.pos > 0) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
 
                     if substring(l_op.stornogrund, 0, 8) == ("00000000").lower() :
                         net_cost =  to_decimal(net_cost) + to_decimal(l_op.warenwert)
                     else:
-
                         gl_acct1 = get_cache (Gl_acct, {"fibukonto": [(eq, l_op.stornogrund)]})
 
                         if gl_acct1:
                             fibukonto = gl_acct1.fibukonto
-                            bezeich = to_string(gl_acct1.fibukonto, coa_format) + " " +\
-                                    gl_acct1.bezeich.upper()
+                            # bezeich = to_string(gl_acct1.fibukonto, coa_format) + " " +\
+                            #         gl_acct1.bezeich.upper()
+                            bezeich = formatting_int(gl_acct1.fibukonto.lstrip("0"), coa_format) + " " + gl_acct1.bezeich.upper()
                             type_of_acct = gl_acct1.acc_type
 
 
@@ -984,18 +1052,20 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.warenwert, l_op.stornogrund, l_op.anzahl, l_op.lager_nr, l_op.pos, l_op._recid, l_artikel.artnr, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.warenwert, L_op.stornogrund, L_op.anzahl, L_op.lager_nr, L_op.pos, L_op._recid, L_artikel.artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == bl_eknr)).filter(
-                     (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.loeschflag <= 1) & (L_op.op_art == 4) & (L_op.herkunftflag == 1) & ((L_op.lager_nr == l_lager.lager_nr) | (L_op.pos == l_lager.lager_nr))).order_by(L_op._recid).all():
-                if l_op_obj_list.get(l_op._recid):
-                    continue
-                else:
-                    l_op_obj_list[l_op._recid] = True
+
+            for l_op.lscheinnr, l_op.warenwert, l_op.stornogrund, l_op.anzahl, l_op.lager_nr, l_op.pos, l_op._recid, l_artikel.artnr, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.warenwert, L_op.stornogrund, L_op.anzahl, L_op.lager_nr, L_op.pos, L_op._recid, L_artikel.artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == bl_eknr)).filter((L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.loeschflag <= 1) & (L_op.op_art == 4) & (L_op.herkunftflag == 1) & ((L_op.lager_nr == l_lager.lager_nr) | (L_op.pos == l_lager.lager_nr))).order_by(L_op._recid).all():
+
+                # if l_op_obj_list.get(l_op._recid):
+                #     continue
+                # else:
+                #     l_op_obj_list[l_op._recid] = True
 
                 if l_op.lager_nr == l_lager.lager_nr:
                     s_list.betrag =  to_decimal(s_list.betrag) - to_decimal(l_op.warenwert)
 
                 if l_op.pos == l_lager.lager_nr:
                     s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_op.warenwert)
+
             s_list = S_list()
             s_list_data.append(s_list)
 
@@ -1013,65 +1083,58 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             s_list.bezeich = "KITCHEN TRANSFER OUT"
             s_list.flag = 113
 
-            for h_compli in db_session.query(H_compli).filter(
-                     (H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.betriebsnr > 0) & (H_compli.p_artnr == 2)).order_by(H_compli.departement).all():
+            for h_compli in db_session.query(H_compli).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.betriebsnr > 0) & (H_compli.p_artnr == 2)).order_by(H_compli.departement).all():
 
                 hoteldpt = get_cache (Hoteldpt, {"num": [(eq, h_compli.betriebsnr)]})
 
                 if hoteldpt and hoteldpt.betriebsnr == l_lager.lager_nr:
-
                     s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 112), first=True)
                     s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(h_compli.epreis)
                 else:
-
                     hoteldpt = get_cache (Hoteldpt, {"num": [(eq, h_compli.departement)]})
 
                     if hoteldpt and hoteldpt.betriebsnr == l_lager.lager_nr:
-
                         s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 113), first=True)
                         s_list.betrag =  to_decimal(s_list.betrag) - to_decimal(h_compli.epreis)
 
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.warenwert, l_op.stornogrund, l_op.anzahl, l_op.lager_nr, l_op.pos, l_op._recid, l_artikel.artnr, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.warenwert, L_op.stornogrund, L_op.anzahl, L_op.lager_nr, L_op.pos, L_op._recid, L_artikel.artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).filter(
-                     (L_op.op_art == 3) & (L_op.loeschflag <= 1) & (L_op.datum >= date1) & (L_op.datum <= date2) & ((L_op.stornogrund == (bev_food).lower()) | (L_op.stornogrund == (food_bev).lower())) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op._recid).all():
-                if l_op_obj_list.get(l_op._recid):
-                    continue
-                else:
-                    l_op_obj_list[l_op._recid] = True
+
+            for l_op.lscheinnr, l_op.warenwert, l_op.stornogrund, l_op.anzahl, l_op.lager_nr, l_op.pos, l_op._recid, l_artikel.artnr, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.warenwert, L_op.stornogrund, L_op.anzahl, L_op.lager_nr, L_op.pos, L_op._recid, L_artikel.artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).filter((L_op.op_art == 3) & (L_op.loeschflag <= 1) & (L_op.datum >= date1) & (L_op.datum <= date2) & ((L_op.stornogrund == (bev_food).lower()) | (L_op.stornogrund == (food_bev).lower())) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op._recid).all():
+
+                # if l_op_obj_list.get(l_op._recid):
+                #     continue
+                # else:
+                #     l_op_obj_list[l_op._recid] = True
 
                 if l_op.stornogrund.lower()  == (food_bev).lower() :
-
                     s_list = query(s_list_data, filters=(lambda s_list: s_list.lager_nr == 9999 and s_list.reihenfolge == 2), first=True)
                     s_list.anf_wert =  to_decimal(s_list.anf_wert) + to_decimal(l_op.warenwert)
 
                 elif l_op.stornogrund.lower()  == (bev_food).lower() :
-
                     s_list = query(s_list_data, filters=(lambda s_list: s_list.lager_nr == 9999 and s_list.reihenfolge == 1), first=True)
                     s_list.anf_wert =  to_decimal(s_list.anf_wert) + to_decimal(l_op.warenwert)
 
-            for hoteldpt in db_session.query(Hoteldpt).filter(
-                     (Hoteldpt.num > 0) & ((Hoteldpt.num == l_lager.betriebsnr) | (Hoteldpt.betriebsnr == l_lager.lager_nr))).order_by(Hoteldpt.num).all():
+            for hoteldpt in db_session.query(Hoteldpt).filter((Hoteldpt.num > 0) & ((Hoteldpt.num == l_lager.betriebsnr) | (Hoteldpt.betriebsnr == l_lager.lager_nr))).order_by(Hoteldpt.num).all():
 
                 h_compli_obj_list = {}
                 h_compli = H_compli()
                 h_art = H_artikel()
-                for h_compli.betriebsnr, h_compli.epreis, h_compli.departement, h_compli.datum, h_compli.artnr, h_compli.anzahl, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.prozent, h_art._recid in db_session.query(H_compli.betriebsnr, H_compli.epreis, H_compli.departement, H_compli.datum, H_compli.artnr, H_compli.anzahl, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.prozent, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter(
-                         (H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
-                    if h_compli_obj_list.get(h_compli._recid):
-                        continue
-                    else:
-                        h_compli_obj_list[h_compli._recid] = True
+
+                for h_compli.betriebsnr, h_compli.epreis, h_compli.departement, h_compli.datum, h_compli.artnr, h_compli.anzahl, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.prozent, h_art._recid in db_session.query(H_compli.betriebsnr, H_compli.epreis, H_compli.departement, H_compli.datum, H_compli.artnr, H_compli.anzahl, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.prozent, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
+
+                    # if h_compli_obj_list.get(h_compli._recid):
+                    #     continue
+                    # else:
+                    #     h_compli_obj_list[h_compli._recid] = True
 
                     if double_currency and curr_datum != h_compli.datum:
                         curr_datum = h_compli.datum
 
                         if foreign_nr != 0:
-
                             exrate = get_cache (Exrate, {"artnr": [(eq, foreign_nr)],"datum": [(eq, curr_datum)]})
                         else:
-
                             exrate = get_cache (Exrate, {"datum": [(eq, curr_datum)]})
 
                         if exrate:
@@ -1082,8 +1145,10 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                     artikel = get_cache (Artikel, {"artnr": [(eq, h_art.artnrfront)],"departement": [(eq, 0)]})
 
                     gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, artikel.fibukonto)]})
+
                     if gl_acct is None:
                         return generate_output()
+                    
                     gl_main = get_cache (Gl_main, {"nr": [(eq, gl_acct.main_nr)]})
 
                     h_artikel = get_cache (H_artikel, {"departement": [(eq, h_compli.departement)],"artnr": [(eq, h_compli.artnr)]})
@@ -1123,12 +1188,12 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                                 s_list.flag = 4
                                 s_list.reihenfolge = flag
                                 s_list.fibukonto = gl_acct.fibukonto
-                                s_list.bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
-                                        gl_acct.bezeich.upper()
+                                # s_list.bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
+                                #         gl_acct.bezeich.upper()
+                                s_list.bezeich = formatting_int(gl_acct.fibukonto.lstrip("0"), coa_format) + " " + gl_acct.bezeich.upper()
 
 
                         else:
-
                             s_list = query(s_list_data, filters=(lambda s_list: s_list.code == gl_main.code and s_list.reihenfolge == 2 and s_list.flag == 4), first=True)
 
                             if not s_list:
@@ -1145,10 +1210,12 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
             if l_lager.betriebsnr != 0:
                 tf_sales, tb_sales = fb_sales(f_eknr, b_eknr)
+
             i = 0
             onhand =  to_decimal("0")
             create_output_list()
-            output_list.s = to_string(translateExtended ("1. Opening Inventory", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("1. Opening Inventory", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("1. Opening Inventory", lvcarea, ""), 24)
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 0 and s_list.reihenfolge == flag and s_list.lager_nr != 9999 and s_list.anf_wert != 0), first=True)
 
@@ -1171,8 +1238,10 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             i = i + 1
             betrag1 =  to_decimal(betrag1) + to_decimal(onhand)
             create_output_list()
-            output_list.s = to_string(translateExtended (" OpenInv Adjustment", lvcarea, "") , "x(24)") +\
-                    to_string("", "x(33)")
+            # output_list.s = to_string(translateExtended (" OpenInv Adjustment", lvcarea, "") , "x(24)") +\
+            #         to_string("", "x(33)")
+            output_list.s = format_fixed_length(translateExtended (" OpenInv Adjustment", lvcarea, ""), 24) + to_string("", "x(33)")
+
             output_list.nr = 1
             output_list.store = l_lager.lager_nr
             output_list.amount =  to_decimal(onhand)
@@ -1184,7 +1253,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             i = 0
             onhand =  to_decimal("0")
             create_output_list()
-            output_list.s = to_string(translateExtended ("2. Incoming Stocks", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("2. Incoming Stocks", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("2. Incoming Stocks", lvcarea, ""), 24)
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 11 and s_list.reihenfolge == flag), first=True)
 
@@ -1200,7 +1270,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             i = 0
             onhand =  to_decimal("0")
             create_output_list()
-            output_list.s = to_string(translateExtended ("3. Returned Stocks", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("3. Returned Stocks", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("3. Returned Stocks", lvcarea, ""), 24)
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 12 and s_list.reihenfolge == flag), first=True)
 
@@ -1213,9 +1284,11 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 output_list.s = output_list.s + to_string("", "x(33)") + to_string(onhand, "->>>,>>>,>>9.99")
             else:
                 output_list.s = output_list.s + to_string("", "x(33)") + to_string(onhand, "->>,>>>,>>>,>>9")
+
             i = 0
             create_output_list()
-            output_list.s = to_string(translateExtended ("4. Store Transfer", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("4. Store Transfer", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("4. Store Transfer", lvcarea, ""), 24)
 
             for s_list in query(s_list_data, filters=(lambda s_list: s_list.flag == 111 and s_list.reihenfolge == flag), sort_by=[("lager_nr",False)]):
                 i = i + 1
@@ -1227,7 +1300,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                     output_list.s = output_list.s + to_string("", "x(33)") + to_string(s_list.betrag, "->>,>>>,>>>,>>9")
             i = 0
             create_output_list()
-            output_list.s = to_string(translateExtended ("5. Kitchen Transfer In", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("5. Kitchen Transfer In", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("5. Kitchen Transfer In", lvcarea, ""), 24)
 
             for s_list in query(s_list_data, filters=(lambda s_list: s_list.flag == 112 and s_list.reihenfolge == flag), sort_by=[("lager_nr",False)]):
                 i = i + 1
@@ -1239,7 +1313,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                     output_list.s = output_list.s + to_string("", "x(33)") + to_string(s_list.betrag, "->>,>>>,>>>,>>9")
             i = 0
             create_output_list()
-            output_list.s = to_string(translateExtended (" Kitchen Transfer Out", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended (" Kitchen Transfer Out", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended (" Kitchen Transfer Out", lvcarea, ""), 24)
 
             for s_list in query(s_list_data, filters=(lambda s_list: s_list.flag == 113 and s_list.reihenfolge == flag), sort_by=[("lager_nr",False)]):
                 i = i + 1
@@ -1252,7 +1327,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.lager_nr == 9999 and s_list.reihenfolge == 2), first=True)
             create_output_list()
-            output_list.s = to_string(("6. " + s_list.l_bezeich) , "x(24)") + to_string("", "x(33)")
+            # output_list.s = to_string(("6. " + s_list.l_bezeich) , "x(24)") + to_string("", "x(33)")
+            output_list.s = format_fixed_length(("6. " + s_list.l_bezeich), 24) + to_string("", "x(33)")
 
             if not long_digit:
                 output_list.s = output_list.s + to_string(s_list.anf_wert, "->>>,>>>,>>9.99")
@@ -1260,9 +1336,10 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 output_list.s = output_list.s + to_string(s_list.anf_wert, "->>,>>>,>>>,>>9")
             betrag4 =  to_decimal(betrag1) + to_decimal(betrag2) + to_decimal(betrag3) + to_decimal(s_list.anf_wert)
             create_output_list()
-            output_list.s = to_string(translateExtended ("7. Inventory Available", lvcarea, "") , "x(24)") +\
-                    to_string("(1 + 2 + 3 + 4 + 5 + 6)", "x(33)") +\
-                    to_string("", "x(15)")
+            # output_list.s = to_string(translateExtended ("7. Inventory Available", lvcarea, "") , "x(24)") +\
+            #         to_string("(1 + 2 + 3 + 4 + 5 + 6)", "x(33)") +\
+            #         to_string("", "x(15)")
+            output_list.s = format_fixed_length(translateExtended ("7. Inventory Available", lvcarea, ""), 24) + format_fixed_length("(1 + 2 + 3 + 4 + 5 + 6)", 33) + to_string("", "x(15)")
             output_list.nr = 2
             output_list.store = l_lager.lager_nr
             output_list.amount =  to_decimal(betrag4)
@@ -1274,7 +1351,8 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
             i = 0
             onhand =  to_decimal("0")
             create_output_list()
-            output_list.s = to_string(translateExtended ("8. Closing Inventory", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("8. Closing Inventory", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("8. Closing Inventory", lvcarea, ""), 24)
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.flag == 0 and s_list.reihenfolge == flag and s_list.lager_nr != 9999 and s_list.end_wert != 0), first=True)
 
@@ -1289,8 +1367,9 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 output_list.s = output_list.s + to_string("", "x(33)") + to_string(onhand, "->>,>>>,>>>,>>9")
             create_output_list()
             betrag56 =  to_decimal(betrag4) - to_decimal(betrag5)
-            output_list.s = to_string(translateExtended ("9. Tot. Cost Consumption", lvcarea, "") , "x(24)") +\
-                    to_string("(7 - 8)", "x(33)") + to_string("", "x(15)")
+            # output_list.s = to_string(translateExtended ("9. Tot. Cost Consumption", lvcarea, "") , "x(24)") +\
+            #         to_string("(7 - 8)", "x(33)") + to_string("", "x(15)")
+            output_list.s = format_fixed_length(translateExtended ("9. Tot. Cost Consumption", lvcarea, ""), 24) + format_fixed_length("(7 - 8)", 33) + to_string("", "x(15)")
             output_list.nr = 3
             output_list.store = l_lager.lager_nr
             output_list.amount =  to_decimal(betrag56)
@@ -1299,10 +1378,12 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 output_list.s = output_list.s + to_string(betrag56, "->>>,>>>,>>9.99")
             else:
                 output_list.s = output_list.s + to_string(betrag56, "->>,>>>,>>>,>>9")
+
             create_output_list()
-            output_list.s = to_string(translateExtended ("10 Less by Expenses", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("10 Less by Expenses", lvcarea, ""), 24)
+
             create_output_list()
-            output_list.s = to_string(translateExtended ("- Compliment Cost", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("-  Compliment Cost", lvcarea, ""), 24)
             counter = 0
 
             for s_list in query(s_list_data, filters=(lambda s_list: s_list.flag == 4 and s_list.reihenfolge == flag and s_list.betrag != 0), sort_by=[("bezeich",False)]):
@@ -1314,11 +1395,13 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                     output_list.s = to_string("", "x(24)")
 
                 if not long_digit:
-                    output_list.s = output_list.s + to_string(s_list.bezeich, "x(33)") + to_string(s_list.betrag, "->>>,>>>,>>9.99")
+                    output_list.s = output_list.s + format_fixed_length(s_list.bezeich, 33) + to_string(s_list.betrag, "->>>,>>>,>>9.99")
                 else:
-                    output_list.s = output_list.s + to_string(s_list.bezeich, "x(33)") + to_string(s_list.betrag, "->>,>>>,>>>,>>9")
+                    output_list.s = output_list.s + format_fixed_length(s_list.bezeich, 33) + to_string(s_list.betrag, "->>,>>>,>>>,>>9")
+
             create_output_list()
-            output_list.s = to_string(translateExtended ("- Department Expenses", lvcarea, "") , "x(24)")
+            # output_list.s = to_string(translateExtended ("- Department Expenses", lvcarea, "") , "x(24)")
+            output_list.s = format_fixed_length(translateExtended ("-  Department Expenses", lvcarea, ""), 24)
             counter = 0
 
             for s_list in query(s_list_data, filters=(lambda s_list: s_list.flag == 5 and s_list.reihenfolge == flag and s_list.betrag != 0), sort_by=[("bezeich",False)]):
@@ -1330,32 +1413,43 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                     output_list.s = to_string("", "x(24)")
 
                 if not long_digit:
-                    output_list.s = output_list.s + to_string(s_list.bezeich, "x(33)") + to_string(s_list.betrag, "->>>,>>>,>>9.99")
+                    output_list.s = output_list.s + format_fixed_length(s_list.bezeich, 33) + to_string(s_list.betrag, "->>>,>>>,>>9.99")
                 else:
-                    output_list.s = output_list.s + to_string(s_list.bezeich, "x(33)") + to_string(s_list.betrag, "->>,>>>,>>>,>>9")
+                    output_list.s = output_list.s + format_fixed_length(s_list.bezeich, 33) + to_string(s_list.betrag, "->>,>>>,>>>,>>9")
 
             s_list = query(s_list_data, filters=(lambda s_list: s_list.reihenfolge == 1 and s_list.lager_nr == 9999), first=True)
             create_output_list()
             output_list.s = to_string("", "x(24)")
 
             if not long_digit:
-                output_list.s = output_list.s + to_string(s_list.l_bezeich, "x(33)") + to_string(s_list.anf_wert, "->>>,>>>,>>9.99")
+                output_list.s = output_list.s + format_fixed_length(s_list.l_bezeich, 24) + to_string(s_list.anf_wert, "->>>,>>>,>>9.99")
             else:
-                output_list.s = output_list.s + to_string(s_list.l_bezeich, "x(33)") + to_string(s_list.anf_wert, "->>,>>>,>>>,>>9")
+                output_list.s = output_list.s + format_fixed_length(s_list.l_bezeich, 24) + to_string(s_list.anf_wert, "->>,>>>,>>>,>>9")
+
             betrag6 =  to_decimal(betrag6) + to_decimal(s_list.anf_wert)
             create_output_list()
 
             if not long_digit:
-                output_list.s = to_string("", "x(24)") + to_string("", "x(24)") + to_string("SUB TOTAL", "x(9)") + to_string("", "x(15)") + to_string(betrag6, "->>>,>>>,>>9.99")
+                # output_list.s = to_string("", "x(24)") + to_string("", "x(24)") + to_string(translateExtended ("SUB TOTAL", lvcarea, "") , "x(9)") + to_string("", "x(15)") + to_string(betrag6, "->>>,>>>,>>9.99")
+
+                output_list.s = to_string("", "x(24)") + to_string("", "x(24)") + format_fixed_length("SUB TOTAL", 9) + to_string("", "x(15)") + to_string(betrag6, "->>>,>>>,>>9.99")
             else:
-                output_list.s = to_string("", "x(24)") + to_string("", "x(24)") + to_string("SUB TOTAL", "x(9)") + to_string("", "x(15)") + to_string(betrag6, "->>,>>>,>>>,>>9")
+                # output_list.s = to_string("", "x(24)") + to_string("", "x(24)") + to_string(translateExtended ("SUB TOTAL", lvcarea, "") , "x(9)") + to_string("", "x(15)") + to_string(betrag6, "->>,>>>,>>>,>>9")
+
+                output_list.s = to_string("", "x(24)") + to_string("", "x(24)") + format_fixed_length("SUB TOTAL", 9) + to_string("", "x(15)") + to_string(betrag6, "->>,>>>,>>>,>>9")
+
             consume2 =  to_decimal(betrag56) - to_decimal(betrag6)
             create_output_list()
 
             if not long_digit:
-                output_list.s = to_string(translateExtended ("11 Net Cost Consumed", lvcarea, "") , "x(24)") + to_string("(9 - 10)", "x(33)") + to_string("", "x(15)") + to_string(consume2, "->>>,>>>,>>9.99")
+                # output_list.s = to_string(translateExtended ("11 Net Cost Consumed", lvcarea, "") , "x(24)") + to_string("(9 - 10)", "x(33)") + to_string("", "x(15)") + to_string(consume2, "->>>,>>>,>>9.99")
+
+                output_list.s = format_fixed_length(translateExtended ("11 Net Cost Consumed", lvcarea, "") , 24) + format_fixed_length("(9 - 10)", 33) + to_string("", "x(15)") + to_string(consume2, "->>>,>>>,>>9.99")
             else:
-                output_list.s = to_string(translateExtended ("11 Net Cost Consumed", lvcarea, "") , "x(24)") + to_string("(9 - 10)", "x(33)") + to_string("", "x(15)") + to_string(consume2, "->>,>>>,>>>,>>9")
+                # output_list.s = to_string("11 Net Cost Consumed", "x(24)") + to_string("(9 - 10)", "x(33)") + to_string("", "x(15)") + to_string(consume2, "->>,>>>,>>>,>>9")
+
+                output_list.s = format_fixed_length(translateExtended ("11 Net Cost Consumed", lvcarea, "") , 24) + format_fixed_length("(9 - 10)", 33) + to_string("", "x(15)") + to_string(consume2, "->>,>>>,>>>,>>9")
+            
             create_output_list()
             b_ratio =  to_decimal("0")
 
@@ -1363,9 +1457,13 @@ def fb_reconsile1bl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:
                 b_ratio =  to_decimal(consume2) / to_decimal(tb_sales) * to_decimal("100")
 
             if not long_digit:
-                output_list.s = to_string(translateExtended (">> Net Beverage Sales", lvcarea, "") , "x(24)") + to_string("", "x(16)") + to_string(tb_sales, "->,>>>,>>>,>>9.99") + to_string(translateExtended (" Cost:Sales", lvcarea, "") , "x(15)") + to_string(b_ratio, "->,>>>,>>9.99 %")
+                # output_list.s = to_string(translateExtended (">> Net Beverage Sales", lvcarea, "") , "x(24)") + to_string("", "x(16)") + to_string(tf_sales, "->,>>>,>>>,>>9.99") + to_string(" Cost:Sales", "x(15)") + to_string(f_ratio, "->,>>>,>>9.99 %")
+
+                output_list.s = format_fixed_length(translateExtended (">> Net Beverage Sales", lvcarea, "") , 24) + to_string("", "x(16)") + to_string(tb_sales, "->,>>>,>>>,>>9.99") + format_fixed_length(translateExtended (" Cost:Sales", lvcarea, "") , 15) + f"{to_string(b_ratio, "->,>>>,>>9.99")} %"
             else:
-                output_list.s = to_string(translateExtended ("Net Beverage Sales", lvcarea, "") , "x(24)") + to_string("", "x(16)") + to_string(tb_sales, " ->>>,>>>,>>>,>>9") + to_string(translateExtended (" Cost:Sales", lvcarea, "") , "x(15)") + to_string(b_ratio, "->,>>>,>>9.99 %")
+                # output_list.s = to_string("Net Beverage Sales", "x(24)") + to_string("", "x(16)") + to_string(tf_sales, " ->>>,>>>,>>>,>>9") + to_string(" Cost:Sales", "x(15)") + to_string(f_ratio, "->,>>>,>>9.99 %")
+
+                output_list.s = format_fixed_length(translateExtended ("Net Beverage Sales", lvcarea, "") , 24) + to_string("", "x(16)") + to_string(tb_sales, " ->>>,>>>,>>>,>>9") + format_fixed_length(translateExtended (" Cost:Sales", lvcarea, "") , 15) + f"{to_string(b_ratio, "->,>>>,>>9.99")} %"
         done = True
 
 
