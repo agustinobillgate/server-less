@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 8/9/2025
+# jml data tidak sama
+# from functions import log_program_rd
 
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
