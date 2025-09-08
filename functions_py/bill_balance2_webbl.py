@@ -52,7 +52,6 @@ def bill_balance2_webbl(pvilanguage:int, co_today:bool, room:string, zero_flag:b
         if not co_today:
 
             if room == "" and  menu_nsbill:
-                log_program_rd.rwrite_log("bill", f"1.NS : {menu_nsbill}")
                 for bill in db_session.query(Bill).filter(
                             (Bill.flag == 0) & (Bill.resnr == 0)
                             ).order_by(Bill.name).all():
@@ -66,8 +65,10 @@ def bill_balance2_webbl(pvilanguage:int, co_today:bool, room:string, zero_flag:b
                         billbalance_list = Billbalance_list()
                         billbalance_list_data.append(billbalance_list)
 
-                        guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
-
+                        # guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+                        guest = db_session.query(Guest).filter(
+                            (Guest.gastnr == bill.gastnr)
+                        ).first()
                         if guest:
 
                             for bill_line in db_session.query(Bill_line).filter(
@@ -105,8 +106,7 @@ def bill_balance2_webbl(pvilanguage:int, co_today:bool, room:string, zero_flag:b
             if room == "" and menu_msbill:
                 log_program_rd.rwrite_log("bill", f"1.M : {menu_msbill}")
                 for bill in db_session.query(Bill).filter(
-                         (Bill.flag == 0) & 
-                         (Bill.resnr > 0) & 
+                         (Bill.flag == 0) & (Bill.resnr > 0) & 
                          (Bill.reslinnr == 0)).order_by(Bill.name).all():
                     do_it = False
                     bill_saldo =  to_decimal("0")
@@ -119,7 +119,15 @@ def bill_balance2_webbl(pvilanguage:int, co_today:bool, room:string, zero_flag:b
                         billbalance_list = Billbalance_list()
                         billbalance_list_data.append(billbalance_list)
 
-                        res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"resstatus": [(le, 8)]})
+                        # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"resstatus": [(le, 8)]})
+                        res_line = (
+                            db_session.query(Res_line)
+                            .filter(
+                                Res_line.resnr == bill.resnr,
+                                Res_line.resstatus <= 8
+                            )
+                            .first()
+                        )
 
                         guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
 
@@ -270,27 +278,40 @@ def bill_balance2_webbl(pvilanguage:int, co_today:bool, room:string, zero_flag:b
                         tot_outstand =  to_decimal(tot_outstand) + to_decimal(tot_saldo)
 
         elif menu_fobill:
-            log_program_rd.rwrite_log("bill", f"ElseFO : {menu_fobill}")
+            log_program_rd.rwrite_log("bill", f"ElseFO 271: {menu_fobill}")
             for bill in db_session.query(Bill).filter(
                      (Bill.flag == 0) & 
-                     (Bill.resnr > 0) 
-                    ).order_by(Bill.zinr, Bill.reslinnr).all():
+                     (Bill.resnr > 0) & (Bill.zinr != "") & 
+                     (Bill.zinr >= room)).order_by(Bill.zinr, Bill.reslinnr).all():
 
-                res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
-                log_program_rd.rwrite_log("bill", f"ElseFO, Bill : {bill.rechnr}")
+                # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
+                res_line = (
+                        db_session.query(Res_line)
+                        .filter(
+                            Res_line.resnr == bill.resnr,
+                            Res_line.reslinnr == bill.reslinnr
+                        )
+                        .first()
+                    )
+                log_program_rd.rwrite_log("bill", f"ElseFO, Bill 278: {bill.rechnr}")
                 if not res_line:
-
                     history = db_session.query(History).filter(
                              (History.resnr == bill.resnr) & (History.reslinnr == bill.reslinnr) & not_ (History.zi_wechsel)).first()
+                
                 do_it = False
                 bill_saldo =  to_decimal("0")
 
+                # if zero_flag or bill.saldo != 0:
                 if zero_flag or bill.saldo != 0:
                     do_it = True
-
+                
                 if gname != "":
 
-                    reservation = get_cache (Reservation, {"groupname": [(eq, gname)],"resnr": [(eq, bill.resnr)]})
+                    # reservation = get_cache (Reservation, {"groupname": [(eq, gname)],"resnr": [(eq, bill.resnr)]})
+                    reservation = db_session(Reservation).filter(
+                        (Reservation.groupname == gname) &
+                        (Reservation.resnr == bill.resnr)
+                    ).first()
 
                     if not reservation:
                         do_it = False
@@ -299,10 +320,16 @@ def bill_balance2_webbl(pvilanguage:int, co_today:bool, room:string, zero_flag:b
 
                     if res_line:
 
-                        guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+                        # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+                        guest = db_session.query(Guest).filter(
+                                (Guest.gastnr == res_line.gastnrmember) 
+                            ).first()
                     else:
 
-                        guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+                        # guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+                        guest = db_session.query(Guest).filter(
+                                (Guest.gastnr == bill.gastnr)
+                            ).first()
                     billbalance_list = Billbalance_list()
                     billbalance_list_data.append(billbalance_list)
 
@@ -365,7 +392,8 @@ def bill_balance2_webbl(pvilanguage:int, co_today:bool, room:string, zero_flag:b
                 bill = Bill()
                 res_line = Res_line()
                 for bill.name, bill.saldo, bill.gastnr, bill.rechnr, bill.datum, bill.vesrdepot, bill.billtyp, bill.resnr, bill.zinr, bill.reslinnr, bill.parent_nr, bill._recid, res_line.gastnrmember, res_line.ankunft, res_line.abreise, res_line.resstatus, res_line.bemerk, res_line.code, res_line.name, res_line.zipreis, res_line._recid in db_session.query(Bill.name, Bill.saldo, Bill.gastnr, Bill.rechnr, Bill.datum, Bill.vesrdepot, Bill.billtyp, Bill.resnr, Bill.zinr, Bill.reslinnr, Bill.parent_nr, Bill._recid, Res_line.gastnrmember, Res_line.ankunft, Res_line.abreise, Res_line.resstatus, Res_line.bemerk, Res_line.code, Res_line.name, Res_line.zipreis, Res_line._recid).join(Res_line,(Res_line.resnr == Bill.resnr) & (Res_line.reslinnr == Bill.reslinnr) & (Res_line.abreise == ci_date)).filter(
-                         (Bill.flag == 0) & (Bill.resnr > 0) & (Bill.zinr != "") & (Bill.zinr >= room)).order_by(Bill.zinr, Bill.reslinnr).all():
+                         (Bill.flag == 0) & (Bill.resnr > 0) & 
+                         (Bill.zinr != "") & (Bill.zinr >= room)).order_by(Bill.zinr, Bill.reslinnr).all():
                     # if bill_obj_list.get(bill._recid):
                     #     continue
                     # else:
@@ -439,24 +467,38 @@ def bill_balance2_webbl(pvilanguage:int, co_today:bool, room:string, zero_flag:b
             if menu_fobill:
 
                 for bill in db_session.query(Bill).filter(
-                         (Bill.flag == 0) & 
-                         (Bill.resnr > 0) 
-                        ).order_by(Bill.zinr, Bill.reslinnr).all():
+                         (Bill.flag == 0) & (Bill.resnr > 0) & 
+                         (Bill.zinr != "") & 
+                         (Bill.zinr >= room)).order_by(Bill.zinr, Bill.reslinnr).all():
                     do_it = False
                     bill_saldo =  to_decimal("0")
                     log_program_rd.rwrite_log("bill", f"foBill 442 : {bill.rechnr}")
                     if zero_flag or bill.saldo != 0:
                         do_it = True
                     
-                    res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
-
-                    queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                    # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+                    res_line = (
+                                db_session.query(Res_line)
+                                .filter(
+                                    Res_line.resnr == bill.resnr,
+                                    Res_line.reslinnr == bill.parent_nr
+                                )
+                                .first()
+                            )
+                    # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                    queasy = db_session.query(Queasy).filter(
+                        (Queasy.key==9) &
+                        (Queasy.number1 == to_int(Res_line.code))
+                        ).first()
 
                     if queasy and queasy.logi1:
 
                         if do_it:
 
-                            guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+                            # guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+                            guest = db_session.query(Guest).filter(
+                                (Guest.gastnr == bill.gastnr)
+                            ).first()
 
                             for bill_line in db_session.query(Bill_line).filter(
                                      (Bill_line.rechnr == bill.rechnr) & (Bill_line.bill_datum <= billdate)).order_by(Bill_line._recid).all():
