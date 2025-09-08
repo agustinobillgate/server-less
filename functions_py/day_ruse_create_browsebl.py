@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 8/9/2025
+# beda sorting 
+# from functions import log_program_rd
 
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -45,8 +50,10 @@ def day_ruse_create_browsebl(from_room:string, curr_date:date):
         j:int = 0
         counter_date:int = 0
 
+        # Rd 8/9/2025
+        # update order by zinr
         for zimmer in db_session.query(Zimmer).filter(
-                 (Zimmer.zinr >= (from_room).lower())).order_by(Zimmer._recid).all():
+                 (Zimmer.zinr >= (from_room).lower())).order_by(Zimmer.zinr).all():
 
             zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
             room_list = Room_list()
@@ -61,8 +68,12 @@ def day_ruse_create_browsebl(from_room:string, curr_date:date):
                 room_list.i_char = " i "
         to_date = curr_date + timedelta(days=17)
 
+        # Rd 8/9/2025
+        # update order by zinr
         for zinrstat in db_session.query(Zinrstat).filter(
-                 ((Zinrstat.datum >= curr_date) & (Zinrstat.datum <= to_date)) & (Zinrstat.zinr >= (from_room).lower()) & (Zinrstat.zimmeranz > 0)).order_by(Zinrstat._recid).all():
+                 ((Zinrstat.datum >= curr_date) & (Zinrstat.datum <= to_date)) & 
+                 (Zinrstat.zinr >= (from_room).lower()) & 
+                 (Zinrstat.zimmeranz > 0)).order_by(Zinrstat.zinr).all():
 
             room_list = query(room_list_data, filters=(lambda room_list: room_list.zinr == zinrstat.zinr), first=True)
 
