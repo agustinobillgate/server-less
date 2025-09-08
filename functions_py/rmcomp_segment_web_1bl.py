@@ -113,7 +113,8 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
 
         nonlocal rmcomp_segm_list, s_list, tmp_room, t_list, sbuff, sbuff, sbuff
         nonlocal rmcomp_segm_list_data, s_list_data, tmp_room_data, t_list_data
-
+        for s in s_list_data:
+            print(s.compname)
         return {"rmcomp-segm-list": rmcomp_segm_list_data, "s-list": s_list_data}
 
     def create_umsatz(date1:date, date2:date):
@@ -173,13 +174,13 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
         gty_revenue =  to_decimal("0")
 
         if mi_ftd:
-
             if date2 < (ci_date - timedelta(days=1)):
                 d2 = date2
             else:
                 d2 = (ci_date - timedelta(days=1))
         else:
             d2 = date2
+
         mm = get_month(d2)
         yy = get_year(d2)
         f_date = date_mdy(get_month(d2) , 1, get_year(d2))
@@ -189,13 +190,12 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
             d1 = date1
         else:
             d1 = date1
+
         mm = get_month(d2)
-
-
         yy = get_year(d2)
         f_date = date_mdy(get_month(d2) , 1, get_year(d2))
         # tmpdate = d1 + timedelta(days=1)
-        bydate = (d2 - d1).days
+        bydate = (d2 - d1).days + 1
         tdate = d2
 
         print("Bydate:", bydate, d1, d2)
@@ -243,7 +243,8 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
                 #     continue
                 # else:
                 #     genstat_obj_list[genstat._recid] = True
-
+                aa = guest.name + " " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
+                print(aa)
                 if genstat.datum != tdatum:
                     tdatum = genstat.datum
                     do_dat = True
@@ -638,7 +639,7 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
         yy = get_year(d2)
         f_date = date_mdy(get_month(d2) , 1, get_year(d2))
         tmpdate = d1 + timedelta(days=1)
-        bydate = (d2 - d1).days
+        bydate = (d2 - d1).days + 1
         tdate = d2
         while bydate != 0:
 
@@ -2381,7 +2382,6 @@ def rmcomp_segment_web_1bl(pvilanguage:int, sorttype:int, cardtype:int, incl_com
 
     print("From/To:", from_date, to_date, ci_date)
     if (from_date < ci_date) and (to_date < ci_date):
-
         if sorttype == 0 or sorttype == 1:
             create_umsatz(from_date, to_date)
 
