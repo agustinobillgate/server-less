@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 8/9/2025
+# isi kolom tidak sama
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -28,6 +31,11 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
 
 
     db_session = local_storage.db_session
+
+    #Rd 8/9/2025
+    gastname = gastname.strip()
+    to_name = to_name.strip()
+    zinr = zinr.strip()
 
     def generate_output():
         nonlocal b1_list_data, actflag, bl_saldo, lvcarea, res_line, guest, bill, bill_line, bediener, reservation, history
@@ -58,7 +66,6 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
         if sorttype == 1:
 
             if bil_int == 0:
-
                 for res_line in db_session.query(Res_line).filter(
                          (Res_line.active_flag == 1) & (Res_line.zinr == (zinr).lower()) & (Res_line.resstatus != 12) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
 
@@ -80,7 +87,6 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                             pass
 
                         if bl_saldo != bill.saldo:
-
                             tbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
                             tbuff.saldo =  to_decimal(bl_saldo)
                             pass
@@ -90,14 +96,19 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
             bill_obj_list = {}
             bill = Bill()
             rline = Res_line()
-            for bill.zinr, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk in db_session.query(Bill.zinr, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
-                     (Bill.zinr >= (zinr).lower()) & (Bill.zinr != "") & (Bill.flag == bil_int)).order_by(Bill.zinr, Bill.billnr).all():
-                if bill_obj_list.get(bill._recid):
-                    continue
-                else:
-                    bill_obj_list[bill._recid] = True
-
-
+            for                     bill.zinr, bill.flag, bill.name, bill.datum, bill.parent_nr, bill.printnr, bill.rechnr, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk \
+                in db_session.query(Bill.zinr, Bill.flag, Bill.name, Bill.datum, Bill.parent_nr, Bill.printnr, Bill.rechnr, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk)\
+                        .join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag))\
+                        .filter(
+                                (Bill.zinr >= (zinr).lower()) & 
+                                (Bill.zinr != "") & 
+                                (Bill.flag == bil_int))\
+                        .order_by(Bill.zinr, Bill.billnr).all():
+                # if bill_obj_list.get(bill._recid):
+                #     continue
+                # else:
+                #     bill_obj_list[bill._recid] = True
+                # print("BillParent:", bill.parent_nr, rline.gastnrmember)
                 assign_it()
 
         elif sorttype == 2:
@@ -116,12 +127,13 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                 bill_obj_list = {}
                 bill = Bill()
                 rline = Res_line()
-                for bill.zinr, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk in db_session.query(Bill.zinr, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
+                for bill.zinr, bill.name, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk \
+                    in db_session.query(Bill.zinr, Bill.name, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
                          (Bill.zinr > "") & (Bill.flag == bil_int) & (Bill.name >= (fr_name).lower()) & (Bill.name <= (to_name).lower()) & (Bill.billtyp == 0)).order_by(Bill.name, Bill.zinr).all():
-                    if bill_obj_list.get(bill._recid):
-                        continue
-                    else:
-                        bill_obj_list[bill._recid] = True
+                    # if bill_obj_list.get(bill._recid):
+                    #     continue
+                    # else:
+                    #     bill_obj_list[bill._recid] = True
 
 
                     assign_it()
@@ -133,12 +145,13 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                     bill_obj_list = {}
                     bill = Bill()
                     rline = Res_line()
-                    for bill.zinr, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk in db_session.query(Bill.zinr, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
+                    for bill.zinr, bill.name, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk\
+                         in db_session.query(Bill.zinr, Bill.name, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
                              (Bill.zinr > "") & (Bill.flag == bil_int) & (Bill.name >= (fr_name).lower()) & (Bill.billtyp == 0)).order_by(Bill.name, Bill.zinr).all():
-                        if bill_obj_list.get(bill._recid):
-                            continue
-                        else:
-                            bill_obj_list[bill._recid] = True
+                        # if bill_obj_list.get(bill._recid):
+                        #     continue
+                        # else:
+                        #     bill_obj_list[bill._recid] = True
 
 
                         assign_it()
@@ -148,12 +161,13 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                 bill_obj_list = {}
                 bill = Bill()
                 rline = Res_line()
-                for bill.zinr, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk in db_session.query(Bill.zinr, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
+                for bill.zinr, bill.name, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk \
+                    in db_session.query(Bill.zinr, Bill.name, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
                          (Bill.zinr > "") & (Bill.flag == bil_int) & (Bill.gastnr == curr_gastnr) & (Bill.billtyp == 0)).order_by(Bill.name, Bill.zinr.desc()).all():
-                    if bill_obj_list.get(bill._recid):
-                        continue
-                    else:
-                        bill_obj_list[bill._recid] = True
+                    # if bill_obj_list.get(bill._recid):
+                    #     continue
+                    # else:
+                    #     bill_obj_list[bill._recid] = True
 
 
                     assign_it()
@@ -164,12 +178,15 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
             bill_obj_list = {}
             bill = Bill()
             rline = Res_line()
-            for bill.zinr, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk in db_session.query(Bill.zinr, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
+            for bill.zinr, bill.name, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk \
+                in db_session.query(Bill.zinr, Bill.name, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk)\
+                .join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag))\
+                .filter(
                      (Bill.zinr > "") & (Bill.flag == bil_int) & (Bill.rechnr == rechnr)).order_by(Bill.rechnr).all():
-                if bill_obj_list.get(bill._recid):
-                    continue
-                else:
-                    bill_obj_list[bill._recid] = True
+                # if bill_obj_list.get(bill._recid):
+                #     continue
+                # else:
+                #     bill_obj_list[bill._recid] = True
 
 
                 assign_it()
@@ -181,16 +198,16 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                 bill_obj_list = {}
                 bill = Bill()
                 rline = Res_line()
-                for bill.zinr, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk in db_session.query(Bill.zinr, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
+                for                     bill.zinr, bill.name, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk \
+                    in db_session.query(Bill.zinr, Bill.name, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
                          (Bill.zinr > "") & (Bill.flag == bil_int) & (Bill.rechnr >= rechnr) & (Bill.rechnr <= to_rechnr)).order_by(Bill.rechnr).all():
-                    if bill_obj_list.get(bill._recid):
-                        continue
-                    else:
-                        bill_obj_list[bill._recid] = True
+                    # if bill_obj_list.get(bill._recid):
+                    #     continue
+                    # else:
+                    #     bill_obj_list[bill._recid] = True
 
 
                     assign_it()
-
 
         elif sorttype == 4:
 
@@ -254,12 +271,13 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                 bill_obj_list = {}
                 bill = Bill()
                 rline = Res_line()
-                for bill.zinr, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk in db_session.query(Bill.zinr, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
+                for bill.zinr, bill.name, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk \
+                    in db_session.query(Bill.zinr, Bill.name, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
                          (Bill.zinr == (zinr).lower()) & (Bill.flag == bil_int) & (Bill.rechnr != 0)).order_by(Bill.rechnr.desc()).all():
-                    if bill_obj_list.get(bill._recid):
-                        continue
-                    else:
-                        bill_obj_list[bill._recid] = True
+                    # if bill_obj_list.get(bill._recid):
+                    #     continue
+                    # else:
+                    #     bill_obj_list[bill._recid] = True
 
 
                     assign_it()
@@ -280,12 +298,13 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                 bill_obj_list = {}
                 bill = Bill()
                 rline = Res_line()
-                for bill.zinr, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk in db_session.query(Bill.zinr, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
+                for bill.zinr, bill.name, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk \
+                    in db_session.query(Bill.zinr, Bill.name, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
                          (Bill.zinr > "") & (Bill.flag == bil_int) & (Bill.name >= (gastname).lower()) & (Bill.name <= (to_name).lower()) & (Bill.billtyp == 0) & (Bill.rechnr != 0)).order_by(Bill.name, Bill.rechnr.desc()).all():
-                    if bill_obj_list.get(bill._recid):
-                        continue
-                    else:
-                        bill_obj_list[bill._recid] = True
+                    # if bill_obj_list.get(bill._recid):
+                    #     continue
+                    # else:
+                    #     bill_obj_list[bill._recid] = True
 
 
                     assign_it()
@@ -297,12 +316,13 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                     bill_obj_list = {}
                     bill = Bill()
                     rline = Res_line()
-                    for bill.zinr, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk in db_session.query(Bill.zinr, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
+                    for bill.zinr, bill.name, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk \
+                        in db_session.query(Bill.zinr, Bill.name, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
                              (Bill.zinr > "") & (Bill.flag == bil_int) & (Bill.name >= (gastname).lower()) & (Bill.billtyp == 0) & (Bill.rechnr != 0)).order_by(Bill.name, Bill.rechnr.desc()).all():
-                        if bill_obj_list.get(bill._recid):
-                            continue
-                        else:
-                            bill_obj_list[bill._recid] = True
+                        # if bill_obj_list.get(bill._recid):
+                        #     continue
+                        # else:
+                        #     bill_obj_list[bill._recid] = True
 
 
                         assign_it()
@@ -312,12 +332,13 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                 bill_obj_list = {}
                 bill = Bill()
                 rline = Res_line()
-                for bill.zinr, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk in db_session.query(Bill.zinr, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.abreise == ci_date)).filter(
+                for bill.zinr, bill.name, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk \
+                    in db_session.query(Bill.zinr, Bill.name, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.abreise == ci_date)).filter(
                          (Bill.zinr > "") & (Bill.flag == bil_int) & (Bill.gastnr == curr_gastnr) & (Bill.billtyp == 0) & (Bill.rechnr != 0)).order_by(Bill.name, Bill.rechnr.desc()).all():
-                    if bill_obj_list.get(bill._recid):
-                        continue
-                    else:
-                        bill_obj_list[bill._recid] = True
+                    # if bill_obj_list.get(bill._recid):
+                    #     continue
+                    # else:
+                    #     bill_obj_list[bill._recid] = True
 
 
                     assign_it()
@@ -329,12 +350,13 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                 bill_obj_list = {}
                 bill = Bill()
                 rline = Res_line()
-                for bill.zinr, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk in db_session.query(Bill.zinr, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
+                for bill.zinr, bill.name, bill.saldo, bill._recid, rline.resnr, rline.reslinnr, rline.zinr, rline._recid, rline.gastnrmember, rline.abreise, rline.bemerk \
+                    in db_session.query(Bill.zinr, Bill.name, Bill.saldo, Bill._recid, Rline.resnr, Rline.reslinnr, Rline.zinr, Rline._recid, Rline.gastnrmember, Rline.abreise, Rline.bemerk).join(Rline,(Rline.resnr == Bill.resnr) & (Rline.reslinnr == Bill.parent_nr) & (Rline.active_flag == actflag)).filter(
                          (Bill.zinr > "") & (Bill.flag == bil_int) & (Bill.rechnr == rechnr)).order_by(Bill._recid).all():
-                    if bill_obj_list.get(bill._recid):
-                        continue
-                    else:
-                        bill_obj_list[bill._recid] = True
+                    # if bill_obj_list.get(bill._recid):
+                    #     continue
+                    # else:
+                    #     bill_obj_list[bill._recid] = True
 
 
                     assign_it()
@@ -354,7 +376,6 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
         nonlocal b1_list_data, actflag, bl_saldo, lvcarea, res_line, guest, bill, bill_line, bediener, reservation, history
         nonlocal pvilanguage, sorttype, zinr, bil_int, curr_gastnr, ci_date, gastname, to_name, rechnr
         nonlocal resline, rline, guestmember, mbill, bbuff, tbuff
-
 
         nonlocal b1_list, resline, rline, guestmember, mbill, bbuff, tbuff
         nonlocal b1_list_data
@@ -377,6 +398,7 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
             tbuff.saldo =  to_decimal(bl_saldo)
             pass
             pass
+
         b1_list = B1_list()
         b1_list_data.append(b1_list)
 
@@ -384,15 +406,19 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
         b1_list.billnr = bill.billnr
         b1_list.rechnr = bill.rechnr
         b1_list.name = bill.name
-        b1_list.saldo =  to_decimal(bill.saldo)
-        b1_list.resnr = bill.resnr
+
+        
+        # b1_list.saldo =  to_decimal(bill.saldo)
+        b1_list.saldo =  to_decimal(bl_saldo)
+        b1_list.resnr = rline.resnr
+        # b1_list.resnr = bill.resnr
         b1_list.reslinnr = bill.reslinnr
         b1_list.datum = bill.datum
         b1_list.printnr = bill.printnr
         b1_list.vesrcod = bill.vesrcod
         b1_list.rec_id = bill._recid
 
-        mbill = get_cache (Bill, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, 0)]})
+        mbill = get_cache (Bill, {"resnr": [(eq, rline.resnr)],"reslinnr": [(eq, 0)]})
 
         if mbill:
             b1_list.fg_col = True
@@ -404,15 +430,21 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
 
         if bill:
 
-            reservation = get_cache (Reservation, {"resnr": [(eq, bill.resnr)]})
+            # reservation = get_cache (Reservation, {"resnr": [(eq, bill.resnr)]})
+            reservation = db_session.query(Reservation).filter(
+                (Reservation.resnr == rline.resnr)
+            ).first()
 
             if reservation:
 
-                resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+                resline = get_cache (Res_line, {"resnr": [(eq, rline.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
 
                 if resline:
 
                     guestmember = get_cache (Guest, {"gastnr": [(eq, resline.gastnrmember)]})
+                    # guestmember = db_session.query(Guest).filter(
+                    #         (Guest.gastnr == resline.gastnrmember)
+                    #     ).first()
                     b1_list.resname = guestmember.name + ", " + guestmember.vorname1 + " " + guestmember.anrede1
                     b1_list.guest_name = guestmember.anrede1 + " " + guestmember.name + ", " + guestmember.vorname1
                     b1_list.address = guestmember.adresse1
@@ -428,14 +460,17 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                     if resline.bemerk != "":
                         b1_list.b_comments = b1_list.b_comments + resline.bemerk
             else:
-
+                
                 if bill.flag == 1:
 
-                    history = get_cache (History, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)],"zi_wechsel": [(eq, False)]})
+                    history = get_cache (History, {"resnr": [(eq, rline.resnr)],"reslinnr": [(eq, bill.parent_nr)],"zi_wechsel": [(eq, False)]})
 
                     if history:
 
                         guestmember = get_cache (Guest, {"gastnr": [(eq, history.gastnr)]})
+                        # guestmember = db_session.query(Guest).filter(
+                        #     (Guest.gastnr == history.gastnr)
+                        # ).first()
                         b1_list.resname = guestmember.name + ", " + guestmember.vorname1 + " " + guestmember.anrede1
                         b1_list.guest_name = guestmember.anrede1 + " " + guestmember.name + ", " + guestmember.vorname1
                         b1_list.address = guestmember.adresse1
