@@ -1,5 +1,11 @@
 #using conversion tools version: 1.0.0.117
 
+# -------------------------------------------
+# Rulita, 10-09-2025 
+# TiketID : 5BE11A
+# Issue recompile program 
+# -------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_op
