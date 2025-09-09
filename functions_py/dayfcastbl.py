@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 9/9/2025
-#
+# txt_file strip
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -42,7 +42,8 @@ def dayfcastbl(pvilanguage:int, inhouse_flag:bool, disp_flag:bool, lessoo:bool, 
     segm_list_data, Segm_list = create_model("Segm_list", {"segmentcode":int, "bezeich":string, "segm":[int,19]})
 
     db_session = local_storage.db_session
-
+    #Rd 9/9/2025
+    txt_file = txt_file.strip()
     def generate_output():
         nonlocal room_list_data, sum_list_data, segm_list_data, tab_label, datum, ci_date, wlist, dlist, curr_day, week_list, i, inhouse, tot_room, inactive, pax, from_date, to_date, tmp_date, lvcarea, htparam, zimkateg, zimmer, res_line, reservation, segment, kontline, reslin_queasy, queasy, guestseg, resplan, outorder
         nonlocal pvilanguage, inhouse_flag, disp_flag, lessoo, incl_tent, curr_date, printer_nr, call_from, txt_file, vhp_limited
@@ -194,6 +195,9 @@ def dayfcastbl(pvilanguage:int, inhouse_flag:bool, disp_flag:bool, lessoo:bool, 
         zimmer = Zimmer()
         for res_line.active_flag, res_line.resnr, res_line.ankunft, res_line.abreise, res_line.kontignr, res_line.zimmeranz, res_line.erwachs, res_line.reslinnr, res_line.zinr, res_line.gastnr, res_line.zipreis, res_line.kind1, res_line.kind2, res_line.l_zuordnung, res_line.gratis, res_line.resstatus, res_line.zikatnr, res_line._recid, zimmer.sleeping, zimmer._recid in db_session.query(Res_line.active_flag, Res_line.resnr, Res_line.ankunft, Res_line.abreise, Res_line.kontignr, Res_line.zimmeranz, Res_line.erwachs, Res_line.reslinnr, Res_line.zinr, Res_line.gastnr, Res_line.zipreis, Res_line.kind1, Res_line.kind2, Res_line.l_zuordnung, Res_line.gratis, Res_line.resstatus, Res_line.zikatnr, Res_line._recid, Zimmer.sleeping, Zimmer._recid).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).filter(
                  ((Res_line.resstatus == 6) | (Res_line.resstatus == 13)) & (Res_line.active_flag == 1) & (not_ (Res_line.ankunft > to_date)) & (not_ (Res_line.abreise < curr_date)) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resnr).all():
+            
+
+
             if res_line_obj_list.get(res_line._recid):
                 continue
             else:
