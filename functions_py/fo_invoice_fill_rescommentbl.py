@@ -3,6 +3,8 @@
 # Rd 30/7/25
 # gitlab: 152
 # no attribute 'bemerk'. Did you mean: 'bemerkung'?\n"
+#
+#
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -21,7 +23,6 @@ def fo_invoice_fill_rescommentbl(bil_recid:int, fill_co:bool):
     Resbuff = create_buffer("Resbuff",Res_line)
     Rbuff = create_buffer("Rbuff",Res_line)
     Guestmember = create_buffer("Guestmember",Guest)
-
 
     db_session = local_storage.db_session
 
@@ -45,9 +46,8 @@ def fo_invoice_fill_rescommentbl(bil_recid:int, fill_co:bool):
     res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
 
     reservation = get_cache (Reservation, {"resnr": [(eq, bill.resnr)]})
-
+    guestmember = None
     if res_line:
-
         guestmember = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
 
     resbuff = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
@@ -87,8 +87,9 @@ def fo_invoice_fill_rescommentbl(bil_recid:int, fill_co:bool):
 
     # Rd 30/7/2025
     # bemerk -> bemerkung
-    if guestmember and guestmember.bemerkung != "":
-        rescomment = rescomment + guestmember.bemerk + chr_unicode(10)
+    if guestmember is not None:
+        if guestmember.bemerkung != "":
+            rescomment = rescomment + guestmember.bemerkung + chr_unicode(10)
 
     waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
 
