@@ -74,11 +74,12 @@ def hk_availextra(fdate:date, tdate:date, artnr:int, sorttype:int, language_code
                 for tmp_extra in query(tmp_extra_data, filters=(lambda tmp_extra: tmp_extra.cdate == ndate), sort_by=[("reihe",False),("room",False)]):
                     tot_used = tot_used + tmp_extra.qty
 
-                    disp_table = query(disp_table_data, filters=(lambda disp_table: disp_table.str1 == to_string(ndate , "99/99/9999") and disp_table.str2 == tmp_extra.room), first=True)
-
+                    disp_table = query(disp_table_data, filters=(lambda disp_table: disp_table.str1 == to_string(ndate ,'%d/%m/%y') and disp_table.str2 == tmp_extra.room), first=True)
+                    
                     if disp_table:
                         up_str3 = int (disp_table.str3) + tmp_extra.qty
-                        disp_table.str1 = to_string(ndate , "99/99/9999")
+                        # disp_table.str1 = to_string(ndate , "99/99/9999")
+                        disp_table.str1 = to_string(ndate, '%d/%m/%y' )
                         disp_table.str2 = tmp_extra.room
                         disp_table.str3 = to_string(up_str3)
                         disp_table.str5 = to_string(art_qty - up_str3)
@@ -91,7 +92,8 @@ def hk_availextra(fdate:date, tdate:date, artnr:int, sorttype:int, language_code
                         disp_table_data.append(disp_table)
 
                         disp_table.reihe = tmp_extra.reihe
-                        disp_table.str1 = to_string(ndate , "99/99/9999")
+                        # disp_table.str1 = to_string(ndate , "99/99/9999")
+                        disp_table.str1 = to_string(ndate, '%d/%m/%y' )
                         disp_table.str2 = tmp_extra.room
                         disp_table.str3 = to_string(tmp_extra.qty)
                         disp_table.str5 = to_string(art_qty1)
@@ -121,7 +123,8 @@ def hk_availextra(fdate:date, tdate:date, artnr:int, sorttype:int, language_code
                 disp_table = Disp_table()
                 disp_table_data.append(disp_table)
 
-                disp_table.str1 = to_string(ndate , "99/99/9999")
+                # disp_table.str1 = to_string(ndate , "99/99/9999")
+                disp_table.str1 = to_string(ndate, '%d/%m/%y')
                 disp_table.str2 = ""
                 disp_table.str3 = ""
                 disp_table.str5 = to_string(art_qty)
@@ -181,7 +184,8 @@ def hk_availextra(fdate:date, tdate:date, artnr:int, sorttype:int, language_code
             disp_table = Disp_table()
             disp_table_data.append(disp_table)
 
-            disp_table.str1 = to_string(ndate , "99/99/99")
+            # disp_table.str1 = to_string(ndate , "99/99/99")
+            disp_table.str1 = to_string(ndate, '%d/%m/%y' )
             disp_table.str2 = ""
             disp_table.str3 = to_string(tot_used)
             disp_table.str5 = to_string(art_qty - tot_used)
