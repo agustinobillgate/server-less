@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 10/9/2025
+#
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -25,6 +29,8 @@ def read_res_linebl(case_type:int, resno:int, reslinno:int, resstat:int, actflag
 
     db_session = local_storage.db_session
 
+    # Rd 10/9/2025
+    kontcode = kontcode.strip()
     def generate_output():
         nonlocal t_res_line_data, delichr4, rmnopattern, c_room, res_line, kontline, guest, zimmer, reservation
         nonlocal case_type, resno, reslinno, resstat, actflag, rmno, arrive, depart, gastno, kontigno, kontcode

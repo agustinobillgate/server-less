@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 10/9/2025
+# replace g-info, c-info : \\n -> \n
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -41,6 +44,7 @@ def flplan_arbl(pvilanguage:int):
 
         nonlocal cr_list
         nonlocal cr_list_data
+        
 
         return {"max_row": max_row, "max_col": max_col, "cr-list": cr_list_data}
 
@@ -254,6 +258,7 @@ def flplan_arbl(pvilanguage:int):
 
         if outorder:
             r_info = to_string(outorder.gespstart) + " - " + to_string(outorder.gespende) + chr_unicode(10) + outorder.gespgrund
+            r_info = r_info.replace("\\n", "\n")
 
         return generate_inner_output()
 
@@ -278,21 +283,24 @@ def flplan_arbl(pvilanguage:int):
 
         if i_case == 1:
             g_info = translateExtended ("ResNo:", lvcarea, "") + " " + to_string(res_line.resnr) + " " + translateExtended ("Room:", lvcarea, "") + " " + res_line.zinr + chr_unicode(10) + translateExtended ("Guest:", lvcarea, "") + " " + res_line.name + chr_unicode(10) + translateExtended ("Group:", lvcarea, "") + " " + reservation.groupname + chr_unicode(10) + translateExtended ("Arrival:", lvcarea, "") + " " + to_string(res_line.ankunft) + chr_unicode(10) + translateExtended ("Depart:", lvcarea, "") + " " + to_string(res_line.abreise) + chr_unicode(10) + translateExtended ("Adult:", lvcarea, "") + " " + to_string(res_line.erwachs) + chr_unicode(10) + translateExtended ("RmRate:", lvcarea, "") + " " + to_string(res_line.zipreis)
-
+            g_info = g_info.replace("\\n", "\n")
             if res_line.betriebsnr > 0:
 
                 waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
 
                 if waehrung:
                     g_info = g_info + " " + waehrung.wabkurz
+                    g_info = g_info.replace("\\n", "\n")
 
             if reservation.bemerk != "" or res_line.bemerk != "":
                 r_info = translateExtended ("Reservation Comment:", lvcarea, "") + chr_unicode(10) + reservation.bemerk + chr_unicode(10) + res_line.bemerk
+                r_info = r_info.replace("\\n", "\n")
 
             reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "specialrequest")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)]})
 
             if reslin_queasy:
                 r_info = r_info + chr_unicode(10) + translateExtended ("Special Request:", lvcarea, "") + " " + reslin_queasy.char3
+                r_info = r_info.replace("\\n", "\n")
         elif i_case == 2:
 
             rbuff = db_session.query(Rbuff).filter(
@@ -308,6 +316,7 @@ def flplan_arbl(pvilanguage:int):
 
             rsvbuff = get_cache (Reservation, {"resnr": [(eq, rbuff.resnr)]})
             g_info = g_info + chr_unicode(10) + chr_unicode(10) + translateExtended ("ResNo:", lvcarea, "") + " " + to_string(rbuff.resnr) + " " + translateExtended ("Room:", lvcarea, "") + " " + rbuff.zinr + chr_unicode(10) + translateExtended ("Guest:", lvcarea, "") + " " + rbuff.name + chr_unicode(10) + translateExtended ("Group:", lvcarea, "") + " " + rsvbuff.groupname + chr_unicode(10) + translateExtended ("Arrival:", lvcarea, "") + " " + to_string(rbuff.ankunft) + chr_unicode(10) + translateExtended ("Depart:", lvcarea, "") + " " + to_string(rbuff.abreise) + chr_unicode(10) + translateExtended ("Adult:", lvcarea, "") + " " + to_string(rbuff.erwachs) + chr_unicode(10) + translateExtended ("RmRate:", lvcarea, "") + " " + to_string(rbuff.zipreis)
+            g_info = g_info.replace("\\n", "\n")
 
             if rbuff.betriebsnr > 0:
 
@@ -315,14 +324,17 @@ def flplan_arbl(pvilanguage:int):
 
                 if waehrung:
                     g_info = g_info + " " + waehrung.wabkurz
+                    g_info = g_info.replace("\\n", "\n")
 
             if rsvbuff.bemerk != "" or rbuff.bemerk != "":
                 r_info = r_info + chr_unicode(10) + chr_unicode(10) + translateExtended ("Reservtion Comment:", lvcarea, "") + chr_unicode(10) + rsvbuff.bemerk + chr_unicode(10) + rbuff.bemerk
+                r_info = r_info.replace("\\n", "\n")
 
             reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "specialrequest")],"resnr": [(eq, rbuff.resnr)],"reslinnr": [(eq, rbuff.reslinnr)]})
 
             if reslin_queasy:
                 r_info = r_info + chr_unicode(10) + translateExtended ("Special Request:", lvcarea, "") + " " + reslin_queasy.char3
+                r_info = r_info.replace("\\n", "\n")
 
         return generate_inner_output()
 
