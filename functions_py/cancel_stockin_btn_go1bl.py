@@ -44,7 +44,8 @@ def cancel_stockin_btn_go1bl(pvilanguage:int, all_supp:bool, sorttype:int, from_
 
         # cancel_stockin_list.lief = substring(str_list.s, 83, 24)
         cancel_stockin_list.lief = str_list.lief
-
+        if cancel_stockin_list.lief == "0":
+            cancel_stockin_list.lief = ""
 
         # cancel_stockin_list.art = substring(str_list.s, 10, 7)
         cancel_stockin_list.art = str_list.art
