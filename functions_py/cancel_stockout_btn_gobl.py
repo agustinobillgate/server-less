@@ -22,6 +22,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
     wert:Decimal = to_decimal("0.0")
     long_digit:bool = False
     htparam = gl_acct = bediener = l_lager = l_ophdr = l_artikel = l_op = l_untergrup = parameters = None
+    cost_acct = cost_acct.strip()
 
     s_list = str_list = None
 
@@ -39,6 +40,12 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         nonlocal s_list_data, str_list_data
 
         return {"it_exist": it_exist, "str-list": str_list_data}
+    
+    def format_fixed_length(text: str, length: int) -> str:
+        if len(text) > length:
+            return text[:length]   # trim
+        else:
+            return text.ljust(length)
 
     def create_lista():
 
@@ -86,12 +93,17 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
             acct_no = ""
 
             l_op_obj_list = {}
-            for l_op, l_ophdr, gl_acct, l_artikel in db_session.query(L_op, L_ophdr, Gl_acct, L_artikel).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
-                     (L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(L_artikel.bezeich, L_op.datum, func.substring(L_op.lscheinnr, 3, 12)).all():
-                if l_op_obj_list.get(l_op._recid):
-                    continue
-                else:
-                    l_op_obj_list[l_op._recid] = True
+            l_op = L_op()
+            l_ophdr = L_ophdr()
+            gl_acct = Gl_acct()
+            l_artikel = L_artikel()
+
+            for l_op.fuellflag, l_op.stornogrund, l_op.einzelpreis, l_op.warenwert, l_op.anzahl, l_op.lscheinnr, l_op.artnr, l_op.datum, l_op._recid, l_ophdr.lscheinnr, gl_acct.fibukonto, gl_acct.bezeich, l_artikel.artnr, l_artikel.bezeich in db_session.query(L_op.fuellflag, L_op.stornogrund, L_op.einzelpreis, L_op.warenwert, L_op.anzahl, L_op.lscheinnr, L_op.artnr, L_op.datum, L_op._recid, L_ophdr.lscheinnr, Gl_acct.fibukonto, Gl_acct.bezeich, L_artikel.artnr, L_artikel.bezeich).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter((L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(L_artikel.bezeich, L_op.datum, func.substring(L_op.lscheinnr, 3, 12)).all():
+
+                # if l_op_obj_list.get(l_op._recid):
+                #     continue
+                # else:
+                #     l_op_obj_list[l_op._recid] = True
 
                 usr = db_session.query(Usr).filter(
                          (Usr.nr == l_op.fuellflag)).first()
@@ -100,6 +112,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     usrid = usr.userinit
                 else:
                     usrid = "??"
+
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
@@ -114,6 +127,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                 if show_price:
                     preis =  to_decimal(l_op.einzelpreis)
                     wert =  to_decimal(l_op.warenwert)
+
                 it_exist = True
                 other_fibu = False
 
@@ -156,19 +170,27 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    for i in range(1,45 + 1) :
-                        str_list.s = str_list.s + " "
-                    str_list.s = str_list.s + "Subtotal "
-                    for i in range(1,23 + 1) :
-                        str_list.s = str_list.s + " "
+                    # for i in range(1,45 + 1) :
+                    #     str_list.s = str_list.s + " "
+                    # str_list.s = str_list.s + "Subtotal "
+                    # for i in range(1,23 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 46)
+                    str_list.s = str_list.s + format_fixed_length("Subtotal ", 24)
+                    
                     str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-                    for i in range(1,14 + 1) :
-                        str_list.s = str_list.s + " "
+
+                    # for i in range(1,14 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 15)
 
                     if not long_digit:
                         str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
                     else:
                         str_list.s = str_list.s + to_string(t_val, "->,>>>,>>>,>>9")
+
                     t_anz =  to_decimal("0")
                     t_val =  to_decimal("0")
                     str_list = Str_list()
@@ -184,7 +206,8 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(24)")
+                    # str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(24)")
+                    str_list.s = to_string("", "x(8)") + format_fixed_length(l_lager.bezeich, 24)
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
@@ -202,7 +225,8 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                         s_list.bezeich = cost_bezeich
 
                         if cc_code != 0:
-                            s_list.bezeich = to_string(cc_code, "9999 ") + s_list.bezeich
+                            s_list.bezeich = to_string(cc_code, "9999") + " " + s_list.bezeich
+                            
                     s_list.cost = s_list.cost + wert
                     t_anz =  to_decimal(t_anz) + to_decimal(l_op.anzahl)
                     t_val =  to_decimal(t_val) + to_decimal(wert)
@@ -217,22 +241,53 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list.op_recid = l_op._recid
 
                     if not long_digit:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->>,>>>,>>9.99")
+
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>>,>>>,>>9.99") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
                     else:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">,>>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->,>>>,>>>,>>9")
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>,>>>,>>>,>>9") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
 
         if t_anz != 0:
             str_list = Str_list()
             str_list_data.append(str_list)
 
-            for i in range(1,45 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,45 + 1) :
+            #     str_list.s = str_list.s + " "
+            # str_list.s = str_list.s + "Subtotal "
+            # for i in range(1,23 + 1) :
+            #     str_list.s = str_list.s + " "
+
+            str_list.s = str_list.s + format_fixed_length(" ", 46)
             str_list.s = str_list.s + "Subtotal "
-            for i in range(1,23 + 1) :
-                str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 24)
+
             str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-            for i in range(1,14 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,14 + 1) :
+            #     str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 15)
 
             if not long_digit:
                 str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
@@ -244,21 +299,24 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,23 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,23 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
+    
         str_list.s = str_list.s + to_string(tot_anz, "->,>>>,>>9.999")
-        for i in range(1,12 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,14 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 15)
 
         if not long_digit:
             str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
             str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
-        str_list = Str_list()
-        str_list_data.append(str_list)
 
         str_list = Str_list()
         str_list_data.append(str_list)
@@ -266,33 +324,57 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list = Str_list()
+        str_list_data.append(str_list)
+
+        # str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list.s = to_string("", "x(8)") + format_fixed_length("SUMMARY OF EXPENSES", 30)
         tot_amount =  to_decimal("0")
 
         for s_list in query(s_list_data, sort_by=[("bezeich",False)]):
             str_list = Str_list()
             str_list_data.append(str_list)
 
-
             if not long_digit:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->>,>>>,>>9.99")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
             else:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->,>>>,>>>,>>9")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
+
             tot_amount =  to_decimal(tot_amount) + to_decimal(s_list.cost)
+
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,49 + 1) :
+        #     str_list.s = str_list.s + " "
+
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,49 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
 
         if not long_digit:
-            str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            # str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
-            str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
-
+            # str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->,>>>,>>>,>>9")
 
     def create_listb():
 
@@ -340,12 +422,17 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
             acct_no = ""
 
             l_op_obj_list = {}
-            for l_op, l_ophdr, gl_acct, l_artikel in db_session.query(L_op, L_ophdr, Gl_acct, L_artikel).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
-                     (L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(func.substring(L_op.lscheinnr, 3, 12), L_artikel.bezeich).all():
-                if l_op_obj_list.get(l_op._recid):
-                    continue
-                else:
-                    l_op_obj_list[l_op._recid] = True
+            l_op = L_op()
+            l_ophdr = L_ophdr()
+            gl_acct = Gl_acct()
+            l_artikel = L_artikel()
+
+            for l_op.fuellflag, l_op.stornogrund, l_op.einzelpreis, l_op.warenwert, l_op.lscheinnr, l_op.artnr, l_op.anzahl, l_op.datum, l_op._recid, l_ophdr.lscheinnr, gl_acct.fibukonto, gl_acct.bezeich, l_artikel.artnr, l_artikel.bezeich in db_session.query(L_op.fuellflag, L_op.stornogrund, L_op.einzelpreis, L_op.warenwert, L_op.lscheinnr, L_op.artnr, L_op.anzahl, L_op.datum, L_op._recid, L_ophdr.lscheinnr, Gl_acct.fibukonto, Gl_acct.bezeich, L_artikel.artnr, L_artikel.bezeich).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter((L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(func.substring(L_op.lscheinnr, 3, 12), L_artikel.bezeich).all():
+                
+                # if l_op_obj_list.get(l_op._recid):
+                #     continue
+                # else:
+                #     l_op_obj_list[l_op._recid] = True
 
                 usr = db_session.query(Usr).filter(
                          (Usr.nr == l_op.fuellflag)).first()
@@ -354,6 +441,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     usrid = usr.userinit
                 else:
                     usrid = "??"
+
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
@@ -368,6 +456,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                 if show_price:
                     preis =  to_decimal(l_op.einzelpreis)
                     wert =  to_decimal(l_op.warenwert)
+
                 it_exist = True
                 other_fibu = False
 
@@ -407,19 +496,27 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    for i in range(1,45 + 1) :
-                        str_list.s = str_list.s + " "
-                    str_list.s = str_list.s + "Subtotal "
-                    for i in range(1,23 + 1) :
-                        str_list.s = str_list.s + " "
+                    # for i in range(1,45 + 1) :
+                    #     str_list.s = str_list.s + " "
+                    # str_list.s = str_list.s + "Subtotal "
+                    # for i in range(1,23 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 46)
+                    str_list.s = str_list.s + format_fixed_length("Subtotal ", 24)
+                    
                     str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-                    for i in range(1,14 + 1) :
-                        str_list.s = str_list.s + " "
+
+                    # for i in range(1,14 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 15)
 
                     if not long_digit:
                         str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
                     else:
                         str_list.s = str_list.s + to_string(t_val, "->,>>>,>>>,>>9")
+
                     t_anz =  to_decimal("0")
                     t_val =  to_decimal("0")
                     str_list = Str_list()
@@ -435,7 +532,8 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(24)")
+                    # str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(24)")
+                    str_list.s = to_string("", "x(8)") + format_fixed_length(l_lager.bezeich, 24)
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
@@ -453,7 +551,8 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                         s_list.bezeich = cost_bezeich
 
                         if cc_code != 0:
-                            s_list.bezeich = to_string(cc_code, "9999 ") + s_list.bezeich
+                            s_list.bezeich = to_string(cc_code, "9999") + " " + s_list.bezeich
+
                     s_list.cost = s_list.cost + wert
                     t_anz =  to_decimal(t_anz) + to_decimal(l_op.anzahl)
                     t_val =  to_decimal(t_val) + to_decimal(wert)
@@ -468,22 +567,53 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list.op_recid = l_op._recid
 
                     if not long_digit:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->>,>>>,>>9.99")
+
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>>,>>>,>>9.99") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
                     else:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->,>>>,>>>,>>9")
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>,>>>,>>>,>>9") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
 
         if t_anz != 0:
             str_list = Str_list()
             str_list_data.append(str_list)
 
-            for i in range(1,45 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,45 + 1) :
+            #     str_list.s = str_list.s + " "
+            # str_list.s = str_list.s + "Subtotal "
+            # for i in range(1,23 + 1) :
+            #     str_list.s = str_list.s + " "
+
+            str_list.s = str_list.s + format_fixed_length(" ", 46)
             str_list.s = str_list.s + "Subtotal "
-            for i in range(1,23 + 1) :
-                str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 24)
+
             str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-            for i in range(1,14 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,14 + 1) :
+            #     str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 15)
 
             if not long_digit:
                 str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
@@ -495,21 +625,24 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,23 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,23 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
+    
         str_list.s = str_list.s + to_string(tot_anz, "->,>>>,>>9.999")
-        for i in range(1,14 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,14 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 15)
 
         if not long_digit:
             str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
             str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
-        str_list = Str_list()
-        str_list_data.append(str_list)
 
         str_list = Str_list()
         str_list_data.append(str_list)
@@ -517,32 +650,57 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list = Str_list()
+        str_list_data.append(str_list)
+
+        # str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list.s = to_string("", "x(8)") + format_fixed_length("SUMMARY OF EXPENSES", 30)
         tot_amount =  to_decimal("0")
 
         for s_list in query(s_list_data, sort_by=[("bezeich",False)]):
             str_list = Str_list()
             str_list_data.append(str_list)
 
-
             if not long_digit:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->>,>>>,>>9.99")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
             else:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->,>>>,>>>,>>9")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
+
             tot_amount =  to_decimal(tot_amount) + to_decimal(s_list.cost)
+
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,49 + 1) :
+        #     str_list.s = str_list.s + " "
+
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,49 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
 
         if not long_digit:
-            str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            # str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
-            str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            # str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->,>>>,>>>,>>9")
 
 
     def create_listc():
@@ -592,12 +750,17 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
             acct_no = ""
 
             l_op_obj_list = {}
-            for l_op, l_ophdr, gl_acct, l_artikel in db_session.query(L_op, L_ophdr, Gl_acct, L_artikel).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
-                     (L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(L_op.datum, L_artikel.bezeich).all():
-                if l_op_obj_list.get(l_op._recid):
-                    continue
-                else:
-                    l_op_obj_list[l_op._recid] = True
+            l_op = L_op()
+            l_ophdr = L_ophdr()
+            gl_acct = Gl_acct()
+            l_artikel = L_artikel()
+
+            for l_op.fuellflag, l_op.stornogrund, l_op.einzelpreis, l_op.warenwert, l_op.datum, l_op.lscheinnr, l_op.artnr, l_op.anzahl, l_op._recid, l_ophdr.lscheinnr, gl_acct.fibukonto, gl_acct.bezeich, l_artikel.artnr, l_artikel.bezeich in db_session.query(L_op.fuellflag, L_op.stornogrund, L_op.einzelpreis, L_op.warenwert, L_op.datum, L_op.lscheinnr, L_op.artnr, L_op.anzahl, L_op._recid, L_ophdr.lscheinnr, Gl_acct.fibukonto, Gl_acct.bezeich, L_artikel.artnr, L_artikel.bezeich).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter((L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(L_op.datum, L_artikel.bezeich).all():
+
+                # if l_op_obj_list.get(l_op._recid):
+                #     continue
+                # else:
+                #     l_op_obj_list[l_op._recid] = True
 
                 usr = db_session.query(Usr).filter(
                          (Usr.nr == l_op.fuellflag)).first()
@@ -620,6 +783,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                 if show_price:
                     preis =  to_decimal(l_op.einzelpreis)
                     wert =  to_decimal(l_op.warenwert)
+
                 it_exist = True
                 other_fibu = False
 
@@ -659,19 +823,27 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    for i in range(1,45 + 1) :
-                        str_list.s = str_list.s + " "
-                    str_list.s = str_list.s + "Subtotal "
-                    for i in range(1,23 + 1) :
-                        str_list.s = str_list.s + " "
+                    # for i in range(1,45 + 1) :
+                    #     str_list.s = str_list.s + " "
+                    # str_list.s = str_list.s + "Subtotal "
+                    # for i in range(1,23 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 46)
+                    str_list.s = str_list.s + format_fixed_length("Subtotal ", 24)
+
                     str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-                    for i in range(1,14 + 1) :
-                        str_list.s = str_list.s + " "
+
+                    # for i in range(1,14 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 15)
 
                     if not long_digit:
                         str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
                     else:
                         str_list.s = str_list.s + to_string(t_val, "->,>>>,>>>,>>9")
+
                     t_anz =  to_decimal("0")
                     t_val =  to_decimal("0")
                     str_list = Str_list()
@@ -688,7 +860,8 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(24)")
+                    # str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(24)")
+                    str_list.s = to_string("", "x(8)") + format_fixed_length(l_lager.bezeich, 24)
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
@@ -706,7 +879,8 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                         s_list.bezeich = cost_bezeich
 
                         if cc_code != 0:
-                            s_list.bezeich = to_string(cc_code, "9999 ") + s_list.bezeich
+                            s_list.bezeich = to_string(cc_code, "9999") + " " + s_list.bezeich
+
                     s_list.cost = s_list.cost + wert
                     t_anz =  to_decimal(t_anz) + to_decimal(l_op.anzahl)
                     t_val =  to_decimal(t_val) + to_decimal(wert)
@@ -721,22 +895,53 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list.op_recid = l_op._recid
 
                     if not long_digit:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->>,>>>,>>9.99")
+
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>>,>>>,>>9.99") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
                     else:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->,>>>,>>>,>>9")
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>,>>>,>>>,>>9") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
 
         if t_anz != 0:
             str_list = Str_list()
             str_list_data.append(str_list)
 
-            for i in range(1,45 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,45 + 1) :
+            #     str_list.s = str_list.s + " "
+            # str_list.s = str_list.s + "Subtotal "
+            # for i in range(1,23 + 1) :
+            #     str_list.s = str_list.s + " "
+
+            str_list.s = str_list.s + format_fixed_length(" ", 46)
             str_list.s = str_list.s + "Subtotal "
-            for i in range(1,23 + 1) :
-                str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 24)
+
             str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-            for i in range(1,14 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,14 + 1) :
+            #     str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 15)
 
             if not long_digit:
                 str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
@@ -748,21 +953,24 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,23 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,23 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
+    
         str_list.s = str_list.s + to_string(tot_anz, "->,>>>,>>9.999")
-        for i in range(1,12 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,14 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 15)
 
         if not long_digit:
             str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
             str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
-        str_list = Str_list()
-        str_list_data.append(str_list)
 
         str_list = Str_list()
         str_list_data.append(str_list)
@@ -770,7 +978,11 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list = Str_list()
+        str_list_data.append(str_list)
+
+        # str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list.s = to_string("", "x(8)") + format_fixed_length("SUMMARY OF EXPENSES", 30)
         tot_amount =  to_decimal("0")
 
         for s_list in query(s_list_data, sort_by=[("bezeich",False)]):
@@ -779,23 +991,45 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
 
 
             if not long_digit:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->>,>>>,>>9.99")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
             else:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->,>>>,>>>,>>9")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
+
             tot_amount =  to_decimal(tot_amount) + to_decimal(s_list.cost)
+
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,49 + 1) :
+        #     str_list.s = str_list.s + " "
+
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,49 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
 
         if not long_digit:
-            str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            # str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
-            str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            # str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->>,>>>,>>9.99")
 
 
     def create_list():
@@ -842,12 +1076,17 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
             acct_no = ""
 
             l_op_obj_list = {}
-            for l_op, l_ophdr, gl_acct, l_artikel in db_session.query(L_op, L_ophdr, Gl_acct, L_artikel).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
-                     (L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(L_op.stornogrund, L_ophdr.fibukonto, L_artikel.bezeich, L_op.datum).all():
-                if l_op_obj_list.get(l_op._recid):
-                    continue
-                else:
-                    l_op_obj_list[l_op._recid] = True
+            l_op = L_op()
+            l_ophdr = L_ophdr()
+            gl_acct = Gl_acct()
+            l_artikel = L_artikel()
+
+            for l_op.fuellflag, l_op.stornogrund, l_op.einzelpreis, l_op.warenwert, l_op.stornogrund, l_op.lscheinnr, l_op.anzahl, l_op.datum, l_op._recid, l_ophdr.lscheinnr, gl_acct.fibukonto, gl_acct.bezeich, l_artikel.artnr, l_artikel.bezeich in db_session.query(L_op.fuellflag, L_op.stornogrund, L_op.einzelpreis, L_op.warenwert, L_op.stornogrund, L_op.lscheinnr, L_op.anzahl, L_op.datum, L_op._recid, L_ophdr.lscheinnr, Gl_acct.fibukonto, Gl_acct.bezeich, L_artikel.artnr, L_artikel.bezeich).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter((L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(L_op.stornogrund, L_ophdr.fibukonto, L_artikel.bezeich, L_op.datum).all():
+                
+                # if l_op_obj_list.get(l_op._recid):
+                #     continue
+                # else:
+                #     l_op_obj_list[l_op._recid] = True
 
                 usr = db_session.query(Usr).filter(
                          (Usr.nr == l_op.fuellflag)).first()
@@ -856,6 +1095,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     usrid = usr.userinit
                 else:
                     usrid = "??"
+
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
@@ -870,6 +1110,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                 if show_price:
                     preis =  to_decimal(l_op.einzelpreis)
                     wert =  to_decimal(l_op.warenwert)
+
                 it_exist = True
                 other_fibu = False
 
@@ -908,23 +1149,31 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                 if curr_fibu == "":
                     curr_fibu = fibukonto
 
-                if curr_fibu.lower()  != (fibukonto).lower()  and t_anz != 0:
+                if curr_fibu.lower() != (fibukonto).lower()  and t_anz != 0:
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    for i in range(1,45 + 1) :
-                        str_list.s = str_list.s + " "
-                    str_list.s = str_list.s + "Subtotal "
-                    for i in range(1,23 + 1) :
-                        str_list.s = str_list.s + " "
+                    # for i in range(1,45 + 1) :
+                    #     str_list.s = str_list.s + " "
+                    # str_list.s = str_list.s + "Subtotal "
+                    # for i in range(1,23 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 46)
+                    str_list.s = str_list.s + format_fixed_length("Subtotal ", 24)
+                    
                     str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-                    for i in range(1,14 + 1) :
-                        str_list.s = str_list.s + " "
+
+                    # for i in range(1,14 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 15)
 
                     if not long_digit:
                         str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
                     else:
                         str_list.s = str_list.s + to_string(t_val, "->,>>>,>>>,>>9")
+
                     t_anz =  to_decimal("0")
                     t_val =  to_decimal("0")
                     str_list = Str_list()
@@ -940,7 +1189,8 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(24)")
+                    # str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(24)")
+                    str_list.s = to_string("", "x(8)") + format_fixed_length(l_lager.bezeich, 24)
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
@@ -958,7 +1208,8 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                         s_list.bezeich = cost_bezeich
 
                         if cc_code != 0:
-                            s_list.bezeich = to_string(cc_code, "9999 ") + s_list.bezeich
+                            s_list.bezeich = to_string(cc_code, "9999") + " " + s_list.bezeich
+
                     s_list.cost = s_list.cost + wert
                     t_anz =  to_decimal(t_anz) + to_decimal(l_op.anzahl)
                     t_val =  to_decimal(t_val) + to_decimal(wert)
@@ -973,22 +1224,53 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list.op_recid = l_op._recid
 
                     if not long_digit:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
-                    else:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
 
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->>,>>>,>>9.99")
+
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>>,>>>,>>9.99") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
+                    else:
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->,>>>,>>>,>>9")
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>,>>>,>>>,>>9") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
+                        
         if t_anz != 0:
             str_list = Str_list()
             str_list_data.append(str_list)
 
-            for i in range(1,45 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,45 + 1) :
+            #     str_list.s = str_list.s + " "
+            # str_list.s = str_list.s + "Subtotal "
+            # for i in range(1,23 + 1) :
+            #     str_list.s = str_list.s + " "
+
+            str_list.s = str_list.s + format_fixed_length(" ", 46)
             str_list.s = str_list.s + "Subtotal "
-            for i in range(1,23 + 1) :
-                str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 24)
+
             str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-            for i in range(1,14 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,14 + 1) :
+            #     str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 15)
 
             if not long_digit:
                 str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
@@ -1000,21 +1282,24 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,23 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,23 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
+    
         str_list.s = str_list.s + to_string(tot_anz, "->,>>>,>>9.999")
-        for i in range(1,12 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,14 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 15)
 
         if not long_digit:
             str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
             str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
-        str_list = Str_list()
-        str_list_data.append(str_list)
 
         str_list = Str_list()
         str_list_data.append(str_list)
@@ -1022,32 +1307,57 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list = Str_list()
+        str_list_data.append(str_list)
+
+        # str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list.s = to_string("", "x(8)") + format_fixed_length("SUMMARY OF EXPENSES", 30)
         tot_amount =  to_decimal("0")
 
         for s_list in query(s_list_data, sort_by=[("bezeich",False)]):
             str_list = Str_list()
             str_list_data.append(str_list)
 
-
             if not long_digit:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+                 # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->>,>>>,>>9.99")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
             else:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->,>>>,>>>,>>9")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
+
             tot_amount =  to_decimal(tot_amount) + to_decimal(s_list.cost)
+
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,49 + 1) :
+        #     str_list.s = str_list.s + " "
+
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,49 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
 
         if not long_digit:
-            str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            # str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
-            str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            # str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->,>>>,>>>,>>9")
 
 
     def create_list1():
@@ -1102,12 +1412,18 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
             acct_no = ""
 
             l_op_obj_list = {}
-            for l_op, l_ophdr, gl_acct, l_artikel, l_untergrup in db_session.query(L_op, L_ophdr, Gl_acct, L_artikel, L_untergrup).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == from_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum) & ((L_untergrup.betriebsnr >= grp1) & (L_untergrup.betriebsnr <= grp2))).filter(
-                     (L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(L_op.stornogrund, L_ophdr.fibukonto, L_op.datum, L_artikel.bezeich).all():
-                if l_op_obj_list.get(l_op._recid):
-                    continue
-                else:
-                    l_op_obj_list[l_op._recid] = True
+            l_op = L_op()
+            l_ophdr = L_ophdr()
+            gl_acct = Gl_acct()
+            l_artikel = L_artikel()
+            l_untergrup = L_untergrup()
+
+            for l_op.fuellflag, l_op.stornogrund, l_op.einzelpreis, l_op.warenwert, l_op.lscheinnr, l_op.anzahl, l_op.datum, l_op._recid, l_ophdr.lscheinnr, gl_acct.fibukonto, gl_acct.bezeich, l_artikel.artnr, l_artikel.bezeich, l_untergrup._recid in db_session.query(L_op.fuellflag, L_op.stornogrund, L_op.einzelpreis, L_op.warenwert, L_op.lscheinnr, L_op.anzahl, L_op.datum, L_op._recid, L_ophdr.lscheinnr, Gl_acct.fibukonto, Gl_acct.bezeich, L_artikel.artnr, L_artikel.bezeich, L_untergrup._recid).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == from_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum) & ((L_untergrup.betriebsnr >= grp1) & (L_untergrup.betriebsnr <= grp2))).filter((L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(L_op.stornogrund, L_ophdr.fibukonto, L_op.datum, L_artikel.bezeich).all():
+
+                # if l_op_obj_list.get(l_op._recid):
+                #     continue
+                # else:
+                #     l_op_obj_list[l_op._recid] = True
 
                 usr = db_session.query(Usr).filter(
                          (Usr.nr == l_op.fuellflag)).first()
@@ -1116,6 +1432,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     usrid = usr.userinit
                 else:
                     usrid = "??"
+
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
@@ -1130,6 +1447,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                 if show_price:
                     preis =  to_decimal(l_op.einzelpreis)
                     wert =  to_decimal(l_op.warenwert)
+
                 it_exist = True
                 other_fibu = False
 
@@ -1172,19 +1490,27 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    for i in range(1,45 + 1) :
-                        str_list.s = str_list.s + " "
-                    str_list.s = str_list.s + "Subtotal "
-                    for i in range(1,23 + 1) :
-                        str_list.s = str_list.s + " "
+                    # for i in range(1,45 + 1) :
+                    #     str_list.s = str_list.s + " "
+                    # str_list.s = str_list.s + "Subtotal "
+                    # for i in range(1,23 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 46)
+                    str_list.s = str_list.s + format_fixed_length("Subtotal ", 24)
+
                     str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-                    for i in range(1,14 + 1) :
-                        str_list.s = str_list.s + " "
+
+                    # for i in range(1,14 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 15)
 
                     if not long_digit:
                         str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
                     else:
                         str_list.s = str_list.s + to_string(t_val, "->,>>>,>>>,>>9")
+                        
                     t_anz =  to_decimal("0")
                     t_val =  to_decimal("0")
                     str_list = Str_list()
@@ -1200,7 +1526,8 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(30)")
+                    # str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(30)")
+                    str_list.s = to_string("", "x(8)") + format_fixed_length(l_lager.bezeich, 30)
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
@@ -1218,7 +1545,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                         s_list.bezeich = cost_bezeich
 
                         if cc_code != 0:
-                            s_list.bezeich = to_string(cc_code, "9999 ") + s_list.bezeich
+                            s_list.bezeich = to_string(cc_code, "9999") + " " + s_list.bezeich
                     s_list.cost = s_list.cost + wert
                     t_anz =  to_decimal(t_anz) + to_decimal(l_op.anzahl)
                     t_val =  to_decimal(t_val) + to_decimal(wert)
@@ -1233,22 +1560,53 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list.op_recid = l_op._recid
 
                     if not long_digit:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->>,>>>,>>9.99")
+
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>>,>>>,>>9.99") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
                     else:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->,>>>,>>>,>>9")
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>,>>>,>>>,>>9") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
 
         if t_anz != 0:
             str_list = Str_list()
             str_list_data.append(str_list)
 
-            for i in range(1,45 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,45 + 1) :
+            #     str_list.s = str_list.s + " "
+            # str_list.s = str_list.s + "Subtotal "
+            # for i in range(1,23 + 1) :
+            #     str_list.s = str_list.s + " "
+
+            str_list.s = str_list.s + format_fixed_length(" ", 46)
             str_list.s = str_list.s + "Subtotal "
-            for i in range(1,23 + 1) :
-                str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 24)
+
             str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-            for i in range(1,14 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,14 + 1) :
+            #     str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 15)
 
             if not long_digit:
                 str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
@@ -1260,21 +1618,24 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,23 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,23 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
+
         str_list.s = str_list.s + to_string(tot_anz, "->,>>>,>>9.999")
-        for i in range(1,12 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,12 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 15)
 
         if not long_digit:
             str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
             str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
-        str_list = Str_list()
-        str_list_data.append(str_list)
 
         str_list = Str_list()
         str_list_data.append(str_list)
@@ -1282,32 +1643,57 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list = Str_list()
+        str_list_data.append(str_list)
+
+        # str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list.s = to_string("", "x(8)") + format_fixed_length("SUMMARY OF EXPENSES", 30)
         tot_amount =  to_decimal("0")
 
         for s_list in query(s_list_data, sort_by=[("bezeich",False)]):
             str_list = Str_list()
             str_list_data.append(str_list)
 
-
             if not long_digit:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->>,>>>,>>9.99")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
             else:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->,>>>,>>>,>>9")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
+
             tot_amount =  to_decimal(tot_amount) + to_decimal(s_list.cost)
+
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,49 + 1) :
+        #     str_list.s = str_list.s + " "
+
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,49 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
 
         if not long_digit:
-            str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            # str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
-            str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            # str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->,>>>,>>>,>>9")
 
 
     def create_list1a():
@@ -1364,12 +1750,18 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
             acct_no = ""
 
             l_op_obj_list = {}
-            for l_op, l_artikel, l_ophdr, gl_acct, l_untergrup in db_session.query(L_op, L_artikel, L_ophdr, Gl_acct, L_untergrup).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == from_grp)).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum) & ((L_untergrup.betriebsnr >= grp1) & (L_untergrup.betriebsnr <= grp2))).filter(
-                     (L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(L_op.datum, L_artikel.bezeich, func.substring(L_op.lscheinnr, 3, 12)).all():
-                if l_op_obj_list.get(l_op._recid):
-                    continue
-                else:
-                    l_op_obj_list[l_op._recid] = True
+            l_op = L_op()
+            l_ophdr = L_ophdr()
+            gl_acct = Gl_acct()
+            l_artikel = L_artikel()
+            l_untergrup = L_untergrup()
+
+            for l_op.fuellflag, l_op.stornogrund, l_op.einzelpreis, l_op.warenwert, l_op.lscheinnr, l_op.anzahl, l_op.datum, l_op._recid, l_ophdr.lscheinnr, gl_acct.fibukonto, gl_acct.bezeich, l_artikel.artnr, l_artikel.bezeich, l_untergrup._recid in db_session.query(L_op.fuellflag, L_op.stornogrund, L_op.einzelpreis, L_op.warenwert, L_op.lscheinnr, L_op.anzahl, L_op.datum, L_op._recid, L_ophdr.lscheinnr, Gl_acct.fibukonto, Gl_acct.bezeich, L_artikel.artnr, L_artikel.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == from_grp)).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum) & ((L_untergrup.betriebsnr >= grp1) & (L_untergrup.betriebsnr <= grp2))).filter((L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(L_op.datum, L_artikel.bezeich, func.substring(L_op.lscheinnr, 3, 12)).all():
+
+                # if l_op_obj_list.get(l_op._recid):
+                #     continue
+                # else:
+                #     l_op_obj_list[l_op._recid] = True
 
                 usr = db_session.query(Usr).filter(
                          (Usr.nr == l_op.fuellflag)).first()
@@ -1378,6 +1770,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     usrid = usr.userinit
                 else:
                     usrid = "??"
+
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
@@ -1434,19 +1827,27 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    for i in range(1,45 + 1) :
-                        str_list.s = str_list.s + " "
-                    str_list.s = str_list.s + "Subtotal "
-                    for i in range(1,23 + 1) :
-                        str_list.s = str_list.s + " "
+                    # for i in range(1,45 + 1) :
+                    #     str_list.s = str_list.s + " "
+                    # str_list.s = str_list.s + "Subtotal "
+                    # for i in range(1,23 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 46)
+                    str_list.s = str_list.s + format_fixed_length("Subtotal ", 24)
+
                     str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-                    for i in range(1,14 + 1) :
-                        str_list.s = str_list.s + " "
+
+                    # for i in range(1,14 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 15)
 
                     if not long_digit:
                         str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
                     else:
                         str_list.s = str_list.s + to_string(t_val, "->,>>>,>>>,>>9")
+
                     t_anz =  to_decimal("0")
                     t_val =  to_decimal("0")
                     str_list = Str_list()
@@ -1462,7 +1863,8 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(30)")
+                    # str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(30)")
+                    str_list.s = to_string("", "x(8)") + format_fixed_length(l_lager.bezeich, 30)
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
@@ -1480,7 +1882,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                         s_list.bezeich = cost_bezeich
 
                         if cc_code != 0:
-                            s_list.bezeich = to_string(cc_code, "9999 ") + s_list.bezeich
+                            s_list.bezeich = to_string(cc_code, "9999") + " " + s_list.bezeich
                     s_list.cost = s_list.cost + wert
                     t_anz =  to_decimal(t_anz) + to_decimal(l_op.anzahl)
                     t_val =  to_decimal(t_val) + to_decimal(wert)
@@ -1495,22 +1897,53 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list.op_recid = l_op._recid
 
                     if not long_digit:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->>,>>>,>>9.99")
+
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>>,>>>,>>9.99") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
                     else:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->,>>>,>>>,>>9")
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>,>>>,>>>,>>9") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
 
         if t_anz != 0:
             str_list = Str_list()
             str_list_data.append(str_list)
 
-            for i in range(1,45 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,45 + 1) :
+            #     str_list.s = str_list.s + " "
+            # str_list.s = str_list.s + "Subtotal "
+            # for i in range(1,23 + 1) :
+            #     str_list.s = str_list.s + " "
+
+            str_list.s = str_list.s + format_fixed_length(" ", 46)
             str_list.s = str_list.s + "Subtotal "
-            for i in range(1,23 + 1) :
-                str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 24)
+
             str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-            for i in range(1,14 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,14 + 1) :
+            #     str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 15)
 
             if not long_digit:
                 str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
@@ -1522,21 +1955,24 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,23 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,23 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
+
         str_list.s = str_list.s + to_string(tot_anz, "->,>>>,>>9.999")
-        for i in range(1,12 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,12 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 15)
 
         if not long_digit:
             str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
             str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
-        str_list = Str_list()
-        str_list_data.append(str_list)
 
         str_list = Str_list()
         str_list_data.append(str_list)
@@ -1544,32 +1980,57 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list = Str_list()
+        str_list_data.append(str_list)
+
+        # str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list.s = to_string("", "x(8)") + format_fixed_length("SUMMARY OF EXPENSES", 30)
         tot_amount =  to_decimal("0")
 
         for s_list in query(s_list_data, sort_by=[("bezeich",False)]):
             str_list = Str_list()
             str_list_data.append(str_list)
 
-
             if not long_digit:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->>,>>>,>>9.99")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
             else:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->,>>>,>>>,>>9")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
+
             tot_amount =  to_decimal(tot_amount) + to_decimal(s_list.cost)
+
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,49 + 1) :
+        #     str_list.s = str_list.s + " "
+
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,49 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
 
         if not long_digit:
-            str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            # str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
-            str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            # str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->,>>>,>>>,>>9")
 
 
     def create_list1b():
@@ -1626,12 +2087,18 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
             acct_no = ""
 
             l_op_obj_list = {}
-            for l_op, l_artikel, l_ophdr, gl_acct, l_untergrup in db_session.query(L_op, L_artikel, L_ophdr, Gl_acct, L_untergrup).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == from_grp)).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum) & ((L_untergrup.betriebsnr >= grp1) & (L_untergrup.betriebsnr <= grp2))).filter(
-                     (L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(func.substring(L_op.lscheinnr, 3, 12), L_artikel.bezeich).all():
-                if l_op_obj_list.get(l_op._recid):
-                    continue
-                else:
-                    l_op_obj_list[l_op._recid] = True
+            l_op = L_op()
+            l_ophdr = L_ophdr()
+            gl_acct = Gl_acct()
+            l_artikel = L_artikel()
+            l_untergrup = L_untergrup()
+            
+            for l_op.fuellflag, l_op.stornogrund, l_op.einzelpreis, l_op.warenwert, l_op.lscheinnr, l_op.anzahl, l_op.datum, l_op._recid, l_ophdr.lscheinnr, gl_acct.fibukonto, gl_acct.bezeich, l_artikel.artnr, l_artikel.bezeich, l_untergrup._recid in db_session.query(L_op.fuellflag, L_op.stornogrund, L_op.einzelpreis, L_op.warenwert, L_op.lscheinnr, L_op.anzahl, L_op.datum, L_op._recid, L_ophdr.lscheinnr, Gl_acct.fibukonto, Gl_acct.bezeich, L_artikel.artnr, L_artikel.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == from_grp)).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum) & ((L_untergrup.betriebsnr >= grp1) & (L_untergrup.betriebsnr <= grp2))).filter((L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(func.substring(L_op.lscheinnr, 3, 12), L_artikel.bezeich).all():
+                
+                # if l_op_obj_list.get(l_op._recid):
+                #     continue
+                # else:
+                #     l_op_obj_list[l_op._recid] = True
 
                 usr = db_session.query(Usr).filter(
                          (Usr.nr == l_op.fuellflag)).first()
@@ -1640,6 +2107,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     usrid = usr.userinit
                 else:
                     usrid = "??"
+
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
@@ -1654,6 +2122,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                 if show_price:
                     preis =  to_decimal(l_op.einzelpreis)
                     wert =  to_decimal(l_op.warenwert)
+
                 it_exist = True
                 other_fibu = False
 
@@ -1693,19 +2162,27 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    for i in range(1,45 + 1) :
-                        str_list.s = str_list.s + " "
-                    str_list.s = str_list.s + "Subtotal "
-                    for i in range(1,23 + 1) :
-                        str_list.s = str_list.s + " "
+                    # for i in range(1,45 + 1) :
+                    #     str_list.s = str_list.s + " "
+                    # str_list.s = str_list.s + "Subtotal "
+                    # for i in range(1,23 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 46)
+                    str_list.s = str_list.s + format_fixed_length("Subtotal ", 24)
+
                     str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-                    for i in range(1,14 + 1) :
-                        str_list.s = str_list.s + " "
+
+                    # for i in range(1,14 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 15)
 
                     if not long_digit:
                         str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
                     else:
                         str_list.s = str_list.s + to_string(t_val, "->,>>>,>>>,>>9")
+
                     t_anz =  to_decimal("0")
                     t_val =  to_decimal("0")
                     str_list = Str_list()
@@ -1721,7 +2198,8 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(30)")
+                    # str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(30)")
+                    str_list.s = to_string("", "x(8)") + format_fixed_length(l_lager.bezeich, 30)
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
@@ -1739,7 +2217,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                         s_list.bezeich = cost_bezeich
 
                         if cc_code != 0:
-                            s_list.bezeich = to_string(cc_code, "9999 ") + s_list.bezeich
+                            s_list.bezeich = to_string(cc_code, "9999") + " " + s_list.bezeich
                     s_list.cost = s_list.cost + wert
                     t_anz =  to_decimal(t_anz) + to_decimal(l_op.anzahl)
                     t_val =  to_decimal(t_val) + to_decimal(wert)
@@ -1754,22 +2232,53 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list.op_recid = l_op._recid
 
                     if not long_digit:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->>,>>>,>>9.99")
+
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>>,>>>,>>9.99") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
                     else:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->,>>>,>>>,>>9")
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>,>>>,>>>,>>9") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
 
         if t_anz != 0:
             str_list = Str_list()
             str_list_data.append(str_list)
 
-            for i in range(1,45 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,45 + 1) :
+            #     str_list.s = str_list.s + " "
+            # str_list.s = str_list.s + "Subtotal "
+            # for i in range(1,23 + 1) :
+            #     str_list.s = str_list.s + " "
+
+            str_list.s = str_list.s + format_fixed_length(" ", 46)
             str_list.s = str_list.s + "Subtotal "
-            for i in range(1,23 + 1) :
-                str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 24)
+
             str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-            for i in range(1,14 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,14 + 1) :
+            #     str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 15)
 
             if not long_digit:
                 str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
@@ -1781,21 +2290,24 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,23 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,23 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
+
         str_list.s = str_list.s + to_string(tot_anz, "->,>>>,>>9.999")
-        for i in range(1,12 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,12 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 15)
 
         if not long_digit:
             str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
             str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
-        str_list = Str_list()
-        str_list_data.append(str_list)
 
         str_list = Str_list()
         str_list_data.append(str_list)
@@ -1803,32 +2315,57 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list = Str_list()
+        str_list_data.append(str_list)
+
+        # str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list.s = to_string("", "x(8)") + format_fixed_length("SUMMARY OF EXPENSES", 30)
         tot_amount =  to_decimal("0")
 
         for s_list in query(s_list_data, sort_by=[("bezeich",False)]):
             str_list = Str_list()
             str_list_data.append(str_list)
 
-
             if not long_digit:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->>,>>>,>>9.99")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
             else:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->,>>>,>>>,>>9")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
+
             tot_amount =  to_decimal(tot_amount) + to_decimal(s_list.cost)
+
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,49 + 1) :
+        #     str_list.s = str_list.s + " "
+
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,49 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
 
         if not long_digit:
-            str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            # str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
-            str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            # str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->,>>>,>>>,>>9")
 
 
     def create_list1c():
@@ -1886,12 +2423,18 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
             acct_no = ""
 
             l_op_obj_list = {}
-            for l_op, l_artikel, l_ophdr, gl_acct, l_untergrup in db_session.query(L_op, L_artikel, L_ophdr, Gl_acct, L_untergrup).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == from_grp)).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum) & ((L_untergrup.betriebsnr >= grp1) & (L_untergrup.betriebsnr <= grp2))).filter(
-                     (L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(L_op.datum, L_artikel.bezeich).all():
-                if l_op_obj_list.get(l_op._recid):
-                    continue
-                else:
-                    l_op_obj_list[l_op._recid] = True
+            l_op = L_op()
+            l_ophdr = L_ophdr()
+            gl_acct = Gl_acct()
+            l_artikel = L_artikel()
+            l_untergrup = L_untergrup()
+
+            for l_op.fuellflag, l_op.stornogrund, l_op.einzelpreis, l_op.warenwert, l_op.lscheinnr, l_op.anzahl, l_op.datum, l_op._recid, l_ophdr.lscheinnr, gl_acct.fibukonto, gl_acct.bezeich, l_artikel.artnr, l_artikel.bezeich, l_untergrup._recid in db_session.query(L_op.fuellflag, L_op.stornogrund, L_op.einzelpreis, L_op.warenwert, L_op.lscheinnr, L_op.anzahl, L_op.datum, L_op._recid, L_ophdr.lscheinnr, Gl_acct.fibukonto, Gl_acct.bezeich, L_artikel.artnr, L_artikel.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum == from_grp)).join(L_ophdr,(L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum) & ((L_untergrup.betriebsnr >= grp1) & (L_untergrup.betriebsnr <= grp2))).filter((L_op.lager_nr == l_lager.lager_nr) & (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr >= from_art) & (L_op.artnr <= to_art) & (L_op.anzahl != 0) & (L_op.op_art == 3) & (L_op.loeschflag == 2)).order_by(L_op.datum, L_artikel.bezeich).all():
+
+                # if l_op_obj_list.get(l_op._recid):
+                #     continue
+                # else:
+                #     l_op_obj_list[l_op._recid] = True
 
                 usr = db_session.query(Usr).filter(
                          (Usr.nr == l_op.fuellflag)).first()
@@ -1900,6 +2443,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     usrid = usr.userinit
                 else:
                     usrid = "??"
+
                 for i in range(1,num_entries(l_op.stornogrund, ";")  + 1) :
                     str1 = entry(i - 1, l_op.stornogrund, ";")
 
@@ -1953,19 +2497,27 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    for i in range(1,45 + 1) :
-                        str_list.s = str_list.s + " "
-                    str_list.s = str_list.s + "Subtotal "
-                    for i in range(1,23 + 1) :
-                        str_list.s = str_list.s + " "
+                    # for i in range(1,45 + 1) :
+                    #     str_list.s = str_list.s + " "
+                    # str_list.s = str_list.s + "Subtotal "
+                    # for i in range(1,23 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 46)
+                    str_list.s = str_list.s + format_fixed_length("Subtotal ", 24)
+
                     str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-                    for i in range(1,14 + 1) :
-                        str_list.s = str_list.s + " "
+
+                    # for i in range(1,14 + 1) :
+                    #     str_list.s = str_list.s + " "
+
+                    str_list.s = str_list.s + format_fixed_length(" ", 15)
 
                     if not long_digit:
                         str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
                     else:
                         str_list.s = str_list.s + to_string(t_val, "->,>>>,>>>,>>9")
+                        
                     t_anz =  to_decimal("0")
                     t_val =  to_decimal("0")
                     str_list = Str_list()
@@ -1982,7 +2534,8 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(30)")
+                    # str_list.s = to_string("", "x(8)") + to_string(l_lager.bezeich, "x(30)")
+                    str_list.s = to_string("", "x(8)") + format_fixed_length(l_lager.bezeich, 30)
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
@@ -2000,7 +2553,7 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                         s_list.bezeich = cost_bezeich
 
                         if cc_code != 0:
-                            s_list.bezeich = to_string(cc_code, "9999 ") + s_list.bezeich
+                            s_list.bezeich = to_string(cc_code, "9999") + " " + s_list.bezeich
                     s_list.cost = s_list.cost + wert
                     t_anz =  to_decimal(t_anz) + to_decimal(l_op.anzahl)
                     t_val =  to_decimal(t_val) + to_decimal(wert)
@@ -2015,22 +2568,53 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
                     str_list.op_recid = l_op._recid
 
                     if not long_digit:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>>,>>>,>>9.99") + to_string(wert, "->>,>>>,>>9.99") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->>,>>>,>>9.99")
+
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>>,>>>,>>9.99") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
                     else:
-                        str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+                        # str_list.s = to_string(l_op.datum) + to_string(s_list.bezeich, "x(30)") + to_string(l_artikel.artnr, "9999999") + to_string(l_artikel.bezeich, "x(32)") + to_string(l_op.anzahl, "->,>>>,>>9.999") + to_string(preis, ">>,>>>,>>>,>>9") + to_string(wert, "->,>>>,>>>,>>9") + to_string(l_op.lscheinnr, "x(12)") + to_string(usrid, "x(2)") + to_string(str_time, "x(8)") + to_string(reason, "x(24)")
+
+                        if l_op.anzahl >= 0:
+                            tmp_l_op_anzahl = format_fixed_length(to_string(l_op.anzahl, ">,>>>,>>9.999"), 14)
+                        else:
+                            tmp_l_op_anzahl = to_string(l_op.anzahl, "->,>>>,>>9.999")
+
+                        if wert >= 0:
+                            tmp_wert = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                        else:
+                            tmp_wert = to_string(wert, "->,>>>,>>>,>>9")
+
+                        str_list.s = to_string(l_op.datum) + format_fixed_length(s_list.bezeich, 30) + to_string(l_artikel.artnr, "9999999") + format_fixed_length(l_artikel.bezeich, 32) + tmp_l_op_anzahl + to_string(preis, ">>,>>>,>>>,>>9") + tmp_wert + format_fixed_length(l_op.lscheinnr, 12) + format_fixed_length(usrid, 2) + format_fixed_length(str_time, 8) + format_fixed_length(reason, 24)
 
         if t_anz != 0:
             str_list = Str_list()
             str_list_data.append(str_list)
 
-            for i in range(1,45 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,45 + 1) :
+            #     str_list.s = str_list.s + " "
+            # str_list.s = str_list.s + "Subtotal "
+            # for i in range(1,23 + 1) :
+            #     str_list.s = str_list.s + " "
+
+            str_list.s = str_list.s + format_fixed_length(" ", 46)
             str_list.s = str_list.s + "Subtotal "
-            for i in range(1,23 + 1) :
-                str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 24)
+
             str_list.s = str_list.s + to_string(t_anz, "->,>>>,>>9.999")
-            for i in range(1,14 + 1) :
-                str_list.s = str_list.s + " "
+            # for i in range(1,14 + 1) :
+            #     str_list.s = str_list.s + " "
+            str_list.s = str_list.s + format_fixed_length(" ", 15)
 
             if not long_digit:
                 str_list.s = str_list.s + to_string(t_val, "->>,>>>,>>9.99")
@@ -2042,21 +2626,24 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,23 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,23 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
+
         str_list.s = str_list.s + to_string(tot_anz, "->,>>>,>>9.999")
-        for i in range(1,12 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,12 + 1) :
+        #     str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 15)
 
         if not long_digit:
             str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
             str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
-        str_list = Str_list()
-        str_list_data.append(str_list)
 
         str_list = Str_list()
         str_list_data.append(str_list)
@@ -2064,32 +2651,57 @@ def cancel_stockout_btn_gobl(from_grp:int, mi_alloc_chk:bool, mi_article_chk:boo
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list = Str_list()
+        str_list_data.append(str_list)
+
+        # str_list.s = to_string("", "x(8)") + to_string("SUMMARY OF EXPENSES", "x(30)")
+        str_list.s = to_string("", "x(8)") + format_fixed_length("SUMMARY OF EXPENSES", 30)
         tot_amount =  to_decimal("0")
 
         for s_list in query(s_list_data, sort_by=[("bezeich",False)]):
             str_list = Str_list()
             str_list_data.append(str_list)
 
-
             if not long_digit:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->>,>>>,>>9.99")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">>,>>>,>>9.99"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->>,>>>,>>9.99")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
             else:
-                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+                # str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + to_string(s_list.bezeich, "x(32)") + to_string(0, "->>>>>>>>>>>>>") + to_string(0, ">>>>>>>>>>>>") + to_string(s_list.cost, "->,>>>,>>>,>>9")
+
+                if s_list.cost >= 0:
+                    tmp_cost = format_fixed_length(to_string(wert, ">,>>>,>>>,>>9"), 14)
+                else:
+                    tmp_cost = to_string(wert, "->,>>>,>>>,>>9")
+
+                str_list.s = to_string("", "x(8)") + to_string("", "x(30)") + to_string("", "x(7)") + format_fixed_length(s_list.bezeich, 32) + to_string("", "x(14)") + to_string("", "x(14)") + tmp_cost
+
             tot_amount =  to_decimal(tot_amount) + to_decimal(s_list.cost)
+
         str_list = Str_list()
         str_list_data.append(str_list)
 
-        for i in range(1,45 + 1) :
-            str_list.s = str_list.s + " "
+        # for i in range(1,45 + 1) :
+        #     str_list.s = str_list.s + " "
+        # str_list.s = str_list.s + "T O T A L"
+        # for i in range(1,49 + 1) :
+        #     str_list.s = str_list.s + " "
+
+        str_list.s = str_list.s + format_fixed_length(" ", 46)
         str_list.s = str_list.s + "T O T A L"
-        for i in range(1,49 + 1) :
-            str_list.s = str_list.s + " "
+        str_list.s = str_list.s + format_fixed_length(" ", 24)
 
         if not long_digit:
-            str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            # str_list.s = str_list.s + to_string(tot_amount, "->>,>>>,>>9.99")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->>,>>>,>>9.99")
         else:
-            str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            # str_list.s = str_list.s + to_string(tot_amount, "->,>>>,>>>,>>9")
+            str_list.s = str_list.s + to_string("", "x(14)") + to_string("", "x(14)") + to_string(tot_amount, "->,>>>,>>>,>>9")
 
 
     def get_costcenter_code(fibukonto:string):
