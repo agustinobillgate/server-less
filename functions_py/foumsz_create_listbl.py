@@ -149,20 +149,19 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
                     not_avail_umstaz.artnr = artikel.artnr
                     not_avail_umstaz.depart = artikel.departement
                     not_avail_umstaz.bezeich = artikel.bezeich
-
         for umsatz in db_session.query(Umsatz).filter(
                     (Umsatz.departement >= from_dept) & 
                     (Umsatz.departement <= to_dept) & 
                     (Umsatz.datum >= from_date) & 
                     (Umsatz.datum <= to_date))\
                     .order_by(Umsatz.departement, Umsatz.artnr, Umsatz.datum).all():
-
+            
             if curr_artnr == 0 or curr_artnr != umsatz.artnr or (curr_artnr == umsatz.artnr and curr_departement != umsatz.departement):
 
                 artikel = get_cache (Artikel, {"artnr": [(eq, umsatz.artnr)],"departement": [(eq, umsatz.departement)]})
 
                 if artikel and (artikel.artart == 0 or artikel.artart == 8):
-
+                   
                     if curr_artnr != 0:
                         it_exist = False
                         serv =  to_decimal("0")
@@ -174,7 +173,7 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
 
                 else:
                     do_it = False
-
+                
             if do_it :
                 counter = counter + 1
 
@@ -198,7 +197,6 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
                                     cl_list.dept = not_avail_umstaz.depart
                                     cl_list.bezeich = not_avail_umstaz.bezeich
                                     it_exist = False
-
 
                                 mbudget = sum_budget(first_date, to_date, not_avail_umstaz.artnr, not_avail_umstaz.depart)
                                 mbudget = round(mbudget, 1)
@@ -355,10 +353,15 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
                     nett_tax =  to_decimal(nett_amt) * to_decimal(vat)
                     nett_amt =  to_decimal(umsatz.betrag) - to_decimal(nett_serv) - to_decimal(nett_tax)
 
+                
+                tmp_to_date = to_date
                 mbudget = sum_budget(first_date, to_date, artikel.artnr, artikel.departement)
+                
                 mbudget = round(mbudget, 1)
                 cl_list.mbudget =  to_decimal(mbudget)
+
                 if umsatz.datum == to_date:
+
                     cl_list.dqty = umsatz.anzahl
                     cl_list.dnet = ( to_decimal(nett_amt) / to_decimal(fact1) )
                     cl_list.dgros = ( to_decimal(umsatz.betrag) / to_decimal(fact1) )
@@ -375,8 +378,6 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
                     t_dgros = to_decimal(t_dgros + round(cl_list.dgros , price_decimal))
                     
                     dqty = dqty + cl_list.dqty
-                    t_dqty = t_dqty + cl_list.dqty
-
                 if umsatz.datum == to_date and vat_list:
                     vat_list.dtax =  to_decimal(vat_list.dtax) + to_decimal((nett_tax) / to_decimal(fact1) )
                     vat_list.dnet =  to_decimal(vat_list.dnet) + to_decimal((nett_amt) / to_decimal(fact1) )
@@ -384,25 +385,7 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
                     vat_list.dserv =  to_decimal(vat_list.dserv) + to_decimal((nett_serv) / to_decimal(fact1) )
 
                 if umsatz.datum >= first_date and umsatz.datum <= to_date:
-                    # Rd 9/9/2025, add manual, di .p tidak ada
-                    # ---------------------------------------
-                   
-                    cl_list.dqty = ( to_decimal(umsatz.anzahl) / to_decimal(fact1) )
-                    cl_list.dnet = ( to_decimal(nett_amt) / to_decimal(fact1) )
-                    cl_list.dgros = ( to_decimal(umsatz.betrag) / to_decimal(fact1) )
-                    cl_list.dserv = ( to_decimal(nett_serv) / to_decimal(fact1) )
-                    cl_list.dtax = ( to_decimal(nett_tax) / to_decimal(fact1) )
-                    dqty = dqty + umsatz.anzahl
-                    dnet = to_decimal(dnet + round(cl_list.dnet , price_decimal))
-                    dserv = to_decimal(dserv + round(cl_list.dserv , price_decimal))
-                    dtax = to_decimal(dtax + round(cl_list.dtax , price_decimal))
-                    dgros = to_decimal(dgros + round(cl_list.dgros , price_decimal))
-                    #---------------------------------------
-                    vat_list.dtax =  to_decimal(vat_list.dtax) + to_decimal((nett_tax) / to_decimal(fact1) )
-                    vat_list.dnet =  to_decimal(vat_list.dnet) + to_decimal((nett_amt) / to_decimal(fact1) )
-                    vat_list.dgros =  to_decimal(vat_list.dgros) + to_decimal((umsatz.betrag) / to_decimal(fact1) )
-                    vat_list.dserv =  to_decimal(vat_list.dserv) + to_decimal((nett_serv) / to_decimal(fact1) )
-                    #---------------------------------------
+
 
                     cl_list.mnet = to_decimal(cl_list.mnet + round((nett_amt / fact1) , price_decimal))
                     cl_list.mserv = to_decimal(cl_list.mserv + round((nett_serv / fact1) , price_decimal))
@@ -412,21 +395,12 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
                     mserv = to_decimal(mserv + round((nett_serv / fact1) , price_decimal))
                     mtax = to_decimal(mtax + round((nett_tax / fact1) , price_decimal))
                     mgros = to_decimal(mgros + round((umsatz.betrag / fact1) , price_decimal))
-
-                   
-                    t_dnet = to_decimal(t_dnet + round((nett_amt / fact1) , price_decimal))
-                    t_dserv = to_decimal(t_dserv + round((nett_serv / fact1) , price_decimal))
-                    t_dtax = to_decimal(t_dtax + round((nett_tax / fact1) , price_decimal))
-                    t_dgros = to_decimal(t_dgros + round((umsatz.betrag / fact1) , price_decimal))
-                    
                     t_mnet = to_decimal(t_mnet + round((nett_amt / fact1) , price_decimal))
                     t_mserv = to_decimal(t_mserv + round((nett_serv / fact1) , price_decimal))
                     t_mtax = to_decimal(t_mtax + round((nett_tax / fact1) , price_decimal))
                     t_mgros = to_decimal(t_mgros + round((umsatz.betrag / fact1) , price_decimal))
                     cl_list.mqty = cl_list.mqty + umsatz.anzahl
                     mqty = mqty + umsatz.anzahl
-
-                    t_dqty = t_dqty + umsatz.anzahl
                     t_mqty = t_mqty + umsatz.anzahl
 
                 if umsatz.datum >= first_date and umsatz.datum <= to_date and vat_list:
@@ -636,7 +610,10 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
                 if not gvat_list:
                     gvat_list = Gvat_list()
                     gvat_list_data.append(gvat_list)
+
                     gvat_list.vat =  to_decimal(vat_list.vat)
+
+              
                    
                 gvat_list.dnet =  to_decimal(gvat_list.dnet) + to_decimal(vat_list.dnet)
                 gvat_list.dserv =  to_decimal(gvat_list.dserv) + to_decimal(vat_list.dserv)
@@ -736,6 +713,8 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
         cl_list.flag = "***"
         cl_list.bezeich = "GRAND TOTAL"
 
+        # Rd 20/8/2025
+        cl_list.dnet =  to_decimal(t_dqty)
 
         cl_list.dnet =  to_decimal(t_dnet)
         cl_list.dserv =  to_decimal(t_dserv)
@@ -838,7 +817,9 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
         def generate_inner_output():
             return (mbudget)
 
+        
         tmp_from_date, tmp_to_date = calculate_date_range(to_date)
+
 
         for budget in db_session.query(Budget).filter(
                  (Budget.datum >= tmp_from_date) & (Budget.datum <= tmp_to_date) & (Budget.departement == deptno) & (Budget.artnr == artnr)).order_by(Budget._recid).all():
@@ -848,13 +829,6 @@ def foumsz_create_listbl(from_dept:int, to_dept:int, first_date:date, from_date:
 
 
     def calculate_date_range(input_date:date):
-
-        nonlocal umsz_list_data, vhp_limited, vat_str, vat_artnr, serv_artnr, price_decimal, htparam, umsatz, artikel, budget, hoteldpt, kontplan
-        nonlocal from_dept, to_dept, first_date, from_date, to_date, totvatflag
-
-
-        nonlocal umsz_list, cl_list, vat_list, gvat_list, not_avail_umstaz
-        nonlocal umsz_list_data, cl_list_data, vat_list_data, gvat_list_data, not_avail_umstaz_data
 
         from_date = None
         to_date = None
