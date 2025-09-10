@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 10/9/2025
+# format tanggal beda
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
