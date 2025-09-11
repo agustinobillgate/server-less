@@ -2,6 +2,8 @@
 #------------------------------------------
 # Rd, 11/9/2025
 # baris TOTAL tidak ada.
+# for loop query diganti manual
+# for test in query(test_data, filters=(lambda test: not matches(test.xx,r""))):
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -245,17 +247,18 @@ def prepare_rm_atdrecapbl(pvilanguage:int):
                 t_pax = t_pax + cl_list.pax
                 t_cpax = t_cpax + cl_list.cpax
 
-            if not matches(temp_et,r""):
+            # Rd, 11/9/2025
+            # for loop query diganti manual
+            # if not matches(temp_et,r""):
+            if temp_et != r"":
                 cl_list = Cl_list()
                 cl_list_data.append(cl_list)
 
                 cl_list.flag = 1
 
-                # cl_list.etage = temp_et + "-TOTAL"
-                # cl_list.loc = ""
-                print("--> Total2")
-                cl_list.etage = ""
-                cl_list.loc = temp_et + "-TOTAL"
+                cl_list.etage = temp_et + "-TOTAL"
+                cl_list.loc = ""
+
                 cl_list.occ = t_occ
                 cl_list.hu = t_hu
                 cl_list.ooo = t_ooo
@@ -279,6 +282,8 @@ def prepare_rm_atdrecapbl(pvilanguage:int):
             t_pax = 0
             t_cpax = 0
 
+        # Rd, 11/9/2025
+        # for loop query diganti manual
         # for test in query(test_data, filters=(lambda test: not matches(test.xx,r""))):
         for test in test_data:
             if test.xx == "":
