@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 11/9/2025
+# baris TOTAL tidak ada.
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -143,7 +147,7 @@ def prepare_rm_atdrecapbl(pvilanguage:int):
                 frate =  to_decimal("1")
 
             elif res_line.reserve_dec != 0:
-                frate =  to_decimal(reserve_dec)
+                frate =  to_decimal(res_line.reserve_dec)
 
             cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.etage == to_string(zimmer.etage) and cl_list.loc == zimmer.code), first=True)
 
@@ -247,9 +251,11 @@ def prepare_rm_atdrecapbl(pvilanguage:int):
 
                 cl_list.flag = 1
 
-
-                cl_list.etage = temp_et + "-TOTAL"
-                cl_list.loc = ""
+                # cl_list.etage = temp_et + "-TOTAL"
+                # cl_list.loc = ""
+                print("--> Total2")
+                cl_list.etage = ""
+                cl_list.loc = temp_et + "-TOTAL"
                 cl_list.occ = t_occ
                 cl_list.hu = t_hu
                 cl_list.ooo = t_ooo
@@ -273,7 +279,10 @@ def prepare_rm_atdrecapbl(pvilanguage:int):
             t_pax = 0
             t_cpax = 0
 
-        for test in query(test_data, filters=(lambda test: not matches(test.xx,r""))):
+        # for test in query(test_data, filters=(lambda test: not matches(test.xx,r""))):
+        for test in test_data:
+            if test.xx == "":
+                continue
             t_occ = 0
             t_hu = 0
             t_ooo = 0
@@ -306,12 +315,10 @@ def prepare_rm_atdrecapbl(pvilanguage:int):
                 t_nrev =  to_decimal(t_nrev) + to_decimal(cl_list.nrev)
                 t_pax = t_pax + cl_list.pax
                 t_cpax = t_cpax + cl_list.cpax
+
             cl_list = Cl_list()
             cl_list_data.append(cl_list)
-
             cl_list.flag = 1
-
-
             cl_list.loc = temp_loc + "-TOTAL"
             cl_list.etage = ""
             cl_list.occ = t_occ
@@ -380,6 +387,7 @@ def prepare_rm_atdrecapbl(pvilanguage:int):
             t_nrev =  to_decimal(t_nrev) + to_decimal(cl_list.nrev)
             t_pax = t_pax + cl_list.pax
             t_cpax = t_cpax + cl_list.cpax
+
         cl_list = Cl_list()
         cl_list_data.append(cl_list)
 
@@ -457,6 +465,7 @@ def prepare_rm_atdrecapbl(pvilanguage:int):
         exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
     else:
         exchg_rate =  to_decimal("1")
+
     create_list()
 
     return generate_output()
