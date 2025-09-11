@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 11/9/2025
+# beda summary Room
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -183,7 +186,8 @@ def walkin_list_1webbl(case_type:int, fdate:date, tdate:date, walk_in:int, wi_gr
         t_walkin_list.res_city = guest.wohnort + " " + guest.plz
         t_walkin_list.res_bemerk = reservation.bemerk
 
-        summary_list = query(summary_list_data, filters=(lambda summary_list: summary_list.arrangement == t_walkin_list.arrangement), first=True)
+
+        summary_list = query(summary_list_data, filters=(lambda summary_list: summary_list.arrangement == t_walkin_list.arrangement.strip()), first=True)
 
         if not summary_list:
             summary_list = Summary_list()
