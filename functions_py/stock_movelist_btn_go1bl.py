@@ -45,6 +45,12 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
         nonlocal str_list_data, str_list2_data, stock_movelist_data
 
         return {"stock-movelist": stock_movelist_data}
+    
+    def format_fixed_length(text: str, length: int) -> str:
+        if len(text) > length:
+            return text[:length]   # trim
+        else:
+            return text.ljust(length)
 
     def create_list(pvilanguage:int, s_artnr:int, show_price:bool, from_lager:int, to_lager:int):
 
@@ -55,7 +61,7 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
         t_qty:Decimal = to_decimal("0.0")
         t_wert:Decimal = to_decimal("0.0")
         bemerk:string = ""
-        close_date:date = None
+        close_date:date = datetime(1, 1, 1)
         preis:Decimal = to_decimal("0.0")
         wert:Decimal = to_decimal("0.0")
         it_exist:bool = False
@@ -104,13 +110,11 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
                 if show_price:
                     t_val =  to_decimal(l_bestand.val_anf_best)
 
-
                 str_list2 = Str_list2()
                 str_list2_data.append(str_list2)
 
                 str_list2.datum = ""
-                str_list2.lscheinnr = to_string(l_lager.lager_nr) + " " + to_string(l_lager.bezeich)
-
+                str_list2.lscheinnr = to_string(l_lager.lager_nr, "99") + " " + to_string(l_lager.bezeich)
 
                 str_list2 = Str_list2()
                 str_list2_data.append(str_list2)
@@ -124,8 +128,6 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
                         str_list2.lscheinnr = ""
                         str_list2.init_qty = to_string(l_bestand.anz_anf_best)
                         str_list2.init_val = to_string(l_bestand.val_anf_best)
-
-
                     else:
                         str_list2.datum = to_string(l_bestand.anf_best_dat)
                         str_list2.lscheinnr = ""
@@ -140,27 +142,27 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
                         str_list2.lscheinnr = ""
                         str_list2.init_qty = to_string(l_bestand.anz_anf_best)
                         str_list2.init_val = to_string(0)
-
-
                     else:
                         str_list2.datum = to_string(l_bestand.anf_best_dat)
                         str_list2.lscheinnr = ""
                         str_list2.init_qty = to_string(l_bestand.anz_anf_best)
                         str_list2.init_val = to_string(0)
 
+
+            l_op = L_op()
+
             # Rd
             # add validation close_date is none
-            # for l_op in db_session.query(L_op).filter(
-            #          (L_op.lager_nr == l_lager.lager_nr) & (L_op.artnr == s_artnr) & (L_op.loeschflag <= 1) & (L_op.datum <= close_date)).order_by(L_op.datum, L_op.op_art).all():
-            query = db_session.query(L_op).filter(
-                        (L_op.lager_nr == l_lager.lager_nr) &
-                        (L_op.artnr == s_artnr) &
-                        (L_op.loeschflag <= 1)
-                    )
-            if close_date is not None:
-                query = query.filter(L_op.datum <= close_date)
-            l_op_list = query.order_by(L_op.datum, L_op.op_art).all()
-            for l_op in l_op_list:
+            for l_op.einzelpreis, l_op.warenwert, l_op.op_art, l_op.lief_nr, l_op.anzahl, l_op.datum, l_op.lscheinnr, l_op.herkunftflag, l_op.zeit, l_op.stornogrund, l_op.pos, l_op.fuellflag  in db_session.query(L_op.einzelpreis, L_op.warenwert, L_op.op_art, L_op.lief_nr, L_op.anzahl, L_op.datum, L_op.lscheinnr, L_op.herkunftflag, L_op.zeit, L_op.stornogrund, L_op.pos, L_op.fuellflag).filter((L_op.lager_nr == l_lager.lager_nr) & (L_op.artnr == s_artnr) & (L_op.loeschflag <= 1) & (L_op.datum <= close_date)).order_by(L_op.datum, L_op.op_art).all():
+            # query = db_session.query(L_op).filter(
+            #             (L_op.lager_nr == l_lager.lager_nr) &
+            #             (L_op.artnr == s_artnr) &
+            #             (L_op.loeschflag <= 1)
+            #         )
+            # if close_date is not None:
+            #     query = query.filter(L_op.datum <= close_date)
+            # l_op_list = query.order_by(L_op.datum, L_op.op_art).all()
+            # for l_op in l_op_list:
                 it_exist = True
 
                 if show_price:
@@ -205,18 +207,14 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
 
                         if l_op1:
                             bemerk = translateExtended ("From", lvcarea, "") + " " + to_string(l_op1.lager_nr)
-
-
                         else:
                             bemerk = translateExtended ("Transferred", lvcarea, "")
 
                     elif l_op.herkunftflag == 3:
                         bemerk = translateExtended ("Transform In", lvcarea, "")
 
-
                     t_anz =  to_decimal(t_anz) + to_decimal(l_op.anzahl)
                     t_val =  to_decimal(t_val) + to_decimal(wert)
-
 
                     str_list2 = Str_list2()
                     str_list2_data.append(str_list2)
@@ -244,7 +242,6 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
 
                         if gl_acct:
                             bemerk = gl_acct.fibukonto
-
 
                     else:
 
@@ -284,7 +281,6 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
                     if l_op.herkunftflag == 1:
                         bemerk = translateExtended ("To Store", lvcarea, "") + " " + to_string(l_op.pos)
 
-
                     else:
                         bemerk = translateExtended ("Transform Out", lvcarea, "")
 
@@ -292,10 +288,10 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
                     t_anz =  to_decimal(t_anz) - to_decimal(l_op.anzahl)
                     t_val =  to_decimal(t_val) - to_decimal(wert)
 
-
                     str_list2 = Str_list2()
                     str_list2_data.append(str_list2)
 
+                    add_id()
                     str_list2.m_unit = l_artikel.masseinheit
                     str_list2.datum = to_string(l_op.datum)
                     str_list2.lscheinnr = to_string(l_op.lscheinnr)
@@ -316,7 +312,6 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
                 if l_artikel.vk_preis != 0:
                     t_val =  to_decimal(t_anz) * to_decimal(l_artikel.vk_preis)
 
-
                 str_list2 = Str_list2()
                 str_list2_data.append(str_list2)
 
@@ -326,17 +321,14 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
                 str_list2.init_qty = to_string(t_anz)
                 str_list2.init_val = to_string(t_val)
 
-
         str_list2 = Str_list2()
         str_list2_data.append(str_list2)
 
         str_list2 = Str_list2()
         str_list2_data.append(str_list2)
-
 
         if l_artikel.vk_preis != 0:
             t_wert =  to_decimal(t_qty) * to_decimal(l_artikel.vk_preis)
-
 
         str_list2.datum = ""
         str_list2.lscheinnr = "T O T A L : "
@@ -351,10 +343,10 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
 
             for l_ophis in db_session.query(L_ophis).filter(
                      (L_ophis.artnr == s_artnr) & (L_ophis.op_art == 1)).order_by(L_ophis.datum.desc()).all():
+                
                 last_date = l_ophis.datum
-
-
                 break
+
             first_rec = True
 
             for l_ophis in db_session.query(L_ophis).filter(
@@ -368,23 +360,20 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
                     str_list2.lscheinnr = to_string(translateExtended ("Last Receiving:", lvcarea, ""))
                     str_list2.in_qty = to_string(l_ophis.anzahl)
                     str_list2.in_val = to_string(l_ophis.warenwert)
-
-
                 else:
                     str_list2.m_unit = l_artikel.masseinheit
                     str_list2.datum = to_string(l_ophis.datum)
                     str_list2.in_qty = to_string(l_ophis.anzahl)
                     str_list2.in_val = to_string(l_ophis.warenwert)
 
-
                 first_rec = False
 
             for l_ophis in db_session.query(L_ophis).filter(
                      (L_ophis.artnr == s_artnr) & (L_ophis.op_art == 3)).order_by(L_ophis.datum.desc()).all():
+                
                 last_date = l_ophis.datum
-
-
                 break
+            
             first_rec = True
 
             for l_ophis in db_session.query(L_ophis).filter(
@@ -398,8 +387,6 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
                     str_list2.lscheinnr = to_string(translateExtended ("Last Outgoing:", lvcarea, ""))
                     str_list2.out_qty = to_string(l_ophis.anzahl)
                     str_list2.out_val = to_string(l_ophis.warenwert)
-
-
                 else:
                     str_list2.m_unit = l_artikel.masseinheit
                     str_list2.datum = to_string(l_ophis.datum)
@@ -425,11 +412,8 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
 
         if usr:
             str_list2.id = usr.userinit
-
-
         else:
             str_list2.id = "??"
-
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 246)]})
 
@@ -450,7 +434,7 @@ def stock_movelist_btn_go1bl(pvilanguage:int, s_artnr:int, show_price:bool, from
 
         # stock_movelist.datum = date_mdy(str_list2.datum)
         stock_movelist.datum = str_list2.datum
-        stock_movelist.lscheinnr = str_list2.lscheinnr
+        stock_movelist.lscheinnr = format_fixed_length(str_list2.lscheinnr, 16)
         stock_movelist.init_qty =  to_decimal(to_decimal(str_list2.init_qty) )
         stock_movelist.init_val =  to_decimal(to_decimal(str_list2.init_val) )
         stock_movelist.in_qty =  to_decimal(to_decimal(str_list2.in_qty) )
