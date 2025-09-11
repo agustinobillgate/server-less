@@ -191,7 +191,7 @@ def fo_daysale_daysale_list1bl(bline_list_data:[Bline_list], pvilanguage:int, sh
                                 res_line = get_cache (Res_line, {"resnr": [(eq, to_int(t_resnr))]})
 
                                 if res_line:
-                                    turnover.gname =res_line.name
+                                    turnover.gname = res_line.name
 
                         if artikel.artart == 2:
                             turnover.c_ledger =  to_decimal(turnover.c_ledger) - to_decimal(billjournal.betrag)

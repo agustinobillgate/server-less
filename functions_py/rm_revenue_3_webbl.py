@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 11/9/2025
+# 
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -74,6 +78,9 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
     cl_list_data, Cl_list = create_model("Cl_list", {"flag":string, "zinr":string, "rmcat":string, "anz":int, "pax":int, "com_anz":int, "com_pax":int, "hu_anz":int, "hu_pax":int, "net":Decimal, "proz":Decimal, "manz":int, "mpax":int, "com_manz":int, "com_mpax":int, "hu_manz":int, "hu_mpax":int, "mnet":Decimal, "proz1":Decimal, "yanz":int, "ypax":int, "com_yanz":int, "com_ypax":int, "hu_yanz":int, "hu_ypax":int, "ynet":Decimal, "proz2":Decimal})
 
     db_session = local_storage.db_session
+
+    # Rd, 11/9/2025
+    rm_no = rm_no.strip()
 
     def generate_output():
         nonlocal output_list_data, i, anz, manz, yanz, com_anz, com_manz, com_yanz, hu_anz, hu_manz, hu_yanz, pax, mpax, ypax, com_pax, com_mpax, com_ypax, hu_pax, hu_mpax, hu_ypax, mnet, ynet, net, t_anz, t_manz, t_yanz, t_pax, t_mpax, t_ypax, t_net, t_mnet, t_ynet, t_com_anz, t_com_pax, t_com_manz, t_com_mpax, t_com_yanz, t_com_ypax, t_hu_anz, t_hu_pax, t_hu_manz, t_hu_mpax, t_hu_yanz, t_hu_ypax, from_bez, to_bez, price_decimal, from_date, curr_zeit, ci_date, do_it, compli_flag, hu_flag, htparam, zimmer, reservation, arrangement, res_line, waehrung, segment, argt_line, artikel, zinrstat, genstat, zimkateg
