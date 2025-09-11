@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 10/9/2025
+# beda kolom guest name
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -122,8 +126,22 @@ def fo_daysale_daysale_list1bl(bline_list_data:[Bline_list], pvilanguage:int, sh
                 billjournal_obj_list = {}
                 billjournal = Billjournal()
                 artikel = Artikel()
-                for billjournal.betriebsnr, billjournal.rechnr, billjournal.bezeich, billjournal.betrag, billjournal.fremdwaehrng, billjournal.userinit, billjournal._recid, artikel.betriebsnr, artikel.artnr, artikel.bezeich, artikel.artart, artikel._recid in db_session.query(Billjournal.betriebsnr, Billjournal.rechnr, Billjournal.bezeich, Billjournal.betrag, Billjournal.fremdwaehrng, Billjournal.userinit, Billjournal._recid, Artikel.betriebsnr, Artikel.artnr, Artikel.bezeich, Artikel.artart, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == 0) & ((Artikel.artart == 2) | (Artikel.artart == 6) | (Artikel.artart == 7))).filter(
-                         (Billjournal.bill_datum == from_date) & (Billjournal.departement == 0) & (Billjournal.anzahl != 0) & (Billjournal.userinit == bediener.userinit)).order_by(Billjournal.rechnr).all():
+                for billjournal.betriebsnr, billjournal.rechnr, billjournal.bezeich, billjournal.betrag, billjournal.fremdwaehrng, \
+                    billjournal.userinit, billjournal._recid, artikel.betriebsnr, artikel.artnr, artikel.bezeich, artikel.artart, \
+                        artikel._recid \
+                    in db_session.query(Billjournal.betriebsnr, Billjournal.rechnr, Billjournal.bezeich, Billjournal.betrag, \
+                        Billjournal.fremdwaehrng, Billjournal.userinit, Billjournal._recid, Artikel.betriebsnr, Artikel.artnr, \
+                        Artikel.bezeich, Artikel.artart, Artikel._recid)\
+                    .join(Artikel,(Artikel.artnr == Billjournal.artnr) & 
+                                    (Artikel.departement == 0) & 
+                                    ((Artikel.artart == 2) | (Artikel.artart == 6) | (Artikel.artart == 7)))\
+                    .filter(
+                         (Billjournal.bill_datum == from_date) & 
+                         (Billjournal.departement == 0) & 
+                         (Billjournal.anzahl != 0) & 
+                         (Billjournal.userinit == bediener.userinit))\
+                    .order_by(Billjournal.rechnr).all():
+
                     if billjournal_obj_list.get(billjournal._recid):
                         continue
                     else:
@@ -173,7 +191,7 @@ def fo_daysale_daysale_list1bl(bline_list_data:[Bline_list], pvilanguage:int, sh
                                 res_line = get_cache (Res_line, {"resnr": [(eq, to_int(t_resnr))]})
 
                                 if res_line:
-                                    turnover.gname = res_line.name
+                                    turnover.gname =res_line.name
 
                         if artikel.artart == 2:
                             turnover.c_ledger =  to_decimal(turnover.c_ledger) - to_decimal(billjournal.betrag)
