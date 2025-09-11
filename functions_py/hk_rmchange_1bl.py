@@ -2,6 +2,9 @@
 # ===============================
 # Rulita, 04-09-2025
 # Fixing entry 
+#
+# Rulita, 11-09-2025
+# Fixing query history bemerk 
 # ===============================
 
 from functions.additional_functions import *
@@ -41,12 +44,26 @@ def hk_rmchange_1bl(from_date:date, to_date:date):
 
     h_list_data.clear()
 
+    # Rulita ajudst history.bemerk
     for history in db_session.query(History).filter(
-             (History.ankunft <= to_date) & (History.abreise >= from_date) & (History.zi_wechsel) & (substring(History.bemerk, 0, 8) >= to_string(from_date)) & (substring(History.bemerk, 0, 8) <= to_string(to_date))).order_by(func.substring(History.bemerk, 0, 8), History.zinr).all():
+             (History.ankunft <= to_date) \
+                & (History.abreise >= from_date) \
+                & (History.zi_wechsel) \
+                & (substring(History.bemerk, 0, 8) >= to_string(from_date.strftime('%d-%m-%y'))) \
+                & (substring(History.bemerk, 0, 8) <= to_string(to_date.strftime('%d-%m-%y')))) \
+                .all():
+                # .order_by(func.substring(History.bemerk, 0, 8), History.zinr).all():
 
-        res_line = get_cache (Res_line, {"resnr": [(eq, history.resnr)]})
+        res_line = db_session.query(Res_line).filter(
+                         (Res_line.resnr == history.resnr)).first()
 
-        bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+        # res_line = get_cache (Res_line, {"resnr": [(eq, )]})
+
+        bediener = db_session.query(Bediener).filter(
+                         (Bediener.userinit == user_init)).first()
+
+        # bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+
         # Rulita
         # s1 = entry(0, history.bemerk, chr_unicode(10))
         s1 = history.bemerk.split('\\n')[0]
@@ -56,9 +73,8 @@ def hk_rmchange_1bl(from_date:date, to_date:date):
         if get_index(history.bemerk, '\\n') > 0:
             # s2 = entry(0, entry(1, history.bemerk, chr_unicode(10)) , chr_unicode(2))
             # s2 = history.bemerk.split('\\n')[1]
-            s2 = history.bemerk.split('\\n')[1].split(chr(2))[0]
-        else:
-            s2 = ""
+            s2 = history.bemerk.split('\\n')[1]
+
         h_list = H_list()
         h_list_data.append(h_list)
 
@@ -74,7 +90,5 @@ def hk_rmchange_1bl(from_date:date, to_date:date):
 
         if num_entries(history.bemerk, chr_unicode(2)) > 1:
             h_list.usr_id = entry(1, history.bemerk, chr_unicode(2))
-
-        log_program.write_log("test_oscar2", f"substring(History.bemerk, 0, 8) : {func.substring(History.bemerk, 0, 8)}")
 
     return generate_output()
