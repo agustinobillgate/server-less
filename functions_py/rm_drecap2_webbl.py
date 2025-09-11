@@ -3,6 +3,10 @@
 # Rd, 29/7/2025
 # gitlab: 111
 # error konversi, # mtd_totrm = 0 mtd_act == 0 ytd_act == 0 ytd_totrm == 0
+# Rd 11/9/2025, RmRev Exc Comp&HU -> tidak muncul
+# camel case di 2 variable berikut
+# mi_exchu_chk = mi_exc_h_u_chk
+# mi_exccomp_chk = mi_exc_comp_chk
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -11,7 +15,8 @@ from functions.get_room_breakdown import get_room_breakdown
 from functions.calc_servvat import calc_servvat
 from models import Htparam, Zimmer, Zkstat, Zinrstat, Genstat, Segment, Guestseg, Reservation, Res_line, Outorder, Artikel, Umsatz
 
-def rm_drecap2_webbl(pvilanguage:int, opening_date:date, from_date:date, to_date:date, fdate:date, tdate:date, segmtype_exist:bool, mi_mtd_chk:bool, mi_ftd_chk:bool, mi_exchu_chk:bool, mi_exccomp_chk:bool, long_digit:bool):
+# def rm_drecap2_webbl(pvilanguage:int, opening_date:date, from_date:date, to_date:date, fdate:date, tdate:date, segmtype_exist:bool, mi_mtd_chk:bool, mi_ftd_chk:bool, mi_exchu_chk:bool,  mi_exccomp_chk:bool, long_digit:bool):
+def rm_drecap2_webbl(pvilanguage:int, opening_date:date, from_date:date, to_date:date, fdate:date, tdate:date, segmtype_exist:bool, mi_mtd_chk:bool, mi_ftd_chk:bool, mi_exc_h_u_chk:bool,  mi_exc_comp_chk:bool, long_digit:bool):
 
     prepare_cache ([Htparam, Zkstat, Zinrstat, Genstat, Segment, Guestseg, Reservation, Res_line, Outorder, Artikel, Umsatz])
 
@@ -86,6 +91,10 @@ def rm_drecap2_webbl(pvilanguage:int, opening_date:date, from_date:date, to_date
     om_list_data, Om_list = create_model("Om_list", {"zinr":string, "userinit":string, "ind":int, "reason":string, "gespstart":date, "gespende":date})
 
     db_session = local_storage.db_session
+    # Rd, 11/9/2025
+    # camel case di 2 variable berikut
+    mi_exchu_chk = mi_exc_h_u_chk
+    mi_exccomp_chk = mi_exc_comp_chk
 
     def generate_output():
         nonlocal cl_list_data, lvcarea, do_it, droomrev, mroomrev, yroomrev, drevrev, mrevrev, yrevrev, dpaxrev, mpaxrev, ypaxrev, draterev, mraterev, yraterev, droomcomp, mroomcomp, yroomcomp, dpaxcomp, mpaxcomp, ypaxcomp, droomhu, mroomhu, yroomhu, dpaxhu, mpaxhu, ypaxhu, tot_room, all_room, dvacant, mvacant, yvacant, dooo, mooo, yooo, dnoshow, mnoshow, ynoshow, dcancel, mcancel, ycancel, cal_umsatz1_called, cal_umsatz4_called, droom, proz1, mroom, proz2, dpax, mpax, drate, mrate, drev, mrev, yroom, ypax, yrate, yrev, inactive, mtd_act, mtd_totrm, ytd_act, ytd_totrm, ci_date, htparam, zimmer, zkstat, zinrstat, genstat, segment, guestseg, reservation, res_line, outorder, artikel, umsatz
