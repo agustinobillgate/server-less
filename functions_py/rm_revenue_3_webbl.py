@@ -642,8 +642,14 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                             if excl_compl:
 
                                 genstat = db_session.query(Genstat).filter(
-                                         (Genstat.datum == datum) & (Genstat.zikatnr == zimmer.zikatnr) & (Genstat.zinr == zimmer.zinr) & (Genstat.zipreis == 0) & (Genstat.gratis != 0) & (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(1)])).first()
-
+                                         (Genstat.datum == datum) & 
+                                         (Genstat.zikatnr == zimmer.zikatnr) & 
+                                         (Genstat.zinr == zimmer.zinr) & 
+                                         (Genstat.zipreis == 0) & 
+                                         (Genstat.gratis != 0) & 
+                                         (Genstat.resstatus == 6) & 
+                                         (Genstat.res_logic[inc_value(1)])).first()
+                                # genstat -> issue, tanya pak Fadly
                                 if genstat:
 
                                     segment = db_session.query(Segment).filter(

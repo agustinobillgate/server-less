@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 12/9/2025
+# data qty beda , saat checked: exclude qty
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -24,6 +28,7 @@ def rest_billjourn_journal_list1_webbl(from_art:int, from_dept:int, to_dept:int,
 
     db_session = local_storage.db_session
 
+
     def generate_output():
         nonlocal booking_journbill_list_data, disc_art1, disc_art2, disc_art3, guest, htparam, h_journal, hoteldpt, h_artikel, h_bill, res_line
         nonlocal from_art, from_dept, to_dept, from_date, to_date, price_decimal, excl_paydisc
@@ -40,7 +45,6 @@ def rest_billjourn_journal_list1_webbl(from_art:int, from_dept:int, to_dept:int,
         nonlocal booking_journbill_list_data, disc_art1, disc_art2, disc_art3, guest, htparam, h_journal, hoteldpt, h_artikel, h_bill, res_line
         nonlocal from_art, from_dept, to_dept, from_date, to_date, price_decimal, excl_paydisc
         nonlocal gbuff
-
 
         nonlocal booking_journbill_list, gbuff
         nonlocal booking_journbill_list_data
@@ -68,7 +72,6 @@ def rest_billjourn_journal_list1_webbl(from_art:int, from_dept:int, to_dept:int,
         booking_journbill_list_data.clear()
 
         if from_art == 0:
-
             for hoteldpt in db_session.query(Hoteldpt).filter(
                      (Hoteldpt.num >= from_dept) & (Hoteldpt.num <= to_dept)).order_by(Hoteldpt.num).all():
                 sub_tot =  to_decimal("0")
@@ -84,7 +87,9 @@ def rest_billjourn_journal_list1_webbl(from_art:int, from_dept:int, to_dept:int,
                     it_exist = False
 
                     for h_journal in db_session.query(H_journal).filter(
-                             (H_journal.bill_datum == curr_date) & (H_journal.departement == hoteldpt.num)).order_by(H_journal.rechnr, H_journal.sysdate, H_journal.zeit).all():
+                             (H_journal.bill_datum == curr_date) & 
+                             (H_journal.departement == hoteldpt.num)\
+                        ).order_by(H_journal.rechnr, H_journal.sysdate, H_journal.zeit).all():
 
                         h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_journal.artnr)],"departement": [(eq, h_journal.departement)]})
                         it_exist = True
@@ -123,6 +128,7 @@ def rest_billjourn_journal_list1_webbl(from_art:int, from_dept:int, to_dept:int,
 
                         if (h_journal.artnr == disc_art1 or h_journal.artnr == disc_art2 or h_journal.artnr == disc_art2) and h_journal.betrag == 0:
                             pass
+                            
                         else:
                             booking_journbill_list = Booking_journbill_list()
                             booking_journbill_list_data.append(booking_journbill_list)
@@ -171,7 +177,7 @@ def rest_billjourn_journal_list1_webbl(from_art:int, from_dept:int, to_dept:int,
                                 sub_tot =  to_decimal(sub_tot) + to_decimal(h_journal.betrag)
                                 tot =  to_decimal(tot) + to_decimal(h_journal.betrag)
 
-                            elif h_journal.artnr == 0 and substring(h_journal.bezeich, 0, 9) == ("To Table ").lower() :
+                            elif h_journal.artnr == 0 and substring(h_journal.bezeich, 0, 9) == ("To Table ") :
 
                                 if price_decimal == 2:
                                     booking_journbill_list.sales =  to_decimal(h_journal.betrag)
@@ -182,7 +188,7 @@ def rest_billjourn_journal_list1_webbl(from_art:int, from_dept:int, to_dept:int,
                                 sub_tot =  to_decimal(sub_tot) + to_decimal(h_journal.betrag)
                                 tot =  to_decimal(tot) + to_decimal(h_journal.betrag)
 
-                            elif h_journal.artnr == 0 and substring(h_journal.bezeich, 0, 11) == ("From Table ").lower() :
+                            elif h_journal.artnr == 0 and substring(h_journal.bezeich, 0, 11) == ("From Table ") :
 
                                 if price_decimal == 2:
                                     booking_journbill_list.sales =  to_decimal(h_journal.betrag)
@@ -216,8 +222,11 @@ def rest_billjourn_journal_list1_webbl(from_art:int, from_dept:int, to_dept:int,
                             booking_journbill_list.rmno = curr_room
 
                             if excl_paydisc:
-
-                                if (h_artikel and h_artikel.artart != 0) or (h_journal.artnr == disc_art1 or h_journal.artnr == disc_art2 or h_journal.artnr == disc_art2) or (matches(h_journal.bezeich,r"*DISC*")) or (h_journal.artnr == 0 and substring(h_journal.bezeich, 0, 4) == ("RmNo").lower()) or (h_journal.artnr == 0 and substring(h_journal.bezeich, 0, 8) == ("Transfer").lower()):
+                                if (h_artikel and h_artikel.artart != 0) or \
+                                    (h_journal.artnr == disc_art1 or h_journal.artnr == disc_art2 or h_journal.artnr == disc_art3  ) or \
+                                    (matches(h_journal.bezeich,r"*DISC*")) or \
+                                    (h_journal.artnr == 0 and substring(h_journal.bezeich, 0, 4) == "RmNo") or \
+                                    (h_journal.artnr == 0 and substring(h_journal.bezeich, 0, 8) == "Transfer"):
                                     booking_journbill_list.qty = 0
                                 qty = qty + booking_journbill_list.qty
                             else:
