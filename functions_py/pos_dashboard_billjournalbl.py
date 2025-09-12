@@ -1,4 +1,10 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 12/9/2025
+#
+#------------------------------------------
+
+
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -22,6 +28,7 @@ def pos_dashboard_billjournalbl(from_date:date, to_date:date, from_dept:int, to_
     t_list_data, T_list = create_model("T_list", {"bill_date":date, "dept_no":int, "rechnr":int})
 
     db_session = local_storage.db_session
+    log_debug = []
 
     def generate_output():
         nonlocal journal_list_data, disc_art1, disc_art2, disc_art3, htparam, queasy, hoteldpt, h_journal, h_artikel, h_bill, res_line, guest
@@ -31,7 +38,7 @@ def pos_dashboard_billjournalbl(from_date:date, to_date:date, from_dept:int, to_
         nonlocal journal_list, t_list
         nonlocal journal_list_data, t_list_data
 
-        return {"journal-list": journal_list_data}
+        return {"log": log_debug, "journal-list": journal_list_data}
 
     def journal_list():
 
@@ -62,14 +69,17 @@ def pos_dashboard_billjournalbl(from_date:date, to_date:date, from_dept:int, to_
         journal_list_data.clear()
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 225) & (Queasy.char1 == ("orderbill").lower()) & (num_entries(Queasy.char2, "|") > 7) & (matches(entry(7, Queasy.char2, "|"),"*BL=*"))).order_by(Queasy._recid).all():
+                 (Queasy.key == 225) & 
+                 (Queasy.char1 == ("orderbill")) & 
+                 (num_entries(Queasy.char2, "|") > 7) & 
+                 (matches(entry(7, Queasy.char2, "|"),"*BL=*"))).order_by(Queasy._recid).all():
             mess_str = queasy.char2
             for i_str in range(1,num_entries(mess_str, "|")  + 1) :
                 mess_token = entry(i_str - 1, mess_str, "|")
                 mess_keyword = entry(0, mess_token, "=")
                 mess_value = entry(1, mess_token, "=")
 
-                if mess_keyword.lower()  == ("BL").lower() :
+                if mess_keyword  == ("BL") :
                     validate_rechnr = to_int(mess_value)
 
                 if validate_rechnr != 0:
@@ -159,13 +169,13 @@ def pos_dashboard_billjournalbl(from_date:date, to_date:date, from_dept:int, to_
                         sub_tot =  to_decimal(sub_tot) + to_decimal(h_journal.betrag)
                         tot =  to_decimal(tot) + to_decimal(h_journal.betrag)
 
-                    elif h_journal.artnr == 0 and substring(h_journal.bezeich, 0, 9) == ("To Table ").lower() :
+                    elif h_journal.artnr == 0 and substring(h_journal.bezeich, 0, 9) == ("To Table ") :
                         journal_list.amount =  to_decimal(h_journal.betrag)
                         journal_list.payment =  to_decimal("0")
                         sub_tot =  to_decimal(sub_tot) + to_decimal(h_journal.betrag)
                         tot =  to_decimal(tot) + to_decimal(h_journal.betrag)
 
-                    elif h_journal.artnr == 0 and substring(h_journal.bezeich, 0, 11) == ("From Table ").lower() :
+                    elif h_journal.artnr == 0 and substring(h_journal.bezeich, 0, 11) == ("From Table ") :
                         journal_list.amount =  to_decimal(h_journal.betrag)
                         journal_list.payment =  to_decimal("0")
                         sub_tot =  to_decimal(sub_tot) + to_decimal(h_journal.betrag)
