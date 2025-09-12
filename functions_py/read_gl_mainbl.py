@@ -14,6 +14,10 @@ def read_gl_mainbl(case_type:int, int1:int, int2:int, char1:string, char2:string
 
     db_session = local_storage.db_session
 
+    # Rd 11/9/2025
+    char1 = char1.strip()
+    char2 = char2.strip()
+
     def generate_output():
         nonlocal t_gl_main_data, gl_main
         nonlocal case_type, int1, int2, char1, char2

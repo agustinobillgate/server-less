@@ -1,12 +1,21 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 22/8/2025
-# " " -> "        "  , str -> output_list.str
+# adjust string positions to match gl_jouhislist_create_listbl.py
+# add fixed length formatting (Oscar suggestion)
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.gl_jouhislist_create_listbl import gl_jouhislist_create_listbl
+import os
+
+
+def format_fixed_length(text: str, length: int) -> str:
+    if len(text) > length:
+        return text[:length]   # trim
+    else:
+        return text.ljust(length)
 
 def gl_jouhislist_create_list_webbl(sorttype:int, from_fibu:string, to_fibu:string, from_dept:int, from_date:date, to_date:date, close_year:date):
     t_ouput_list_data = []
@@ -43,16 +52,24 @@ def gl_jouhislist_create_list_webbl(sorttype:int, from_fibu:string, to_fibu:stri
         t_ouput_list.marked = output_list.marked
         t_ouput_list.fibukonto = output_list.fibukonto
         t_ouput_list.jnr = output_list.jnr
-        t_ouput_list.bemerk = output_list.bemerk
+        t_ouput_list.bemerk = output_list.bemerk.replace("\u0002", "")
         t_ouput_list.datum = substring(output_list.str, 0, 8)
         t_ouput_list.refno = substring(output_list.str, 8, 15)
         t_ouput_list.bezeich = substring(output_list.str, 23, 40)
-        t_ouput_list.debit = substring(output_list.str, 63, 22)
-        t_ouput_list.credit = substring(output_list.str, 85, 22)
+        t_ouput_list.debit = substring(output_list.str, 62, 22)
+        t_ouput_list.credit = substring(output_list.str, 84, 21)
         t_ouput_list.balance = substring(output_list.str, 179, 22)
-        t_ouput_list.user_init = substring(output_list.str, 107, 3)
-        t_ouput_list.created = scurr_date
-        t_ouput_list.chgid = substring(output_list.str, 118, 3)
-        t_ouput_list.chgdate = substring(output_list.str, 121, 8)
+        t_ouput_list.user_init = substring(output_list.str, 105, 3)
+        t_ouput_list.created = substring(output_list.str, 108, 8)
+        # t_ouput_list.created = scurr_date
+        t_ouput_list.chgid = substring(output_list.str, 116, 3)
+        t_ouput_list.chgdate = substring(output_list.str, 119, 8)
+
+        t_ouput_list.debit = format_fixed_length(t_ouput_list.debit.strip(), 22)
+        t_ouput_list.credit = format_fixed_length(t_ouput_list.credit.strip(), 21)
+        t_ouput_list.balance = format_fixed_length(t_ouput_list.balance.strip(), 22)
+        t_ouput_list.user_init = format_fixed_length(t_ouput_list.user_init.strip(), 3)
+        t_ouput_list.created = format_fixed_length(t_ouput_list.created.strip(), 8)
+        t_ouput_list.chgid = format_fixed_length(t_ouput_list.chgid.strip(), 3)
 
     return generate_output()
