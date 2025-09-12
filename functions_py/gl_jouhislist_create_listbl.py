@@ -2,11 +2,13 @@
 #------------------------------------------
 # Rd, 22/8/2025
 # " " -> "        "  , str -> output_list.str
+# re-adjust substring positions, see gl_jouhislist_create_list_webbl.py
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gl_acct, Gl_jourhis, Gl_jhdrhis, Gl_accthis, Htparam
+
 
 def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, from_dept:int, from_date:date, to_date:date, close_year:date):
 
@@ -114,10 +116,15 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
             gl_jhdrhis = Gl_jhdrhis()
             gl_acct = Gl_acct()
             for gl_jourhis.chgdate, gl_jourhis.fibukonto, gl_jourhis.debit, gl_jourhis.credit, gl_jourhis.bemerk, gl_jourhis._recid, gl_jhdrhis.refno, \
-                            gl_jhdrhis.jnr, gl_jhdrhis.datum, gl_jhdrhis._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid \
+                            gl_jhdrhis.jnr, gl_jhdrhis.datum, gl_jhdrhis._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid, \
+                            gl_jhdrhis.userinit, gl_jhdrhis.sysdate, gl_jhdrhis.chginit \
                             in db_session.query(Gl_jourhis.chgdate, Gl_jourhis.fibukonto, Gl_jourhis.debit, Gl_jourhis.credit, Gl_jourhis.bemerk, Gl_jourhis._recid, Gl_jhdrhis.refno,\
-                            Gl_jhdrhis.jnr, Gl_jhdrhis.datum, Gl_jhdrhis._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid).join(Gl_jhdrhis,(Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date)).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto)).filter(
-                         (Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto, Gl_jhdrhis.datum, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
+                            Gl_jhdrhis.jnr, Gl_jhdrhis.datum, Gl_jhdrhis._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid,\
+                            Gl_jhdrhis.userinit, Gl_jhdrhis.sysdate, Gl_jhdrhis.chginit\
+                ).join(Gl_jhdrhis, (Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date))\
+                .join(Gl_acct, (Gl_acct.fibukonto == Gl_jourhis.fibukonto))\
+                .filter((Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower()))\
+                .order_by(Gl_jourhis.fibukonto, Gl_jhdrhis.datum, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
                 if gl_jourhis_obj_list.get(gl_jourhis._recid):
                     continue
                 else:
@@ -164,7 +171,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
 
                     for i in range(1,30 + 1) :
                         output_list.str = output_list.str + " "
-                    output_list.str = output_list.str + "T O T A L " + to_string(prev_bal, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99") + blankchar + to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
+                    output_list.str = output_list.str + "T O T A L  " + to_string(prev_bal, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99") + blankchar + to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -214,7 +221,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
 
                 output_list.fibukonto = gl_jourhis.fibukonto
                 output_list.jnr = gl_jhdrhis.jnr
-                # print(gl_jhdrhis.datum, gl_jhdrhis.refno)
+                
                 output_list.str = to_string(gl_jhdrhis.datum) +\
                         to_string(gl_jhdrhis.refno, "x(15)") +\
                         to_string(gl_jhdrhis.bezeich, "x(40)") +\
@@ -224,7 +231,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
                         to_string(gl_jourhis.sysdate) +\
                         to_string(gl_jourhis.chginit, "x(3)") +\
                         to_string(chgdate, "x(8)") +\
-                        to_string(get_bemerk (gl_jourhis.bemerk) , "x(50)") +\
+                        to_string(get_bemerk (gl_jourhis.bemerk) , "x(40)") +\
                         to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
 
 
@@ -234,7 +241,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
 
             for i in range(1,30 + 1) :
                 output_list.str = output_list.str + " "
-            output_list.str = output_list.str + "T O T A L " + to_string(prev_bal, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99") + blankchar + to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "T O T A L  " + to_string(prev_bal, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99") + blankchar + to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
             output_list = Output_list()
             output_list_data.append(output_list)
 
@@ -243,7 +250,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
 
             for i in range(1,30 + 1) :
                 output_list.str = output_list.str + " "
-            output_list.str = output_list.str + "GRAND T O T A L " + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "GRAND T O T A L                  " + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
 
         elif sorttype == 1:
 
@@ -251,10 +258,16 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
             gl_jourhis = Gl_jourhis()
             gl_jhdrhis = Gl_jhdrhis()
             gl_acct = Gl_acct()
-            for gl_jourhis.chgdate, gl_jourhis.fibukonto, gl_jourhis.debit, gl_jourhis.credit, gl_jourhis.bemerk, gl_jourhis._recid, gl_jhdrhis.jnr, gl_jhdrhis.refno, \
-                gl_jhdrhis.datum, gl_jhdrhis._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid, gl_jhdrhis.refno \
-                in db_session.query(Gl_jourhis.chgdate, Gl_jourhis.fibukonto, Gl_jourhis.debit, Gl_jourhis.credit, Gl_jourhis.bemerk, Gl_jourhis._recid, Gl_jhdrhis.jnr, Gl_jhdrhis.refno, Gl_jhdrhis.datum, Gl_jhdrhis._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid).join(Gl_jhdrhis,(Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date)).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto) & (Gl_acct.main_nr == gl_main.nr)).filter(
-                         (Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto, Gl_jhdrhis.datum, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
+            for gl_jourhis.chgdate, gl_jourhis.fibukonto, gl_jourhis.debit, gl_jourhis.credit, gl_jourhis.bemerk, gl_jourhis._recid, gl_jhdrhis.refno, \
+                            gl_jhdrhis.jnr, gl_jhdrhis.datum, gl_jhdrhis._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid, \
+                            gl_jhdrhis.userinit, gl_jhdrhis.sysdate, gl_jhdrhis.chginit \
+                            in db_session.query(Gl_jourhis.chgdate, Gl_jourhis.fibukonto, Gl_jourhis.debit, Gl_jourhis.credit, Gl_jourhis.bemerk, Gl_jourhis._recid, Gl_jhdrhis.refno,\
+                            Gl_jhdrhis.jnr, Gl_jhdrhis.datum, Gl_jhdrhis._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid,\
+                            Gl_jhdrhis.userinit, Gl_jhdrhis.sysdate, Gl_jhdrhis.chginit
+                ).join(Gl_jhdrhis, (Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date)\
+                ).join(Gl_acct, (Gl_acct.fibukonto == Gl_jourhis.fibukonto))\
+                .filter((Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower()))\
+                .order_by(Gl_jourhis.fibukonto, Gl_jhdrhis.datum, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
                 if gl_jourhis_obj_list.get(gl_jourhis._recid):
                     continue
                 else:
@@ -300,7 +313,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
 
                     for i in range(1,30 + 1) :
                         output_list.str = output_list.str + " "
-                    output_list.str = output_list.str + "T O T A L " + to_string(prev_bal, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99") + blankchar + to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
+                    output_list.str = output_list.str + "T O T A L  " + to_string(prev_bal, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99") + blankchar + to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -360,7 +373,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
                         to_string(gl_jourhis.sysdate) +\
                         to_string(gl_jourhis.chginit, "x(3)") +\
                         to_string(chgdate, "x(8)") +\
-                        to_string(get_bemerk (gl_jourhis.bemerk) , "x(50)") +\
+                        to_string(get_bemerk (gl_jourhis.bemerk) , "x(40)") +\
                         to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
 
 
@@ -370,7 +383,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
 
             for i in range(1,30 + 1) :
                 output_list.str = output_list.str + " "
-            output_list.str = output_list.str + "T O T A L " + to_string(prev_bal, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99") + blankchar + to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "T O T A L  " + to_string(prev_bal, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99") + blankchar + to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
             output_list = Output_list()
             output_list_data.append(output_list)
 
@@ -379,7 +392,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
 
             for i in range(1,30 + 1) :
                 output_list.str = output_list.str + " "
-            output_list.str = output_list.str + "GRAND T O T A L " + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "GRAND T O T A L                  " + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
 
         elif sorttype == 3:
 
@@ -387,9 +400,13 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
             gl_jourhis = Gl_jourhis()
             gl_jhdrhis = Gl_jhdrhis()
             gl_acct = Gl_acct()
-            for gl_jourhis.chgdate, gl_jourhis.fibukonto, gl_jourhis.debit, gl_jourhis.credit, gl_jourhis.bemerk, gl_jourhis._recid, gl_jhdrhis.jnr, gl_jhdrhis.refno,\
-                        gl_jhdrhis.datum, gl_jhdrhis._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid in db_session.query(Gl_jourhis.chgdate, Gl_jourhis.fibukonto,\
-                                                                                                                                     Gl_jourhis.debit, Gl_jourhis.credit, Gl_jourhis.bemerk, Gl_jourhis._recid, Gl_jhdrhis.jnr, Gl_jhdrhis.refno, Gl_jhdrhis.datum, Gl_jhdrhis._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid).join(Gl_jhdrhis,(Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date)).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto) & (Gl_acct.deptnr == from_dept)).filter(
+            for gl_jourhis.chgdate, gl_jourhis.fibukonto, gl_jourhis.debit, gl_jourhis.credit, gl_jourhis.bemerk, gl_jourhis._recid, gl_jhdrhis.refno, \
+                            gl_jhdrhis.jnr, gl_jhdrhis.datum, gl_jhdrhis._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid, \
+                            gl_jhdrhis.userinit, gl_jhdrhis.sysdate, gl_jhdrhis.chginit \
+                            in db_session.query(Gl_jourhis.chgdate, Gl_jourhis.fibukonto, Gl_jourhis.debit, Gl_jourhis.credit, Gl_jourhis.bemerk, Gl_jourhis._recid, Gl_jhdrhis.refno,\
+                            Gl_jhdrhis.jnr, Gl_jhdrhis.datum, Gl_jhdrhis._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid,\
+                            Gl_jhdrhis.userinit, Gl_jhdrhis.sysdate, Gl_jhdrhis.chginit\
+                    ).join(Gl_jhdrhis,(Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date)).join(Gl_acct,(Gl_acct.fibukonto == Gl_jourhis.fibukonto) & (Gl_acct.deptnr == from_dept)).filter(
                          (Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower())).order_by(Gl_jourhis.fibukonto, Gl_jhdrhis.datum, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
                 if gl_jourhis_obj_list.get(gl_jourhis._recid):
                     continue
@@ -436,7 +453,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
 
                     for i in range(1,30 + 1) :
                         output_list.str = output_list.str + " "
-                    output_list.str = output_list.str + "T O T A L " + to_string(prev_bal, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99") + blankchar + to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
+                    output_list.str = output_list.str + "T O T A L  " + to_string(prev_bal, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99") + blankchar + to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
@@ -495,7 +512,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
                         to_string(gl_jourhis.sysdate) +\
                         to_string(gl_jourhis.chginit, "x(3)") +\
                         to_string(chgdate, "x(8)") +\
-                        to_string(get_bemerk (gl_jourhis.bemerk) , "x(50)") +\
+                        to_string(get_bemerk (gl_jourhis.bemerk) , "x(40)") +\
                         to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
 
 
@@ -505,7 +522,7 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
 
             for i in range(1,30 + 1) :
                 output_list.str = output_list.str + " "
-            output_list.str = output_list.str + "T O T A L " + to_string(prev_bal, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99") + blankchar + to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
+            output_list.str = output_list.str + "T O T A L  " + to_string(prev_bal, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(t_credit, "->>,>>>,>>>,>>>,>>9.99") + blankchar + to_string(balance, "->>,>>>,>>>,>>>,>>9.99")
             output_list = Output_list()
             output_list_data.append(output_list)
 
@@ -513,8 +530,8 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
             output_list_data.append(output_list)
 
             for i in range(1,30 + 1) :
-                output_list.str = str + " "
-            output_list.output_list.str = str + "GRAND T O T A L " + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
+                output_list.str = output_list.str + " "
+            output_list.str = output_list.str + "GRAND T O T A L                  " + to_string(tot_debit, "->>,>>>,>>>,>>>,>>9.99") + to_string(tot_credit, "->>,>>>,>>>,>>>,>>9.99")
 
 
     def convert_fibu(konto:string):

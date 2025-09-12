@@ -5,8 +5,8 @@
 # weekday function
 # if available bill_date
 # 11/9/2025, baris total blm muncul
-# Last update: FDL: 588FC9/3c01d397c393dc154f3307fd2fe85daa526b55c7
 #-----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -305,593 +305,586 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                     sum_list.com = sum_list.com + res_line.gratis * res_line.zimmeranz
 
 
-                    # for curr_i in range(1,res_line.zimmeranz + 1) :
-                    #     fix_rate = False
-                    #     cl_list = Cl_list()
-                    #     cl_list_data.append(cl_list)
+                    for curr_i in range(1,res_line.zimmeranz + 1) :
+                        fix_rate = False
+                        cl_list = Cl_list()
+                        cl_list_data.append(cl_list)
 
-                    #     cl_list.res_recid = res_line._recid
-                    #     cl_list.zinr = res_line.zinr
-                    #     cl_list.rstatus = res_line.resstatus
-                    #     cl_list.argt = res_line.arrangement
-                    #     cl_list.name = res_line.name + "-"
-                    #     cl_list.com = res_line.gratis
-                    #     cl_list.ankunft = res_line.ankunft
-                    #     cl_list.abreise = res_line.abreise
-                    #     cl_list.zipreis =  to_decimal(res_line.zipreis)
-                    #     cl_list.localrate =  to_decimal(res_line.zipreis) * to_decimal(frate)
-                    #     cl_list.t_rev =  to_decimal(res_line.zipreis)
-                    #     cl_list.resnr = res_line.resnr
-                    #     cl_list.resname = res_line.resname
+                        cl_list.res_recid = res_line._recid
+                        cl_list.zinr = res_line.zinr
+                        cl_list.rstatus = res_line.resstatus
+                        cl_list.argt = res_line.arrangement
+                        cl_list.name = res_line.name + "-"
+                        cl_list.com = res_line.gratis
+                        cl_list.ankunft = res_line.ankunft
+                        cl_list.abreise = res_line.abreise
+                        cl_list.zipreis =  to_decimal(res_line.zipreis)
+                        cl_list.localrate =  to_decimal(res_line.zipreis) * to_decimal(frate)
+                        cl_list.t_rev =  to_decimal(res_line.zipreis)
+                        cl_list.resnr = res_line.resnr
+                        cl_list.resname = res_line.resname
 
-                    #     if res_line.zimmeranz > 1:
-                    #         cl_list.zinr = "#" + to_string(curr_i, "99")
+                        if res_line.zimmeranz > 1:
+                            cl_list.zinr = "#" + to_string(curr_i, "99")
 
-                    #     if zimmer:
-                    #         cl_list.sleeping = zimmer.sleeping
-                    #     cl_list.adult = res_line.erwachs
-                    #     cl_list.ch1 = res_line.kind1
-                    #     cl_list.ch2 = res_line.kind2
-                    #     cl_list.comch = res_line.l_zuordnung[3]
+                        if zimmer:
+                            cl_list.sleeping = zimmer.sleeping
+                        cl_list.adult = res_line.erwachs
+                        cl_list.ch1 = res_line.kind1
+                        cl_list.ch2 = res_line.kind2
+                        cl_list.comch = res_line.l_zuordnung[3]
 
-                    #     zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
+                        zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
 
-                    #     if zimkateg:
-                    #         cl_list.rmtype = zimkateg.kurzbez
+                        if zimkateg:
+                            cl_list.rmtype = zimkateg.kurzbez
 
-                    #     segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                        segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
 
-                    #     if segment:
-                    #         cl_list.segm_desc = segment.bezeich
+                        if segment:
+                            cl_list.segm_desc = segment.bezeich
 
-                    #     if member1.nation1 != "":
-                    #         cl_list.nation = member1.nation1
+                        if member1.nation1 != "":
+                            cl_list.nation = member1.nation1
 
-                    #     if cl_list.zipreis == 0 and cl_list.adult == 0:
-                    #         cl_list.pax = res_line.gratis + cl_list.comch
+                        if cl_list.zipreis == 0:
+                            cl_list.pax = res_line.gratis + cl_list.comch
 
 
-                    #     else:
-                    #         cl_list.pax = res_line.erwachs + res_line.kind1 + res_line.kind2 + res_line.gratis + cl_list.comch
+                        else:
+                            cl_list.pax = res_line.erwachs + res_line.kind1 + res_line.kind2 + res_line.gratis + cl_list.comch
 
-                    #     if guest:
-                    #         cl_list.name = cl_list.name + guest.name + ", " + guest.vorname1 + "-" + guest.adresse1
-                    #         cl_list.currency = waehrung1.wabkurz
+                        if guest:
+                            cl_list.name = cl_list.name + guest.name + ", " + guest.vorname1 + "-" + guest.adresse1
+                            cl_list.currency = waehrung1.wabkurz
 
-                    #     if bill:
-                    #         cl_list.rechnr = bill.rechnr
+                        if bill:
+                            cl_list.rechnr = bill.rechnr
 
-                    #     argt_list = query(argt_list_data, filters=(lambda argt_list: argt_list.argtnr == arrangement.argtnr), first=True)
+                        argt_list = query(argt_list_data, filters=(lambda argt_list: argt_list.argtnr == arrangement.argtnr), first=True)
 
-                    #     if not argt_list:
-                    #         argt_list = Argt_list()
-                    #         argt_list_data.append(argt_list)
+                        if not argt_list:
+                            argt_list = Argt_list()
+                            argt_list_data.append(argt_list)
 
-                    #         argt_list.argtnr = arrangement.argtnr
-                    #         argt_list.argtcode = arrangement.arrangement
-                    #         argt_list.bezeich = arrangement.argt_bez
-                    #         argt_list.room = 1
+                            argt_list.argtnr = arrangement.argtnr
+                            argt_list.argtcode = arrangement.arrangement
+                            argt_list.bezeich = arrangement.argt_bez
+                            argt_list.room = 1
+                            argt_list.pax = res_line.erwachs + res_line.kind1 + res_line.kind2 + res_line.gratis + cl_list.comch
 
-                    #         if cl_list.zipreis == 0 and cl_list.adult == 0:
-                    #             argt_list.pax = res_line.gratis + cl_list.comch
 
+                        else:
+                            argt_list.room = argt_list.room + 1
+                            argt_list.pax = argt_list.pax + (res_line.erwachs + res_line.gratis)
 
-                    #         else:
-                    #             argt_list.pax = res_line.erwachs + res_line.kind1 + res_line.kind2 + res_line.gratis + cl_list.comch
-                    #     else:
-                    #         argt_list.room = argt_list.room + 1
+                        if guest.geburtdatum1 != None and guest.geburtdatum2 != None:
 
-                    #         if cl_list.zipreis == 0 and cl_list.adult == 0:
-                    #             argt_list.pax = argt_list.pax + res_line.gratis + cl_list.comch
+                            if guest.geburtdatum1 < guest.geburtdatum2:
+                                cl_list.age1 = get_year(guest.geburtdatum2) - get_year(guest.geburtdatum1)
 
+                        if matches(res_line.zimmer_wunsch,r"*ChAge*"):
+                            for loopi in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
+                                s = entry(loopi - 1, res_line.zimmer_wunsch, ";")
 
-                    #         else:
-                    #             argt_list.pax = argt_list.pax + res_line.erwachs + res_line.kind1 + res_line.kind2 + res_line.gratis + cl_list.comch
+                                if substring(s, 0, 5) == ("ChAge").lower() :
+                                    cl_list.age2 = substring(s, 5)
 
-                    #     if guest.geburtdatum1 != None and guest.geburtdatum2 != None:
+                        if matches(res_line.zimmer_wunsch,r"*$CODE$*"):
+                            s = substring(res_line.zimmer_wunsch, (get_index(res_line.zimmer_wunsch, "$CODE$") + 6) - 1)
+                            cl_list.ratecode = trim(entry(0, s, ";"))
 
-                    #         if guest.geburtdatum1 < guest.geburtdatum2:
-                    #             cl_list.age1 = get_year(guest.geburtdatum2) - get_year(guest.geburtdatum1)
+                        if frate == 1:
+                            cl_list.ex_rate = to_string(frate, " >>9.99")
 
-                    #     if matches(res_line.zimmer_wunsch,r"*ChAge*"):
-                    #         for loopi in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
-                    #             s = entry(loopi - 1, res_line.zimmer_wunsch, ";")
+                        elif frate <= 999:
+                            cl_list.ex_rate = to_string(frate, " >>9.9999")
 
-                    #             if substring(s, 0, 5) == ("ChAge").lower() :
-                    #                 cl_list.age2 = substring(s, 5)
+                        elif frate <= 99999:
+                            cl_list.ex_rate = to_string(frate, ">>,>>9.99")
+                        else:
+                            cl_list.ex_rate = to_string(frate, ">,>>>,>>9")
 
-                    #     if matches(res_line.zimmer_wunsch,r"*$CODE$*"):
-                    #         s = substring(res_line.zimmer_wunsch, (get_index(res_line.zimmer_wunsch, "$CODE$") + 6) - 1)
-                    #         cl_list.ratecode = trim(entry(0, s, ";"))
+                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, curr_date)],"date2": [(ge, curr_date)]})
 
-                    #     if frate == 1:
-                    #         cl_list.ex_rate = to_string(frate, " >>9.99")
+                        if reslin_queasy:
+                            fix_rate = True
+                            rmrate =  to_decimal(reslin_queasy.deci1)
+                            cl_list.fix_rate = "F"
 
-                    #     elif frate <= 999:
-                    #         cl_list.ex_rate = to_string(frate, " >>9.9999")
+                        if not fix_rate:
 
-                    #     elif frate <= 99999:
-                    #         cl_list.ex_rate = to_string(frate, ">>,>>9.99")
-                    #     else:
-                    #         cl_list.ex_rate = to_string(frate, ">,>>>,>>9")
+                            if not it_exist:
 
-                    #     reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, curr_date)],"date2": [(ge, curr_date)]})
+                                if guest_pr:
 
-                    #     if reslin_queasy:
-                    #         fix_rate = True
-                    #         rmrate =  to_decimal(reslin_queasy.deci1)
-                    #         cl_list.fix_rate = "F"
+                                    queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, res_line.reserve_int)]})
 
-                    #     if not fix_rate:
+                                    if queasy and queasy.logi3:
+                                        bill_date = res_line.ankunft
 
-                    #         if not it_exist:
+                                    # Rd 30/7/2025
+                                    # if date availabel
+                                    if bill_date and new_contrate:
+                                        rate_found, rmrate, restricted_disc, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, res_line.resnr, res_line.reslinnr, guest_pr.code, None, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, res_line.zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
+                                    else:
+                                        if bill_date:
+                                            rmrate, rate_found = get_output(pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
 
-                    #             if guest_pr:
+                                        if it_exist:
+                                            rate_found = True
 
-                    #                 queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, res_line.reserve_int)]})
+                                        if curr_i != 0:
 
-                    #                 if queasy and queasy.logi3:
-                    #                     bill_date = res_line.ankunft
+                                            if not it_exist and bonus_array[curr_i - 1] :
+                                                rmrate =  to_decimal("0")
 
-                    #                 if new_contrate:
-                    #                     rate_found, rmrate, restricted_disc, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, res_line.resnr, res_line.reslinnr, guest_pr.code, None, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, res_line.zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
-                    #                 else:
-                    #                     rmrate, rate_found = get_output(pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
+                                if not rate_found:
+                                    w_day = wd_array[get_weekday(bill_date) - 1]
 
-                    #                     if it_exist:
-                    #                         rate_found = True
+                                    if (bill_date == curr_date) or (bill_date == res_line.ankunft):
+                                        rmrate =  to_decimal(res_line.zipreis)
 
-                    #                     if curr_i != 0:
+                                        katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, w_day)]})
 
-                    #                         if not it_exist and bonus_array[curr_i - 1] :
-                    #                             rmrate =  to_decimal("0")
+                                        if not katpreis:
 
-                    #             if not rate_found:
-                    #                 w_day = wd_array[get_weekday(bill_date) - 1]
+                                            katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, 0)]})
 
-                    #                 if (bill_date == curr_date) or (bill_date == res_line.ankunft):
-                    #                     rmrate =  to_decimal(res_line.zipreis)
+                                        if katpreis and get_rackrate (res_line.erwachs, res_line.kind1, res_line.kind2) == rmrate:
+                                            rack_rate = True
 
-                    #                     katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, w_day)]})
+                                    elif rack_rate:
 
-                    #                     if not katpreis:
+                                        katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, w_day)]})
 
-                    #                         katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, 0)]})
+                                        if not katpreis:
 
-                    #                     if katpreis and get_rackrate (res_line.erwachs, res_line.kind1, res_line.kind2) == rmrate:
-                    #                         rack_rate = True
+                                            katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, 0)]})
 
-                    #                 elif rack_rate:
+                                        if katpreis and get_rackrate (res_line.erwachs, res_line.kind1, res_line.kind2) > 0:
+                                            rmrate =  to_decimal(get_rackrate (res_line.erwachs , res_line.kind1 , res_line.kind2))
 
-                    #                     katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, w_day)]})
+                                    if curr_i != 0:
 
-                    #                     if not katpreis:
+                                        if bonus_array[curr_i - 1] :
+                                            rmrate =  to_decimal("0")
 
-                    #                         katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, bill_date)],"endperiode": [(ge, bill_date)],"betriebsnr": [(eq, 0)]})
+                        if res_line.zipreis != rmrate and fix_rate:
+                            cl_list.flag_rate = True
+                        else:
+                            cl_list.flag_rate = False
 
-                    #                     if katpreis and get_rackrate (res_line.erwachs, res_line.kind1, res_line.kind2) > 0:
-                    #                         rmrate =  to_decimal(get_rackrate (res_line.erwachs , res_line.kind1 , res_line.kind2))
+                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, curr_date)],"date2": [(ge, curr_date)],"char1": [(ne, "")]})
 
-                    #                 if curr_i != 0:
+                        if reslin_queasy and res_line.arrangement != reslin_queasy.char1:
+                            cl_list.flag_argtcode = True
+                        tot_rate =  to_decimal(tot_rate) + to_decimal(cl_list.zipreis)
+                        tot_lrate =  to_decimal(tot_lrate) + to_decimal(cl_list.localrate)
 
-                    #                     if bonus_array[curr_i - 1] :
-                    #                         rmrate =  to_decimal("0")
+                        if not res_line.adrflag:
+                            tot_pax = tot_pax + cl_list.pax
+                        else:
+                            ltot_pax = ltot_pax + cl_list.pax
+                        tot_com = tot_com + cl_list.com
+                        tot_adult = tot_adult + cl_list.adult
+                        tot_ch1 = tot_ch1 + cl_list.ch1
+                        tot_ch2 = tot_ch2 + cl_list.ch2
+                        tot_comch = tot_comch + cl_list.comch
+                        cl_list.lodging =  to_decimal(cl_list.zipreis)
 
-                    #     if res_line.zipreis != rmrate and fix_rate:
-                    #         cl_list.flag_rate = True
-                    #     else:
-                    #         cl_list.flag_rate = False
+                        if cl_list.lodging != 0:
+                            prcode = 0
+                            contcode = ""
 
-                    #     reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, curr_date)],"date2": [(ge, curr_date)],"char1": [(ne, "")]})
+                            rguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
 
-                    #     if reslin_queasy and res_line.arrangement != reslin_queasy.char1:
-                    #         cl_list.flag_argtcode = True
-                    #     tot_rate =  to_decimal(tot_rate) + to_decimal(cl_list.zipreis)
-                    #     tot_lrate =  to_decimal(tot_lrate) + to_decimal(cl_list.localrate)
+                            if res_line.reserve_int != 0:
 
-                    #     if not res_line.adrflag:
-                    #         tot_pax = tot_pax + cl_list.pax
-                    #     else:
-                    #         ltot_pax = ltot_pax + cl_list.pax
-                    #     tot_com = tot_com + cl_list.com
-                    #     tot_adult = tot_adult + cl_list.adult
-                    #     tot_ch1 = tot_ch1 + cl_list.ch1
-                    #     tot_ch2 = tot_ch2 + cl_list.ch2
-                    #     tot_comch = tot_comch + cl_list.comch
-                    #     cl_list.lodging =  to_decimal(cl_list.zipreis)
+                                guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, rguest.gastnr)]})
 
-                    #     if cl_list.lodging != 0:
-                    #         prcode = 0
-                    #         contcode = ""
+                            if guest_pr:
+                                contcode = guest_pr.code
+                                ct = res_line.zimmer_wunsch
 
-                    #         rguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+                                if matches(ct,r"*$CODE$*"):
+                                    ct = substring(ct, get_index(ct, "$CODE$") + 6 - 1)
+                                    contcode = substring(ct, 0, get_index(ct, ";") - 1)
 
-                    #         if res_line.reserve_int != 0:
+                                if new_contrate:
+                                    prcode = get_output(ratecode_seek(res_line.resnr, res_line.reslinnr, contcode, curr_date))
+                                else:
 
-                    #             guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, rguest.gastnr)]})
+                                    pricecod = get_cache (Pricecod, {"code": [(eq, contcode)],"marknr": [(eq, res_line.reserve_int)],"argtnr": [(eq, arrangement.argtnr)],"zikatnr": [(eq, curr_zikatnr)],"startperiode": [(le, curr_date)],"endperiode": [(ge, curr_date)]})
 
-                    #         if guest_pr:
-                    #             contcode = guest_pr.code
-                    #             ct = res_line.zimmer_wunsch
+                                    if pricecod:
+                                        prcode = pricecod._recid
+                            rm_rate =  to_decimal(res_line.zipreis)
 
-                    #             if matches(ct,r"*$CODE$*"):
-                    #                 ct = substring(ct, get_index(ct, "$CODE$") + 6 - 1)
-                    #                 contcode = substring(ct, 0, get_index(ct, ";") - 1)
+                            for argt_line in db_session.query(Argt_line).filter(
+                                     (Argt_line.argtnr == arrangement.argtnr) & not_ (Argt_line.kind2)).order_by(Argt_line._recid).all():
 
-                    #             if new_contrate:
-                    #                 prcode = get_output(ratecode_seek(res_line.resnr, res_line.reslinnr, contcode, curr_date))
-                    #             else:
+                                artikel = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
 
-                    #                 pricecod = get_cache (Pricecod, {"code": [(eq, contcode)],"marknr": [(eq, res_line.reserve_int)],"argtnr": [(eq, arrangement.argtnr)],"zikatnr": [(eq, curr_zikatnr)],"startperiode": [(le, curr_date)],"endperiode": [(ge, curr_date)]})
+                                if not artikel:
+                                    take_it = False
+                                else:
+                                    take_it, f_betrag, argt_betrag, qty = get_argtline_rate(contcode, argt_line._recid)
 
-                    #                 if pricecod:
-                    #                     prcode = pricecod._recid
-                    #         rm_rate =  to_decimal(res_line.zipreis)
+                                if take_it:
 
-                    #         for argt_line in db_session.query(Argt_line).filter(
-                    #                  (Argt_line.argtnr == arrangement.argtnr) & not_ (Argt_line.kind2)).order_by(Argt_line._recid).all():
+                                    s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == argt_line.argt_artnr and s_list.dept == argt_line.departement and s_list.curr == waehrung.wabkurz), first=True)
 
-                    #             artikel = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
+                                    if not s_list:
+                                        s_list = S_list()
+                                        s_list_data.append(s_list)
 
-                    #             if not artikel:
-                    #                 take_it = False
-                    #             else:
-                    #                 take_it, f_betrag, argt_betrag, qty = get_argtline_rate(contcode, argt_line._recid)
+                                        s_list.artnr = argt_line.argt_artnr
+                                        s_list.dept = argt_line.departement
+                                        s_list.bezeich = artikel.bezeich
+                                        s_list.curr = waehrung.wabkurz
 
-                    #             if take_it:
 
-                    #                 s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == argt_line.argt_artnr and s_list.dept == argt_line.departement and s_list.curr == waehrung.wabkurz), first=True)
+                                    s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(f_betrag)
+                                    s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(argt_betrag) * to_decimal(frate)
+                                    s_list.anzahl = s_list.anzahl + qty
 
-                    #                 if not s_list:
-                    #                     s_list = S_list()
-                    #                     s_list_data.append(s_list)
 
-                    #                     s_list.artnr = argt_line.argt_artnr
-                    #                     s_list.dept = argt_line.departement
-                    #                     s_list.bezeich = artikel.bezeich
-                    #                     s_list.curr = waehrung.wabkurz
+                                    sum_list.t_rev =  to_decimal(sum_list.t_rev) + to_decimal(argt_betrag) * to_decimal(frate)
 
+                                    if artikel.zwkum == bfast_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
+                                        sum_list.bfast =  to_decimal(sum_list.bfast) + to_decimal(argt_betrag) * to_decimal(frate)
+                                        cl_list.bfast =  to_decimal(cl_list.bfast) + to_decimal(argt_betrag)
 
-                    #                 s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(f_betrag)
-                    #                 s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(argt_betrag) * to_decimal(frate)
-                    #                 s_list.anzahl = s_list.anzahl + qty
+                                        if res_line.adrflag:
+                                            ltot_bfast =  to_decimal(ltot_bfast) + to_decimal(argt_betrag)
+                                        else:
+                                            tot_bfast =  to_decimal(tot_bfast) + to_decimal(argt_betrag)
+                                        cl_list.lodging =  to_decimal(cl_list.lodging) - to_decimal(argt_betrag)
 
+                                    elif artikel.zwkum == lunch_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
+                                        sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(argt_betrag) * to_decimal(frate)
+                                        cl_list.lunch =  to_decimal(cl_list.lunch) + to_decimal(argt_betrag)
 
-                    #                 sum_list.t_rev =  to_decimal(sum_list.t_rev) + to_decimal(argt_betrag) * to_decimal(frate)
+                                        if res_line.adrflag:
+                                            ltot_lunch =  to_decimal(ltot_lunch) + to_decimal(argt_betrag)
+                                        else:
+                                            tot_lunch =  to_decimal(tot_lunch) + to_decimal(argt_betrag)
+                                        cl_list.lodging =  to_decimal(cl_list.lodging) - to_decimal(argt_betrag)
 
-                    #                 if artikel.zwkum == bfast_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
-                    #                     sum_list.bfast =  to_decimal(sum_list.bfast) + to_decimal(argt_betrag) * to_decimal(frate)
-                    #                     cl_list.bfast =  to_decimal(cl_list.bfast) + to_decimal(argt_betrag)
+                                    elif artikel.zwkum == dinner_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
+                                        sum_list.dinner =  to_decimal(sum_list.dinner) + to_decimal(argt_betrag) * to_decimal(frate)
+                                        cl_list.dinner =  to_decimal(cl_list.dinner) + to_decimal(argt_betrag)
 
-                    #                     if res_line.adrflag:
-                    #                         ltot_bfast =  to_decimal(ltot_bfast) + to_decimal(argt_betrag)
-                    #                     else:
-                    #                         tot_bfast =  to_decimal(tot_bfast) + to_decimal(argt_betrag)
-                    #                     cl_list.lodging =  to_decimal(cl_list.lodging) - to_decimal(argt_betrag)
+                                        if res_line.adrflag:
+                                            ltot_dinner =  to_decimal(ltot_dinner) + to_decimal(argt_betrag)
+                                        else:
+                                            tot_dinner =  to_decimal(tot_dinner) + to_decimal(argt_betrag)
+                                        cl_list.lodging =  to_decimal(cl_list.lodging) - to_decimal(argt_betrag)
 
-                    #                 elif artikel.zwkum == lunch_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
-                    #                     sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(argt_betrag) * to_decimal(frate)
-                    #                     cl_list.lunch =  to_decimal(cl_list.lunch) + to_decimal(argt_betrag)
+                                    elif artikel.zwkum == lundin_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
+                                        sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(argt_betrag) * to_decimal(frate)
+                                        cl_list.lunch =  to_decimal(cl_list.lunch) + to_decimal(argt_betrag)
 
-                    #                     if res_line.adrflag:
-                    #                         ltot_lunch =  to_decimal(ltot_lunch) + to_decimal(argt_betrag)
-                    #                     else:
-                    #                         tot_lunch =  to_decimal(tot_lunch) + to_decimal(argt_betrag)
-                    #                     cl_list.lodging =  to_decimal(cl_list.lodging) - to_decimal(argt_betrag)
+                                        if res_line.adrflag:
+                                            ltot_lunch =  to_decimal(ltot_lunch) + to_decimal(argt_betrag)
+                                        else:
+                                            tot_lunch =  to_decimal(tot_lunch) + to_decimal(argt_betrag)
+                                        cl_list.lodging =  to_decimal(cl_list.lodging) - to_decimal(argt_betrag)
+                                    else:
+                                        sum_list.misc =  to_decimal(sum_list.misc) + to_decimal(argt_betrag) * to_decimal(frate)
+                                        cl_list.misc =  to_decimal(cl_list.misc) + to_decimal(argt_betrag)
 
-                    #                 elif artikel.zwkum == dinner_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
-                    #                     sum_list.dinner =  to_decimal(sum_list.dinner) + to_decimal(argt_betrag) * to_decimal(frate)
-                    #                     cl_list.dinner =  to_decimal(cl_list.dinner) + to_decimal(argt_betrag)
+                                        if res_line.adrflag:
+                                            ltot_misc =  to_decimal(ltot_misc) + to_decimal(argt_betrag)
+                                        else:
+                                            tot_misc =  to_decimal(tot_misc) + to_decimal(argt_betrag)
+                                        cl_list.lodging =  to_decimal(cl_list.lodging) - to_decimal(argt_betrag)
 
-                    #                     if res_line.adrflag:
-                    #                         ltot_dinner =  to_decimal(ltot_dinner) + to_decimal(argt_betrag)
-                    #                     else:
-                    #                         tot_dinner =  to_decimal(tot_dinner) + to_decimal(argt_betrag)
-                    #                     cl_list.lodging =  to_decimal(cl_list.lodging) - to_decimal(argt_betrag)
+                        if res_line.adrflag:
+                            ltot_lodging =  to_decimal(ltot_lodging) + to_decimal(cl_list.lodging)
+                        else:
+                            tot_lodging =  to_decimal(tot_lodging) + to_decimal(cl_list.lodging)
+                        lodge_betrag =  to_decimal(cl_list.lodging) * to_decimal(frate)
 
-                    #                 elif artikel.zwkum == lundin_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
-                    #                     sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(argt_betrag) * to_decimal(frate)
-                    #                     cl_list.lunch =  to_decimal(cl_list.lunch) + to_decimal(argt_betrag)
+                        if foreign_rate and price_decimal == 0 and not res_line.adrflag:
 
-                    #                     if res_line.adrflag:
-                    #                         ltot_lunch =  to_decimal(ltot_lunch) + to_decimal(argt_betrag)
-                    #                     else:
-                    #                         tot_lunch =  to_decimal(tot_lunch) + to_decimal(argt_betrag)
-                    #                     cl_list.lodging =  to_decimal(cl_list.lodging) - to_decimal(argt_betrag)
-                    #                 else:
-                    #                     sum_list.misc =  to_decimal(sum_list.misc) + to_decimal(argt_betrag) * to_decimal(frate)
-                    #                     cl_list.misc =  to_decimal(cl_list.misc) + to_decimal(argt_betrag)
+                            htparam = get_cache (Htparam, {"paramnr": [(eq, 145)]})
 
-                    #                     if res_line.adrflag:
-                    #                         ltot_misc =  to_decimal(ltot_misc) + to_decimal(argt_betrag)
-                    #                     else:
-                    #                         tot_misc =  to_decimal(tot_misc) + to_decimal(argt_betrag)
-                    #                     cl_list.lodging =  to_decimal(cl_list.lodging) - to_decimal(argt_betrag)
+                            if htparam.finteger != 0:
+                                n = 1
+                                for i in range(1,htparam.finteger + 1) :
+                                    n = n * 10
+                                lodge_betrag = to_decimal(round(lodge_betrag / n , 0) * n)
 
-                    #     if res_line.adrflag:
-                    #         ltot_lodging =  to_decimal(ltot_lodging) + to_decimal(cl_list.lodging)
-                    #     else:
-                    #         tot_lodging =  to_decimal(tot_lodging) + to_decimal(cl_list.lodging)
-                    #     lodge_betrag =  to_decimal(cl_list.lodging) * to_decimal(frate)
+                        artikel1 = get_cache (Artikel, {"artnr": [(eq, arrangement.artnr_logis)],"departement": [(eq, 0)]})
 
-                    #     if foreign_rate and price_decimal == 0 and not res_line.adrflag:
+                        s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == artikel1.artnr and s_list.dept == artikel1.departement and s_list.curr == waehrung1.wabkurz), first=True)
 
-                    #         htparam = get_cache (Htparam, {"paramnr": [(eq, 145)]})
+                        if not s_list:
+                            s_list = S_list()
+                            s_list_data.append(s_list)
 
-                    #         if htparam.finteger != 0:
-                    #             n = 1
-                    #             for i in range(1,htparam.finteger + 1) :
-                    #                 n = n * 10
-                    #             lodge_betrag = to_decimal(round(lodge_betrag / n , 0) * n)
+                            s_list.artnr = artikel1.artnr
+                            s_list.dept = artikel1.departement
+                            s_list.bezeich = artikel1.bezeich
+                            s_list.curr = waehrung1.wabkurz
 
-                    #     artikel1 = get_cache (Artikel, {"artnr": [(eq, arrangement.artnr_logis)],"departement": [(eq, 0)]})
 
-                    #     s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == artikel1.artnr and s_list.dept == artikel1.departement and s_list.curr == waehrung1.wabkurz), first=True)
+                        s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(lodge_betrag) / to_decimal(frate)
+                        s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(lodge_betrag)
+                        s_list.anzahl = s_list.anzahl + 1
 
-                    #     if not s_list:
-                    #         s_list = S_list()
-                    #         s_list_data.append(s_list)
 
-                    #         s_list.artnr = artikel1.artnr
-                    #         s_list.dept = artikel1.departement
-                    #         s_list.bezeich = artikel1.bezeich
-                    #         s_list.curr = waehrung1.wabkurz
+                        sum_list.lodging =  to_decimal(sum_list.lodging) + to_decimal(lodge_betrag)
+                        sum_list.t_rev =  to_decimal(sum_list.t_rev) + to_decimal(lodge_betrag)
 
+                        for fixleist in db_session.query(Fixleist).filter(
+                                 (Fixleist.resnr == res_line.resnr) & (Fixleist.reslinnr == res_line.reslinnr)).order_by(Fixleist._recid).all():
+                            post_it = check_fixleist_posted(fixleist.artnr, fixleist.departement, fixleist.sequenz, fixleist.dekade, fixleist.lfakt)
 
-                    #     s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(lodge_betrag) / to_decimal(frate)
-                    #     s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(lodge_betrag)
-                    #     s_list.anzahl = s_list.anzahl + 1
+                            if post_it:
+                                fcost =  to_decimal(fixleist.betrag) * to_decimal(fixleist.number)
+                                cl_list.t_rev =  to_decimal(cl_list.t_rev) + to_decimal(fcost)
+                                sum_list.t_rev =  to_decimal(sum_list.t_rev) + to_decimal(fcost) * to_decimal(frate)
 
+                                if res_line.adrflag:
+                                    ltot_rate =  to_decimal(ltot_rate) + to_decimal(fcost)
+                                else:
+                                    tot_rate =  to_decimal(tot_rate) + to_decimal(fcost)
 
-                    #     sum_list.lodging =  to_decimal(sum_list.lodging) + to_decimal(lodge_betrag)
-                    #     sum_list.t_rev =  to_decimal(sum_list.t_rev) + to_decimal(lodge_betrag)
+                                artikel = get_cache (Artikel, {"artnr": [(eq, fixleist.artnr)],"departement": [(eq, fixleist.departement)]})
 
-                    #     for fixleist in db_session.query(Fixleist).filter(
-                    #              (Fixleist.resnr == res_line.resnr) & (Fixleist.reslinnr == res_line.reslinnr)).order_by(Fixleist._recid).all():
-                    #         post_it = check_fixleist_posted(fixleist.artnr, fixleist.departement, fixleist.sequenz, fixleist.dekade, fixleist.lfakt)
+                                s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == artikel.artnr and s_list.dept == artikel.departement and s_list.curr == waehrung1.wabkurz), first=True)
 
-                    #         if post_it:
-                    #             fcost =  to_decimal(fixleist.betrag) * to_decimal(fixleist.number)
-                    #             cl_list.t_rev =  to_decimal(cl_list.t_rev) + to_decimal(fcost)
-                    #             sum_list.t_rev =  to_decimal(sum_list.t_rev) + to_decimal(fcost) * to_decimal(frate)
+                                if not s_list:
+                                    s_list = S_list()
+                                    s_list_data.append(s_list)
 
-                    #             if res_line.adrflag:
-                    #                 ltot_rate =  to_decimal(ltot_rate) + to_decimal(fcost)
-                    #             else:
-                    #                 tot_rate =  to_decimal(tot_rate) + to_decimal(fcost)
+                                    s_list.artnr = artikel.artnr
+                                    s_list.dept = artikel.departement
+                                    s_list.bezeich = artikel.bezeich
+                                    s_list.curr = waehrung1.wabkurz
 
-                    #             artikel = get_cache (Artikel, {"artnr": [(eq, fixleist.artnr)],"departement": [(eq, fixleist.departement)]})
+                                if (artikel.zwkum == bfast_art and artikel.departement == fb_dept):
+                                    s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
+                                    s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
+                                    s_list.anzahl = s_list.anzahl + fixleist.number
+                                    cl_list.bfast =  to_decimal(cl_list.bfast) + to_decimal(fcost)
+                                    sum_list.bfast =  to_decimal(sum_list.bfast) + to_decimal(fcost) * to_decimal(frate)
 
-                    #             s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == artikel.artnr and s_list.dept == artikel.departement and s_list.curr == waehrung1.wabkurz), first=True)
+                                    if res_line.adrflag:
+                                        ltot_bfast =  to_decimal(ltot_bfast) + to_decimal(fcost) * to_decimal(frate)
+                                    else:
+                                        tot_bfast =  to_decimal(tot_bfast) + to_decimal(fcost)
 
-                    #             if not s_list:
-                    #                 s_list = S_list()
-                    #                 s_list_data.append(s_list)
+                                elif (artikel.zwkum == lunch_art and artikel.departement == fb_dept):
+                                    s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
+                                    s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
+                                    s_list.anzahl = s_list.anzahl + fixleist.number
+                                    cl_list.lunch =  to_decimal(cl_list.lunch) + to_decimal(fcost)
+                                    sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(fcost) * to_decimal(frate)
 
-                    #                 s_list.artnr = artikel.artnr
-                    #                 s_list.dept = artikel.departement
-                    #                 s_list.bezeich = artikel.bezeich
-                    #                 s_list.curr = waehrung1.wabkurz
+                                    if res_line.adrflag:
+                                        ltot_lunch =  to_decimal(ltot_lunch) + to_decimal(fcost) * to_decimal(frate)
+                                    else:
+                                        tot_lunch =  to_decimal(tot_lunch) + to_decimal(fcost)
 
-                    #             if (artikel.zwkum == bfast_art and artikel.departement == fb_dept):
-                    #                 s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
-                    #                 s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
-                    #                 s_list.anzahl = s_list.anzahl + fixleist.number
-                    #                 cl_list.bfast =  to_decimal(cl_list.bfast) + to_decimal(fcost)
-                    #                 sum_list.bfast =  to_decimal(sum_list.bfast) + to_decimal(fcost) * to_decimal(frate)
+                                elif (artikel.zwkum == dinner_art and artikel.departement == fb_dept):
+                                    s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
+                                    s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
+                                    s_list.anzahl = s_list.anzahl + fixleist.number
+                                    cl_list.dinner =  to_decimal(cl_list.dinner) + to_decimal(fcost)
+                                    sum_list.dinner =  to_decimal(sum_list.dinner) + to_decimal(fcost) * to_decimal(frate)
 
-                    #                 if res_line.adrflag:
-                    #                     ltot_bfast =  to_decimal(ltot_bfast) + to_decimal(fcost) * to_decimal(frate)
-                    #                 else:
-                    #                     tot_bfast =  to_decimal(tot_bfast) + to_decimal(fcost)
+                                    if res_line.adrflag:
+                                        ltot_dinner =  to_decimal(ltot_dinner) + to_decimal(fcost) * to_decimal(frate)
+                                    else:
+                                        tot_dinner =  to_decimal(tot_dinner) + to_decimal(fcost)
+                                else:
+                                    s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
+                                    s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
+                                    s_list.anzahl = s_list.anzahl + fixleist.number
+                                    cl_list.fixcost =  to_decimal(cl_list.fixcost) + to_decimal(fcost)
+                                    sum_list.fixcost =  to_decimal(sum_list.fixcost) + to_decimal(fcost) * to_decimal(frate)
 
-                    #             elif (artikel.zwkum == lunch_art and artikel.departement == fb_dept):
-                    #                 s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
-                    #                 s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
-                    #                 s_list.anzahl = s_list.anzahl + fixleist.number
-                    #                 cl_list.lunch =  to_decimal(cl_list.lunch) + to_decimal(fcost)
-                    #                 sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(fcost) * to_decimal(frate)
+                                    if res_line.adrflag:
+                                        ltot_fix =  to_decimal(ltot_fix) + to_decimal(fcost)
+                                    else:
+                                        tot_fix =  to_decimal(tot_fix) + to_decimal(fcost)
 
-                    #                 if res_line.adrflag:
-                    #                     ltot_lunch =  to_decimal(ltot_lunch) + to_decimal(fcost) * to_decimal(frate)
-                    #                 else:
-                    #                     tot_lunch =  to_decimal(tot_lunch) + to_decimal(fcost)
+                        for argt_line in db_session.query(Argt_line).filter(
+                                 (Argt_line.argtnr == arrangement.argtnr) & (Argt_line.kind2)).order_by(Argt_line._recid).all():
 
-                    #             elif (artikel.zwkum == dinner_art and artikel.departement == fb_dept):
-                    #                 s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
-                    #                 s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
-                    #                 s_list.anzahl = s_list.anzahl + fixleist.number
-                    #                 cl_list.dinner =  to_decimal(cl_list.dinner) + to_decimal(fcost)
-                    #                 sum_list.dinner =  to_decimal(sum_list.dinner) + to_decimal(fcost) * to_decimal(frate)
+                            if argt_line.fakt_modus == 6:
 
-                    #                 if res_line.adrflag:
-                    #                     ltot_dinner =  to_decimal(ltot_dinner) + to_decimal(fcost) * to_decimal(frate)
-                    #                 else:
-                    #                     tot_dinner =  to_decimal(tot_dinner) + to_decimal(fcost)
-                    #             else:
-                    #                 s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
-                    #                 s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
-                    #                 s_list.anzahl = s_list.anzahl + fixleist.number
-                    #                 cl_list.fixcost =  to_decimal(cl_list.fixcost) + to_decimal(fcost)
-                    #                 sum_list.fixcost =  to_decimal(sum_list.fixcost) + to_decimal(fcost) * to_decimal(frate)
+                                argt6_list = query(argt6_list_data, filters=(lambda argt6_list: argt6_list.argtnr == argt_line.argtnr and argt6_list.departement == argt_line.departement and argt6_list.argt_artnr == argt_line.argt_artnr and argt6_list.vt_percnt == argt_line.vt_percnt and argt6_list.resnr == res_line.resnr and argt6_list.reslinnr == res_line.reslinnr and argt6_list.is_charged == 1), first=True)
 
-                    #                 if res_line.adrflag:
-                    #                     ltot_fix =  to_decimal(ltot_fix) + to_decimal(fcost)
-                    #                 else:
-                    #                     tot_fix =  to_decimal(tot_fix) + to_decimal(fcost)
+                                if not argt6_list:
+                                    argt6_list = Argt6_list()
+                                    argt6_list_data.append(argt6_list)
 
-                    #     for argt_line in db_session.query(Argt_line).filter(
-                    #              (Argt_line.argtnr == arrangement.argtnr) & (Argt_line.kind2)).order_by(Argt_line._recid).all():
+                                    argt6_list.argtnr = argt_line.argtnr
+                                    argt6_list.departement = argt_line.departement
+                                    argt6_list.argt_artnr = argt_line.argt_artnr
+                                    argt6_list.vt_percnt = argt_line.vt_percnt
+                                    argt6_list.is_charged = 1
+                                    argt6_list.resnr = res_line.resnr
+                                    argt6_list.reslinnr = res_line.reslinnr
 
-                    #         if argt_line.fakt_modus == 6:
+                                if argt6_list.period < argt_line.intervall:
 
-                    #             argt6_list = query(argt6_list_data, filters=(lambda argt6_list: argt6_list.argtnr == argt_line.argtnr and argt6_list.departement == argt_line.departement and argt6_list.argt_artnr == argt_line.argt_artnr and argt6_list.vt_percnt == argt_line.vt_percnt and argt6_list.resnr == res_line.resnr and argt6_list.reslinnr == res_line.reslinnr and argt6_list.is_charged == 1), first=True)
+                                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, res_line.abreise)],"date2": [(ge, res_line.ankunft)]})
 
-                    #             if not argt6_list:
-                    #                 argt6_list = Argt6_list()
-                    #                 argt6_list_data.append(argt6_list)
+                                    if reslin_queasy:
 
-                    #                 argt6_list.argtnr = argt_line.argtnr
-                    #                 argt6_list.departement = argt_line.departement
-                    #                 argt6_list.argt_artnr = argt_line.argt_artnr
-                    #                 argt6_list.vt_percnt = argt_line.vt_percnt
-                    #                 argt6_list.is_charged = 1
-                    #                 argt6_list.resnr = res_line.resnr
-                    #                 argt6_list.reslinnr = res_line.reslinnr
+                                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, curr_date)],"date2": [(ge, curr_date)]})
 
-                    #             if argt6_list.period < argt_line.intervall:
+                                        if reslin_queasy:
+                                            post_it = check_fixargt_posted(argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, reslin_queasy.date1)
 
-                    #                 reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, res_line.abreise)],"date2": [(ge, res_line.ankunft)]})
+                                            if post_it :
+                                                argt6_list.period = argt6_list.period + 1
+                                    else:
+                                        post_it = check_fixargt_posted(argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, res_line.ankunft)
 
-                    #                 if reslin_queasy:
+                                        if post_it :
+                                            argt6_list.period = argt6_list.period + 1
+                                else:
+                                    post_it = False
+                            else:
+                                post_it = check_fixargt_posted(argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, res_line.ankunft)
 
-                    #                     reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, curr_date)],"date2": [(ge, curr_date)]})
+                            if post_it:
 
-                    #                     if reslin_queasy:
-                    #                         post_it = check_fixargt_posted(argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, reslin_queasy.date1)
+                                if argt_line.vt_percnt == 0:
 
-                    #                         if post_it :
-                    #                             argt6_list.period = argt6_list.period + 1
-                    #                 else:
-                    #                     post_it = check_fixargt_posted(argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, res_line.ankunft)
+                                    if argt_line.betriebsnr == 0:
+                                        pax = res_line.erwachs
+                                    else:
+                                        pax = argt_line.betriebsnr
 
-                    #                     if post_it :
-                    #                         argt6_list.period = argt6_list.period + 1
-                    #             else:
-                    #                 post_it = False
-                    #         else:
-                    #             post_it = check_fixargt_posted(argt_line.argt_artnr, argt_line.departement, argt_line.fakt_modus, argt_line.intervall, res_line.ankunft)
+                                elif argt_line.vt_percnt == 1:
+                                    pax = res_line.kind1
 
-                    #         if post_it:
+                                elif argt_line.vt_percnt == 2:
+                                    pax = res_line.kind2
+                                else:
+                                    pax = 0
+                                price =  to_decimal("0")
 
-                    #             if argt_line.vt_percnt == 0:
+                                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, curr_date)],"date2": [(ge, curr_date)]})
 
-                    #                 if argt_line.betriebsnr == 0:
-                    #                     pax = res_line.erwachs
-                    #                 else:
-                    #                     pax = argt_line.betriebsnr
+                                if reslin_queasy:
 
-                    #             elif argt_line.vt_percnt == 1:
-                    #                 pax = res_line.kind1
+                                    for reslin_queasy in db_session.query(Reslin_queasy).filter(
+                                             (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (curr_date >= Reslin_queasy.date1) & (curr_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
 
-                    #             elif argt_line.vt_percnt == 2:
-                    #                 pax = res_line.kind2
-                    #             else:
-                    #                 pax = 0
-                    #             price =  to_decimal("0")
+                                        if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
 
-                    #             reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, curr_date)],"date2": [(ge, curr_date)]})
+                                            zwkum = db_session.query(Zwkum).filter(
+                                                     (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
 
-                    #             if reslin_queasy:
+                                            if zwkum:
+                                                price =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100") * to_decimal(-1)
+                                            else:
+                                                price =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
+                                        else:
 
-                    #                 for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                    #                          (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (curr_date >= Reslin_queasy.date1) & (curr_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
+                                            if reslin_queasy.deci1 != 0:
+                                                price =  to_decimal(reslin_queasy.deci1)
 
-                    #                     if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
+                                            elif reslin_queasy.deci2 != 0:
+                                                price =  to_decimal(reslin_queasy.deci2)
 
-                    #                         zwkum = db_session.query(Zwkum).filter(
-                    #                                  (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
+                                            elif reslin_queasy.deci3 != 0:
+                                                price =  to_decimal(reslin_queasy.deci3)
+                                        fcost =  to_decimal(price) * to_decimal(pax)
 
-                    #                         if zwkum:
-                    #                             price =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100") * to_decimal(-1)
-                    #                         else:
-                    #                             price =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
-                    #                     else:
+                                        if price != 0:
+                                            cl_list.t_rev =  to_decimal(cl_list.t_rev) + to_decimal(fcost)
+                                            sum_list.t_rev =  to_decimal(sum_list.t_rev) + to_decimal(fcost) * to_decimal(frate)
 
-                    #                         if reslin_queasy.deci1 != 0:
-                    #                             price =  to_decimal(reslin_queasy.deci1)
+                                if price == 0:
 
-                    #                         elif reslin_queasy.deci2 != 0:
-                    #                             price =  to_decimal(reslin_queasy.deci2)
+                                    if argt_line.betrag > 0:
+                                        fcost =  to_decimal(argt_line.betrag) * to_decimal(pax)
+                                    else:
 
-                    #                         elif reslin_queasy.deci3 != 0:
-                    #                             price =  to_decimal(reslin_queasy.deci3)
-                    #                     fcost =  to_decimal(price) * to_decimal(pax)
+                                        zwkum = db_session.query(Zwkum).filter(
+                                                 (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
 
-                    #                     if price != 0:
-                    #                         cl_list.t_rev =  to_decimal(cl_list.t_rev) + to_decimal(fcost)
-                    #                         sum_list.t_rev =  to_decimal(sum_list.t_rev) + to_decimal(fcost) * to_decimal(frate)
+                                        if zwkum:
+                                            fcost = ( to_decimal(rm_rate) * to_decimal((argt_line.betrag) / to_decimal(100))) * to_decimal(pax)
+                                        else:
+                                            fcost = ( to_decimal(rm_rate) * to_decimal(- to_decimal(argt_line.betrag) / to_decimal(100))) * to_decimal(pax)
+                                    cl_list.t_rev =  to_decimal(cl_list.t_rev) + to_decimal(fcost)
+                                    sum_list.t_rev =  to_decimal(sum_list.t_rev) + to_decimal(fcost) * to_decimal(frate)
 
-                    #             if price == 0:
+                                if res_line.adrflag:
+                                    ltot_rate =  to_decimal(ltot_rate) + to_decimal(fcost)
+                                else:
+                                    tot_rate =  to_decimal(tot_rate) + to_decimal(fcost)
 
-                    #                 if argt_line.betrag > 0:
-                    #                     fcost =  to_decimal(argt_line.betrag) * to_decimal(pax)
-                    #                 else:
+                                artikel = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
 
-                    #                     zwkum = db_session.query(Zwkum).filter(
-                    #                              (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
+                                s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == artikel.artnr and s_list.dept == artikel.departement and s_list.curr == waehrung1.wabkurz), first=True)
 
-                    #                     if zwkum:
-                    #                         fcost = ( to_decimal(rm_rate) * to_decimal((argt_line.betrag) / to_decimal(100))) * to_decimal(pax)
-                    #                     else:
-                    #                         fcost = ( to_decimal(rm_rate) * to_decimal(- to_decimal(argt_line.betrag) / to_decimal(100))) * to_decimal(pax)
-                    #                 cl_list.t_rev =  to_decimal(cl_list.t_rev) + to_decimal(fcost)
-                    #                 sum_list.t_rev =  to_decimal(sum_list.t_rev) + to_decimal(fcost) * to_decimal(frate)
+                                if not s_list:
+                                    s_list = S_list()
+                                    s_list_data.append(s_list)
 
-                    #             if res_line.adrflag:
-                    #                 ltot_rate =  to_decimal(ltot_rate) + to_decimal(fcost)
-                    #             else:
-                    #                 tot_rate =  to_decimal(tot_rate) + to_decimal(fcost)
+                                    s_list.artnr = artikel.artnr
+                                    s_list.dept = artikel.departement
+                                    s_list.bezeich = artikel.bezeich
+                                    s_list.curr = waehrung1.wabkurz
 
-                    #             artikel = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
+                                if (artikel.zwkum == bfast_art and artikel.departement == fb_dept):
+                                    s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
+                                    s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
+                                    s_list.anzahl = s_list.anzahl + pax
+                                    cl_list.bfast =  to_decimal(cl_list.bfast) + to_decimal(fcost)
+                                    sum_list.bfast =  to_decimal(sum_list.bfast) + to_decimal(fcost) * to_decimal(frate)
 
-                    #             s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == artikel.artnr and s_list.dept == artikel.departement and s_list.curr == waehrung1.wabkurz), first=True)
+                                    if res_line.adrflag:
+                                        ltot_bfast =  to_decimal(ltot_bfast) + to_decimal(fcost) * to_decimal(frate)
+                                    else:
+                                        tot_bfast =  to_decimal(tot_bfast) + to_decimal(fcost)
 
-                    #             if not s_list:
-                    #                 s_list = S_list()
-                    #                 s_list_data.append(s_list)
+                                elif (artikel.zwkum == lunch_art and artikel.departement == fb_dept):
+                                    s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
+                                    s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
+                                    s_list.anzahl = s_list.anzahl + pax
+                                    cl_list.lunch =  to_decimal(cl_list.lunch) + to_decimal(fcost)
+                                    sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(fcost) * to_decimal(frate)
 
-                    #                 s_list.artnr = artikel.artnr
-                    #                 s_list.dept = artikel.departement
-                    #                 s_list.bezeich = artikel.bezeich
-                    #                 s_list.curr = waehrung1.wabkurz
+                                    if res_line.adrflag:
+                                        ltot_lunch =  to_decimal(ltot_lunch) + to_decimal(fcost) * to_decimal(frate)
+                                    else:
+                                        tot_lunch =  to_decimal(tot_lunch) + to_decimal(fcost)
 
-                    #             if (artikel.zwkum == bfast_art and artikel.departement == fb_dept):
-                    #                 s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
-                    #                 s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
-                    #                 s_list.anzahl = s_list.anzahl + pax
-                    #                 cl_list.bfast =  to_decimal(cl_list.bfast) + to_decimal(fcost)
-                    #                 sum_list.bfast =  to_decimal(sum_list.bfast) + to_decimal(fcost) * to_decimal(frate)
+                                elif (artikel.zwkum == dinner_art and artikel.departement == fb_dept):
+                                    s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
+                                    s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
+                                    s_list.anzahl = s_list.anzahl + pax
+                                    cl_list.dinner =  to_decimal(cl_list.dinner) + to_decimal(fcost)
+                                    sum_list.dinner =  to_decimal(sum_list.dinner) + to_decimal(fcost) * to_decimal(frate)
 
-                    #                 if res_line.adrflag:
-                    #                     ltot_bfast =  to_decimal(ltot_bfast) + to_decimal(fcost) * to_decimal(frate)
-                    #                 else:
-                    #                     tot_bfast =  to_decimal(tot_bfast) + to_decimal(fcost)
+                                    if res_line.adrflag:
+                                        ltot_dinner =  to_decimal(ltot_dinner) + to_decimal(fcost) * to_decimal(frate)
+                                    else:
+                                        tot_dinner =  to_decimal(tot_dinner) + to_decimal(fcost)
+                                else:
+                                    s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
+                                    s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
+                                    s_list.anzahl = s_list.anzahl + pax
+                                    cl_list.fixcost =  to_decimal(cl_list.fixcost) + to_decimal(fcost)
+                                    sum_list.fixcost =  to_decimal(sum_list.fixcost) + to_decimal(fcost) * to_decimal(frate)
 
-                    #             elif (artikel.zwkum == lunch_art and artikel.departement == fb_dept):
-                    #                 s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
-                    #                 s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
-                    #                 s_list.anzahl = s_list.anzahl + pax
-                    #                 cl_list.lunch =  to_decimal(cl_list.lunch) + to_decimal(fcost)
-                    #                 sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(fcost) * to_decimal(frate)
-
-                    #                 if res_line.adrflag:
-                    #                     ltot_lunch =  to_decimal(ltot_lunch) + to_decimal(fcost) * to_decimal(frate)
-                    #                 else:
-                    #                     tot_lunch =  to_decimal(tot_lunch) + to_decimal(fcost)
-
-                    #             elif (artikel.zwkum == dinner_art and artikel.departement == fb_dept):
-                    #                 s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
-                    #                 s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
-                    #                 s_list.anzahl = s_list.anzahl + pax
-                    #                 cl_list.dinner =  to_decimal(cl_list.dinner) + to_decimal(fcost)
-                    #                 sum_list.dinner =  to_decimal(sum_list.dinner) + to_decimal(fcost) * to_decimal(frate)
-
-                    #                 if res_line.adrflag:
-                    #                     ltot_dinner =  to_decimal(ltot_dinner) + to_decimal(fcost) * to_decimal(frate)
-                    #                 else:
-                    #                     tot_dinner =  to_decimal(tot_dinner) + to_decimal(fcost)
-                    #             else:
-                    #                 s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(fcost)
-                    #                 s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(fcost) * to_decimal(frate)
-                    #                 s_list.anzahl = s_list.anzahl + pax
-                    #                 cl_list.fixcost =  to_decimal(cl_list.fixcost) + to_decimal(fcost)
-                    #                 sum_list.fixcost =  to_decimal(sum_list.fixcost) + to_decimal(fcost) * to_decimal(frate)
-
-                    #                 if res_line.adrflag:
-                    #                     ltot_fix =  to_decimal(ltot_fix) + to_decimal(fcost)
-                    #                 else:
-                    #                     tot_fix =  to_decimal(tot_fix) + to_decimal(fcost)
+                                    if res_line.adrflag:
+                                        ltot_fix =  to_decimal(ltot_fix) + to_decimal(fcost)
+                                    else:
+                                        tot_fix =  to_decimal(tot_fix) + to_decimal(fcost)
 
                 if curr_zinr != res_line.zinr or curr_resnr != res_line.resnr:
 
@@ -904,11 +897,7 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
         else:
 
             for res_line in db_session.query(Res_line).filter(
-                     ((Res_line.active_flag <= 1)) & 
-                     ((Res_line.resstatus <= 2) | (Res_line.resstatus == 5) | (Res_line.resstatus == 6)) & 
-                     (not_ (Res_line.ankunft > curr_date)) & 
-                     (not_ (Res_line.abreise < curr_date)))\
-                .order_by(Res_line.zinr, Res_line.resnr).all():
+                     ((Res_line.active_flag <= 1)) & ((Res_line.resstatus <= 2) | (Res_line.resstatus == 5) | (Res_line.resstatus == 6)) & (not_ (Res_line.ankunft > curr_date)) & (not_ (Res_line.abreise < curr_date))).order_by(Res_line.zinr, Res_line.resnr).all():
                 do_it = True
 
                 if res_line.abreise == curr_date:
@@ -1040,22 +1029,12 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                             argt_list.argtcode = arrangement.arrangement
                             argt_list.bezeich = arrangement.argt_bez
                             argt_list.room = 1
-
-                            if cl_list.zipreis == 0 and cl_list.adult == 0:
-                                argt_list.pax = res_line.gratis + cl_list.comch
+                            argt_list.pax = res_line.erwachs + res_line.kind1 + res_line.kind2 + res_line.gratis + cl_list.comch
 
 
-                            else:
-                                argt_list.pax = res_line.erwachs + res_line.kind1 + res_line.kind2 + res_line.gratis + cl_list.comch
                         else:
                             argt_list.room = argt_list.room + 1
-
-                            if cl_list.zipreis == 0 and cl_list.adult == 0:
-                                argt_list.pax = argt_list.pax + res_line.gratis + cl_list.comch
-
-
-                            else:
-                                argt_list.pax = argt_list.pax + res_line.erwachs + res_line.kind1 + res_line.kind2 + res_line.gratis + cl_list.comch
+                            argt_list.pax = argt_list.pax + (res_line.erwachs + res_line.gratis)
 
                         if guest.geburtdatum1 != None and guest.geburtdatum2 != None:
 
@@ -1102,10 +1081,13 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                                     if queasy and queasy.logi3:
                                         bill_date = res_line.ankunft
 
-                                    if new_contrate:
+                                    # Rd 30/7/2025
+                                    # if date availabel
+                                    if bill_date and new_contrate:
                                         rate_found, rmrate, restricted_disc, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, res_line.resnr, res_line.reslinnr, guest_pr.code, None, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, res_line.zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
                                     else:
-                                        rmrate, rate_found = get_output(pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
+                                        if bill_date:
+                                            rmrate, rate_found = get_output(pricecod_rate(res_line.resnr, res_line.reslinnr, guest_pr.code, bill_date, res_line.ankunft, res_line.abreise, res_line.reserve_int, argtnr, curr_zikatnr, res_line.erwachs, res_line.kind1, res_line.kind2, res_line.reserve_dec, res_line.betriebsnr))
 
                                         if it_exist:
                                             rate_found = True
@@ -1116,8 +1098,11 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                                                 rmrate =  to_decimal("0")
 
                                 if not rate_found:
-                                    w_day = wd_array[get_weekday(bill_date) - 1]
 
+                                    # Rd 30/7/2025
+                                    # if bill_date available
+                                    if bill_date:
+                                        w_day = wd_array[get_weekday(bill_date) - 1]
                                     if (bill_date == curr_date) or (bill_date == res_line.ankunft):
                                         rmrate =  to_decimal(res_line.zipreis)
 
@@ -1607,94 +1592,92 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
         curr_ch2 = 0
         curr_comch = 0
 
-        # for cc_list in query(cc_list_data, filters=(lambda cc_list: cc_list.flag == ""), sort_by=[("currency",False)]):
+        for cc_list in query(cc_list_data, filters=(lambda cc_list: cc_list.flag == ""), sort_by=[("currency",False)]):
 
-        #     if curr_code != cc_list.currency:
+            if curr_code != cc_list.currency:
 
-        #         if curr_code != "":
-        #             cl_list.zipreis =  to_decimal(curr_rate)
-        #             cl_list.localrate =  to_decimal(curr_local)
-        #             cl_list.lodging =  to_decimal(curr_lodge)
-        #             cl_list.bfast =  to_decimal(curr_bfast)
-        #             cl_list.lunch =  to_decimal(curr_lunch)
-        #             cl_list.dinner =  to_decimal(curr_dinner)
-        #             cl_list.misc =  to_decimal(curr_misc)
-        #             cl_list.fixcost =  to_decimal(curr_fcost)
-        #             cl_list.t_rev =  to_decimal(curr_trev)
-        #             cl_list.pax = curr_pax
-        #             cl_list.com = curr_com
-        #             cl_list.zinr = to_string(curr_rm, ">>>9")
-        #             cl_list.adult = curr_adult
-        #             cl_list.ch1 = curr_ch1
-        #             cl_list.ch2 = curr_ch2
-        #             cl_list.comch = curr_comch
+                if curr_code != "":
+                    cl_list.zipreis =  to_decimal(curr_rate)
+                    cl_list.localrate =  to_decimal(curr_local)
+                    cl_list.lodging =  to_decimal(curr_lodge)
+                    cl_list.bfast =  to_decimal(curr_bfast)
+                    cl_list.lunch =  to_decimal(curr_lunch)
+                    cl_list.dinner =  to_decimal(curr_dinner)
+                    cl_list.misc =  to_decimal(curr_misc)
+                    cl_list.fixcost =  to_decimal(curr_fcost)
+                    cl_list.t_rev =  to_decimal(curr_trev)
+                    cl_list.pax = curr_pax
+                    cl_list.com = curr_com
+                    cl_list.zinr = to_string(curr_rm, ">>>9")
+                    cl_list.adult = curr_adult
+                    cl_list.ch1 = curr_ch1
+                    cl_list.ch2 = curr_ch2
+                    cl_list.comch = curr_comch
 
-        #         waehrung = get_cache (Waehrung, {"wabkurz": [(eq, cc_list.currency)]})
+                waehrung = get_cache (Waehrung, {"wabkurz": [(eq, cc_list.currency)]})
 
-        #         if (waehrung.ankauf / waehrung.einheit) != 1:
-        #             currency_list = Currency_list()
-        #             currency_list_data.append(currency_list)
+                if (waehrung.ankauf / waehrung.einheit) != 1:
+                    currency_list = Currency_list()
+                    currency_list_data.append(currency_list)
 
-        #             currency_list.code = cc_list.currency
-        #         cl_list = Cl_list()
-        #         cl_list_data.append(cl_list)
+                    currency_list.code = cc_list.currency
+                cl_list = Cl_list()
+                cl_list_data.append(cl_list)
 
-        #         cl_list.flag = "**"
-        #         cl_list.currency = cc_list.currency
-        #         curr_code = cc_list.currency
-        #         curr_rate =  to_decimal("0")
-        #         curr_local =  to_decimal("0")
-        #         curr_lodge =  to_decimal("0")
-        #         curr_bfast =  to_decimal("0")
-        #         curr_lunch =  to_decimal("0")
-        #         curr_dinner =  to_decimal("0")
-        #         curr_misc =  to_decimal("0")
-        #         curr_fcost =  to_decimal("0")
-        #         curr_trev =  to_decimal("0")
-        #         curr_pax = 0
-        #         curr_com = 0
-        #         curr_rm = 0
-        #         curr_rm = 0
-        #         curr_adult = 0
-        #         curr_ch1 = 0
-        #         curr_ch2 = 0
-        #         curr_comch = 0
-        #     curr_rate =  to_decimal(curr_rate) + to_decimal(cc_list.zipreis)
-        #     curr_local =  to_decimal(curr_local) + to_decimal(cc_list.localrate)
-        #     curr_lodge =  to_decimal(curr_lodge) + to_decimal(cc_list.lodging)
-        #     curr_bfast =  to_decimal(curr_bfast) + to_decimal(cc_list.bfast)
-        #     curr_lunch =  to_decimal(curr_lunch) + to_decimal(cc_list.lunch)
-        #     curr_dinner =  to_decimal(curr_dinner) + to_decimal(cc_list.dinner)
-        #     curr_misc =  to_decimal(curr_misc) + to_decimal(cc_list.misc)
-        #     curr_fcost =  to_decimal(curr_fcost) + to_decimal(cc_list.fixcost)
-        #     curr_trev =  to_decimal(curr_trev) + to_decimal(cc_list.t_rev)
-        #     curr_pax = curr_pax + cc_list.pax
-        #     curr_com = curr_com + cc_list.com
-        #     curr_adult = curr_adult + cc_list.adult
-        #     curr_ch1 = curr_ch1 + cc_list.ch1
-        #     curr_ch2 = curr_ch2 + cc_list.ch2
-        #     curr_comch = curr_comch + cc_list.comch
+                cl_list.flag = "**"
+                cl_list.currency = cc_list.currency
+                curr_code = cc_list.currency
+                curr_rate =  to_decimal("0")
+                curr_local =  to_decimal("0")
+                curr_lodge =  to_decimal("0")
+                curr_bfast =  to_decimal("0")
+                curr_lunch =  to_decimal("0")
+                curr_dinner =  to_decimal("0")
+                curr_misc =  to_decimal("0")
+                curr_fcost =  to_decimal("0")
+                curr_trev =  to_decimal("0")
+                curr_pax = 0
+                curr_com = 0
+                curr_rm = 0
+                curr_rm = 0
+                curr_adult = 0
+                curr_ch1 = 0
+                curr_ch2 = 0
+                curr_comch = 0
+            curr_rate =  to_decimal(curr_rate) + to_decimal(cc_list.zipreis)
+            curr_local =  to_decimal(curr_local) + to_decimal(cc_list.localrate)
+            curr_lodge =  to_decimal(curr_lodge) + to_decimal(cc_list.lodging)
+            curr_bfast =  to_decimal(curr_bfast) + to_decimal(cc_list.bfast)
+            curr_lunch =  to_decimal(curr_lunch) + to_decimal(cc_list.lunch)
+            curr_dinner =  to_decimal(curr_dinner) + to_decimal(cc_list.dinner)
+            curr_misc =  to_decimal(curr_misc) + to_decimal(cc_list.misc)
+            curr_fcost =  to_decimal(curr_fcost) + to_decimal(cc_list.fixcost)
+            curr_trev =  to_decimal(curr_trev) + to_decimal(cc_list.t_rev)
+            curr_pax = curr_pax + cc_list.pax
+            curr_com = curr_com + cc_list.com
+            curr_adult = curr_adult + cc_list.adult
+            curr_ch1 = curr_ch1 + cc_list.ch1
+            curr_ch2 = curr_ch2 + cc_list.ch2
+            curr_comch = curr_comch + cc_list.comch
 
-        #     if cc_list.rstatus != 13:
-        #         curr_rm = curr_rm + 1
-        
-        
-        # cl_list.zipreis =  to_decimal(curr_rate)
-        # cl_list.localrate =  to_decimal(curr_local)
-        # cl_list.lodging =  to_decimal(curr_lodge)
-        # cl_list.bfast =  to_decimal(curr_bfast)
-        # cl_list.lunch =  to_decimal(curr_lunch)
-        # cl_list.dinner =  to_decimal(curr_dinner)
-        # cl_list.misc =  to_decimal(curr_misc)
-        # cl_list.fixcost =  to_decimal(curr_fcost)
-        # cl_list.t_rev =  to_decimal(curr_trev)
-        # cl_list.pax = curr_pax
-        # cl_list.com = curr_com
-        # cl_list.zinr = to_string(curr_rm, ">>>9")
-        # cl_list.adult = curr_adult
-        # cl_list.ch1 = curr_ch1
-        # cl_list.ch2 = curr_ch2
-        # cl_list.comch = curr_comch
+            if cc_list.rstatus != 13:
+                curr_rm = curr_rm + 1
+        cl_list.zipreis =  to_decimal(curr_rate)
+        cl_list.localrate =  to_decimal(curr_local)
+        cl_list.lodging =  to_decimal(curr_lodge)
+        cl_list.bfast =  to_decimal(curr_bfast)
+        cl_list.lunch =  to_decimal(curr_lunch)
+        cl_list.dinner =  to_decimal(curr_dinner)
+        cl_list.misc =  to_decimal(curr_misc)
+        cl_list.fixcost =  to_decimal(curr_fcost)
+        cl_list.t_rev =  to_decimal(curr_trev)
+        cl_list.pax = curr_pax
+        cl_list.com = curr_com
+        cl_list.zinr = to_string(curr_rm, ">>>9")
+        cl_list.adult = curr_adult
+        cl_list.ch1 = curr_ch1
+        cl_list.ch2 = curr_ch2
+        cl_list.comch = curr_comch
 
         for cl_list in query(cl_list_data, filters=(lambda cl_list: cl_list.flag.lower()  != ("*").lower())):
 
@@ -1949,48 +1932,30 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                 if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
                     argt_betrag = ( to_decimal(res_line.zipreis) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal(100)) * to_decimal(qty)
                 else:
-
-                    if argt_line.vt_percnt == 0:
-                        argt_betrag =  to_decimal(reslin_queasy.deci1) * to_decimal(qty)
-
-                    elif argt_line.vt_percnt == 1:
-                        argt_betrag =  to_decimal(reslin_queasy.deci2) * to_decimal(qty)
-
-                    elif argt_line.vt_percnt == 2:
-                        argt_betrag =  to_decimal(reslin_queasy.deci3) * to_decimal(qty)
+                    argt_betrag =  to_decimal(reslin_queasy.deci1) * to_decimal(qty)
                 f_betrag =  to_decimal(argt_betrag)
 
                 waehrung = get_cache (Waehrung, {"_recid": [(eq, waehrung1._recid)]})
 
                 if argt_betrag == 0:
                     add_it = False
-                else:
 
-                    return generate_inner_output()
+                return generate_inner_output()
 
             if contcode != "":
 
                 reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, res_line.reserve_int)],"number2": [(eq, arrangement.argtnr)],"number3": [(eq, argtline.argt_artnr)],"resnr": [(eq, argtline.departement)],"reslinnr": [(eq, curr_zikatnr)],"date1": [(le, curr_date)],"date2": [(ge, curr_date)]})
 
                 if reslin_queasy:
-
-                    if argt_line.vt_percnt == 0:
-                        argt_betrag =  to_decimal(reslin_queasy.deci1) * to_decimal(qty)
-
-                    elif argt_line.vt_percnt == 1:
-                        argt_betrag =  to_decimal(reslin_queasy.deci2) * to_decimal(qty)
-
-                    elif argt_line.vt_percnt == 2:
-                        argt_betrag =  to_decimal(reslin_queasy.deci3) * to_decimal(qty)
+                    argt_betrag =  to_decimal(reslin_queasy.deci1) * to_decimal(qty)
                     f_betrag =  to_decimal(argt_betrag)
 
                     waehrung = get_cache (Waehrung, {"_recid": [(eq, waehrung1._recid)]})
 
                     if argt_betrag == 0:
                         add_it = False
-                    else:
 
-                        return generate_inner_output()
+                    return generate_inner_output()
             argt_betrag =  to_decimal(argt_line.betrag)
 
             arrangement = get_cache (Arrangement, {"argtnr": [(eq, argt_line.argtnr)]})
@@ -2007,8 +1972,8 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                 argt_betrag = ( to_decimal(rm_rate) * to_decimal((argt_betrag) / to_decimal(100))) * to_decimal(qty)
                 argt_betrag =  -1 * to_decimal(argt_betrag)
 
-            if argt_betrag != 0:
-                add_it = True
+            if argt_betrag == 0:
+                add_it = False
 
         return generate_inner_output()
 
