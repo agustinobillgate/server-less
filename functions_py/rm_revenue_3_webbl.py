@@ -2,7 +2,7 @@
 #------------------------------------------
 # Rd, 11/9/2025
 # strip payload rm_no
-# field zinrstat.personen  # Rd 9/11/2025 -> zinrstat.personen
+# field zinrstat.person  # Rd 9/11/2025 -> zinrstat.personen
 #------------------------------------------
 #using conversion tools version: 1.0.0.117
 
@@ -82,6 +82,8 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
     db_session = local_storage.db_session
 
     rm_no = rm_no.strip()
+    log_debug = []
+
     def generate_output():
         nonlocal output_list_data, i, anz, manz, yanz, com_anz, com_manz, com_yanz, hu_anz, hu_manz, hu_yanz, pax, mpax, ypax, com_pax, com_mpax, com_ypax, hu_pax, hu_mpax, hu_ypax, mnet, ynet, net, t_anz, t_manz, t_yanz, t_pax, t_mpax, t_ypax, t_net, t_mnet, t_ynet, t_com_anz, t_com_pax, t_com_manz, t_com_mpax, t_com_yanz, t_com_ypax, t_hu_anz, t_hu_pax, t_hu_manz, t_hu_mpax, t_hu_yanz, t_hu_ypax, from_bez, to_bez, price_decimal, from_date, curr_zeit, ci_date, do_it, compli_flag, hu_flag, htparam, zimmer, reservation, arrangement, res_line, waehrung, segment, argt_line, artikel, zinrstat, genstat, zimkateg
         nonlocal m_ftd, m_ytd, f_date, t_date, to_date, rm_no, sorttype, lod__rev, excl_compl
@@ -90,7 +92,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
         nonlocal output_list, cl_list, payload_list
         nonlocal output_list_data, cl_list_data
 
-        return {"output-list": output_list_data}
+        return {"log": log_debug, "output-list": output_list_data}
 
     def create_resline():
 
@@ -579,62 +581,90 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                         if excl_compl:
 
                             genstat = db_session.query(Genstat).filter(
-                                     (Genstat.datum == datum) & (Genstat.zikatnr == zimmer.zikatnr) & (Genstat.zinr == zimmer.zinr) & (Genstat.zipreis == 0) & (Genstat.gratis != 0) & (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(1)])).first()
+                                     (Genstat.datum == datum) & 
+                                     (Genstat.zikatnr == zimmer.zikatnr) & 
+                                     (Genstat.zinr == zimmer.zinr) & 
+                                     (Genstat.zipreis == 0) & 
+                                     (Genstat.gratis != 0) & 
+                                     (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(1)])).first()
 
                             if genstat:
 
                                 segment = db_session.query(Segment).filter(
-                                         (Segment.segmentcode == genstat.segmentcode) & ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
+                                         (Segment.segmentcode == genstat.segmentcode) & 
+                                         ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
 
                                 if segment:
                                     do_it = False
+                                    pass
 
                         if do_it:
 
                             if datum == to_date:
                                 cl_list.anz = cl_list.anz + zinrstat.zimmeranz
                                 cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-                                cl_list.pax = cl_list.pax + zinrstat.person
+                                cl_list.pax = cl_list.pax + zinrstat.personen
                                 anz = anz + zinrstat.zimmeranz
-                                pax = pax + zinrstat.person
+                                pax = pax + zinrstat.personen
                                 net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
 
                             if get_month(zinrstat.datum) == mm and get_year(zinrstat.datum) == yy:
                                 cl_list.manz = cl_list.manz + zinrstat.zimmeranz
                                 cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-                                cl_list.mpax = cl_list.mpax + zinrstat.person
+                                cl_list.mpax = cl_list.mpax + zinrstat.personen
                                 manz = manz + zinrstat.zimmeranz
-                                mpax = mpax + zinrstat.person
+                                mpax = mpax + zinrstat.personen
                                 mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
                             cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-                            cl_list.ypax = cl_list.ypax + zinrstat.person
+                            cl_list.ypax = cl_list.ypax + zinrstat.personen
                             cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
                             yanz = yanz + zinrstat.zimmeranz
-                            ypax = ypax + zinrstat.person
+                            ypax = ypax + zinrstat.personen
                             ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
         else:
             rm_no = ""
 
             if sorttype == 1:
-
                 zimmer_obj_list = {}
                 zimmer = Zimmer()
                 zimkateg = Zimkateg()
-                for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer.zinr).all():
-                    if zimmer_obj_list.get(zimmer._recid):
-                        continue
-                    else:
-                        zimmer_obj_list[zimmer._recid] = True
-
+                for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid \
+                    in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, \
+                                        Zimkateg.kurzbez, Zimkateg._recid\
+                                        )\
+                    .join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer.zinr).all():
+                    # if zimmer_obj_list.get(zimmer._recid):
+                    #     continue
+                    # else:
+                    #     zimmer_obj_list[zimmer._recid] = True
 
                     cl_list = Cl_list()
                     cl_list_data.append(cl_list)
 
                     cl_list.zinr = zimmer.zinr
                     cl_list.rmcat = zimkateg.kurzbez
-                    for datum in date_range(from_date,to_date) :
+                    # log_debug.append(f"from_date: {from_date}, to_date: {to_date}, zinr: {zimmer.zinr}")
 
-                        zinrstat = get_cache (Zinrstat, {"zinr": [(eq, zimmer.zinr)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
+                    zinrstat_records = {
+                        (zs.datum, zs.zimmeranz): zs
+                        for zs in db_session.query(Zinrstat)
+                            .filter(
+                                (Zinrstat.zinr == zimmer.zinr) &
+                                (Zinrstat.datum >= from_date) &
+                                (Zinrstat.datum <= to_date) &
+                                (Zinrstat.zimmeranz > 0)
+                            ).all()
+                    }
+                    for datum in date_range(from_date,to_date) :
+                        pass
+                        print(f"datum: {datum}, zinr: {zimmer.zinr}")
+                        # zinrstat = get_cache (Zinrstat, {"zinr": [(eq, zimmer.zinr)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
+                        # zinrstat = db_session.query(Zinrstat).filter(
+                        #          (Zinrstat.zinr == zimmer.zinr) &
+                        #          (Zinrstat.datum == datum) &
+                        #          (Zinrstat.zimmeranz > 0)).first()
+                        zinrstat = zinrstat_records.get((datum, 1))
+                        # log_debug.append(f"datum: {datum}, zinr: {zimmer.zinr}, zinrstat: {zinrstat}")
 
                         if zinrstat:
                             do_it = True
@@ -658,153 +688,153 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                                     if segment:
                                         do_it = False
 
-                            if do_it:
+            #                 if do_it:
 
-                                if datum == to_date:
-                                    cl_list.anz = cl_list.anz + zinrstat.zimmeranz
-                                    cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-                                    cl_list.pax = cl_list.pax + zinrstat.person
-                                    anz = anz + zinrstat.zimmeranz
-                                    pax = pax + zinrstat.person
-                                    net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
+            #                     if datum == to_date:
+            #                         cl_list.anz = cl_list.anz + zinrstat.zimmeranz
+            #                         cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
+            #                         cl_list.pax = cl_list.pax + zinrstat.personen
+            #                         anz = anz + zinrstat.zimmeranz
+            #                         pax = pax + zinrstat.personen
+            #                         net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
 
-                                if get_month(zinrstat.datum) == mm and get_year(zinrstat.datum) == yy:
-                                    cl_list.manz = cl_list.manz + zinrstat.zimmeranz
-                                    cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-                                    cl_list.mpax = cl_list.mpax + zinrstat.person
-                                    manz = manz + zinrstat.zimmeranz
-                                    mpax = mpax + zinrstat.person
-                                    mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
-                                cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-                                cl_list.ypax = cl_list.ypax + zinrstat.person
-                                cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
-                                yanz = yanz + zinrstat.zimmeranz
-                                ypax = ypax + zinrstat.person
-                                ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
+            #                     if get_month(zinrstat.datum) == mm and get_year(zinrstat.datum) == yy:
+            #                         cl_list.manz = cl_list.manz + zinrstat.zimmeranz
+            #                         cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
+            #                         cl_list.mpax = cl_list.mpax + zinrstat.personen
+            #                         manz = manz + zinrstat.zimmeranz
+            #                         mpax = mpax + zinrstat.personen
+            #                         mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
+            #                     cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
+            #                     cl_list.ypax = cl_list.ypax + zinrstat.personen
+            #                     cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
+            #                     yanz = yanz + zinrstat.zimmeranz
+            #                     ypax = ypax + zinrstat.personen
+            #                     ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
 
-            elif sorttype == 2:
+            # elif sorttype == 2:
 
-                zimmer_obj_list = {}
-                zimmer = Zimmer()
-                zimkateg = Zimkateg()
-                for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimkateg.zikatnr, Zimmer.zinr).all():
-                    if zimmer_obj_list.get(zimmer._recid):
-                        continue
-                    else:
-                        zimmer_obj_list[zimmer._recid] = True
+            #     zimmer_obj_list = {}
+            #     zimmer = Zimmer()
+            #     zimkateg = Zimkateg()
+            #     for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimkateg.zikatnr, Zimmer.zinr).all():
+            #         if zimmer_obj_list.get(zimmer._recid):
+            #             continue
+            #         else:
+            #             zimmer_obj_list[zimmer._recid] = True
 
-                    if last_zikatnr == 0:
-                        last_zikatnr = zimmer.zikatnr
+            #         if last_zikatnr == 0:
+            #             last_zikatnr = zimmer.zikatnr
 
-                    if last_zikatnr != zimmer.zikatnr:
-                        cl_list = Cl_list()
-                        cl_list_data.append(cl_list)
+            #         if last_zikatnr != zimmer.zikatnr:
+            #             cl_list = Cl_list()
+            #             cl_list_data.append(cl_list)
 
-                        cl_list.rmcat = "Total"
-                        cl_list.anz = t_anz
-                        cl_list.pax = t_pax
-                        cl_list.net =  to_decimal(t_net)
-                        cl_list.manz = t_manz
-                        cl_list.mnet =  to_decimal(t_mnet)
-                        cl_list.mpax = t_mpax
-                        cl_list.yanz = t_yanz
-                        cl_list.ypax = t_ypax
-                        cl_list.ynet =  to_decimal(t_ynet)
-                        t_anz = 0
-                        t_pax = 0
-                        t_net =  to_decimal("0")
-                        t_manz = 0
-                        t_mnet =  to_decimal("0")
-                        t_mpax = 0
-                        t_yanz = 0
-                        t_ynet =  to_decimal("0")
-                        t_ypax = 0
-                        last_zikatnr = zimmer.zikatnr
-
-
-                    cl_list = Cl_list()
-                    cl_list_data.append(cl_list)
-
-                    cl_list.zinr = zimmer.zinr
-                    cl_list.rmcat = zimkateg.kurzbez
-                    for datum in date_range(from_date,to_date) :
-
-                        zinrstat = get_cache (Zinrstat, {"zinr": [(eq, zimmer.zinr)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
-
-                        if zinrstat:
-                            do_it = True
-
-                            if excl_compl:
-
-                                genstat = db_session.query(Genstat).filter(
-                                         (Genstat.datum == datum) & (Genstat.zikatnr == zimmer.zikatnr) & (Genstat.zinr == zimmer.zinr) & (Genstat.zipreis == 0) & (Genstat.gratis != 0) & (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(1)])).first()
-
-                                if genstat:
-
-                                    segment = db_session.query(Segment).filter(
-                                             (Segment.segmentcode == genstat.segmentcode) & ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
-
-                                    if segment:
-                                        do_it = False
-
-                            if do_it:
-
-                                if datum == to_date:
-                                    cl_list.anz = cl_list.anz + zinrstat.zimmeranz
-                                    cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-                                    cl_list.pax = cl_list.pax + zinrstat.person
-                                    anz = anz + zinrstat.zimmeranz
-                                    pax = pax + zinrstat.person
-                                    net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
-                                    t_anz = t_anz + zinrstat.zimmeranz
-                                    t_pax = t_pax + zinrstat.person
-                                    t_net =  to_decimal(t_net) + to_decimal(zinrstat.argtumsatz)
-
-                                if get_month(zinrstat.datum) == mm:
-                                    cl_list.manz = cl_list.manz + zinrstat.zimmeranz
-                                    cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-                                    cl_list.mpax = cl_list.mpax + zinrstat.person
-                                    manz = manz + zinrstat.zimmeranz
-                                    mpax = mpax + zinrstat.person
-                                    mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
-                                    t_manz = t_manz + zinrstat.zimmeranz
-                                    t_mpax = t_mpax + zinrstat.person
-                                    t_mnet =  to_decimal(t_mnet) + to_decimal(zinrstat.argtumsatz)
-                                cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-                                cl_list.ypax = cl_list.ypax + zinrstat.person
-                                cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
-                                yanz = yanz + zinrstat.zimmeranz
-                                ypax = ypax + zinrstat.person
-                                ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
-                                t_yanz = t_yanz + zinrstat.zimmeranz
-                                t_ypax = t_ypax + zinrstat.person
-                                t_ynet =  to_decimal(t_ynet) + to_decimal(zinrstat.argtumsatz)
-
-            if sorttype == 2:
-                cl_list = Cl_list()
-                cl_list_data.append(cl_list)
-
-                cl_list.rmcat = "Total"
-                cl_list.anz = t_anz
-                cl_list.pax = t_pax
-                cl_list.net =  to_decimal(t_net)
-                cl_list.manz = t_manz
-                cl_list.mnet =  to_decimal(t_mnet)
-                cl_list.mpax = t_mpax
-                cl_list.yanz = t_yanz
-                cl_list.ypax = t_ypax
-                cl_list.ynet =  to_decimal(t_ynet)
+            #             cl_list.rmcat = "Total"
+            #             cl_list.anz = t_anz
+            #             cl_list.pax = t_pax
+            #             cl_list.net =  to_decimal(t_net)
+            #             cl_list.manz = t_manz
+            #             cl_list.mnet =  to_decimal(t_mnet)
+            #             cl_list.mpax = t_mpax
+            #             cl_list.yanz = t_yanz
+            #             cl_list.ypax = t_ypax
+            #             cl_list.ynet =  to_decimal(t_ynet)
+            #             t_anz = 0
+            #             t_pax = 0
+            #             t_net =  to_decimal("0")
+            #             t_manz = 0
+            #             t_mnet =  to_decimal("0")
+            #             t_mpax = 0
+            #             t_yanz = 0
+            #             t_ynet =  to_decimal("0")
+            #             t_ypax = 0
+            #             last_zikatnr = zimmer.zikatnr
 
 
-                t_anz = 0
-                t_pax = 0
-                t_net =  to_decimal("0")
-                t_manz = 0
-                t_mnet =  to_decimal("0")
-                t_mpax = 0
-                t_yanz = 0
-                t_ynet =  to_decimal("0")
-                t_ypax = 0
+            #         cl_list = Cl_list()
+            #         cl_list_data.append(cl_list)
+
+            #         cl_list.zinr = zimmer.zinr
+            #         cl_list.rmcat = zimkateg.kurzbez
+            #         for datum in date_range(from_date,to_date) :
+
+            #             zinrstat = get_cache (Zinrstat, {"zinr": [(eq, zimmer.zinr)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
+
+            #             if zinrstat:
+            #                 do_it = True
+
+            #                 if excl_compl:
+
+            #                     genstat = db_session.query(Genstat).filter(
+            #                              (Genstat.datum == datum) & (Genstat.zikatnr == zimmer.zikatnr) & (Genstat.zinr == zimmer.zinr) & (Genstat.zipreis == 0) & (Genstat.gratis != 0) & (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(1)])).first()
+
+            #                     if genstat:
+
+            #                         segment = db_session.query(Segment).filter(
+            #                                  (Segment.segmentcode == genstat.segmentcode) & ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
+
+            #                         if segment:
+            #                             do_it = False
+
+            #                 if do_it:
+
+            #                     if datum == to_date:
+            #                         cl_list.anz = cl_list.anz + zinrstat.zimmeranz
+            #                         cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
+            #                         cl_list.pax = cl_list.pax + zinrstat.personen
+            #                         anz = anz + zinrstat.zimmeranz
+            #                         pax = pax + zinrstat.personen
+            #                         net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
+            #                         t_anz = t_anz + zinrstat.zimmeranz
+            #                         t_pax = t_pax + zinrstat.personen
+            #                         t_net =  to_decimal(t_net) + to_decimal(zinrstat.argtumsatz)
+
+            #                     if get_month(zinrstat.datum) == mm:
+            #                         cl_list.manz = cl_list.manz + zinrstat.zimmeranz
+            #                         cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
+            #                         cl_list.mpax = cl_list.mpax + zinrstat.personen
+            #                         manz = manz + zinrstat.zimmeranz
+            #                         mpax = mpax + zinrstat.personen
+            #                         mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
+            #                         t_manz = t_manz + zinrstat.zimmeranz
+            #                         t_mpax = t_mpax + zinrstat.personen
+            #                         t_mnet =  to_decimal(t_mnet) + to_decimal(zinrstat.argtumsatz)
+            #                     cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
+            #                     cl_list.ypax = cl_list.ypax + zinrstat.personen
+            #                     cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
+            #                     yanz = yanz + zinrstat.zimmeranz
+            #                     ypax = ypax + zinrstat.personen
+            #                     ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
+            #                     t_yanz = t_yanz + zinrstat.zimmeranz
+            #                     t_ypax = t_ypax + zinrstat.personen
+            #                     t_ynet =  to_decimal(t_ynet) + to_decimal(zinrstat.argtumsatz)
+
+            # if sorttype == 2:
+            #     cl_list = Cl_list()
+            #     cl_list_data.append(cl_list)
+
+            #     cl_list.rmcat = "Total"
+            #     cl_list.anz = t_anz
+            #     cl_list.pax = t_pax
+            #     cl_list.net =  to_decimal(t_net)
+            #     cl_list.manz = t_manz
+            #     cl_list.mnet =  to_decimal(t_mnet)
+            #     cl_list.mpax = t_mpax
+            #     cl_list.yanz = t_yanz
+            #     cl_list.ypax = t_ypax
+            #     cl_list.ynet =  to_decimal(t_ynet)
+
+
+            #     t_anz = 0
+            #     t_pax = 0
+            #     t_net =  to_decimal("0")
+            #     t_manz = 0
+            #     t_mnet =  to_decimal("0")
+            #     t_mpax = 0
+            #     t_yanz = 0
+            #     t_ynet =  to_decimal("0")
+            #     t_ypax = 0
 
         for cl_list in query(cl_list_data):
 
@@ -1991,61 +2021,61 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
 
                                 if compli_flag:
                                     cl_list.com_anz = cl_list.com_anz + zinrstat.zimmeranz
-                                    cl_list.com_pax = cl_list.com_pax + zinrstat.person
+                                    cl_list.com_pax = cl_list.com_pax + zinrstat.personen
                                     com_anz = com_anz + zinrstat.zimmeranz
-                                    com_pax = com_pax + zinrstat.person
+                                    com_pax = com_pax + zinrstat.personen
 
                                 elif hu_flag:
                                     cl_list.hu_anz = cl_list.hu_anz + zinrstat.zimmeranz
-                                    cl_list.hu_pax = cl_list.hu_pax + zinrstat.person
+                                    cl_list.hu_pax = cl_list.hu_pax + zinrstat.personen
                                     hu_anz = hu_anz + zinrstat.zimmeranz
-                                    hu_pax = hu_pax + zinrstat.person
+                                    hu_pax = hu_pax + zinrstat.personen
                                 else:
                                     cl_list.anz = cl_list.anz + zinrstat.zimmeranz
                                     cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-                                    cl_list.pax = cl_list.pax + zinrstat.person
+                                    cl_list.pax = cl_list.pax + zinrstat.personen
                                     anz = anz + zinrstat.zimmeranz
-                                    pax = pax + zinrstat.person
+                                    pax = pax + zinrstat.personen
                                     net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
 
                             if get_month(zinrstat.datum) == mm and get_year(zinrstat.datum) == yy:
 
                                 if compli_flag:
                                     cl_list.com_manz = cl_list.com_manz + zinrstat.zimmeranz
-                                    cl_list.com_mpax = cl_list.com_mpax + zinrstat.person
+                                    cl_list.com_mpax = cl_list.com_mpax + zinrstat.personen
                                     com_manz = com_manz + zinrstat.zimmeranz
-                                    com_mpax = com_mpax + zinrstat.person
+                                    com_mpax = com_mpax + zinrstat.personen
 
                                 elif hu_flag:
                                     cl_list.hu_manz = cl_list.hu_manz + zinrstat.zimmeranz
-                                    cl_list.hu_mpax = cl_list.hu_mpax + zinrstat.person
+                                    cl_list.hu_mpax = cl_list.hu_mpax + zinrstat.personen
                                     hu_manz = hu_manz + zinrstat.zimmeranz
-                                    hu_mpax = hu_mpax + zinrstat.person
+                                    hu_mpax = hu_mpax + zinrstat.personen
                                 else:
                                     cl_list.manz = cl_list.manz + zinrstat.zimmeranz
                                     cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-                                    cl_list.mpax = cl_list.mpax + zinrstat.person
+                                    cl_list.mpax = cl_list.mpax + zinrstat.personen
                                     manz = manz + zinrstat.zimmeranz
-                                    mpax = mpax + zinrstat.person
+                                    mpax = mpax + zinrstat.personen
                                     mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
 
                             if compli_flag:
                                 cl_list.com_yanz = cl_list.com_yanz + zinrstat.zimmeranz
-                                cl_list.com_ypax = cl_list.com_ypax + zinrstat.person
+                                cl_list.com_ypax = cl_list.com_ypax + zinrstat.personen
                                 com_yanz = com_yanz + zinrstat.zimmeranz
-                                com_ypax = com_ypax + zinrstat.person
+                                com_ypax = com_ypax + zinrstat.personen
 
                             elif hu_flag:
                                 cl_list.hu_yanz = cl_list.hu_yanz + zinrstat.zimmeranz
-                                cl_list.hu_ypax = cl_list.hu_ypax + zinrstat.person
+                                cl_list.hu_ypax = cl_list.hu_ypax + zinrstat.personen
                                 hu_yanz = hu_yanz + zinrstat.zimmeranz
-                                hu_ypax = hu_ypax + zinrstat.person
+                                hu_ypax = hu_ypax + zinrstat.personen
                             else:
                                 cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-                                cl_list.ypax = cl_list.ypax + zinrstat.person
+                                cl_list.ypax = cl_list.ypax + zinrstat.personen
                                 cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
                                 yanz = yanz + zinrstat.zimmeranz
-                                ypax = ypax + zinrstat.person
+                                ypax = ypax + zinrstat.personen
                                 ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
         else:
             rm_no = ""
@@ -2098,61 +2128,61 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
 
                                     if compli_flag:
                                         cl_list.com_anz = cl_list.com_anz + zinrstat.zimmeranz
-                                        cl_list.com_pax = cl_list.com_pax + zinrstat.person
+                                        cl_list.com_pax = cl_list.com_pax + zinrstat.personen
                                         com_anz = com_anz + zinrstat.zimmeranz
-                                        com_pax = com_pax + zinrstat.person
+                                        com_pax = com_pax + zinrstat.personen
 
                                     elif hu_flag:
                                         cl_list.hu_anz = cl_list.hu_anz + zinrstat.zimmeranz
-                                        cl_list.hu_pax = cl_list.hu_pax + zinrstat.person
+                                        cl_list.hu_pax = cl_list.hu_pax + zinrstat.personen
                                         hu_anz = hu_anz + zinrstat.zimmeranz
-                                        hu_pax = hu_pax + zinrstat.person
+                                        hu_pax = hu_pax + zinrstat.personen
                                     else:
                                         cl_list.anz = cl_list.anz + zinrstat.zimmeranz
                                         cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-                                        cl_list.pax = cl_list.pax + zinrstat.person
+                                        cl_list.pax = cl_list.pax + zinrstat.personen
                                         anz = anz + zinrstat.zimmeranz
-                                        pax = pax + zinrstat.person
+                                        pax = pax + zinrstat.personen
                                         net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
 
                                 if get_month(zinrstat.datum) == mm and get_year(zinrstat.datum) == yy:
 
                                     if compli_flag:
                                         cl_list.com_manz = cl_list.com_manz + zinrstat.zimmeranz
-                                        cl_list.com_mpax = cl_list.com_mpax + zinrstat.person
+                                        cl_list.com_mpax = cl_list.com_mpax + zinrstat.personen
                                         com_manz = com_manz + zinrstat.zimmeranz
-                                        com_mpax = com_mpax + zinrstat.person
+                                        com_mpax = com_mpax + zinrstat.personen
 
                                     elif hu_flag:
                                         cl_list.hu_manz = cl_list.hu_manz + zinrstat.zimmeranz
-                                        cl_list.hu_mpax = cl_list.hu_mpax + zinrstat.person
+                                        cl_list.hu_mpax = cl_list.hu_mpax + zinrstat.personen
                                         hu_manz = hu_manz + zinrstat.zimmeranz
-                                        hu_mpax = hu_mpax + zinrstat.person
+                                        hu_mpax = hu_mpax + zinrstat.personen
                                     else:
                                         cl_list.manz = cl_list.manz + zinrstat.zimmeranz
                                         cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-                                        cl_list.mpax = cl_list.mpax + zinrstat.person
+                                        cl_list.mpax = cl_list.mpax + zinrstat.personen
                                         manz = manz + zinrstat.zimmeranz
-                                        mpax = mpax + zinrstat.person
+                                        mpax = mpax + zinrstat.personen
                                         mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
 
                                 if compli_flag:
                                     cl_list.com_yanz = cl_list.com_yanz + zinrstat.zimmeranz
-                                    cl_list.com_ypax = cl_list.com_ypax + zinrstat.person
+                                    cl_list.com_ypax = cl_list.com_ypax + zinrstat.personen
                                     com_yanz = com_yanz + zinrstat.zimmeranz
-                                    com_ypax = com_ypax + zinrstat.person
+                                    com_ypax = com_ypax + zinrstat.personen
 
                                 elif hu_flag:
                                     cl_list.hu_yanz = cl_list.hu_yanz + zinrstat.zimmeranz
-                                    cl_list.hu_ypax = cl_list.hu_ypax + zinrstat.person
+                                    cl_list.hu_ypax = cl_list.hu_ypax + zinrstat.personen
                                     hu_yanz = hu_yanz + zinrstat.zimmeranz
-                                    hu_ypax = hu_ypax + zinrstat.person
+                                    hu_ypax = hu_ypax + zinrstat.personen
                                 else:
                                     cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-                                    cl_list.ypax = cl_list.ypax + zinrstat.person
+                                    cl_list.ypax = cl_list.ypax + zinrstat.personen
                                     cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
                                     yanz = yanz + zinrstat.zimmeranz
-                                    ypax = ypax + zinrstat.person
+                                    ypax = ypax + zinrstat.personen
                                     ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
 
             elif sorttype == 2:
@@ -2257,81 +2287,81 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
 
                                     if compli_flag:
                                         cl_list.com_anz = cl_list.com_anz + zinrstat.zimmeranz
-                                        cl_list.com_pax = cl_list.com_pax + zinrstat.person
+                                        cl_list.com_pax = cl_list.com_pax + zinrstat.personen
                                         t_com_anz = t_com_anz + zinrstat.zimmeranz
-                                        t_com_pax = t_com_pax + zinrstat.person
+                                        t_com_pax = t_com_pax + zinrstat.personen
                                         com_anz = com_anz + zinrstat.zimmeranz
-                                        com_pax = com_pax + zinrstat.person
+                                        com_pax = com_pax + zinrstat.personen
 
                                     elif hu_flag:
                                         cl_list.hu_anz = cl_list.hu_anz + zinrstat.zimmeranz
-                                        cl_list.hu_pax = cl_list.hu_pax + zinrstat.person
+                                        cl_list.hu_pax = cl_list.hu_pax + zinrstat.personen
                                         t_hu_anz = t_hu_anz + zinrstat.zimmeranz
-                                        t_hu_pax = t_hu_pax + zinrstat.person
+                                        t_hu_pax = t_hu_pax + zinrstat.personen
                                         hu_anz = hu_anz + zinrstat.zimmeranz
-                                        hu_pax = hu_pax + zinrstat.person
+                                        hu_pax = hu_pax + zinrstat.personen
                                     else:
                                         cl_list.anz = cl_list.anz + zinrstat.zimmeranz
                                         cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-                                        cl_list.pax = cl_list.pax + zinrstat.person
+                                        cl_list.pax = cl_list.pax + zinrstat.personen
                                         anz = anz + zinrstat.zimmeranz
-                                        pax = pax + zinrstat.person
+                                        pax = pax + zinrstat.personen
                                         net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
                                         t_anz = t_anz + zinrstat.zimmeranz
-                                        t_pax = t_pax + zinrstat.person
+                                        t_pax = t_pax + zinrstat.personen
                                         t_net =  to_decimal(t_net) + to_decimal(zinrstat.argtumsatz)
 
                                 if get_month(zinrstat.datum) == mm and get_year(zinrstat.datum) == yy:
 
                                     if compli_flag:
                                         cl_list.com_manz = cl_list.com_manz + zinrstat.zimmeranz
-                                        cl_list.com_mpax = cl_list.com_mpax + zinrstat.person
+                                        cl_list.com_mpax = cl_list.com_mpax + zinrstat.personen
                                         t_com_manz = t_com_manz + zinrstat.zimmeranz
-                                        t_com_mpax = t_com_mpax + zinrstat.person
+                                        t_com_mpax = t_com_mpax + zinrstat.personen
                                         com_manz = com_manz + zinrstat.zimmeranz
-                                        com_mpax = com_mpax + zinrstat.person
+                                        com_mpax = com_mpax + zinrstat.personen
 
                                     elif hu_flag:
                                         cl_list.hu_manz = cl_list.hu_manz + zinrstat.zimmeranz
-                                        cl_list.hu_mpax = cl_list.hu_mpax + zinrstat.person
+                                        cl_list.hu_mpax = cl_list.hu_mpax + zinrstat.personen
                                         t_hu_manz = t_hu_manz + zinrstat.zimmeranz
-                                        t_hu_mpax = t_hu_mpax + zinrstat.person
+                                        t_hu_mpax = t_hu_mpax + zinrstat.personen
                                         hu_manz = hu_manz + zinrstat.zimmeranz
-                                        hu_mpax = hu_mpax + zinrstat.person
+                                        hu_mpax = hu_mpax + zinrstat.personen
                                     else:
                                         cl_list.manz = cl_list.manz + zinrstat.zimmeranz
                                         cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-                                        cl_list.mpax = cl_list.mpax + zinrstat.person
+                                        cl_list.mpax = cl_list.mpax + zinrstat.personen
                                         manz = manz + zinrstat.zimmeranz
-                                        mpax = mpax + zinrstat.person
+                                        mpax = mpax + zinrstat.personen
                                         mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
                                         t_manz = t_manz + zinrstat.zimmeranz
-                                        t_mpax = t_mpax + zinrstat.person
+                                        t_mpax = t_mpax + zinrstat.personen
                                         t_mnet =  to_decimal(t_mnet) + to_decimal(zinrstat.argtumsatz)
 
                                 if compli_flag:
                                     cl_list.com_yanz = cl_list.com_yanz + zinrstat.zimmeranz
-                                    cl_list.com_ypax = cl_list.com_ypax + zinrstat.person
+                                    cl_list.com_ypax = cl_list.com_ypax + zinrstat.personen
                                     t_com_yanz = t_com_yanz + zinrstat.zimmeranz
-                                    t_com_ypax = t_com_ypax + zinrstat.person
+                                    t_com_ypax = t_com_ypax + zinrstat.personen
                                     com_yanz = com_yanz + zinrstat.zimmeranz
-                                    com_ypax = com_ypax + zinrstat.person
+                                    com_ypax = com_ypax + zinrstat.personen
 
                                 elif hu_flag:
                                     cl_list.hu_yanz = cl_list.hu_yanz + zinrstat.zimmeranz
-                                    cl_list.hu_ypax = cl_list.hu_ypax + zinrstat.person
+                                    cl_list.hu_ypax = cl_list.hu_ypax + zinrstat.personen
                                     t_hu_yanz = t_hu_yanz + zinrstat.zimmeranz
-                                    t_hu_ypax = t_hu_ypax + zinrstat.person
+                                    t_hu_ypax = t_hu_ypax + zinrstat.personen
                                     hu_yanz = hu_yanz + zinrstat.zimmeranz
-                                    hu_ypax = hu_ypax + zinrstat.person
+                                    hu_ypax = hu_ypax + zinrstat.personen
                                 cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-                                cl_list.ypax = cl_list.ypax + zinrstat.person
+                                cl_list.ypax = cl_list.ypax + zinrstat.personen
                                 cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
                                 yanz = yanz + zinrstat.zimmeranz
-                                ypax = ypax + zinrstat.person
+                                ypax = ypax + zinrstat.personen
                                 ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
                                 t_yanz = t_yanz + zinrstat.zimmeranz
-                                t_ypax = t_ypax + zinrstat.person
+                                t_ypax = t_ypax + zinrstat.personen
                                 t_ynet =  to_decimal(t_ynet) + to_decimal(zinrstat.argtumsatz)
 
             if sorttype == 2:
@@ -3072,23 +3102,29 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
     if (not excl_compl and not payload_list.show_breakdown_comphu) or excl_compl and not payload_list.show_breakdown_comphu:
 
         if m_ftd and f_date >= ci_date and t_date >= ci_date:
-            create_resline()
+            log_debug.append("create_resline")
+            # create_resline()
         else:
 
             if lod__rev :
-                create_genstat()
+                log_debug.append("create_genstat")
+                # create_genstat()
             else:
+                log_debug.append("create_zinrstat")
                 create_zinrstat()
 
     elif not excl_compl and payload_list.show_breakdown_comphu:
 
         if m_ftd and f_date >= ci_date and t_date >= ci_date:
-            create_resline2()
+            log_debug.append("create_resline2")
+            # create_resline2()
         else:
 
             if lod__rev :
-                create_genstat2()
+                log_debug.append("create_genstat2")
+                # create_genstat2()
             else:
-                create_zinrstat2()
+                log_debug.append("create_zinrstat2")
+                # create_zinrstat2()
 
     return generate_output()
