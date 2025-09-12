@@ -115,13 +115,8 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
             gl_jourhis = Gl_jourhis()
             gl_jhdrhis = Gl_jhdrhis()
             gl_acct = Gl_acct()
-            for gl_jourhis.chgdate, gl_jourhis.fibukonto, gl_jourhis.debit, gl_jourhis.credit, gl_jourhis.bemerk, gl_jourhis._recid, gl_jhdrhis.refno, \
-                            gl_jhdrhis.jnr, gl_jhdrhis.datum, gl_jhdrhis._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid, \
-                            gl_jhdrhis.userinit, gl_jhdrhis.sysdate, gl_jhdrhis.chginit \
-                            in db_session.query(Gl_jourhis.chgdate, Gl_jourhis.fibukonto, Gl_jourhis.debit, Gl_jourhis.credit, Gl_jourhis.bemerk, Gl_jourhis._recid, Gl_jhdrhis.refno,\
-                            Gl_jhdrhis.jnr, Gl_jhdrhis.datum, Gl_jhdrhis._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid,\
-                            Gl_jhdrhis.userinit, Gl_jhdrhis.sysdate, Gl_jhdrhis.chginit\
-                ).join(Gl_jhdrhis, (Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date))\
+            for gl_jourhis, gl_jhdrhis, gl_acct in db_session.query(Gl_jourhis, Gl_jhdrhis, Gl_acct)\
+                .join(Gl_jhdrhis, (Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date))\
                 .join(Gl_acct, (Gl_acct.fibukonto == Gl_jourhis.fibukonto))\
                 .filter((Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower()))\
                 .order_by(Gl_jourhis.fibukonto, Gl_jhdrhis.datum, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
@@ -258,14 +253,9 @@ def gl_jouhislist_create_listbl(sorttype:int, from_fibu:string, to_fibu:string, 
             gl_jourhis = Gl_jourhis()
             gl_jhdrhis = Gl_jhdrhis()
             gl_acct = Gl_acct()
-            for gl_jourhis.chgdate, gl_jourhis.fibukonto, gl_jourhis.debit, gl_jourhis.credit, gl_jourhis.bemerk, gl_jourhis._recid, gl_jhdrhis.refno, \
-                            gl_jhdrhis.jnr, gl_jhdrhis.datum, gl_jhdrhis._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct._recid, \
-                            gl_jhdrhis.userinit, gl_jhdrhis.sysdate, gl_jhdrhis.chginit \
-                            in db_session.query(Gl_jourhis.chgdate, Gl_jourhis.fibukonto, Gl_jourhis.debit, Gl_jourhis.credit, Gl_jourhis.bemerk, Gl_jourhis._recid, Gl_jhdrhis.refno,\
-                            Gl_jhdrhis.jnr, Gl_jhdrhis.datum, Gl_jhdrhis._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct._recid,\
-                            Gl_jhdrhis.userinit, Gl_jhdrhis.sysdate, Gl_jhdrhis.chginit
-                ).join(Gl_jhdrhis, (Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date)\
-                ).join(Gl_acct, (Gl_acct.fibukonto == Gl_jourhis.fibukonto))\
+            for gl_jourhis, gl_jhdrhis, gl_acct in db_session.query(Gl_jourhis, Gl_jhdrhis, Gl_acct)\
+                .join(Gl_jhdrhis, (Gl_jhdrhis.jnr == Gl_jourhis.jnr) & (Gl_jhdrhis.datum >= from_date) & (Gl_jhdrhis.datum <= to_date))\
+                .join(Gl_acct, (Gl_acct.fibukonto == Gl_jourhis.fibukonto))\
                 .filter((Gl_jourhis.fibukonto >= (from_fibu).lower()) & (Gl_jourhis.fibukonto <= (to_fibu).lower()))\
                 .order_by(Gl_jourhis.fibukonto, Gl_jhdrhis.datum, Gl_jhdrhis.refno, func.substring(Gl_jourhis.bemerk, 0, 24)).all():
                 if gl_jourhis_obj_list.get(gl_jourhis._recid):
