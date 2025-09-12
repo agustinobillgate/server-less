@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 12/9/2025
+# variable: beg_bal -> beg_balance, end_bal -> end_balance, ytd_bal -> ytd_balance
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -27,6 +31,7 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
 
     db_session = local_storage.db_session
 
+
     def generate_output():
         nonlocal summary_list_data, detail_list_data, sales, cost, gop_credit, gop_debit, tot_diff, close_date, htparam, gl_jouhdr, gl_acct, gl_journal, gl_department
         nonlocal from_depart, from_date, to_date, close_month, sorttype, from_fibu, to_fibu, pnl_acct, pbal_flag
@@ -35,7 +40,7 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
         nonlocal g_list, summary_list, detail_list
         nonlocal g_list_data, summary_list_data, detail_list_data
 
-        return {"summary-list": summary_list_data, "detail-list": detail_list_data}
+        return { "summary-list": summary_list_data, "detail-list": detail_list_data}
 
     def get_bemerk(bemerk:string):
 
@@ -305,7 +310,7 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
                         tt_bal =  to_decimal(tt_bal) - to_decimal(gl_journal.debit) + to_decimal(gl_journal.credit)
 
                     if gl_acct.acc_type == 1:
-
+                        
                         if get_year(close_date) == get_year(to_date):
                             for n in range(1,get_month(to_date)  + 1) :
 
@@ -339,7 +344,6 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
                                 y_bal =  to_decimal(y_bal) + to_decimal(gl_acct.last_yr[n - 1])
                         t_ybal =  to_decimal(t_ybal) - to_decimal(y_bal)
                         tt_ybal =  to_decimal(tt_ybal) - to_decimal(y_bal)
-
                     if p_bal != 0 or t_debit != 0 or t_credit != 0 or y_bal != 0:
                         summary_list = Summary_list()
                         summary_list_data.append(summary_list)
@@ -370,8 +374,8 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
                 summary_list.t_debit =  to_decimal(tot_debit)
                 summary_list.t_credit =  to_decimal(tot_credit)
                 summary_list.net_change =  to_decimal(tot_diff)
-                summary_list.end_bal =  to_decimal(tot_bal)
-                summary_list.ytd_bal =  to_decimal(t_ybal)
+                summary_list.end_balance =  to_decimal(tot_bal)
+                summary_list.ytd_balance =  to_decimal(t_ybal)
 
 
                 summary_list = Summary_list()
@@ -381,12 +385,12 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
             summary_list_data.append(summary_list)
 
             summary_list.bezeich = "T O T A L"
-            summary_list.beg_bal =  to_decimal(tt_pbal)
+            summary_list.beg_balance =  to_decimal(tt_pbal)
             summary_list.t_debit =  to_decimal(tt_debit)
             summary_list.t_credit =  to_decimal(tt_credit)
             summary_list.net_change =  to_decimal(tt_diff)
-            summary_list.end_bal =  to_decimal(tt_bal)
-            summary_list.ytd_bal =  to_decimal(tt_ybal)
+            summary_list.end_balance =  to_decimal(tt_bal)
+            summary_list.ytd_balance =  to_decimal(tt_ybal)
 
 
     def create_trial_list2():
@@ -641,15 +645,16 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
                                 y_bal =  to_decimal(y_bal) + to_decimal(gl_acct.last_yr[n - 1])
                         t_ybal =  to_decimal(t_ybal) - to_decimal(y_bal)
                         tt_ybal =  to_decimal(tt_ybal) - to_decimal(y_bal)
-
+                    
                     if p_bal != 0 or t_debit != 0 or t_credit != 0 or y_bal != 0:
+                        
                         c = convert_fibu(gl_acct.fibukonto)
                         summary_list = Summary_list()
                         summary_list_data.append(summary_list)
 
                         summary_list.acctno = c
                         summary_list.bezeich = gl_acct.bezeich
-                        summary_list.beg_bal =  to_decimal(p_bal)
+                        summary_list.beg_balance =  to_decimal(p_bal)
                         summary_list.t_debit =  to_decimal(t_debit)
                         summary_list.t_credit =  to_decimal(t_credit)
 
@@ -660,20 +665,20 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
                         tot_diff =  to_decimal(tot_diff) + to_decimal(t_credit) - to_decimal(t_debit)
                         tt_diff =  to_decimal(tt_diff) + to_decimal(t_credit) - to_decimal(t_debit)
                         summary_list.net_change =  to_decimal(diff)
-                        summary_list.end_bal =  to_decimal(t_bal)
-                        summary_list.ytd_bal =  to_decimal(y_bal)
+                        summary_list.end_balance =  to_decimal(t_bal)
+                        summary_list.ytd_balance =  to_decimal(y_bal)
 
 
                 summary_list = Summary_list()
                 summary_list_data.append(summary_list)
 
                 summary_list.bezeich = "s U B T O T A L"
-                summary_list.beg_bal =  to_decimal(prev_bal)
+                summary_list.beg_balance =  to_decimal(prev_bal)
                 summary_list.t_debit =  to_decimal(tot_debit)
                 summary_list.t_credit =  to_decimal(tot_credit)
                 summary_list.net_change =  to_decimal(tot_diff)
-                summary_list.end_bal =  to_decimal(tot_bal)
-                summary_list.ytd_bal =  to_decimal(t_ybal)
+                summary_list.end_balance =  to_decimal(tot_bal)
+                summary_list.ytd_balance =  to_decimal(t_ybal)
 
 
                 summary_list = Summary_list()
@@ -683,12 +688,12 @@ def trialb_pnl_create_list_webbl(from_depart:int, from_date:date, to_date:date, 
             summary_list_data.append(summary_list)
 
             summary_list.bezeich = "T O T A L"
-            summary_list.beg_bal =  to_decimal(tt_pbal)
+            summary_list.beg_balance =  to_decimal(tt_pbal)
             summary_list.t_debit =  to_decimal(tt_debit)
             summary_list.t_credit =  to_decimal(tt_credit)
             summary_list.net_change =  to_decimal(tt_diff)
-            summary_list.end_bal =  to_decimal(tt_bal)
-            summary_list.ytd_bal =  to_decimal(tt_ybal)
+            summary_list.end_balance =  to_decimal(tt_bal)
+            summary_list.ytd_balance =  to_decimal(tt_ybal)
 
 
     def convert_fibu(konto:string):
