@@ -1,0 +1,112 @@
+{
+    "Htparam": {
+        "read": [
+            "finteger",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimmer": {
+        "read": [
+            "kbezeich",
+            "zikatnr",
+            "zinr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "segmentcode",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Arrangement": {
+        "read": [
+            "argtnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "reserve_dec",
+            "betriebsnr",
+            "ankunft",
+            "abreise",
+            "zipreis",
+            "_recid",
+            "zimmeranz",
+            "erwachs",
+            "gratis",
+            "kind1",
+            "kind2",
+            "zinr",
+            "zikatnr"
+        ],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [
+            "ankauf",
+            "einheit",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Segment": {
+        "read": [
+            "betriebsnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Argt_line": {
+        "read": [
+            "argt_artnr",
+            "departement",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Artikel": {
+        "read": [],
+        "write": []
+    },
+    "Zinrstat": {
+        "read": [
+            "zimmeranz",
+            "argtumsatz",
+            "personen",
+            "datum",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Genstat": {
+        "read": [
+            "segmentcode",
+            "gratis",
+            "resstatus",
+            "res_logic",
+            "logis",
+            "erwachs",
+            "kind1",
+            "kind2",
+            "kind3",
+            "datum",
+            "zipreis",
+            "zikatnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "kurzbez",
+            "_recid"
+        ],
+        "write": []
+    }
+}

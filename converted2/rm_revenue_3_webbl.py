@@ -1,9 +1,5 @@
 #using conversion tools version: 1.0.0.117
-#------------------------------------------
-# Rd, 11/9/2025
-# strip payload rm_no
-# field zinrstat.personen  # Rd 9/11/2025 -> zinrstat.personen
-#------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -78,9 +74,6 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
     cl_list_data, Cl_list = create_model("Cl_list", {"flag":string, "zinr":string, "rmcat":string, "anz":int, "pax":int, "com_anz":int, "com_pax":int, "hu_anz":int, "hu_pax":int, "net":Decimal, "proz":Decimal, "manz":int, "mpax":int, "com_manz":int, "com_mpax":int, "hu_manz":int, "hu_mpax":int, "mnet":Decimal, "proz1":Decimal, "yanz":int, "ypax":int, "com_yanz":int, "com_ypax":int, "hu_yanz":int, "hu_ypax":int, "ynet":Decimal, "proz2":Decimal})
 
     db_session = local_storage.db_session
-
-    # Rd, 11/9/2025
-    rm_no = rm_no.strip()
 
     def generate_output():
         nonlocal output_list_data, i, anz, manz, yanz, com_anz, com_manz, com_yanz, hu_anz, hu_manz, hu_yanz, pax, mpax, ypax, com_pax, com_mpax, com_ypax, hu_pax, hu_mpax, hu_ypax, mnet, ynet, net, t_anz, t_manz, t_yanz, t_pax, t_mpax, t_ypax, t_net, t_mnet, t_ynet, t_com_anz, t_com_pax, t_com_manz, t_com_mpax, t_com_yanz, t_com_ypax, t_hu_anz, t_hu_pax, t_hu_manz, t_hu_mpax, t_hu_yanz, t_hu_ypax, from_bez, to_bez, price_decimal, from_date, curr_zeit, ci_date, do_it, compli_flag, hu_flag, htparam, zimmer, reservation, arrangement, res_line, waehrung, segment, argt_line, artikel, zinrstat, genstat, zimkateg
@@ -582,8 +575,6 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                                      (Genstat.datum == datum) & (Genstat.zikatnr == zimmer.zikatnr) & (Genstat.zinr == zimmer.zinr) & (Genstat.zipreis == 0) & (Genstat.gratis != 0) & (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(1)])).first()
 
                             if genstat:
-                                do_it = False
-                            else:
 
                                 segment = db_session.query(Segment).filter(
                                          (Segment.segmentcode == genstat.segmentcode) & ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
@@ -596,23 +587,23 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                             if datum == to_date:
                                 cl_list.anz = cl_list.anz + zinrstat.zimmeranz
                                 cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-                                cl_list.pax = cl_list.pax + zinrstat.personen  # Rd 9/11/2025
+                                cl_list.pax = cl_list.pax + zinrstat.person
                                 anz = anz + zinrstat.zimmeranz
-                                pax = pax + zinrstat.personen  # Rd 9/11/2025
+                                pax = pax + zinrstat.person
                                 net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
 
                             if get_month(zinrstat.datum) == mm and get_year(zinrstat.datum) == yy:
                                 cl_list.manz = cl_list.manz + zinrstat.zimmeranz
                                 cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-                                cl_list.mpax = cl_list.mpax + zinrstat.personen  # Rd 9/11/2025
+                                cl_list.mpax = cl_list.mpax + zinrstat.person
                                 manz = manz + zinrstat.zimmeranz
-                                mpax = mpax + zinrstat.personen  # Rd 9/11/2025
+                                mpax = mpax + zinrstat.person
                                 mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
                             cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-                            cl_list.ypax = cl_list.ypax + zinrstat.personen  # Rd 9/11/2025
+                            cl_list.ypax = cl_list.ypax + zinrstat.person
                             cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
                             yanz = yanz + zinrstat.zimmeranz
-                            ypax = ypax + zinrstat.personen  # Rd 9/11/2025
+                            ypax = ypax + zinrstat.person
                             ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
         else:
             rm_no = ""
@@ -647,8 +638,6 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                                          (Genstat.datum == datum) & (Genstat.zikatnr == zimmer.zikatnr) & (Genstat.zinr == zimmer.zinr) & (Genstat.zipreis == 0) & (Genstat.gratis != 0) & (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(1)])).first()
 
                                 if genstat:
-                                    do_it = False
-                                else:
 
                                     segment = db_session.query(Segment).filter(
                                              (Segment.segmentcode == genstat.segmentcode) & ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
@@ -661,23 +650,23 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                                 if datum == to_date:
                                     cl_list.anz = cl_list.anz + zinrstat.zimmeranz
                                     cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-                                    cl_list.pax = cl_list.pax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.pax = cl_list.pax + zinrstat.person
                                     anz = anz + zinrstat.zimmeranz
-                                    pax = pax + zinrstat.personen  # Rd 9/11/2025
+                                    pax = pax + zinrstat.person
                                     net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
 
                                 if get_month(zinrstat.datum) == mm and get_year(zinrstat.datum) == yy:
                                     cl_list.manz = cl_list.manz + zinrstat.zimmeranz
                                     cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-                                    cl_list.mpax = cl_list.mpax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.mpax = cl_list.mpax + zinrstat.person
                                     manz = manz + zinrstat.zimmeranz
-                                    mpax = mpax + zinrstat.personen  # Rd 9/11/2025
+                                    mpax = mpax + zinrstat.person
                                     mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
                                 cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-                                cl_list.ypax = cl_list.ypax + zinrstat.personen  # Rd 9/11/2025
+                                cl_list.ypax = cl_list.ypax + zinrstat.person
                                 cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
                                 yanz = yanz + zinrstat.zimmeranz
-                                ypax = ypax + zinrstat.personen  # Rd 9/11/2025
+                                ypax = ypax + zinrstat.person
                                 ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
 
             elif sorttype == 2:
@@ -738,8 +727,6 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                                          (Genstat.datum == datum) & (Genstat.zikatnr == zimmer.zikatnr) & (Genstat.zinr == zimmer.zinr) & (Genstat.zipreis == 0) & (Genstat.gratis != 0) & (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(1)])).first()
 
                                 if genstat:
-                                    do_it = False
-                                else:
 
                                     segment = db_session.query(Segment).filter(
                                              (Segment.segmentcode == genstat.segmentcode) & ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
@@ -752,32 +739,32 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                                 if datum == to_date:
                                     cl_list.anz = cl_list.anz + zinrstat.zimmeranz
                                     cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-                                    cl_list.pax = cl_list.pax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.pax = cl_list.pax + zinrstat.person
                                     anz = anz + zinrstat.zimmeranz
-                                    pax = pax + zinrstat.personen  # Rd 9/11/2025
+                                    pax = pax + zinrstat.person
                                     net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
                                     t_anz = t_anz + zinrstat.zimmeranz
-                                    t_pax = t_pax + zinrstat.personen  # Rd 9/11/2025
+                                    t_pax = t_pax + zinrstat.person
                                     t_net =  to_decimal(t_net) + to_decimal(zinrstat.argtumsatz)
 
                                 if get_month(zinrstat.datum) == mm:
                                     cl_list.manz = cl_list.manz + zinrstat.zimmeranz
                                     cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-                                    cl_list.mpax = cl_list.mpax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.mpax = cl_list.mpax + zinrstat.person
                                     manz = manz + zinrstat.zimmeranz
-                                    mpax = mpax + zinrstat.personen  # Rd 9/11/2025
+                                    mpax = mpax + zinrstat.person
                                     mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
                                     t_manz = t_manz + zinrstat.zimmeranz
-                                    t_mpax = t_mpax + zinrstat.personen  # Rd 9/11/2025
+                                    t_mpax = t_mpax + zinrstat.person
                                     t_mnet =  to_decimal(t_mnet) + to_decimal(zinrstat.argtumsatz)
                                 cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-                                cl_list.ypax = cl_list.ypax + zinrstat.personen  # Rd 9/11/2025
+                                cl_list.ypax = cl_list.ypax + zinrstat.person
                                 cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
                                 yanz = yanz + zinrstat.zimmeranz
-                                ypax = ypax + zinrstat.personen  # Rd 9/11/2025
+                                ypax = ypax + zinrstat.person
                                 ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
                                 t_yanz = t_yanz + zinrstat.zimmeranz
-                                t_ypax = t_ypax + zinrstat.personen  # Rd 9/11/2025
+                                t_ypax = t_ypax + zinrstat.person
                                 t_ynet =  to_decimal(t_ynet) + to_decimal(zinrstat.argtumsatz)
 
             if sorttype == 2:
@@ -1991,61 +1978,61 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
 
                                 if compli_flag:
                                     cl_list.com_anz = cl_list.com_anz + zinrstat.zimmeranz
-                                    cl_list.com_pax = cl_list.com_pax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.com_pax = cl_list.com_pax + zinrstat.person
                                     com_anz = com_anz + zinrstat.zimmeranz
-                                    com_pax = com_pax + zinrstat.personen  # Rd 9/11/2025
+                                    com_pax = com_pax + zinrstat.person
 
                                 elif hu_flag:
                                     cl_list.hu_anz = cl_list.hu_anz + zinrstat.zimmeranz
-                                    cl_list.hu_pax = cl_list.hu_pax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.hu_pax = cl_list.hu_pax + zinrstat.person
                                     hu_anz = hu_anz + zinrstat.zimmeranz
-                                    hu_pax = hu_pax + zinrstat.personen  # Rd 9/11/2025
+                                    hu_pax = hu_pax + zinrstat.person
                                 else:
                                     cl_list.anz = cl_list.anz + zinrstat.zimmeranz
                                     cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-                                    cl_list.pax = cl_list.pax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.pax = cl_list.pax + zinrstat.person
                                     anz = anz + zinrstat.zimmeranz
-                                    pax = pax + zinrstat.personen  # Rd 9/11/2025
+                                    pax = pax + zinrstat.person
                                     net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
 
                             if get_month(zinrstat.datum) == mm and get_year(zinrstat.datum) == yy:
 
                                 if compli_flag:
                                     cl_list.com_manz = cl_list.com_manz + zinrstat.zimmeranz
-                                    cl_list.com_mpax = cl_list.com_mpax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.com_mpax = cl_list.com_mpax + zinrstat.person
                                     com_manz = com_manz + zinrstat.zimmeranz
-                                    com_mpax = com_mpax + zinrstat.personen  # Rd 9/11/2025
+                                    com_mpax = com_mpax + zinrstat.person
 
                                 elif hu_flag:
                                     cl_list.hu_manz = cl_list.hu_manz + zinrstat.zimmeranz
-                                    cl_list.hu_mpax = cl_list.hu_mpax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.hu_mpax = cl_list.hu_mpax + zinrstat.person
                                     hu_manz = hu_manz + zinrstat.zimmeranz
-                                    hu_mpax = hu_mpax + zinrstat.personen  # Rd 9/11/2025
+                                    hu_mpax = hu_mpax + zinrstat.person
                                 else:
                                     cl_list.manz = cl_list.manz + zinrstat.zimmeranz
                                     cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-                                    cl_list.mpax = cl_list.mpax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.mpax = cl_list.mpax + zinrstat.person
                                     manz = manz + zinrstat.zimmeranz
-                                    mpax = mpax + zinrstat.personen  # Rd 9/11/2025
+                                    mpax = mpax + zinrstat.person
                                     mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
 
                             if compli_flag:
                                 cl_list.com_yanz = cl_list.com_yanz + zinrstat.zimmeranz
-                                cl_list.com_ypax = cl_list.com_ypax + zinrstat.personen  # Rd 9/11/2025
+                                cl_list.com_ypax = cl_list.com_ypax + zinrstat.person
                                 com_yanz = com_yanz + zinrstat.zimmeranz
-                                com_ypax = com_ypax + zinrstat.personen  # Rd 9/11/2025
+                                com_ypax = com_ypax + zinrstat.person
 
                             elif hu_flag:
                                 cl_list.hu_yanz = cl_list.hu_yanz + zinrstat.zimmeranz
-                                cl_list.hu_ypax = cl_list.hu_ypax + zinrstat.personen  # Rd 9/11/2025
+                                cl_list.hu_ypax = cl_list.hu_ypax + zinrstat.person
                                 hu_yanz = hu_yanz + zinrstat.zimmeranz
-                                hu_ypax = hu_ypax + zinrstat.personen  # Rd 9/11/2025
+                                hu_ypax = hu_ypax + zinrstat.person
                             else:
                                 cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-                                cl_list.ypax = cl_list.ypax + zinrstat.personen  # Rd 9/11/2025
+                                cl_list.ypax = cl_list.ypax + zinrstat.person
                                 cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
                                 yanz = yanz + zinrstat.zimmeranz
-                                ypax = ypax + zinrstat.personen  # Rd 9/11/2025
+                                ypax = ypax + zinrstat.person
                                 ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
         else:
             rm_no = ""
@@ -2098,61 +2085,61 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
 
                                     if compli_flag:
                                         cl_list.com_anz = cl_list.com_anz + zinrstat.zimmeranz
-                                        cl_list.com_pax = cl_list.com_pax + zinrstat.personen  # Rd 9/11/2025
+                                        cl_list.com_pax = cl_list.com_pax + zinrstat.person
                                         com_anz = com_anz + zinrstat.zimmeranz
-                                        com_pax = com_pax + zinrstat.personen  # Rd 9/11/2025
+                                        com_pax = com_pax + zinrstat.person
 
                                     elif hu_flag:
                                         cl_list.hu_anz = cl_list.hu_anz + zinrstat.zimmeranz
-                                        cl_list.hu_pax = cl_list.hu_pax + zinrstat.personen  # Rd 9/11/2025
+                                        cl_list.hu_pax = cl_list.hu_pax + zinrstat.person
                                         hu_anz = hu_anz + zinrstat.zimmeranz
-                                        hu_pax = hu_pax + zinrstat.personen  # Rd 9/11/2025
+                                        hu_pax = hu_pax + zinrstat.person
                                     else:
                                         cl_list.anz = cl_list.anz + zinrstat.zimmeranz
                                         cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-                                        cl_list.pax = cl_list.pax + zinrstat.personen  # Rd 9/11/2025
+                                        cl_list.pax = cl_list.pax + zinrstat.person
                                         anz = anz + zinrstat.zimmeranz
-                                        pax = pax + zinrstat.personen  # Rd 9/11/2025
+                                        pax = pax + zinrstat.person
                                         net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
 
                                 if get_month(zinrstat.datum) == mm and get_year(zinrstat.datum) == yy:
 
                                     if compli_flag:
                                         cl_list.com_manz = cl_list.com_manz + zinrstat.zimmeranz
-                                        cl_list.com_mpax = cl_list.com_mpax + zinrstat.personen  # Rd 9/11/2025
+                                        cl_list.com_mpax = cl_list.com_mpax + zinrstat.person
                                         com_manz = com_manz + zinrstat.zimmeranz
-                                        com_mpax = com_mpax + zinrstat.personen  # Rd 9/11/2025
+                                        com_mpax = com_mpax + zinrstat.person
 
                                     elif hu_flag:
                                         cl_list.hu_manz = cl_list.hu_manz + zinrstat.zimmeranz
-                                        cl_list.hu_mpax = cl_list.hu_mpax + zinrstat.personen  # Rd 9/11/2025
+                                        cl_list.hu_mpax = cl_list.hu_mpax + zinrstat.person
                                         hu_manz = hu_manz + zinrstat.zimmeranz
-                                        hu_mpax = hu_mpax + zinrstat.personen  # Rd 9/11/2025
+                                        hu_mpax = hu_mpax + zinrstat.person
                                     else:
                                         cl_list.manz = cl_list.manz + zinrstat.zimmeranz
                                         cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-                                        cl_list.mpax = cl_list.mpax + zinrstat.personen  # Rd 9/11/2025
+                                        cl_list.mpax = cl_list.mpax + zinrstat.person
                                         manz = manz + zinrstat.zimmeranz
-                                        mpax = mpax + zinrstat.personen  # Rd 9/11/2025
+                                        mpax = mpax + zinrstat.person
                                         mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
 
                                 if compli_flag:
                                     cl_list.com_yanz = cl_list.com_yanz + zinrstat.zimmeranz
-                                    cl_list.com_ypax = cl_list.com_ypax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.com_ypax = cl_list.com_ypax + zinrstat.person
                                     com_yanz = com_yanz + zinrstat.zimmeranz
-                                    com_ypax = com_ypax + zinrstat.personen  # Rd 9/11/2025
+                                    com_ypax = com_ypax + zinrstat.person
 
                                 elif hu_flag:
                                     cl_list.hu_yanz = cl_list.hu_yanz + zinrstat.zimmeranz
-                                    cl_list.hu_ypax = cl_list.hu_ypax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.hu_ypax = cl_list.hu_ypax + zinrstat.person
                                     hu_yanz = hu_yanz + zinrstat.zimmeranz
-                                    hu_ypax = hu_ypax + zinrstat.personen  # Rd 9/11/2025
+                                    hu_ypax = hu_ypax + zinrstat.person
                                 else:
                                     cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-                                    cl_list.ypax = cl_list.ypax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.ypax = cl_list.ypax + zinrstat.person
                                     cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
                                     yanz = yanz + zinrstat.zimmeranz
-                                    ypax = ypax + zinrstat.personen  # Rd 9/11/2025
+                                    ypax = ypax + zinrstat.person
                                     ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
 
             elif sorttype == 2:
@@ -2257,81 +2244,81 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
 
                                     if compli_flag:
                                         cl_list.com_anz = cl_list.com_anz + zinrstat.zimmeranz
-                                        cl_list.com_pax = cl_list.com_pax + zinrstat.personen  # Rd 9/11/2025
+                                        cl_list.com_pax = cl_list.com_pax + zinrstat.person
                                         t_com_anz = t_com_anz + zinrstat.zimmeranz
-                                        t_com_pax = t_com_pax + zinrstat.personen  # Rd 9/11/2025
+                                        t_com_pax = t_com_pax + zinrstat.person
                                         com_anz = com_anz + zinrstat.zimmeranz
-                                        com_pax = com_pax + zinrstat.personen  # Rd 9/11/2025
+                                        com_pax = com_pax + zinrstat.person
 
                                     elif hu_flag:
                                         cl_list.hu_anz = cl_list.hu_anz + zinrstat.zimmeranz
-                                        cl_list.hu_pax = cl_list.hu_pax + zinrstat.personen  # Rd 9/11/2025
+                                        cl_list.hu_pax = cl_list.hu_pax + zinrstat.person
                                         t_hu_anz = t_hu_anz + zinrstat.zimmeranz
-                                        t_hu_pax = t_hu_pax + zinrstat.personen  # Rd 9/11/2025
+                                        t_hu_pax = t_hu_pax + zinrstat.person
                                         hu_anz = hu_anz + zinrstat.zimmeranz
-                                        hu_pax = hu_pax + zinrstat.personen  # Rd 9/11/2025
+                                        hu_pax = hu_pax + zinrstat.person
                                     else:
                                         cl_list.anz = cl_list.anz + zinrstat.zimmeranz
                                         cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-                                        cl_list.pax = cl_list.pax + zinrstat.personen  # Rd 9/11/2025
+                                        cl_list.pax = cl_list.pax + zinrstat.person
                                         anz = anz + zinrstat.zimmeranz
-                                        pax = pax + zinrstat.personen  # Rd 9/11/2025
+                                        pax = pax + zinrstat.person
                                         net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
                                         t_anz = t_anz + zinrstat.zimmeranz
-                                        t_pax = t_pax + zinrstat.personen  # Rd 9/11/2025
+                                        t_pax = t_pax + zinrstat.person
                                         t_net =  to_decimal(t_net) + to_decimal(zinrstat.argtumsatz)
 
                                 if get_month(zinrstat.datum) == mm and get_year(zinrstat.datum) == yy:
 
                                     if compli_flag:
                                         cl_list.com_manz = cl_list.com_manz + zinrstat.zimmeranz
-                                        cl_list.com_mpax = cl_list.com_mpax + zinrstat.personen  # Rd 9/11/2025
+                                        cl_list.com_mpax = cl_list.com_mpax + zinrstat.person
                                         t_com_manz = t_com_manz + zinrstat.zimmeranz
-                                        t_com_mpax = t_com_mpax + zinrstat.personen  # Rd 9/11/2025
+                                        t_com_mpax = t_com_mpax + zinrstat.person
                                         com_manz = com_manz + zinrstat.zimmeranz
-                                        com_mpax = com_mpax + zinrstat.personen  # Rd 9/11/2025
+                                        com_mpax = com_mpax + zinrstat.person
 
                                     elif hu_flag:
                                         cl_list.hu_manz = cl_list.hu_manz + zinrstat.zimmeranz
-                                        cl_list.hu_mpax = cl_list.hu_mpax + zinrstat.personen  # Rd 9/11/2025
+                                        cl_list.hu_mpax = cl_list.hu_mpax + zinrstat.person
                                         t_hu_manz = t_hu_manz + zinrstat.zimmeranz
-                                        t_hu_mpax = t_hu_mpax + zinrstat.personen  # Rd 9/11/2025
+                                        t_hu_mpax = t_hu_mpax + zinrstat.person
                                         hu_manz = hu_manz + zinrstat.zimmeranz
-                                        hu_mpax = hu_mpax + zinrstat.personen  # Rd 9/11/2025
+                                        hu_mpax = hu_mpax + zinrstat.person
                                     else:
                                         cl_list.manz = cl_list.manz + zinrstat.zimmeranz
                                         cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-                                        cl_list.mpax = cl_list.mpax + zinrstat.personen  # Rd 9/11/2025
+                                        cl_list.mpax = cl_list.mpax + zinrstat.person
                                         manz = manz + zinrstat.zimmeranz
-                                        mpax = mpax + zinrstat.personen  # Rd 9/11/2025
+                                        mpax = mpax + zinrstat.person
                                         mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
                                         t_manz = t_manz + zinrstat.zimmeranz
-                                        t_mpax = t_mpax + zinrstat.personen  # Rd 9/11/2025
+                                        t_mpax = t_mpax + zinrstat.person
                                         t_mnet =  to_decimal(t_mnet) + to_decimal(zinrstat.argtumsatz)
 
                                 if compli_flag:
                                     cl_list.com_yanz = cl_list.com_yanz + zinrstat.zimmeranz
-                                    cl_list.com_ypax = cl_list.com_ypax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.com_ypax = cl_list.com_ypax + zinrstat.person
                                     t_com_yanz = t_com_yanz + zinrstat.zimmeranz
-                                    t_com_ypax = t_com_ypax + zinrstat.personen  # Rd 9/11/2025
+                                    t_com_ypax = t_com_ypax + zinrstat.person
                                     com_yanz = com_yanz + zinrstat.zimmeranz
-                                    com_ypax = com_ypax + zinrstat.personen  # Rd 9/11/2025
+                                    com_ypax = com_ypax + zinrstat.person
 
                                 elif hu_flag:
                                     cl_list.hu_yanz = cl_list.hu_yanz + zinrstat.zimmeranz
-                                    cl_list.hu_ypax = cl_list.hu_ypax + zinrstat.personen  # Rd 9/11/2025
+                                    cl_list.hu_ypax = cl_list.hu_ypax + zinrstat.person
                                     t_hu_yanz = t_hu_yanz + zinrstat.zimmeranz
-                                    t_hu_ypax = t_hu_ypax + zinrstat.personen  # Rd 9/11/2025
+                                    t_hu_ypax = t_hu_ypax + zinrstat.person
                                     hu_yanz = hu_yanz + zinrstat.zimmeranz
-                                    hu_ypax = hu_ypax + zinrstat.personen  # Rd 9/11/2025
+                                    hu_ypax = hu_ypax + zinrstat.person
                                 cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-                                cl_list.ypax = cl_list.ypax + zinrstat.personen  # Rd 9/11/2025
+                                cl_list.ypax = cl_list.ypax + zinrstat.person
                                 cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
                                 yanz = yanz + zinrstat.zimmeranz
-                                ypax = ypax + zinrstat.personen  # Rd 9/11/2025
+                                ypax = ypax + zinrstat.person
                                 ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
                                 t_yanz = t_yanz + zinrstat.zimmeranz
-                                t_ypax = t_ypax + zinrstat.personen  # Rd 9/11/2025
+                                t_ypax = t_ypax + zinrstat.person
                                 t_ynet =  to_decimal(t_ynet) + to_decimal(zinrstat.argtumsatz)
 
             if sorttype == 2:
