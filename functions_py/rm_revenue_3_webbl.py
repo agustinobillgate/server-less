@@ -1065,7 +1065,6 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                                     pax = pax + genstat.erwachs + genstat.gratis +\
                                             genstat.kind1 + genstat.kind2 + genstat.kind3
 
-
                                     net =  to_decimal(net) + to_decimal(genstat.logis)
 
                                 if get_month(genstat.datum) == mm and get_year(genstat.datum) == yy:
