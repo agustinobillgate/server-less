@@ -9,7 +9,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Queasy, Htparam, Zkstat, Zinrstat, Paramtext, Guest, Reservation, Zimmer, Zimkateg, Res_line, Guestseg, Segment, Mc_guest, Mc_types, Nation, Waehrung, Reslin_queasy, Mealcoup, Genstat
-
+log_debug = []
 def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_gastnr:int, froom:string, troom:string, exc_depart:bool, incl_gcomment:bool, incl_rsvcomment:bool, prog_name:string, disp_accompany:bool, disp_exclinact:bool, split_rsv_print:bool, exc_compli:bool):
 
     prepare_cache ([Htparam, Zkstat, Zinrstat, Paramtext, Guest, Reservation, Zimmer, Zimkateg, Res_line, Guestseg, Segment, Mc_guest, Mc_types, Nation, Waehrung, Reslin_queasy, Mealcoup, Genstat])
@@ -197,8 +197,10 @@ def pj_inhouse2_btn_go_4_cldbl(sorttype:int, datum:date, curr_date:date, curr_ga
                 cl_list.rmcat = zimkateg.kurzbez + setup_list.char
                 cl_list.kurzbez = zimkateg.kurzbez
                 cl_list.bezeich = zimkateg.bezeichnung
-                cl_list.nat = gmember.nation1
-                # print("CNat:", cl_list.nat)
+                # Rd 15/9/2025
+                # memastikan datanya sama.
+                cl_list.nat = gmember.nation1.strip()
+                #------------------------
                 cl_list.resnr = res_line.resnr
                 cl_list.vip = vip_flag
                 cl_list.name = res_line.name
