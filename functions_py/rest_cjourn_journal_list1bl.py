@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 15/9/2025
+# data .p kosong, .py ada isi, # Rd, validasi kosong di .p dan .py beda
+#------------------------------------------
 
+from converted2 import aa
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -54,8 +59,14 @@ def rest_cjourn_journal_list1bl(from_dept:int, to_dept:int, from_date:date, to_d
             for curr_date in date_range(from_date,to_date) :
 
                 for h_journal in db_session.query(H_journal).filter(
-                         (H_journal.stornogrund != "") & (H_journal.departement == hoteldpt.num) & (H_journal.bill_datum == curr_date)).order_by(H_journal.sysdate.desc(), H_journal.zeit.desc()).all():
-
+                         (H_journal.stornogrund != "") & 
+                         (H_journal.departement == hoteldpt.num) & 
+                         (H_journal.bill_datum == curr_date)).order_by(H_journal.sysdate.desc(), H_journal.zeit.desc()).all():
+    
+                    # Rd, validasi kosong di .p dan .py beda
+                    check_kosong = h_journal.stornogrund
+                    if check_kosong.strip() == "":
+                        continue
                     kellner = get_cache (Kellner, {"kellner_nr": [(eq, h_journal.kellner_nr)],"departement": [(eq, h_journal.departement)]})
                     kname = ""
 
