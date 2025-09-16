@@ -1,0 +1,37 @@
+{
+    "H_journal": {
+        "read": [
+            "rechnr",
+            "departement",
+            "bezeich",
+            "bill_datum",
+            "fremdwaehrng",
+            "kellner_nr",
+            "tischnr",
+            "anzahl",
+            "betrag",
+            "artnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_bill": {
+        "read": [],
+        "write": []
+    },
+    "Bill": {
+        "read": [
+            "resnr",
+            "reslinnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "name",
+            "_recid"
+        ],
+        "write": []
+    }
+}
