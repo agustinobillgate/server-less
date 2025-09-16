@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 16/9/2025
+# show detail overview, tdk tampil
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -171,8 +174,23 @@ def hk_count_webbl(pvilanguage:int):
         res_line = Res_line()
         zimmer = Zimmer()
         reservation = Reservation()
-        for res_line.gastnrmember, res_line.zinr, res_line.erwachs, res_line.gratis, res_line.kind1, res_line.kind2, res_line.l_zuordnung, res_line.abreise, res_line.zipreis, res_line.resstatus, res_line.bemerk, res_line.ankzeit, res_line.zikatnr, res_line.zimmeranz, res_line.zimmer_wunsch, res_line.ankunft, res_line._recid, zimmer.zikatnr, zimmer.zinr, zimmer.zistatus, zimmer.sleeping, zimmer._recid, reservation.segmentcode, reservation._recid in db_session.query(Res_line.gastnrmember, Res_line.zinr, Res_line.erwachs, Res_line.gratis, Res_line.kind1, Res_line.kind2, Res_line.l_zuordnung, Res_line.abreise, Res_line.zipreis, Res_line.resstatus, Res_line.bemerk, Res_line.ankzeit, Res_line.zikatnr, Res_line.zimmeranz, Res_line.zimmer_wunsch, Res_line.ankunft, Res_line._recid, Zimmer.zikatnr, Zimmer.zinr, Zimmer.zistatus, Zimmer.sleeping, Zimmer._recid, Reservation.segmentcode, Reservation._recid).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).join(Reservation,(Reservation.resnr == Res_line.resnr)).filter(
-                 (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & (Res_line.ankunft <= ci_date) & (Res_line.abreise >= ci_date) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resnr).all():
+        for res_line.gastnrmember, res_line.zinr, res_line.erwachs, res_line.gratis, res_line.kind1, res_line.kind2, res_line.l_zuordnung, \
+            res_line.abreise, res_line.zipreis, res_line.resstatus, res_line.bemerk, res_line.ankzeit, res_line.zikatnr, res_line.zimmeranz, \
+            res_line.zimmer_wunsch, res_line.ankunft, res_line._recid, zimmer.zikatnr, zimmer.zinr, zimmer.zistatus, zimmer.sleeping, \
+            zimmer._recid, reservation.segmentcode, reservation._recid \
+            in db_session.query(Res_line.gastnrmember, Res_line.zinr, Res_line.erwachs, Res_line.gratis, Res_line.kind1, Res_line.kind2, \
+                                Res_line.l_zuordnung, Res_line.abreise, Res_line.zipreis, Res_line.resstatus, Res_line.bemerk, Res_line.ankzeit, \
+                                Res_line.zikatnr, Res_line.zimmeranz, Res_line.zimmer_wunsch, Res_line.ankunft, Res_line._recid, Zimmer.zikatnr, \
+                                Zimmer.zinr, Zimmer.zistatus, Zimmer.sleeping, Zimmer._recid, Reservation.segmentcode, Reservation._recid)\
+                            .join(Zimmer,(Zimmer.zinr == Res_line.zinr))\
+                            .join(Reservation,(Reservation.resnr == Res_line.resnr))\
+                            .filter(
+                                (Res_line.active_flag == 1) & 
+                                (Res_line.resstatus != 12) & 
+                                (Res_line.ankunft <= ci_date) & 
+                                (Res_line.abreise >= ci_date) & 
+                                (Res_line.l_zuordnung[inc_value(2)] == 0))\
+                            .order_by(Res_line.resnr).all():
             if res_line_obj_list.get(res_line._recid):
                 continue
             else:
@@ -264,7 +282,7 @@ def hk_count_webbl(pvilanguage:int):
 
         for res_line in db_session.query(Res_line).filter(
                  (Res_line.active_flag == 0) & (Res_line.ankunft == ci_date) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
-
+            
             zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
             rm_active = True
 
@@ -371,7 +389,9 @@ def hk_count_webbl(pvilanguage:int):
         zimmer_obj_list = {}
         zimmer = Zimmer()
         zimkateg = Zimkateg()
-        for zimmer.zikatnr, zimmer.zinr, zimmer.zistatus, zimmer.sleeping, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.zikatnr, Zimmer.zinr, Zimmer.zistatus, Zimmer.sleeping, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer._recid).all():
+        for zimmer.zikatnr, zimmer.zinr, zimmer.zistatus, zimmer.sleeping, zimmer._recid, zimkateg.kurzbez, zimkateg._recid, zimkateg.verfuegbarkeit \
+            in db_session.query(Zimmer.zikatnr, Zimmer.zinr, Zimmer.zistatus, Zimmer.sleeping, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid, Zimkateg.verfuegbarkeit)\
+            .join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer._recid).all():
             if zimmer_obj_list.get(zimmer._recid):
                 continue
             else:
