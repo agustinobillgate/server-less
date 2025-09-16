@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 21/7/2025
+# gitlab: 385
+# add if available
+# Rd 16/9/20225, checkbox 'Show as summary' beda output
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -27,7 +32,10 @@ def rest_usrjournal_btn_cldbl(sumflag:bool, from_date:date, to_date:date, usr_in
         nonlocal output_list, sum_list
         nonlocal output_list_data, sum_list_data
 
-        return {"output-list": output_list_data}
+        log_debug = []
+        for output_list in query(output_list_data):
+            log_debug.append(output_list.str)
+        return {"log": log_debug, "output-list": output_list_data}
 
     def journal_list():
 
@@ -187,9 +195,9 @@ def rest_usrjournal_btn_cldbl(sumflag:bool, from_date:date, to_date:date, usr_in
 
 
         if price_decimal == 2:
-            output_list.str = to_string("", "x(33)") + to_string("T O T A L ", "x(27)") + to_string("", "x(11)") + to_string(qty_total, "x(5)") + to_string(sub_tot_total, "x(17)")
+            output_list.str = to_string("", "x(33)") + to_string("T O T A L   ", "x(27)") + to_string("", "x(11)") + to_string(qty_total, "x(5)") + to_string(sub_tot_total, "x(17)")
         else:
-            output_list.str = to_string("", "x(33)") + to_string("T O T A L ", "x(27)") + to_string("", "x(11)") + to_string(qty_total, "x(5)") + to_string(sub_tot_total_no_coma, "x(17)")
+            output_list.str = to_string("", "x(33)") + to_string("T O T A L   ", "x(27)") + to_string("", "x(11)") + to_string(qty_total, "x(5)") + to_string(sub_tot_total_no_coma, "x(17)")
         output_list.bezeich = "T O T A L"
 
     hoteldpt = get_cache (Hoteldpt, {"num": [(eq, curr_dept)]})
