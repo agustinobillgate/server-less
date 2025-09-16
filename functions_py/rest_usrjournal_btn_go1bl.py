@@ -3,7 +3,11 @@
 # Rd 21/7/2025
 # gitlab: 385
 # add if available
+
+# Rulita, 16-09-2025
+# Issue, fixing substring billnr dan kolom total default 0
 #-----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -36,22 +40,25 @@ def rest_usrjournal_btn_go1bl(sumflag:bool, from_date:date, to_date:date, usr_in
 
     output_list_data = get_output(rest_usrjournal_btn_cldbl(sumflag, from_date, to_date, usr_init, curr_dept, price_decimal))
 
+    
+
     for rest_jour_list in query(rest_jour_list_data):
         rest_jour_list_data.remove(rest_jour_list)
 
     for output_list in query(output_list_data):
-        monthpart = substring(substring(output_list.str, 0, 8) , 3, 2)
-        daypart = substring(substring(output_list.str, 0, 8) , 0, 2)
+        monthpart = substring(substring(output_list.str, 0, 8) , 0, 2)
+        daypart = substring(substring(output_list.str, 0, 8) , 3, 2)
         yearpart = substring(substring(output_list.str, 0, 8) , 6, 2)
-
-        if monthpart == "" and daypart == "" and yearpart == "":
+        
+        # Rulita
+        if monthpart == "  " and daypart == "  " and yearpart == "  ":
             date_flag = True
 
         if to_int(yearpart) < 50:
             fullyear = 2000 + to_int(yearpart)
         else:
             fullyear = 1900 + to_int(yearpart)
-
+        
         if not date_flag:
             rest_jour_list = Rest_jour_list()
             rest_jour_list_data.append(rest_jour_list)
