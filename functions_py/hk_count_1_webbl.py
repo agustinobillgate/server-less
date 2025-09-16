@@ -1,4 +1,9 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 16/9/2025
+# zimkateg.verfuegbarkeit -> blm ada di for loop
+#------------------------------------------
+
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -381,14 +386,16 @@ def hk_count_1_webbl(pvilanguage:int):
         zimmer_obj_list = {}
         zimmer = Zimmer()
         zimkateg = Zimkateg()
-        for zimmer.zikatnr, zimmer.zinr, zimmer.zistatus, zimmer.sleeping, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.zikatnr, Zimmer.zinr, Zimmer.zistatus, Zimmer.sleeping, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer._recid).all():
+        for zimmer.zikatnr, zimmer.zinr, zimmer.zistatus, zimmer.sleeping, zimmer._recid, zimkateg.kurzbez, zimkateg._recid, zimkateg.verfuegbarkeit \
+            in db_session.query(Zimmer.zikatnr, Zimmer.zinr, Zimmer.zistatus, Zimmer.sleeping, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid, Zimkateg.verfuegbarkeit)\
+            .join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr))\
+            .order_by(Zimmer._recid).all():
             if zimmer_obj_list.get(zimmer._recid):
                 continue
             else:
                 zimmer_obj_list[zimmer._recid] = True
 
             if zimkateg.verfuegbarkeit:
-
                 outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)],"gespstart": [(le, ci_date)],"gespende": [(ge, ci_date)],"betriebsnr": [(eq, 2)]})
 
                 if outorder:
