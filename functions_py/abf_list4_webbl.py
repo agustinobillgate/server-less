@@ -3,6 +3,7 @@
 # Rd, 22/8/2025
 # total row beda, di incl guarantee
 #------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -64,20 +65,8 @@ def abf_list4_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, incl_accom:bool
         abf_list_data.clear()
 
         res_line_obj_list = {}
-
-        # for res_line in db_session.query(Res_line).filter(
-        #          ((Res_line.resstatus != 3) & (Res_line.resstatus != 2) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & 
-        #           (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99)) & 
-        #         (Res_line.active_flag <= 1) & 
-        #         (((Res_line.ankunft <= fdate) & (Res_line.abreise >= fdate)) | ((Res_line.ankunft == fdate) & (Res_line.abreise == fdate) & (Res_line.ankzeit <= mxtime_dayuse))) & 
-        #         (Res_line.l_zuordnung[inc_value(2)] <= 1)).order_by(Res_line.zinr).all():
-            
         for res_line in db_session.query(Res_line).filter(
-                 ((Res_line.resstatus != 3) & (Res_line.resstatus != 2) & (Res_line.resstatus != 4) & 
-                  (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & 
-                  (Res_line.resstatus != 12) & (Res_line.resstatus != 99)) & (Res_line.active_flag == 1) & 
-                  (((Res_line.ankunft < fdate) & (Res_line.abreise >= fdate)) | ((Res_line.ankunft == fdate) & (Res_line.abreise == fdate) & (Res_line.ankzeit <= mxtime_dayuse))) & 
-                  (Res_line.l_zuordnung[inc_value(2)] <= 1)).order_by(Res_line.zinr).all():
+                 ((Res_line.resstatus != 3) & (Res_line.resstatus != 2) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99)) & (Res_line.active_flag == 1) & (((Res_line.ankunft < fdate) & (Res_line.abreise >= fdate)) | ((Res_line.ankunft == fdate) & (Res_line.abreise == fdate) & (Res_line.ankzeit <= mxtime_dayuse))) & (Res_line.l_zuordnung[inc_value(2)] <= 1)).order_by(Res_line.zinr).all():
             zikat_list = query(zikat_list_data, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
             if not zikat_list:
                 continue
@@ -97,7 +86,7 @@ def abf_list4_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, incl_accom:bool
             if incl_accom and res_line.l_zuordnung[2] == 1:
                 do_it = False
 
-                arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement.strip())]})
 
                 if arrangement:
 
@@ -136,7 +125,7 @@ def abf_list4_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, incl_accom:bool
                     pass
                 else:
 
-                    arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                    arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement.strip())]})
 
                     if arrangement:
 
@@ -210,7 +199,7 @@ def abf_list4_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, incl_accom:bool
 
                 segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
 
-                ratecode = get_cache (Ratecode, {"code": [(eq, res_line.arrangement)]})
+                ratecode = get_cache (Ratecode, {"code": [(eq, res_line.arrangement.strip())]})
                 abf_list = Abf_list()
                 abf_list_data.append(abf_list)
 
@@ -357,8 +346,10 @@ def abf_list4_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, incl_accom:bool
 
 
     def disp_arlist1():
+
         nonlocal abf_list_data, mxtime_dayuse, param_561, diffcidate, p_87, num_of_day, exchg_rate, htparam, res_line, arrangement, artikel, argt_line, reslin_queasy, fixleist, guest, reservation, segment, ratecode, mc_guest, mc_types, mealcoup, waehrung, bill, master
         nonlocal fdate, bfast_artnr, bfast_dept, incl_accom, incl_guarantee, show_bfast_rate
+
 
         nonlocal abf_list, zikat_list
         nonlocal abf_list_data
@@ -380,11 +371,7 @@ def abf_list4_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, incl_accom:bool
 
         res_line_obj_list = {}
         for res_line in db_session.query(Res_line).filter(
-                 ((Res_line.resstatus != 3) & (Res_line.resstatus != 2) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & 
-                  (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99)) & 
-                (Res_line.active_flag <= 1) & 
-                (((Res_line.ankunft <= fdate) & (Res_line.abreise >= fdate)) | ((Res_line.ankunft == fdate) & (Res_line.abreise == fdate) & (Res_line.ankzeit <= mxtime_dayuse))) & 
-                (Res_line.l_zuordnung[inc_value(2)] <= 1)).order_by(Res_line.zinr).all():
+                 ((Res_line.resstatus != 3) & (Res_line.resstatus != 2) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99)) & (Res_line.active_flag <= 1) & (((Res_line.ankunft + 1 <= fdate) & (Res_line.abreise >= fdate)) | ((Res_line.ankunft == fdate) & (Res_line.abreise == fdate) & (Res_line.ankzeit <= mxtime_dayuse))) & (Res_line.l_zuordnung[inc_value(2)] <= 1)).order_by(Res_line.zinr).all():
             zikat_list = query(zikat_list_data, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
             if not zikat_list:
                 continue
@@ -404,7 +391,7 @@ def abf_list4_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, incl_accom:bool
             if incl_accom and res_line.l_zuordnung[2] == 1:
                 do_it = False
 
-                arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement.strip())]})
 
                 if arrangement:
 
@@ -443,7 +430,7 @@ def abf_list4_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, incl_accom:bool
                     pass
                 else:
 
-                    arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                    arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement.strip())]})
 
                     if arrangement:
 
@@ -517,7 +504,7 @@ def abf_list4_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, incl_accom:bool
 
                 segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
 
-                ratecode = get_cache (Ratecode, {"code": [(eq, res_line.arrangement)]})
+                ratecode = get_cache (Ratecode, {"code": [(eq, res_line.arrangement.strip())]})
                 abf_list = Abf_list()
                 abf_list_data.append(abf_list)
 
@@ -533,11 +520,9 @@ def abf_list4_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, incl_accom:bool
                 abf_list.kurzbez = zikat_list.kurzbez
                 abf_list.erwachs = abf_list.erwachs + qty
                 abf_list.gastnr = res_line.gastnr
-
                 # Rd 22/8/2025, add zimmeranz
                 abf_list.zimmeranz = res_line.zimmeranz
                 #-------------------------------------
-
                 abf_list.resname = reservation.name
                 abf_list.zipreis =  to_decimal(res_line.zipreis)
                 abf_list.id = reservation.useridanlage
@@ -700,7 +685,7 @@ def abf_list4_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, incl_accom:bool
         else:
 
             invoice = db_session.query(Invoice).filter(
-                     (Invoice.zinr == res_line.zinr) & (Invoice.resnr == res_line.resnr) & (Invoice.reslinnr == res_line.reslinnr) & (Invoice.billtyp == 0) & (Invoice.billnr == 1) & (Invoice.flag == 0)).first()
+                        (Invoice.zinr == res_line.zinr) & (Invoice.resnr == res_line.resnr) & (Invoice.reslinnr == res_line.reslinnr) & (Invoice.billtyp == 0) & (Invoice.billnr == 1) & (Invoice.flag == 0)).first()
 
         if not dont_post:
 
@@ -736,7 +721,7 @@ def abf_list4_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, incl_accom:bool
                 start_date = res_line.ankunft + timedelta(days=delta)
 
                 if (res_line.abreise - start_date) < intervall:
-                    start_date = res_line.ankunftmaster_flag
+                    start_date = res_line.ankunft
 
                 if fdate > (start_date + timedelta(days=(intervall - 1))):
                     dont_post = True

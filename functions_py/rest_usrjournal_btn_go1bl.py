@@ -13,6 +13,7 @@ from decimal import Decimal
 from datetime import date
 from functions.rest_usrjournal_btn_cldbl import rest_usrjournal_btn_cldbl
 
+log_debug = []
 def rest_usrjournal_btn_go1bl(sumflag:bool, from_date:date, to_date:date, usr_init:string, curr_dept:int, price_decimal:int):
     rest_jour_list_data = []
     monthpart:string = ""
@@ -36,9 +37,9 @@ def rest_usrjournal_btn_go1bl(sumflag:bool, from_date:date, to_date:date, usr_in
         nonlocal output_list, rest_jour_list
         nonlocal output_list_data, rest_jour_list_data
 
-        return {"rest-jour-list": rest_jour_list_data}
+        return {"log": log_debug, "rest-jour-list": rest_jour_list_data}
 
-    output_list_data = get_output(rest_usrjournal_btn_cldbl(sumflag, from_date, to_date, usr_init, curr_dept, price_decimal))
+    log_debug, output_list_data = get_output(rest_usrjournal_btn_cldbl(sumflag, from_date, to_date, usr_init, curr_dept, price_decimal))
 
     
 
