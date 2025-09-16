@@ -45,7 +45,10 @@ def gcf_birthdatebl(from_date:int, to_date:int, from_age:int, to_age:int, sortty
                 #     for guest in db_session.query(Guest).filter(
                 #              (Guest.karteityp == 0) & (Guest.gastnr > 0) & (Guest.name > "") & (Guest.vorname1 >= "") & (Guest.geburtdatum1 != None)).order_by(Guest._recid).all():
             for guest in db_session.query(Guest).filter(
-                     (Guest.karteityp == 0) & (Guest.gastnr > 0) & (Guest.name > "") & (Guest.vorname1 >= "") & (Guest.geburtdatum1 != None)).order_by(Guest.name.asc()).all():
+                     (Guest.karteityp == 0) & (Guest.gastnr > 0) & 
+                     (Guest.name > "") & 
+                     (Guest.vorname1 >= "") & 
+                     (Guest.geburtdatum1 != None)).order_by(Guest.name.asc()).all():
 
                 if (get_month(guest.geburtdatum1) * 100 + get_day(guest.geburtdatum1)) >= from_date and (get_month(guest.geburtdatum1) * 100 + get_day(guest.geburtdatum1)) <= to_date and (- get_year(guest.geburtdatum1) + get_year(get_current_date())) >= from_age and (- get_year(guest.geburtdatum1) + get_year(get_current_date())) <= to_age:
                     birth_list = Birth_list()
@@ -71,7 +74,7 @@ def gcf_birthdatebl(from_date:int, to_date:int, from_age:int, to_age:int, sortty
 
 
         else:
-
+        
             for res_line in db_session.query(Res_line).filter(
                      ((Res_line.resstatus == 6) | (Res_line.resstatus == 13)) & (Res_line.active_flag == 1)).order_by(Res_line._recid).all():
 
