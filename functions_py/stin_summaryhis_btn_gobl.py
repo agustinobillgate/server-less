@@ -60,6 +60,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
 
         for l_lager in db_session.query(L_lager).filter(
                  (L_lager.lager_nr >= from_lager) & (L_lager.lager_nr <= to_lager)).order_by(L_lager.lager_nr).all():
+
             qty =  to_decimal("0")
             val =  to_decimal("0")
             t_qty =  to_decimal("0")
@@ -75,40 +76,32 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
             #                                         (l_ophis.op_art == 1))))) & 
             #                                         (L_artikel.zwkum >= from_grp) & 
             #                                         (L_artikel.zwkum <= to_grp))).order_by(L_artikel.artnr).all():
-             # Inner: FOR EACH l-ophis WHERE ... (for this lager)
-            for l_ophis in (
-                db_session.query(L_ophis)
-                .filter(
-                    L_ophis.lager_nr == l_lager.lager_nr,   # join to current l-lager
-                    L_ophis.datum    >= from_date,
-                    L_ophis.datum    <= to_date,
-                    L_ophis.artnr    >= from_art,
-                    L_ophis.artnr    <= to_art,
-                    L_ophis.anzahl   != 0,
-                    L_ophis.op_art   == 1,
-                )
-                .order_by(L_ophis.artnr.asc())
-                .all()
-            ):
+            # Inner: FOR EACH l-ophis WHERE ... (for this lager)
+
+            l_ophis = L_ophis()
+            l_artikel = L_artikel()
+
+            for l_ophis.artnr, l_ophis.datum, l_ophis.anzahl, l_ophis.warenwert, l_artikel.artnr, l_artikel.bezeich, l_artikel.masseinheit in db_session.query(L_ophis.artnr, L_ophis.datum, L_ophis.anzahl, L_ophis.warenwert, L_artikel.artnr, L_artikel.bezeich, L_artikel.masseinheit).filter( L_ophis.lager_nr == l_lager.lager_nr, L_ophis.datum >= from_date, L_ophis.datum <= to_date, L_ophis.artnr >= from_art, L_ophis.artnr <= to_art, L_ophis.anzahl != 0, L_ophis.op_art == 1).join(L_artikel, L_artikel.artnr == L_ophis.artnr).order_by(L_ophis.artnr.asc()).filter(L_artikel.zwkum >= from_grp, L_artikel.zwkum <= to_grp).all():
+
                 # FIRST l-artikel WHERE artnr = l-ophis.artnr
                 #   AND zwkum BETWEEN from-grp AND to-grp BY l-artikel.artnr
-                l_artikel = (
-                    db_session.query(L_artikel)
-                    .filter(
-                        L_artikel.artnr == l_ophis.artnr,
-                        L_artikel.zwkum >= from_grp,
-                        L_artikel.zwkum <= to_grp,
-                    )
-                    .first()   # "FIRST"; returns None if not found
-                )
+                # l_artikel = (
+                #     db_session.query(L_artikel)
+                #     .filter(
+                #         L_artikel.artnr == l_ophis.artnr,
+                #         L_artikel.zwkum >= from_grp,
+                #         L_artikel.zwkum <= to_grp,
+                #     )
+                #     .first()   # "FIRST"; returns None if not found
+                # )
 
-                if l_artikel is None:
-                    continue
+                # if l_artikel is None:
+                #     continue
                 
-                if l_artikel_obj_list.get(l_artikel._recid):
-                    continue
-                else:
-                    l_artikel_obj_list[l_artikel._recid] = True
+                # if l_artikel_obj_list.get(l_artikel._recid):
+                #     continue
+                # else:
+                #     l_artikel_obj_list[l_artikel._recid] = True
 
                 if f_lager != l_lager.lager_nr and t_qty != 0:
                     t_list = T_list()
@@ -138,6 +131,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                     if f_lager != l_lager.lager_nr:
                         t_list.f_bezeich = l_lager.bezeich
                         f_lager = l_lager.lager_nr
+
                     t_list.artnr = to_string(l_ophis.artnr, "9999999")
                     t_list.bezeich = l_artikel.bezeich
                     t_list.einheit = l_artikel.masseinheit
@@ -149,6 +143,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                     val =  to_decimal(val) + to_decimal(l_ophis.warenwert)
                     d_qty =  to_decimal(d_qty) + to_decimal(l_ophis.anzahl)
                     d_val =  to_decimal(d_val) + to_decimal(l_ophis.warenwert)
+
                 t_list.t_qty =  to_decimal(t_list.t_qty) + to_decimal(l_ophis.anzahl)
                 t_list.t_val =  to_decimal(t_list.t_val) + to_decimal(l_ophis.warenwert)
                 t_qty =  to_decimal(t_qty) + to_decimal(l_ophis.anzahl)
@@ -167,6 +162,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                 t_list.val =  to_decimal(val)
                 t_list.t_qty =  to_decimal(t_qty)
                 t_list.t_val =  to_decimal(t_val)
+                
         t_list = T_list()
         t_list_data.append(t_list)
 
@@ -210,6 +206,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
 
         for l_lager in db_session.query(L_lager).filter(
                  (L_lager.lager_nr >= from_lager) & (L_lager.lager_nr <= to_lager)).order_by(L_lager.lager_nr).all():
+
             qty =  to_decimal("0")
             val =  to_decimal("0")
             t_qty =  to_decimal("0")
@@ -219,12 +216,13 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
             l_ophis = L_ophis()
             l_artikel = L_artikel()
             l_untergrup = L_untergrup()
-            for l_ophis.datum, l_ophis.artnr, l_ophis.anzahl, l_ophis.op_art, l_ophis.warenwert, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.zwkum, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.datum, L_ophis.artnr, L_ophis.anzahl, L_ophis.op_art, L_ophis.warenwert, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.zwkum, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.zwkum >= from_grp) & (L_artikel.zwkum <= to_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
-                     (L_ophis.lager_nr == l_lager.lager_nr) & (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.artnr >= from_art) & (L_ophis.artnr <= to_art) & (L_ophis.anzahl != 0) & (L_ophis.op_art == 1)).order_by(L_artikel.zwkum, L_artikel.artnr).all():
-                if l_ophis_obj_list.get(l_ophis._recid):
-                    continue
-                else:
-                    l_ophis_obj_list[l_ophis._recid] = True
+
+            for l_ophis.datum, l_ophis.artnr, l_ophis.anzahl, l_ophis.op_art, l_ophis.warenwert, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.zwkum, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_ophis.datum, L_ophis.artnr, L_ophis.anzahl, L_ophis.op_art, L_ophis.warenwert, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.zwkum, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.zwkum >= from_grp) & (L_artikel.zwkum <= to_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter((L_ophis.lager_nr == l_lager.lager_nr) & (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.artnr >= from_art) & (L_ophis.artnr <= to_art) & (L_ophis.anzahl != 0) & (L_ophis.op_art == 1)).order_by(L_artikel.zwkum, L_artikel.artnr).all():
+
+                # if l_ophis_obj_list.get(l_ophis._recid):
+                #     continue
+                # else:
+                #     l_ophis_obj_list[l_ophis._recid] = True
 
                 if subgr != l_untergrup.bezeich and subgr != "" and sm_qty != 0:
                     t_list = T_list()
@@ -269,6 +267,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                     if f_lager != l_lager.lager_nr:
                         t_list.f_bezeich = l_lager.bezeich
                         f_lager = l_lager.lager_nr
+
                     t_list.artnr = to_string(l_ophis.artnr, "9999999")
                     t_list.bezeich = l_artikel.bezeich
                     t_list.einheit = l_artikel.masseinheit
@@ -284,6 +283,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                     st_val =  to_decimal(st_val) + to_decimal(l_ophis.warenwert)
                     d_qty =  to_decimal(d_qty) + to_decimal(l_ophis.anzahl)
                     d_val =  to_decimal(d_val) + to_decimal(l_ophis.warenwert)
+
                 t_list.t_qty =  to_decimal(t_list.t_qty) + to_decimal(l_ophis.anzahl)
                 t_list.t_val =  to_decimal(t_list.t_val) + to_decimal(l_ophis.warenwert)
                 t_qty =  to_decimal(t_qty) + to_decimal(l_ophis.anzahl)
@@ -320,6 +320,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                 t_list.val =  to_decimal(val)
                 t_list.t_qty =  to_decimal(t_qty)
                 t_list.t_val =  to_decimal(t_val)
+
         t_list = T_list()
         t_list_data.append(t_list)
 
@@ -357,6 +358,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
 
         for l_lager in db_session.query(L_lager).filter(
                  (L_lager.lager_nr >= from_lager) & (L_lager.lager_nr <= to_lager)).order_by(L_lager.lager_nr).all():
+
             qty =  to_decimal("0")
             val =  to_decimal("0")
             t_qty =  to_decimal("0")
@@ -365,12 +367,13 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
             l_ophis_obj_list = {}
             l_ophis = L_ophis()
             l_artikel = L_artikel()
-            for l_ophis.datum, l_ophis.artnr, l_ophis.anzahl, l_ophis.op_art, l_ophis.warenwert, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.zwkum, l_artikel._recid in db_session.query(L_ophis.datum, L_ophis.artnr, L_ophis.anzahl, L_ophis.op_art, L_ophis.warenwert, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.zwkum, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.zwkum >= from_grp) & (L_artikel.zwkum <= to_grp)).filter(
-                     (L_ophis.lager_nr == l_lager.lager_nr) & (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.artnr >= from_art) & (L_ophis.artnr <= to_art) & (L_ophis.anzahl != 0) & (L_ophis.op_art == 1)).order_by(L_artikel.bezeich).all():
-                if l_ophis_obj_list.get(l_ophis._recid):
-                    continue
-                else:
-                    l_ophis_obj_list[l_ophis._recid] = True
+
+            for l_ophis.datum, l_ophis.artnr, l_ophis.anzahl, l_ophis.op_art, l_ophis.warenwert, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.zwkum, l_artikel._recid in db_session.query(L_ophis.datum, L_ophis.artnr, L_ophis.anzahl, L_ophis.op_art, L_ophis.warenwert, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.zwkum, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.zwkum >= from_grp) & (L_artikel.zwkum <= to_grp)).filter((L_ophis.lager_nr == l_lager.lager_nr) & (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.artnr >= from_art) & (L_ophis.artnr <= to_art) & (L_ophis.anzahl != 0) & (L_ophis.op_art == 1)).order_by(L_artikel.bezeich).all():
+
+                # if l_ophis_obj_list.get(l_ophis._recid):
+                #     continue
+                # else:
+                #     l_ophis_obj_list[l_ophis._recid] = True
 
                 if f_lager != l_lager.lager_nr and t_qty != 0:
                     t_list = T_list()
@@ -400,6 +403,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                     if f_lager != l_lager.lager_nr:
                         t_list.f_bezeich = l_lager.bezeich
                         f_lager = l_lager.lager_nr
+                        
                     t_list.artnr = to_string(l_ophis.artnr, "9999999")
                     t_list.bezeich = l_artikel.bezeich
                     t_list.einheit = l_artikel.masseinheit
@@ -411,6 +415,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                     val =  to_decimal(val) + to_decimal(l_ophis.warenwert)
                     d_qty =  to_decimal(d_qty) + to_decimal(l_ophis.anzahl)
                     d_val =  to_decimal(d_val) + to_decimal(l_ophis.warenwert)
+
                 t_list.t_qty =  to_decimal(t_list.t_qty) + to_decimal(l_ophis.anzahl)
                 t_list.t_val =  to_decimal(t_list.t_val) + to_decimal(l_ophis.warenwert)
                 t_qty =  to_decimal(t_qty) + to_decimal(l_ophis.anzahl)
@@ -429,6 +434,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                 t_list.val =  to_decimal(val)
                 t_list.t_qty =  to_decimal(t_qty)
                 t_list.t_val =  to_decimal(t_val)
+
         t_list = T_list()
         t_list_data.append(t_list)
 
@@ -466,6 +472,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
 
         for l_lager in db_session.query(L_lager).filter(
                  (L_lager.lager_nr >= from_lager) & (L_lager.lager_nr <= to_lager)).order_by(L_lager.lager_nr).all():
+
             qty =  to_decimal("0")
             val =  to_decimal("0")
             t_qty =  to_decimal("0")
@@ -474,12 +481,12 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
             l_ophis_obj_list = {}
             l_ophis = L_ophis()
             l_artikel = L_artikel()
-            for l_ophis.datum, l_ophis.artnr, l_ophis.anzahl, l_ophis.op_art, l_ophis.warenwert, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.zwkum, l_artikel._recid in db_session.query(L_ophis.datum, L_ophis.artnr, L_ophis.anzahl, L_ophis.op_art, L_ophis.warenwert, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.zwkum, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.zwkum >= from_grp) & (L_artikel.zwkum <= to_grp)).filter(
-                     (L_ophis.lager_nr == l_lager.lager_nr) & (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.artnr >= from_art) & (L_ophis.artnr <= to_art) & (L_ophis.anzahl != 0) & (L_ophis.op_art == 1)).order_by(L_artikel.bezeich).all():
-                if l_ophis_obj_list.get(l_ophis._recid):
-                    continue
-                else:
-                    l_ophis_obj_list[l_ophis._recid] = True
+            for l_ophis.datum, l_ophis.artnr, l_ophis.anzahl, l_ophis.op_art, l_ophis.warenwert, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.masseinheit, l_artikel.zwkum, l_artikel._recid in db_session.query(L_ophis.datum, L_ophis.artnr, L_ophis.anzahl, L_ophis.op_art, L_ophis.warenwert, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.masseinheit, L_artikel.zwkum, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.zwkum >= from_grp) & (L_artikel.zwkum <= to_grp)).filter((L_ophis.lager_nr == l_lager.lager_nr) & (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.artnr >= from_art) & (L_ophis.artnr <= to_art) & (L_ophis.anzahl != 0) & (L_ophis.op_art == 1)).order_by(L_artikel.bezeich).all():
+
+                # if l_ophis_obj_list.get(l_ophis._recid):
+                #     continue
+                # else:
+                #     l_ophis_obj_list[l_ophis._recid] = True
 
                 if f_lager != l_lager.lager_nr and t_qty != 0:
                     tt_list = Tt_list()
@@ -509,6 +516,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                     if f_lager != l_lager.lager_nr:
                         tt_list.f_bezeich = l_lager.bezeich
                         f_lager = l_lager.lager_nr
+
                     tt_list.artnr = to_string(l_ophis.artnr, "9999999")
                     tt_list.bezeich = l_artikel.bezeich
                     tt_list.einheit = l_artikel.masseinheit
@@ -522,6 +530,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                     if f_lager != l_lager.lager_nr:
                         tt_list.f_bezeich = l_lager.bezeich
                         f_lager = l_lager.lager_nr
+
                     tt_list.artnr = to_string(l_ophis.artnr, "9999999")
                     tt_list.bezeich = l_artikel.bezeich
                     tt_list.einheit = l_artikel.masseinheit
@@ -533,6 +542,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                     val =  to_decimal(val) + to_decimal(l_ophis.warenwert)
                     d_qty =  to_decimal(d_qty) + to_decimal(l_ophis.anzahl)
                     d_val =  to_decimal(d_val) + to_decimal(l_ophis.warenwert)
+
                 tt_list.t_qty =  to_decimal(tt_list.t_qty) + to_decimal(l_ophis.anzahl)
                 tt_list.t_val =  to_decimal(tt_list.t_val) + to_decimal(l_ophis.warenwert)
                 t_qty =  to_decimal(t_qty) + to_decimal(l_ophis.anzahl)
@@ -551,6 +561,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                 tt_list.val =  to_decimal(val)
                 tt_list.t_qty =  to_decimal(t_qty)
                 tt_list.t_val =  to_decimal(t_val)
+
         tt_list = Tt_list()
         tt_list_data.append(tt_list)
 
@@ -600,6 +611,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
                 t_list.val =  to_decimal(temp_list.val)
 
             for temp_list in query(temp_list_data, filters=(lambda temp_list: temp_list.f_lager == tt_list.f_lager and temp_list.bezeich.lower()  != ("TOTAL").lower()), sort_by=[("t_val",True)]):
+
                 t_list = T_list()
                 t_list_data.append(t_list)
 
@@ -619,6 +631,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
             temp_list = query(temp_list_data, filters=(lambda temp_list: temp_list.f_lager == t_list.f_lager and temp_list.bezeich.lower()  == ("TOTAL").lower()), first=True)
 
             if temp_list:
+
                 t_list = T_list()
                 t_list_data.append(t_list)
 
@@ -638,6 +651,7 @@ def stin_summaryhis_btn_gobl(sorttype:int, from_lager:int, to_lager:int, from_da
         temp_list = query(temp_list_data, filters=(lambda temp_list: temp_list.f_lager == 9999), first=True)
 
         if temp_list:
+            
             t_list = T_list()
             t_list_data.append(t_list)
 
