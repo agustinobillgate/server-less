@@ -1,10 +1,10 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd 21/7/2025
-# gitlab: 385
-# add if available
-# Rd 16/9/20225, checkbox 'Show as summary' beda output
-#-----------------------------------------
+
+# ========================================================
+# Rulita, 16-09-2025
+# Issue, fixing substring billnr dan kolom total default 0
+# ========================================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -32,10 +32,7 @@ def rest_usrjournal_btn_cldbl(sumflag:bool, from_date:date, to_date:date, usr_in
         nonlocal output_list, sum_list
         nonlocal output_list_data, sum_list_data
 
-        log_debug = []
-        for output_list in query(output_list_data):
-            log_debug.append(output_list.str)
-        return {"log": log_debug, "output-list": output_list_data}
+        return {"output-list": output_list_data}
 
     def journal_list():
 
@@ -78,7 +75,7 @@ def rest_usrjournal_btn_cldbl(sumflag:bool, from_date:date, to_date:date, usr_in
 
 
                 h_journal_tischnr = to_string(h_journal.tischnr, ">>>>>9")
-                h_journal_rechnr = to_string(h_journal.rechnr, "9,999,999")
+                h_journal_rechnr = to_string(f"{h_journal.rechnr:9}")   # Rulita
                 h_journal_artnr = to_string(h_journal.artnr, ">>>>>>>>>")
                 hoteldpt_depart_journal_list = substring(hoteldpt.depart, 0, 12)
                 h_journal_anzahl = to_string(h_journal.anzahl, "-9999")
@@ -92,11 +89,31 @@ def rest_usrjournal_btn_cldbl(sumflag:bool, from_date:date, to_date:date, usr_in
 
 
                 if price_decimal == 2:
-                    output_list.str = to_string(h_journal.bill_datum) + to_string(h_journal_tischnr, "x(6)") + to_string(h_journal_rechnr, "x(9)") + to_string(h_journal_artnr, "x(9)") + to_string(h_journal.bezeich, "x(28)") + to_string(hoteldpt_depart_journal_list, "x(12)") + to_string(h_journal_anzahl, "x(5)") + to_string(h_journal_betrag, "x(17)") + h_journal_zeit + to_string(h_journal_kellner_nr, "x(5)") + to_string(h_bill_kellner_nr, "x(5)")
+                    output_list.str = to_string(h_journal.bill_datum) \
+                        + to_string(h_journal_tischnr, "x(6)") \
+                        + to_string(h_journal_rechnr, "x(9)") \
+                        + to_string(h_journal_artnr, "x(9)") \
+                        + to_string(h_journal.bezeich, "x(28)") \
+                        + to_string(hoteldpt_depart_journal_list, "x(12)") \
+                        + to_string(h_journal_anzahl, "x(5)") \
+                        + to_string(h_journal_betrag, "x(17)") \
+                        + h_journal_zeit \
+                        + to_string(h_journal_kellner_nr, "x(5)") \
+                        + to_string(h_bill_kellner_nr, "x(5)")
                 else:
-                    output_list.str = to_string(h_journal.bill_datum) + to_string(h_journal_tischnr, "x(6)") + to_string(h_journal_rechnr, "x(9)") + to_string(h_journal_artnr, "x(9)") + to_string(h_journal.bezeich, "x(28)") + to_string(hoteldpt_depart_journal_list, "x(12)") + to_string(h_journal_anzahl, "x(5)") + to_string(h_journal_betrag_no_coma, "x(17)") + h_journal_zeit + to_string(h_journal_kellner_nr, "x(5)") + to_string(h_bill_kellner_nr, "x(5)")
+                    output_list.str = to_string(h_journal.bill_datum) \
+                        + to_string(h_journal_tischnr, "x(6)") \
+                        + to_string(h_journal_rechnr, "x(9)") \
+                        + to_string(h_journal_artnr, "x(9)") \
+                        + to_string(h_journal.bezeich, "x(28)") \
+                        + to_string(hoteldpt_depart_journal_list, "x(12)") \
+                        + to_string(h_journal_anzahl, "x(5)") \
+                        + to_string(h_journal_betrag_no_coma, "x(17)") \
+                        + h_journal_zeit \
+                        + to_string(h_journal_kellner_nr, "x(5)") \
+                        + to_string(h_bill_kellner_nr, "x(5)")
+                    
                 output_list.bezeich = h_journal.bezeich
-
 
                 qty = qty + h_journal.anzahl
                 sub_tot =  to_decimal(sub_tot) + to_decimal(h_journal.betrag)
@@ -109,9 +126,17 @@ def rest_usrjournal_btn_cldbl(sumflag:bool, from_date:date, to_date:date, usr_in
 
 
         if price_decimal == 2:
-            output_list.str = to_string("", "x(33)") + to_string("T O T A L ", "x(27)") + to_string("", "x(11)") + to_string(qty_total, "x(5)") + to_string(sub_tot_total, "x(17)")
+            output_list.str = to_string("", "x(33)") \
+                + to_string("T O T A L   ", "x(27)") \
+                + to_string("", "x(11)") \
+                + to_string(qty_total, "x(5)") \
+                + to_string(sub_tot_total, "x(17)")
         else:
-            output_list.str = to_string("", "x(33)") + to_string("T O T A L ", "x(27)") + to_string("", "x(11)") + to_string(qty_total, "x(5)") + to_string(sub_tot_total_no_coma, "x(17)")
+            output_list.str = to_string("", "x(33)") \
+                + to_string("T O T A L   ", "x(27)") \
+                + to_string("", "x(11)") \
+                + to_string(qty_total, "x(5)") \
+                + to_string(sub_tot_total_no_coma, "x(17)")
         output_list.bezeich = "T O T A L"
 
 
@@ -179,9 +204,28 @@ def rest_usrjournal_btn_cldbl(sumflag:bool, from_date:date, to_date:date, usr_in
 
 
             if price_decimal == 2:
-                output_list.str = to_string(sum_list.datum) + to_string("", "x(6)") + to_string("", "x(9)") + to_string(sum_list_artnr, "x(9)") + to_string(sum_list.bezeich, "x(28)") + to_string(hoteldpt_depart, "x(12)") + to_string(sum_list_anzahl, "x(5)") + to_string(sum_list_betrag, "x(17)") + to_string("", "x(5)") + to_string(sum_list_usrno, "x(3)") + to_string("", "x(3)")
+                output_list.str = to_string(sum_list.datum) \
+                + to_string("", "x(6)") \
+                + to_string("", "x(9)") \
+                + to_string(sum_list_artnr, "x(9)") \
+                + to_string(sum_list.bezeich, "x(28)") \
+                + to_string(hoteldpt_depart, "x(12)") \
+                + to_string(sum_list_anzahl, "x(5)") \
+                + to_string(sum_list_betrag, "x(17)") \
+                + to_string("", "x(5)") + to_string(sum_list_usrno, "x(3)") \
+                + to_string("", "x(3)")
             else:
-                output_list.str = to_string(sum_list.datum) + to_string("", "x(6)") + to_string("", "x(9)") + to_string(sum_list_artnr, "x(9)") + to_string(sum_list.bezeich, "x(28)") + to_string(hoteldpt_depart, "x(12)") + to_string(sum_list_anzahl, "x(5)") + to_string(sum_list_betrag_no_coma, "x(17)") + to_string("", "x(5)") + to_string(sum_list_usrno, "x(3)") + to_string("", "x(3)")
+                output_list.str = to_string(sum_list.datum) \
+                + to_string("", "x(6)") \
+                + to_string("", "x(9)") \
+                + to_string(sum_list_artnr, "x(9)") \
+                + to_string(sum_list.bezeich, "x(28)") \
+                + to_string(hoteldpt_depart, "x(12)") \
+                + to_string(sum_list_anzahl, "x(5)") \
+                + to_string(sum_list_betrag_no_coma, "x(17)") \
+                + to_string("", "x(5)") \
+                + to_string(sum_list_usrno, "x(3)") \
+                + to_string("", "x(3)")
             output_list.bezeich = sum_list.bezeich
 
 
@@ -195,9 +239,17 @@ def rest_usrjournal_btn_cldbl(sumflag:bool, from_date:date, to_date:date, usr_in
 
 
         if price_decimal == 2:
-            output_list.str = to_string("", "x(33)") + to_string("T O T A L   ", "x(27)") + to_string("", "x(11)") + to_string(qty_total, "x(5)") + to_string(sub_tot_total, "x(17)")
+            output_list.str = to_string("", "x(33)") \
+                + to_string("T O T A L   ", "x(27)") \
+                + to_string("", "x(11)") \
+                + to_string(qty_total, "x(5)") \
+                + to_string(sub_tot_total, "x(17)")
         else:
-            output_list.str = to_string("", "x(33)") + to_string("T O T A L   ", "x(27)") + to_string("", "x(11)") + to_string(qty_total, "x(5)") + to_string(sub_tot_total_no_coma, "x(17)")
+            output_list.str = to_string("", "x(33)") \
+                + to_string("T O T A L   ", "x(27)") \
+                + to_string("", "x(11)") \
+                + to_string(qty_total, "x(5)") \
+                + to_string(sub_tot_total_no_coma, "x(17)")
         output_list.bezeich = "T O T A L"
 
     hoteldpt = get_cache (Hoteldpt, {"num": [(eq, curr_dept)]})
