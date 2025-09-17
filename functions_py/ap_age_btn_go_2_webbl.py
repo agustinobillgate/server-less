@@ -844,7 +844,6 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
         fill_in_list()
         outlist = ""
         fill_in_list()
-        print(f"t_saldo: {t_saldo}, t_debt0: {t_debt0}, t_debt1: {t_debt1}, t_debt2: {t_debt2}, t_debt3: {t_debt3}")
         
         outlist = to_string(translateExtended ("        Statistic Percentage (%) :", lvcarea, "") , "x(33)") + "                      " + "100.00" + "             " + to_string((t_debt0 / t_saldo * 100) , "->>9.99") + "             " + to_string((t_debt1 / t_saldo * 100) , "->>9.99") + "             " + to_string((t_debt2 / t_saldo * 100) , "->>9.99") + "             " + to_string((t_debt3 / t_saldo * 100) , "->>9.99")
         
