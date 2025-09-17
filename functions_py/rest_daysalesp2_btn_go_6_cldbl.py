@@ -3,7 +3,7 @@
 # Rd 21/7/2025
 # Rd 14/8/2025, penambahan field di output list
 # gitlab: 378
-#
+# do while diganti ke for loop
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -279,11 +279,14 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
         nt_pvoucher =  to_decimal("0")
 
         for h_bill in db_session.query(H_bill).filter(
-                 (H_bill.flag == 0) & (H_bill.saldo != 0) & (H_bill.departement == curr_dept)).order_by(H_bill._recid).all():
+                 (H_bill.flag == 0) & 
+                 (H_bill.saldo != 0) & 
+                 (H_bill.departement == curr_dept)).order_by(H_bill._recid).all():
 
             if inhouse:
 
-                res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                res_line = db_session.query(Res_line).filter((Res_line.resnr == h_bill.resnr) & (Res_line.reslinnr == h_bill.reslinnr)).first()
 
                 if res_line:
 
@@ -297,27 +300,29 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                         outstand_list.name = kellner.kellnername
 
                     for h_bill_line in db_session.query(H_bill_line).filter(
-                             (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == curr_dept)).order_by(H_bill_line._recid).all():
+                             (H_bill_line.rechnr == h_bill.rechnr) & 
+                             (H_bill_line.departement == curr_dept)).order_by(H_bill_line._recid).all():
                         outstand_list.saldo =  to_decimal(outstand_list.saldo) + to_decimal(h_bill_line.betrag)
                         outstand_list.foreign =  to_decimal(outstand_list.foreign) + to_decimal(h_bill_line.fremdwbetrag)
 
             elif wig:
-
-                res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                res_line = db_session.query(Res_line).filter(
+                         (Res_line.resnr == h_bill.resnr) & (Res_line.reslinnr == h_bill.reslinnr)).first() 
+                
 
                 if not res_line:
-
                     kellner = get_cache (Kellner, {"kellner_nr": [(eq, h_bill.kellner_nr)]})
                     outstand_list = Outstand_list()
                     outstand_list_data.append(outstand_list)
-
                     outstand_list.rechnr = h_bill.rechnr
 
                     if kellner:
                         outstand_list.name = kellner.kellnername
 
                     for h_bill_line in db_session.query(H_bill_line).filter(
-                             (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == curr_dept)).order_by(H_bill_line._recid).all():
+                             (H_bill_line.rechnr == h_bill.rechnr) &
+                             (H_bill_line.departement == curr_dept)).order_by(H_bill_line._recid).all():
                         outstand_list.saldo =  to_decimal(outstand_list.saldo) + to_decimal(h_bill_line.betrag)
                         outstand_list.foreign =  to_decimal(outstand_list.foreign) + to_decimal(h_bill_line.fremdwbetrag)
             else:
@@ -337,23 +342,29 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                     outstand_list.foreign =  to_decimal(outstand_list.foreign) + to_decimal(h_bill_line.fremdwbetrag)
 
         for h_bill in db_session.query(H_bill).filter(
-                 (H_bill.flag == 1) & (H_bill.departement == curr_dept)).order_by(H_bill._recid).all():
+                 (H_bill.flag == 1) & 
+                 (H_bill.departement == curr_dept)).order_by(H_bill._recid).all():
 
             if inhouse:
 
-                res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                res_line = db_session.query(Res_line).filter(
+                         (Res_line.resnr == h_bill.resnr) & (Res_line.reslinnr == h_bill.reslinnr)).first()
 
                 if res_line:
                     daysale1()
 
             elif wig:
 
-                res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                res_line = db_session.query(Res_line).filter(
+                         (Res_line.resnr == h_bill.resnr) & (Res_line.reslinnr == h_bill.reslinnr)).first()
 
                 if not res_line:
                     daysale1()
             else:
                 daysale1()
+                pass
 
         if incl_move_table:
             for curr_date in date_range(from_date,to_date) :
@@ -455,6 +466,8 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
                             elif artnr_list[i - 1] == fo_disc3:
                                 tlist.betrag[i - 1] = total_odisc
+        
+        
         turnover = Turnover()
         turnover_data.append(turnover)
 
@@ -485,30 +498,30 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                 turnover.t_vat =  to_decimal(turnover.t_vat) + to_decimal(tlist.t_vat)
                 turnover.rest_deposit =  to_decimal(turnover.rest_deposit) + to_decimal(tlist.rest_deposit)
                 turnover.p_voucher =  to_decimal(turnover.p_voucher) + to_decimal(tlist.p_voucher)
-            else:
+        else:
 
-                for tlist in query(tlist_data, filters=(lambda tlist: tlist.flag == 0)):
-                    turnover.belegung = turnover.belegung + tlist.belegung
-                    turnover.qty_fpax = turnover.qty_fpax + tlist.qty_fpax
-                    turnover.qty_bpax = turnover.qty_bpax + tlist.qty_bpax
-                    turnover.qty_opax = turnover.qty_opax + tlist.qty_opax
-                    turnover.cvr_food = turnover.cvr_food + tlist.cvr_food
-                    turnover.cvr_bev = turnover.cvr_bev + tlist.cvr_bev
-                    for i in range(1,20 + 1) :
-                        turnover.betrag[i - 1] = turnover.betrag[i - 1] + tlist.betrag[i - 1]
+            for tlist in query(tlist_data, filters=(lambda tlist: tlist.flag == 0)):
+                turnover.belegung = turnover.belegung + tlist.belegung
+                turnover.qty_fpax = turnover.qty_fpax + tlist.qty_fpax
+                turnover.qty_bpax = turnover.qty_bpax + tlist.qty_bpax
+                turnover.qty_opax = turnover.qty_opax + tlist.qty_opax
+                turnover.cvr_food = turnover.cvr_food + tlist.cvr_food
+                turnover.cvr_bev = turnover.cvr_bev + tlist.cvr_bev
+                for i in range(1,20 + 1) :
+                    turnover.betrag[i - 1] = turnover.betrag[i - 1] + tlist.betrag[i - 1]
 
 
-                    turnover.other =  to_decimal(turnover.other) + to_decimal(tlist.other)
-                    turnover.t_service =  to_decimal(turnover.t_service) + to_decimal(tlist.t_service)
-                    turnover.t_tax =  to_decimal(turnover.t_tax) + to_decimal(tlist.t_tax)
-                    turnover.t_debit =  to_decimal(turnover.t_debit) + to_decimal(tlist.t_debit)
-                    turnover.p_cash =  to_decimal(turnover.p_cash) + to_decimal(tlist.p_cash)
-                    turnover.p_cash1 =  to_decimal(turnover.p_cash1) + to_decimal(tlist.p_cash1)
-                    turnover.r_transfer =  to_decimal(turnover.r_transfer) + to_decimal(tlist.r_transfer)
-                    turnover.c_ledger =  to_decimal(turnover.c_ledger) + to_decimal(tlist.c_ledger)
-                    turnover.t_vat =  to_decimal(turnover.t_vat) + to_decimal(tlist.t_vat)
-                    turnover.rest_deposit =  to_decimal(turnover.rest_deposit) + to_decimal(tlist.rest_deposit)
-                    turnover.p_voucher =  to_decimal(turnover.p_voucher) + to_decimal(tlist.p_voucher)
+                turnover.other =  to_decimal(turnover.other) + to_decimal(tlist.other)
+                turnover.t_service =  to_decimal(turnover.t_service) + to_decimal(tlist.t_service)
+                turnover.t_tax =  to_decimal(turnover.t_tax) + to_decimal(tlist.t_tax)
+                turnover.t_debit =  to_decimal(turnover.t_debit) + to_decimal(tlist.t_debit)
+                turnover.p_cash =  to_decimal(turnover.p_cash) + to_decimal(tlist.p_cash)
+                turnover.p_cash1 =  to_decimal(turnover.p_cash1) + to_decimal(tlist.p_cash1)
+                turnover.r_transfer =  to_decimal(turnover.r_transfer) + to_decimal(tlist.r_transfer)
+                turnover.c_ledger =  to_decimal(turnover.c_ledger) + to_decimal(tlist.c_ledger)
+                turnover.t_vat =  to_decimal(turnover.t_vat) + to_decimal(tlist.t_vat)
+                turnover.rest_deposit =  to_decimal(turnover.rest_deposit) + to_decimal(tlist.rest_deposit)
+                turnover.p_voucher =  to_decimal(turnover.p_voucher) + to_decimal(tlist.p_voucher)
         turnover = Turnover()
         turnover_data.append(turnover)
 
@@ -677,7 +690,9 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
                 if inhouse:
 
-                    res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                    # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                    res_line = db_session.query(Res_line).filter(
+                        (Res_line.resnr == h_bill.resnr) & (Res_line.reslinnr == h_bill.reslinnr)).first()  
 
                     if res_line:
                         outstand_list = Outstand_list()
@@ -743,14 +758,18 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
                     if inhouse:
 
-                        res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                        # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                        res_line = db_session.query(Res_line).filter(
+                            (Res_line.resnr == h_bill.resnr) & (Res_line.reslinnr == h_bill.reslinnr)).first()
 
                         if res_line:
                             daysale()
 
                     elif wig:
 
-                        res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                        # res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                        res_line = db_session.query(Res_line).filter(
+                            (Res_line.resnr == h_bill.resnr) & (Res_line.reslinnr == h_bill.reslinnr)).first()
 
                         if not res_line:
                             daysale()
@@ -996,11 +1015,10 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
 
     def daysale1():
-
+        
         nonlocal t_betrag, t_foreign, exchg_rate, tot_serv, tot_tax, tot_debit, tot_cash, tot_cash1, tot_trans, tot_ledger, tot_cover, nt_cover, tot_other, nt_other, nt_serv, nt_tax, nt_debit, nt_cash, nt_cash1, nt_trans, nt_ledger, tot_vat, nt_vat, avail_outstand_list, turnover_data, t_tot_betrag_data, t_nt_betrag_data, outstand_list_data, pay_list_data, summ_list_data, tot_betrag, nt_betrag, t_cash1, tt_other, anz_comp, val_comp, anz_coup, val_coup, total_fdisc, total_bdisc, total_odisc, t_serv, t_tax, t_debit, t_cash, t_trans, t_ledger, t_cover, fo_disc1, fo_disc2, fo_disc3, tt_betrag, multi_vat, f_endkum, b_endkum, tot_deposit, t_deposit, nt_deposit, qty, counter, artnr_data, artnr_list, t_pvoucher, tot_pvoucher, nt_pvoucher, pax_cash, pax, pax2, htparam, waehrung, h_bill, h_bill_line, artikel, h_artikel, h_journal, res_line, kellner, bill
         nonlocal disc_art1, disc_art2, disc_art3, curr_dept, all_user, shift, from_date, to_date, art_str, voucher_art, zero_vat_compli, exclude_compli, show_fbodisc, htl_dept_dptnr, incl_move_table, wig, inhouse
         nonlocal pay_listbuff, tlist
-
 
         nonlocal other_art, temp, t_tot_betrag, t_nt_betrag, bline_list, outstand_list, pay_list, pay_listbuff, turnover, summ_list, buf_art, t_artnr, tlist
         nonlocal other_art_data, temp_data, t_tot_betrag_data, t_nt_betrag_data, outstand_list_data, pay_list_data, turnover_data, summ_list_data, t_artnr_data
@@ -1090,13 +1108,31 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                 turnover.cvr_bev = 0
 
         if shift == 0:
-
-            h_bill_line = get_cache (H_bill_line, {"rechnr": [(eq, h_bill.rechnr)],"bill_datum": [(ge, from_date),(le, to_date)],"departement": [(eq, curr_dept)]})
+            # h_bill_line = get_cache (H_bill_line, {"rechnr": [(eq, h_bill.rechnr)],"bill_datum": [(ge, from_date),(le, to_date)],"departement": [(eq, curr_dept)]})
+            # Rd, 21/7/2025
+            # ganti dari do while ke for loop
+            # h_bill_line = db_session.query(H_bill_line).filter(
+            #              (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & 
+            #              (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept)).order_by(H_bill_line._recid).first()
+            h_bill_line_all = db_session.query(H_bill_line).filter(
+                         (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & 
+                         (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept)).order_by(H_bill_line._recid).all()
         else:
-
-            h_bill_line = get_cache (H_bill_line, {"rechnr": [(eq, h_bill.rechnr)],"bill_datum": [(ge, from_date),(le, to_date)],"departement": [(eq, curr_dept)],"betriebsnr": [(eq, shift)]})
-        while None != h_bill_line:
-
+            # h_bill_line = get_cache (H_bill_line, {"rechnr": [(eq, h_bill.rechnr)],"bill_datum": [(ge, from_date),(le, to_date)],"departement": [(eq, curr_dept)],"betriebsnr": [(eq, shift)]})
+            # Rd, 21/7/2025
+            # ganti dari do while ke for loop
+            # h_bill_line = db_session.query(H_bill_line).filter(
+            #              (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & 
+            #              (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept) & (H_bill_line.betriebsnr == shift)).order_by(H_bill_line._recid).first()
+            h_bill_line_all = db_session.query(H_bill_line).filter(
+                         (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & 
+                         (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept) & (H_bill_line.betriebsnr == shift)).order_by(H_bill_line._recid).all()
+            
+        
+        # while None != h_bill_line:
+        # Rd, 21/7/2025
+        # ganti dari do while ke for loop
+        for h_bill_line in h_bill_line_all:
             turnover = query(turnover_data, filters=(lambda turnover: turnover.departement == curr_dept and turnover.rechnr == to_string(h_bill.rechnr)), first=True)
 
             if not turnover:
@@ -1105,13 +1141,13 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                 guestname = ""
 
                 if shift == 0:
-
                     h_bline = db_session.query(H_bline).filter(
-                                 (H_bline.rechnr == h_bill.rechnr) & (H_bline.bill_datum >= from_date) & (H_bline.bill_datum <= to_date) & (H_bline.departement == curr_dept) & (H_bline.artnr == 0)).first()
+                                 (H_bline.rechnr == h_bill.rechnr) & (H_bline.bill_datum >= from_date) & 
+                                 (H_bline.bill_datum <= to_date) & (H_bline.departement == curr_dept) & (H_bline.artnr == 0)).first()
                 else:
-
                     h_bline = db_session.query(H_bline).filter(
-                                 (H_bline.rechnr == h_bill.rechnr) & (H_bline.bill_datum >= from_date) & (H_bline.bill_datum <= to_date) & (H_bline.departement == curr_dept) & (H_bline.betriebsnr == shift) & (H_bline.artnr == 0)).first()
+                                 (H_bline.rechnr == h_bill.rechnr) & (H_bline.bill_datum >= from_date) & 
+                                 (H_bline.bill_datum <= to_date) & (H_bline.departement == curr_dept) & (H_bline.betriebsnr == shift) & (H_bline.artnr == 0)).first()
 
                 if h_bline:
                     pos = get_index(h_bline.bezeich, "*")
@@ -1120,12 +1156,13 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                         bill_no = to_int(substring(h_bline.bezeich, pos - 1, (length(h_bline.bezeich) - pos + 1)))
 
                     if bill_no != 0:
-
-                        bill = get_cache (Bill, {"rechnr": [(eq, bill_no)]})
+                        # bill = get_cache (Bill, {"rechnr": [(eq, bill_no)]})
+                        bill = db_session.query(Bill).filter(Bill.rechnr == bill_no).first()
 
                         if bill:
-
-                            res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+                            # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+                            res_line = db_session.query(Res_line).filter(
+                                         (Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.parent_nr)).first()
 
                             if res_line:
                                 guestname = res_line.name
@@ -1143,9 +1180,11 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                 turnover.resnr = h_bill.resnr
                 tot_cover = tot_cover + h_bill.belegung
 
-            if h_bill_line.artnr != 0:
 
-                h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_bill_line.artnr)],"departement": [(eq, curr_dept)]})
+            if h_bill_line.artnr != 0:
+                # h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_bill_line.artnr)],"departement": [(eq, curr_dept)]})
+                h_artikel = db_session.query(H_artikel).filter(
+                             (H_artikel.artnr == h_bill_line.artnr) & (H_artikel.departement == curr_dept)).first()
 
             if h_bill_line.artnr == 0:
 
@@ -1168,7 +1207,8 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                     if num_entries(h_bill_line.bezeich, "*") > 1:
                         billnr = to_int(entry(1, h_bill_line.bezeich, "*"))
 
-                bill = get_cache (Bill, {"rechnr": [(eq, billnr)]})
+                # bill = get_cache (Bill, {"rechnr": [(eq, billnr)]})
+                bill = db_session.query(Bill).filter(Bill.rechnr == billnr).first()
 
                 if bill:
 
@@ -1270,15 +1310,19 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
                 cancel_pay = False
             else:
-
-                h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_bill_line.artnr)],"departement": [(eq, curr_dept)]})
-
+                
+                # h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_bill_line.artnr)],"departement": [(eq, curr_dept)]})
+                h_artikel = db_session.query(H_artikel).filter(
+                             (H_artikel.artnr == h_bill_line.artnr) & (H_artikel.departement == curr_dept)).first()
                 if h_artikel.artart == 0:
 
-                    artikel = get_cache (Artikel, {"departement": [(eq, curr_dept)],"artnr": [(eq, h_artikel.artnrfront)]})
+                    # artikel = get_cache (Artikel, {"departement": [(eq, curr_dept)],"artnr": [(eq, h_artikel.artnrfront)]})
+                    artikel = db_session.query(Artikel).filter(
+                                 (Artikel.artnr == h_artikel.artnrfront) & (Artikel.departement == curr_dept)).first()
                 else:
-
-                    artikel = get_cache (Artikel, {"departement": [(eq, 0)],"artnr": [(eq, h_artikel.artnrfront)]})
+                    # artikel = get_cache (Artikel, {"departement": [(eq, 0)],"artnr": [(eq, h_artikel.artnrfront)]})
+                    artikel = db_session.query(Artikel).filter(
+                                 (Artikel.artnr == h_artikel.artnrfront) & (Artikel.departement == 0)).first()
 
                 if h_artikel.artart == 0:
                     service =  to_decimal("0")
@@ -1286,7 +1330,6 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                     vat2 =  to_decimal("0")
 
                     if h_bill_line.artnr != disc_art1 and h_bill_line.artnr != disc_art2 and h_bill_line.artnr != disc_art3:
-
                         if (artikel.umsatzart == 3 or artikel.umsatzart == 5):
                             turnover.qty_fpax = turnover.qty_fpax + h_bill_line.anzahl
                             turnover.cvr_food = h_bill.belegung
@@ -1294,15 +1337,14 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                         elif artikel.umsatzart == 6:
                             turnover.qty_bpax = turnover.qty_bpax + h_bill_line.anzahl
                             turnover.cvr_bev = h_bill.belegung
-
-
                         else:
                             turnover.qty_opax = turnover.qty_opax + h_bill_line.anzahl
+                    
+                    
                     service, vat, vat2, fact = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, h_bill_line.bill_datum))
 
                     if multi_vat == False:
                         vat =  to_decimal(vat) + to_decimal(vat2)
-
 
                     netto =  to_decimal(h_bill_line.betrag) / to_decimal((1) + to_decimal(vat) + to_decimal(vat2) + to_decimal(service))
                     turnover.t_service =  to_decimal(turnover.t_service) + to_decimal(netto) * to_decimal(service)
@@ -1419,7 +1461,9 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
                 elif h_artikel.artart == 6:
 
-                    artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)]})
+                    # artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)]})
+                    artikel = db_session.query(Artikel).filter(
+                                 (Artikel.artnr == h_artikel.artnrfront) & (Artikel.departement == 0)).first()
 
                     pay_list = query(pay_list_data, filters=(lambda pay_list: pay_list.flag == 1 and pay_list.bezeich == artikel.bezeich), first=True)
 
@@ -1437,7 +1481,8 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                         pay_list.saldo =  to_decimal(pay_list.saldo) - to_decimal(h_bill_line.betrag)
                         t_betrag =  to_decimal(t_betrag) - to_decimal(h_bill_line.betrag)
 
-                    waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, artikel.betriebsnr)]})
+                    # waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, artikel.betriebsnr)]})
+                    waehrung = db_session.query(Waehrung).filter(Waehrung.waehrungsnr == artikel.betriebsnr).first()
 
                     if waehrung:
                         turnover.p_curr = waehrung.wabkurz
@@ -1493,16 +1538,18 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                     elif h_artikel.artart == 2:
                         turnover.info = turnover.info + to_string(h_artikel.artnr) + " " + h_artikel.bezeich + ";"
 
-            if shift == 0:
+            # Rd, 21/7/2025
+            # ganti dari do while ke for loop
+            # if shift == 0:
 
-                curr_recid = h_bill_line._recid
-                h_bill_line = db_session.query(H_bill_line).filter(
-                             (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept) & (H_bill_line._recid > curr_recid)).first()
-            else:
+            #     curr_recid = h_bill_line._recid
+            #     h_bill_line = db_session.query(H_bill_line).filter(
+            #                  (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept) & (H_bill_line._recid > curr_recid)).first()
+            # else:
 
-                curr_recid = h_bill_line._recid
-                h_bill_line = db_session.query(H_bill_line).filter(
-                             (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept) & (H_bill_line.betriebsnr == shift) & (H_bill_line._recid > curr_recid)).first()
+            #     curr_recid = h_bill_line._recid
+            #     h_bill_line = db_session.query(H_bill_line).filter(
+            #                  (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept) & (H_bill_line.betriebsnr == shift) & (H_bill_line._recid > curr_recid)).first()
 
 
     def fo_discarticle():
@@ -1520,29 +1567,41 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
         fo_disc2 = 0
         fo_disc3 = 0
 
-        h_artikel = get_cache (H_artikel, {"artnr": [(eq, disc_art1)],"departement": [(eq, curr_dept)]})
+        # h_artikel = get_cache (H_artikel, {"artnr": [(eq, disc_art1)],"departement": [(eq, curr_dept)]})
+        h_artikel = db_session.query(H_artikel).filter(
+                     (H_artikel.artnr == disc_art1) & (H_artikel.departement == curr_dept)).first() 
 
         if h_artikel:
 
-            artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, curr_dept)]})
+            # artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, curr_dept)]})
+            artikel = db_session.query(Artikel).filter(
+                         (Artikel.artnr == h_artikel.artnrfront) & (Artikel.departement == curr_dept)).first()
 
             if artikel:
                 fo_disc1 = artikel.artnr
 
-        h_artikel = get_cache (H_artikel, {"artnr": [(eq, disc_art2)],"departement": [(eq, curr_dept)]})
+        # h_artikel = get_cache (H_artikel, {"artnr": [(eq, disc_art2)],"departement": [(eq, curr_dept)]})
+        h_artikel = db_session.query(H_artikel).filter(
+                     (H_artikel.artnr == disc_art2) & (H_artikel.departement == curr_dept)).first() 
 
         if h_artikel:
 
-            artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, curr_dept)]})
+            # artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, curr_dept)]})
+            artikel = db_session.query(Artikel).filter(
+                         (Artikel.artnr == h_artikel.artnrfront) & (Artikel.departement == curr_dept)).first()
 
             if artikel:
                 fo_disc2 = artikel.artnr
 
-        h_artikel = get_cache (H_artikel, {"artnr": [(eq, disc_art3)],"departement": [(eq, curr_dept)]})
+        # h_artikel = get_cache (H_artikel, {"artnr": [(eq, disc_art3)],"departement": [(eq, curr_dept)]})
+        h_artikel = db_session.query(H_artikel).filter(
+                     (H_artikel.artnr == disc_art3) & (H_artikel.departement == curr_dept)).first()
 
         if h_artikel:
 
-            artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, curr_dept)]})
+            # artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, curr_dept)]})
+            artikel = db_session.query(Artikel).filter(
+                         (Artikel.artnr == h_artikel.artnrfront) & (Artikel.departement == curr_dept)).first()
 
             if artikel:
                 fo_disc3 = artikel.artnr
@@ -1644,11 +1703,25 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
         if shift == 0:
 
-            h_bill_line = get_cache (H_bill_line, {"rechnr": [(eq, h_bill.rechnr)],"bill_datum": [(ge, from_date),(le, to_date)],"departement": [(eq, curr_dept)]})
+            # h_bill_line = get_cache (H_bill_line, {"rechnr": [(eq, h_bill.rechnr)],"bill_datum": [(ge, from_date),(le, to_date)],"departement": [(eq, curr_dept)]})
+            # Rd, 21/7/2025
+            # ganti dari do while ke for loop
+            # h_bill_line = db_session.query(H_bill_line).filter(
+            #              (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept)).first()
+            h_bill_line_all = db_session.query(H_bill_line).filter(
+                         (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept)).all()
         else:
 
-            h_bill_line = get_cache (H_bill_line, {"rechnr": [(eq, h_bill.rechnr)],"bill_datum": [(ge, from_date),(le, to_date)],"departement": [(eq, curr_dept)],"betriebsnr": [(eq, shift)]})
-        while None != h_bill_line:
+            # h_bill_line = get_cache (H_bill_line, {"rechnr": [(eq, h_bill.rechnr)],"bill_datum": [(ge, from_date),(le, to_date)],"departement": [(eq, curr_dept)],"betriebsnr": [(eq, shift)]})
+            # h_bill_line = db_session.query(H_bill_line).filter(
+            #              (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept) & (H_bill_line.betriebsnr == shift)).first()
+            h_bill_line_all = db_session.query(H_bill_line).filter(
+                         (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept) & (H_bill_line.betriebsnr == shift)).all()
+        
+        # Rd, 21/7/2025
+        # ganti dari do while ke for loop
+        # while None != h_bill_line:
+        for h_bill_line in h_bill_line_all:
 
             turnover = query(turnover_data, filters=(lambda turnover: turnover.departement == curr_dept and turnover.kellner_nr == kellner.kellner_nr and turnover.rechnr == to_string(h_bill.rechnr)), first=True)
 
@@ -1674,11 +1747,14 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
                     if bill_no != 0:
 
-                        bill = get_cache (Bill, {"rechnr": [(eq, bill_no)]})
+                        # bill = get_cache (Bill, {"rechnr": [(eq, bill_no)]})
+                        bill = db_session.query(Bill).filter(Bill.rechnr == bill_no).first()
 
                         if bill:
 
-                            res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+                            # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+                            res_line = db_session.query(Res_line).filter(
+                                         (Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.parent_nr)).first()
 
                             if res_line:
                                 guestname = res_line.name
@@ -1716,14 +1792,13 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                 i = 0
 
                 if matches(h_bill_line.bezeich,r"*RmNo*") or matches(h_bill_line.bezeich,r"*Transfer*"):
-
                     if num_entries(h_bill_line.bezeich, "*") > 1:
                         billnr = to_int(entry(1, h_bill_line.bezeich, "*"))
 
-                bill = get_cache (Bill, {"rechnr": [(eq, billnr)]})
+                # bill = get_cache (Bill, {"rechnr": [(eq, billnr)]})
+                bill = db_session.query(Bill).filter(Bill.rechnr == billnr).first()
 
                 if bill:
-
                     if bill.resnr != 0 and bill.reslinnr != 0:
                         turnover.info = "Room " + bill.zinr
 
@@ -1736,9 +1811,11 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                 tot_trans =  to_decimal(tot_trans) - to_decimal(h_bill_line.betrag)
             else:
 
-                h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_bill_line.artnr)],"departement": [(eq, curr_dept)]})
+                # h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_bill_line.artnr)],"departement": [(eq, curr_dept)]})
+                h_artikel = db_session.query(H_artikel).filter(
+                             (H_artikel.artnr == h_bill_line.artnr) & (H_artikel.departement == curr_dept)).first()
 
-                if h_artikel.artart == 11 or h_artikel.artart == 12:
+                if h_artikel and (h_artikel.artart == 11 or h_artikel.artart == 12):
 
                     if not cancel_pay:
 
@@ -1827,8 +1904,10 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                     cancel_pay = False
 
                 elif h_artikel.artart == 0:
-
-                    artikel = get_cache (Artikel, {"departement": [(eq, curr_dept)],"artnr": [(eq, h_artikel.artnrfront)]})
+                    
+                    # artikel = get_cache (Artikel, {"departement": [(eq, curr_dept)],"artnr": [(eq, h_artikel.artnrfront)]})
+                    artikel = db_session.query(Artikel).filter(
+                                 (Artikel.departement == curr_dept) & (Artikel.artnr == h_artikel.artnrfront)).first()
 
                     if artikel:
                         service =  to_decimal("0")
@@ -1970,12 +2049,16 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
                             tot_other =  to_decimal(tot_other) + to_decimal(netto)
                 else:
-
-                    artikel = get_cache (Artikel, {"departement": [(eq, 0)],"artnr": [(eq, h_artikel.artnrfront)]})
+                    
+                    # artikel = get_cache (Artikel, {"departement": [(eq, 0)],"artnr": [(eq, h_artikel.artnrfront)]})
+                    artikel = db_session.query(Artikel).filter(
+                                 (Artikel.departement == 0) & (Artikel.artnr == h_artikel.artnrfront)).first()
 
                 if h_artikel.artart == 6:
 
-                    artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)]})
+                    # artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)]})
+                    artikel = db_session.query(Artikel).filter(
+                                 (Artikel.artnr == h_artikel.artnrfront) & (Artikel.departement == 0)).first()  
 
                     pay_list = query(pay_list_data, filters=(lambda pay_list: pay_list.flag == 1 and pay_list.bezeich == artikel.bezeich), first=True)
 
@@ -2066,16 +2149,18 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
                     elif h_artikel.artart == 2:
                         turnover.info = turnover.info + to_string(h_artikel.artnr) + " " + h_artikel.bezeich + ";"
 
-            if shift == 0:
+            # Rd, 21/7/2025
+            # ganti dari do while ke for loop
+            # if shift == 0:
 
-                curr_recid = h_bill_line._recid
-                h_bill_line = db_session.query(H_bill_line).filter(
-                             (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept) & (H_bill_line._recid > curr_recid)).first()
-            else:
+            #     curr_recid = h_bill_line._recid
+            #     h_bill_line = db_session.query(H_bill_line).filter(
+            #                  (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept) & (H_bill_line._recid > curr_recid)).first()
+            # else:
 
-                curr_recid = h_bill_line._recid
-                h_bill_line = db_session.query(H_bill_line).filter(
-                             (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept) & (H_bill_line.betriebsnr == shift) & (H_bill_line._recid > curr_recid)).first()
+            #     curr_recid = h_bill_line._recid
+            #     h_bill_line = db_session.query(H_bill_line).filter(
+            #                  (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.bill_datum >= from_date) & (H_bill_line.bill_datum <= to_date) & (H_bill_line.departement == curr_dept) & (H_bill_line.betriebsnr == shift) & (H_bill_line._recid > curr_recid)).first()
 
 
     def cal_fbodisc(billno:int):
@@ -2106,8 +2191,21 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
         h_journal_obj_list = {}
         h_journal = H_journal()
         h_artikel = H_artikel()
-        for h_journal.rechnr, h_journal.departement, h_journal.bill_datum, h_journal.betrag, h_journal.artnr, h_journal._recid, h_artikel.artart, h_artikel.bezeich, h_artikel.artnrfront, h_artikel.artnr, h_artikel._recid in db_session.query(H_journal.rechnr, H_journal.departement, H_journal.bill_datum, H_journal.betrag, H_journal.artnr, H_journal._recid, H_artikel.artart, H_artikel.bezeich, H_artikel.artnrfront, H_artikel.artnr, H_artikel._recid).join(H_artikel,(H_artikel.artnr == H_journal.artnr) & (H_artikel.departement == H_journal.departement) & (H_artikel.artart == 0)).filter(
-                 (H_journal.bill_datum >= from_date) & (H_journal.bill_datum <= to_date) & (H_journal.departement == curr_dept) & (H_journal.rechnr == billno) & (H_journal.betrag != 0)).order_by(H_journal._recid).all():
+        for h_journal.rechnr, h_journal.departement, h_journal.bill_datum, h_journal.betrag, h_journal.artnr, h_journal._recid, \
+            h_artikel.artart, h_artikel.bezeich, h_artikel.artnrfront, h_artikel.artnr, h_artikel._recid \
+            in db_session.query(H_journal.rechnr, H_journal.departement, H_journal.bill_datum, H_journal.betrag, H_journal.artnr, \
+                                H_journal._recid, H_artikel.artart, H_artikel.bezeich, H_artikel.artnrfront, H_artikel.artnr, \
+                                H_artikel._recid)\
+                .join(H_artikel,(H_artikel.artnr == H_journal.artnr) & 
+                                (H_artikel.departement == H_journal.departement) & 
+                                (H_artikel.artart == 0))\
+                .filter(
+                        (H_journal.bill_datum >= from_date) & 
+                        (H_journal.bill_datum <= to_date) & 
+                        (H_journal.departement == curr_dept) & 
+                        (H_journal.rechnr == billno) & 
+                        (H_journal.betrag != 0))\
+                .order_by(H_journal._recid).all():
             if h_journal_obj_list.get(h_journal._recid):
                 continue
             else:
@@ -2164,6 +2262,7 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
             if artnr_data[i - 1] != 0:
                 qty = qty + 1
+    
     for i in range(1,qty + 1) :
 
         buf_art = query(buf_art_data, filters=(lambda buf_art: buf_art.artnr == artnr_data[i - 1] and buf_art.departement == curr_dept), first=True)
@@ -2179,6 +2278,8 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
     for t_artnr in query(t_artnr_data, sort_by=[("nr",False)]):
         artnr_list[t_artnr.nr - 1] = t_artnr.artnr
 
+
+
     if not all_user:
         daysale_list()
     else:
@@ -2186,7 +2287,9 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
     for turnover in query(turnover_data):
 
-        h_bill = get_cache (H_bill, {"rechnr": [(eq, to_int(turnover.rechnr))],"departement": [(eq, curr_dept)]})
+        # h_bill = get_cache (H_bill, {"rechnr": [(eq, to_int(turnover.rechnr))],"departement": [(eq, curr_dept)]})
+        h_bill = db_session.query(H_bill).filter(
+                     (H_bill.rechnr == to_int(turnover.rechnr)) & (H_bill.departement == curr_dept)).first()        
 
         if h_bill and turnover.p_cash != 0:
             pax_cash = pax_cash + turnover.belegung
@@ -2198,7 +2301,6 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
         pax2 = pax2 + 1
 
     turnover = query(turnover_data, first=True)
-
     if turnover:
 
         pay_list = query(pay_list_data, filters=(lambda pay_list: pay_list.flag == 1 and pay_list.saldo != 0), first=True)
@@ -2218,7 +2320,7 @@ def rest_daysalesp2_btn_go_6_cldbl(bline_list_data:[Bline_list], buf_art_data:[B
 
         if pay_list:
 
-            for tlist in query(tlist_data, filters=(lambda tlist: not tlist.compli and tlist.r_transfer != 0 and tlist.rechnr.lower()  != ("G-TOTAL").lower()  and tlist.rechnr.lower()  != ("R-TOTAL").lower())):
+            for tlist in query(tlist_data, filters=(lambda tlist: not tlist.compli and tlist.r_transfer != 0 and tlist.rechnr  != ("G-TOTAL")  and tlist.rechnr  != ("R-TOTAL"))):
                 pay_list.person = pay_list.person + tlist.belegung
 
         if outstand_list:
