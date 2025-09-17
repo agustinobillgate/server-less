@@ -3,7 +3,7 @@
 # Rd 21/7/2025
 # Rd 14/8/2025, penambahan field di output list
 # gitlab: 378
-#
+# do while diganti ke for loop
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
