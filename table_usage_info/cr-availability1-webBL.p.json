@@ -1,0 +1,153 @@
+{
+    "Kontline": {
+        "read": [],
+        "write": []
+    },
+    "Res_line": {
+        "read": [],
+        "write": []
+    },
+    "Zimmer": {
+        "read": [
+            "zikatnr",
+            "sleeping",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Paramtext": {
+        "read": [
+            "ptexte",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "fdate",
+            "fchar",
+            "finteger",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "char2",
+            "number2",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Arrangement": {
+        "read": [
+            "arrangement",
+            "intervall",
+            "zuordnung",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "kurzbez",
+            "zikatnr",
+            "typ",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Artikel": {
+        "read": [
+            "bezeich",
+            "zwkum",
+            "departement",
+            "anzahl",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fixleist": {
+        "read": [
+            "sequenz",
+            "lfakt",
+            "dekade",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest_pr": {
+        "read": [
+            "code",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Argt_line": {
+        "read": [
+            "betriebsnr",
+            "betrag",
+            "argtnr",
+            "departement",
+            "argt_artnr",
+            "vt_percnt",
+            "kind1",
+            "fakt_modus",
+            "intervall",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Genstat": {
+        "read": [
+            "zipreis",
+            "erwachs",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reslin_queasy": {
+        "read": [
+            "number3",
+            "char2",
+            "deci1",
+            "deci2",
+            "deci3",
+            "date1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zwkum": {
+        "read": [],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "segmentcode",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Segment": {
+        "read": [],
+        "write": []
+    },
+    "Outorder": {
+        "read": [
+            "gespstart",
+            "gespende",
+            "zinr",
+            "betriebsnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Resplan": {
+        "read": [
+            "anzzim",
+            "_recid"
+        ],
+        "write": []
+    }
+}
