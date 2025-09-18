@@ -71,7 +71,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
     db_session = local_storage.db_session
 
     # Rd Strip()
-    qci_zinr = qci_zinr.strip()
+    # qci_zinr = qci_zinr.strip()
 
     def generate_output():
         nonlocal room_list_data, sum_list_data, lvcarea, logid, logstr, cdstr, col_label, curr_day, datum, tot_room, i, ci_date, co_date, from_date, to_date, last_option, wlist, dlist, j, dd, mm, yyyy, num_day, htl_name, htl_adr, htl_tel, res_allot, week_list, rpt_title, occ_room, kontline, res_line, zimmer, paramtext, htparam, queasy, arrangement, zimkateg, artikel, fixleist, guest_pr, argt_line, genstat, reslin_queasy, zwkum, reservation, segment, outorder, resplan
@@ -112,7 +112,6 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         nonlocal pvilanguage, vhp_limited, op_type, printer_nr, call_from, adult_child_str, statsort, dispsort, curr_date, incl_tentative, mi_inactive, show_rate, indgastnr, qci_zinr
         nonlocal qci_zimmer
 
-
         nonlocal sum_list, room_avail_list, date_list, room_list, rate_list, created_list, t_kontline, argt_list, rmcat_list, tmp_resline, tmp_extra, temp_art, tmp_allotment, qci_zimmer, buff_ratelist
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, argt_list_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
 
@@ -142,8 +141,6 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
             buffer_copy(room_avail_list, room_list)
             room_list.i_counter = curr_i * 100
-
-
             indgastnr, created_list_data, rate_list_data = get_output(available_ratesbl(htparam.fdate, tdate, room_avail_list.zikatnr, curr_i, adult_child_str, indgastnr, created_list_data))
 
             for rate_list in query(rate_list_data, sort_by=[("i_counter",False)]):
@@ -729,10 +726,9 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                 else:
                     rmcat_list.anzahl = rmcat_list.anzahl + 1
 
-
         if not mi_inactive:
-
             return
+        
         zikatnr = 0
 
         for zimmer in db_session.query(Zimmer).filter(
@@ -760,7 +756,6 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         nonlocal pvilanguage, vhp_limited, op_type, printer_nr, call_from, adult_child_str, statsort, dispsort, curr_date, incl_tentative, mi_inactive, show_rate, indgastnr, qci_zinr
         nonlocal qci_zimmer
 
-
         nonlocal sum_list, room_avail_list, date_list, room_list, rate_list, created_list, t_kontline, argt_list, rmcat_list, tmp_resline, tmp_extra, temp_art, tmp_allotment, qci_zimmer, buff_ratelist
         nonlocal sum_list_data, room_avail_list_data, date_list_data, room_list_data, rate_list_data, created_list_data, t_kontline_data, argt_list_data, rmcat_list_data, tmp_resline_data, tmp_extra_data, temp_art_data, tmp_allotment_data
 
@@ -779,6 +774,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
         kline = None
         Kline =  create_buffer("Kline",Kontline)
         count_rmcateg()
+        
         room_avail_list_data.clear()
         sum_list_data.clear()
         ffdate = curr_date
@@ -834,9 +830,12 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                                 tmp_allotment.zikatnr = res_line.zikatnr
                             tmp_allotment.res_allot[i - 1] = tmp_allotment.res_allot[i - 1] + res_line.zimmeranz
 
+
+
         if not incl_tentative:
 
             if statsort == 1:
+                
                 sum_list = Sum_list()
                 sum_list_data.append(sum_list)
 
@@ -859,56 +858,62 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                         room_avail_list.zikatnr = zimkateg.zikatnr
                         room_avail_list.bezeich = zimkateg.kurzbez +\
                                 " - " + to_string(zimkateg.overbooking, ">>9")
+                
 
-                zimkateg_obj_list = {}
-                for zimkateg in db_session.query(Zimkateg).filter(
-                         ((Zimkateg.zikatnr.in_(list(set([rmcat_list.zikatnr for rmcat_list in rmcat_list_data if ~rmcat_list.sleeping])))))).order_by(Zimkateg.typ, Zimkateg.zikatnr).all():
-                    if zimkateg_obj_list.get(zimkateg._recid):
-                        continue
-                    else:
-                        zimkateg_obj_list[zimkateg._recid] = True
+                # Rd 18/9/2025
+                # diremark, data tampil double, .p e1 tidak double
+                #------------------------------------------------------------
+                # zimkateg_obj_list = {}
+                # for zimkateg in db_session.query(Zimkateg).filter(
+                #          ((Zimkateg.zikatnr.in_(list(set([rmcat_list.zikatnr for rmcat_list in rmcat_list_data if ~rmcat_list.sleeping])))))).order_by(Zimkateg.typ, Zimkateg.zikatnr).all():
+                #     if zimkateg_obj_list.get(zimkateg._recid):
+                #         continue
+                #     else:
+                #         zimkateg_obj_list[zimkateg._recid] = True
 
-                    rmcat_list = query(rmcat_list_data, (lambda rmcat_list: (zimkateg.zikatnr == rmcat_list.zikatnr)), first=True)
-                    room_avail_list = Room_avail_list()
-                    room_avail_list_data.append(room_avail_list)
+                #     rmcat_list = query(rmcat_list_data, (lambda rmcat_list: (zimkateg.zikatnr == rmcat_list.zikatnr)), first=True)
+                #     room_avail_list = Room_avail_list()
 
-                    room_avail_list.sleeping = False
-                    i = 1
-                    while i <= (num_day + 1) :
-                        room_avail_list.room[i - 1] = rmcat_list.anzahl
-                        i = i + 1
-                    room_avail_list.i_typ = zimkateg.typ
-                    room_avail_list.zikatnr = zimkateg.zikatnr
-                    room_avail_list.bezeich = zimkateg.kurzbez +\
-                            " - " + to_string(zimkateg.overbooking, ">>9")
+                #     room_avail_list_data.append(room_avail_list)
 
-
-                    datum = curr_date
-                    for i in range(1,30 + 1) :
-
-                        res_line_obj_list = {}
-                        for res_line, zimmer in db_session.query(Res_line, Zimmer).join(Zimmer,(Zimmer.zinr == Res_line.zinr) & not_ (Zimmer.sleeping)).filter(
-                                 (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.zikatnr == room_avail_list.zikatnr) & (Res_line.zinr != "") & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
-                            if res_line_obj_list.get(res_line._recid):
-                                continue
-                            else:
-                                res_line_obj_list[res_line._recid] = True
-
-                            if not vhp_limited:
-                                do_it = True
-                            else:
-
-                                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-
-                                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
-                                do_it = None != segment and segment.vip_level == 0
-
-                            if do_it:
-                                room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - 1
-                                occ_room[i - 1] = occ_room[i - 1] + 1
+                #     room_avail_list.sleeping = False
+                #     i = 1
+                #     while i <= (num_day + 1) :
+                #         room_avail_list.room[i - 1] = rmcat_list.anzahl
+                #         i = i + 1
+                #     room_avail_list.i_typ = zimkateg.typ
+                #     room_avail_list.zikatnr = zimkateg.zikatnr
+                #     room_avail_list.bezeich = zimkateg.kurzbez +\
+                #             " - " + to_string(zimkateg.overbooking, ">>9")
 
 
-                        datum = datum + timedelta(days=1)
+                #     datum = curr_date
+                    # for i in range(1,30 + 1) :
+
+                    #     res_line_obj_list = {}
+                    #     for res_line, zimmer in db_session.query(Res_line, Zimmer).join(Zimmer,(Zimmer.zinr == Res_line.zinr) & not_ (Zimmer.sleeping)).filter(
+                    #              (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.zikatnr == room_avail_list.zikatnr) & (Res_line.zinr != "") & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+                    #         if res_line_obj_list.get(res_line._recid):
+                    #             continue
+                    #         else:
+                    #             res_line_obj_list[res_line._recid] = True
+
+                    #         if not vhp_limited:
+                    #             do_it = True
+                    #         else:
+
+                    #             reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+
+                    #             segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                    #             do_it = None != segment and segment.vip_level == 0
+
+                    #         if do_it:
+                    #             room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - 1
+                    #             occ_room[i - 1] = occ_room[i - 1] + 1
+
+
+                    #     datum = datum + timedelta(days=1)
+                #------------------------------------------------------------
 
                 outorder_obj_list = {}
                 outorder = Outorder()
@@ -1073,13 +1078,13 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                 sum_list = Sum_list()
                 sum_list_data.append(sum_list)
 
-                sum_list.bezeich = translateExtended ("room Occupied", lvcarea, "")
+                sum_list.bezeich = translateExtended ("Room Occupied", lvcarea, "")
                 for i in range(1,30 + 1) :
                     sum_list.summe[i - 1] = occ_room[i - 1]
                 sum_list = Sum_list()
                 sum_list_data.append(sum_list)
 
-                sum_list.bezeich = translateExtended ("Total Active room", lvcarea, "")
+                sum_list.bezeich = translateExtended ("Total Active Room", lvcarea, "")
                 for i in range(1,30 + 1) :
                     sum_list.summe[i - 1] = tot_room
                 sum_list = Sum_list()
@@ -1140,57 +1145,60 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                     room_avail_list.zikatnr = zimkateg.zikatnr
                     room_avail_list.bezeich = zimkateg.kurzbez +\
                             " - " + to_string(zimkateg.overbooking, ">>9")
+                    
+            # Rd 18/9/2025
+            # diremark, data tampil double, .p e1 tidak double
+            #------------------------------------------------------------
+            # zimkateg_obj_list = {}
+            # for zimkateg in db_session.query(Zimkateg).filter(
+            #          ((Zimkateg.zikatnr.in_(list(set([rmcat_list.zikatnr for rmcat_list in rmcat_list_data if ~rmcat_list.sleeping])))))).order_by(Zimkateg.typ, Zimkateg.zikatnr).all():
+            #     if zimkateg_obj_list.get(zimkateg._recid):
+            #         continue
+            #     else:
+            #         zimkateg_obj_list[zimkateg._recid] = True
 
-            zimkateg_obj_list = {}
-            for zimkateg in db_session.query(Zimkateg).filter(
-                     ((Zimkateg.zikatnr.in_(list(set([rmcat_list.zikatnr for rmcat_list in rmcat_list_data if ~rmcat_list.sleeping])))))).order_by(Zimkateg.typ, Zimkateg.zikatnr).all():
-                if zimkateg_obj_list.get(zimkateg._recid):
-                    continue
-                else:
-                    zimkateg_obj_list[zimkateg._recid] = True
+            #     rmcat_list = query(rmcat_list_data, (lambda rmcat_list: (zimkateg.zikatnr == rmcat_list.zikatnr)), first=True)
+            #     room_avail_list = Room_avail_list()
+            #     room_avail_list_data.append(room_avail_list)
 
-                rmcat_list = query(rmcat_list_data, (lambda rmcat_list: (zimkateg.zikatnr == rmcat_list.zikatnr)), first=True)
-                room_avail_list = Room_avail_list()
-                room_avail_list_data.append(room_avail_list)
-
-                room_avail_list.sleeping = False
-                i = 1
-                while i <= (num_day + 1) :
-                    room_avail_list.room[i - 1] = rmcat_list.anzahl
-                    i = i + 1
-                room_avail_list.i_typ = zimkateg.typ
-                room_avail_list.zikatnr = zimkateg.zikatnr
-                room_avail_list.bezeich = zimkateg.kurzbez +\
-                        " - " + to_string(zimkateg.overbooking, ">>9")
-
-
-                datum = curr_date
-                for i in range(1,30 + 1) :
-
-                    res_line_obj_list = {}
-                    for res_line, zimmer in db_session.query(Res_line, Zimmer).join(Zimmer,(Zimmer.zinr == Res_line.zinr) & not_ (Zimmer.sleeping)).filter(
-                             (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.zikatnr == room_avail_list.zikatnr) & (Res_line.zinr != "") & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
-                        if res_line_obj_list.get(res_line._recid):
-                            continue
-                        else:
-                            res_line_obj_list[res_line._recid] = True
-
-                        if not vhp_limited:
-                            do_it = True
-                        else:
-
-                            reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-
-                            segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
-                            do_it = None != segment and segment.vip_level == 0
-
-                        if do_it:
-                            room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - 1
-                            occ_room[i - 1] = occ_room[i - 1] + 1
+            #     room_avail_list.sleeping = False
+            #     i = 1
+            #     while i <= (num_day + 1) :
+            #         room_avail_list.room[i - 1] = rmcat_list.anzahl
+            #         i = i + 1
+            #     room_avail_list.i_typ = zimkateg.typ
+            #     room_avail_list.zikatnr = zimkateg.zikatnr
+            #     room_avail_list.bezeich = zimkateg.kurzbez +\
+            #             " - " + to_string(zimkateg.overbooking, ">>9")
 
 
-                    datum = datum + timedelta(days=1)
+            #     datum = curr_date
+            #     for i in range(1,30 + 1) :
 
+            #         res_line_obj_list = {}
+            #         for res_line, zimmer in db_session.query(Res_line, Zimmer).join(Zimmer,(Zimmer.zinr == Res_line.zinr) & not_ (Zimmer.sleeping)).filter(
+            #                  (Res_line.active_flag <= 1) & (Res_line.resstatus <= 6) & (((Res_line.ankunft <= datum) & (Res_line.abreise > datum)) | ((Res_line.ankunft == datum) & (Res_line.abreise == datum))) & (Res_line.zikatnr == room_avail_list.zikatnr) & (Res_line.zinr != "") & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
+            #             if res_line_obj_list.get(res_line._recid):
+            #                 continue
+            #             else:
+            #                 res_line_obj_list[res_line._recid] = True
+
+            #             if not vhp_limited:
+            #                 do_it = True
+            #             else:
+
+            #                 reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+
+            #                 segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+            #                 do_it = None != segment and segment.vip_level == 0
+
+            #             if do_it:
+            #                 room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - 1
+            #                 occ_room[i - 1] = occ_room[i - 1] + 1
+
+
+            #         datum = datum + timedelta(days=1)
+            #------------------------------------------------------------
             outorder_obj_list = {}
             outorder = Outorder()
             zimmer = Zimmer()
@@ -1218,6 +1226,8 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                                 ooo_list[i - 1] = ooo_list[i - 1] + 1
                                 room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - 1
                         datum = datum + timedelta(days=1)
+
+            
             i = 1
             datum = curr_date
             while i <= (num_day + 1) :
@@ -1256,6 +1266,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
                         occ_room[i - 1] = occ_room[i - 1] + kontline.zimmeranz
                 i = i + 1
                 datum = datum + timedelta(days=1)
+
             for i in range(1,30 + 1) :
                 sum_list.summe[i - 1] = 0
 
@@ -1836,7 +1847,6 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
     if op_type == 0:
         create_browse()
-
         if statsort == 1:
             calc_extra(curr_date)
 
@@ -1849,15 +1859,18 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
         if not show_rate:
             create_room_list()
+            pass
         else:
             create_rate_list()
-    elif op_type == 1:
-        design_lnl()
-    elif op_type == 2:
-        print_lnl()
-    elif op_type == 3:
-        print_txt()
-    elif op_type == 4:
-        clear_it()
+            pass
+
+    # elif op_type == 1:
+    #     design_lnl()
+    # elif op_type == 2:
+    #     print_lnl()
+    # elif op_type == 3:
+    #     print_txt()
+    # elif op_type == 4:
+    #     clear_it()
 
     return generate_output()
