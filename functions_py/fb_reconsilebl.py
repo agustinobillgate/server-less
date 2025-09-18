@@ -398,7 +398,9 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
                 else:
                     if (not h_cost and h_compli.datum < bill_date) or (h_cost and h_cost.betrag == 0):
                         if h_artikel.artnrlager != 0:
+
                             l_artikel = db_session.query(L_artikel).filter((L_artikel.artnr == h_artikel.artnrlager)).first()
+     
                             if l_artikel:
                                 if price_type == 0 or l_artikel.ek_aktuell == 0:
                                     cost = l_artikel.vk_preis
@@ -1762,7 +1764,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
                     if (not h_cost and h_compli.datum < bill_date) or (h_cost and h_cost.betrag == 0):
                         if artikel.umsatzart == 3 or artikel.umsatzart == 5:
                             if h_artikel.artnrlager != 0:
-                                l_artikel = db_session.query(L_artikel).filter(L_artikel.artnr == h_artikel.artnrlager)
+                                l_artikel = db_session.query(L_artikel).filter(L_artikel.artnr == h_artikel.artnrlager).first()
 
                                 if l_artikel:
                                     if price_type == 0 or l_artikel.ek_aktuell == 0:
@@ -2612,7 +2614,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
                     if (not h_cost and h_compli.datum < bill_date) or (h_cost and h_cost.betrag == 0):
                         if artikel.umsatzart == 6:
                             if h_artikel.artnrlager != 0:
-                                l_artikel = db_session.query(L_artikel).filter(l_artikel.artnr == h_artikel.artnrlager)
+                                l_artikel = db_session.query(L_artikel).filter(l_artikel.artnr == h_artikel.artnrlager).first()
                                 
                                 if l_artikel:
                                     
