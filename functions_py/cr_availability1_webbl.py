@@ -3,6 +3,7 @@
 # Rd, 17-July-25
 # replace variable fdate -> ffdate
 # #859, overbook -> overbooking
+# Rd, data room availability with rates
 #---------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
