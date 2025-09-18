@@ -2,6 +2,7 @@
 #-----------------------------------------
 # Rd, 21/8/20225
 # beda sorting
+# Rd, 18/9/2025 -> zinr kosong
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -63,8 +64,8 @@ def gcf_birthdate_listbl(from_mm:int, from_dd:int, to_mm:int, to_dd:int, from_ag
 
         birth_list2.name = birth_list.name
         birth_list2.geburtdatum = birth_list.geburtdatum
-        birth_list2.ankunft1 = birth_list.ankunft1
-        birth_list2.abreise1 = birth_list.abreise1
+        birth_list2.ankunft1 = birth_list.ankunft
+        birth_list2.abreise1 = birth_list.abreise
         birth_list2.zinr = birth_list.zinr
         birth_list2.adresse = entry(0, birth_list.adresse, chr_unicode(3))
         birth_list2.wohnort = birth_list.wohnort
