@@ -62,14 +62,12 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
     Gmember = create_buffer("Gmember",Guest)
     Gbuff = create_buffer("Gbuff",Guest)
 
-
     db_session = local_storage.db_session
 
     def generate_output():
         nonlocal tot_rm, tot_a, tot_c, tot_co, s_list_data, t_cl_list_data, lvcarea, curr_date, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, ol_gastnr, sms_gastnr, wg_gastnr, indi_gastnr, nr, vip_flag, i, dummy_flag, do_it, last_gcf, tentres, all_remark, stat_list, guest, htparam, reservation, sourccod, res_line, guestseg, segment, zimmer, nation, mc_guest, mc_types, queasy, reslin_queasy, history, paramtext
         nonlocal pvilanguage, from_date, to_date, ci_date, disptype, incl_tentative, sorttype, comment_type, incl_accompany, split_rsv_print, total_flag, segm1_list_data
         nonlocal gmember, gbuff
-
 
         nonlocal setup_list, cl_list, t_cl_list, s_list, t_list, zikat_list, segm1_list, arrangement_list, gmember, gbuff
         nonlocal setup_list_data, cl_list_data, t_cl_list_data, s_list_data, t_list_data
@@ -81,7 +79,6 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         nonlocal tot_rm, tot_a, tot_c, tot_co, s_list_data, t_cl_list_data, lvcarea, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, ol_gastnr, sms_gastnr, wg_gastnr, indi_gastnr, nr, vip_flag, i, dummy_flag, do_it, last_gcf, tentres, all_remark, stat_list, guest, htparam, reservation, sourccod, res_line, guestseg, segment, zimmer, nation, mc_guest, mc_types, queasy, reslin_queasy, history, paramtext
         nonlocal pvilanguage, from_date, to_date, ci_date, disptype, incl_tentative, sorttype, comment_type, incl_accompany, split_rsv_print, total_flag, segm1_list_data
         nonlocal gmember, gbuff
-
 
         nonlocal setup_list, cl_list, t_cl_list, s_list, t_list, zikat_list, segm1_list, arrangement_list, gmember, gbuff
         nonlocal setup_list_data, cl_list_data, t_cl_list_data, s_list_data, t_list_data
@@ -111,7 +108,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -135,7 +132,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                         cl_list_data.remove(cl_list)
                         pass
                         nr = nr - 1
-
+            
 
         elif sorttype == 2:
 
@@ -337,7 +334,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         cl_list.rmcat = zikat_list.kurzbez + setup_list.char
         cl_list.kurzbez = zikat_list.kurzbez
         cl_list.bezeich = zikat_list.bezeich
-        cl_list.nat = gmember.nation1
+        cl_list.nat = gmember.nation1.replace("\u00022", "").replace("\u00023", "")
         cl_list.gastnr = res_line.gastnr
         cl_list.resnr = res_line.resnr
         cl_list.vip = vip_flag
@@ -345,8 +342,8 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         cl_list.zipreis = to_string(res_line.zipreis, " >>>,>>>,>>9.99")
         cl_list.zimmeranz = res_line.zimmeranz
         cl_list.rmno = res_line.zinr
-        cl_list.arrival = to_string(res_line.ankunft, "99/99/99")
-        cl_list.depart = to_string(res_line.abreise, "99/99/99")
+        cl_list.arrival = to_string(res_line.ankunft, "%d/%m/%y")
+        cl_list.depart = to_string(res_line.abreise, "%d/%m/%y")
         cl_list.a = res_line.erwachs
         cl_list.c = res_line.kind1 + res_line.kind2
         cl_list.co = res_line.gratis
@@ -520,15 +517,18 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         vip_flag = ""
         do_it = False
         last_gcf = 0
-
-
         nr = 0
 
         if sorttype == 1:
 
             res_line_obj_list = {}
-            for res_line, reservation, sourccod, guest, gmember in db_session.query(Res_line, Reservation, Sourccod, Guest, Gmember).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
-                     (Res_line.active_flag == 1) & ((Res_line.resstatus == 6) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Reservation.name, Reservation.groupname, Res_line.name, Res_line.zinr).all():
+            for res_line, reservation, sourccod, guest, gmember \
+                in db_session.query(Res_line, Reservation, Sourccod, Guest, Gmember)\
+                .join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Sourccod,(Sourccod.source_code == Reservation.resart))\
+                .join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember))\
+                .filter(
+                     (Res_line.active_flag == 1) & ((Res_line.resstatus == 6) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date))\
+                .order_by(Reservation.name, Reservation.groupname, Res_line.name, Res_line.zinr).all():
                 zikat_list = query(zikat_list_data, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
                 if not zikat_list:
                     continue
@@ -859,7 +859,6 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                         nr = nr - 1
 
         else:
-
             res_line_obj_list = {}
             for res_line, reservation, sourccod, guest, gmember in db_session.query(Res_line, Reservation, Sourccod, Guest, Gmember).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
                      (Res_line.active_flag == 0) & (Res_line.resstatus != tentres) & (Res_line.ankunft == curr_date)).order_by(Res_line.resstatus, Reservation.name, Reservation.groupname, Res_line.name).all():
@@ -972,7 +971,6 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         nr = 0
 
         if sorttype == 1:
-
             res_line_obj_list = {}
             for res_line, reservation, sourccod, guest, gmember in db_session.query(Res_line, Reservation, Sourccod, Guest, Gmember).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
                      ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Reservation.name, Reservation.groupname, Res_line.name, Res_line.zinr).all():
@@ -1017,7 +1015,6 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
 
 
         elif sorttype == 2:
-
             res_line_obj_list = {}
             for res_line, reservation, sourccod, guest, gmember in db_session.query(Res_line, Reservation, Sourccod, Guest, Gmember).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
                      ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.zinr, Reservation.name, Reservation.groupname, Res_line.name).all():
@@ -1062,7 +1059,6 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
 
 
         elif sorttype == 3:
-
             res_line_obj_list = {}
             for res_line, reservation, sourccod, guest, gmember in db_session.query(Res_line, Reservation, Sourccod, Guest, Gmember).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
                      ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Reservation.resdat, Res_line.zinr).all():
@@ -1107,7 +1103,6 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
 
 
         elif sorttype == 4:
-
             res_line_obj_list = {}
             for res_line, reservation, sourccod, guest, gmember in db_session.query(Res_line, Reservation, Sourccod, Guest, Gmember).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
                      ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.arrangement, Reservation.name, Reservation.groupname, Res_line.name).all():
@@ -1151,7 +1146,6 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                             nr = nr - 1
 
         else:
-
             res_line_obj_list = {}
             for res_line, reservation, sourccod, guest, gmember in db_session.query(Res_line, Reservation, Sourccod, Guest, Gmember).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
                      ((Res_line.resstatus == 6) | (Res_line.resstatus == 8) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.resstatus, Reservation.name, Reservation.groupname, Res_line.name).all():
@@ -1231,7 +1225,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         cl_list.rmcat = zikat_list.kurzbez + setup_list.char
         cl_list.kurzbez = zikat_list.kurzbez
         cl_list.bezeich = zikat_list.bezeich
-        cl_list.nat = gmember.nation1
+        cl_list.nat = gmember.nation1.strip()
         cl_list.gastnr = res_line.gastnr
         cl_list.resnr = res_line.resnr
         cl_list.vip = vip_flag
@@ -1239,8 +1233,8 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         cl_list.zipreis = to_string(res_line.zipreis, " >>>,>>>,>>9.99")
         cl_list.zimmeranz = res_line.zimmeranz
         cl_list.rmno = res_line.zinr
-        cl_list.arrival = to_string(res_line.ankunft, "99/99/99")
-        cl_list.depart = to_string(res_line.abreise, "99/99/99")
+        cl_list.arrival = to_string(res_line.ankunft, "%d/%m/%y")
+        cl_list.depart = to_string(res_line.abreise, "%d/%m/%y")
         cl_list.a = res_line.erwachs
         cl_list.c = res_line.kind1 + res_line.kind2
         cl_list.co = res_line.gratis
@@ -1449,11 +1443,15 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         tot_tkind:int = 0
         t_cl_list_data.clear()
         t_list_data.clear()
-
+        
+        # Rd 19/9/2025
+        # menyamakan sorting dgn e1
+        if sorttype == 1:
+            cl_list_data = sorted(cl_list_data, key=lambda r: (r.name or "").strip().casefold())
+        
         for cl_list in query(cl_list_data):
             t_cl_list = T_cl_list()
             t_cl_list_data.append(t_cl_list)
-            print("CL:", cl_list)
             buffer_copy(cl_list, t_cl_list)
 
             if num_entries(cl_list.company, ";") > 1:
@@ -1479,7 +1477,9 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
             # err none - none,
             # t_cl_list.night = date_mdy(cl_list.depart) - date_mdy(cl_list.arrival)
             try:
-                t_cl_list.night = date_mdy(cl_list.depart) - date_mdy(cl_list.arrival)
+                tmp_depart = date_mdy(cl_list.depart)
+                tmp_arrival = date_mdy(cl_list.arrival)
+                t_cl_list.night = (tmp_depart - tmp_arrival).days
             except:
                 pass
 
