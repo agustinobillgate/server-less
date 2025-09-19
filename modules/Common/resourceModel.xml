@@ -985,4 +985,56 @@
   <prgs:resource consumes="application/json" name="_leasingArAge" path="/leasingArAge" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-leasing-ar-age-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-leasing-ar-age-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mappingSOBSegment" path="/mappingSOBSegment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mappingsob-segmentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mappingsob-segmentbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_mappingSOBSegmentPrepare" path="/mappingSOBSegmentPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-mapsobsegmentbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-mapsobsegmentbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_leasingCreateJournalPrintProforma1" path="/leasingCreateJournalPrintProforma1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-leasing-create-journal-print-proforma_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-leasing-create-journal-print-proforma_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_leasingReminderActualInvoice" path="/leasingReminderActualInvoice" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-leasing-reminder-actual-invoicebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-leasing-reminder-actual-invoicebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ifEcsysManualAdj" path="/ifEcsysManualAdj" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-if-ecsys-manual-adjbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-if-ecsys-manual-adjbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_loadDateTimeServer1" path="/loadDateTimeServer1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-load-datetime-server_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-load-datetime-server_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ifEcsysCheckQueasy" path="/ifEcsysCheckQueasy" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-if-ecsys-check-queasybl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-if-ecsys-check-queasybl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tadaResendData1" path="/tadaResendData1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-tada-resend-data_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-tada-resend-data_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_leasingJournalReminderActualInvoice" path="/leasingJournalReminderActualInvoice" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-leasing-create-journal-reminder-actual-invoicebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-leasing-create-journal-reminder-actual-invoicebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tbaseMappingMaingroupFbarticlePrepare" path="/tbaseMappingMaingroupFbarticlePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-tbase-mapping-maingroup-fbarticlebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-tbase-mapping-maingroup-fbarticlebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tbaseMappingOutletFbarticlePrepare" path="/tbaseMappingOutletFbarticlePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-tbase-mapping-outlet-fbarticlebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-tbase-mapping-outlet-fbarticlebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tbaseMappingSubgroupFbarticlePrepare" path="/tbaseMappingSubgroupFbarticlePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-tbase-mapping-subgroup-fbarticlebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-tbase-mapping-subgroup-fbarticlebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tbaseMappingMaingroupFbarticle" path="/tbaseMappingMaingroupFbarticle" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-tbase-mapping-maingroup-fbarticlebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-tbase-mapping-maingroup-fbarticlebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tbaseMappingOutletFbarticle" path="/tbaseMappingOutletFbarticle" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-tbase-mapping-outlet-fbarticlebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-tbase-mapping-outlet-fbarticlebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tbaseMappingSubgroupFbarticle" path="/tbaseMappingSubgroupFbarticle" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-tbase-mapping-subgroup-fbarticlebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-tbase-mapping-subgroup-fbarticlebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tbaseEmailSetupPrepare" path="/tbaseEmailSetupPrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-tbase-email-setupbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-tbase-email-setupbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_tbaseEmailSetup" path="/tbaseEmailSetup" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-tbase-email-setupbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-tbase-email-setupbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+
 </prgs:model>

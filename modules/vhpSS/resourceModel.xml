@@ -1512,4 +1512,17 @@
   <prgs:resource consumes="application/json" name="_hmenuCreateMenuCustom" path="/hmenuCreateMenuCustom" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-hmenu-create-menu-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-hmenu-create-menu-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_writeArtikel1Custom" path="/writeArtikel1Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-write-artikel_1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-write-artikel_1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_updateDynaratecode2UpdateRatecode1" path="/updateDynaratecode2UpdateRatecode1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-update-dynaratecode2-update-ratecode-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-update-dynaratecode2-update-ratecode-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_articleAdminPrepare1" path="/articleAdminPrepare1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-artikel-admin_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-artikel-admin_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_rarticleAdminBtnExit3" path="/rarticleAdminBtnExit3" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rarticle-admin-btn-exit3-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rarticle-admin-btn-exit3-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+
 </prgs:model>

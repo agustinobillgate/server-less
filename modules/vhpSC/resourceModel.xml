@@ -447,4 +447,8 @@
   <prgs:resource consumes="application/json" name="_bkStatsSobSegmentDetail" path="/bkStatsSobSegmentDetail" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-bk-stats-sob-segment-detail-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-bk-stats-sob-segment-detail-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_baPlanCheckReser1Custom" path="/baPlanCheckReser1Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ba-plan-check-reser1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ba-plan-check-reser1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+
 </prgs:model>
