@@ -153,7 +153,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -187,7 +187,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -222,7 +222,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -256,7 +256,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -497,7 +497,6 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         if reslin_queasy:
             cl_list.spreq = reslin_queasy.char3
 
-
         tot_a = tot_a + res_line.erwachs * res_line.zimmeranz
         tot_c = tot_c + (res_line.kind1 + res_line.kind2) * res_line.zimmeranz
         tot_co = tot_co + res_line.gratis * res_line.zimmeranz
@@ -533,7 +532,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -568,7 +567,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -599,7 +598,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
             res_line_obj_list = {}
             for res_line, reservation, sourccod, guest, gmember in db_session.query(Res_line, Reservation, Sourccod, Guest, Gmember).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Sourccod,(Sourccod.source_code == Reservation.resart)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
                      (Res_line.active_flag == 1) & ((Res_line.resstatus == 6) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Reservation.resdat, Res_line.zinr).all():
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -638,7 +637,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -672,7 +671,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -728,7 +727,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -763,7 +762,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -798,7 +797,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -833,7 +832,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -866,7 +865,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -902,54 +901,53 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         nonlocal setup_list_data, cl_list_data, t_cl_list_data, s_list_data, t_list_data
 
         for cl_list in query(cl_list_data, sort_by=[("nation",False),("bezeich",False)]):
-
-            s_list = query(s_list_data, filters=(lambda s_list: s_list.rmcat == cl_list.kurzbez), first=True)
+            s_list = query(s_list_data, filters=(lambda s_list: s_list.rmcat.strip() == cl_list.kurzbez.strip()), first=True)
 
             if not s_list:
 
                 s_list = query(s_list_data, filters=(lambda s_list: s_list.rmcat == ""), first=True)
 
                 if s_list:
-                    s_list.rmcat = cl_list.kurzbez
+                    s_list.rmcat = cl_list.kurzbez.strip()
                     s_list.bezeich = cl_list.bezeich
 
             if not s_list:
                 s_list = S_list()
                 s_list_data.append(s_list)
 
-                s_list.rmcat = cl_list.kurzbez
+                s_list.rmcat = cl_list.kurzbez.strip()
                 s_list.bezeich = cl_list.bezeich
             s_list.anz = s_list.anz + cl_list.qty
 
-            s_list = query(s_list_data, filters=(lambda s_list: s_list.nat == cl_list.nat), first=True)
+            s_list = query(s_list_data, filters=(lambda s_list: s_list.nat == cl_list.nat.strip()), first=True)
 
             if not s_list:
 
                 s_list = query(s_list_data, filters=(lambda s_list: s_list.nat == ""), first=True)
 
                 if s_list:
-                    s_list.nat = cl_list.nat
+                    s_list.nat = cl_list.nat.strip()
 
             if not s_list:
                 s_list = S_list()
                 s_list_data.append(s_list)
 
-
                 if s_list:
-                    s_list.nat = cl_list.nat
+                    s_list.nat = cl_list.nat.strip()
+
             s_list.adult = s_list.adult + (cl_list.a + cl_list.co) * cl_list.qty
             s_list.child = s_list.child + cl_list.c * cl_list.qty
 
         if (tot_a + tot_co) != 0:
 
-            for s_list in query(s_list_data, filters=(lambda s_list: s_list.nat != "")):
-
-                nation = get_cache (Nation, {"kurzbez": [(eq, s_list.nat)]})
+            for s_list in query(s_list_data, filters=(lambda s_list: s_list.nat.strip() != "")):
+                nation = get_cache (Nation, {"kurzbez": [(eq, s_list.nat.strip())]})
+                # print(f"s_list.nat: {s_list.nat}, nation: {nation}")
 
                 if nation:
-                    s_list.nat = nation.bezeich
+                    s_list.nat = nation.bezeich.strip()
                 else:
-                    s_list.nat = translateExtended ("UNKNOWN", lvcarea, "")
+                    s_list.nat = translateExtended ("UNKNOWN", lvcarea, "") + " (" + s_list.nat.strip() + ")"   
                 s_list.proz =  to_decimal(s_list.adult) / to_decimal((tot_a) + to_decimal(tot_co)) * to_decimal("100")
 
     def create_arrival1(curr_date:date):
@@ -978,7 +976,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -1022,7 +1020,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -1066,7 +1064,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -1110,7 +1108,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -1153,7 +1151,7 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 if not zikat_list:
                     continue
 
-                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement and arrangement_list.selected), first=True)
+                arrangement_list = query(arrangement_list_data, (lambda arrangement_list: arrangement_list.argt == res_line.arrangement.strip() and arrangement_list.selected), first=True)
                 if not arrangement_list:
                     continue
 
@@ -1430,7 +1428,6 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         nonlocal pvilanguage, from_date, to_date, ci_date, disptype, incl_tentative, sorttype, comment_type, incl_accompany, split_rsv_print, total_flag, segm1_list_data
         nonlocal gmember, gbuff
 
-
         nonlocal setup_list, cl_list, t_cl_list, s_list, t_list, zikat_list, segm1_list, arrangement_list, gmember, gbuff
         nonlocal setup_list_data, cl_list_data, t_cl_list_data, s_list_data, t_list_data
 
@@ -1448,30 +1445,34 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         # menyamakan sorting dgn e1
         if sorttype == 1:
             cl_list_data = sorted(cl_list_data, key=lambda r: (r.name or "").strip().casefold())
+            # re number
+            counter_ = 0
+            for cl in cl_list_data:
+                counter_ += 1
+                cl.nr = counter_
         
         for cl_list in query(cl_list_data):
             t_cl_list = T_cl_list()
             t_cl_list_data.append(t_cl_list)
+            
             buffer_copy(cl_list, t_cl_list)
 
             if num_entries(cl_list.company, ";") > 1:
                 t_cl_list.company = entry(0, cl_list.company, ";")
                 t_cl_list.phonenum = entry(1, cl_list.company, ";")
-
-
             else:
                 t_cl_list.company = cl_list.company
 
             if num_entries(cl_list.memberno, ";") > 1:
                 t_cl_list.member_typ = entry(1, cl_list.memberno, ";")
                 t_cl_list.memberno = entry(0, cl_list.memberno, ";")
-
-
             else:
                 t_cl_list.memberno = cl_list.memberno
 
             if t_cl_list.stay > 1:
                 t_cl_list.repeat_guest = "*"
+
+            t_cl_list.bemerk = cl_list.bemerk.replace("\\n", " ")
 
             # Rd 21/7/25
             # err none - none,
@@ -1482,7 +1483,6 @@ def pj_arrive2_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
                 t_cl_list.night = (tmp_depart - tmp_arrival).days
             except:
                 pass
-
 
         t_cl_list = T_cl_list()
         t_cl_list_data.append(t_cl_list)
