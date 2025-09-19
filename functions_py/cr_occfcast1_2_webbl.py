@@ -5,7 +5,7 @@
 # Add safe_divide, if argm, if room
 #-----------------------------------------
 from functions.additional_functions import *
-from decimal import Decimal
+from decimal import Decimal 
 from datetime import date
 from functions.calc_servvat import calc_servvat
 from functions.get_room_breakdown import get_room_breakdown

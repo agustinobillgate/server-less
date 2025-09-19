@@ -966,4 +966,20 @@
   <prgs:resource consumes="application/json" name="_restInvCalculateAmountCustom" path="/restInvCalculateAmountCustom" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-calculate-amount-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-calculate-amount-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_dailySalesReportP221" path="/dailySalesReportP221" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-daysalesp2-btn-go2-web_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-daysalesp2-btn-go2-web_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvUpdateVoidItem" path="/restInvUpdateVoidItem" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-update-void-item-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-update-void-item-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restInvCancelSubmenu" path="/restInvCancelSubmenu" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-restinv-cancel-submenu-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-restinv-cancel-submenu-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restStatsegment2Custom" path="/restStatsegment2Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-statsegment-go2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-statsegment-go2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restStatsegment2OutlistCustom" path="/restStatsegment2OutlistCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-statsegment-go2-outlist-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-statsegment-go2-outlist-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+
 </prgs:model>

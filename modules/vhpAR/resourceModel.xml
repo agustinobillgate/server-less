@@ -315,4 +315,11 @@
   <prgs:resource consumes="application/json" name="_soaPrintSendmail" path="/soaPrintSendmail" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ar-printsoa-sendmail-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ar-printsoa-sendmail-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getLeasingARAge2Custom" path="/getLeasingARAge2Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-leasing-ar-age_2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-leasing-ar-age_2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getLeasingARAge12" path="/getLeasingARAge12" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-leasing-ar-age1_2-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-leasing-ar-age1_2-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+
 </prgs:model>

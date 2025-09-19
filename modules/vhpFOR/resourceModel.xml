@@ -1356,4 +1356,8 @@
   <prgs:resource consumes="application/json" name="_leasingReservation" path="/leasingReservation" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-reservation-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-reservation-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_gcfBtnGoCustom" path="/gcfBtnGoCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gcf-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gcf-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+
 </prgs:model>
