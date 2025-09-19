@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 18/9/2025
+# In House Guest List, kosong di excl depart guest (period)
+# update string replace \n di bemerk
+# update arrival, depart, birtdate, localreg, created field to string
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -117,6 +122,10 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
 
     db_session = local_storage.db_session
 
+    # Rd, 18/9/2025 
+    froom = froom.strip()
+    troom = troom.strip()
+    
     def generate_output():
         nonlocal curr_date, curr_gastnr, str, htl_no, tdate, crdate, cgdate, counter, company, tot_payrm, tot_rm, tot_a, tot_c, tot_co, tot_avail, inactive, tot_keycard, bemerk, bemerk1, bezeich, tot_qty, tot_rev, ct, tmp_rmcat, tmp_nat, tmp_adult, tmp_proz, tmp_child, tmp_flag, tmp_vip, tmp_firstname, tmp_lastname, tmp_birthdate, tmp_groupname, tmp_rmno, tmp_qty, tmp_arrive, tmp_depart, tmp_rmcat_que, tmp_ratecode, tmp_kurzbez, tmp_pax, tmp_nat_que, tmp_nation, tmp_argt, tmp_company, tmp_flight, tmp_etd, tmp_segm, tmp_telefon, tmp_mobil_tel, tmp_created, tmp_createid, tmp_ci_time, tmp_curr, tmp_sob, tmp_memberno, tmp_membertype, tmp_email, tmp_localreg, tmp_c_zipreis, tmp_c_lodging, tmp_c_breakfast, tmp_c_lunch, tmp_c_dinner, tmp_c_otherev, tmp_c_a, tmp_c_c, tmp_c_co, tmp_c_rechnr, tmp_c_resnr, tmp_night, tmp_city, tmp_keycard, tmp_co_time, tmp_pay_art, tmp_zinr_bez, tmp_bezeich, tmp_currency, tmp_segment, tmp_sum_curr, curr_time, queasy, zimkateg, paramtext
         nonlocal sorttype, from_date, to_date, froom, troom, exc_depart, incl_gcomment, incl_rsvcomment, disp_accompany, idflag, exc_compli
@@ -125,7 +134,6 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
 
         nonlocal inhouse_guest_list, output_list, s_list, zikat_list, t_buff_queasy, summary_roomtype, summary_nation, summary_revenue, summary_segment, summary_list4, sum_list, tmplist, bqueasy, tqueasy, bufflist
         nonlocal inhouse_guest_list_data, output_list_data, s_list_data, zikat_list_data, t_buff_queasy_data, summary_roomtype_data, summary_nation_data, summary_revenue_data, summary_segment_data, summary_list4_data, sum_list_data, tmplist_data
-
         return {}
 
     def decode_string(in_str:string):
@@ -223,25 +231,24 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
 
         return generate_inner_output()
 
-
     queasy = Queasy()
     db_session.add(queasy)
-
+    
     queasy.key = 285
     queasy.char1 = "Inhouse List"
     queasy.number1 = 1
     queasy.number2 = to_int(idflag)
-
+    db_session.commit()
 
     pass
     queasy = Queasy()
-    db_session.add(queasy)
-
+    
+    db_session.commit()
     queasy.key = 285
     queasy.char1 = "Inhouse List Sum"
     queasy.number1 = 1
     queasy.number2 = to_int(idflag)
-
+    db_session.add(queasy)
 
     pass
     curr_time = get_current_time_in_seconds()
@@ -267,28 +274,19 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
     tot_payrm, tot_rm, tot_a, tot_c, tot_co, tot_avail, inactive, tot_keycard, output_list_data, s_list_data, t_buff_queasy_data = get_output(pj_inhouse4_btn_go_5_cldbl(1, from_date, to_date, curr_date, curr_gastnr, froom, troom, exc_depart, incl_gcomment, incl_rsvcomment, "PJ-inhouse2", disp_accompany, exc_compli, zikat_list_data))
 
     if sorttype == 1 or sorttype == 3:
-
         if sorttype == 1:
-
             for output_list in query(output_list_data, sort_by=[("nr",False)]):
                 counter = counter + 1
                 output_list.nr = counter
-
-
                 inhouse_guest_list = Inhouse_guest_list()
                 inhouse_guest_list_data.append(inhouse_guest_list)
-
                 buffer_copy(output_list, inhouse_guest_list)
         else:
-
             for output_list in query(output_list_data, sort_by=[("etage",False),("rmno",False)]):
                 counter = counter + 1
                 output_list.nr = counter
-
-
                 inhouse_guest_list = Inhouse_guest_list()
                 inhouse_guest_list_data.append(inhouse_guest_list)
-
                 buffer_copy(output_list, inhouse_guest_list)
     else:
 
@@ -301,7 +299,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
 
                 inhouse_guest_list.rmcat = output_list.company
 
-                for bufflist in query(bufflist_data, filters=(lambda bufflist: bufflist.company.lower()  == (company).lower())):
+                for bufflist in query(bufflist_data, filters=(lambda bufflist: bufflist.company  == (company))):
                     counter = counter + 1
                     inhouse_guest_list = Inhouse_guest_list()
                     inhouse_guest_list_data.append(inhouse_guest_list)
@@ -328,7 +326,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
 
             buffer_copy(output_list, tmplist)
 
-    for tmplist in query(tmplist_data, filters=(lambda tmplist: tmplist.rmno.lower()  >= (froom).lower()  and tmplist.rmno.lower()  <= (troom).lower())):
+    for tmplist in query(tmplist_data, filters=(lambda tmplist: tmplist.rmno  >= (froom)  and tmplist.rmno  <= (troom))):
 
         sum_list = query(sum_list_data, filters=(lambda sum_list: sum_list.curr == entry(0, tmplist.curr, ";")), first=True)
 
@@ -415,7 +413,6 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
 
     summary_nation.nat = "ROOM AVAILABLE"
     summary_nation.adult = to_string(tot_avail, ">>,>>9")
-
     if inactive != 0:
         summary_nation = Summary_nation()
         summary_nation_data.append(summary_nation)
@@ -437,7 +434,6 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
 
     summary_nation.nat = "AVRG GUEST/ROOM"
     summary_nation.adult = to_string((tot_a + tot_co) / tot_rm, ">>,>>9.99")
-
 
     summary_nation = Summary_nation()
     summary_nation_data.append(summary_nation)
@@ -482,7 +478,8 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
         bezeich = replace_str(bezeich, chr_unicode(13) , "")
         bemerk = replace_str(bemerk, chr_unicode(10) , "")
         bemerk = replace_str(bemerk, chr_unicode(13) , "")
-        bemerk = replace_str(bemerk, "|", "")
+        bemerk = replace_str(bemerk, "\\n", " ")
+        
         counter = counter + 1
 
 
@@ -964,7 +961,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
             tmp_zinr_bez = tmp_zinr_bez
         queasy = Queasy()
         db_session.add(queasy)
-
+        
         queasy.key = 280
         queasy.char1 = "Inhouse List"
         queasy.number2 = to_int(idflag)
@@ -1039,7 +1036,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
                 tmp_zinr_bez + "|" +\
                 to_string(inhouse_guest_list.flag_guest)
         queasy.number1 = counter
-
+        db_session.commit()
 
         pass
 
@@ -1071,7 +1068,6 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
             ct = ct + 1
             queasy = Queasy()
             db_session.add(queasy)
-
             queasy.key = 280
             queasy.char1 = "Inhouse List Sum"
             queasy.number1 = ct
@@ -1084,6 +1080,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
                     to_string(summary_roomtype.rev) + "|" +\
                     to_string(summary_roomtype.proz_rev) + "|" +\
                     to_string(summary_roomtype.arr)
+            db_session.commit()
 
 
         ct = 0
@@ -1132,7 +1129,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
             ct = ct + 1
             queasy = Queasy()
             db_session.add(queasy)
-
+            
             queasy.key = 280
             queasy.char1 = "Inhouse List Sum"
             queasy.number1 = ct
@@ -1142,7 +1139,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
                     tmp_adult + "|" +\
                     tmp_proz + "|" +\
                     tmp_child
-
+            db_session.commit()
 
         ct = 0
 
@@ -1155,7 +1152,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
                 tmp_currency = summary_revenue.currency
             queasy = Queasy()
             db_session.add(queasy)
-
+            
             queasy.key = 280
             queasy.char1 = "Inhouse List Sum"
             queasy.number1 = ct
@@ -1168,7 +1165,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
                     to_string(summary_revenue.l_amount) + "|" +\
                     to_string(summary_revenue.d_amount) + "|" +\
                     to_string(summary_revenue.o_amount)
-
+            db_session.commit()
 
         ct = 0
 
@@ -1181,7 +1178,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
                 tmp_segment = summary_segment.segment
             queasy = Queasy()
             db_session.add(queasy)
-
+            
             queasy.key = 280
             queasy.char1 = "Inhouse List Sum"
             queasy.number1 = ct
@@ -1194,7 +1191,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
                     to_string(summary_segment.rev) + "|" +\
                     to_string(summary_segment.proz_rev) + "|" +\
                     to_string(summary_segment.arr)
-
+            db_session.commit()
 
         ct = 0
 
@@ -1202,7 +1199,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
             ct = ct + 1
             queasy = Queasy()
             db_session.add(queasy)
-
+            
             queasy.key = 280
             queasy.char1 = "Inhouse List Sum"
             queasy.number1 = ct
@@ -1211,7 +1208,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
             queasy.char2 = summary_list4.argt + "|" +\
                     to_string(summary_list4.rm_qty) + "|" +\
                     to_string(summary_list4.pax)
-
+            db_session.commit()
 
         ct = 0
 
@@ -1224,7 +1221,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
                 tmp_sum_curr = sum_list.curr
             queasy = Queasy()
             db_session.add(queasy)
-
+            
             queasy.key = 280
             queasy.char1 = "Inhouse List Sum"
             queasy.number1 = ct
@@ -1237,6 +1234,7 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
                     to_string(sum_list.lunch) + "|" +\
                     to_string(sum_list.dinner) + "|" +\
                     to_string(sum_list.other)
+            db_session.commit()
 
     bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "inhouse list")],"number2": [(eq, to_int(idflag))]})
 
@@ -1258,4 +1256,5 @@ def pj_inhouse4_2_webbl(sorttype:int, from_date:date, to_date:date, froom:string
         pass
         pass
 
+    db_session.commit()
     return generate_output()
