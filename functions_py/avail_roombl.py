@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------
+# Rd 22/7/2025
+# zistatus kosong
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -69,11 +72,15 @@ def avail_roombl(mi_clean:bool, mi_clean1:bool, mi_dirty:bool, mi_depart:bool, m
 
             if not outorder:
 
-                res_line = get_cache (Res_line, {"active_flag": [(le, 1)],"resstatus": [(ne, 12)],"zinr": [(eq, zimmer.zinr)],"ankunft": [(ge, abreise)],"abreise": [(le, ankunft)]})
-
+                # res_line = get_cache (Res_line, {"active_flag": [(le, 1)],"resstatus": [(ne, 12)],"zinr": [(eq, zimmer.zinr)],"ankunft": [(ge, abreise)],"abreise": [(le, ankunft)]})
+                res_line = db_session.query(Res_line).filter(
+                         (Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.zinr == zimmer.zinr) & (Res_line.ankunft < abreise) & (Res_line.abreise > ankunft)).first()
                 if not res_line:
                     room_list = Room_list()
                     room_list_data.append(room_list)
+
+                    # Rd 22/7/2025, default infonum = 3
+                    room_list.infonum = 3
 
                     room_list.zinr = zimmer.zinr
 
@@ -82,6 +89,8 @@ def avail_roombl(mi_clean:bool, mi_clean1:bool, mi_dirty:bool, mi_depart:bool, m
                 else:
                     room_list = Room_list()
                     room_list_data.append(room_list)
+                    # Rd 22/7/2025, default infonum = 3
+                    room_list.infonum = 3
 
                     room_list.zinr = zimmer.zinr
 
@@ -99,6 +108,8 @@ def avail_roombl(mi_clean:bool, mi_clean1:bool, mi_dirty:bool, mi_depart:bool, m
             else:
                 room_list = Room_list()
                 room_list_data.append(room_list)
+                # Rd 22/7/2025, default infonum = 3
+                room_list.infonum = 3
 
                 room_list.zinr = zimmer.zinr
 
@@ -112,9 +123,13 @@ def avail_roombl(mi_clean:bool, mi_clean1:bool, mi_dirty:bool, mi_depart:bool, m
 
     for room_list in query(room_list_data):
 
-        zimmer = get_cache (Zimmer, {"zinr": [(eq, room_list.zinr)]})
+        # zimmer = get_cache (Zimmer, {"zinr": [(eq, room_list.zinr)]})
+        zimmer = db_session.query(Zimmer).filter(
+                 (Zimmer.zinr == room_list.zinr)).first()
 
-        zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+        # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+        zimkateg = db_session.query(Zimkateg).filter(
+                 (Zimkateg.zikatnr == zimmer.zikatnr)).first()
 
         if zimmer.build != "":
             room_list.build = zimmer.build
@@ -140,13 +155,17 @@ def avail_roombl(mi_clean:bool, mi_clean1:bool, mi_dirty:bool, mi_depart:bool, m
             if paramtext:
                 room_list.setup = paramtext.ptexte
 
-        zimplan = get_cache (Zimplan, {"zinr": [(eq, room_list.zinr)],"datum": [(eq, ankunft - timedelta(days=1))]})
+        # zimplan = get_cache (Zimplan, {"zinr": [(eq, room_list.zinr)],"datum": [(eq, ankunft - timedelta(days=1))]})
+        zimplan = db_session.query(Zimplan).filter(
+                 (Zimplan.zinr == room_list.zinr) & (Zimplan.datum == (ankunft - timedelta(days=1)))).first()
 
         if zimplan:
             room_list.infonum = room_list.infonum - 2
             room_list.recid1 = zimplan.res_recid
 
-        zimplan = get_cache (Zimplan, {"zinr": [(eq, room_list.zinr)],"datum": [(eq, abreise)]})
+        # zimplan = get_cache (Zimplan, {"zinr": [(eq, room_list.zinr)],"datum": [(eq, abreise)]})
+        zimplan = db_session.query(Zimplan).filter(
+                 (Zimplan.zinr == room_list.zinr) & (Zimplan.datum == abreise)).first()
 
         if zimplan:
             room_list.infonum = room_list.infonum - 1
@@ -164,20 +183,25 @@ def avail_roombl(mi_clean:bool, mi_clean1:bool, mi_dirty:bool, mi_depart:bool, m
         if zimmer.zistatus == 8:
             room_list.zistat = 5
         else:
-            room_list.zistat = zimmer.zistatus + 1
+            room_list.zistatus = zimmer.zistatus + 1
 
         if room_list.flag == 7:
-            room_list.zistat = 8
+            room_list.zistatus = 8
 
     for room_list in query(room_list_data):
 
         if substring(room_list.infochar, 0, 1) == "<":
 
-            res_line = get_cache (Res_line, {"_recid": [(eq, room_list.recid1)]})
+            # res_line = get_cache (Res_line, {"_recid": [(eq, room_list.recid1)]})
+            res_line = db_session.query(Res_line).filter(
+                     (Res_line._recid == room_list.recid1)).first() 
 
             if res_line:
 
-                guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+                # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+                guest = db_session.query(Guest).filter(
+                         (Guest.gastnr == res_line.gastnrpay)).first()
+                
                 room_list.infostr = room_list.infostr +\
                         "< ResNo: " +\
                         to_string(res_line.resnr) + chr_unicode(10)
@@ -190,11 +214,15 @@ def avail_roombl(mi_clean:bool, mi_clean1:bool, mi_dirty:bool, mi_depart:bool, m
 
         if substring(room_list.infochar, 1, 1) == ">":
 
-            res_line = get_cache (Res_line, {"_recid": [(eq, room_list.recid2)]})
+            # res_line = get_cache (Res_line, {"_recid": [(eq, room_list.recid2)]})
+            res_line = db_session.query(Res_line).filter(
+                     (Res_line._recid == room_list.recid2)).first()
 
             if res_line:
 
-                guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+                # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+                guest = db_session.query(Guest).filter(
+                         (Guest.gastnr == res_line.gastnrpay)).first()
                 room_list.infostr = room_list.infostr +\
                         "> ResNo: " +\
                         to_string(res_line.resnr) + chr_unicode(10)
@@ -205,7 +233,9 @@ def avail_roombl(mi_clean:bool, mi_clean1:bool, mi_dirty:bool, mi_depart:bool, m
 
         if room_list.zistatus == 7:
 
-            outorder = get_cache (Outorder, {"zinr": [(eq, room_list.zinr)]})
+            # outorder = get_cache (Outorder, {"zinr": [(eq, room_list.zinr)]})
+            outorder = db_session.query(Outorder).filter(
+                     (Outorder.zinr == room_list.zinr)).first()
 
             if outorder:
 
@@ -215,7 +245,9 @@ def avail_roombl(mi_clean:bool, mi_clean1:bool, mi_dirty:bool, mi_depart:bool, m
 
         if room_list.zistatus == 8:
 
-            outorder = get_cache (Outorder, {"zinr": [(eq, room_list.zinr)]})
+            # outorder = get_cache (Outorder, {"zinr": [(eq, room_list.zinr)]})
+            outorder = db_session.query(Outorder).filter(
+                     (Outorder.zinr == room_list.zinr)).first()
 
             if outorder:
 
