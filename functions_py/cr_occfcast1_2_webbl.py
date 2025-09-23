@@ -210,7 +210,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
             room_list.wd = wd
             room_list.datum = datum
-            room_list.bezeich = " " + week_list[wd - 1] + " " + to_string(datum) + rsvstat
+            room_list.bezeich = " " + week_list[wd - 1] + " " + to_string(datum, '%d/%m/%y') + rsvstat
 
             for kontline in db_session.query(Kontline).filter(
                      (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
@@ -460,12 +460,30 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             exchg_rate =  to_decimal("1")
         d2 = d2 + timedelta(days=1)
 
+        #-----------------------
+        # data stlh tgl ci_date
+        #-----------------------
         if to_date >= ci_date:
-
+            
             for res_line in db_session.query(Res_line).filter(
-                     (((Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.active_flag <= 1) & (Res_line.ankunft <= to_date) & (Res_line.abreise >= d2))) | (((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.ankunft == ci_date) & (Res_line.abreise == ci_date)) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.abreise == ci_date))) & (Res_line.gastnr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.resnr, Res_line.reslinnr.desc()).all():
+                     (((Res_line.resstatus <= 13) & 
+                       (Res_line.resstatus != 4) & 
+                       (Res_line.resstatus != 8) & 
+                       (Res_line.resstatus != 9) & 
+                       (Res_line.resstatus != 10) & 
+                       (Res_line.resstatus != 12) & 
+                       (Res_line.active_flag <= 1) & 
+                       (Res_line.ankunft <= to_date) & 
+                       (Res_line.abreise >= d2))) | (((Res_line.active_flag == 2) & 
+                    (Res_line.resstatus == 8) & 
+                    (Res_line.ankunft == ci_date) & 
+                    (Res_line.abreise == ci_date)) | ((Res_line.active_flag == 2) & 
+                                                      (Res_line.resstatus == 8) & 
+                                                      (Res_line.abreise == ci_date))) & (Res_line.gastnr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0))\
+                .order_by(Res_line.resnr, Res_line.reslinnr.desc()).all():
 
-                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
                 curr_i = 0
                 dayuse_flag = False
 
@@ -473,15 +491,24 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                     do_it = True
                 else:
 
-                    segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                    # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                    segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
+
                     do_it = None != segment and segment.vip_level == 0
 
                 if do_it and res_line.resstatus == 8 and res_line.ankunft == ci_date and res_line.abreise == ci_date:
                     dayuse_flag = True
 
-                    arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                    # arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                    arrangement = db_session.query(Arrangement).filter(Arrangement.arrangement == res_line.arrangement.strip()).first()
 
-                    bill_line = get_cache (Bill_line, {"departement": [(eq, 0)],"artnr": [(eq, arrangement.argt_artikelnr)],"bill_datum": [(eq, ci_date)],"massnr": [(eq, res_line.resnr)],"billin_nr": [(eq, res_line.reslinnr)]})
+                    bill_line = db_session.query(Bill_line).filter(
+                        Bill_line.departement == 0,
+                        Bill_line.artnr == arrangement.argt_artikelnr,
+                        Bill_line.bill_datum == ci_date,
+                        Bill_line.massnr == res_line.resnr,
+                        Bill_line.billin_nr == res_line.reslinnr
+                    ).first()
                     do_it = None != bill_line
 
                 if do_it and not all_segm:
@@ -503,7 +530,13 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
                 if do_it and zimmer:
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, datum)],"date2": [(ge, datum)]})
+                    # queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, datum)],"date2": [(ge, datum)]})
+                    queasy = db_session.query(Queasy).filter(
+                        (Queasy.key == 14) &
+                        (Queasy.char1 == res_line.zinr) &
+                        (Queasy.date1 <= datum) &
+                        (Queasy.date2 >= datum)
+                    ).first()
 
                     if zimmer.sleeping:
 
@@ -575,7 +608,14 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
                         if res_line.zipreis != 0:
 
-                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, datum)],"date2": [(ge, datum)]})
+                            # reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, datum)],"date2": [(ge, datum)]})
+                            reslin_queasy = db_session.query(Reslin_queasy).filter(
+                                (Reslin_queasy.key == "arrangement") &
+                                (Reslin_queasy.resnr == res_line.resnr) &
+                                (Reslin_queasy.reslinnr == res_line.reslinnr) &
+                                (Reslin_queasy.date1 <= datum) &
+                                (Reslin_queasy.date2 >= datum)  
+                            ).first()
 
                             if reslin_queasy and reslin_queasy.number3 != 0:
                                 pax = reslin_queasy.number3
@@ -587,7 +627,13 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
                             if res_line.zimmerfix:
 
-                                rline1 = get_cache (Res_line, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(ne, res_line.reslinnr)],"resstatus": [(eq, 8)],"abreise": [(ge, datum)]})
+                                # rline1 = get_cache (Res_line, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(ne, res_line.reslinnr)],"resstatus": [(eq, 8)],"abreise": [(ge, datum)]})
+                                rline1 = db_session.query(Res_line).filter(
+                                    (Res_line.resnr == res_line.resnr) &    
+                                    (Res_line.reslinnr != res_line.reslinnr) &
+                                    (Res_line.resstatus == 8) &
+                                    (Res_line.abreise >= datum)
+                                ).first()
 
                                 if rline1:
                                     consider_it = False
@@ -653,10 +699,9 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                             tot_fixcost2 =  to_decimal(tot_fixcost2) + to_decimal((fcost) / to_decimal(exchg_rate) )
                                             tot_fixcost =  to_decimal(tot_fixcost) + to_decimal(fcost)
 
-                                arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
-
+                                # arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                                arrangement = db_session.query(Arrangement).filter(Arrangement.arrangement == res_line.arrangement.strip()).first()
                                 if arrangement:
-
                                     for argt_line in db_session.query(Argt_line).filter(
                                              (Argt_line.argtnr == arrangement.argtnr) & (Argt_line.kind2)).order_by(Argt_line._recid).all():
 
@@ -701,7 +746,11 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
                                         if post_it:
 
-                                            artikel = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
+                                            # artikel = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
+                                            artikel = db_session.query(Artikel).filter(
+                                                (Artikel.artnr == argt_line.argt_artnr) &
+                                                (Artikel.departement == argt_line.departement)  
+                                            ).first()
 
                                             if artikel:
                                                 service, vat = get_output(calc_servvat(artikel.departement, artikel.artnr, datum, artikel.service_code, artikel.mwst_code))
@@ -789,8 +838,14 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                             (pax + res_line.kind1 + res_line.kind2 + res_line.l_zuordnung[3] +\
                                             res_line.gratis) * res_line.zimmeranz
 
-                                    kontline = get_cache (Kontline, {"gastnr": [(eq, res_line.gastnr)],"ankunft": [(eq, datum)],"zikatnr": [(eq, res_line.zikatnr)],"betriebsnr": [(eq, 1)],"kontstatus": [(eq, 1)]})
-
+                                    # kontline = get_cache (Kontline, {"gastnr": [(eq, res_line.gastnr)],"ankunft": [(eq, datum)],"zikatnr": [(eq, res_line.zikatnr)],"betriebsnr": [(eq, 1)],"kontstatus": [(eq, 1)]})
+                                    kontline = db_session.query(Kontline).filter(
+                                            (Kontline.gastnr == res_line.gastnr) &
+                                            (Kontline.ankunft == datum) &
+                                            (Kontline.zikatnr == res_line.zikatnr) &
+                                            (Kontline.betriebsnr == 1) &
+                                            (Kontline.kontstatus == 1)  
+                                        ).first()
                                     if kontline:
                                         room_list.k_pax = room_list.k_pax +\
                                                 (pax + res_line.kind1 + res_line.kind2 + res_line.l_zuordnung[3] +\
@@ -805,7 +860,9 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
                                 if res_line.ankunft <= res_line.abreise or dayuse_flag:
 
-                                    if res_line.resstatus != 11 and res_line.resstatus != 13 and (res_line.resstatus != 3 or (res_line.resstatus == 3 and incl_tent)) and not res_line.zimmerfix:
+                                    if res_line.resstatus != 11 and \
+                                            res_line.resstatus != 13 and \
+                                            (res_line.resstatus != 3 or (res_line.resstatus == 3 and incl_tent)) and not res_line.zimmerfix:
                                         room_list.room[6] = room_list.room[6] + res_line.zimmeranz
                                         room_list.lodg[3] = room_list.lodg[3] + net_lodg
                                         room_list.lodg[5] = room_list.lodg[3] / exchg_rate
@@ -833,8 +890,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                             (pax + res_line.kind1 + res_line.kind2 + res_line.l_zuordnung[3] +\
                                             res_line.gratis) * res_line.zimmeranz
 
+                            #--------------------------
                             if datum == res_line.abreise and (res_line.resstatus != 3 or (res_line.resstatus == 3 and incl_tent)) and consider_it:
-
                                 if res_line.resstatus != 11 and res_line.resstatus != 13 and not res_line.zimmerfix:
                                     room_list.room[4] = room_list.room[4] + res_line.zimmeranz
                                     room_list.lodg[2] = room_list.lodg[2] + net_lodg
@@ -849,17 +906,23 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                 rm_array[5] = rm_array[5] +\
                                         (pax + res_line.kind1 + res_line.kind2 + res_line.l_zuordnung[3] +\
                                         res_line.gratis) * res_line.zimmeranz
+                            #--------------------------
+                            if (res_line.resstatus != 3 or (res_line.resstatus == 3 and incl_tent)) and \
+                                    res_line.resstatus != 4 and \
+                                    consider_it and \
+                                    (res_line.abreise > res_line.ankunft and \
+                                     res_line.ankunft != datum and \
+                                     res_line.abreise != datum):
 
-                            if (res_line.resstatus != 3 or (res_line.resstatus == 3 and incl_tent)) and res_line.resstatus != 4 and consider_it and (res_line.abreise > res_line.ankunft and res_line.ankunft != datum and res_line.abreise != datum):
-
-                                if res_line.resstatus != 11 and res_line.resstatus != 13 and (res_line.resstatus != 3 or (res_line.resstatus == 3 and incl_tent)) and not res_line.zimmerfix:
+                                if res_line.resstatus != 11 and \
+                                    res_line.resstatus != 13 and \
+                                    (res_line.resstatus != 3 or (res_line.resstatus == 3 and incl_tent)) and \
+                                    not res_line.zimmerfix:
                                     room_list.room[6] = room_list.room[6] + res_line.zimmeranz
                                     room_list.lodg[3] = room_list.lodg[3] + net_lodg
                                     room_list.lodg[5] = room_list.lodg[3] / exchg_rate
                                     rm_array[6] = rm_array[6] + res_line.zimmeranz
                                     t_lodg[3] = t_lodg[3] + net_lodg
-
-
                                     t_lodg[5] = t_lodg[5] + (net_lodg / exchg_rate)
 
                                     if res_line.erwachs == 0 and res_line.gratis > 0 and res_line.zipreis == 0:
@@ -888,8 +951,6 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                 if (res_line.kontignr < 0) and kont_doit:
                                     room_list.room[15] = room_list.room[15] - res_line.zimmeranz
                                     rm_array[15] = rm_array[15] - res_line.zimmeranz
-
-
                                     room_list.room[16] = room_list.room[16] -\
                                             (pax + res_line.kind1 + res_line.kind2 + res_line.l_zuordnung[3] +\
                                             res_line.gratis) * res_line.zimmeranz
@@ -897,8 +958,14 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                             (pax + res_line.kind1 + res_line.kind2 + res_line.l_zuordnung[3] +\
                                             res_line.gratis) * res_line.zimmeranz
 
-                                    kontline = get_cache (Kontline, {"gastnr": [(eq, res_line.gastnr)],"ankunft": [(eq, datum)],"zikatnr": [(eq, res_line.zikatnr)],"betriebsnr": [(eq, 1)],"kontstatus": [(eq, 1)]})
-
+                                    # kontline = get_cache (Kontline, {"gastnr": [(eq, res_line.gastnr)],"ankunft": [(eq, datum)],"zikatnr": [(eq, res_line.zikatnr)],"betriebsnr": [(eq, 1)],"kontstatus": [(eq, 1)]})
+                                    kontline = db_session.query(Kontline).filter(
+                                                    (Kontline.gastnr == res_line.gastnr) &
+                                                    (Kontline.ankunft == datum) &
+                                                    (Kontline.zikatnr == res_line.zikatnr) &
+                                                    (Kontline.betriebsnr == 1) &
+                                                    (Kontline.kontstatus == 1)
+                                                ).first()
                                     if kontline:
                                         room_list.k_pax = room_list.k_pax +\
                                                 (pax + res_line.kind1 + res_line.kind2 + res_line.l_zuordnung[3] +\
@@ -917,8 +984,6 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                 room_list.t_pax = room_list.t_pax + (res_line.erwachs * res_line.zimmeranz)
                                 tent_pers = tent_pers + (res_line.erwachs * res_line.zimmeranz)
                                 room_list.lodg[3] = room_list.lodg[3] + net_lodg
-
-
                                 room_list.lodg[5] = room_list.lodg[3] / exchg_rate
 
                                 if res_line.erwachs == 0 and res_line.gratis > 0 and res_line.zipreis == 0:
@@ -943,6 +1008,11 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                     if kontline and datum >= (ci_date + timedelta(days=kontline.ruecktage)):
                                         room_list.room[13] = room_list.room[13] - res_line.zimmeranz
                                         rm_array[13] = rm_array[13] - res_line.zimmeranz
+
+
+        
+        
+         #-----------------------
 
         for datum in date_range(d2,to_date) :
 
@@ -1664,7 +1734,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
             room_list.wd = wd
             room_list.datum = datum
-            room_list.bezeich = " " + week_list[wd - 1] + " " + to_string(datum) + rsvstat
+            room_list.bezeich = " " + week_list[wd - 1] + " " + to_string(datum, '%d/%m/%y') + rsvstat
 
             for kontline in db_session.query(Kontline).filter(
                      (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
@@ -1691,7 +1761,9 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
             if curr_resnr != res_line.resnr:
 
-                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
+
                 curr_resnr = res_line.resnr
                 curr_segm = reservation.segmentcode
 
@@ -2768,7 +2840,6 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
         def generate_inner_output():
             return (active_room)
 
-
         if curr_datum >= ci_date:
             active_room = actual_tot_room
 
@@ -2858,7 +2929,6 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
         nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
-
 
         nonlocal room_list, segm_list, argt_list, zikat_list, outlook_list, print_list, print_list2, print_list3, argt6_list, rline1, active_rm_list, dayuse_list, s_list, a_list, z_list, o_list, bsegm, bargt, broom, s_list, a_list, z_list, o_list, s_list, z_list
         nonlocal room_list_data, print_list_data, print_list2_data, print_list3_data, argt6_list_data, active_rm_list_data, dayuse_list_data
