@@ -47,6 +47,7 @@ def rm_fbyguest_btn_gobl(sum_month:bool, fr_date:date, to_date:date, to_year:int
     boutput1_data = output_list1_data
 
     db_session = local_storage.db_session
+    
 
     def generate_output():
         nonlocal output_list_data, output_list1_data, black_list, counter, ci_date, curr_date, tot_rm, trm, tot_rev, trev, do_it, trev1, trm1, loopi, htparam, zimkateg, guest, genstat, reservation, res_line, arrangement, bill_line, zimmer, queasy
@@ -91,25 +92,33 @@ def rm_fbyguest_btn_gobl(sum_month:bool, fr_date:date, to_date:date, to_year:int
         else:
             tdate = ci_date - timedelta(days=1)
 
-        if guest_type.lower()  == ("ALL").lower() :
+        if guest_type  == ("ALL") :
             guest_type_char = "**"
 
-        elif guest_type.lower()  == ("INDIVIDUAL").lower() :
+        elif guest_type  == ("INDIVIDUAL") :
             guest_type_char = "0"
 
-        elif guest_type.lower()  == ("COMPANY").lower() :
+        elif guest_type  == ("COMPANY") :
             guest_type_char = "1"
 
-        elif guest_type.lower()  == ("AGENCY").lower() :
+        elif guest_type  == ("AGENCY") :
             guest_type_char = "2"
 
         genstat_obj_list = {}
-        for genstat, zimkateg, guest in db_session.query(Genstat, Zimkateg, Guest).join(Zimkateg,(Zimkateg.zikatnr == Genstat.zikatnr)).join(Guest,(Guest.gastnr == Genstat.gastnr) & (matches(to_string(Guest.karteityp),guest_type_char))).filter(
-                 (Genstat.datum >= fr_date) & (Genstat.datum <= tdate) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)]) & (Genstat.resstatus != 13)).order_by(Guest.karteityp, Guest.name).all():
-            if genstat_obj_list.get(genstat._recid):
-                continue
-            else:
-                genstat_obj_list[genstat._recid] = True
+        for genstat, zimkateg, guest in db_session.query(Genstat, Zimkateg, Guest)\
+            .join(Zimkateg,(Zimkateg.zikatnr == Genstat.zikatnr))\
+            .join(Guest,(Guest.gastnr == Genstat.gastnr) & (matches(to_string(Guest.karteityp),guest_type_char)))\
+            .filter(
+                 (Genstat.datum >= fr_date) & (Genstat.datum <= tdate) & 
+                 (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & 
+                 (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)]) & 
+                 (Genstat.resstatus != 13))\
+            .order_by(Guest.karteityp, Guest.name).all():
+
+            # if genstat_obj_list.get(genstat._recid):
+            #     continue
+            # else:
+            #     genstat_obj_list[genstat._recid] = True
 
             if ex_comp:
 
@@ -152,17 +161,21 @@ def rm_fbyguest_btn_gobl(sum_month:bool, fr_date:date, to_date:date, to_year:int
 
                 if do_it and res_line.resstatus == 8 and res_line.ankunft == ci_date and res_line.abreise == ci_date:
 
-                    arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                    # arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                    arrangement = db_session.query(Arrangement).filter(Arrangement.arrangement == res_line.arrangement.strip()).first()
 
-                    bill_line = get_cache (Bill_line, {"departement": [(eq, 0)],"artnr": [(eq, arrangement.argt_artikelnr)],"bill_datum": [(eq, ci_date)],"massnr": [(eq, res_line.resnr)],"billin_nr": [(eq, res_line.reslinnr)]})
+
+                    # bill_line = get_cache (Bill_line, {"departement": [(eq, 0)],"artnr": [(eq, arrangement.argt_artikelnr)],"bill_datum": [(eq, ci_date)],"massnr": [(eq, res_line.resnr)],"billin_nr": [(eq, res_line.reslinnr)]})
+                    bill_line = db_session.query(Bill_line).filter(Bill_line.departement == 0, Bill_line.artnr == arrangement.argt_artikelnr, Bill_line.bill_datum == ci_date, Bill_line.massnr == res_line.resnr, Bill_line.billin_nr == res_line.reslinnr).first()
                     do_it = None != bill_line
 
-                zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == res_line.zinr).first()
 
                 if do_it and zimmer:
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
-
+                    # queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
+                    queasy = db_session.query(Queasy).filter(Queasy.key == 14, Queasy.char1 == res_line.zinr, Queasy.date1 <= fr_date - timedelta(days=1), Queasy.date2 >= fr_date - timedelta(days=1)).first()
                     if zimmer.sleeping:
 
                         if queasy and queasy.number3 == res_line.gastnr:
@@ -261,16 +274,16 @@ def rm_fbyguest_btn_gobl(sum_month:bool, fr_date:date, to_date:date, to_year:int
         tot_service:Decimal = to_decimal("0.0")
         guest_type_char:string = ""
 
-        if guest_type.lower()  == ("ALL").lower() :
+        if guest_type  == ("ALL") :
             guest_type_char = "**"
 
-        elif guest_type.lower()  == ("INDIVIDUAL").lower() :
+        elif guest_type  == ("INDIVIDUAL") :
             guest_type_char = "0"
 
-        elif guest_type.lower()  == ("COMPANY").lower() :
+        elif guest_type  == ("COMPANY") :
             guest_type_char = "1"
 
-        elif guest_type.lower()  == ("AGENCY").lower() :
+        elif guest_type  == ("AGENCY") :
             guest_type_char = "2"
 
         res_line_obj_list = {}
@@ -286,12 +299,15 @@ def rm_fbyguest_btn_gobl(sum_month:bool, fr_date:date, to_date:date, to_year:int
 
             if do_it and res_line.resstatus == 8 and res_line.ankunft == ci_date and res_line.abreise == ci_date:
 
-                arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                # arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                arrangement = db_session.query(Arrangement).filter(Arrangement.arrangement == res_line.arrangement.strip()).first()
 
-                bill_line = get_cache (Bill_line, {"departement": [(eq, 0)],"artnr": [(eq, arrangement.argt_artikelnr)],"bill_datum": [(eq, ci_date)],"massnr": [(eq, res_line.resnr)],"billin_nr": [(eq, res_line.reslinnr)]})
+                # bill_line = db_session.query(Bill_line).filter(Bill_line.departement == 0, Bill_line.artnr == arrangement.argt_artikelnr, Bill_line.bill_datum == ci_date, Bill_line.massnr == res_line.resnr, Bill_line.billin_nr == res_line.reslinnr).first()
+                bill_line = db_session.query(Bill_line).filter(Bill_line.departement == 0, Bill_line.artnr == arrangement.argt_artikelnr, Bill_line.bill_datum == ci_date, Bill_line.massnr == res_line.resnr, Bill_line.billin_nr == res_line.reslinnr).first()
                 do_it = None != bill_line
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+            zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == res_line.zinr).first()
 
             if do_it and zimmer:
 
@@ -397,16 +413,16 @@ def rm_fbyguest_btn_gobl(sum_month:bool, fr_date:date, to_date:date, to_year:int
         todate:date = None
         guest_type_char:string = ""
 
-        if guest_type.lower()  == ("ALL").lower() :
+        if guest_type  == ("ALL") :
             guest_type_char = "**"
 
-        elif guest_type.lower()  == ("INDIVIDUAL").lower() :
+        elif guest_type  == ("INDIVIDUAL") :
             guest_type_char = "0"
 
-        elif guest_type.lower()  == ("COMPANY").lower() :
+        elif guest_type  == ("COMPANY") :
             guest_type_char = "1"
 
-        elif guest_type.lower()  == ("AGENCY").lower() :
+        elif guest_type  == ("AGENCY") :
             guest_type_char = "2"
         frdate = date_mdy(1, 1, to_year)
         todate = date_mdy(12, 31, to_year)
@@ -460,12 +476,15 @@ def rm_fbyguest_btn_gobl(sum_month:bool, fr_date:date, to_date:date, to_year:int
 
                 if do_it and res_line.resstatus == 8 and res_line.ankunft == ci_date and res_line.abreise == ci_date:
 
-                    arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                    # arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                    arrangement = db_session.query(Arrangement).filter(Arrangement.arrangement == res_line.arrangement.strip()).first()
 
-                    bill_line = get_cache (Bill_line, {"departement": [(eq, 0)],"artnr": [(eq, arrangement.argt_artikelnr)],"bill_datum": [(eq, ci_date)],"massnr": [(eq, res_line.resnr)],"billin_nr": [(eq, res_line.reslinnr)]})
+                    # bill_line = db_session.query(Bill_line).filter(Bill_line.departement == 0, Bill_line.artnr == arrangement.argt_artikelnr, Bill_line.bill_datum == ci_date, Bill_line.massnr == res_line.resnr, Bill_line.billin_nr == res_line.reslinnr).first()
+                    bill_line = db_session.query(Bill_line).filter(Bill_line.departement == 0, Bill_line.artnr == arrangement.argt_artikelnr, Bill_line.bill_datum == ci_date, Bill_line.massnr == res_line.resnr, Bill_line.billin_nr == res_line.reslinnr).first()
                     do_it = None != bill_line
 
-                zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == res_line.zinr).first()
 
                 if do_it and zimmer:
 
@@ -572,16 +591,16 @@ def rm_fbyguest_btn_gobl(sum_month:bool, fr_date:date, to_date:date, to_year:int
         todate:date = None
         guest_type_char:string = ""
 
-        if guest_type.lower()  == ("ALL").lower() :
+        if guest_type  == ("ALL") :
             guest_type_char = "**"
 
-        elif guest_type.lower()  == ("INDIVIDUAL").lower() :
+        elif guest_type  == ("INDIVIDUAL") :
             guest_type_char = "0"
 
-        elif guest_type.lower()  == ("COMPANY").lower() :
+        elif guest_type  == ("COMPANY") :
             guest_type_char = "1"
 
-        elif guest_type.lower()  == ("AGENCY").lower() :
+        elif guest_type  == ("AGENCY") :
             guest_type_char = "2"
         frdate = date_mdy(1, 1, to_year)
         todate = date_mdy(12, 31, to_year)
@@ -599,17 +618,21 @@ def rm_fbyguest_btn_gobl(sum_month:bool, fr_date:date, to_date:date, to_year:int
 
             if do_it and res_line.resstatus == 8 and res_line.ankunft == ci_date and res_line.abreise == ci_date:
 
-                arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                # arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                arrangement = db_session.query(Arrangement).filter(Arrangement.arrangement == res_line.arrangement.strip()).first()
 
-                bill_line = get_cache (Bill_line, {"departement": [(eq, 0)],"artnr": [(eq, arrangement.argt_artikelnr)],"bill_datum": [(eq, ci_date)],"massnr": [(eq, res_line.resnr)],"billin_nr": [(eq, res_line.reslinnr)]})
+
+                # bill_line = get_cache (Bill_line, {"departement": [(eq, 0)],"artnr": [(eq, arrangement.argt_artikelnr)],"bill_datum": [(eq, ci_date)],"massnr": [(eq, res_line.resnr)],"billin_nr": [(eq, res_line.reslinnr)]})
+                bill_line = db_session.query(Bill_line).filter(Bill_line.departement == 0, Bill_line.artnr == arrangement.argt_artikelnr, Bill_line.bill_datum == ci_date, Bill_line.massnr == res_line.resnr, Bill_line.billin_nr == res_line.reslinnr).first()
                 do_it = None != bill_line
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+            zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == res_line.zinr).first()
 
             if do_it and zimmer:
 
-                queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})
-
+                # queasy = db_session.query(Queasy).filter(Queasy.key == 14, Queasy.char1 == res_line.zinr, Queasy.date1 <= fr_date - timedelta(days=1), Queasy.date2 >= fr_date - timedelta(days=1)).first()
+                queasy = get_cache (Queasy, {"key": [(eq, 14)],"char1": [(eq, res_line.zinr)],"date1": [(le, fr_date - timedelta(days=1))],"date2": [(ge, fr_date - timedelta(days=1))]})   
                 if zimmer.sleeping:
 
                     if queasy and queasy.number3 == res_line.gastnr:

@@ -54,12 +54,15 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
 
     db_session = local_storage.db_session
 
-    # try:
-    #     to_name = to_name.strip()
-    #     from_name = from_name.strip()
-    # except:
-    #     to_name = ""
-    #     from_name = ""
+    # from_name = from_name.strip()
+    # to_name = to_name.strip()
+
+    try:
+        to_name = to_name.strip()
+        from_name = from_name.strip()
+    except:
+        to_name = ""
+        from_name = ""
 
 
 
@@ -89,7 +92,7 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
         age_list_data.clear()
         output_list_data.clear()
 
-        if from_name == None and to_name == None:
+        if from_name == "" and to_name == "":
 
             l_kredit_obj_list = {}
             l_kredit = L_kredit()
@@ -743,7 +746,6 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
         nonlocal output_list1_data, lvcarea, outlist, supplier, curr_name, curr_liefnr, counter, price_decimal, t_saldo, t_debt0, t_debt1, t_debt2, t_debt3, debt0, debt1, debt2, debt3, tot_debt, t_debet, t_credit, t_comm, t_adjust, l_kredit, l_lieferant, queasy
         nonlocal pvilanguage, to_date, from_name, to_name, day1, day2, day3, curr_disp, round_zero, segm
 
-
         nonlocal age_list, output_list, output_list1
         nonlocal age_list_data, output_list_data, output_list1_data
 
@@ -840,12 +842,15 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
             fill_in_list()
         outlist = "-------------------------------------------------------------------------------------------------------------------------------------------------"
         fill_in_list()
-        outlist = to_string(translateExtended ("           T O T A L  A/P:", lvcarea, "") , "x(26)") + "                  " + to_string(t_saldo, "->>,>>>,>>>,>>9.99") + "             " + to_string(t_debt0, "->>,>>>,>>>,>>9.99") + "             " + to_string(t_debt1, "->>,>>>,>>>,>>9.99") + "             " + to_string(t_debt2, "->>,>>>,>>>,>>9.99") + "             " + to_string(t_debt3, "->>,>>>,>>>,>>9.99")
+
+        outlist = "  " + "    " + "  " +  format_fixed_length("T O T A L  A/P:" , 34) + "  " + to_string(t_saldo, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt0, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt1, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt2, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt3, "->>,>>>,>>>,>>9.99")
         fill_in_list()
         outlist = ""
         fill_in_list()
-        
-        outlist = to_string(translateExtended ("        Statistic Percentage (%) :", lvcarea, "") , "x(33)") + "                      " + "100.00" + "             " + to_string((t_debt0 / t_saldo * 100) , "->>9.99") + "             " + to_string((t_debt1 / t_saldo * 100) , "->>9.99") + "             " + to_string((t_debt2 / t_saldo * 100) , "->>9.99") + "             " + to_string((t_debt3 / t_saldo * 100) , "->>9.99")
+        if t_saldo != 0:
+            outlist = to_string(translateExtended ("        Statistic Percentage (%) :", lvcarea, "") , "x(33)") + "                      " + "100.00" + "             " + to_string((t_debt0 / t_saldo * 100) , "->>9.99") + "             " + to_string((t_debt1 / t_saldo * 100) , "->>9.99") + "             " + to_string((t_debt2 / t_saldo * 100) , "->>9.99") + "             " + to_string((t_debt3 / t_saldo * 100) , "->>9.99")
+        else:
+            outlist = to_string(translateExtended ("        Statistic Percentage (%) :", lvcarea, "") , "x(33)") + "                      " + "100.00" + "             " + to_string(0 , "->>9.99") + "             " + to_string(0 , "->>9.99") + "             " + to_string(0 , "->>9.99") + "             " + to_string(0 , "->>9.99")
         
         fill_in_list()
         outlist = ""
@@ -913,3 +918,8 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
     create_outputlist1()
 
     return generate_output()
+
+"""
+    55  UD YUS,                                  1,846,500.00               0.00               0.00               0.00       1,846,500.00  
+        T O T A L  A/P:                     302,361,550.00                          0.00                          0.00                          0.00                302,361,550.00
+"""
