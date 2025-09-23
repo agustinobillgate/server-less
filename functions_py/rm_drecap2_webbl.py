@@ -15,6 +15,10 @@ from functions.get_room_breakdown import get_room_breakdown
 from functions.calc_servvat import calc_servvat
 from models import Htparam, Zimmer, Zkstat, Zinrstat, Genstat, Segment, Guestseg, Reservation, Res_line, Outorder, Artikel, Umsatz
 
+def safe_divide(numerator, denominator):
+    numerator, denominator = to_decimal(numerator), to_decimal(denominator)
+    return (numerator / denominator) if denominator not in (0, None) else to_decimal("0")
+
 # def rm_drecap2_webbl(pvilanguage:int, opening_date:date, from_date:date, to_date:date, fdate:date, tdate:date, segmtype_exist:bool, mi_mtd_chk:bool, mi_ftd_chk:bool, mi_exchu_chk:bool,  mi_exccomp_chk:bool, long_digit:bool):
 def rm_drecap2_webbl(pvilanguage:int, opening_date:date, from_date:date, to_date:date, fdate:date, tdate:date, segmtype_exist:bool, mi_mtd_chk:bool, mi_ftd_chk:bool, mi_exc_h_u_chk:bool,  mi_exc_comp_chk:bool, long_digit:bool):
 
@@ -231,7 +235,7 @@ def rm_drecap2_webbl(pvilanguage:int, opening_date:date, from_date:date, to_date
 
         # Rd 29/7/2025
         # mtd_totrm = 0 mtd_act == 0 ytd_act == 0 ytd_totrm == 0
-        mtd_totrm = mtd_act = ytd_act = ytd_totrm == 0
+        mtd_totrm = mtd_act = ytd_act = ytd_totrm = 0
 
         for zimmer in db_session.query(Zimmer).filter(
                  (Zimmer.sleeping)).order_by(Zimmer._recid).all():
@@ -272,7 +276,7 @@ def rm_drecap2_webbl(pvilanguage:int, opening_date:date, from_date:date, to_date
 
         # Rd 29/7/2025
         # mtd_totrm = 0 mtd_act == 0 ytd_act == 0 ytd_totrm == 0
-        mtd_totrm = mtd_act = ytd_act = ytd_totrm == 0
+        mtd_totrm = mtd_act = ytd_act = ytd_totrm = 0
 
         for zimmer in db_session.query(Zimmer).filter(
                  (Zimmer.sleeping)).order_by(Zimmer._recid).all():
@@ -1375,6 +1379,18 @@ def rm_drecap2_webbl(pvilanguage:int, opening_date:date, from_date:date, to_date
         cl_list.droom = all_room - tot_room
         cl_list.mroom = mtd_totrm - mtd_act
         cl_list.yroom = ytd_totrm - ytd_act
+        cl_list.proz1 = ""
+        cl_list.proz2 = ""
+        cl_list.proz3 = ""
+        cl_list.dpax = ""
+        cl_list.mpax = ""
+        cl_list.yroom = ""
+        cl_list.ypax = ""
+        cl_list.drate = ""
+        cl_list.mrate = ""
+        cl_list.drev =  ""
+        cl_list.mrev =  ""
+        cl_list.yrev =  ""
 
 
         cl_list = Cl_list()
@@ -1465,15 +1481,15 @@ def rm_drecap2_webbl(pvilanguage:int, opening_date:date, from_date:date, to_date
             cl_list = Cl_list()
             cl_list_data.append(cl_list)
 
-        drev_droom =  to_decimal(drevrev) / to_decimal((droomrev) + to_decimal(droomhu) + to_decimal(droomcomp))
+        drev_droom =  safe_divide(drevrev, droomrev) + (droomhu) + (droomcomp)
 
         if drev_droom == None:
             drev_droom =  to_decimal("0")
-        mrev_mroom =  to_decimal(mrevrev) / to_decimal((mroomrev) + to_decimal(mroomhu) + to_decimal(mroomcomp))
+        mrev_mroom =  safe_divide(mrevrev, mroomrev) + (mroomhu) + (mroomcomp)
 
         if mrev_mroom == None:
             mrev_mroom =  to_decimal("0")
-        yrev_yroom =  to_decimal(yrevrev) / to_decimal((yroomrev) + to_decimal(yroomhu) + to_decimal(yroomcomp))
+        yrev_yroom =  safe_divide(yrevrev, yroomrev) + (yroomhu) + (yroomcomp)
 
         if yrev_yroom == None:
             yrev_yroom =  to_decimal("0")
