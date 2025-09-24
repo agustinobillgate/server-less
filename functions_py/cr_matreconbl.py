@@ -5,8 +5,6 @@ from decimal import Decimal, ROUND_HALF_UP, ROUND_HALF_DOWN
 from datetime import date
 from models import Htparam, L_artikel, L_untergrup, L_bestand, L_lager, L_op, L_ophdr, Gl_acct
 
-from functions import log_program
-
 def cr_matreconbl(pvilanguage:int, to_date:date, lager_no:int, from_main:int, to_main:int, sort_type:int):
 
     prepare_cache ([Htparam, L_artikel, L_untergrup, L_bestand, L_op])
