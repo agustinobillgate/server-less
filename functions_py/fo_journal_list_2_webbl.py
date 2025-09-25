@@ -51,7 +51,6 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
     queasy.number1 = 1
     queasy.char2 = id_flag
 
-
     pass
     log_debug, gtot, output_list_data = get_output(fo_journal_cld_3bl(from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, onlyjournal, excljournal, mi_post, mi_showrelease, mi_break, id_flag))
 
@@ -127,5 +126,5 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
     return generate_output()
 
 """
-24/09/24      0        0009Maestro[Deposit #96858]                           Front Office      0001          -450,000.0008:14:3160  24/09/248489                    Tambunan, Dewi Marintan Mrs.Tambunan, Dewi Marintan Mrs.
+24/09/24      0        0009Maestro[Deposit #96858]                           Front Office10001          -450,000.0008:14:3160  24/09/248489                    Tambunan, Dewi Marintan Mrs.Tambunan, Dewi Marintan Mrs.
 """
