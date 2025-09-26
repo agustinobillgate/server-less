@@ -1,11 +1,4 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd 13/8/2025
-# date
-# Rd 24/9/2025, output beda value dgn e1
-# 224/9/2025, download .p, koversi ulang
-#-----------------------------------------
-#using conversion tools version: 1.0.0.117
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -31,17 +24,15 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
 
 
     db_session = local_storage.db_session
-    log_debug = []
+
     def generate_output():
         nonlocal fo_journal_list_data, done_flag, gtot, queasy, artikel, htparam
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, onlyjournal, excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal bqueasy
-
-
         nonlocal output_list, fo_journal_list, bqueasy
         nonlocal output_list_data, fo_journal_list_data
 
-        return {"log": log_debug, "fo-journal-list": fo_journal_list_data, "done_flag": done_flag}
+        return {"fo-journal-list": fo_journal_list_data, "done_flag": done_flag}
 
     queasy = Queasy()
     db_session.add(queasy)
@@ -52,7 +43,7 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
     queasy.char2 = id_flag
 
     pass
-    log_debug, gtot, output_list_data = get_output(fo_journal_cld_3bl(from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, onlyjournal, excljournal, mi_post, mi_showrelease, mi_break, id_flag))
+    gtot, output_list_data = get_output(fo_journal_cld_3bl(from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, onlyjournal, excljournal, mi_post, mi_showrelease, mi_break, id_flag))
 
     bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "fo transaction")],"char2": [(eq, id_flag)]})
 
@@ -66,8 +57,12 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
         pass
     fo_journal_list_data.clear()
 
+# """
+#             Visa[Deposit #96252]                                                                                1234                                    Sembodo, Yaksa           Sembodo, Yaksa                                                                                                                                      09/24/2409/25/24ECO-ONLINE 0        96252ONLINE TRAVEL AGENTTIKET.COM,                 0.00               0.00               0.00",
+
+# """
+
     for output_list in query(output_list_data):
-        log_debug.append(output_list.str)
         fo_journal_list = Fo_journal_list()
         fo_journal_list_data.append(fo_journal_list)
 
@@ -84,12 +79,12 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
         fo_journal_list.depart = substring(output_list.str, 77, 12)
         fo_journal_list.outlet = substring(output_list.str, 89, 6)
         fo_journal_list.qty = to_int(substring(output_list.str, 95, 5))
-        # fo_journal_list.amount = to_decimal(substring(output_list.str, 100, 22))
+        fo_journal_list.amount = to_decimal(substring(output_list.str, 100, 22))
         fo_journal_list.guestname = output_list.guestname
         fo_journal_list.billrcvr = output_list.gname
         fo_journal_list.zeit = substring(output_list.str, 122, 8)
         fo_journal_list.id = substring(output_list.str, 130, 4)
-        # fo_journal_list.sysdate = date_mdy(substring(output_list.str, 134, 8))
+        fo_journal_list.sysdate = date_mdy(substring(output_list.str, 134, 8))
         fo_journal_list.remark = output_list.remark
         fo_journal_list.checkin = output_list.checkin
         fo_journal_list.checkout = output_list.checkout
@@ -124,7 +119,3 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
                     fo_journal_list.serv_percentage =  to_decimal("0")
 
     return generate_output()
-
-"""
-24/09/24      0        0009Maestro[Deposit #96858]                           Front Office10001          -450,000.0008:14:3160  24/09/248489                    Tambunan, Dewi Marintan Mrs.Tambunan, Dewi Marintan Mrs.
-"""
