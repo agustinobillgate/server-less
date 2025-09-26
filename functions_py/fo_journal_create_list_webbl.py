@@ -32,9 +32,10 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
         nonlocal done_flag, counter, queasy_str1, queasy_str2, queasy, artikel, htparam
         nonlocal id_flag
         nonlocal bqueasy, pqueasy, tqueasy
-
-
         nonlocal fo_journal_list, bqueasy, pqueasy, tqueasy
+
+        # Rd temporary disable delete bqueasy
+        done_flag = True
         return {"done_flag": done_flag, "fo-journal-list": fo_journal_list_data}
 
 
@@ -108,9 +109,9 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
         bqueasy = db_session.query(Bqueasy).filter(
                  (Bqueasy._recid == queasy._recid)).first()
         # Rd 14/8/2025
-        if bqueasy:
-            db_session.delete(bqueasy)
-            pass
+        # if bqueasy:
+        #     db_session.delete(bqueasy)
+        #     pass
 
     pqueasy = db_session.query(Pqueasy).filter(
              (Pqueasy.key == 280) & (Pqueasy.char1 == ("FO Transaction")) & (Pqueasy.char2 == (id_flag))).first()
@@ -136,10 +137,10 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
     tqueasy = db_session.query(Tqueasy).filter(
              (Tqueasy.key == 285) & (Tqueasy.char1 == ("FO Transaction")) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == (id_flag))).first()
 
-    if tqueasy:
-        pass
-        db_session.delete(tqueasy)
-        pass
+    # if tqueasy:
+    #     pass
+    #     db_session.delete(tqueasy)
+    #     pass
 
     return generate_output()
 

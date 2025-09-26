@@ -25,6 +25,8 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
 
     db_session = local_storage.db_session
 
+    print(exclude_artrans)
+
     def generate_output():
         nonlocal fo_journal_list_data, done_flag, gtot, queasy, artikel, htparam
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, onlyjournal, excljournal, mi_post, mi_showrelease, mi_break, id_flag
