@@ -2027,7 +2027,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                             custom_record()
 
 
-                elif sorttype == 2:
+                elif sorttype == 2: # rd stash test
 
                     if mi_post :
 
