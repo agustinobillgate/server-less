@@ -691,7 +691,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                                         # bill = get_cache (Bill, {"rechnr": [(eq, billjournal.rechnr)]})
                                         bill = db_session.query(Bill).filter(Bill.rechnr == billjournal.rechnr).first()
                                         # print(f"/{billjournal.zinr}/{billjournal.rechnr}/")
-                                        log_debug.append(f"0.Bill: {billjournal.bezeich} Rechnr: {to_string(billjournal.rechnr)}, Room:{billjournal.zinr}")
+                                        # log_debug.append(f"0.Bill: {billjournal.bezeich} Rechnr: {to_string(billjournal.rechnr)}, Room:{billjournal.zinr}")
                                         if bill and billjournal.zinr != "":
                                             log_debug.append(f"1.Bill found ResNr: {to_string(bill.resnr)}, Room:{billjournal.zinr}")
                                             # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill.zinr)]})
@@ -1393,7 +1393,6 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                             if not matches(billjournal.bezeich, ("*<*")) and not matches(billjournal.bezeich, ("*>*")):
 
                                 if billjournal.rechnr > 0:
-
                                     if billjournal.bediener_nr == 0 and mi_onlyjournal == False:
 
                                         # bill = get_cache (Bill, {"rechnr": [(eq, billjournal.rechnr)]})
@@ -1402,10 +1401,10 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                                         if bill and billjournal.zinr != "":
 
                                             # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, bill.zinr)]})
-                                            res_line = db_session.query(Res_line).filter(Res_line.resnr == bill.resnr, Res_line.zinr == bill.zinr).first()
+                                            res_line = db_session.query(Res_line).filter(Res_line.resnr == bill.resnr, Res_line.zinr == billjournal.zinr).first()
                                             
                                             # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-                                            reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
+                                            reservation = db_session.query(Reservation).filter(Reservation.resnr == bill.resnr).first()
 
                                             # buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
                                             buffguest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).first()  
@@ -2065,7 +2064,8 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                                     if billjournal.rechnr > 0:
 
-                                        bill = get_cache (Bill, {"rechnr": [(eq, billjournal.rechnr)]})
+                                        # bill = get_cache (Bill, {"rechnr": [(eq, billjournal.rechnr)]})
+                                        bill = db_session.query(Bill).filter(Bill.rechnr == billjournal.rechnr).first()
 
                                         if bill and billjournal.zinr != "":
 
