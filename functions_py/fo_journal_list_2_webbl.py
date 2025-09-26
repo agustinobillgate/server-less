@@ -1,8 +1,5 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd 13/8/2025
-# date
-#-----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -32,8 +29,6 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
         nonlocal fo_journal_list_data, done_flag, gtot, queasy, artikel, htparam
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, onlyjournal, excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal bqueasy
-
-
         nonlocal output_list, fo_journal_list, bqueasy
         nonlocal output_list_data, fo_journal_list_data
 
@@ -47,13 +42,12 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
     queasy.number1 = 1
     queasy.char2 = id_flag
 
-
     pass
     gtot, output_list_data = get_output(fo_journal_cld_3bl(from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, onlyjournal, excljournal, mi_post, mi_showrelease, mi_break, id_flag))
+
     bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "fo transaction")],"char2": [(eq, id_flag)]})
 
     if bqueasy:
-        output_list_data
         done_flag = True
         pass
         bqueasy.number1 = 0
@@ -63,11 +57,16 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
         pass
     fo_journal_list_data.clear()
 
+# """
+#             Visa[Deposit #96252]                                                                                1234                                    Sembodo, Yaksa           Sembodo, Yaksa                                                                                                                                      09/24/2409/25/24ECO-ONLINE 0        96252ONLINE TRAVEL AGENTTIKET.COM,                 0.00               0.00               0.00",
+
+# """
+
     for output_list in query(output_list_data):
         fo_journal_list = Fo_journal_list()
         fo_journal_list_data.append(fo_journal_list)
-        
-        fo_journal_list.datum = date_mdy(substring(output_list.str, 0, 8))  # Rd 13/8/2025, error disini, output_list None
+
+        fo_journal_list.datum = date_mdy(substring(output_list.str, 0, 8))
         fo_journal_list.c = output_list.c
         fo_journal_list.roomnumber = output_list.zinr
         fo_journal_list.nsflag = output_list.ns
