@@ -137,8 +137,8 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
             reservation = Reservation()
             arrangement = Arrangement()
             zimmer = Zimmer()
-            for res_line.reserve_dec, res_line.betriebsnr, res_line.ankunft, res_line.abreise, res_line.zipreis, res_line._recid, res_line.zimmeranz, res_line.erwachs, res_line.gratis, res_line.kind1, res_line.kind2, res_line.zinr, res_line.zikatnr, reservation.segmentcode, reservation._recid, arrangement.argtnr, arrangement._recid, zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid in db_session.query(Res_line.reserve_dec, Res_line.betriebsnr, Res_line.ankunft, Res_line.abreise, Res_line.zipreis, Res_line._recid, Res_line.zimmeranz, Res_line.erwachs, Res_line.gratis, Res_line.kind1, Res_line.kind2, Res_line.zinr, Res_line.zikatnr, Reservation.segmentcode, Reservation._recid, Arrangement.argtnr, Arrangement._recid, Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Arrangement,(Arrangement.arrangement == Res_line.arrangement)).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).filter(
-                     ((Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (not_ (Res_line.ankunft > t_date)) & (not_ (Res_line.abreise < f_date))) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.zinr == (rm_no).lower()) & (Res_line.zipreis != 0)).order_by(Res_line.zinr).all():
+            for res_line, reservation, arrangement, zimmer in db_session.query(Res_line, Reservation, Arrangement, Zimmer).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Arrangement,(Arrangement.arrangement == Res_line.arrangement)).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).filter(
+                     ((Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (not_ (Res_line.ankunft > t_date)) & (not_ (Res_line.abreise < f_date))) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.zinr == (rm_no)) & (Res_line.zipreis != 0)).order_by(Res_line.zinr).all():
                 if res_line_obj_list.get(res_line._recid):
                     continue
                 else:
@@ -221,7 +221,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 reservation = Reservation()
                 arrangement = Arrangement()
                 zimmer = Zimmer()
-                for res_line.reserve_dec, res_line.betriebsnr, res_line.ankunft, res_line.abreise, res_line.zipreis, res_line._recid, res_line.zimmeranz, res_line.erwachs, res_line.gratis, res_line.kind1, res_line.kind2, res_line.zinr, res_line.zikatnr, reservation.segmentcode, reservation._recid, arrangement.argtnr, arrangement._recid, zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid in db_session.query(Res_line.reserve_dec, Res_line.betriebsnr, Res_line.ankunft, Res_line.abreise, Res_line.zipreis, Res_line._recid, Res_line.zimmeranz, Res_line.erwachs, Res_line.gratis, Res_line.kind1, Res_line.kind2, Res_line.zinr, Res_line.zikatnr, Reservation.segmentcode, Reservation._recid, Arrangement.argtnr, Arrangement._recid, Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Arrangement,(Arrangement.arrangement == Res_line.arrangement)).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).filter(
+                for res_line, reservation, arrangement, zimmer in db_session.query(Res_line, Reservation, Arrangement, Zimmer).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Arrangement,(Arrangement.arrangement == Res_line.arrangement)).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).filter(
                          ((Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (not_ (Res_line.ankunft > t_date)) & (not_ (Res_line.abreise < f_date))) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.zinr != "") & (Res_line.zipreis != 0)).order_by(Res_line.zinr).all():
                     if res_line_obj_list.get(res_line._recid):
                         continue
@@ -313,7 +313,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 reservation = Reservation()
                 arrangement = Arrangement()
                 zimmer = Zimmer()
-                for res_line.reserve_dec, res_line.betriebsnr, res_line.ankunft, res_line.abreise, res_line.zipreis, res_line._recid, res_line.zimmeranz, res_line.erwachs, res_line.gratis, res_line.kind1, res_line.kind2, res_line.zinr, res_line.zikatnr, reservation.segmentcode, reservation._recid, arrangement.argtnr, arrangement._recid, zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid in db_session.query(Res_line.reserve_dec, Res_line.betriebsnr, Res_line.ankunft, Res_line.abreise, Res_line.zipreis, Res_line._recid, Res_line.zimmeranz, Res_line.erwachs, Res_line.gratis, Res_line.kind1, Res_line.kind2, Res_line.zinr, Res_line.zikatnr, Reservation.segmentcode, Reservation._recid, Arrangement.argtnr, Arrangement._recid, Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Arrangement,(Arrangement.arrangement == Res_line.arrangement)).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).filter(
+                for res_line, reservation, arrangement, zimmer in db_session.query(Res_line, Reservation, Arrangement, Zimmer).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Arrangement,(Arrangement.arrangement == Res_line.arrangement)).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).filter(
                          ((Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (not_ (Res_line.ankunft > t_date)) & (not_ (Res_line.abreise < f_date))) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.zinr != "") & (Res_line.zipreis != 0)).order_by(Res_line.zikatnr, Res_line.zinr).all():
                     if res_line_obj_list.get(res_line._recid):
                         continue
@@ -573,7 +573,11 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 cl_list.rmcat = zimmer.kbezeich
                 for datum in date_range(from_date,to_date) :
 
-                    zinrstat = get_cache (Zinrstat, {"zinr": [(eq, rm_no)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
+                    # zinrstat = get_cache (Zinrstat, {"zinr": [(eq, rm_no)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
+                    zinrstat = db_session.query(Zinrstat).filter(
+                             (Zinrstat.zinr == zimmer.zinr.strip()) &
+                             (Zinrstat.datum == datum) &
+                             (Zinrstat.zimmeranz > 0)).first()
 
                     if zinrstat:
                         do_it = True
@@ -633,10 +637,10 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                                         Zimkateg.kurzbez, Zimkateg._recid\
                                         )\
                     .join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer.zinr).all():
-                    # if zimmer_obj_list.get(zimmer._recid):
-                    #     continue
-                    # else:
-                    #     zimmer_obj_list[zimmer._recid] = True
+                    if zimmer_obj_list.get(zimmer._recid):
+                        continue
+                    else:
+                        zimmer_obj_list[zimmer._recid] = True
 
                     cl_list = Cl_list()
                     cl_list_data.append(cl_list)
@@ -659,11 +663,11 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                         pass
                         print(f"datum: {datum}, zinr: {zimmer.zinr}")
                         # zinrstat = get_cache (Zinrstat, {"zinr": [(eq, zimmer.zinr)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
-                        # zinrstat = db_session.query(Zinrstat).filter(
-                        #          (Zinrstat.zinr == zimmer.zinr) &
-                        #          (Zinrstat.datum == datum) &
-                        #          (Zinrstat.zimmeranz > 0)).first()
-                        zinrstat = zinrstat_records.get((datum, 1))
+                        zinrstat = db_session.query(Zinrstat).filter(
+                                 (Zinrstat.zinr == zimmer.zinr) &
+                                 (Zinrstat.datum == datum) &
+                                 (Zinrstat.zimmeranz > 0)).first()
+                        # zinrstat = zinrstat_records.get((datum, 1))
                         # log_debug.append(f"datum: {datum}, zinr: {zimmer.zinr}, zinrstat: {zinrstat}")
 
                         if zinrstat:
@@ -688,153 +692,157 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                                     if segment:
                                         do_it = False
 
-            #                 if do_it:
+                            if do_it:
 
-            #                     if datum == to_date:
-            #                         cl_list.anz = cl_list.anz + zinrstat.zimmeranz
-            #                         cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-            #                         cl_list.pax = cl_list.pax + zinrstat.personen
-            #                         anz = anz + zinrstat.zimmeranz
-            #                         pax = pax + zinrstat.personen
-            #                         net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
+                                if datum == to_date:
+                                    cl_list.anz = cl_list.anz + zinrstat.zimmeranz
+                                    cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
+                                    cl_list.pax = cl_list.pax + zinrstat.personen
+                                    anz = anz + zinrstat.zimmeranz
+                                    pax = pax + zinrstat.personen
+                                    net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
 
-            #                     if get_month(zinrstat.datum) == mm and get_year(zinrstat.datum) == yy:
-            #                         cl_list.manz = cl_list.manz + zinrstat.zimmeranz
-            #                         cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-            #                         cl_list.mpax = cl_list.mpax + zinrstat.personen
-            #                         manz = manz + zinrstat.zimmeranz
-            #                         mpax = mpax + zinrstat.personen
-            #                         mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
-            #                     cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-            #                     cl_list.ypax = cl_list.ypax + zinrstat.personen
-            #                     cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
-            #                     yanz = yanz + zinrstat.zimmeranz
-            #                     ypax = ypax + zinrstat.personen
-            #                     ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
+                                if get_month(zinrstat.datum) == mm and get_year(zinrstat.datum) == yy:
+                                    cl_list.manz = cl_list.manz + zinrstat.zimmeranz
+                                    cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
+                                    cl_list.mpax = cl_list.mpax + zinrstat.personen
+                                    manz = manz + zinrstat.zimmeranz
+                                    mpax = mpax + zinrstat.personen
+                                    mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
+                                cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
+                                cl_list.ypax = cl_list.ypax + zinrstat.personen
+                                cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
+                                yanz = yanz + zinrstat.zimmeranz
+                                ypax = ypax + zinrstat.personen
+                                ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
 
-            # elif sorttype == 2:
+            elif sorttype == 2:
 
-            #     zimmer_obj_list = {}
-            #     zimmer = Zimmer()
-            #     zimkateg = Zimkateg()
-            #     for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimkateg.zikatnr, Zimmer.zinr).all():
-            #         if zimmer_obj_list.get(zimmer._recid):
-            #             continue
-            #         else:
-            #             zimmer_obj_list[zimmer._recid] = True
+                zimmer_obj_list = {}
+                zimmer = Zimmer()
+                zimkateg = Zimkateg()
+                for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimkateg.zikatnr, Zimmer.zinr).all():
+                    if zimmer_obj_list.get(zimmer._recid):
+                        continue
+                    else:
+                        zimmer_obj_list[zimmer._recid] = True
 
-            #         if last_zikatnr == 0:
-            #             last_zikatnr = zimmer.zikatnr
+                    if last_zikatnr == 0:
+                        last_zikatnr = zimmer.zikatnr
 
-            #         if last_zikatnr != zimmer.zikatnr:
-            #             cl_list = Cl_list()
-            #             cl_list_data.append(cl_list)
+                    if last_zikatnr != zimmer.zikatnr:
+                        cl_list = Cl_list()
+                        cl_list_data.append(cl_list)
 
-            #             cl_list.rmcat = "Total"
-            #             cl_list.anz = t_anz
-            #             cl_list.pax = t_pax
-            #             cl_list.net =  to_decimal(t_net)
-            #             cl_list.manz = t_manz
-            #             cl_list.mnet =  to_decimal(t_mnet)
-            #             cl_list.mpax = t_mpax
-            #             cl_list.yanz = t_yanz
-            #             cl_list.ypax = t_ypax
-            #             cl_list.ynet =  to_decimal(t_ynet)
-            #             t_anz = 0
-            #             t_pax = 0
-            #             t_net =  to_decimal("0")
-            #             t_manz = 0
-            #             t_mnet =  to_decimal("0")
-            #             t_mpax = 0
-            #             t_yanz = 0
-            #             t_ynet =  to_decimal("0")
-            #             t_ypax = 0
-            #             last_zikatnr = zimmer.zikatnr
-
-
-            #         cl_list = Cl_list()
-            #         cl_list_data.append(cl_list)
-
-            #         cl_list.zinr = zimmer.zinr
-            #         cl_list.rmcat = zimkateg.kurzbez
-            #         for datum in date_range(from_date,to_date) :
-
-            #             zinrstat = get_cache (Zinrstat, {"zinr": [(eq, zimmer.zinr)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
-
-            #             if zinrstat:
-            #                 do_it = True
-
-            #                 if excl_compl:
-
-            #                     genstat = db_session.query(Genstat).filter(
-            #                              (Genstat.datum == datum) & (Genstat.zikatnr == zimmer.zikatnr) & (Genstat.zinr == zimmer.zinr) & (Genstat.zipreis == 0) & (Genstat.gratis != 0) & (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(1)])).first()
-
-            #                     if genstat:
-
-            #                         segment = db_session.query(Segment).filter(
-            #                                  (Segment.segmentcode == genstat.segmentcode) & ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
-
-            #                         if segment:
-            #                             do_it = False
-
-            #                 if do_it:
-
-            #                     if datum == to_date:
-            #                         cl_list.anz = cl_list.anz + zinrstat.zimmeranz
-            #                         cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
-            #                         cl_list.pax = cl_list.pax + zinrstat.personen
-            #                         anz = anz + zinrstat.zimmeranz
-            #                         pax = pax + zinrstat.personen
-            #                         net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
-            #                         t_anz = t_anz + zinrstat.zimmeranz
-            #                         t_pax = t_pax + zinrstat.personen
-            #                         t_net =  to_decimal(t_net) + to_decimal(zinrstat.argtumsatz)
-
-            #                     if get_month(zinrstat.datum) == mm:
-            #                         cl_list.manz = cl_list.manz + zinrstat.zimmeranz
-            #                         cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
-            #                         cl_list.mpax = cl_list.mpax + zinrstat.personen
-            #                         manz = manz + zinrstat.zimmeranz
-            #                         mpax = mpax + zinrstat.personen
-            #                         mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
-            #                         t_manz = t_manz + zinrstat.zimmeranz
-            #                         t_mpax = t_mpax + zinrstat.personen
-            #                         t_mnet =  to_decimal(t_mnet) + to_decimal(zinrstat.argtumsatz)
-            #                     cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
-            #                     cl_list.ypax = cl_list.ypax + zinrstat.personen
-            #                     cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
-            #                     yanz = yanz + zinrstat.zimmeranz
-            #                     ypax = ypax + zinrstat.personen
-            #                     ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
-            #                     t_yanz = t_yanz + zinrstat.zimmeranz
-            #                     t_ypax = t_ypax + zinrstat.personen
-            #                     t_ynet =  to_decimal(t_ynet) + to_decimal(zinrstat.argtumsatz)
-
-            # if sorttype == 2:
-            #     cl_list = Cl_list()
-            #     cl_list_data.append(cl_list)
-
-            #     cl_list.rmcat = "Total"
-            #     cl_list.anz = t_anz
-            #     cl_list.pax = t_pax
-            #     cl_list.net =  to_decimal(t_net)
-            #     cl_list.manz = t_manz
-            #     cl_list.mnet =  to_decimal(t_mnet)
-            #     cl_list.mpax = t_mpax
-            #     cl_list.yanz = t_yanz
-            #     cl_list.ypax = t_ypax
-            #     cl_list.ynet =  to_decimal(t_ynet)
+                        cl_list.rmcat = "Total"
+                        cl_list.anz = t_anz
+                        cl_list.pax = t_pax
+                        cl_list.net =  to_decimal(t_net)
+                        cl_list.manz = t_manz
+                        cl_list.mnet =  to_decimal(t_mnet)
+                        cl_list.mpax = t_mpax
+                        cl_list.yanz = t_yanz
+                        cl_list.ypax = t_ypax
+                        cl_list.ynet =  to_decimal(t_ynet)
+                        t_anz = 0
+                        t_pax = 0
+                        t_net =  to_decimal("0")
+                        t_manz = 0
+                        t_mnet =  to_decimal("0")
+                        t_mpax = 0
+                        t_yanz = 0
+                        t_ynet =  to_decimal("0")
+                        t_ypax = 0
+                        last_zikatnr = zimmer.zikatnr
 
 
-            #     t_anz = 0
-            #     t_pax = 0
-            #     t_net =  to_decimal("0")
-            #     t_manz = 0
-            #     t_mnet =  to_decimal("0")
-            #     t_mpax = 0
-            #     t_yanz = 0
-            #     t_ynet =  to_decimal("0")
-            #     t_ypax = 0
+                    cl_list = Cl_list()
+                    cl_list_data.append(cl_list)
+
+                    cl_list.zinr = zimmer.zinr
+                    cl_list.rmcat = zimkateg.kurzbez
+                    for datum in date_range(from_date,to_date) :
+
+                        # zinrstat = get_cache (Zinrstat, {"zinr": [(eq, zimmer.zinr)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
+                        zinrstat = db_session.query(Zinrstat).filter(
+                                 (Zinrstat.zinr == zimmer.zinr.strip()) &
+                                 (Zinrstat.datum == datum) &
+                                 (Zinrstat.zimmeranz > 0)).first()
+
+                        if zinrstat:
+                            do_it = True
+
+                            if excl_compl:
+
+                                genstat = db_session.query(Genstat).filter(
+                                         (Genstat.datum == datum) & (Genstat.zikatnr == zimmer.zikatnr) & (Genstat.zinr == zimmer.zinr) & (Genstat.zipreis == 0) & (Genstat.gratis != 0) & (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(1)])).first()
+
+                                if genstat:
+
+                                    segment = db_session.query(Segment).filter(
+                                             (Segment.segmentcode == genstat.segmentcode) & ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
+
+                                    if segment:
+                                        do_it = False
+
+                            if do_it:
+
+                                if datum == to_date:
+                                    cl_list.anz = cl_list.anz + zinrstat.zimmeranz
+                                    cl_list.net =  to_decimal(cl_list.net) + to_decimal(zinrstat.argtumsatz)
+                                    cl_list.pax = cl_list.pax + zinrstat.personen
+                                    anz = anz + zinrstat.zimmeranz
+                                    pax = pax + zinrstat.personen
+                                    net =  to_decimal(net) + to_decimal(zinrstat.argtumsatz)
+                                    t_anz = t_anz + zinrstat.zimmeranz
+                                    t_pax = t_pax + zinrstat.personen
+                                    t_net =  to_decimal(t_net) + to_decimal(zinrstat.argtumsatz)
+
+                                if get_month(zinrstat.datum) == mm:
+                                    cl_list.manz = cl_list.manz + zinrstat.zimmeranz
+                                    cl_list.mnet =  to_decimal(cl_list.mnet) + to_decimal(zinrstat.argtumsatz)
+                                    cl_list.mpax = cl_list.mpax + zinrstat.personen
+                                    manz = manz + zinrstat.zimmeranz
+                                    mpax = mpax + zinrstat.personen
+                                    mnet =  to_decimal(mnet) + to_decimal(zinrstat.argtumsatz)
+                                    t_manz = t_manz + zinrstat.zimmeranz
+                                    t_mpax = t_mpax + zinrstat.personen
+                                    t_mnet =  to_decimal(t_mnet) + to_decimal(zinrstat.argtumsatz)
+                                cl_list.yanz = cl_list.yanz + zinrstat.zimmeranz
+                                cl_list.ypax = cl_list.ypax + zinrstat.personen
+                                cl_list.ynet =  to_decimal(cl_list.ynet) + to_decimal(zinrstat.argtumsatz)
+                                yanz = yanz + zinrstat.zimmeranz
+                                ypax = ypax + zinrstat.personen
+                                ynet =  to_decimal(ynet) + to_decimal(zinrstat.argtumsatz)
+                                t_yanz = t_yanz + zinrstat.zimmeranz
+                                t_ypax = t_ypax + zinrstat.personen
+                                t_ynet =  to_decimal(t_ynet) + to_decimal(zinrstat.argtumsatz)
+
+            if sorttype == 2:
+                cl_list = Cl_list()
+                cl_list_data.append(cl_list)
+
+                cl_list.rmcat = "Total"
+                cl_list.anz = t_anz
+                cl_list.pax = t_pax
+                cl_list.net =  to_decimal(t_net)
+                cl_list.manz = t_manz
+                cl_list.mnet =  to_decimal(t_mnet)
+                cl_list.mpax = t_mpax
+                cl_list.yanz = t_yanz
+                cl_list.ypax = t_ypax
+                cl_list.ynet =  to_decimal(t_ynet)
+
+
+                t_anz = 0
+                t_pax = 0
+                t_net =  to_decimal("0")
+                t_manz = 0
+                t_mnet =  to_decimal("0")
+                t_mpax = 0
+                t_yanz = 0
+                t_ynet =  to_decimal("0")
+                t_ypax = 0
 
         for cl_list in query(cl_list_data):
 
@@ -881,7 +889,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
             output_list.flag = cl_list.flag
             output_list.rmno = cl_list.zinr
 
-            if cl_list.flag.lower()  == ("*").lower() :
+            if cl_list.flag  == ("*") :
                 pass
             else:
 
@@ -978,7 +986,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 for datum in date_range(from_date,to_date) :
 
                     for genstat in db_session.query(Genstat).filter(
-                             (Genstat.zinr == (rm_no).lower()) & (Genstat.datum == datum) & ((Genstat.resstatus == 6) | (Genstat.resstatus == 8))).order_by(Genstat._recid).all():
+                             (Genstat.zinr == (rm_no)) & (Genstat.datum == datum) & ((Genstat.resstatus == 6) | (Genstat.resstatus == 8))).order_by(Genstat._recid).all():
                         do_it = True
 
                         if excl_compl:
@@ -1024,7 +1032,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 zimmer_obj_list = {}
                 zimmer = Zimmer()
                 zimkateg = Zimkateg()
-                for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer.zinr).all():
+                for zimmer, zimkateg in db_session.query(Zimmer, Zimkateg).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer.zinr).all():
                     if zimmer_obj_list.get(zimmer._recid):
                         continue
                     else:
@@ -1092,7 +1100,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 zimmer_obj_list = {}
                 zimmer = Zimmer()
                 zimkateg = Zimkateg()
-                for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimkateg.zikatnr, Zimmer.zinr).all():
+                for zimmer, zimkateg in db_session.query(Zimmer, Zimkateg).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimkateg.zikatnr, Zimmer.zinr).all():
                     if zimmer_obj_list.get(zimmer._recid):
                         continue
                     else:
@@ -1358,8 +1366,8 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
             reservation = Reservation()
             arrangement = Arrangement()
             zimmer = Zimmer()
-            for res_line.reserve_dec, res_line.betriebsnr, res_line.ankunft, res_line.abreise, res_line.zipreis, res_line._recid, res_line.zimmeranz, res_line.erwachs, res_line.gratis, res_line.kind1, res_line.kind2, res_line.zinr, res_line.zikatnr, reservation.segmentcode, reservation._recid, arrangement.argtnr, arrangement._recid, zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid in db_session.query(Res_line.reserve_dec, Res_line.betriebsnr, Res_line.ankunft, Res_line.abreise, Res_line.zipreis, Res_line._recid, Res_line.zimmeranz, Res_line.erwachs, Res_line.gratis, Res_line.kind1, Res_line.kind2, Res_line.zinr, Res_line.zikatnr, Reservation.segmentcode, Reservation._recid, Arrangement.argtnr, Arrangement._recid, Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Arrangement,(Arrangement.arrangement == Res_line.arrangement)).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).filter(
-                     ((Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (not_ (Res_line.ankunft > t_date)) & (not_ (Res_line.abreise < f_date))) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.zinr == (rm_no).lower()) & (Res_line.zipreis != 0)).order_by(Res_line.zinr).all():
+            for res_line, reservation, arrangement, zimmer in db_session.query(Res_line, Reservation, Arrangement, Zimmer).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Arrangement,(Arrangement.arrangement == Res_line.arrangement)).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).filter(
+                     ((Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (not_ (Res_line.ankunft > t_date)) & (not_ (Res_line.abreise < f_date))) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.zinr == (rm_no)) & (Res_line.zipreis != 0)).order_by(Res_line.zinr).all():
                 if res_line_obj_list.get(res_line._recid):
                     continue
                 else:
@@ -1473,7 +1481,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 reservation = Reservation()
                 arrangement = Arrangement()
                 zimmer = Zimmer()
-                for res_line.reserve_dec, res_line.betriebsnr, res_line.ankunft, res_line.abreise, res_line.zipreis, res_line._recid, res_line.zimmeranz, res_line.erwachs, res_line.gratis, res_line.kind1, res_line.kind2, res_line.zinr, res_line.zikatnr, reservation.segmentcode, reservation._recid, arrangement.argtnr, arrangement._recid, zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid in db_session.query(Res_line.reserve_dec, Res_line.betriebsnr, Res_line.ankunft, Res_line.abreise, Res_line.zipreis, Res_line._recid, Res_line.zimmeranz, Res_line.erwachs, Res_line.gratis, Res_line.kind1, Res_line.kind2, Res_line.zinr, Res_line.zikatnr, Reservation.segmentcode, Reservation._recid, Arrangement.argtnr, Arrangement._recid, Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Arrangement,(Arrangement.arrangement == Res_line.arrangement)).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).filter(
+                for res_line, reservation, arrangement, zimmer in db_session.query(Res_line, Reservation, Arrangement, Zimmer).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Arrangement,(Arrangement.arrangement == Res_line.arrangement)).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).filter(
                          ((Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (not_ (Res_line.ankunft > t_date)) & (not_ (Res_line.abreise < f_date))) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.zinr != "") & (Res_line.zipreis != 0)).order_by(Res_line.zinr).all():
                     if res_line_obj_list.get(res_line._recid):
                         continue
@@ -1596,7 +1604,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 reservation = Reservation()
                 arrangement = Arrangement()
                 zimmer = Zimmer()
-                for res_line.reserve_dec, res_line.betriebsnr, res_line.ankunft, res_line.abreise, res_line.zipreis, res_line._recid, res_line.zimmeranz, res_line.erwachs, res_line.gratis, res_line.kind1, res_line.kind2, res_line.zinr, res_line.zikatnr, reservation.segmentcode, reservation._recid, arrangement.argtnr, arrangement._recid, zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid in db_session.query(Res_line.reserve_dec, Res_line.betriebsnr, Res_line.ankunft, Res_line.abreise, Res_line.zipreis, Res_line._recid, Res_line.zimmeranz, Res_line.erwachs, Res_line.gratis, Res_line.kind1, Res_line.kind2, Res_line.zinr, Res_line.zikatnr, Reservation.segmentcode, Reservation._recid, Arrangement.argtnr, Arrangement._recid, Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Arrangement,(Arrangement.arrangement == Res_line.arrangement)).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).filter(
+                for res_line, reservation, arrangement, zimmer in db_session.query(Res_line, Reservation, Arrangement, Zimmer).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Arrangement,(Arrangement.arrangement == Res_line.arrangement)).join(Zimmer,(Zimmer.zinr == Res_line.zinr)).filter(
                          ((Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (not_ (Res_line.ankunft > t_date)) & (not_ (Res_line.abreise < f_date))) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line.zinr != "") & (Res_line.zipreis != 0)).order_by(Res_line.zikatnr, Res_line.zinr).all():
                     if res_line_obj_list.get(res_line._recid):
                         continue
@@ -1991,7 +1999,9 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 cl_list.rmcat = zimmer.kbezeich
                 for datum in date_range(from_date,to_date) :
 
-                    zinrstat = get_cache (Zinrstat, {"zinr": [(eq, rm_no)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
+                    # zinrstat = get_cache (Zinrstat, {"zinr": [(eq, rm_no)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
+                    zinrstat = db_session.query(Zinrstat).filter(
+                             (Zinrstat.zinr == rm_no) & (Zinrstat.datum == datum) & (Zinrstat.zimmeranz > 0)).first()
 
                     if zinrstat:
                         do_it = True
@@ -2084,7 +2094,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 zimmer_obj_list = {}
                 zimmer = Zimmer()
                 zimkateg = Zimkateg()
-                for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer.zinr).all():
+                for zimmer, zimkateg in db_session.query(Zimmer, Zimkateg).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer.zinr).all():
                     if zimmer_obj_list.get(zimmer._recid):
                         continue
                     else:
@@ -2098,7 +2108,9 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                     cl_list.rmcat = zimkateg.kurzbez
                     for datum in date_range(from_date,to_date) :
 
-                        zinrstat = get_cache (Zinrstat, {"zinr": [(eq, zimmer.zinr)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
+                        # zinrstat = get_cache (Zinrstat, {"zinr": [(eq, zimmer.zinr)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
+                        zinrstat = db_session.query(Zinrstat).filter(
+                                 (Zinrstat.zinr == zimmer.zinr) & (Zinrstat.datum == datum) & (Zinrstat.zimmeranz > 0)).first()
 
                         if zinrstat:
                             do_it = True
@@ -2189,7 +2201,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 zimmer_obj_list = {}
                 zimmer = Zimmer()
                 zimkateg = Zimkateg()
-                for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimkateg.zikatnr, Zimmer.zinr).all():
+                for zimmer, zimkateg in db_session.query(Zimmer, Zimkateg).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimkateg.zikatnr, Zimmer.zinr).all():
                     if zimmer_obj_list.get(zimmer._recid):
                         continue
                     else:
@@ -2257,7 +2269,9 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                     cl_list.rmcat = zimkateg.kurzbez
                     for datum in date_range(from_date,to_date) :
 
-                        zinrstat = get_cache (Zinrstat, {"zinr": [(eq, zimmer.zinr)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
+                        # zinrstat = get_cache (Zinrstat, {"zinr": [(eq, zimmer.zinr)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
+                        zinrstat = db_session.query(Zinrstat).filter(
+                                 (Zinrstat.zinr == zimmer.zinr) & (Zinrstat.datum == datum) & (Zinrstat.zimmeranz > 0)).first()
 
                         if zinrstat:
                             do_it = True
@@ -2470,7 +2484,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
             output_list.flag = cl_list.flag
             output_list.rmno = cl_list.zinr
 
-            if cl_list.flag.lower()  == ("*").lower() :
+            if cl_list.flag  == ("*") :
                 pass
             else:
                 output_list.rmno1 = to_string(cl_list.zinr)
@@ -2581,7 +2595,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 for datum in date_range(from_date,to_date) :
 
                     for genstat in db_session.query(Genstat).filter(
-                             (Genstat.zinr == (rm_no).lower()) & (Genstat.datum == datum) & ((Genstat.resstatus == 6) | (Genstat.resstatus == 8))).order_by(Genstat._recid).all():
+                             (Genstat.zinr == (rm_no)) & (Genstat.datum == datum) & ((Genstat.resstatus == 6) | (Genstat.resstatus == 8))).order_by(Genstat._recid).all():
                         do_it = True
 
                         if do_it:
@@ -2669,7 +2683,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 zimmer_obj_list = {}
                 zimmer = Zimmer()
                 zimkateg = Zimkateg()
-                for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer.zinr).all():
+                for zimmer, zimkateg in db_session.query(Zimmer, Zimkateg).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer.zinr).all():
                     if zimmer_obj_list.get(zimmer._recid):
                         continue
                     else:
@@ -2778,7 +2792,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 zimmer_obj_list = {}
                 zimmer = Zimmer()
                 zimkateg = Zimkateg()
-                for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimkateg.zikatnr, Zimmer.zinr).all():
+                for zimmer, zimkateg in db_session.query(Zimmer, Zimkateg).join(Zimkateg, (Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimkateg.zikatnr, Zimmer.zinr).all():
                     if zimmer_obj_list.get(zimmer._recid):
                         continue
                     else:
@@ -3102,7 +3116,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
 
         if m_ftd and f_date >= ci_date and t_date >= ci_date:
             log_debug.append("create_resline")
-            # create_resline()
+            create_resline()
         else:
 
             if lod__rev :
@@ -3116,14 +3130,14 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
 
         if m_ftd and f_date >= ci_date and t_date >= ci_date:
             log_debug.append("create_resline2")
-            # create_resline2()
+            create_resline2()
         else:
 
             if lod__rev :
                 log_debug.append("create_genstat2")
-                # create_genstat2()
+                create_genstat2()
             else:
                 log_debug.append("create_zinrstat2")
-                # create_zinrstat2()
+                create_zinrstat2()
 
     return generate_output()
