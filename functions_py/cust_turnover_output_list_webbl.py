@@ -5,6 +5,7 @@
 #----------------------------------------
 
 from functions.additional_functions import *
+from sqlalchemy import func
 from decimal import Decimal
 from models import Queasy
 
@@ -31,11 +32,45 @@ def cust_turnover_output_list_webbl(idflag:string, cust_list_data:[Cust_list]):
 
 
         nonlocal cust_list, bqueasy, pqueasy, tqueasy
+        return {"counter": counter,"idFlag": idflag, "doneflag": doneflag, "cust-list": cust_list_data}
 
-        return {"doneflag": doneflag, "cust-list": cust_list_data}
-
+    
+    # for queasy in db_session.query(Queasy).filter(
+    #          (Queasy.key == 280) and (Queasy.char1 == "Guest Turnover") and (Queasy.char3 == idflag)).order_by(Queasy.number1).yield_per(100):
+    #----------
+    # q = (
+    #     db_session.query(Queasy)
+    #     .filter(
+    #         and_(
+    #             Queasy.key == 280,
+    #             func.lower(func.trim(Queasy.char1)) == "guest turnover",
+    #             func.trim(Queasy.char3) == idflag.strip(),
+    #         )
+    #     )
+    #     .order_by(Queasy.number1)
+    #     .yield_per(100)
+    # )
+    #----------
+    # q = db_session.query(Queasy).filter(
+    #          (Queasy.key == 280) and (func.lower(func.trim(Queasy.char1)) == "guest turnover") and (func.trim(Queasy.char3) == idflag.strip())).order_by(Queasy.number1).yield_per(100)
+    #----------
+    # q = (
+    #     db_session.query(Queasy)
+    #     .filter(
+    #         and_(
+    #             Queasy.key == 280,
+    #             func.lower(func.trim(Queasy.char1)) == "guest turnover"
+    #         )
+    #     )
+    #     .order_by(Queasy.number1)
+    #     .yield_per(100)
+    # )
+    #----------
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 280) & (Queasy.char1 == ("Guest Turnover").lower()) & (Queasy.char3 == idflag)).order_by(Queasy.number1).yield_per(100):
+            (Queasy.key == 280) and (Queasy.char1 == "Guest Turnover") and (Queasy.char3 == idflag)).order_by(Queasy.number1).yield_per(100):
+    # for queasy in q:
+        # if queasy.char3 != idflag:
+        #     continue
         counter = counter + 1
 
         if counter > 1000:
@@ -74,29 +109,24 @@ def cust_turnover_output_list_webbl(idflag:string, cust_list_data:[Cust_list]):
         pass
 
     pqueasy = db_session.query(Pqueasy).filter(
-             (Pqueasy.key == 280) & (Pqueasy.char1 == ("Guest Turnover").lower()) & (Pqueasy.char3 == idflag)).first()
+             (Pqueasy.key == 280) & (Pqueasy.char1 == ("Guest Turnover")) & (Pqueasy.char3 == idflag)).first()
 
     if pqueasy:
         doneflag = False
-
-
     else:
-
         tqueasy = db_session.query(Tqueasy).filter(
-                 (Tqueasy.key == 285) & (Tqueasy.char1 == ("Guest Turnover").lower()) & (Tqueasy.number1 == 1) & (Tqueasy.char2 == idflag)).first()
+                 (Tqueasy.key == 285) & (Tqueasy.char1 == ("Guest Turnover")) & (Tqueasy.number1 == 1) & (Tqueasy.char2 == idflag)).first()
 
         if tqueasy:
             doneflag = False
-
 
         else:
             doneflag = True
 
     tqueasy = db_session.query(Tqueasy).filter(
-             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Guest Turnover").lower()) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == idflag)).first()
+             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Guest Turnover")) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == idflag)).first()
 
     if tqueasy:
-        pass
         db_session.delete(tqueasy)
         pass
 

@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 26/9/2025
+#
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -24,33 +28,32 @@ def cust_turnover_list_webbl(cardtype:int, sort_type:int, curr_sort1:int, fdate:
 
     db_session = local_storage.db_session
 
+    currency = currency.strip()
+
     def generate_output():
         nonlocal sort1, tmp_counter, queasy
         nonlocal cardtype, sort_type, curr_sort1, fdate, tdate, check_ftd, currency, excl_other, curr_sort2, idflag
         nonlocal bqueasy, pqueasy
 
-
         nonlocal cust_list, bqueasy, pqueasy
         nonlocal cust_list_data
 
-        return {}
+        return {"idflag": idflag}
 
 
+    # Rd, 1/10/2025 - simpan start flag
     queasy = Queasy()
     db_session.add(queasy)
 
     queasy.key = 285
     queasy.char1 = "Guest Turnover"
-    queasy.number1 = 1
+    queasy.number1 = 1      # 1: start, 0: end (Rd, 1/10/2025)
     queasy.char2 = idflag
 
-
-    pass
     curr_sort2, sort1, cust_list_data = get_output(cust_turnover_listbl(cardtype, sort_type, curr_sort1, fdate, tdate, check_ftd, currency, excl_other, curr_sort2))
 
     for cust_list in query(cust_list_data):
         tmp_counter = tmp_counter + 1
-
 
         pqueasy = Queasy()
         db_session.add(pqueasy)
@@ -83,8 +86,6 @@ def cust_turnover_list_webbl(cardtype:int, sort_type:int, curr_sort1:int, fdate:
                     to_string(cust_list.resno) + "|" +\
                     to_string(cust_list.reslinnr) + "|" +\
                     to_string(cust_list.curr_pos)
-
-
         else:
             pqueasy.char2 = to_string(cust_list.gastnr) + "|" +\
                     to_string(cust_list.cust_name) + "|" +\
@@ -109,17 +110,12 @@ def cust_turnover_list_webbl(cardtype:int, sort_type:int, curr_sort1:int, fdate:
                     to_string(cust_list.reslinnr) + "|" +\
                     to_string(cust_list.curr_pos)
 
-
-        pass
-
-    bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "guest turnover")],"char2": [(eq, idflag)]})
-
+        db_session.commit()
+    
+    # Process Selesai, simpan end flag
+    bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "Guest Turnover")],"char2": [(eq, idflag)]})
     if bqueasy:
-        pass
         bqueasy.number1 = 0
 
-
-        pass
-        pass
-
+    db_session.commit()
     return generate_output()
