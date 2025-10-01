@@ -110,7 +110,8 @@ def cust_turnover_list_webbl(cardtype:int, sort_type:int, curr_sort1:int, fdate:
                     to_string(cust_list.reslinnr) + "|" +\
                     to_string(cust_list.curr_pos)
 
-        db_session.commit()
+        
+    db_session.commit()
     
     # Process Selesai, simpan end flag
     bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "Guest Turnover")],"char2": [(eq, idflag)]})
