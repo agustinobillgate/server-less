@@ -8,6 +8,8 @@ from decimal import Decimal
 from datetime import date
 from models import Queasy
 
+import time
+
 def rmrev_bdown_partial_create_list_webbl(id_flag:string):
     cl_list_data = []
     currency_list_data = []
@@ -45,10 +47,34 @@ def rmrev_bdown_partial_create_list_webbl(id_flag:string):
 
         return {"cl-list": cl_list_data, "currency-list": currency_list_data, "sum-list": sum_list_data, "s-list": s_list_data, "argt-list": argt_list_data, "done_flag": done_flag}
 
-    for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 280) & (Queasy.char1 == "RRB Period") & (Queasy.char2 == id_flag)).order_by(Queasy.number1).all():
+    tmp_count = -1
+
+    retry = 0
+
+    while True:
+        count = db_session.query(Queasy).filter(
+            (Queasy.key == 280) &
+            (Queasy.char1 == "RRB Period") &
+            (Queasy.char2 == id_flag)
+        ).count()
+
+        if count >= 500:
+            break
+
+        if tmp_count == 0 and retry > 60:
+            break
+
+        if tmp_count > 0 and tmp_count == count:
+            break
+
+        tmp_count = count
+        retry += 1
+
+        time.sleep(0.5)
+
+   
+    for queasy in db_session.query(Queasy).filter((Queasy.key == 280) & (Queasy.char1 == "RRB Period") & (Queasy.char2 == id_flag)).order_by(Queasy.number1).all():
         
-        print("Q:", queasy.char3)
         tbl_name = entry(0, queasy.char3, "|")
         counter = counter + 1
 
@@ -157,7 +183,7 @@ def rmrev_bdown_partial_create_list_webbl(id_flag:string):
             argt_list.bfast =  to_decimal(to_decimal(entry(7 , queasy.char3 , "|")) )
 
         bqueasy = db_session.query(Bqueasy).filter(
-                 (Bqueasy._recid == queasy._recid)).first()
+                (Bqueasy._recid == queasy._recid)).first()
         # Rd 14/8/2025
         if bqueasy:
             db_session.delete(bqueasy)
@@ -168,17 +194,12 @@ def rmrev_bdown_partial_create_list_webbl(id_flag:string):
 
     if pqueasy:
         done_flag = False
-
-
     else:
-
         tqueasy = db_session.query(Tqueasy).filter(
                  (Tqueasy.key == 285) & (Tqueasy.char1 == ("RRB Period").lower()) & (Tqueasy.number1 == 1) & (Tqueasy.char2 == (id_flag).lower())).first()
 
         if tqueasy:
             done_flag = False
-
-
         else:
             done_flag = True
 
