@@ -57,7 +57,7 @@ def cust_turnover_output_list_webbl(idflag:string, cust_list_data:[Cust_list]):
         tmp_count = count
         retry += 1
 
-        time.sleep(0.5)
+        time.sleep(0.3)
 
 
     for queasy in db_session.query(Queasy).filter(
