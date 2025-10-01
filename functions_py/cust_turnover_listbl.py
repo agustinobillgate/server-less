@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 26/9/2025
+# dipanggil dari cust_turnover_list_webbl.py
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -91,8 +95,6 @@ def cust_turnover_listbl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date
             tr_stayno = cust_list1.stayno
             counter = counter + 1
             curr_region = cust_list1.region
-
-
         else:
             tr_lyrev =  to_decimal(tr_lyrev) + to_decimal(cust_list1.ly_rev)
             tr_gesamtumsatz =  to_decimal(tr_gesamtumsatz) + to_decimal(cust_list1.gesamtumsatz)
@@ -102,7 +104,6 @@ def cust_turnover_listbl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date
             tr_sonst_umsatz =  to_decimal(tr_sonst_umsatz) + to_decimal(cust_list1.sonst_umsatz)
             tr_ba_umsatz =  to_decimal(tr_ba_umsatz) + to_decimal(cust_list1.ba_umsatz)
             tr_stayno = tr_stayno + cust_list1.stayno
-
 
         cust_list = Cust_list()
         cust_list_data.append(cust_list)
