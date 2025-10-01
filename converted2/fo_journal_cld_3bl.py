@@ -1,18 +1,18 @@
-#using conversion tools version: 1.0.0.105
+#using conversion tools version: 1.0.0.117
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 import re
 from functions.calc_servvat import calc_servvat
-from models import Guest, Artikel, Queasy, Htparam, Bill, Bill_line, Res_line, Reservation, Sourccod, Segment, Genstat, Guestseg, Debitor, Hoteldpt, Billjournal, H_bill, Bk_veran, Arrangement, Argt_line, H_journal
+from models import Guest, Artikel, Queasy, Htparam, Bill, Bill_line, Res_line, Reservation, Sourccod, Segment, Genstat, History, Guestseg, Debitor, Hoteldpt, Billjournal, H_bill, Bk_veran, Arrangement, Argt_line, H_journal
 
 def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, from_date:date, to_date:date, sorttype:int, exclude_artrans:bool, long_digit:bool, foreign_flag:bool, mi_onlyjournal:bool, mi_excljournal:bool, mi_post:bool, mi_showrelease:bool, mi_break:bool, id_flag:string):
 
-    prepare_cache ([Guest, Artikel, Queasy, Htparam, Bill, Res_line, Reservation, Sourccod, Segment, Genstat, Guestseg, Debitor, Hoteldpt, Billjournal, H_bill, Bk_veran, H_journal])
+    prepare_cache ([Guest, Artikel, Queasy, Htparam, Bill, Res_line, Reservation, Sourccod, Segment, Genstat, History, Guestseg, Debitor, Hoteldpt, Billjournal, H_bill, Bk_veran, H_journal])
 
     gtot = to_decimal("0.0")
-    output_list_list = []
+    output_list_data = []
     curr_date:date = None
     descr1:string = ""
     voucher_no:string = ""
@@ -34,17 +34,17 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
     temp2:string = ""
     counter:int = 0
     isoutletshift:bool = False
-    guest = artikel = queasy = htparam = bill = bill_line = res_line = reservation = sourccod = segment = genstat = guestseg = debitor = hoteldpt = billjournal = h_bill = bk_veran = arrangement = argt_line = h_journal = None
+    guest = artikel = queasy = htparam = bill = bill_line = res_line = reservation = sourccod = segment = genstat = history = guestseg = debitor = hoteldpt = billjournal = h_bill = bk_veran = arrangement = argt_line = h_journal = None
 
     output_list = shift_list = buffguest = gbuff = shift_buff = b_artikel = None
 
-    output_list_list, Output_list = create_model("Output_list", {"bezeich":string, "c":string, "ns":string, "mb":string, "shift":string, "dept":string, "str":string, "remark":string, "gname":string, "descr":string, "voucher":string, "checkin":date, "checkout":date, "guestname":string, "segcode":string, "amt_nett":Decimal, "service":Decimal, "vat":Decimal, "zinr":string, "deptno":int, "nationality":string, "resnr":int, "book_source":string, "resname":string})
-    shift_list_list, Shift_list = create_model("Shift_list", {"shift":int, "ftime":int, "ttime":int})
+    output_list_data, Output_list = create_model("Output_list", {"bezeich":string, "c":string, "ns":string, "mb":string, "shift":string, "dept":string, "str":string, "remark":string, "gname":string, "descr":string, "voucher":string, "checkin":date, "checkout":date, "guestname":string, "segcode":string, "amt_nett":Decimal, "service":Decimal, "vat":Decimal, "zinr":string, "deptno":int, "nationality":string, "resnr":int, "book_source":string, "resname":string})
+    shift_list_data, Shift_list = create_model("Shift_list", {"shift":int, "ftime":int, "ttime":int})
 
     Buffguest = create_buffer("Buffguest",Guest)
     Gbuff = create_buffer("Gbuff",Guest)
     Shift_buff = Shift_list
-    shift_buff_list = shift_list_list
+    shift_buff_data = shift_list_data
 
     B_artikel = create_buffer("B_artikel",Artikel)
 
@@ -52,25 +52,25 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal gtot, output_list_list, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
+        nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, mi_onlyjournal, mi_excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal buffguest, gbuff, shift_buff, b_artikel
 
 
         nonlocal output_list, shift_list, buffguest, gbuff, shift_buff, b_artikel
-        nonlocal output_list_list, shift_list_list
+        nonlocal output_list_data, shift_list_data
 
-        return {"gtot": gtot, "output-list": output_list_list}
+        return {"gtot": gtot, "output-list": output_list_data}
 
     def handle_null_date(inp_date:date):
 
-        nonlocal gtot, output_list_list, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
+        nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, mi_onlyjournal, mi_excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal buffguest, gbuff, shift_buff, b_artikel
 
 
         nonlocal output_list, shift_list, buffguest, gbuff, shift_buff, b_artikel
-        nonlocal output_list_list, shift_list_list
+        nonlocal output_list_data, shift_list_data
 
         if inp_date == None:
             return to_string("", "x(8)")
@@ -80,13 +80,13 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
     def handle_null_char(inp_char:string):
 
-        nonlocal gtot, output_list_list, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
+        nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, mi_onlyjournal, mi_excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal buffguest, gbuff, shift_buff, b_artikel
 
 
         nonlocal output_list, shift_list, buffguest, gbuff, shift_buff, b_artikel
-        nonlocal output_list_list, shift_list_list
+        nonlocal output_list_data, shift_list_data
 
         if inp_char == None:
             return ""
@@ -99,13 +99,13 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
     def custom_record():
 
-        nonlocal gtot, output_list_list, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
+        nonlocal gtot, output_list_data, curr_date, descr1, voucher_no, ind, indexing, gdelimiter, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, mi_onlyjournal, mi_excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal buffguest, gbuff, shift_buff, b_artikel
 
 
         nonlocal output_list, shift_list, buffguest, gbuff, shift_buff, b_artikel
-        nonlocal output_list_list, shift_list_list
+        nonlocal output_list_data, shift_list_data
 
         roomnumber:string = ""
         zinrdate:date = None
@@ -136,7 +136,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
             bill_line = get_cache (Bill_line, {"rechnr": [(eq, bill.rechnr)],"zinr": [(eq, roomnumber)]})
 
-            res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, roomnumber)]})
+            res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, roomnumber)],"ankunft": [(le, zinrdate)],"abreise": [(ge, zinrdate)]})
 
             reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
 
@@ -250,6 +250,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                 if guest:
                     output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
                     output_list.gname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                    output_list.resname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
                     output_list.nationality = guest.nation1
 
         elif matches(output_list.descr,r"*#*"):
@@ -312,6 +313,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                 if guest:
                     output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
                     output_list.gname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                    output_list.resname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
                     output_list.nationality = guest.nation1
 
         if roomnumber != "" and billnumber == 0:
@@ -395,6 +397,46 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                         output_list.segcode = segment.bezeich
                     else:
                         output_list.segcode = ""
+
+        if roomnumber != "" and not res_line:
+
+            bill = get_cache (Bill, {"rechnr": [(eq, billnumber)]})
+
+            history = get_cache (History, {"resnr": [(eq, bill.resnr)],"zinr": [(eq, roomnumber)],"ankunft": [(le, zinrdate)],"abreise": [(ge, zinrdate)]})
+
+            res_line = get_cache (Res_line, {"resnr": [(eq, history.resnr)],"reslinnr": [(eq, history.reslinnr)],"ankunft": [(le, history.ankunft)],"abreise": [(ge, history.abreise)]})
+
+            reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+
+            buffguest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+
+            guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+
+            gbuff = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+
+            if guest and reservation:
+                output_list.str = output_list.str + guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                output_list.checkin = res_line.ankunft
+                output_list.checkout = res_line.abreise
+                output_list.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                output_list.gname = buffguest.name + ", " + buffguest.vorname1 + " " + buffguest.anrede1
+                output_list.nationality = guest.nation1
+                output_list.resnr = res_line.resnr
+                output_list.resname = gbuff.name + ", " + gbuff.vorname1 + " " + gbuff.anrede1
+
+                if reservation.resart != 0:
+
+                    sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
+
+                    if sourccod:
+                        output_list.book_source = sourccod.bezeich
+
+            segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+
+            if segment:
+                output_list.segcode = segment.bezeich
+            else:
+                output_list.segcode = ""
         roomnumber = ""
 
         if output_list.ns != "" and handle_null_char (output_list.gname) != "" and bill:
@@ -514,13 +556,13 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
     def journal_list():
 
-        nonlocal gtot, output_list_list, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
+        nonlocal gtot, output_list_data, descr1, voucher_no, ind, indexing, gdelimiter, roomnumber, zinrdate, billnumber, curr_str, curr_resnr, serv, vat, netto, temp_str, hoteldept, shift, temp1, temp2, counter, isoutletshift, guest, artikel, queasy, htparam, bill, bill_line, res_line, reservation, sourccod, segment, genstat, history, guestseg, debitor, hoteldpt, billjournal, h_bill, bk_veran, arrangement, argt_line, h_journal
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, mi_onlyjournal, mi_excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal buffguest, gbuff, shift_buff, b_artikel
 
 
         nonlocal output_list, shift_list, buffguest, gbuff, shift_buff, b_artikel
-        nonlocal output_list_list, shift_list_list
+        nonlocal output_list_data, shift_list_data
 
         qty:int = 0
         sub_tot:Decimal = to_decimal("0.0")
@@ -544,7 +586,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
         tot_vat:Decimal = to_decimal("0.0")
         tot_service:Decimal = to_decimal("0.0")
         loopind:int = 0
-        output_list_list.clear()
+        output_list_data.clear()
 
         for artikel in db_session.query(Artikel).filter(
                  (Artikel.artnr >= from_art) & (Artikel.artnr <= to_art) & (Artikel.departement >= from_dept) & (Artikel.departement <= to_dept)).order_by((Artikel.departement * 10000 + Artikel.artnr)).all():
@@ -583,7 +625,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                         if do_it:
                             it_exist = True
                             output_list = Output_list()
-                            output_list_list.append(output_list)
+                            output_list_data.append(output_list)
 
 
                             if (billjournal.bediener_nr == 0 and mi_onlyjournal == False) or (billjournal.bediener_nr != 0 and mi_excljournal == False):
@@ -1003,13 +1045,13 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                                     if h_journal:
 
-                                        shift_list = query(shift_list_list, filters=(lambda shift_list: shift_list.ftime <= h_journal.zeit and shift_list.ttime >= h_journal.zeit), first=True)
+                                        shift_list = query(shift_list_data, filters=(lambda shift_list: shift_list.ftime <= h_journal.zeit and shift_list.ttime >= h_journal.zeit), first=True)
 
                                         if shift_list:
                                             shift = shift_list.shift
                                         else:
 
-                                            shift_buff = query(shift_buff_list, filters=(lambda shift_buff: shift_buff.ftime >= shift_buff.ttime), first=True)
+                                            shift_buff = query(shift_buff_data, filters=(lambda shift_buff: shift_buff.ftime >= shift_buff.ttime), first=True)
 
                                             if shift_buff:
                                                 shift = shift_buff.shift
@@ -1129,7 +1171,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                                 output_list.zinr = billjournal.zinr
                                 output_list.deptno = billjournal.departement
 
-                                if matches(billjournal.bezeich,r"*Deposit*") and billjournal.rechnr != 0:
+                                if get_index(billjournal.bezeich, "Deposit") > 0 and get_index(billjournal.bezeich, "[") > 0 and get_index(billjournal.bezeich, "#") > 0 and billjournal.rechnr != 0:
 
                                     if not long_digit:
                                         str = to_string(handle_null_date (billjournal.bill_datum) , "x(8)") + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string(billjournal.betriebsnr, ">>>>>>") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->>,>>>,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
@@ -1232,7 +1274,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                         if do_it:
                             it_exist = True
                             output_list = Output_list()
-                            output_list_list.append(output_list)
+                            output_list_data.append(output_list)
 
 
                             if (billjournal.bediener_nr != 0 and mi_excljournal == False) or (billjournal.bediener_nr == 0 and mi_onlyjournal == False):
@@ -1638,13 +1680,13 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                                     if h_journal:
 
-                                        shift_list = query(shift_list_list, filters=(lambda shift_list: shift_list.ftime <= h_journal.zeit and shift_list.ttime >= h_journal.zeit), first=True)
+                                        shift_list = query(shift_list_data, filters=(lambda shift_list: shift_list.ftime <= h_journal.zeit and shift_list.ttime >= h_journal.zeit), first=True)
 
                                         if shift_list:
                                             shift = shift_list.shift
                                         else:
 
-                                            shift_buff = query(shift_buff_list, filters=(lambda shift_buff: shift_buff.ftime >= shift_buff.ttime), first=True)
+                                            shift_buff = query(shift_buff_data, filters=(lambda shift_buff: shift_buff.ftime >= shift_buff.ttime), first=True)
 
                                             if shift_buff:
                                                 shift = shift_buff.shift
@@ -1764,7 +1806,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                                 output_list.zinr = billjournal.zinr
                                 output_list.deptno = billjournal.departement
 
-                                if matches(billjournal.bezeich,r"*Deposit*") and billjournal.rechnr != 0:
+                                if get_index(billjournal.bezeich, "Deposit") > 0 and get_index(billjournal.bezeich, "[") > 0 and get_index(billjournal.bezeich, "#") > 0 and billjournal.rechnr != 0:
 
                                     if not long_digit:
                                         str = to_string(handle_null_date (billjournal.bill_datum) , "x(8)") + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string(billjournal.betriebsnr, ">>>>>>") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->>,>>>,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
@@ -1846,7 +1888,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                             if do_it:
                                 it_exist = True
                                 output_list = Output_list()
-                                output_list_list.append(output_list)
+                                output_list_data.append(output_list)
 
 
                                 if (billjournal.bediener_nr != 0 and mi_excljournal == False) or (billjournal.bediener_nr == 0 and mi_onlyjournal == False):
@@ -1973,13 +2015,13 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                                         if h_journal:
 
-                                            shift_list = query(shift_list_list, filters=(lambda shift_list: shift_list.ftime <= h_journal.zeit and shift_list.ttime >= h_journal.zeit), first=True)
+                                            shift_list = query(shift_list_data, filters=(lambda shift_list: shift_list.ftime <= h_journal.zeit and shift_list.ttime >= h_journal.zeit), first=True)
 
                                             if shift_list:
                                                 shift = shift_list.shift
                                             else:
 
-                                                shift_buff = query(shift_buff_list, filters=(lambda shift_buff: shift_buff.ftime >= shift_buff.ttime), first=True)
+                                                shift_buff = query(shift_buff_data, filters=(lambda shift_buff: shift_buff.ftime >= shift_buff.ttime), first=True)
 
                                                 if shift_buff:
                                                     shift = shift_buff.shift
@@ -2099,10 +2141,18 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                                     output_list.zinr = billjournal.zinr
                                     output_list.deptno = billjournal.departement
 
-                                    if not long_digit:
-                                        str = to_string(handle_null_date (billjournal.bill_datum) , "x(8)") + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string(billjournal.betriebsnr, ">>>>>>") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->>,>>>,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
+                                    if get_index(billjournal.bezeich, "Deposit") > 0 and get_index(billjournal.bezeich, "[") > 0 and get_index(billjournal.bezeich, "#") > 0 and billjournal.rechnr != 0:
+
+                                        if not long_digit:
+                                            str = to_string(handle_null_date (billjournal.bill_datum) , "x(8)") + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string(billjournal.betriebsnr, ">>>>>>") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->>,>>>,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
+                                        else:
+                                            str = to_string(handle_null_date (billjournal.bill_datum) , "x(8)") + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string(billjournal.betriebsnr, ">>>>>>") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->,>>>,>>>,>>>,>>>,>>9") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
                                     else:
-                                        str = to_string(handle_null_date (billjournal.bill_datum) , "x(8)") + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string(billjournal.betriebsnr, ">>>>>>") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->,>>>,>>>,>>>,>>>,>>9") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
+
+                                        if not long_digit:
+                                            str = to_string(handle_null_date (billjournal.bill_datum) , "x(8)") + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string("", "x(6)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->>,>>>,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
+                                        else:
+                                            str = to_string(handle_null_date (billjournal.bill_datum) , "x(8)") + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (billjournal.bezeich) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string("", "x(6)") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->,>>>,>>>,>>>,>>>,>>9") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
                                     qty = qty + billjournal.anzahl
                                     gqty = gqty + billjournal.anzahl
 
@@ -2170,7 +2220,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                             if do_it:
                                 it_exist = True
                                 output_list = Output_list()
-                                output_list_list.append(output_list)
+                                output_list_data.append(output_list)
 
 
                                 if (billjournal.bediener_nr != 0 and mi_excljournal == False) or (billjournal.bediener_nr == 0 and mi_onlyjournal == False):
@@ -2245,13 +2295,13 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
                                         if h_journal:
 
-                                            shift_list = query(shift_list_list, filters=(lambda shift_list: shift_list.ftime <= h_journal.zeit and shift_list.ttime >= h_journal.zeit), first=True)
+                                            shift_list = query(shift_list_data, filters=(lambda shift_list: shift_list.ftime <= h_journal.zeit and shift_list.ttime >= h_journal.zeit), first=True)
 
                                             if shift_list:
                                                 shift = shift_list.shift
                                             else:
 
-                                                shift_buff = query(shift_buff_list, filters=(lambda shift_buff: shift_buff.ftime >= shift_buff.ttime), first=True)
+                                                shift_buff = query(shift_buff_data, filters=(lambda shift_buff: shift_buff.ftime >= shift_buff.ttime), first=True)
 
                                                 if shift_buff:
                                                     shift = shift_buff.shift
@@ -2371,7 +2421,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                                     output_list.zinr = billjournal.zinr
                                     output_list.deptno = billjournal.departement
 
-                                    if matches(billjournal.bezeich,r"*Deposit*") and billjournal.rechnr != 0:
+                                    if get_index(billjournal.bezeich, "Deposit") > 0 and get_index(billjournal.bezeich, "[") > 0 and get_index(billjournal.bezeich, "#") > 0 and billjournal.rechnr != 0:
 
                                         if not long_digit:
                                             str = to_string(handle_null_date (billjournal.bill_datum) , "x(8)") + to_string(handle_null_char (billjournal.zinr) , "x(6)") + to_string(billjournal.rechnr, "999999999") + to_string(billjournal.artnr, "9999") + to_string(handle_null_char (descr1) , "x(50)") + to_string(handle_null_char (deptname) , "x(12)") + to_string(billjournal.betriebsnr, ">>>>>>") + to_string(billjournal.anzahl, "-9999") + to_string(amount, "->>,>>>,>>>,>>>,>>9.99") + to_string(billjournal.zeit, "HH:MM:SS") + to_string(handle_null_char (billjournal.userinit) , "x(4)") + to_string(handle_null_date (billjournal.sysdate)) + to_string(handle_null_char (voucher_no) , "x(24)")
@@ -2428,7 +2478,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
 
             if it_exist:
                 output_list = Output_list()
-                output_list_list.append(output_list)
+                output_list_data.append(output_list)
 
 
                 if not long_digit:
@@ -2449,7 +2499,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
                     t_vat =  to_decimal("0")
                 custom_record()
         output_list = Output_list()
-        output_list_list.append(output_list)
+        output_list_data.append(output_list)
 
 
         if not long_digit:
@@ -2488,7 +2538,7 @@ def fo_journal_cld_3bl(from_art:int, to_art:int, from_dept:int, to_dept:int, fro
     for queasy in db_session.query(Queasy).filter(
              (Queasy.key == 5) & (Queasy.number3 != 0)).order_by(Queasy.number1).all():
         shift_list = Shift_list()
-        shift_list_list.append(shift_list)
+        shift_list_data.append(shift_list)
 
         shift_list.shift = queasy.number3
         temp1 = to_string(queasy.number1, "9999")

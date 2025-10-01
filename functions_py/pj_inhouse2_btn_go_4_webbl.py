@@ -37,7 +37,7 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
     query_string:string = ""
     queasy = None
 
-    froom = froom.strip()
+    
 
     cl_list = s_list = segm_list = argt_list = sum_list = t_buff_queasy = output_list = lnl_sum = summary_list1 = summary_list2 = summary_list3 = summary_list4 = c_list = None
 
@@ -56,6 +56,9 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
     db_session = local_storage.db_session
 
+    froom = froom.strip()
+    troom = troom.strip()
+
     def generate_output():
         nonlocal output_list_data, summary_list1_data, summary_list2_data, summary_list3_data, summary_list4_data, lnl_sum_data, t_buff_queasy_data, tot_payrm, tot_rm, tot_a, tot_c, tot_co, tot_avail, tot_rmqty, inactive, curr_company, outnr, query_string, queasy
         nonlocal sorttype, datum, curr_date, curr_gastnr, froom, troom, exc_depart, incl_gcomment, incl_rsvcomment, prog_name, disp_accompany, disp_exclinact, split_rsv_print, exc_compli
@@ -63,10 +66,8 @@ def pj_inhouse2_btn_go_4_webbl(sorttype:int, datum:date, curr_date:date, curr_ga
 
         nonlocal cl_list, s_list, segm_list, argt_list, sum_list, t_buff_queasy, output_list, lnl_sum, summary_list1, summary_list2, summary_list3, summary_list4, c_list
         nonlocal cl_list_data, s_list_data, segm_list_data, argt_list_data, sum_list_data, t_buff_queasy_data, output_list_data, lnl_sum_data, summary_list1_data, summary_list2_data, summary_list3_data, summary_list4_data
-        # print("Sorttype:", sorttype)
-        # for rec in output_list_data:
-        #     print(rec.rmno)
-        return {"output-list": output_list_data, "summary-list1": summary_list1_data, "summary-list2": summary_list2_data, "summary-list3": summary_list3_data, "summary-list4": summary_list4_data, "lnl-sum": lnl_sum_data, "t-buff-queasy": t_buff_queasy_data}
+
+        return { "output-list": output_list_data, "summary-list1": summary_list1_data, "summary-list2": summary_list2_data, "summary-list3": summary_list3_data, "summary-list4": summary_list4_data, "lnl-sum": lnl_sum_data, "t-buff-queasy": t_buff_queasy_data}
 
     def create_inhouse_v2():
 

@@ -1398,4 +1398,8 @@
   <prgs:resource consumes="application/json" name="_stockOutlistChgCustom" path="/stockOutlistChgCustom" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-stock-outlist-btn-chg-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-stock-outlist-btn-chg-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_invHadjustlistBtnGo" path="/invHadjustlistBtnGo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-inv-hadjustlist-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-inv-hadjustlist-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+
 </prgs:model>

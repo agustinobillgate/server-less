@@ -1,10 +1,17 @@
 #using conversion tools version: 1.0.0.117
 
+#------------------------------------------
+# Rd, 22/9/2025
+# update parameter p_txtno -> p_txt_no 
+#------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Paramtext
 
-def read_paramtextbl(case_type:int, p_txtno:int):
+# Rd, 22/9/2025
+# update parameter p_txtno -> p_txt_no, krn dari UI dan .p tidak sesuai
+def read_paramtextbl(case_type:int, p_txt_no:int):
     p_text = ""
     t_paramtext_data = []
     from_number:int = 0
@@ -18,6 +25,10 @@ def read_paramtextbl(case_type:int, p_txtno:int):
 
 
     db_session = local_storage.db_session
+
+    # Rd, 22/9/2025
+    # assign ke p_txtno
+    p_txtno=p_txt_no
 
     def generate_output():
         nonlocal p_text, t_paramtext_data, from_number, to_number, do_it, paramtext

@@ -132,9 +132,9 @@ def hk_countsheetbl(pvilanguage:int):
                                 tot_stat[8] = tot_stat[8] + 1
                                 out_list.i = out_list.i + 1
                                 out_list.anz = out_list.anz + 1
-                                out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(res_line.gratis, ">> ")
+                                out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(res_line.gratis, ">>    ")
                                 out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
-                                out_list.pax = out_list.pax + to_string(res_line.gratis, ">> ")
+                                out_list.pax = out_list.pax + to_string(res_line.gratis, ">>    ")
                             else:
 
                                 out_list = query(out_list_data, filters=(lambda out_list: out_list.etage == zimmer.etage and out_list.stat == 9 and out_list.flag == 0), first=True)
@@ -154,9 +154,9 @@ def hk_countsheetbl(pvilanguage:int):
                                 tot_stat[9] = tot_stat[9] + 1
                                 out_list.i = out_list.i + 1
                                 out_list.anz = out_list.anz + 1
-                                out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(res_line.gratis, ">> ")
+                                out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(res_line.gratis, ">>    ")
                                 out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
-                                out_list.pax = out_list.pax + to_string(res_line.gratis, ">> ")
+                                out_list.pax = out_list.pax + to_string(res_line.gratis, ">>    ")
 
                     elif zimmer.zistatus == 8:
                         hu_flag = False
@@ -195,11 +195,11 @@ def hk_countsheetbl(pvilanguage:int):
                             tot_stat[11] = tot_stat[11] + 1
                             out_list.i = out_list.i + 1
                             out_list.anz = out_list.anz + 1
-                            out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(res_line.erwach, ">> ")
+                            out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(res_line.erwach, ">>    ")
                             out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
                             # Rd 15/8/2025
                             # out_list.pax = out_list.pax + to_string(res_line.erwach, ">>> ")
-                            out_list.pax = out_list.pax + to_string(res_line.erwachs, ">>> ")
+                            out_list.pax = out_list.pax + to_string(res_line.erwachs, ">>>   ")
 
 
                     elif zimmer.zistatus >= 0 and zimmer.zistatus <= 2:
@@ -226,7 +226,7 @@ def hk_countsheetbl(pvilanguage:int):
                             tot_stat[7] = tot_stat[7] + 1
                             out_list.i = out_list.i + 1
                             out_list.anz = out_list.anz + 1
-                            out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + " "
+                            out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + "      "
                             out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
 
                     if not hu_flag and not om_flag:
@@ -255,11 +255,11 @@ def hk_countsheetbl(pvilanguage:int):
                             for res_line in db_session.query(Res_line).filter(
                                      (Res_line.active_flag == 1) & (Res_line.zinr == zimmer.zinr) & (Res_line.resstatus != 12)).order_by(Res_line._recid).all():
                                 pax = pax + res_line.erwachs
-                            out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(pax, ">> ")
+                            out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(pax, ">>    ")
                             out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
-                            out_list.pax = out_list.pax + to_string(pax, ">>> ")
+                            out_list.pax = out_list.pax + to_string(pax, ">>>   ")
                         else:
-                            out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + " "
+                            out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + "      "
                             out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
 
                     reslin1 = db_session.query(Reslin1).filter(
@@ -289,9 +289,9 @@ def hk_countsheetbl(pvilanguage:int):
                         for reslin1 in db_session.query(Reslin1).filter(
                                  (Reslin1.active_flag == 0) & ((Reslin1.resstatus == 1) | (Reslin1.resstatus == 2) | (Reslin1.resstatus == 3) | (Reslin1.resstatus == 4) | (Reslin1.resstatus == 13)) & (Reslin1.zinr == zimmer.zinr) & (Reslin1.ankunft == ci_date)).order_by(Reslin1._recid).all():
                             pax = pax + reslin1.erwachs
-                        out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(pax, ">> ")
+                        out_list.str = out_list.str + to_string(zimmer.zinr, "x(6)") + to_string(pax, ">>    ")
                         out_list.room = out_list.room + to_string(zimmer.zinr, "x(6)")
-                        out_list.pax = out_list.pax + to_string(pax, ">>> ")
+                        out_list.pax = out_list.pax + to_string(pax, ">>>   ")
 
         for out_list in query(out_list_data, filters=(lambda out_list: out_list.flag == 0)):
             out_list.sum = out_list.anz
@@ -307,7 +307,7 @@ def hk_countsheetbl(pvilanguage:int):
                 out_list.sum = 0
 
 
-                loop = truncate(length(nstr) / 120, 0)
+                loop = to_int(truncate(length(nstr) / 120, 0))
                 for i in range(1,loop + 1) :
                     nseq = nseq + 1
                     out_list_buff = Out_list_buff()
@@ -338,15 +338,15 @@ def hk_countsheetbl(pvilanguage:int):
 
         reihe = reihe + 1
         out_list.seq = reihe
-        out_list.str = translateExtended ("SUMMARY :", lvcarea, "") + " "
+        out_list.str = translateExtended ("SUMMARY :", lvcarea, "") + "   "
 
 
-        out_list.room = translateExtended ("SUMMARY :", lvcarea, "") + " "
+        out_list.room = translateExtended ("SUMMARY :", lvcarea, "") + "   "
         for n in range(1,12 + 1) :
 
             if tot_stat[n - 1] != 0:
-                out_list.str = out_list.str + stat[n - 1] + "=" + to_string(tot_stat[n - 1]) + " "
-                out_list.room = out_list.room + stat[n - 1] + "=" + to_string(tot_stat[n - 1]) + " "
+                out_list.str = out_list.str + stat[n - 1] + "=" + to_string(tot_stat[n - 1]) + "   "
+                out_list.room = out_list.room + stat[n - 1] + "=" + to_string(tot_stat[n - 1]) + "   "
 
     ci_date = get_output(htpdate(110))
     create_list()

@@ -46,8 +46,8 @@ arlAddQueueRoom,arl_list_add_queue_roombl
 arlChgDepTime,arl_list_chg_deptimebl
 arlCheckDeposit,arl_list_check_depositbl
 arlCancelRsv2,arl_list_cancelrsv_2bl
-arlCancelRsv1-3,arl_list_cancelrsv1_3bl
-arlCancelRsv1-1,arl_list_cancelrsv1_1bl
+arlCancelRsv1_3,arl_list_cancelrsv1_3bl
+arlCancelRsv1_1,arl_list_cancelrsv1_1bl
 arlCancelCi,arl_list_cancelcibl
 availRoomPrepare,prepare_avail_roombl
 availRoom,avail_roombl
@@ -451,3 +451,4 @@ gcfHistoryCentralizedPrepare,prepare_gcf_history_centralizedbl
 repeatGlistCentralized,repeat_glist_centralized_webbl
 reservationLeasingDelete,del_reserve_webbl
 leasingReservation,reservation_webbl
+gcfBtnGoCustom,gcf_btn_go_webbl

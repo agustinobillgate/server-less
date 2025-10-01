@@ -11,6 +11,8 @@ from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from models import Argt_line, Waehrung, Guest, Artikel, Htparam, Res_line, Zimmer, Genstat, Arrangement, Exrate, Reservation, Billjournal, Bill, Segment, Zimkateg, Reslin_queasy, Queasy
 
+from sqlalchemy import func, not_
+
 def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new_contrate:bool, foreign_rate:bool, price_decimal:int, fdate:date, tdate:date, srttype:int, id_flag:string):
 
     prepare_cache ([Waehrung, Guest, Artikel, Htparam, Res_line, Zimmer, Genstat, Arrangement, Exrate, Reservation, Billjournal, Bill, Segment, Zimkateg, Reslin_queasy, Queasy])
@@ -53,6 +55,18 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
         nonlocal sum_list_data, currency_list_data, cl_list_data, s_list_data, argt_list_data, t_argt_line_data
 
         return {"cl-list": cl_list_data, "currency-list": currency_list_data, "sum-list": sum_list_data, "s-list": s_list_data, "argt-list": argt_list_data}
+
+    def custom_rounding(dec, format_data:str, is_up:bool = True):
+        if type(dec) == float:
+            dec = Decimal(dec)
+            
+        if is_up:
+            return dec.quantize(Decimal(format_data), rounding=ROUND_HALF_UP)
+        else:
+            return dec.quantize(Decimal(format_data), rounding=ROUND_HALF_DOWN)
+
+    def to_fraction_str(n: int) -> str:
+        return "0" if n == 0 else "0." + "0"*(n-1) + "1"
 
     def handle_null_date(inp_date:date):
 
@@ -221,26 +235,23 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
         artikel = get_cache (Artikel, {"zwkum": [(eq, bfast_art)],"departement": [(eq, fb_dept)]})
 
         if not artikel and bfast_art != 0:
-
             return
 
         artikel = get_cache (Artikel, {"zwkum": [(eq, lunch_art)],"departement": [(eq, fb_dept)]})
 
         if not artikel and lunch_art != 0:
-
             return
 
         artikel = get_cache (Artikel, {"zwkum": [(eq, dinner_art)],"departement": [(eq, fb_dept)]})
 
         if not artikel and dinner_art != 0:
-
             return
 
         artikel = get_cache (Artikel, {"zwkum": [(eq, lundin_art)],"departement": [(eq, fb_dept)]})
 
         if not artikel and lundin_art != 0:
-
             return
+
         s_list_data.clear()
         cl_list_data.clear()
         currency_list_data.clear()
@@ -251,26 +262,31 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
         r_qty = 0
         lodge_betrag =  to_decimal("0")
 
-        if srttype == 2:
+        if srttype == 2:    
 
             genstat_obj_list = {}
             genstat = Genstat()
             res_line = Res_line()
             zimmer = Zimmer()
-            for genstat.argt, genstat.datum, genstat.zinr, genstat.resnr, genstat.res_int, genstat.erwachs, genstat.kind1, genstat.kind2, genstat.gratis, genstat.kind3, genstat.resstatus, genstat.zipreis, genstat.ratelocal, genstat.logis, genstat.res_deci, genstat.zikatnr, genstat.res_char, genstat._recid, res_line.betriebsnr, res_line.reserve_dec, res_line.gastnrpay, res_line.gastnrmember, res_line.resnr, res_line.l_zuordnung, res_line.zikatnr, res_line._recid, res_line.name, res_line.ankunft, res_line.abreise, res_line.resname, res_line.zimmer_wunsch, res_line.reslinnr, res_line.adrflag, res_line.zinr, res_line.zipreis, res_line.reserve_int, zimmer.sleeping, zimmer._recid in db_session.query(Genstat.argt, Genstat.datum, Genstat.zinr, Genstat.resnr, Genstat.res_int, Genstat.erwachs, Genstat.kind1, Genstat.kind2, Genstat.gratis, Genstat.kind3, Genstat.resstatus, Genstat.zipreis, Genstat.ratelocal, Genstat.logis, Genstat.res_deci, Genstat.zikatnr, Genstat.res_char, Genstat._recid, Res_line.betriebsnr, Res_line.reserve_dec, Res_line.gastnrpay, Res_line.gastnrmember, Res_line.resnr, Res_line.l_zuordnung, Res_line.zikatnr, Res_line._recid, Res_line.name, Res_line.ankunft, Res_line.abreise, Res_line.resname, Res_line.zimmer_wunsch, Res_line.reslinnr, Res_line.adrflag, Res_line.zinr, Res_line.zipreis, Res_line.reserve_int, Zimmer.sleeping, Zimmer._recid).join(Res_line,(Res_line.resnr == Genstat.resnr) & (Res_line.reslinnr == Genstat.res_int[inc_value(0)]) & (Res_line.l_zuordnung[inc_value(2)] == 0)).join(Zimmer,(Zimmer.zinr == Genstat.zinr)).filter(
-                     (Genstat.zinr != "") & (Genstat.datum >= fdate) & (Genstat.datum <= tdate) & (Genstat.res_logic[inc_value(1)])).order_by(Res_line.resname).all():
-                if genstat_obj_list.get(genstat._recid):
-                    continue
-                else:
-                    genstat_obj_list[genstat._recid] = True
 
+            # TODO take long time (about 96.65 seconds for from date 01-09-2024 to date 24-09-2024) and make retrieve data failed because data have not saved to queasy
+            for genstat.argt, genstat.datum, genstat.zinr, genstat.resnr, genstat.res_int, genstat.erwachs, genstat.kind1, genstat.kind2, genstat.gratis, genstat.kind3, genstat.resstatus, genstat.zipreis, genstat.ratelocal, genstat.logis, genstat.res_deci, genstat.zikatnr, genstat.res_char, genstat._recid, res_line.betriebsnr, res_line.reserve_dec, res_line.gastnrpay, res_line.gastnrmember, res_line.resnr, res_line.l_zuordnung, res_line.zikatnr, res_line._recid, res_line.name, res_line.ankunft, res_line.abreise, res_line.resname, res_line.zimmer_wunsch, res_line.reslinnr, res_line.adrflag, res_line.zinr, res_line.zipreis, res_line.reserve_int, zimmer.sleeping, zimmer._recid in db_session.query(Genstat.argt, Genstat.datum, Genstat.zinr, Genstat.resnr, Genstat.res_int, Genstat.erwachs, Genstat.kind1, Genstat.kind2, Genstat.gratis, Genstat.kind3, Genstat.resstatus, Genstat.zipreis, Genstat.ratelocal, Genstat.logis, Genstat.res_deci, Genstat.zikatnr, Genstat.res_char, Genstat._recid, Res_line.betriebsnr, Res_line.reserve_dec, Res_line.gastnrpay, Res_line.gastnrmember, Res_line.resnr, Res_line.l_zuordnung, Res_line.zikatnr, Res_line._recid, Res_line.name, Res_line.ankunft, Res_line.abreise, Res_line.resname, Res_line.zimmer_wunsch, Res_line.reslinnr, Res_line.adrflag, Res_line.zinr, Res_line.zipreis, Res_line.reserve_int, Zimmer.sleeping, Zimmer._recid).join(Res_line,(Res_line.resnr == Genstat.resnr) & (Res_line.reslinnr == Genstat.res_int[inc_value(0)]) & (Res_line.l_zuordnung[inc_value(2)] == 0)).join(Zimmer,(Zimmer.zinr == Genstat.zinr)).filter((Genstat.zinr != "") & (Genstat.datum >= fdate) & (Genstat.datum <= tdate) & (Genstat.res_logic[inc_value(1)])).order_by(Res_line.resname).all():
+
+                # if genstat_obj_list.get(genstat._recid):
+                #     continue
+                # else:
+                #     genstat_obj_list[genstat._recid] = True
 
                 serv1 =  to_decimal("0")
                 vat1 =  to_decimal("0")
                 vat2 =  to_decimal("0")
                 fact1 =  to_decimal("0")
 
-                arrangement = get_cache (Arrangement, {"arrangement": [(eq, genstat.argt)]})
+                tmp_argt = genstat.argt
+                if tmp_argt != None:
+                    tmp_argt = tmp_argt.strip()
+
+                arrangement = get_cache (Arrangement, {"arrangement": [(eq, tmp_argt)]})
 
                 artikel = get_cache (Artikel, {"artnr": [(eq, arrangement.argt_artikelnr)],"departement": [(eq, 0)]})
                 serv1, vat1, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, genstat.datum))
@@ -299,8 +315,8 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                 else:
                     curr_zikatnr = res_line.zikatnr
 
-                for billjournal in db_session.query(Billjournal).filter(
-                         (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr)).order_by(Billjournal._recid).all():
+                for billjournal in db_session.query(Billjournal).filter((Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr)).order_by(Billjournal._recid).all():
+
                     bill_flag1 = ""
 
                     bill = get_cache (Bill, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, 0)]})
@@ -317,10 +333,10 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                 if bill:
                     bill_rechnr = bill.rechnr
                     bill_flag2 = "Guest Bill"
+
                 sum_list.pax = sum_list.pax + genstat.erwachs + genstat.kind1 + genstat.kind2
                 sum_list.adult = sum_list.adult + genstat.erwachs
                 sum_list.com = sum_list.com + genstat.gratis + genstat.kind3
-
 
                 cl_list = Cl_list()
                 cl_list_data.append(cl_list)
@@ -338,20 +354,17 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                 cl_list.resname = res_line.resname
 
                 if not exc_taxserv:
-                    cl_list.zipreis =  to_decimal(genstat.zipreis)
-                    cl_list.localrate =  to_decimal(genstat.ratelocal)
-                    cl_list.t_rev =  to_decimal(genstat.zipreis)
-                    cl_list.lodging =  to_decimal(genstat.logis) * to_decimal((1) + to_decimal(vat1) + to_decimal(vat2) + to_decimal(serv1) )
-                    cl_list.fixcost =  to_decimal(genstat.res_deci[5]) * to_decimal((1) + to_decimal(vat1) + to_decimal(vat2) + to_decimal(serv1) )
-
-
+                    cl_list.zipreis =  custom_rounding(genstat.zipreis, "0.01")
+                    cl_list.localrate =  custom_rounding(genstat.ratelocal, "0.01")
+                    cl_list.t_rev =  custom_rounding(genstat.zipreis, "0.01")
+                    cl_list.lodging =  custom_rounding(genstat.logis * ((1) + to_decimal(vat1) + to_decimal(vat2) + to_decimal(serv1)), "0.01")
+                    cl_list.fixcost =  custom_rounding(genstat.res_deci[5] * ((1) + to_decimal(vat1) + to_decimal(vat2) + to_decimal(serv1)), "0.01")
                 else:
-                    cl_list.zipreis = to_decimal(round((genstat.zipreis / (1 + vat1 + vat2 + serv1)) , price_decimal))
-                    cl_list.localrate = to_decimal(round((genstat.ratelocal / (1 + vat1 + vat2 + serv1)) , price_decimal))
-                    cl_list.t_rev = to_decimal(round((genstat.zipreis / (1 + vat1 + vat2 + serv1)) , price_decimal))
-                    cl_list.lodging = to_decimal(round(genstat.logis , price_decimal))
-                    cl_list.fixcost = to_decimal(round(genstat.res_deci[5] , price_decimal))
-
+                    cl_list.zipreis = custom_rounding((genstat.zipreis / (1 + vat1 + vat2 + serv1)), to_fraction_str(price_decimal))
+                    cl_list.localrate = custom_rounding((genstat.ratelocal / (1 + vat1 + vat2 + serv1)), to_fraction_str(price_decimal))
+                    cl_list.t_rev = custom_rounding((genstat.zipreis / (1 + vat1 + vat2 + serv1)), to_fraction_str(price_decimal))
+                    cl_list.lodging = custom_rounding(genstat.logis, to_fraction_str(price_decimal))
+                    cl_list.fixcost = custom_rounding(genstat.res_deci[5], to_fraction_str(price_decimal))
 
                 sum_list.lodging =  to_decimal(sum_list.lodging) + to_decimal(cl_list.lodging)
                 sum_list.t_rev =  to_decimal(sum_list.t_rev) + to_decimal(genstat.zipreis)
@@ -373,6 +386,7 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
                 if genstat.gratis != 0:
                     cl_list.rechnr = 0
+
                 cl_list.adult = genstat.erwachs
                 cl_list.ch1 = genstat.kind1
                 cl_list.ch2 = genstat.kind2
@@ -380,426 +394,6 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
                 if cl_list.zipreis == 0 and cl_list.adult == 0:
                     cl_list.pax = cl_list.com + cl_list.comch
-
-
-                else:
-                    cl_list.pax = genstat.erwachs + genstat.kind1 + genstat.kind2 + cl_list.com + cl_list.comch
-
-                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
-
-                if segment:
-                    cl_list.segm_desc = segment.bezeich
-
-                if member1.nation1 != "":
-                    cl_list.nation = member1.nation1
-
-                zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, genstat.zikatnr)]})
-
-                if zimkateg:
-                    cl_list.rmtype = zimkateg.kurzbez
-
-                if guest:
-                    cl_list.name = cl_list.name + guest.name + ", " + guest.vorname1 + "-" + guest.adresse1
-                    cl_list.rechnr = bill_rechnr
-                    cl_list.currency = waehrung1.wabkurz
-
-                argt_list = query(argt_list_data, filters=(lambda argt_list: argt_list.argtnr == arrangement.argtnr), first=True)
-
-                if not argt_list:
-                    argt_list = Argt_list()
-                    argt_list_data.append(argt_list)
-
-                    argt_list.argtnr = arrangement.argtnr
-                    argt_list.argtcode = arrangement.arrangement
-                    argt_list.bezeich = L_verbrauch.wert_verbrau
-                    argt_list.room = 1
-                    argt_list.pax = genstat.erwachs + genstat.kind1 + genstat.kind2 + cl_list.com + cl_list.comch
-
-
-                else:
-                    argt_list.room = argt_list.room + 1
-                    argt_list.pax = argt_list.pax + (genstat.erwachs + genstat.gratis)
-
-                if guest.geburtdatum1 != None and guest.geburtdatum2 != None:
-
-                    if guest.geburtdatum1 < guest.geburtdatum2:
-                        cl_list.age1 = get_year(guest.geburtdatum2) - get_year(guest.geburtdatum1)
-
-                if matches(res_line.zimmer_wunsch,r"*ChAge*"):
-                    for loopi in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
-                        str1 = entry(loopi - 1, res_line.zimmer_wunsch, ";")
-
-                        if substring(str1, 0, 5) == ("ChAge").lower() :
-                            cl_list.age2 = substring(str1, 5)
-                serv2 =  to_decimal("0")
-                vat3 =  to_decimal("0")
-                vat4 =  to_decimal("0")
-                fact2 =  to_decimal("0")
-
-
-                for loopi in range(1,num_entries(genstat.res_char[1], ";") - 1 + 1) :
-                    str1 = entry(loopi - 1, genstat.res_char[1], ";")
-
-                    if substring(str1, 0, 6) == ("$CODE$").lower() :
-                        cr_code = substring(str1, 6)
-
-                if genstat.zipreis != 0:
-
-                    argt_line_obj_list = {}
-                    for argt_line, artikel in db_session.query(Argt_line, Artikel).join(Artikel,(Artikel.artnr == Argt_line.argt_artnr) & (Artikel.departement == Argt_line.departement)).filter(
-                             (Argt_line.argtnr == arrangement.argtnr) & not_ (Argt_line.kind2) & (Argt_line.kind1)).order_by(Argt_line._recid).all():
-                        if argt_line_obj_list.get(argt_line._recid):
-                            continue
-                        else:
-                            argt_line_obj_list[argt_line._recid] = True
-
-
-                        Argtline =  create_buffer("Argtline",Argt_line)
-                        take_it, f_betrag, argt_betrag, qty = get_argtline_rate(contcode, argt_line._recid)
-                        serv2, vat3, vat4, fact2 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, genstat.datum))
-                        vat3 =  to_decimal(vat3) + to_decimal(vat4)
-
-                        if artikel.zwkum == bfast_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
-
-                            if not exc_taxserv:
-                                cl_list.bfast =  to_decimal(genstat.res_deci[1]) * to_decimal((1) + to_decimal(vat3) + to_decimal(serv2) )
-                                sum_list.bfast =  to_decimal(sum_list.bfast) + to_decimal(cl_list.bfast)
-
-
-                            else:
-                                cl_list.bfast = to_decimal(round(genstat.res_deci[1] , price_decimal))
-                                sum_list.bfast = to_decimal(round(sum_list.bfast + cl_list.bfast , price_decimal))
-
-                        elif artikel.zwkum == lunch_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
-
-                            if not exc_taxserv:
-                                cl_list.lunch =  to_decimal(genstat.res_deci[2]) * to_decimal((1) + to_decimal(vat3) + to_decimal(serv2) )
-                                sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(cl_list.lunch)
-
-
-                            else:
-                                cl_list.lunch = to_decimal(round(genstat.res_deci[2] , price_decimal))
-                                sum_list.lunch = to_decimal(round(sum_list.lunch + cl_list.lunch , price_decimal))
-
-                        elif artikel.zwkum == dinner_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
-
-                            if not exc_taxserv:
-                                cl_list.dinner =  to_decimal(genstat.res_deci[3]) * to_decimal((1) + to_decimal(vat3) + to_decimal(serv2) )
-                                sum_list.dinner =  to_decimal(sum_list.dinner) + to_decimal(cl_list.dinner)
-
-
-                            else:
-                                cl_list.dinner = to_decimal(round(genstat.res_deci[3] , price_decimal))
-                                sum_list.dinner = to_decimal(round(sum_list.dinner + cl_list.dinner , price_decimal))
-
-                        elif artikel.zwkum == lundin_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
-
-                            if not exc_taxserv:
-                                cl_list.lunch =  to_decimal(genstat.res_deci[2]) * to_decimal((1) + to_decimal(vat3) + to_decimal(serv2) )
-                                sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(cl_list.lunch)
-
-
-                            else:
-                                cl_list.lunch = to_decimal(round(genstat.res_deci[2] , price_decimal))
-                                sum_list.lunch = to_decimal(round(sum_list.lunch + cl_list.lunch , price_decimal))
-
-
-                        else:
-
-                            if argt_betrag != 0:
-                                pass
-
-                    if not exc_taxserv:
-                        cl_list.misc =  to_decimal(cl_list.localrate) - to_decimal((cl_list.lodging) + to_decimal(cl_list.bfast) + to_decimal(cl_list.lunch) + to_decimal(cl_list.dinner) )
-                        sum_list.misc =  to_decimal(sum_list.misc) + to_decimal(cl_list.misc)
-
-
-                    else:
-                        cl_list.misc =  to_decimal(genstat.res_deci[4])
-                        sum_list.misc =  to_decimal(sum_list.misc) + to_decimal(cl_list.misc)
-
-                    if cl_list.misc < 0 and cl_list.misc > -1:
-                        cl_list.misc =  to_decimal(0.00)
-
-                htparam = get_cache (Htparam, {"paramnr": [(eq, 127)]})
-
-                if htparam.flogical and not exc_taxserv:
-                    cl_list.zipreis = to_decimal(round(cl_list.zipreis , price_decimal))
-                    cl_list.lodging = to_decimal(round(cl_list.lodging , price_decimal))
-                    cl_list.bfast = to_decimal(round(cl_list.bfast , price_decimal))
-                    cl_list.lunch = to_decimal(round(cl_list.lunch , price_decimal))
-                    cl_list.dinner = to_decimal(round(cl_list.dinner , price_decimal))
-                    cl_list.misc = to_decimal(round(cl_list.misc , price_decimal))
-                    cl_list.fixcost = to_decimal(round(cl_list.fixcost , price_decimal))
-                    cl_list.localrate = to_decimal(round(cl_list.localrate , price_decimal))
-                    cl_list.t_rev = to_decimal(round(cl_list.t_rev , price_decimal))
-
-                if matches(res_line.zimmer_wunsch,r"*$CODE$*"):
-                    s = substring(res_line.zimmer_wunsch, (get_index(res_line.zimmer_wunsch, "$CODE$") + 6) - 1)
-                    cl_list.ratecode = trim(entry(0, s, ";"))
-
-                if frate == 1:
-                    cl_list.ex_rate = to_string(frate, " >>9.99")
-
-                elif frate <= 999:
-                    cl_list.ex_rate = to_string(frate, " >>9.9999")
-
-                elif frate <= 99999:
-                    cl_list.ex_rate = to_string(frate, ">>,>>9.99")
-                else:
-                    cl_list.ex_rate = to_string(frate, ">,>>>,>>9")
-
-                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, tdate)],"date2": [(ge, fdate)]})
-
-                if reslin_queasy:
-                    cl_list.fix_rate = "F"
-
-
-                tot_rate =  to_decimal(tot_rate) + to_decimal(cl_list.zipreis)
-                tot_lrate =  to_decimal(tot_lrate) + to_decimal(cl_list.localrate)
-
-                if not res_line.adrflag:
-                    tot_pax = tot_pax + cl_list.pax
-                else:
-                    ltot_pax = ltot_pax + cl_list.pax
-                tot_com = tot_com + cl_list.com
-                tot_adult = tot_adult + cl_list.adult
-                tot_ch1 = tot_ch1 + cl_list.ch1
-                tot_ch2 = tot_ch2 + cl_list.ch2
-                tot_comch = tot_comch + cl_list.comch
-
-                for argt_line in db_session.query(Argt_line).filter(
-                         (Argt_line.argtnr == arrangement.argtnr) & not_ (Argt_line.kind2) & (Argt_line.kind1)).order_by(Argt_line.argtnr, Argt_line.argt_artnr).all():
-
-                    t_argt_line = query(t_argt_line_data, filters=(lambda t_argt_line: t_argt_line.argt_artnr == argt_line.argt_artnr and t_argt_line.argtnr == arrangement.argtnr and t_argt_line.departement == argt_line.departement), first=True)
-
-                    if not t_argt_line:
-                        t_argt_line = T_argt_line()
-                        t_argt_line_data.append(t_argt_line)
-
-                        buffer_copy(argt_line, t_argt_line)
-
-                if genstat.zipreis != 0:
-
-                    if bill_flag1.lower()  == ("Master Bill").lower() :
-
-                        billjournal_obj_list = {}
-                        billjournal = Billjournal()
-                        artikel = Artikel()
-                        for billjournal.artnr, billjournal.departement, billjournal.bezeich, billjournal.fremdwaehrng, billjournal.betrag, billjournal._recid, artikel.artnr, artikel.departement, artikel.umsatzart, artikel.zwkum, artikel._recid in db_session.query(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich, Billjournal.fremdwaehrng, Billjournal.betrag, Billjournal._recid, Artikel.artnr, Artikel.departement, Artikel.umsatzart, Artikel.zwkum, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement) & (Artikel.artart != 9)).filter(
-                                 (Billjournal.rechnr == bill_master) & (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr) & (Billjournal.betrag != 0) & (Billjournal.anzahl != 0) & not_ (Billjournal.kassarapport) & (Billjournal.userinit == ("$$").lower())).order_by(Billjournal.sysdate, Billjournal.bill_datum, Billjournal.zinr).all():
-                            if billjournal_obj_list.get(billjournal._recid):
-                                continue
-                            else:
-                                billjournal_obj_list[billjournal._recid] = True
-
-                            if billjournal.artnr != deposit_art:
-
-                                s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == billjournal.artnr and s_list.dept == billjournal.departement and s_list.curr == waehrung1.wabkurz), first=True)
-
-                                if not s_list:
-                                    s_list = S_list()
-                                    s_list_data.append(s_list)
-
-                                    s_list.artnr = billjournal.artnr
-                                    s_list.dept = billjournal.departement
-                                    s_list.bezeich = billjournal.bezeich
-                                    s_list.curr = waehrung1.wabkurz
-
-
-                                s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(billjournal.fremdwaehrng)
-                                s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(billjournal.betrag)
-
-
-                        bill_master = -1
-
-                    if bill_flag2.lower()  == ("Guest Bill").lower() :
-
-                        billjournal_obj_list = {}
-                        billjournal = Billjournal()
-                        artikel = Artikel()
-                        for billjournal.artnr, billjournal.departement, billjournal.bezeich, billjournal.fremdwaehrng, billjournal.betrag, billjournal._recid, artikel.artnr, artikel.departement, artikel.umsatzart, artikel.zwkum, artikel._recid in db_session.query(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich, Billjournal.fremdwaehrng, Billjournal.betrag, Billjournal._recid, Artikel.artnr, Artikel.departement, Artikel.umsatzart, Artikel.zwkum, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement) & (Artikel.artart != 9)).filter(
-                                 (Billjournal.rechnr == bill_rechnr) & (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr) & (Billjournal.betrag != 0) & (Billjournal.anzahl != 0) & not_ (Billjournal.kassarapport) & (Billjournal.userinit == ("$$").lower())).order_by(Billjournal.sysdate, Billjournal.bill_datum, Billjournal.zinr).all():
-                            if billjournal_obj_list.get(billjournal._recid):
-                                continue
-                            else:
-                                billjournal_obj_list[billjournal._recid] = True
-
-                            if billjournal.artnr != deposit_art:
-
-                                s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == billjournal.artnr and s_list.dept == billjournal.departement and s_list.curr == waehrung1.wabkurz), first=True)
-
-                                if not s_list:
-                                    s_list = S_list()
-                                    s_list_data.append(s_list)
-
-                                    s_list.artnr = billjournal.artnr
-                                    s_list.dept = billjournal.departement
-                                    s_list.bezeich = billjournal.bezeich
-                                    s_list.curr = waehrung1.wabkurz
-
-
-                                s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(billjournal.fremdwaehrng)
-                                s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(billjournal.betrag)
-
-
-                        bill_rechnr = -1
-
-                if res_line.adrflag:
-                    ltot_lodging =  to_decimal(ltot_lodging) + to_decimal(cl_list.lodging)
-                else:
-                    tot_lodging =  to_decimal(tot_lodging) + to_decimal(cl_list.lodging)
-                lodge_betrag =  to_decimal(cl_list.lodging)
-
-                if foreign_rate and price_decimal == 0 and not res_line.adrflag:
-
-                    htparam = get_cache (Htparam, {"paramnr": [(eq, 145)]})
-
-                    if htparam.finteger != 0:
-                        n = 1
-                        for i in range(1,htparam.finteger + 1) :
-                            n = n * 10
-                        lodge_betrag = to_decimal(round(lodge_betrag / n , 0) * n)
-
-                if curr_zinr != res_line.zinr or curr_resnr != res_line.resnr:
-
-                    if res_line.adrflag:
-                        ltot_rm = ltot_rm + 1
-                    else:
-                        tot_rm = tot_rm + 1
-                curr_zinr = res_line.zinr
-                curr_resnr = res_line.resnr
-        else:
-
-            genstat_obj_list = {}
-            genstat = Genstat()
-            res_line = Res_line()
-            zimmer = Zimmer()
-            for genstat.argt, genstat.datum, genstat.zinr, genstat.resnr, genstat.res_int, genstat.erwachs, genstat.kind1, genstat.kind2, genstat.gratis, genstat.kind3, genstat.resstatus, genstat.zipreis, genstat.ratelocal, genstat.logis, genstat.res_deci, genstat.zikatnr, genstat.res_char, genstat._recid, res_line.betriebsnr, res_line.reserve_dec, res_line.gastnrpay, res_line.gastnrmember, res_line.resnr, res_line.l_zuordnung, res_line.zikatnr, res_line._recid, res_line.name, res_line.ankunft, res_line.abreise, res_line.resname, res_line.zimmer_wunsch, res_line.reslinnr, res_line.adrflag, res_line.zinr, res_line.zipreis, res_line.reserve_int, zimmer.sleeping, zimmer._recid in db_session.query(Genstat.argt, Genstat.datum, Genstat.zinr, Genstat.resnr, Genstat.res_int, Genstat.erwachs, Genstat.kind1, Genstat.kind2, Genstat.gratis, Genstat.kind3, Genstat.resstatus, Genstat.zipreis, Genstat.ratelocal, Genstat.logis, Genstat.res_deci, Genstat.zikatnr, Genstat.res_char, Genstat._recid, Res_line.betriebsnr, Res_line.reserve_dec, Res_line.gastnrpay, Res_line.gastnrmember, Res_line.resnr, Res_line.l_zuordnung, Res_line.zikatnr, Res_line._recid, Res_line.name, Res_line.ankunft, Res_line.abreise, Res_line.resname, Res_line.zimmer_wunsch, Res_line.reslinnr, Res_line.adrflag, Res_line.zinr, Res_line.zipreis, Res_line.reserve_int, Zimmer.sleeping, Zimmer._recid).join(Res_line,(Res_line.resnr == Genstat.resnr) & (Res_line.reslinnr == Genstat.res_int[inc_value(0)]) & (Res_line.l_zuordnung[inc_value(2)] == 0)).join(Zimmer,(Zimmer.zinr == Genstat.zinr)).filter(
-                     (Genstat.zinr != "") & (Genstat.datum >= fdate) & (Genstat.datum <= tdate) & (Genstat.res_logic[inc_value(1)])).order_by(Genstat.zinr, Genstat.resnr).all():
-                if genstat_obj_list.get(genstat._recid):
-                    continue
-                else:
-                    genstat_obj_list[genstat._recid] = True
-
-
-                serv1 =  to_decimal("0")
-                vat1 =  to_decimal("0")
-                vat2 =  to_decimal("0")
-                fact1 =  to_decimal("0")
-
-                arrangement = get_cache (Arrangement, {"arrangement": [(eq, genstat.argt)]})
-
-                artikel = get_cache (Artikel, {"artnr": [(eq, arrangement.argt_artikelnr)],"departement": [(eq, 0)]})
-                serv1, vat1, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, genstat.datum))
-
-                waehrung1 = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
-
-                exrate = get_cache (Exrate, {"datum": [(ge, fdate),(le, tdate)],"artnr": [(eq, waehrung1.waehrungsnr)]})
-                exchg_rate =  to_decimal(exrate.betrag)
-
-                if res_line.reserve_dec != 0:
-                    frate =  to_decimal(res_line.reserve_dec)
-                else:
-                    frate =  to_decimal(exchg_rate)
-
-                if genstat.zipreis != 0:
-                    r_qty = r_qty + 1
-
-                guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
-
-                member1 = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-
-                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
-
-                if res_line.l_zuordnung[0] != 0:
-                    curr_zikatnr = res_line.l_zuordnung[0]
-                else:
-                    curr_zikatnr = res_line.zikatnr
-
-                for billjournal in db_session.query(Billjournal).filter(
-                         (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr)).order_by(Billjournal._recid).all():
-                    bill_flag1 = ""
-
-                    bill = get_cache (Bill, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, 0)]})
-
-                    if bill:
-                        bill_master = bill.rechnr
-                        bill_flag1 = "Master Bill"
-
-                    if bill_flag1.lower()  == ("Master Bill").lower() :
-                        break
-
-                bill = get_cache (Bill, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
-
-                if bill:
-                    bill_rechnr = bill.rechnr
-                    bill_flag2 = "Guest Bill"
-                sum_list.pax = sum_list.pax + genstat.erwachs + genstat.kind1 + genstat.kind2
-                sum_list.adult = sum_list.adult + genstat.erwachs
-                sum_list.com = sum_list.com + genstat.gratis + genstat.kind3
-
-
-                cl_list = Cl_list()
-                cl_list_data.append(cl_list)
-
-                cl_list.res_recid = res_line._recid
-                cl_list.zinr = genstat.zinr
-                cl_list.rstatus = genstat.resstatus
-                cl_list.sleeping = zimmer.sleeping
-                cl_list.argt = genstat.argt
-                cl_list.name = res_line.name + "-"
-                cl_list.com = genstat.gratis
-                cl_list.ankunft = res_line.ankunft
-                cl_list.abreise = res_line.abreise
-                cl_list.resnr = res_line.resnr
-                cl_list.resname = res_line.resname
-
-                if not exc_taxserv:
-                    cl_list.zipreis =  to_decimal(genstat.zipreis)
-                    cl_list.localrate =  to_decimal(genstat.ratelocal)
-                    cl_list.t_rev =  to_decimal(genstat.zipreis)
-                    cl_list.lodging =  to_decimal(genstat.logis) * to_decimal((1) + to_decimal(vat1) + to_decimal(vat2) + to_decimal(serv1) )
-                    cl_list.fixcost =  to_decimal(genstat.res_deci[5]) * to_decimal((1) + to_decimal(vat1) + to_decimal(vat2) + to_decimal(serv1) )
-
-
-                else:
-                    cl_list.zipreis = to_decimal(round((genstat.zipreis / (1 + vat1 + vat2 + serv1)) , price_decimal))
-                    cl_list.localrate = to_decimal(round((genstat.ratelocal / (1 + vat1 + vat2 + serv1)) , price_decimal))
-                    cl_list.t_rev = to_decimal(round((genstat.zipreis / (1 + vat1 + vat2 + serv1)) , price_decimal))
-                    cl_list.lodging = to_decimal(round(genstat.logis , price_decimal))
-                    cl_list.fixcost = to_decimal(round(genstat.res_deci[5] , price_decimal))
-
-
-                sum_list.lodging =  to_decimal(sum_list.lodging) + to_decimal(cl_list.lodging)
-                sum_list.t_rev =  to_decimal(sum_list.t_rev) + to_decimal(genstat.zipreis)
-                sum_list.fixcost =  to_decimal(sum_list.fixcost) + to_decimal(cl_list.fixcost)
-
-                if bill_flag1.lower()  == ("Master Bill").lower() :
-
-                    billjournal = get_cache (Billjournal, {"rechnr": [(eq, bill_master)],"bill_datum": [(eq, genstat.datum)]})
-
-                    if billjournal:
-                        cl_list.rechnr = bill_master
-
-                if bill_flag2.lower()  == ("Guest Bill").lower() :
-
-                    billjournal = get_cache (Billjournal, {"rechnr": [(eq, bill_rechnr)],"bill_datum": [(eq, genstat.datum)]})
-
-                    if billjournal:
-                        cl_list.rechnr = bill_rechnr
-
-                if genstat.gratis != 0:
-                    cl_list.rechnr = 0
-                cl_list.adult = genstat.erwachs
-                cl_list.ch1 = genstat.kind1
-                cl_list.ch2 = genstat.kind2
-                cl_list.comch = genstat.kind3
-
-                if cl_list.zipreis == 0 and cl_list.adult == 0:
-                    cl_list.pax = cl_list.com + cl_list.comch
-
-
                 else:
                     cl_list.pax = genstat.erwachs + genstat.kind1 + genstat.kind2 + cl_list.com + cl_list.comch
 
@@ -832,8 +426,6 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                     argt_list.bezeich = arrangement.argt_bez
                     argt_list.room = 1
                     argt_list.pax = genstat.erwachs + genstat.kind1 + genstat.kind2 + cl_list.com + cl_list.comch
-
-
                 else:
                     argt_list.room = argt_list.room + 1
                     argt_list.pax = argt_list.pax + (genstat.erwachs + genstat.gratis)
@@ -844,16 +436,17 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                         cl_list.age1 = get_year(guest.geburtdatum2) - get_year(guest.geburtdatum1)
 
                 if matches(res_line.zimmer_wunsch,r"*ChAge*"):
+
                     for loopi in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
                         str1 = entry(loopi - 1, res_line.zimmer_wunsch, ";")
 
                         if substring(str1, 0, 5) == ("ChAge").lower() :
                             cl_list.age2 = substring(str1, 5)
+
                 serv2 =  to_decimal("0")
                 vat3 =  to_decimal("0")
                 vat4 =  to_decimal("0")
                 fact2 =  to_decimal("0")
-
 
                 for loopi in range(1,num_entries(genstat.res_char[1], ";") - 1 + 1) :
                     str1 = entry(loopi - 1, genstat.res_char[1], ";")
@@ -862,17 +455,16 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                         cr_code = substring(str1, 6)
 
                 if genstat.zipreis != 0:
-
                     argt_line_obj_list = {}
-                    for argt_line, artikel in db_session.query(Argt_line, Artikel).join(Artikel,(Artikel.artnr == Argt_line.argt_artnr) & (Artikel.departement == Argt_line.departement)).filter(
-                             (Argt_line.argtnr == arrangement.argtnr) & not_ (Argt_line.kind2) & (Argt_line.kind1)).order_by(Argt_line._recid).all():
-                        if argt_line_obj_list.get(argt_line._recid):
-                            continue
-                        else:
-                            argt_line_obj_list[argt_line._recid] = True
 
+                    for argt_line, artikel in db_session.query(Argt_line, Artikel).join(Artikel,(Artikel.artnr == Argt_line.argt_artnr) & (Artikel.departement == Argt_line.departement)).filter((Argt_line.argtnr == arrangement.argtnr) & not_ (Argt_line.kind2) & (Argt_line.kind1)).order_by(Argt_line._recid).all():
 
-                        Argtline1 =  create_buffer("Argtline1",Argt_line)
+                        # if argt_line_obj_list.get(argt_line._recid):
+                        #     continue
+                        # else:
+                        #     argt_line_obj_list[argt_line._recid] = True
+
+                        Argtline =  create_buffer("Argtline",Argt_line)
                         take_it, f_betrag, argt_betrag, qty = get_argtline_rate(contcode, argt_line._recid)
                         serv2, vat3, vat4, fact2 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, genstat.datum))
                         vat3 =  to_decimal(vat3) + to_decimal(vat4)
@@ -880,60 +472,48 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                         if artikel.zwkum == bfast_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
 
                             if not exc_taxserv:
-                                cl_list.bfast =  to_decimal(genstat.res_deci[1]) * to_decimal((1) + to_decimal(vat3) + to_decimal(serv2) )
+                                cl_list.bfast =  custom_rounding(genstat.res_deci[1] * ((1) + to_decimal(vat3) + to_decimal(serv2)), "0.01")
                                 sum_list.bfast =  to_decimal(sum_list.bfast) + to_decimal(cl_list.bfast)
-
-
                             else:
-                                cl_list.bfast = to_decimal(round(genstat.res_deci[1] , price_decimal))
-                                sum_list.bfast = to_decimal(round(sum_list.bfast + cl_list.bfast , price_decimal))
+                                cl_list.bfast = custom_rounding(genstat.res_deci[1] , to_fraction_str(price_decimal))
+                                sum_list.bfast = custom_rounding((sum_list.bfast + cl_list.bfast), to_fraction_str(price_decimal))
 
                         elif artikel.zwkum == lunch_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
 
                             if not exc_taxserv:
-                                cl_list.lunch =  to_decimal(genstat.res_deci[2]) * to_decimal((1) + to_decimal(vat3) + to_decimal(serv2) )
+                                cl_list.lunch =  custom_rounding(genstat.res_deci[2] * ((1) + to_decimal(vat3) + to_decimal(serv2)), "0.01")
                                 sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(cl_list.lunch)
-
-
                             else:
-                                cl_list.lunch = to_decimal(round(genstat.res_deci[2] , price_decimal))
-                                sum_list.lunch = to_decimal(round(sum_list.lunch + cl_list.lunch , price_decimal))
+                                cl_list.lunch = custom_rounding(genstat.res_deci[2], to_fraction_str(price_decimal))
+                                sum_list.lunch = custom_rounding((sum_list.lunch + cl_list.lunch), to_fraction_str(price_decimal))
 
                         elif artikel.zwkum == dinner_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
 
                             if not exc_taxserv:
-                                cl_list.dinner =  to_decimal(genstat.res_deci[3]) * to_decimal((1) + to_decimal(vat3) + to_decimal(serv2) )
+                                cl_list.dinner =  custom_rounding(genstat.res_deci[3] * ((1) + to_decimal(vat3) + to_decimal(serv2)), "0.01")
                                 sum_list.dinner =  to_decimal(sum_list.dinner) + to_decimal(cl_list.dinner)
-
-
                             else:
-                                cl_list.dinner = to_decimal(round(genstat.res_deci[3] , price_decimal))
-                                sum_list.dinner = to_decimal(round(sum_list.dinner + cl_list.dinner , price_decimal))
+                                cl_list.dinner = custom_rounding(genstat.res_deci[3], to_fraction_str(price_decimal))
+                                sum_list.dinner = custom_rounding((sum_list.dinner + cl_list.dinner), to_fraction_str(price_decimal))
 
                         elif artikel.zwkum == lundin_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
 
                             if not exc_taxserv:
-                                cl_list.lunch =  to_decimal(genstat.res_deci[2]) * to_decimal((1) + to_decimal(vat3) + to_decimal(serv2) )
+                                cl_list.lunch =  custom_rounding(genstat.res_deci[2] * ((1) + to_decimal(vat3) + to_decimal(serv2)), "0.01")
                                 sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(cl_list.lunch)
-
-
                             else:
-                                cl_list.lunch = to_decimal(round(genstat.res_deci[2] , price_decimal))
-                                sum_list.lunch = to_decimal(round(sum_list.lunch + cl_list.lunch , price_decimal))
-
+                                cl_list.lunch = custom_rounding(genstat.res_deci[2], to_fraction_str(price_decimal))
+                                sum_list.lunch = custom_rounding(sum_list.lunch + cl_list.lunch, to_fraction_str(price_decimal))
 
                         else:
-
                             if argt_betrag != 0:
                                 pass
 
                     if not exc_taxserv:
-                        cl_list.misc =  to_decimal(cl_list.localrate) - to_decimal((cl_list.lodging) + to_decimal(cl_list.bfast) + to_decimal(cl_list.lunch) + to_decimal(cl_list.dinner) )
+                        cl_list.misc =  custom_rounding(to_decimal(cl_list.localrate) - to_decimal((cl_list.lodging) + to_decimal(cl_list.bfast) + to_decimal(cl_list.lunch) + to_decimal(cl_list.dinner)), "0.01")
                         sum_list.misc =  to_decimal(sum_list.misc) + to_decimal(cl_list.misc)
-
-
                     else:
-                        cl_list.misc =  to_decimal(genstat.res_deci[4])
+                        cl_list.misc =  custom_rounding(genstat.res_deci[4], "0.01")
                         sum_list.misc =  to_decimal(sum_list.misc) + to_decimal(cl_list.misc)
 
                     if cl_list.misc < 0 and cl_list.misc > -1:
@@ -942,15 +522,15 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                 htparam = get_cache (Htparam, {"paramnr": [(eq, 127)]})
 
                 if htparam.flogical and not exc_taxserv:
-                    cl_list.zipreis = to_decimal(round(cl_list.zipreis , price_decimal))
-                    cl_list.lodging = to_decimal(round(cl_list.lodging , price_decimal))
-                    cl_list.bfast = to_decimal(round(cl_list.bfast , price_decimal))
-                    cl_list.lunch = to_decimal(round(cl_list.lunch , price_decimal))
-                    cl_list.dinner = to_decimal(round(cl_list.dinner , price_decimal))
-                    cl_list.misc = to_decimal(round(cl_list.misc , price_decimal))
-                    cl_list.fixcost = to_decimal(round(cl_list.fixcost , price_decimal))
-                    cl_list.localrate = to_decimal(round(cl_list.localrate , price_decimal))
-                    cl_list.t_rev = to_decimal(round(cl_list.t_rev , price_decimal))
+                    cl_list.zipreis = custom_rounding(cl_list.zipreis, to_fraction_str(price_decimal))
+                    cl_list.lodging = custom_rounding(cl_list.lodging, to_fraction_str(price_decimal))
+                    cl_list.bfast = custom_rounding(cl_list.bfast, to_fraction_str(price_decimal))
+                    cl_list.lunch = custom_rounding(cl_list.lunch, to_fraction_str(price_decimal))
+                    cl_list.dinner = custom_rounding(cl_list.dinner, to_fraction_str(price_decimal))
+                    cl_list.misc = custom_rounding(cl_list.misc, to_fraction_str(price_decimal))
+                    cl_list.fixcost = custom_rounding(cl_list.fixcost, to_fraction_str(price_decimal))
+                    cl_list.localrate = custom_rounding(cl_list.localrate, to_fraction_str(price_decimal))
+                    cl_list.t_rev = custom_rounding(cl_list.t_rev, to_fraction_str(price_decimal))
 
                 if matches(res_line.zimmer_wunsch,r"*$CODE$*"):
                     s = substring(res_line.zimmer_wunsch, (get_index(res_line.zimmer_wunsch, "$CODE$") + 6) - 1)
@@ -958,10 +538,8 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
                 if frate == 1:
                     cl_list.ex_rate = to_string(frate, " >>9.99")
-
                 elif frate <= 999:
                     cl_list.ex_rate = to_string(frate, " >>9.9999")
-
                 elif frate <= 99999:
                     cl_list.ex_rate = to_string(frate, ">>,>>9.99")
                 else:
@@ -972,22 +550,21 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                 if reslin_queasy:
                     cl_list.fix_rate = "F"
 
-
-                tot_rate =  to_decimal(tot_rate) + to_decimal(cl_list.zipreis)
+                tot_rate =  to_decimal(tot_rate) + custom_rounding(cl_list.zipreis, to_fraction_str(price_decimal))
                 tot_lrate =  to_decimal(tot_lrate) + to_decimal(cl_list.localrate)
 
                 if not res_line.adrflag:
                     tot_pax = tot_pax + cl_list.pax
                 else:
                     ltot_pax = ltot_pax + cl_list.pax
+
                 tot_com = tot_com + cl_list.com
                 tot_adult = tot_adult + cl_list.adult
                 tot_ch1 = tot_ch1 + cl_list.ch1
                 tot_ch2 = tot_ch2 + cl_list.ch2
                 tot_comch = tot_comch + cl_list.comch
 
-                for argt_line in db_session.query(Argt_line).filter(
-                         (Argt_line.argtnr == arrangement.argtnr) & not_ (Argt_line.kind2) & (Argt_line.kind1)).order_by(Argt_line.argtnr, Argt_line.argt_artnr).all():
+                for argt_line in db_session.query(Argt_line).filter((Argt_line.argtnr == arrangement.argtnr) & not_(Argt_line.kind2) & (Argt_line.kind1)).order_by(Argt_line.argtnr, Argt_line.argt_artnr).all():
 
                     t_argt_line = query(t_argt_line_data, filters=(lambda t_argt_line: t_argt_line.argt_artnr == argt_line.argt_artnr and t_argt_line.argtnr == arrangement.argtnr and t_argt_line.departement == argt_line.departement), first=True)
 
@@ -1004,12 +581,17 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                         billjournal_obj_list = {}
                         billjournal = Billjournal()
                         artikel = Artikel()
-                        for billjournal.artnr, billjournal.departement, billjournal.bezeich, billjournal.fremdwaehrng, billjournal.betrag, billjournal._recid, artikel.artnr, artikel.departement, artikel.umsatzart, artikel.zwkum, artikel._recid in db_session.query(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich, Billjournal.fremdwaehrng, Billjournal.betrag, Billjournal._recid, Artikel.artnr, Artikel.departement, Artikel.umsatzart, Artikel.zwkum, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement) & (Artikel.artart != 9)).filter(
-                                 (Billjournal.rechnr == bill_master) & (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr) & (Billjournal.betrag != 0) & (Billjournal.anzahl != 0) & not_ (Billjournal.kassarapport) & (Billjournal.userinit == ("$$").lower())).order_by(Billjournal.sysdate, Billjournal.bill_datum, Billjournal.zinr).all():
-                            if billjournal_obj_list.get(billjournal._recid):
-                                continue
-                            else:
-                                billjournal_obj_list[billjournal._recid] = True
+
+                        query_data = db_session.query(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich, func.coalesce(func.sum(Billjournal.fremdwaehrng), 0), func.coalesce(func.sum(Billjournal.betrag), 0)).join(Artikel, (Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement) & (Artikel.artart != 9)).filter((Billjournal.rechnr == bill_master) & (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr) & (Billjournal.betrag != 0) & (Billjournal.anzahl != 0) & not_(Billjournal.kassarapport) & (Billjournal.userinit == ("$$").lower())).group_by(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich)
+
+                        # for billjournal.artnr, billjournal.departement, billjournal.bezeich, billjournal.fremdwaehrng, billjournal.betrag, billjournal._recid, artikel.artnr, artikel.departement, artikel.umsatzart, artikel.zwkum, artikel._recid in db_session.query(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich, Billjournal.fremdwaehrng, Billjournal.betrag, Billjournal._recid, Artikel.artnr, Artikel.departement, Artikel.umsatzart, Artikel.zwkum, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement) & (Artikel.artart != 9)).filter((Billjournal.rechnr == bill_master) & (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr) & (Billjournal.betrag != 0) & (Billjournal.anzahl != 0) & not_ (Billjournal.kassarapport) & (Billjournal.userinit == ("$$").lower())).order_by(Billjournal.sysdate, Billjournal.bill_datum, Billjournal.zinr).all():
+
+                            # if billjournal_obj_list.get(billjournal._recid):
+                            #     continue
+                            # else:
+                            #     billjournal_obj_list[billjournal._recid] = True
+
+                        for billjournal.artnr, billjournal.departement, billjournal.bezeich, sum_fremdwaehrng, sum_betrag in query_data.all():
 
                             if billjournal.artnr != deposit_art:
 
@@ -1024,10 +606,8 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                                     s_list.bezeich = billjournal.bezeich
                                     s_list.curr = waehrung1.wabkurz
 
-
-                                s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(billjournal.fremdwaehrng)
-                                s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(billjournal.betrag)
-
+                                s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(sum_fremdwaehrng)
+                                s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(sum_betrag)
 
                         bill_master = -1
 
@@ -1036,12 +616,18 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                         billjournal_obj_list = {}
                         billjournal = Billjournal()
                         artikel = Artikel()
-                        for billjournal.artnr, billjournal.departement, billjournal.bezeich, billjournal.fremdwaehrng, billjournal.betrag, billjournal._recid, artikel.artnr, artikel.departement, artikel.umsatzart, artikel.zwkum, artikel._recid in db_session.query(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich, Billjournal.fremdwaehrng, Billjournal.betrag, Billjournal._recid, Artikel.artnr, Artikel.departement, Artikel.umsatzart, Artikel.zwkum, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement) & (Artikel.artart != 9)).filter(
-                                 (Billjournal.rechnr == bill_rechnr) & (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr) & (Billjournal.betrag != 0) & (Billjournal.anzahl != 0) & not_ (Billjournal.kassarapport) & (Billjournal.userinit == ("$$").lower())).order_by(Billjournal.sysdate, Billjournal.bill_datum, Billjournal.zinr).all():
-                            if billjournal_obj_list.get(billjournal._recid):
-                                continue
-                            else:
-                                billjournal_obj_list[billjournal._recid] = True
+
+                        query_data = db_session.query(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich, func.coalesce(func.sum(Billjournal.fremdwaehrng), 0), func.coalesce(func.sum(Billjournal.betrag), 0)).join(Artikel, (Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement) & (Artikel.artart != 9)).filter((Billjournal.rechnr == bill_rechnr) & (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr) & (Billjournal.betrag != 0) & (Billjournal.anzahl != 0) & not_(Billjournal.kassarapport) & (Billjournal.userinit == ("$$").lower())).group_by(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich)
+
+                        # for billjournal.artnr, billjournal.departement, billjournal.bezeich, billjournal.fremdwaehrng, billjournal.betrag, billjournal._recid, artikel.artnr, artikel.departement, artikel.umsatzart, artikel.zwkum, artikel._recid in db_session.query(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich, Billjournal.fremdwaehrng, Billjournal.betrag, Billjournal._recid, Artikel.artnr, Artikel.departement, Artikel.umsatzart, Artikel.zwkum, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement) & (Artikel.artart != 9)).filter((Billjournal.rechnr == bill_rechnr) & (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr) & (Billjournal.betrag != 0) & (Billjournal.anzahl != 0) & not_ (Billjournal.kassarapport) & (Billjournal.userinit == ("$$").lower())).order_by(Billjournal.sysdate, Billjournal.bill_datum, Billjournal.zinr).all():
+
+                            # if billjournal_obj_list.get(billjournal._recid):
+                            #     continue
+                            # else:
+                            #     billjournal_obj_list[billjournal._recid] = True
+
+
+                        for billjournal.artnr, billjournal.departement, billjournal.bezeich, sum_fremdwaehrng, sum_betrag in query_data.all():
 
                             if billjournal.artnr != deposit_art:
 
@@ -1056,10 +642,8 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                                     s_list.bezeich = billjournal.bezeich
                                     s_list.curr = waehrung1.wabkurz
 
-
-                                s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(billjournal.fremdwaehrng)
-                                s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(billjournal.betrag)
-
+                                s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(sum_fremdwaehrng)
+                                s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(sum_betrag)
 
                         bill_rechnr = -1
 
@@ -1067,6 +651,419 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                     ltot_lodging =  to_decimal(ltot_lodging) + to_decimal(cl_list.lodging)
                 else:
                     tot_lodging =  to_decimal(tot_lodging) + to_decimal(cl_list.lodging)
+
+                lodge_betrag =  to_decimal(cl_list.lodging)
+
+                if foreign_rate and price_decimal == 0 and not res_line.adrflag:
+
+                    htparam = get_cache (Htparam, {"paramnr": [(eq, 145)]})
+
+                    if htparam.finteger != 0:
+                        n = 1
+                        for i in range(1,htparam.finteger + 1) :
+                            n = n * 10
+
+                        lodge_betrag = to_decimal(round(lodge_betrag / n , 0) * n)
+
+                if curr_zinr != res_line.zinr or curr_resnr != res_line.resnr:
+
+                    if res_line.adrflag:
+                        ltot_rm = ltot_rm + 1
+                    else:
+                        tot_rm = tot_rm + 1
+
+                curr_zinr = res_line.zinr
+                curr_resnr = res_line.resnr
+
+        else:
+            genstat_obj_list = {}
+            genstat = Genstat()
+            res_line = Res_line()
+            zimmer = Zimmer()
+
+            # TODO take long time (about 96.65 seconds for from date 01-09-2024 to date 24-09-2024) and make retrieve data failed because data have not saved to queasy
+            for genstat.argt, genstat.datum, genstat.zinr, genstat.resnr, genstat.res_int, genstat.erwachs, genstat.kind1, genstat.kind2, genstat.gratis, genstat.kind3, genstat.resstatus, genstat.zipreis, genstat.ratelocal, genstat.logis, genstat.res_deci, genstat.zikatnr, genstat.res_char, genstat._recid, res_line.betriebsnr, res_line.reserve_dec, res_line.gastnrpay, res_line.gastnrmember, res_line.resnr, res_line.l_zuordnung, res_line.zikatnr, res_line._recid, res_line.name, res_line.ankunft, res_line.abreise, res_line.resname, res_line.zimmer_wunsch, res_line.reslinnr, res_line.adrflag, res_line.zinr, res_line.zipreis, res_line.reserve_int, zimmer.sleeping, zimmer._recid in db_session.query(Genstat.argt, Genstat.datum, Genstat.zinr, Genstat.resnr, Genstat.res_int, Genstat.erwachs, Genstat.kind1, Genstat.kind2, Genstat.gratis, Genstat.kind3, Genstat.resstatus, Genstat.zipreis, Genstat.ratelocal, Genstat.logis, Genstat.res_deci, Genstat.zikatnr, Genstat.res_char, Genstat._recid, Res_line.betriebsnr, Res_line.reserve_dec, Res_line.gastnrpay, Res_line.gastnrmember, Res_line.resnr, Res_line.l_zuordnung, Res_line.zikatnr, Res_line._recid, Res_line.name, Res_line.ankunft, Res_line.abreise, Res_line.resname, Res_line.zimmer_wunsch, Res_line.reslinnr, Res_line.adrflag, Res_line.zinr, Res_line.zipreis, Res_line.reserve_int, Zimmer.sleeping, Zimmer._recid).join(Res_line,(Res_line.resnr == Genstat.resnr) & (Res_line.reslinnr == Genstat.res_int[inc_value(0)]) & (Res_line.l_zuordnung[inc_value(2)] == 0)).join(Zimmer,(Zimmer.zinr == Genstat.zinr)).filter((Genstat.zinr != "") & (Genstat.datum >= fdate) & (Genstat.datum <= tdate) & (Genstat.res_logic[inc_value(1)])).order_by(Genstat.zinr, Genstat.resnr).all():
+
+                # if genstat_obj_list.get(genstat._recid):
+                #     continue
+                # else:
+                #     genstat_obj_list[genstat._recid] = True
+
+                serv1 =  to_decimal("0")
+                vat1 =  to_decimal("0")
+                vat2 =  to_decimal("0")
+                fact1 =  to_decimal("0")
+
+                tmp_argt = genstat.argt
+                if tmp_argt != None:
+                    tmp_argt = tmp_argt.strip()
+
+                arrangement = get_cache (Arrangement, {"arrangement": [(eq, tmp_argt)]})
+
+                artikel = get_cache (Artikel, {"artnr": [(eq, arrangement.argt_artikelnr)],"departement": [(eq, 0)]})
+                serv1, vat1, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, genstat.datum))
+
+                waehrung1 = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
+
+                exrate = get_cache (Exrate, {"datum": [(ge, fdate),(le, tdate)],"artnr": [(eq, waehrung1.waehrungsnr)]})
+                exchg_rate =  to_decimal(exrate.betrag)
+
+                if res_line.reserve_dec != 0:
+                    frate =  to_decimal(res_line.reserve_dec)
+                else:
+                    frate =  to_decimal(exchg_rate)
+
+                if genstat.zipreis != 0:
+                    r_qty = r_qty + 1
+
+                guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+
+                member1 = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+
+                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+
+                if res_line.l_zuordnung[0] != 0:
+                    curr_zikatnr = res_line.l_zuordnung[0]
+                else:
+                    curr_zikatnr = res_line.zikatnr
+
+                for billjournal in db_session.query(Billjournal).filter((Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr)).order_by(Billjournal._recid).all():
+
+                    bill_flag1 = ""
+
+                    bill = get_cache (Bill, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, 0)]})
+
+                    if bill:
+                        bill_master = bill.rechnr
+                        bill_flag1 = "Master Bill"
+
+                    if bill_flag1.lower()  == ("Master Bill").lower() :
+                        break
+
+                bill = get_cache (Bill, {"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])]})
+
+                if bill:
+                    bill_rechnr = bill.rechnr
+                    bill_flag2 = "Guest Bill"
+
+                sum_list.pax = sum_list.pax + genstat.erwachs + genstat.kind1 + genstat.kind2
+                sum_list.adult = sum_list.adult + genstat.erwachs
+                sum_list.com = sum_list.com + genstat.gratis + genstat.kind3
+
+                cl_list = Cl_list()
+                cl_list_data.append(cl_list)
+
+                cl_list.res_recid = res_line._recid
+                cl_list.zinr = genstat.zinr
+                cl_list.rstatus = genstat.resstatus
+                cl_list.sleeping = zimmer.sleeping
+                cl_list.argt = genstat.argt
+                cl_list.name = res_line.name + "-"
+                cl_list.com = genstat.gratis
+                cl_list.ankunft = res_line.ankunft
+                cl_list.abreise = res_line.abreise
+                cl_list.resnr = res_line.resnr
+                cl_list.resname = res_line.resname
+
+                if not exc_taxserv:
+                    cl_list.zipreis =  custom_rounding(genstat.zipreis, "0.01")
+                    cl_list.localrate =  custom_rounding(genstat.ratelocal, "0.01")
+                    cl_list.t_rev =  custom_rounding(genstat.zipreis, "0.01")
+                    cl_list.lodging =  custom_rounding(genstat.logis * ((1) + to_decimal(vat1) + to_decimal(vat2) + to_decimal(serv1)), "0.01")
+                    cl_list.fixcost =  custom_rounding(genstat.res_deci[5] * ((1) + to_decimal(vat1) + to_decimal(vat2) + to_decimal(serv1)), "0.01")
+                else:
+                    cl_list.zipreis = custom_rounding((genstat.zipreis / (1 + vat1 + vat2 + serv1)), to_fraction_str(price_decimal))
+                    cl_list.localrate = custom_rounding((genstat.ratelocal / (1 + vat1 + vat2 + serv1)), to_fraction_str(price_decimal))
+                    cl_list.t_rev = custom_rounding((genstat.zipreis / (1 + vat1 + vat2 + serv1)), to_fraction_str(price_decimal))
+                    cl_list.lodging = custom_rounding(genstat.logis, to_fraction_str(price_decimal))
+                    cl_list.fixcost = custom_rounding(genstat.res_deci[5], to_fraction_str(price_decimal))
+
+                sum_list.lodging =  to_decimal(sum_list.lodging) + to_decimal(cl_list.lodging)
+                sum_list.t_rev =  to_decimal(sum_list.t_rev) + to_decimal(genstat.zipreis)
+                sum_list.fixcost =  to_decimal(sum_list.fixcost) + to_decimal(cl_list.fixcost)
+
+                if bill_flag1.lower()  == ("Master Bill").lower() :
+
+                    billjournal = get_cache (Billjournal, {"rechnr": [(eq, bill_master)],"bill_datum": [(eq, genstat.datum)]})
+
+                    if billjournal:
+                        cl_list.rechnr = bill_master
+
+                if bill_flag2.lower()  == ("Guest Bill").lower() :
+
+                    billjournal = get_cache (Billjournal, {"rechnr": [(eq, bill_rechnr)],"bill_datum": [(eq, genstat.datum)]})
+
+                    if billjournal:
+                        cl_list.rechnr = bill_rechnr
+
+                if genstat.gratis != 0:
+                    cl_list.rechnr = 0
+
+                cl_list.adult = genstat.erwachs
+                cl_list.ch1 = genstat.kind1
+                cl_list.ch2 = genstat.kind2
+                cl_list.comch = genstat.kind3
+
+                if cl_list.zipreis == 0 and cl_list.adult == 0:
+                    cl_list.pax = cl_list.com + cl_list.comch
+                else:
+                    cl_list.pax = genstat.erwachs + genstat.kind1 + genstat.kind2 + cl_list.com + cl_list.comch
+
+                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+
+                if segment:
+                    cl_list.segm_desc = segment.bezeich
+
+                if member1.nation1 != "":
+                    cl_list.nation = member1.nation1
+
+                zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, genstat.zikatnr)]})
+
+                if zimkateg:
+                    cl_list.rmtype = zimkateg.kurzbez
+
+                if guest:
+                    cl_list.name = cl_list.name + guest.name + ", " + guest.vorname1 + "-" + guest.adresse1
+                    cl_list.rechnr = bill_rechnr
+                    cl_list.currency = waehrung1.wabkurz
+
+                argt_list = query(argt_list_data, filters=(lambda argt_list: argt_list.argtnr == arrangement.argtnr), first=True)
+
+                if not argt_list:
+                    argt_list = Argt_list()
+                    argt_list_data.append(argt_list)
+
+                    argt_list.argtnr = arrangement.argtnr
+                    argt_list.argtcode = arrangement.arrangement
+                    argt_list.bezeich = arrangement.argt_bez
+                    argt_list.room = 1
+                    argt_list.pax = genstat.erwachs + genstat.kind1 + genstat.kind2 + cl_list.com + cl_list.comch
+                else:
+                    argt_list.room = argt_list.room + 1
+                    argt_list.pax = argt_list.pax + (genstat.erwachs + genstat.gratis)
+
+                if guest.geburtdatum1 != None and guest.geburtdatum2 != None:
+
+                    if guest.geburtdatum1 < guest.geburtdatum2:
+                        cl_list.age1 = get_year(guest.geburtdatum2) - get_year(guest.geburtdatum1)
+
+                if matches(res_line.zimmer_wunsch,r"*ChAge*"):
+
+                    for loopi in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
+                        str1 = entry(loopi - 1, res_line.zimmer_wunsch, ";")
+
+                        if substring(str1, 0, 5) == ("ChAge").lower() :
+                            cl_list.age2 = substring(str1, 5)
+
+                serv2 =  to_decimal("0")
+                vat3 =  to_decimal("0")
+                vat4 =  to_decimal("0")
+                fact2 =  to_decimal("0")
+                
+                for loopi in range(1,num_entries(genstat.res_char[1], ";") - 1 + 1) :
+                    str1 = entry(loopi - 1, genstat.res_char[1], ";")
+
+                    if substring(str1, 0, 6) == ("$CODE$").lower() :
+                        cr_code = substring(str1, 6)
+
+                if genstat.zipreis != 0:
+                    argt_line_obj_list = {}
+
+                    for argt_line, artikel in db_session.query(Argt_line, Artikel).join(Artikel, (Artikel.artnr == Argt_line.argt_artnr) & (Artikel.departement == Argt_line.departement)).filter((Argt_line.argtnr == arrangement.argtnr) & not_(Argt_line.kind2) & (Argt_line.kind1)).order_by(Argt_line._recid).all():
+
+                        # if argt_line_obj_list.get(argt_line._recid):
+                        #     continue
+                        # else:
+                        #     argt_line_obj_list[argt_line._recid] = True
+
+                        Argtline1 =  create_buffer("Argtline1",Argt_line)
+                        take_it, f_betrag, argt_betrag, qty = get_argtline_rate(contcode, argt_line._recid)
+                        serv2, vat3, vat4, fact2 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, genstat.datum))
+                        vat3 =  to_decimal(vat3) + to_decimal(vat4)
+
+                        if artikel.zwkum == bfast_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
+
+                            if not exc_taxserv:
+                                cl_list.bfast =  custom_rounding(genstat.res_deci[1] * ((1) + to_decimal(vat3) + to_decimal(serv2)), "0.01")
+                                sum_list.bfast =  to_decimal(sum_list.bfast) + to_decimal(cl_list.bfast)
+                            else:
+                                cl_list.bfast = custom_rounding(genstat.res_deci[1] , to_fraction_str(price_decimal))
+                                sum_list.bfast = custom_rounding((sum_list.bfast + cl_list.bfast), to_fraction_str(price_decimal))
+
+                        elif artikel.zwkum == lunch_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
+
+                            if not exc_taxserv:
+                                cl_list.lunch =  custom_rounding(genstat.res_deci[2] * ((1) + to_decimal(vat3) + to_decimal(serv2)), "0.01")
+                                sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(cl_list.lunch)
+                            else:
+                                cl_list.lunch = custom_rounding(genstat.res_deci[2], to_fraction_str(price_decimal))
+                                sum_list.lunch = custom_rounding((sum_list.lunch + cl_list.lunch), to_fraction_str(price_decimal))
+
+                        elif artikel.zwkum == dinner_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
+
+                            if not exc_taxserv:
+                                cl_list.dinner =  custom_rounding(genstat.res_deci[3] * ((1) + to_decimal(vat3) + to_decimal(serv2)), "0.01")
+                                sum_list.dinner =  to_decimal(sum_list.dinner) + to_decimal(cl_list.dinner)
+                            else:
+                                cl_list.dinner = custom_rounding(genstat.res_deci[3], to_fraction_str(price_decimal))
+                                sum_list.dinner = custom_rounding((sum_list.dinner + cl_list.dinner), to_fraction_str(price_decimal))
+
+                        elif artikel.zwkum == lundin_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
+
+                            if not exc_taxserv:
+                                cl_list.lunch =  custom_rounding(genstat.res_deci[2] * ((1) + to_decimal(vat3) + to_decimal(serv2)), "0.01")
+                                sum_list.lunch =  to_decimal(sum_list.lunch) + to_decimal(cl_list.lunch)
+                            else:
+                                cl_list.lunch = custom_rounding(genstat.res_deci[2], to_fraction_str(price_decimal))
+                                sum_list.lunch = custom_rounding(sum_list.lunch + cl_list.lunch, to_fraction_str(price_decimal))
+
+                        else:
+                            if argt_betrag != 0:
+                                pass
+
+                    if not exc_taxserv:
+                        cl_list.misc =  custom_rounding(to_decimal(cl_list.localrate) - to_decimal((cl_list.lodging) + to_decimal(cl_list.bfast) + to_decimal(cl_list.lunch) + to_decimal(cl_list.dinner)), "0.01")
+                        sum_list.misc =  to_decimal(sum_list.misc) + to_decimal(cl_list.misc)
+                    else:
+                        cl_list.misc =  custom_rounding(genstat.res_deci[4], "0.01")
+                        sum_list.misc =  to_decimal(sum_list.misc) + to_decimal(cl_list.misc)
+
+                    if cl_list.misc < 0 and cl_list.misc > -1:
+                        cl_list.misc =  to_decimal(0.00)
+
+                htparam = get_cache (Htparam, {"paramnr": [(eq, 127)]})
+
+                if htparam.flogical and not exc_taxserv:
+                    cl_list.zipreis = custom_rounding(cl_list.zipreis, to_fraction_str(price_decimal))
+                    cl_list.lodging = custom_rounding(cl_list.lodging, to_fraction_str(price_decimal))
+                    cl_list.bfast = custom_rounding(cl_list.bfast, to_fraction_str(price_decimal))
+                    cl_list.lunch = custom_rounding(cl_list.lunch, to_fraction_str(price_decimal))
+                    cl_list.dinner = custom_rounding(cl_list.dinner, to_fraction_str(price_decimal))
+                    cl_list.misc = custom_rounding(cl_list.misc, to_fraction_str(price_decimal))
+                    cl_list.fixcost = custom_rounding(cl_list.fixcost, to_fraction_str(price_decimal))
+                    cl_list.localrate = custom_rounding(cl_list.localrate, to_fraction_str(price_decimal))
+                    cl_list.t_rev = custom_rounding(cl_list.t_rev, to_fraction_str(price_decimal))
+
+                if matches(res_line.zimmer_wunsch,r"*$CODE$*"):
+                    s = substring(res_line.zimmer_wunsch, (get_index(res_line.zimmer_wunsch, "$CODE$") + 6) - 1)
+                    cl_list.ratecode = trim(entry(0, s, ";"))
+
+                if frate == 1:
+                    cl_list.ex_rate = to_string(frate, " >>9.99")
+                elif frate <= 999:
+                    cl_list.ex_rate = to_string(frate, " >>9.9999")
+                elif frate <= 99999:
+                    cl_list.ex_rate = to_string(frate, ">>,>>9.99")
+                else:
+                    cl_list.ex_rate = to_string(frate, ">,>>>,>>9")
+
+                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, tdate)],"date2": [(ge, fdate)]})
+
+                if reslin_queasy:
+                    cl_list.fix_rate = "F"
+
+                tot_rate =  to_decimal(tot_rate) + custom_rounding(cl_list.zipreis, to_fraction_str(price_decimal))
+                tot_lrate =  to_decimal(tot_lrate) + to_decimal(cl_list.localrate)
+
+                if not res_line.adrflag:
+                    tot_pax = tot_pax + cl_list.pax
+                else:
+                    ltot_pax = ltot_pax + cl_list.pax
+
+                tot_com = tot_com + cl_list.com
+                tot_adult = tot_adult + cl_list.adult
+                tot_ch1 = tot_ch1 + cl_list.ch1
+                tot_ch2 = tot_ch2 + cl_list.ch2
+                tot_comch = tot_comch + cl_list.comch
+
+                for argt_line in db_session.query(Argt_line).filter((Argt_line.argtnr == arrangement.argtnr) & not_(Argt_line.kind2) & (Argt_line.kind1)).order_by(Argt_line.argtnr, Argt_line.argt_artnr).all():
+
+                    t_argt_line = query(t_argt_line_data, filters=(lambda t_argt_line: t_argt_line.argt_artnr == argt_line.argt_artnr and t_argt_line.argtnr == arrangement.argtnr and t_argt_line.departement == argt_line.departement), first=True)
+
+                    if not t_argt_line:
+                        t_argt_line = T_argt_line()
+                        t_argt_line_data.append(t_argt_line)
+
+                        buffer_copy(argt_line, t_argt_line)
+
+                if genstat.zipreis != 0:
+
+                    if bill_flag1.lower()  == ("Master Bill").lower() :
+
+                        billjournal_obj_list = {}
+                        billjournal = Billjournal()
+                        artikel = Artikel()
+
+                        query_data = db_session.query(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich, func.coalesce(func.sum(Billjournal.fremdwaehrng), 0), func.coalesce(func.sum(Billjournal.betrag), 0)).join(Artikel, (Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement) & (Artikel.artart != 9)).filter((Billjournal.rechnr == bill_master) & (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr) & (Billjournal.betrag != 0) & (Billjournal.anzahl != 0) & not_(Billjournal.kassarapport) & (Billjournal.userinit == ("$$").lower())).group_by(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich)
+
+                        # for billjournal.artnr, billjournal.departement, billjournal.bezeich, billjournal.fremdwaehrng, billjournal.betrag, billjournal._recid, artikel.artnr, artikel.departement, artikel.umsatzart, artikel.zwkum, artikel._recid in db_session.query(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich, Billjournal.fremdwaehrng, Billjournal.betrag, Billjournal._recid, Artikel.artnr, Artikel.departement, Artikel.umsatzart, Artikel.zwkum, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement) & (Artikel.artart != 9)).filter((Billjournal.rechnr == bill_master) & (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr) & (Billjournal.betrag != 0) & (Billjournal.anzahl != 0) & not_ (Billjournal.kassarapport) & (Billjournal.userinit == ("$$").lower())).order_by(Billjournal.sysdate, Billjournal.bill_datum, Billjournal.zinr).all():
+
+                            # if billjournal_obj_list.get(billjournal._recid):
+                            #     continue
+                            # else:
+                            #     billjournal_obj_list[billjournal._recid] = True
+
+                        for billjournal.artnr, billjournal.departement, billjournal.bezeich, sum_fremdwaehrng, sum_betrag in query_data.all():
+
+                            if billjournal.artnr != deposit_art:
+
+                                s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == billjournal.artnr and s_list.dept == billjournal.departement and s_list.curr == waehrung1.wabkurz), first=True)
+
+                                if not s_list:
+                                    s_list = S_list()
+                                    s_list_data.append(s_list)
+
+                                    s_list.artnr = billjournal.artnr
+                                    s_list.dept = billjournal.departement
+                                    s_list.bezeich = billjournal.bezeich
+                                    s_list.curr = waehrung1.wabkurz
+
+                                s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(sum_fremdwaehrng)
+                                s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(sum_betrag)
+
+                        bill_master = -1
+
+                    if bill_flag2.lower()  == ("Guest Bill").lower() :
+
+                        billjournal_obj_list = {}
+                        billjournal = Billjournal()
+                        artikel = Artikel()
+
+                        query_data = db_session.query(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich, func.coalesce(func.sum(Billjournal.fremdwaehrng), 0), func.coalesce(func.sum(Billjournal.betrag), 0)).join(Artikel, (Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement) & (Artikel.artart != 9)).filter((Billjournal.rechnr == bill_rechnr) & (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr) & (Billjournal.betrag != 0) & (Billjournal.anzahl != 0) & not_(Billjournal.kassarapport) & (Billjournal.userinit == ("$$").lower())).group_by(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich)
+
+                        # for billjournal.artnr, billjournal.departement, billjournal.bezeich, billjournal.fremdwaehrng, billjournal.betrag, billjournal._recid, artikel.artnr, artikel.departement, artikel.umsatzart, artikel.zwkum, artikel._recid in db_session.query(Billjournal.artnr, Billjournal.departement, Billjournal.bezeich, Billjournal.fremdwaehrng, Billjournal.betrag, Billjournal._recid, Artikel.artnr, Artikel.departement, Artikel.umsatzart, Artikel.zwkum, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement) & (Artikel.artart != 9)).filter((Billjournal.rechnr == bill_rechnr) & (Billjournal.bill_datum == genstat.datum) & (Billjournal.zinr == genstat.zinr) & (Billjournal.betrag != 0) & (Billjournal.anzahl != 0) & not_ (Billjournal.kassarapport) & (Billjournal.userinit == ("$$").lower())).order_by(Billjournal.sysdate, Billjournal.bill_datum, Billjournal.zinr).all():
+
+                            # if billjournal_obj_list.get(billjournal._recid):
+                            #     continue
+                            # else:
+                            #     billjournal_obj_list[billjournal._recid] = True
+
+                        
+                        for billjournal.artnr, billjournal.departement, billjournal.bezeich, sum_fremdwaehrng, sum_betrag in query_data.all():
+
+                            if billjournal.artnr != deposit_art:
+
+                                s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == billjournal.artnr and s_list.dept == billjournal.departement and s_list.curr == waehrung1.wabkurz), first=True)
+
+                                if not s_list:
+                                    s_list = S_list()
+                                    s_list_data.append(s_list)
+
+                                    s_list.artnr = billjournal.artnr
+                                    s_list.dept = billjournal.departement
+                                    s_list.bezeich = billjournal.bezeich
+                                    s_list.curr = waehrung1.wabkurz
+
+                                s_list.f_betrag =  to_decimal(s_list.f_betrag) + to_decimal(sum_fremdwaehrng)
+                                s_list.l_betrag =  to_decimal(s_list.l_betrag) + to_decimal(sum_betrag)
+
+                        bill_rechnr = -1
+
+                if res_line.adrflag:
+                    ltot_lodging =  to_decimal(ltot_lodging) + to_decimal(cl_list.lodging)
+                else:
+                    tot_lodging =  to_decimal(tot_lodging) + to_decimal(cl_list.lodging)
+
                 lodge_betrag =  to_decimal(cl_list.lodging)
 
                 if foreign_rate and price_decimal == 0 and not res_line.adrflag:
@@ -1077,6 +1074,7 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                         m = 1
                         for j in range(1,htparam.finteger + 1) :
                             m = m * 10
+
                         lodge_betrag = to_decimal(round(lodge_betrag / n , 0) * n)
 
                 if curr_zinr != res_line.zinr or curr_resnr != res_line.resnr:
@@ -1085,15 +1083,16 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                         ltot_rm = ltot_rm + 1
                     else:
                         tot_rm = tot_rm + 1
+
                 curr_zinr = res_line.zinr
                 curr_resnr = res_line.resnr
+
         cl_list = Cl_list()
         cl_list_data.append(cl_list)
 
         cl_list.flag = "*"
         cl_list.zinr = ""
-        cl_list.c_zipreis = "s U m m A R Y:"
-
+        cl_list.c_zipreis = "S U M M A R Y:"
 
         curr_code = ""
         curr_rate =  to_decimal("0")
@@ -1143,6 +1142,7 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
                     currency_list.code = cc_list.currency
                     create_partial_currency_list()
+
                 cl_list = Cl_list()
                 cl_list_data.append(cl_list)
 
@@ -1165,6 +1165,7 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                 curr_ch1 = 0
                 curr_ch2 = 0
                 curr_comch = 0
+
             curr_rate =  to_decimal(curr_rate) + to_decimal(cc_list.zipreis)
             curr_local =  to_decimal(curr_local) + to_decimal(cc_list.localrate)
             curr_lodge =  to_decimal(curr_lodge) + to_decimal(cc_list.lodging)
@@ -1183,6 +1184,7 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
             if cc_list.rstatus != 13:
                 curr_rm = curr_rm + 1
+
         cl_list.zipreis =  to_decimal(curr_rate)
         cl_list.localrate =  to_decimal(curr_local)
         cl_list.lodging =  to_decimal(curr_lodge)
@@ -1208,6 +1210,7 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                     cl_list.c_lodging = to_string(cl_list.lodging, "->>,>>>,>>>,>>9.99")
                 else:
                     cl_list.c_lodging = to_string(cl_list.lodging, ">>>,>>>,>>>,>>9.99")
+
                 cl_list.c_zipreis = to_string(cl_list.zipreis, ">>>,>>>,>>>,>>9.99")
                 cl_list.c_localrate = to_string(cl_list.localrate, ">>>,>>>,>>>,>>9.99")
                 cl_list.c_bfast = to_string(cl_list.bfast, "->,>>>,>>>,>>9.99")
@@ -1221,6 +1224,7 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
                 if argt_list:
                     argt_list.bfast =  to_decimal(argt_list.bfast) + to_decimal(cl_list.bfast)
+
             create_partial_cl_list()
 
         if exc_taxserv:
@@ -1238,11 +1242,8 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                 sum_list.misc = to_decimal(round((sum_list.misc / (1 + vat1 + vat2 + serv1)) , price_decimal))
                 sum_list.fixcost = to_decimal(round((sum_list.fixcost / (1 + vat1 + vat2 + serv1)) , price_decimal))
                 sum_list.t_rev = to_decimal(round((sum_list.t_rev / (1 + vat1 + vat2 + serv1)) , price_decimal))
-
-
                 create_partial_sum_list()
         else:
-
             for s_list in query(s_list_data):
                 create_partial_s_list()
 
@@ -1251,6 +1252,7 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
         for argt_list in query(argt_list_data):
             create_partial_argt_list()
+
         total_rev =  to_decimal(tot_rate)
 
 
@@ -1358,6 +1360,7 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                         add_it = False
 
                     return generate_inner_output()
+
             argt_betrag =  to_decimal(argt_line.betrag)
 
             arrangement = get_cache (Arrangement, {"argtnr": [(eq, argt_line.argtnr)]})
@@ -1397,8 +1400,8 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
 
         if genstat.res_char[3] == "":
-
             return generate_inner_output()
+
         for tokcounter in range(1,num_entries(genstat.res_char[3], ";")  + 1) :
             mestoken = trim(entry(tokcounter - 1, genstat.res_char[3], ";"))
 
@@ -1492,8 +1495,7 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
         queasy_str:string = ""
         queasy = Queasy()
-        db_session.add(queasy)
-
+        
         counter = counter + 1
         queasy_str = to_string(cl_list.zipreis) + "|" +\
                 to_string(cl_list.localrate) + "|" +\
@@ -1541,11 +1543,15 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                 to_string(handle_null_char (cl_list.resname)) + "|" +\
                 to_string(handle_null_char (cl_list.segm_desc)) + "|" +\
                 to_string(handle_null_char (cl_list.nation))
+                
         queasy.key = 280
         queasy.char1 = "RRB Period"
         queasy.char2 = id_flag
         queasy.char3 = "cl-list|" + queasy_str
         queasy.number1 = counter
+
+        db_session.add(queasy)
+        db_session.commit()
 
 
     def create_partial_currency_list():
@@ -1560,7 +1566,6 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
         queasy_str:string = ""
         queasy = Queasy()
-        db_session.add(queasy)
 
         counter = counter + 1
         queasy_str = to_string(handle_null_char (currency_list.code))
@@ -1569,6 +1574,9 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
         queasy.char2 = id_flag
         queasy.char3 = "currency-list|" + queasy_str
         queasy.number1 = counter
+
+        db_session.add(queasy)
+        db_session.commit()
 
 
     def create_partial_sum_list():
@@ -1583,7 +1591,6 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
         queasy_str:string = ""
         queasy = Queasy()
-        db_session.add(queasy)
 
         counter = counter + 1
         queasy_str = to_string(handle_null_char (sum_list.bezeich)) + "|" +\
@@ -1600,11 +1607,15 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                 to_string(sum_list.misc) + "|" +\
                 to_string(sum_list.fixcost) + "|" +\
                 to_string(sum_list.t_rev)
+                
         queasy.key = 280
         queasy.char1 = "RRB Period"
         queasy.char2 = id_flag
         queasy.char3 = "sum-list|" + queasy_str
         queasy.number1 = counter
+
+        db_session.add(queasy)
+        db_session.commit()
 
 
     def create_partial_s_list():
@@ -1619,7 +1630,6 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
         queasy_str:string = ""
         queasy = Queasy()
-        db_session.add(queasy)
 
         counter = counter + 1
         queasy_str = to_string(s_list.artnr) + "|" +\
@@ -1630,11 +1640,15 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                 to_string(s_list.betrag) + "|" +\
                 to_string(s_list.l_betrag) + "|" +\
                 to_string(s_list.f_betrag)
+
         queasy.key = 280
         queasy.char1 = "RRB Period"
         queasy.char2 = id_flag
         queasy.char3 = "s-list|" + queasy_str
         queasy.number1 = counter
+
+        db_session.add(queasy)
+        db_session.commit()
 
 
     def create_partial_argt_list():
@@ -1647,9 +1661,10 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
         nonlocal sum_list, currency_list, cl_list, s_list, argt_list, t_argt_line, waehrung1, cc_list
         nonlocal sum_list_data, currency_list_data, cl_list_data, s_list_data, argt_list_data, t_argt_line_data
 
+        # TODO mark oscar
+
         queasy_str:string = ""
         queasy = Queasy()
-        db_session.add(queasy)
 
         counter = counter + 1
         queasy_str = to_string(argt_list.argtnr) + "|" +\
@@ -1659,12 +1674,15 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
                 to_string(argt_list.pax) + "|" +\
                 to_string(argt_list.qty) + "|" +\
                 to_string(argt_list.bfast)
+
         queasy.key = 280
         queasy.char1 = "RRB Period"
         queasy.char2 = id_flag
         queasy.char3 = "argt-list|" + queasy_str
         queasy.number1 = counter
 
+        db_session.add(queasy)
+        db_session.commit()
 
     create_billbalance1()
 

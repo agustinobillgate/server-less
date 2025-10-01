@@ -58,8 +58,8 @@ def rmrev_bdown_create_billbalance5_webbl(input_list_data:[Input_list]):
     input_list = query(input_list_data, first=True)
 
     if not input_list:
-
         return generate_output()
+        
     queasy = Queasy()
     db_session.add(queasy)
 

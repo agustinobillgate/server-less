@@ -2,6 +2,9 @@
 #------------------------------------------
 # Rd, 14/8/2025
 # if available bqueasy
+# 0|0|3||96285|Klaus Walter Ekaputra|Langheck|1988-05-26||122|1|09/17/24|09/25/24|STDD|BARROCAN05|293250|STD|2|0|0| 2/0 0|INA|INDONESIA|RO|TRAVELOKA,  T&T|      |0000 |106|ECO-ONLINE||+6281298085540|09/11/24|**|19:41|Rp|09/17/24|ONLINE TRAVEL AGENT|144923|293250|0|0|0|0|133728|||kl.langheck@gmail.com||       293,250.00|       293,250.00|             0.00|             0.00|             0.00|             0.00|2|0| 0|133728| 96285|    8|Depok |     4|13:00||1|NEO room|1
+# update string replace \n di bemerk
+# update arrival, depart, birtdate, localreg, created field to string
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -40,7 +43,6 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
     Pqueasy = create_buffer("Pqueasy",Queasy)
     Tqueasy = create_buffer("Tqueasy",Queasy)
 
-
     db_session = local_storage.db_session
 
     def generate_output():
@@ -52,14 +54,18 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
         nonlocal inhouse_guest_list, summary_roomtype, summary_nation, summary_revenue, summary_segment, summary_list4, sum_list, tot_list, bqueasy, pqueasy, tqueasy
         nonlocal summary_roomtype_data, summary_nation_data, summary_revenue_data, summary_segment_data, summary_list4_data, sum_list_data, tot_list_data
 
-        return {"doneflag": doneflag, "summary-roomtype": summary_roomtype_data, "summary-nation": summary_nation_data, "summary-revenue": summary_revenue_data, "summary-segment": summary_segment_data, "tot-list": tot_list_data, "summary-list4": summary_list4_data, "inhouse-guest-list": inhouse_guest_list_data}
+        return {"doneflag": doneflag, "summary-roomtype": summary_roomtype_data, "summary-nation": summary_nation_data, 
+                "summary-revenue": summary_revenue_data, 
+                "summary-segment": summary_segment_data, 
+                "tot-list": tot_list_data, 
+                "summary-list4": summary_list4_data, 
+                "inhouse-guest-list": inhouse_guest_list_data}
 
     def decode_string(in_str:string):
 
         nonlocal doneflag, summary_roomtype_data, summary_nation_data, summary_revenue_data, summary_segment_data, tot_list_data, summary_list4_data, counter, htl_no, temp_char, queasy, paramtext
         nonlocal idflag
         nonlocal bqueasy, pqueasy, tqueasy
-
 
         nonlocal inhouse_guest_list, summary_roomtype, summary_nation, summary_revenue, summary_segment, summary_list4, sum_list, tot_list, bqueasy, pqueasy, tqueasy
         nonlocal summary_roomtype_data, summary_nation_data, summary_revenue_data, summary_segment_data, summary_list4_data, sum_list_data, tot_list_data
@@ -87,14 +93,14 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
         htl_no = decode_string(paramtext.ptexte)
 
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List").lower()) & (Queasy.number2 == to_int(idflag))).order_by(Queasy.number1).all():
+             (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List")) & (Queasy.number2 == to_int(idflag))).order_by(Queasy.number1).all():
         counter = counter + 1
 
         if counter > 1000:
             break
         inhouse_guest_list = Inhouse_guest_list()
         inhouse_guest_list_data.append(inhouse_guest_list)
-
+        # 0|0|3||96285|Klaus Walter Ekaputra|Langheck|1988-05-26||122|1|09/17/24|09/25/24|STDD|BARROCAN05|293250|STD|2|0|0| 2/0 0|INA|INDONESIA|RO|TRAVELOKA,  T&T|      |0000 |106|ECO-ONLINE||+6281298085540|09/11/24|**|19:41|Rp|09/17/24|ONLINE TRAVEL AGENT|144923|293250|0|0|0|0|133728|||kl.langheck@gmail.com||       293,250.00|       293,250.00|             0.00|             0.00|             0.00|             0.00|2|0| 0|133728| 96285|    8|Depok |     4|13:00||1|NEO room|1
         inhouse_guest_list.bezeich = entry(0, queasy.char3, "|")
         inhouse_guest_list.bemerk = entry(1, queasy.char3, "|")
         inhouse_guest_list.bemerk1 = entry(2, queasy.char3, "|")
@@ -105,12 +111,13 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
         inhouse_guest_list.resnr = to_int(entry(4, queasy.char2, "|"))
         inhouse_guest_list.firstname = entry(5, queasy.char2, "|")
         inhouse_guest_list.lastname = entry(6, queasy.char2, "|")
-        inhouse_guest_list.birthdate = entry(7, queasy.char2, "|")
+        inhouse_guest_list.birthdate = to_string(date_mdy(entry(7, queasy.char2, "|")), '%d/%m/%Y')
+        
         inhouse_guest_list.groupname = entry(8, queasy.char2, "|")
         inhouse_guest_list.rmno = entry(9, queasy.char2, "|")
         inhouse_guest_list.qty = to_int(entry(10, queasy.char2, "|"))
-        inhouse_guest_list.arrive = date_mdy(entry(11, queasy.char2, "|"))
-        inhouse_guest_list.depart = date_mdy(entry(12, queasy.char2, "|"))
+        inhouse_guest_list.arrive = entry(11, queasy.char2, "|")
+        inhouse_guest_list.depart = entry(12, queasy.char2, "|")
         inhouse_guest_list.rmcat = entry(13, queasy.char2, "|")
         inhouse_guest_list.ratecode = entry(14, queasy.char2, "|")
         inhouse_guest_list.zipreis =  to_decimal(to_decimal(entry(15 , queasy.char2 , "|")) )
@@ -129,11 +136,11 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
         inhouse_guest_list.segm = entry(28, queasy.char2, "|")
         inhouse_guest_list.telefon = entry(29, queasy.char2, "|")
         inhouse_guest_list.mobil_tel = entry(30, queasy.char2, "|")
-        inhouse_guest_list.created = date_mdy(entry(31, queasy.char2, "|"))
+        inhouse_guest_list.created = entry(31, queasy.char2, "|")
         inhouse_guest_list.createid = entry(32, queasy.char2, "|")
         inhouse_guest_list.ci_time = entry(33, queasy.char2, "|")
         inhouse_guest_list.curr = entry(34, queasy.char2, "|")
-        inhouse_guest_list.inhousedate = date_mdy(entry(35, queasy.char2, "|"))
+        inhouse_guest_list.inhousedate = entry(35, queasy.char2, "|")
         inhouse_guest_list.sob = entry(36, queasy.char2, "|")
         inhouse_guest_list.gastnr = to_int(entry(37, queasy.char2, "|"))
         inhouse_guest_list.lodging =  to_decimal(to_decimal(entry(38 , queasy.char2 , "|")) )
@@ -174,16 +181,15 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
         pass
 
     pqueasy = db_session.query(Pqueasy).filter(
-             (Pqueasy.key == 280) & (Pqueasy.char1 == ("Inhouse List").lower()) & (Pqueasy.number2 == to_int(idflag))).first()
+             (Pqueasy.key == 280) & (Pqueasy.char1 == ("Inhouse List")) & (Pqueasy.number2 == to_int(idflag))).first()
 
     if pqueasy:
         doneflag = False
 
-
     else:
 
         tqueasy = db_session.query(Tqueasy).filter(
-                 (Tqueasy.key == 285) & (Tqueasy.char1 == ("Inhouse List").lower()) & (Tqueasy.number1 == 1) & (Tqueasy.number2 == to_int(idflag))).first()
+                 (Tqueasy.key == 285) & (Tqueasy.char1 == ("Inhouse List")) & (Tqueasy.number1 == 1) & (Tqueasy.number2 == to_int(idflag))).first()
 
         if tqueasy:
             doneflag = False
@@ -193,7 +199,7 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
             doneflag = True
 
     tqueasy = db_session.query(Tqueasy).filter(
-             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Inhouse List").lower()) & (Tqueasy.number1 == 0) & (Tqueasy.number2 == to_int(idflag))).first()
+             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Inhouse List")) & (Tqueasy.number1 == 0) & (Tqueasy.number2 == to_int(idflag))).first()
 
     if tqueasy:
         pass
@@ -203,7 +209,9 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
     if doneflag:
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List Sum").lower()) & (Queasy.number2 == to_int(idflag)) & (Queasy.char3 == ("roomtype").lower())).order_by(Queasy.number1).all():
+                 (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List Sum")) & 
+                 (Queasy.number2 == to_int(idflag)) & 
+                 (Queasy.char3 == ("roomtype"))).order_by(Queasy.number1).all():
             summary_roomtype = Summary_roomtype()
             summary_roomtype_data.append(summary_roomtype)
 
@@ -216,7 +224,7 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
             summary_roomtype.arr =  to_decimal(to_decimal(entry(6 , queasy.char2 , "|")) )
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List Sum").lower()) & (Queasy.number2 == to_int(idflag)) & (Queasy.char3 == ("nation").lower())).order_by(Queasy.number1).all():
+                 (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List Sum")) & (Queasy.number2 == to_int(idflag)) & (Queasy.char3 == ("nation"))).order_by(Queasy.number1).all():
             summary_nation = Summary_nation()
             summary_nation_data.append(summary_nation)
 
@@ -226,7 +234,7 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
             summary_nation.child = entry(3, queasy.char2, "|")
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List Sum").lower()) & (Queasy.number2 == to_int(idflag)) & (Queasy.char3 == ("revenue").lower())).order_by(Queasy.number1).all():
+                 (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List Sum")) & (Queasy.number2 == to_int(idflag)) & (Queasy.char3 == ("revenue"))).order_by(Queasy.number1).all():
             summary_revenue = Summary_revenue()
             summary_revenue_data.append(summary_revenue)
 
@@ -239,7 +247,7 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
             summary_revenue.o_amount =  to_decimal(to_decimal(entry(6 , queasy.char2 , "|")) )
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List Sum").lower()) & (Queasy.number2 == to_int(idflag)) & (Queasy.char3 == ("segment").lower())).order_by(Queasy.number1).all():
+                 (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List Sum")) & (Queasy.number2 == to_int(idflag)) & (Queasy.char3 == ("segment"))).order_by(Queasy.number1).all():
             summary_segment = Summary_segment()
             summary_segment_data.append(summary_segment)
 
@@ -252,7 +260,7 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
             summary_segment.arr =  to_decimal(to_decimal(entry(6 , queasy.char2 , "|")) )
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List Sum").lower()) & (Queasy.number2 == to_int(idflag)) & (Queasy.char3 == ("summary").lower())).order_by(Queasy.number1).all():
+                 (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List Sum")) & (Queasy.number2 == to_int(idflag)) & (Queasy.char3 == ("summary"))).order_by(Queasy.number1).all():
             sum_list = Sum_list()
             sum_list_data.append(sum_list)
 
@@ -265,7 +273,7 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
             sum_list.other =  to_decimal(to_decimal(entry(6 , queasy.char2 , "|")) )
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List Sum").lower()) & (Queasy.number2 == to_int(idflag)) & (Queasy.char3 == ("summary-list4").lower())).order_by(Queasy.number1).all():
+                 (Queasy.key == 280) & (Queasy.char1 == ("Inhouse List Sum")) & (Queasy.number2 == to_int(idflag)) & (Queasy.char3 == ("summary-list4"))).order_by(Queasy.number1).all():
             summary_list4 = Summary_list4()
             summary_list4_data.append(summary_list4)
 
@@ -274,14 +282,14 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
             summary_list4.pax = to_int(entry(2, queasy.char2, "|"))
 
         pqueasy = db_session.query(Pqueasy).filter(
-                 (Pqueasy.key == 280) & (Pqueasy.char1 == ("Inhouse List Sum").lower()) & (Pqueasy.number2 == to_int(idflag))).first()
+                 (Pqueasy.key == 280) & (Pqueasy.char1 == ("Inhouse List Sum")) & (Pqueasy.number2 == to_int(idflag))).first()
 
         if pqueasy:
             pass
         else:
 
             tqueasy = db_session.query(Tqueasy).filter(
-                     (Tqueasy.key == 285) & (Tqueasy.char1 == ("Inhouse List Sum").lower()) & (Tqueasy.number1 == 1) & (Tqueasy.number2 == to_int(idflag))).first()
+                     (Tqueasy.key == 285) & (Tqueasy.char1 == ("Inhouse List Sum")) & (Tqueasy.number1 == 1) & (Tqueasy.number2 == to_int(idflag))).first()
 
             if tqueasy:
                 pass
@@ -289,7 +297,7 @@ def pj_inhouse4_create_output_2webbl(idflag:string, inhouse_guest_list_data:[Inh
                 pass
 
         tqueasy = db_session.query(Tqueasy).filter(
-                 (Tqueasy.key == 285) & (Tqueasy.char1 == ("Inhouse List Sum").lower()) & (Tqueasy.number1 == 0) & (Tqueasy.number2 == to_int(idflag))).first()
+                 (Tqueasy.key == 285) & (Tqueasy.char1 == ("Inhouse List Sum")) & (Tqueasy.number1 == 0) & (Tqueasy.number2 == to_int(idflag))).first()
 
         if tqueasy:
             pass

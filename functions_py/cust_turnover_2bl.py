@@ -1,6 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------------------------
 # Manual Update: exrate variable -> eexrate, Rd 16-July-25
+# dipanggil dari cust_turnover_listbl.py
 #-----------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -174,7 +175,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                     cust_list_data.append(cust_list)
 
                     cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                            guest.anredefirm)
+                            guest.anredefirma)
                     cust_list.gastnr = guest.gastnr
                     cust_list.wohnort = guest.wohnort
                     cust_list.plz = guest.plz
@@ -231,14 +232,13 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
 
                     fnet_lodg, net_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, tot_vat, tot_service = get_output(get_room_breakdown(res_line._recid, datum, curr_i, ci_date))
 
-                    if currency != " ":
-                        cust_list.gesamtumsatz =  to_decimal(cust_list.gesamtumsatz) + to_decimal(((net_lodg) + to_decimal(tot_breakfast) +\
-                                tot_lunch + to_decimal(tot_dinner) + to_decimal(tot_other)) / to_decimal(eexrate) )
-                        cust_list.argtumsatz =  to_decimal(cust_list.argtumsatz) + to_decimal((net_lodg) / to_decimal(eexrate) )
-                        cust_list.f_b_umsatz =  to_decimal(cust_list.f_b_umsatz) + to_decimal(((tot_breakfast) + to_decimal(tot_lunch) + to_decimal(tot_dinner)) / to_decimal(eexrate) )
-                        cust_list.sonst_umsatz =  to_decimal(cust_list.sonst_umsatz) + to_decimal((tot_other) / to_decimal(eexrate) )
-
-
+                    if currency.strip() != "":
+                        if eexrate !=0:
+                            cust_list.gesamtumsatz =  to_decimal(cust_list.gesamtumsatz) + to_decimal(((net_lodg) + to_decimal(tot_breakfast) +\
+                                    tot_lunch + to_decimal(tot_dinner) + to_decimal(tot_other)) / to_decimal(eexrate) )
+                            cust_list.argtumsatz =  to_decimal(cust_list.argtumsatz) + to_decimal((net_lodg) / to_decimal(eexrate) )
+                            cust_list.f_b_umsatz =  to_decimal(cust_list.f_b_umsatz) + to_decimal(((tot_breakfast) + to_decimal(tot_lunch) + to_decimal(tot_dinner)) / to_decimal(eexrate) )
+                            cust_list.sonst_umsatz =  to_decimal(cust_list.sonst_umsatz) + to_decimal((tot_other) / to_decimal(eexrate) )
                     else:
                         cust_list.gesamtumsatz =  to_decimal(cust_list.gesamtumsatz) + to_decimal(net_lodg) + to_decimal(tot_breakfast) +\
                                 tot_lunch + to_decimal(tot_dinner) + to_decimal(tot_other)
@@ -277,7 +277,6 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                                         if exrate:
                                             cust_list.sonst_umsatz =  to_decimal(cust_list.sonst_umsatz) + to_decimal(((bill_line.betrag) / to_decimal((1) + to_decimal(service) + to_decimal(vat))) / to_decimal(exrate.betrag) )
                                             cust_list.gesamtumsatz =  to_decimal(cust_list.gesamtumsatz) + to_decimal(((bill_line.betrag) / to_decimal((1) + to_decimal(service) + to_decimal(vat))) / to_decimal(exrate.betrag) )
-
 
                                     else:
                                         cust_list.sonst_umsatz =  to_decimal(cust_list.sonst_umsatz) + to_decimal(bill_line.betrag) / to_decimal((1) + to_decimal(service) + to_decimal(vat) )
@@ -320,14 +319,12 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                                 else:
                                     h_bill_line_obj_list[h_bill_line._recid] = True
 
-
                                 service =  to_decimal("0")
                                 vat =  to_decimal("0")
 
-
                                 service, vat, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, guest_queasy.date1))
 
-                                if currency != " ":
+                                if currency.strip() != "":
 
                                     exrate = get_cache (Exrate, {"datum": [(eq, h_bill_line.bill_datum)],"artnr": [(eq, exratenr)]})
 
@@ -383,7 +380,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
 
             if cust_list:
 
-                if currency != " ":
+                if currency.strip() != "":
 
                     exrate = get_cache (Exrate, {"datum": [(eq, genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -432,7 +429,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                 cust_list_data.append(cust_list)
 
                 cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                        guest.anredefirm)
+                        guest.anredefirma)
                 cust_list.gastnr = guest.gastnr
                 cust_list.wohnort = guest.wohnort
                 cust_list.plz = guest.plz
@@ -470,7 +467,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
             if artikel:
                 service, vat, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, genstat.datum))
 
-            if currency != " ":
+            if currency.strip() != "":
 
                 exrate = get_cache (Exrate, {"datum": [(eq, genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -568,7 +565,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
 
                                 service, vat, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, guest_queasy.date1))
 
-                                if currency != " ":
+                                if currency.strip() != "":
 
                                     exrate = get_cache (Exrate, {"datum": [(eq, genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -603,7 +600,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
 
             if cust_list:
 
-                if currency != " ":
+                if currency.strip() != "":
 
                     exrate = get_cache (Exrate, {"datum": [(eq, t_genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -622,14 +619,14 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                 cust_list_data.append(cust_list)
 
                 cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                        guest.anredefirm)
+                        guest.anredefirma)
                 cust_list.gastnr = guest.gastnr
                 cust_list.wohnort = guest.wohnort
                 cust_list.plz = guest.plz
                 cust_list.land = guest.land
                 cust_list.sales_id = guest.phonetik3
 
-                if currency != " ":
+                if currency.strip() != "":
 
                     exrate = get_cache (Exrate, {"datum": [(eq, t_genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -734,7 +731,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                     cust_list_data.append(cust_list)
 
                     cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                            guest.anredefirm)
+                            guest.anredefirma)
                     cust_list.gastnr = guest.gastnr
                     cust_list.wohnort = guest.wohnort
                     cust_list.plz = guest.plz
@@ -791,7 +788,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
 
                     fnet_lodg, net_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, tot_vat, tot_service = get_output(get_room_breakdown(res_line._recid, datum, curr_i, ci_date))
 
-                    if currency != " ":
+                    if currency.strip() != "":
                         cust_list.gesamtumsatz =  to_decimal(cust_list.gesamtumsatz) + to_decimal(((net_lodg) + to_decimal(tot_breakfast) +\
                                 tot_lunch + to_decimal(tot_dinner) + to_decimal(tot_other)) / to_decimal(eexrate) )
                         cust_list.argtumsatz =  to_decimal(cust_list.argtumsatz) + to_decimal((net_lodg) / to_decimal(eexrate) )
@@ -887,7 +884,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
 
                                 service, vat, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, guest_queasy.date1))
 
-                                if currency != " ":
+                                if currency.strip() != "":
 
                                     exrate = get_cache (Exrate, {"datum": [(eq, genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -943,7 +940,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
 
             if cust_list:
 
-                if currency != " ":
+                if currency.strip() != "":
 
                     exrate = get_cache (Exrate, {"datum": [(eq, genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -992,7 +989,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                 cust_list_data.append(cust_list)
 
                 cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                        guest.anredefirm)
+                        guest.anredefirma)
                 cust_list.gastnr = guest.gastnr
                 cust_list.wohnort = guest.wohnort
                 cust_list.plz = guest.plz
@@ -1032,7 +1029,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
             if artikel:
                 service, vat, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, genstat.datum))
 
-            if currency != " ":
+            if currency.strip() != "":
 
                 exrate = get_cache (Exrate, {"datum": [(eq, t_genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -1071,10 +1068,8 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                             else:
                                 bill_line_obj_list[bill_line._recid] = True
 
-
                             service =  to_decimal("0")
                             vat =  to_decimal("0")
-
 
                             service, vat, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, genstat.datum))
 
@@ -1085,7 +1080,6 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                                 if exrate:
                                     cust_list.sonst_umsatz =  to_decimal(cust_list.sonst_umsatz) + to_decimal(((bill_line.betrag) / to_decimal((1) + to_decimal(service) + to_decimal(vat))) / to_decimal(exrate.betrag) )
                                     cust_list.gesamtumsatz =  to_decimal(cust_list.gesamtumsatz) + to_decimal(((bill_line.betrag) / to_decimal((1) + to_decimal(service) + to_decimal(vat))) / to_decimal(exrate.betrag) )
-
 
                             else:
                                 cust_list.sonst_umsatz =  to_decimal(cust_list.sonst_umsatz) + to_decimal(bill_line.betrag) / to_decimal((1) + to_decimal(service) + to_decimal(vat) )
@@ -1130,7 +1124,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
 
                                 service, vat, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, guest_queasy.date1))
 
-                                if currency != " ":
+                                if currency.strip() != "":
 
                                     exrate = get_cache (Exrate, {"datum": [(eq, genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -1165,7 +1159,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
 
             if cust_list:
 
-                if currency != " ":
+                if currency.strip() != "":
 
                     exrate = get_cache (Exrate, {"datum": [(eq, t_genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -1184,14 +1178,14 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                 cust_list_data.append(cust_list)
 
                 cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                        guest.anredefirm)
+                        guest.anredefirma)
                 cust_list.gastnr = guest.gastnr
                 cust_list.wohnort = guest.wohnort
                 cust_list.plz = guest.plz
                 cust_list.land = guest.land
                 cust_list.sales_id = guest.phonetik3
 
-                if currency != " ":
+                if currency.strip() != "":
 
                     exrate = get_cache (Exrate, {"datum": [(eq, t_genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -1280,7 +1274,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                 if artikel:
                     service, vat, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, genstat.datum))
 
-                if currency != " ":
+                if currency.strip() != "":
 
                     exrate = get_cache (Exrate, {"datum": [(eq, genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -1377,7 +1371,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
 
                                     service, vat, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, guest_queasy.date1))
 
-                                    if currency != " ":
+                                    if currency.strip() != "":
 
                                         exrate = get_cache (Exrate, {"datum": [(eq, genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -1425,14 +1419,14 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                     cust_list_data.append(cust_list)
 
                     cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                            guest.anredefirm)
+                            guest.anredefirma)
                     cust_list.gastnr = guest.gastnr
                     cust_list.wohnort = guest.wohnort
                     cust_list.plz = guest.plz
                     cust_list.land = guest.land
                     cust_list.sales_id = guest.phonetik3
 
-                    if currency != " ":
+                    if currency.strip() != "":
 
                         exrate = get_cache (Exrate, {"datum": [(eq, t_genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -1481,7 +1475,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                     cust_list_data.append(cust_list)
 
                     cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                            guest.anredefirm)
+                            guest.anredefirma)
                     cust_list.gastnr = guest.gastnr
                     cust_list.wohnort = guest.wohnort
                     cust_list.plz = guest.plz
@@ -1504,7 +1498,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                 if artikel:
                     service, vat, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, genstat.datum))
 
-                if currency != " ":
+                if currency.strip() != "":
 
                     exrate = get_cache (Exrate, {"datum": [(eq, genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -1542,22 +1536,17 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                                 else:
                                     bill_line_obj_list[bill_line._recid] = True
 
-
                                 service =  to_decimal("0")
                                 vat =  to_decimal("0")
-
 
                                 service, vat, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, genstat.datum))
 
                                 if currency != "":
-
                                     exrate = get_cache (Exrate, {"datum": [(eq, genstat.datum)],"artnr": [(eq, exratenr)]})
 
                                     if exrate:
                                         cust_list.sonst_umsatz =  to_decimal(cust_list.sonst_umsatz) + to_decimal(((bill_line.betrag) / to_decimal((1) + to_decimal(service) + to_decimal(vat))) / to_decimal(exrate.betrag) )
                                         cust_list.gesamtumsatz =  to_decimal(cust_list.gesamtumsatz) + to_decimal(((bill_line.betrag) / to_decimal((1) + to_decimal(service) + to_decimal(vat))) / to_decimal(exrate.betrag) )
-
-
                                 else:
                                     cust_list.sonst_umsatz =  to_decimal(cust_list.sonst_umsatz) + to_decimal(bill_line.betrag) / to_decimal((1) + to_decimal(service) + to_decimal(vat) )
                                     cust_list.gesamtumsatz =  to_decimal(cust_list.gesamtumsatz) + to_decimal(bill_line.betrag) / to_decimal((1) + to_decimal(service) + to_decimal(vat) )
@@ -1601,7 +1590,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
 
                                     service, vat, vat2, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, guest_queasy.date1))
 
-                                    if currency != " ":
+                                    if currency.strip() != "":
 
                                         exrate = get_cache (Exrate, {"datum": [(eq, genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -1630,7 +1619,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
 
                 if cust_list:
 
-                    if currency != " ":
+                    if currency.strip() != "":
 
                         exrate = get_cache (Exrate, {"datum": [(eq, t_genstat.datum)],"artnr": [(eq, exratenr)]})
 
@@ -1638,33 +1627,29 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                             cust_list.ba_umsatz =  to_decimal(cust_list.ba_umsatz) + to_decimal((t_genstat.res_deci[6]) / to_decimal(exrate.betrag) )
                             cust_list.gesamtumsatz =  to_decimal(cust_list.gesamtumsatz) + to_decimal((t_genstat.res_deci[6]) / to_decimal(exrate.betrag) )
 
-
                     else:
                         cust_list.ba_umsatz =  to_decimal(cust_list.ba_umsatz) + to_decimal(t_genstat.res_deci[6])
                         cust_list.gesamtumsatz =  to_decimal(cust_list.gesamtumsatz) + to_decimal(t_genstat.res_deci[6])
-
 
                 else:
                     cust_list = Cust_list()
                     cust_list_data.append(cust_list)
 
                     cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                            guest.anredefirm)
+                            guest.anredefirma)
                     cust_list.gastnr = guest.gastnr
                     cust_list.wohnort = guest.wohnort
                     cust_list.plz = guest.plz
                     cust_list.land = guest.land
                     cust_list.sales_id = guest.phonetik3
 
-                    if currency != " ":
+                    if currency.strip() != "":
 
                         exrate = get_cache (Exrate, {"datum": [(eq, t_genstat.datum)],"artnr": [(eq, exratenr)]})
 
                         if exrate:
                             cust_list.ba_umsatz = ( to_decimal(t_genstat.res_deci[6]) / to_decimal(exrate.betrag) )
                             cust_list.gesamtumsatz =  to_decimal(cust_list.gesamtumsatz) + to_decimal((t_genstat.res_deci[6]) / to_decimal(exrate.betrag) )
-
-
                     else:
                         cust_list.ba_umsatz =  to_decimal(t_genstat.res_deci[6])
                         cust_list.gesamtumsatz =  to_decimal(cust_list.gesamtumsatz) + to_decimal(t_genstat.res_deci[6])

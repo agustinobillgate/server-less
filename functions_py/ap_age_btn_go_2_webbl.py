@@ -3,12 +3,19 @@
 # Rd, 18/8/2025
 # kolom terpotong
 # " " -> "  "
+# 17/9/2025, data tidak sama dgn e1
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpint import htpint
 from models import L_kredit, L_lieferant, Queasy
+
+def format_fixed_length(text: str, length: int) -> str:
+        if len(text) > length:
+            return text[:length]   # trim
+        else:
+            return text.ljust(length)
 
 
 def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_name:string, day1:int, day2:int, day3:int, curr_disp:int, round_zero:bool, segm:int):
@@ -47,6 +54,18 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
 
     db_session = local_storage.db_session
 
+    # from_name = from_name.strip()
+    # to_name = to_name.strip()
+
+    try:
+        to_name = to_name.strip()
+        from_name = from_name.strip()
+    except:
+        to_name = ""
+        from_name = ""
+
+
+
     def generate_output():
         nonlocal output_list1_data, lvcarea, outlist, supplier, curr_name, curr_liefnr, counter, price_decimal, t_saldo, t_debt0, t_debt1, t_debt2, t_debt3, debt0, debt1, debt2, debt3, tot_debt, t_debet, t_credit, t_comm, t_adjust, l_kredit, l_lieferant, queasy
         nonlocal pvilanguage, to_date, from_name, to_name, day1, day2, day3, curr_disp, round_zero, segm
@@ -73,13 +92,22 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
         age_list_data.clear()
         output_list_data.clear()
 
-        if from_name == None and to_name == None:
+        if from_name == "" and to_name == "":
 
             l_kredit_obj_list = {}
             l_kredit = L_kredit()
             l_lieferant = L_lieferant()
-            for l_kredit.netto, l_kredit.counter, l_kredit.name, l_kredit.rgdatum, l_kredit.lief_nr, l_kredit._recid, l_lieferant.segment1, l_lieferant.firma, l_lieferant.anredefirma, l_lieferant.adresse1, l_lieferant._recid in db_session.query(L_kredit.netto, L_kredit.counter, L_kredit.name, L_kredit.rgdatum, L_kredit.lief_nr, L_kredit._recid, L_lieferant.segment1, L_lieferant.firma, L_lieferant.anredefirma, L_lieferant.adresse1, L_lieferant._recid).join(L_lieferant,(L_lieferant.lief_nr == L_kredit.lief_nr)).filter(
-                     (L_kredit.rgdatum <= to_date) & (L_kredit.opart == 0)).order_by(L_lieferant.firma).all():
+            for l_kredit.netto, l_kredit.counter, l_kredit.name, l_kredit.rgdatum, l_kredit.lief_nr, l_kredit._recid, \
+                l_lieferant.segment1, l_lieferant.firma, l_lieferant.anredefirma, l_lieferant.adresse1, l_lieferant._recid \
+                in db_session.query(L_kredit.netto, L_kredit.counter, L_kredit.name, L_kredit.rgdatum, L_kredit.lief_nr, \
+                                    L_kredit._recid, L_lieferant.segment1, L_lieferant.firma, L_lieferant.anredefirma, \
+                                    L_lieferant.adresse1, L_lieferant._recid)\
+                    .join(L_lieferant,(L_lieferant.lief_nr == L_kredit.lief_nr))\
+                    .filter(
+                            (L_kredit.rgdatum <= to_date) & 
+                            (L_kredit.opart == 0))\
+                    .order_by(L_lieferant.firma).all():
+                
                 if l_kredit_obj_list.get(l_kredit._recid):
                     continue
                 else:
@@ -718,7 +746,6 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
         nonlocal output_list1_data, lvcarea, outlist, supplier, curr_name, curr_liefnr, counter, price_decimal, t_saldo, t_debt0, t_debt1, t_debt2, t_debt3, debt0, debt1, debt2, debt3, tot_debt, t_debet, t_credit, t_comm, t_adjust, l_kredit, l_lieferant, queasy
         nonlocal pvilanguage, to_date, from_name, to_name, day1, day2, day3, curr_disp, round_zero, segm
 
-
         nonlocal age_list, output_list, output_list1
         nonlocal age_list_data, output_list_data, output_list1_data
 
@@ -773,7 +800,7 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
             elif curr_name != age_list.supplier:
 
                 if tot_debt != 0:
-                    outlist = "  " + to_string(counter, ">>>9") + "  " + to_string(supplier, "x(34)") + "  " + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt0, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt1, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt2, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt3, "->>,>>>,>>>,>>9.99") + "  "
+                    outlist = "  " + to_string(counter, ">>>9") + "  " + format_fixed_length(supplier,34) + "  " + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt0, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt1, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt2, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt3, "->>,>>>,>>>,>>9.99") + "  "
                     fill_in_list()
                 else:
                     counter = counter - 1
@@ -811,15 +838,20 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
             age_list_data.remove(age_list)
 
         if counter > 0 and tot_debt != 0:
-            outlist = "  " + to_string(counter, ">>>9") + "  " + to_string(supplier, "x(34)") + "  " + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt0, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt1, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt2, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt3, "->>,>>>,>>>,>>9.99") + "  "
+            outlist = "  " + to_string(counter, ">>>9") + "  " + format_fixed_length(supplier,34) + "  " + to_string(tot_debt, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt0, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt1, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt2, "->>,>>>,>>>,>>9.99") + "  " + to_string(debt3, "->>,>>>,>>>,>>9.99") + "  "
             fill_in_list()
         outlist = "-------------------------------------------------------------------------------------------------------------------------------------------------"
         fill_in_list()
-        outlist = to_string(translateExtended ("           T O T A L  A/P:", lvcarea, "") , "x(26)") + "                  " + to_string(t_saldo, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt0, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt1, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt2, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt3, "->>,>>>,>>>,>>9.99")
+
+        outlist = "  " + "    " + "  " +  format_fixed_length("T O T A L  A/P:" , 34) + "  " + to_string(t_saldo, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt0, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt1, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt2, "->>,>>>,>>>,>>9.99") + "  " + to_string(t_debt3, "->>,>>>,>>>,>>9.99")
         fill_in_list()
         outlist = ""
         fill_in_list()
-        outlist = to_string(translateExtended ("        Statistic Percentage (%) :", lvcarea, "") , "x(33)") + "                      " + "100.00" + "             " + to_string((t_debt0 / t_saldo * 100) , "->>9.99") + "  " + to_string((t_debt1 / t_saldo * 100) , "->>9.99") + "  " + to_string((t_debt2 / t_saldo * 100) , "->>9.99") + "  " + to_string((t_debt3 / t_saldo * 100) , "->>9.99")
+        if t_saldo != 0:
+            outlist = to_string(translateExtended ("        Statistic Percentage (%) :", lvcarea, "") , "x(33)") + "                      " + "100.00" + "             " + to_string((t_debt0 / t_saldo * 100) , "->>9.99") + "             " + to_string((t_debt1 / t_saldo * 100) , "->>9.99") + "             " + to_string((t_debt2 / t_saldo * 100) , "->>9.99") + "             " + to_string((t_debt3 / t_saldo * 100) , "->>9.99")
+        else:
+            outlist = to_string(translateExtended ("        Statistic Percentage (%) :", lvcarea, "") , "x(33)") + "                      " + "100.00" + "             " + to_string(0 , "->>9.99") + "             " + to_string(0 , "->>9.99") + "             " + to_string(0 , "->>9.99") + "             " + to_string(0 , "->>9.99")
+        
         fill_in_list()
         outlist = ""
         fill_in_list()
@@ -857,8 +889,9 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
             buffer_copy(output_list, output_list1)
 
             # rd 15/8/2025
-            # output_list1.nr = substring(output_list.str, 0, 7)
-            output_list1.nr = substring(output_list.str, 0, 6)
+            
+            output_list1.nr = substring(output_list.str, 0, 7)
+            # output_list1.nr = substring(output_list.str, 0, 6)
 
             output_list1.cust_name = substring(output_list.str, 7, 35)
             output_list1.outstanding = substring(output_list.str, 42, 20)
@@ -885,3 +918,8 @@ def ap_age_btn_go_2_webbl(pvilanguage:int, to_date:date, from_name:string, to_na
     create_outputlist1()
 
     return generate_output()
+
+"""
+    55  UD YUS,                                  1,846,500.00               0.00               0.00               0.00       1,846,500.00  
+        T O T A L  A/P:                     302,361,550.00                          0.00                          0.00                          0.00                302,361,550.00
+"""
