@@ -8,6 +8,7 @@ from functions.additional_functions import *
 from sqlalchemy import func
 from decimal import Decimal
 from models import Queasy
+import time
 
 cust_list_data, Cust_list = create_model("Cust_list", {"gastnr":int, "cust_name":string, "gesamtumsatz":Decimal, "logiernachte":int, "argtumsatz":Decimal, "f_b_umsatz":Decimal, "sonst_umsatz":Decimal, "wohnort":string, "plz":string, "land":string, "sales_id":string, "ba_umsatz":Decimal, "ly_rev":Decimal, "region":string, "region1":string, "stayno":int, "resnr":string, "counter":int, "counterall":int, "resno":int, "reslinnr":int, "curr_pos":int})
 
@@ -35,42 +36,33 @@ def cust_turnover_output_list_webbl(idflag:string, cust_list_data:[Cust_list]):
         return {"counter": counter,"idFlag": idflag, "doneflag": doneflag, "cust-list": cust_list_data}
 
     
-    # for queasy in db_session.query(Queasy).filter(
-    #          (Queasy.key == 280) and (Queasy.char1 == "Guest Turnover") and (Queasy.char3 == idflag)).order_by(Queasy.number1).yield_per(100):
-    #----------
-    # q = (
-    #     db_session.query(Queasy)
-    #     .filter(
-    #         and_(
-    #             Queasy.key == 280,
-    #             func.lower(func.trim(Queasy.char1)) == "guest turnover",
-    #             func.trim(Queasy.char3) == idflag.strip(),
-    #         )
-    #     )
-    #     .order_by(Queasy.number1)
-    #     .yield_per(100)
-    # )
-    #----------
-    # q = db_session.query(Queasy).filter(
-    #          (Queasy.key == 280) and (func.lower(func.trim(Queasy.char1)) == "guest turnover") and (func.trim(Queasy.char3) == idflag.strip())).order_by(Queasy.number1).yield_per(100)
-    #----------
-    # q = (
-    #     db_session.query(Queasy)
-    #     .filter(
-    #         and_(
-    #             Queasy.key == 280,
-    #             func.lower(func.trim(Queasy.char1)) == "guest turnover"
-    #         )
-    #     )
-    #     .order_by(Queasy.number1)
-    #     .yield_per(100)
-    # )
-    #----------
+    # tunggu sampai proses selesai
+    count = retry = tmp_count = 0
+    while True:
+        count = db_session.query(Queasy).filter(
+            (Queasy.key == 280) &
+            (Queasy.char1 == "Guest Turnover") &
+            (Queasy.char3 == idflag)
+        ).count()
+
+        if count >= 1000:
+            break
+
+        if tmp_count == 0 and retry > 60:
+            break
+
+        if tmp_count > 0 and tmp_count == count:
+            break
+
+        tmp_count = count
+        retry += 1
+
+        time.sleep(0.5)
+
+
     for queasy in db_session.query(Queasy).filter(
-            (Queasy.key == 280) and (Queasy.char1 == "Guest Turnover") and (Queasy.char3 == idflag)).order_by(Queasy.number1).yield_per(100):
-    # for queasy in q:
-        # if queasy.char3 != idflag:
-        #     continue
+            (Queasy.key == 280) & (Queasy.char1 == "Guest Turnover") & (Queasy.char3 == idflag)).order_by(Queasy.number1).yield_per(100):
+
         counter = counter + 1
 
         if counter > 1000:
