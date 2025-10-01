@@ -423,7 +423,7 @@ def rmrev_bdown_create_billbalance5_cldbl(exc_taxserv:bool, pvILanguage:int, new
 
                     argt_list.argtnr = arrangement.argtnr
                     argt_list.argtcode = arrangement.arrangement
-                    argt_list.bezeich = L_verbrauch.wert_verbrau
+                    argt_list.bezeich = arrangement.argt_bez
                     argt_list.room = 1
                     argt_list.pax = genstat.erwachs + genstat.kind1 + genstat.kind2 + cl_list.com + cl_list.comch
                 else:
