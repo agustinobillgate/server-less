@@ -94,7 +94,7 @@ def gacct_balance_btn_go_list_webbl(pvilanguage:int, bill_alert_data:[Bill_alert
     db_session.add(queasy)
 
     queasy.key = 285
-    queasy.char1 = "guest Ledger Report"
+    queasy.char1 = "Guest Ledger Report"
     queasy.number1 = 1
     queasy.char2 = idflag
 
@@ -112,61 +112,61 @@ def gacct_balance_btn_go_list_webbl(pvilanguage:int, bill_alert_data:[Bill_alert
     # while None != gacct_balance_list:
     for gacct_balance_list in gacct_balance_list_data:
         if gacct_balance_list.ankunft == None:
-            ankunft = ""
+            gacct_balance_list.ankunft = ""
         else:
-            ankunft = to_string(gacct_balance_list.ankunft)
+            gacct_balance_list.ankunft = to_string(gacct_balance_list.ankunft)
 
         if gacct_balance_list.billdatum == None:
-            bill_datum = ""
+            gacct_balance_list.billdatum = ""
         else:
-            bill_datum = to_string(gacct_balance_list.billdatum)
+            gacct_balance_list.billdatum = to_string(gacct_balance_list.billdatum)
 
         if gacct_balance_list.depart == None:
-            depart = ""
+            gacct_balance_list.depart = ""
         else:
-            depart = to_string(gacct_balance_list.depart)
+            gacct_balance_list.depart = to_string(gacct_balance_list.depart)
 
         if matches(gacct_balance_list.guest,r"*|*"):
-            guest = replace_str(gacct_balance_list.guest, "|", "&")
+            gacct_balance_list.guest = replace_str(gacct_balance_list.guest, "|", "&")
         else:
-            guest = gacct_balance_list.guest
+            gacct_balance_list.guest = gacct_balance_list.guest
 
         if matches(gacct_balance_list.bezeich,r"*|*"):
-            bezeich = replace_str(gacct_balance_list.bezeich, "|", " ")
+            gacct_balance_list.bezeich = replace_str(gacct_balance_list.bezeich, "|", " ")
         else:
-            bezeich = gacct_balance_list.bezeich
+            gacct_balance_list.bezeich = gacct_balance_list.bezeich
         queasy = Queasy()
         db_session.add(queasy)
 
         counter = counter + 1
         queasy.key = 280
-        queasy.char1 = "guest Ledger Report"
+        queasy.char1 = "Guest Ledger Report"
         queasy.char3 = idflag
         queasy.char2 = to_string(gacct_balance_list.i_counter) + "|" +\
                 to_string(gacct_balance_list.flag) + "|" +\
                 to_string(gacct_balance_list.artnr) + "|" +\
                 to_string(gacct_balance_list.dept) + "|" +\
-                ankunft + "|" +\
+                gacct_balance_list.ankunft + "|" +\
                 gacct_balance_list.ankzeit + "|" +\
                 gacct_balance_list.typebill + "|" +\
-                bill_datum + "|" +\
-                guest + "|" +\
+                gacct_balance_list.billdatum + "|" +\
+                gacct_balance_list.guest + "|" +\
                 gacct_balance_list.roomno + "|" +\
                 to_string(gacct_balance_list.billno) + "|" +\
                 to_string(gacct_balance_list.billnr) + "|" +\
-                bezeich + "|" +\
+                gacct_balance_list.bezeich + "|" +\
                 to_string(gacct_balance_list.prevbala) + "|" +\
                 to_string(gacct_balance_list.debit) + "|" +\
                 to_string(gacct_balance_list.credit) + "|" +\
                 to_string(gacct_balance_list.balance) + "|" +\
-                depart
+                gacct_balance_list.depart
 
 
         queasy.number1 = to_int(counter)
 
         # gacct_balance_list = query(gacct_balance_list_data, next=True)
 
-    bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "guest ledger report")],"char2": [(eq, idflag)]})
+    bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "Guest Ledger Report")],"char2": [(eq, idflag)]})
 
     if bqueasy:
         pass
