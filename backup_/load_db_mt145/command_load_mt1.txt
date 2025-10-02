@@ -1,0 +1,1 @@
+ psql -U postgres -h psql.staging.e1-vhp.com -d qctest -v ON_ERROR_STOP=1 -c "SET search_path TO mt1;" -f ./mt1_load_tables_pk_20251001.sql
