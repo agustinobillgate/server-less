@@ -122,7 +122,6 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
             bill_list.billnr = bill.billnr
 
             if bill.resnr > 0 and bill.reslinnr > 0:
-
                 # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
                 res_line = db_session.query(Res_line).filter(
                          (Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.parent_nr)).first()    
@@ -140,8 +139,6 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
 
             elif bill.resnr > 0:
                 bill_list.billtype = "M"
-
-
             else:
                 bill_list.billtype = "N"
 
@@ -162,20 +159,16 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
         nonlocal pvilanguage, heute, billdate, ank_flag, sorttype, fact1, price_decimal, short_flag
         nonlocal bline
 
-
         nonlocal output_list, m_list, sum_list, gacct_balance_list, s_list, ns_list, bill_alert, bill_list, bline
         nonlocal output_list_data, m_list_data, sum_list_data, gacct_balance_list_data, s_list_data, ns_list_data, bill_list_data
-
 
         prevbal =  to_decimal("0")
         debit =  to_decimal("0")
         credit =  to_decimal("0")
         balance =  to_decimal("0")
-
         for bill_line in db_session.query(Bill_line).filter(
                  (Bill_line.rechnr == bill_list.rechnr) & (Bill_line.bill_datum <= billdate)).order_by(Bill_line.bezeich, Bill_line.bill_datum, Bill_line.zeit).all():
             tot_bline = tot_bline + 1
-
             s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == bill_line.artnr and s_list.dept == bill_line.departement and s_list.rechnr == bill_line.rechnr), first=True)
 
             if not s_list:
@@ -368,6 +361,7 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
                 t_balance =  to_decimal(t_balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
 
         for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype  == ("N")), sort_by=[("gname",False)]):
+            print("Bill List N - billnr:", bill_list.billnr, " rechnr:", bill_list.rechnr)
             prevbal =  to_decimal("0")
             debit =  to_decimal("0")
             credit =  to_decimal("0")

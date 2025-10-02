@@ -13,3 +13,10 @@ restore:
 pg_dump -U postgres -h psql.staging.e1-vhp.com -d qctest -F c --schema=qcserverless2 -f "./dump-ec2-db-qctest-qcserverless2.dump"
 
 pg_dump -U postgres -h psql.staging.e1-vhp.com -d qctest -F c --schema=qcserverless3 -f "./dump-ec2-db-qctest-qcserverless3.dump"
+
+pg_dump -U postgres -h psql.staging.e1-vhp.com -d qctest -F c --schema=mt1 -f "./dump-ec2-db-qctest-mt1.dump"
+pg_dump -U postgres -h psql.staging.e1-vhp.com -d qctest -F c --schema=mt4 -f "./dump-ec2-db-qctest-mt4.dump"
+pg_dump -U postgres -h psql.staging.e1-vhp.com -d qctest -F c --schema=mt5 -f "./dump-ec2-db-qctest-mt5.dump"
+
+
+DevPostgreSQL#2024
