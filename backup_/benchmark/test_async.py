@@ -1,4 +1,6 @@
 import asyncio
+
+from sqlalchemy import false
 import aiohttp
 import time
 import json
@@ -11,25 +13,109 @@ import json
 # 'payload': Data JSON yang akan dikirim
 API_TARGETS = [
     {
-        "name": "Service 1",
-        "url": "http://httpbin.org/post",  # Ganti dengan http_url1 Anda
-        "payload": {"user_id": 123, "action": "login", "source": "mobile"} # Ganti dengan payload1
+        "name": "In House 1",
+        "url": "https://python.staging.e1-vhp.com:10443/dev/vhpFOR/arlDisp5", 
+        "payload": {
+                    "request": {
+                        "showRate": True,
+                        "lastSort": 1,
+                        "lresnr": 0,
+                        "longStay": 14,
+                        "ciDate": "09/24/24",
+                        "grpFlag": False,
+                        "exclRmshare": False,
+                        "room": " ",
+                        "lname": " ",
+                        "sorttype": 2,
+                        "fdate1": "09/24/24",
+                        "fdate2": "09/24/24",
+                        "fdate": "09/24/24",
+                        "voucherNo": "",
+                        "nationStr": " ",
+                        "tPayloadList": {
+                            "t-payload-list": [
+                                {
+                                    "argt-str": " "
+                                }
+                            ]
+                        },
+                        "inputUserkey": "95EE44CBF839764A7690C157AC66C9C902905E01",
+                        "inputUsername": "it",
+                        "hotel_schema": "qcserverless3"
+                    }
+                }
     },
     {
-        "name": "Service 2",
-        "url": "http://httpbin.org/post",  # Ganti dengan http_url2 Anda
-        "payload": {"product_id": "XYZ-001", "quantity": 2, "cart_id": "c7a8b"} # Ganti dengan payload2
+        "name": "In House 2",
+        "url": "https://python.staging.e1-vhp.com:10443/dev/vhpFOR/arlDisp5", 
+        "payload": {
+                    "request": {
+                        "showRate": True,
+                        "lastSort": 1,
+                        "lresnr": 0,
+                        "longStay": 14,
+                        "ciDate": "09/24/24",
+                        "grpFlag": False,
+                        "exclRmshare": False,
+                        "room": " ",
+                        "lname": " ",
+                        "sorttype": 2,
+                        "fdate1": "09/24/24",
+                        "fdate2": "09/24/24",
+                        "fdate": "09/24/24",
+                        "voucherNo": "",
+                        "nationStr": " ",
+                        "tPayloadList": {
+                            "t-payload-list": [
+                                {
+                                    "argt-str": " "
+                                }
+                            ]
+                        },
+                        "inputUserkey": "95EE44CBF839764A7690C157AC66C9C902905E01",
+                        "inputUsername": "it",
+                        "hotel_schema": "qcserverless3"
+                    }
+                }
     },
     {
-        "name": "Service 3",
-        "url": "http://httpbin.org/post",  # Ganti dengan http_url3 Anda
-        "payload": {"query": "search term", "filter": "last_24_hours"} # Ganti dengan payload3
+        "name": "In House 3",
+        "url": "https://python.staging.e1-vhp.com:10443/dev/vhpFOR/arlDisp5", 
+        "payload": {
+                    "request": {
+                        "showRate": True,
+                        "lastSort": 1,
+                        "lresnr": 0,
+                        "longStay": 14,
+                        "ciDate": "09/24/24",
+                        "grpFlag": False,
+                        "exclRmshare": False,
+                        "room": " ",
+                        "lname": " ",
+                        "sorttype": 2,
+                        "fdate1": "09/24/24",
+                        "fdate2": "09/24/24",
+                        "fdate": "09/24/24",
+                        "voucherNo": "",
+                        "nationStr": " ",
+                        "tPayloadList": {
+                            "t-payload-list": [
+                                {
+                                    "argt-str": " "
+                                }
+                            ]
+                        },
+                        "inputUserkey": "95EE44CBF839764A7690C157AC66C9C902905E01",
+                        "inputUsername": "it",
+                        "hotel_schema": "qcserverless3"
+                    }
+                }
     }
 ]
 
 # --- PENGATURAN TEST ---
 # Berapa kali setiap API akan di-hit
-REQUESTS_PER_API = 50
+REQUESTS_PER_API = 2
 
 # --- SCRIPT UTAMA ---
 
@@ -53,7 +139,7 @@ async def hit_api(session: aiohttp.ClientSession, name: str, url: str, payload: 
                 f"Status: {response.status}"
             )
             # Opsional: Cetak data yang diterima dari API untuk verifikasi
-            # print(json.dumps(response_json, indent=2))
+            print(json.dumps(response_json, indent=2))
             
             return (name, duration, response.status, None)
 
