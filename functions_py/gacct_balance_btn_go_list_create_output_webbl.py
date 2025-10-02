@@ -6,6 +6,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Paramtext
+import time
 
 gacct_balance_list_data, Gacct_balance_list = create_model("Gacct_balance_list", {"i_counter":int, "flag":int, "artnr":int, "dept":int, "ankunft":string, "ankzeit":string, "typebill":string, "billdatum":string, "guest":string, "roomno":string, "billno":int, "billnr":int, "bezeich":string, "prevbala":Decimal, "debit":Decimal, "credit":Decimal, "balance":Decimal, "depart":string})
 
@@ -30,6 +31,29 @@ def gacct_balance_btn_go_list_create_output_webbl(idflag:string, gacct_balance_l
 
 
     db_session = local_storage.db_session
+
+    
+    # tunggu sampai proses selesai
+    count = retry = tmp_count = 0
+    while True:
+        count = db_session.query(Queasy).filter(
+            (Queasy.key == 280) &
+            (Queasy.char1 == "Guest Ledger Report") &
+            (Queasy.char3 == idflag)
+        ).count()
+        # print("Waiting for process to complete... Count:", count, retry)
+        if count >= 1000:
+            break
+
+        if tmp_count == 0 and retry > 60:
+            break
+
+        if tmp_count > 0 and tmp_count == count:
+            break
+
+        tmp_count = count
+        retry += 1
+        time.sleep(0.3)
 
     def generate_output():
         nonlocal doneflag, counter, htl_no, temp_char, ankunft, bill_datum, depart, queasy, paramtext
@@ -72,7 +96,7 @@ def gacct_balance_btn_go_list_create_output_webbl(idflag:string, gacct_balance_l
         htl_no = decode_string(paramtext.ptexte)
 
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 280) & (Queasy.char1 == ("Guest Ledger Report").lower()) & (Queasy.char3 == idflag)).order_by(Queasy.number1).all():
+             (Queasy.key == 280) & (Queasy.char1 == ("Guest Ledger Report")) & (Queasy.char3 == idflag)).order_by(Queasy.number1).all():
         counter = counter + 1
 
         if counter > 1000:
@@ -84,7 +108,9 @@ def gacct_balance_btn_go_list_create_output_webbl(idflag:string, gacct_balance_l
         gacct_balance_list.flag = to_int(entry(1, queasy.char2, "|"))
         gacct_balance_list.artnr = to_int(entry(2, queasy.char2, "|"))
         gacct_balance_list.dept = to_int(entry(3, queasy.char2, "|"))
-        gacct_balance_list.ankunft = entry(4, queasy.char2, "|")
+        tmp_date = entry(4, queasy.char2, "|")
+        tmp_date = substring(tmp_date,3,2) + "/" + substring(tmp_date,0,2) + "/" + substring(tmp_date,6,2)
+        gacct_balance_list.ankunft = tmp_date
         gacct_balance_list.ankzeit = entry(5, queasy.char2, "|")
         gacct_balance_list.typebill = entry(6, queasy.char2, "|")
         gacct_balance_list.billdatum = entry(7, queasy.char2, "|")
@@ -97,7 +123,9 @@ def gacct_balance_btn_go_list_create_output_webbl(idflag:string, gacct_balance_l
         gacct_balance_list.debit =  to_decimal(to_decimal(entry(14 , queasy.char2 , "|")) )
         gacct_balance_list.credit =  to_decimal(to_decimal(entry(15 , queasy.char2 , "|")) )
         gacct_balance_list.balance =  to_decimal(to_decimal(entry(16 , queasy.char2 , "|")) )
-        gacct_balance_list.depart = entry(17, queasy.char2, "|")
+        tmp_date = entry(17, queasy.char2, "|")
+        tmp_date = substring(tmp_date,3,2) + "/" + substring(tmp_date,0,2) + "/" + substring(tmp_date,6,2)
+        gacct_balance_list.depart = tmp_date
 
         bqueasy = db_session.query(Bqueasy).filter(
                  (Bqueasy._recid == queasy._recid)).first()
@@ -107,14 +135,14 @@ def gacct_balance_btn_go_list_create_output_webbl(idflag:string, gacct_balance_l
         pass
 
     pqueasy = db_session.query(Pqueasy).filter(
-             (Pqueasy.key == 280) & (Pqueasy.char1 == ("Guest Ledger Report").lower()) & (Pqueasy.char3 == idflag)).first()
+             (Pqueasy.key == 280) & (Pqueasy.char1 == ("Guest Ledger Report")) & (Pqueasy.char3 == idflag)).first()
 
     if pqueasy:
         doneflag = False
     else:
 
         tqueasy = db_session.query(Tqueasy).filter(
-                 (Tqueasy.key == 285) & (Tqueasy.char1 == ("Guest Ledger Report").lower()) & (Tqueasy.number1 == 1) & (Tqueasy.char2 == idflag)).first()
+                 (Tqueasy.key == 285) & (Tqueasy.char1 == ("Guest Ledger Report")) & (Tqueasy.number1 == 1) & (Tqueasy.char2 == idflag)).first()
 
         if tqueasy:
             doneflag = False
@@ -122,7 +150,7 @@ def gacct_balance_btn_go_list_create_output_webbl(idflag:string, gacct_balance_l
             doneflag = True
 
     tqueasy = db_session.query(Tqueasy).filter(
-             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Guest Ledger Report").lower()) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == idflag)).first()
+             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Guest Ledger Report")) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == idflag)).first()
 
     if tqueasy:
         pass

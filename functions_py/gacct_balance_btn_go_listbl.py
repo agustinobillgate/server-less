@@ -8,6 +8,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bill_line, Bill, Res_line, Guest, Artikel, Uebertrag
+from sqlalchemy import func
 
 bill_alert_data, Bill_alert = create_model("Bill_alert", {"rechnr":int})
 
@@ -122,7 +123,10 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
 
             if bill.resnr > 0 and bill.reslinnr > 0:
 
-                res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+                # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+                res_line = db_session.query(Res_line).filter(
+                         (Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.parent_nr)).first()    
+                
                 bill_list.billtype = "G"
 
                 if res_line:
@@ -141,9 +145,12 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
             else:
                 bill_list.billtype = "N"
 
-            if bill_list.gname == "":
+            if bill_list.gname.strip() == "":
 
-                guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+                # guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+                guest = db_session.query(Guest).filter(
+                    (Guest.gastnr == bill.gastnr)
+                ).first()
 
                 if guest:
                     bill_list.gname = guest.name
@@ -173,13 +180,22 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
 
             if not s_list:
 
-                artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+                # artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+                artikel = db_session.query(Artikel).filter(
+                    (Artikel.artnr == bill_line.artnr) & (Artikel.departement == bill_line.departement)
+                ).first()
 
                 if not artikel and num_entries(bill_line.bezeich, "*") > 1:
 
-                    artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, 0)]})
+                    # artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, 0)]})
+                    artikel = db_session.query(Artikel).filter(
+                        (Artikel.artnr == bill_line.artnr) & (Artikel.departement == 0)
+                    ).first()
+
                 s_list = S_list()
                 s_list_data.append(s_list)
+                #Rd, set default zinr = 1, (LIKE zimmer.zinr)
+                s_list.zinr = "1"
 
                 current_counter = current_counter + 1
                 s_list.i_counter = current_counter
@@ -246,12 +262,12 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
 
             if sorttype == 1:
 
-                for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype.lower()  == ("G").lower()), sort_by=[("ankunft",False),("ankzeit",False),("gname",False),("zinr",False),("billnr",False)]):
+                for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype  == ("G")), sort_by=[("ankunft",False),("ankzeit",False),("gname",False),("zinr",False),("billnr",False)]):
                     create_data2()
 
             else:
 
-                for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype.lower()  == ("G").lower()), sort_by=[("ankunft",False),("ankzeit",False),("zinr",False),("gname",False),("billnr",False)]):
+                for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype  == ("G")), sort_by=[("ankunft",False),("ankzeit",False),("zinr",False),("gname",False),("billnr",False)]):
                     create_data2()
 
 
@@ -259,18 +275,20 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
 
             if sorttype == 1:
 
-                for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype.lower()  == ("G").lower()), sort_by=[("gname",False),("zinr",False),("billnr",False)]):
+                for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype  == ("G")), sort_by=[("gname",False),("zinr",False),("billnr",False)]):
                     create_data2()
 
             else:
 
-                for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype.lower()  == ("G").lower()), sort_by=[("zinr",False),("gname",False),("billnr",False)]):
+                for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype  == ("G")), sort_by=[("zinr",False),("gname",False),("billnr",False)]):
                     create_data2()
 
 
-        for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype.lower()  == ("M").lower()), sort_by=[("rechnr",False)]):
+        for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype  == ("M")), sort_by=[("rechnr",False)]):
 
-            res_line = get_cache (Res_line, {"resnr": [(eq, bill_list.resnr)],"zinr": [(ne, "")],"resstatus": [(ne, 12)]})
+            # res_line = get_cache (Res_line, {"resnr": [(eq, bill_list.resnr)],"zinr": [(ne, "")],"resstatus": [(ne, 12)]})
+            res_line = db_session.query(Res_line).filter(
+                     (Res_line.resnr == bill_list.resnr) & (func.trim(Res_line.zinr) != "") & (Res_line.resstatus != 12)).order_by(Res_line.reslinnr).first()
             m_list = M_list()
             m_list_data.append(m_list)
 
@@ -293,13 +311,22 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
 
                 if not s_list:
 
-                    artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+                    # artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+                    artikel = db_session.query(Artikel).filter(
+                        (Artikel.artnr == bill_line.artnr) & (Artikel.departement == bill_line.departement)
+                    ).first()
 
                     if not artikel and num_entries(bill_line.bezeich, "*") > 1:
 
-                        artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, 0)]})
+                        # artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, 0)]})
+                        artikel = db_session.query(Artikel).filter(
+                            (Artikel.artnr == bill_line.artnr) & (Artikel.departement == 0)
+                        ).first()
+
                     s_list = S_list()
                     s_list_data.append(s_list)
+                    #Rd, set default zinr = 1, (LIKE zimmer.zinr)
+                    s_list.zinr = "1"
 
                     current_counter = current_counter + 1
                     s_list.i_counter = current_counter
@@ -340,7 +367,7 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
                 balance =  to_decimal(balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
                 t_balance =  to_decimal(t_balance) + to_decimal(bill_line.betrag) / to_decimal(fact1)
 
-        for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype.lower()  == ("N").lower()), sort_by=[("gname",False)]):
+        for bill_list in query(bill_list_data, filters=(lambda bill_list: bill_list.billtype  == ("N")), sort_by=[("gname",False)]):
             prevbal =  to_decimal("0")
             debit =  to_decimal("0")
             credit =  to_decimal("0")
@@ -350,17 +377,26 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
                      (Bill_line.rechnr == bill_list.rechnr) & (Bill_line.bill_datum <= billdate)).order_by(Bill_line.bill_datum, Bill_line.artnr, Bill_line.departement).all():
                 tot_bline = tot_bline + 1
 
-                artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+                # artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+                artikel = db_session.query(Artikel).filter(
+                    (Artikel.artnr == bill_line.artnr) & (Artikel.departement == bill_line.departement)
+                ).first()
 
                 if not artikel:
 
-                    artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, 0)]})
+                    # artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, 0)]})
+                    artikel = db_session.query(Artikel).filter(
+                        (Artikel.artnr == bill_line.artnr) & (Artikel.departement == 0)
+                    ).first()
+
 
                 s_list = query(s_list_data, filters=(lambda s_list: s_list.artnr == artikel.artnr and s_list.dept == artikel.departement and s_list.rechnr == bill_line.rechnr), first=True)
 
                 if not s_list:
                     s_list = S_list()
                     s_list_data.append(s_list)
+                    #Rd, set default zinr = 1, (LIKE zimmer.zinr)
+                    s_list.zinr = "1"
 
                     current_counter = current_counter + 1
                     s_list.i_counter = current_counter
@@ -537,7 +573,9 @@ def gacct_balance_btn_go_listbl(pvilanguage:int, bill_alert_data:[Bill_alert], h
         gacct_balance_list_data.append(gacct_balance_list)
 
 
-        uebertrag = get_cache (Uebertrag, {"datum": [(eq, billdate)]})
+        # uebertrag = get_cache (Uebertrag, {"datum": [(eq, billdate)]})
+        uebertrag = db_session.query(Uebertrag).filter(
+                 (Uebertrag.datum == billdate)).first()
 
         if price_decimal == 0:
             gacct_balance_list.bezeich = "Outstanding"
