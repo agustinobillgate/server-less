@@ -981,5 +981,9 @@
   <prgs:resource consumes="application/json" name="_restStatsegment2OutlistCustom" path="/restStatsegment2OutlistCustom" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-statsegment-go2-outlist-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-statsegment-go2-outlist-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_closeinvUpdateBillCustom" path="/closeinvUpdateBillCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-closeinv-update-bill-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-closeinv-update-bill-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+
 
 </prgs:model>

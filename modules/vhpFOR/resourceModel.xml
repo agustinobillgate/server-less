@@ -1359,5 +1359,15 @@
   <prgs:resource consumes="application/json" name="_gcfBtnGoCustom" path="/gcfBtnGoCustom" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gcf-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gcf-btn-go-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_reslineCreate2" path="/reslineCreate2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-mk-resline-go2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-mk-resline-go2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_resGname2UpdateRes1Custom" path="/resGname2UpdateRes1Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-res-gname2-update-res1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-res-gname2-update-res1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_reslinePrepare3Custom" path="/reslinePrepare3Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-resline_3-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-resline_3-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+
 
 </prgs:model>
