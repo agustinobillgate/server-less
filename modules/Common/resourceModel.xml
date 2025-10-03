@@ -1036,5 +1036,14 @@
   <prgs:resource consumes="application/json" name="_tbaseEmailSetup" path="/tbaseEmailSetup" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-tbase-email-setupbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-tbase-email-setupbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+   <prgs:resource consumes="application/json" name="_glConsolidateBtnTfHO" path="/glConsolidateBtnTfHO" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-gl-consolidate-btn-tf-ho-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-gl-consolidate-btn-tf-ho-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_leasingPrintProformaInvoice2" path="/leasingPrintProformaInvoice2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-leasing-print-proforma-invoice_2bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-leasing-print-proforma-invoice_2bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_leasingReprintActualInvoicePrepare" path="/leasingReprintActualInvoicePrepare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-leasing-reprint-actual-invoicebl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-leasing-reprint-actual-invoicebl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 
 </prgs:model>
