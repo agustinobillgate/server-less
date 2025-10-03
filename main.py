@@ -1564,7 +1564,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
     ui_request_id = input_data.get("ui_request_id", "None")
     is_existing_json = False
     inputUsername = input_data.get("inputUsername")
-    hotel_schema = input_data.get("hotel_schema")
+    hotel_schema = input_data.get("hotel_schema").lower() if input_data.get("hotel_schema") else ""
     output_data = {}
     if not hotel_schema:
         hotel_schema = input_data.get("hotel_schema")

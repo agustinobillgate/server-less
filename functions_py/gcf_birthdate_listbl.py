@@ -57,7 +57,8 @@ def gcf_birthdate_listbl(from_mm:int, from_dd:int, to_mm:int, to_dd:int, from_ag
     for birth_list in query(birth_list_data):
         age = get_year(ci_date) - get_year(birth_list.geburtdatum)
 
-        if (get_month(ci_date) < get_month(birth_list.geburtdatum)) or (get_month(ci_date) == get_month(birth_list.geburtdatum) and get_day(ci_date) < get_day(birth_list.geburtdatum)):
+        if (get_month(ci_date) < get_month(birth_list.geburtdatum)) or (get_month(ci_date) == get_month(birth_list.geburtdatum) and 
+                                                                        get_day(ci_date) < get_day(birth_list.geburtdatum)):
             age = age - 1
         birth_list2 = Birth_list2()
         birth_list2_data.append(birth_list2)
