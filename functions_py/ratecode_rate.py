@@ -118,7 +118,8 @@ def ratecode_rate(ebdisc_flag:bool, kbdisc_flag:bool, resnr:int, reslinnr:int, p
 
                     if res_line.zinr != "":
 
-                        zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                        # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                        zimmer = db_session.query(Zimmer).filter((Zimmer.zinr == res_line.zinr) & not_ (Zimmer.sleeping)).first()
 
                         if zimmer.sleeping:
                             rmocc =  to_decimal(rmocc) + to_decimal(res_line.zimmeranz)
@@ -157,7 +158,8 @@ def ratecode_rate(ebdisc_flag:bool, kbdisc_flag:bool, resnr:int, reslinnr:int, p
 
     if resnr > 0:
 
-        res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+        # res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+        res_line = db_session.query(Res_line).filter((Res_line.resnr == resnr) & (Res_line.reslinnr == reslinnr)).first()   
     orig_prcode = prcode
 
     if substring(prcode, 0, 1) == ("!").lower() :
@@ -187,10 +189,12 @@ def ratecode_rate(ebdisc_flag:bool, kbdisc_flag:bool, resnr:int, reslinnr:int, p
             crdate = date_mdy(to_int(substring(ct, 4, 2)) , to_int(substring(ct, 6, 2)) , to_int(substring(ct, 0, 4)))
         else:
 
-            reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
+            # reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
+            reservation = db_session.query(Reservation).filter(Reservation.resnr == resnr).first()
             crdate = reservation.resdat
 
-    queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, marknr)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, marknr)]})
+    queasy = db_session.query(Queasy).filter((Queasy.key == 18) & (Queasy.number1 == marknr)).first()
 
     if queasy and queasy.logi3:
         datum = ankunft
@@ -203,19 +207,19 @@ def ratecode_rate(ebdisc_flag:bool, kbdisc_flag:bool, resnr:int, reslinnr:int, p
 
     if argtno != 0:
 
-        ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"argtnr": [(eq, argtno)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, w_day)],"erwachs": [(eq, adult)],"kind1": [(eq, child1)],"kind2": [(eq, child2)]})
+        # ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"argtnr": [(eq, argtno)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, w_day)],"erwachs": [(eq, adult)],"kind1": [(eq, child1)],"kind2": [(eq, child2)]})
+        ratecode = db_session.query(Ratecode).filter((Ratecode.code == prcode) & (Ratecode.marknr == marknr) & (Ratecode.argtnr == argtno) & (Ratecode.zikatnr == rmcatno) & (Ratecode.startperiode <= datum) & (Ratecode.endperiode >= datum) & (Ratecode.wday == w_day) & (Ratecode.erwachs == adult) & (Ratecode.kind1 == child1) & (Ratecode.kind2 == child2)).first()
 
         if not ratecode:
-
-            ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"argtnr": [(eq, argtno)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, 0)],"erwachs": [(eq, adult)],"kind1": [(eq, child1)],"kind2": [(eq, child2)]})
+            # ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"argtnr": [(eq, argtno)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, 0)],"erwachs": [(eq, adult)],"kind1": [(eq, child1)],"kind2": [(eq, child2)]})
+            ratecode = db_session.query(Ratecode).filter((Ratecode.code == prcode) & (Ratecode.marknr == marknr) & (Ratecode.argtnr == argtno) & (Ratecode.zikatnr == rmcatno) & (Ratecode.startperiode <= datum) & (Ratecode.endperiode >= datum) & (Ratecode.wday == 0) & (Ratecode.erwachs == adult) & (Ratecode.kind1 == child1) & (Ratecode.kind2 == child2)).first()
+        if not ratecode:
+            # ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"argtnr": [(eq, argtno)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, w_day)],"erwachs": [(eq, adult)]})
+            ratecode = db_session.query(Ratecode).filter((Ratecode.code == prcode) & (Ratecode.marknr == marknr) & (Ratecode.argtnr == argtno) & (Ratecode.zikatnr == rmcatno) & (Ratecode.startperiode <= datum) & (Ratecode.endperiode >= datum) & (Ratecode.wday == w_day) & (Ratecode.erwachs == adult)).first()
 
         if not ratecode:
-
-            ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"argtnr": [(eq, argtno)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, w_day)],"erwachs": [(eq, adult)]})
-
-        if not ratecode:
-
-            ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"argtnr": [(eq, argtno)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, 0)],"erwachs": [(eq, adult)]})
+            # ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"argtnr": [(eq, argtno)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, 0)],"erwachs": [(eq, adult)]})
+            ratecode = db_session.query(Ratecode).filter((Ratecode.code == prcode) & (Ratecode.marknr == marknr) & (Ratecode.argtnr == argtno) & (Ratecode.zikatnr == rmcatno) & (Ratecode.startperiode <= datum) & (Ratecode.endperiode >= datum) & (Ratecode.wday == 0) & (Ratecode.erwachs == adult)).first()
 
         if not ratecode:
 
@@ -223,19 +227,20 @@ def ratecode_rate(ebdisc_flag:bool, kbdisc_flag:bool, resnr:int, reslinnr:int, p
         rate_found = True
     else:
 
-        ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, w_day)],"erwachs": [(eq, adult)],"kind1": [(eq, child1)],"kind2": [(eq, child2)]})
+        # ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, w_day)],"erwachs": [(eq, adult)],"kind1": [(eq, child1)],"kind2": [(eq, child2)]})
+        ratecode = db_session.query(Ratecode).filter((Ratecode.code == prcode) & (Ratecode.marknr == marknr) & (Ratecode.zikatnr == rmcatno) & (Ratecode.startperiode <= datum) & (Ratecode.endperiode >= datum) & (Ratecode.wday == w_day) & (Ratecode.erwachs == adult) & (Ratecode.kind1 == child1) & (Ratecode.kind2 == child2)).first()
 
         if not ratecode:
-
-            ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, 0)],"erwachs": [(eq, adult)],"kind1": [(eq, child1)],"kind2": [(eq, child2)]})
-
-        if not ratecode:
-
-            ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, w_day)],"erwachs": [(eq, adult)]})
+            # ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, 0)],"erwachs": [(eq, adult)],"kind1": [(eq, child1)],"kind2": [(eq, child2)]})
+            ratecode = db_session.query(Ratecode).filter((Ratecode.code == prcode) & (Ratecode.marknr == marknr) & (Ratecode.zikatnr == rmcatno) & (Ratecode.startperiode <= datum) & (Ratecode.endperiode >= datum) & (Ratecode.wday == 0) & (Ratecode.erwachs == adult) & (Ratecode.kind1 == child1) & (Ratecode.kind2 == child2)).first()
 
         if not ratecode:
+            # ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, w_day)],"erwachs": [(eq, adult)]})
+            ratecode = db_session.query(Ratecode).filter((Ratecode.code == prcode) & (Ratecode.marknr == marknr) & (Ratecode.zikatnr == rmcatno) & (Ratecode.startperiode <= datum) & (Ratecode.endperiode >= datum) & (Ratecode.wday == w_day) & (Ratecode.erwachs == adult)).first()
 
-            ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, 0)],"erwachs": [(eq, adult)]})
+        if not ratecode:
+            # ratecode = get_cache (Ratecode, {"code": [(eq, prcode)],"marknr": [(eq, marknr)],"zikatnr": [(eq, rmcatno)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"wday": [(eq, 0)],"erwachs": [(eq, adult)]})
+            ratecode = db_session.query(Ratecode).filter((Ratecode.code == prcode) & (Ratecode.marknr == marknr) & (Ratecode.zikatnr == rmcatno) & (Ratecode.startperiode <= datum) & (Ratecode.endperiode >= datum) & (Ratecode.wday == 0) & (Ratecode.erwachs == adult)).first()
 
         if not ratecode:
 
@@ -260,12 +265,13 @@ def ratecode_rate(ebdisc_flag:bool, kbdisc_flag:bool, resnr:int, reslinnr:int, p
     ci_date = htparam.fdate
     book_date = crdate
 
-    arrangement = get_cache (Arrangement, {"argtnr": [(eq, argtno)]})
+    # arrangement = get_cache (Arrangement, {"argtnr": [(eq, argtno)]})
+    arrangement = db_session.query(Arrangement).filter(Arrangement.argtnr == argtno).first()
 
     # Rd, 13/8/2025
     if arrangement:
-        waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, arrangement.betriebsnr)]})
-
+        # waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, arrangement.betriebsnr)]})
+        waehrung = db_session.query(Waehrung).filter(Waehrung.waehrungsnr == arrangement.betriebsnr).first()
         if waehrung:
             exrate1 =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
 
@@ -273,7 +279,8 @@ def ratecode_rate(ebdisc_flag:bool, kbdisc_flag:bool, resnr:int, reslinnr:int, p
         ex2 =  to_decimal(ex2) / to_decimal(res_exrate)
     else:
 
-        waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, wahrno)]})
+        # waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, wahrno)]})
+        waehrung = db_session.query(Waehrung).filter(Waehrung.waehrungsnr == wahrno).first()
 
         if waehrung:
             ex2 = ( to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit))
@@ -326,7 +333,7 @@ def ratecode_rate(ebdisc_flag:bool, kbdisc_flag:bool, resnr:int, reslinnr:int, p
                 if add_it:
                     argt_defined = False
 
-                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, ""),(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, datum)],"date2": [(ge, datum)]})
+                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, datum)],"date2": [(ge, datum)]}) 
 
                     if reslin_queasy:
                         argt_defined = True
@@ -342,8 +349,8 @@ def ratecode_rate(ebdisc_flag:bool, kbdisc_flag:bool, resnr:int, reslinnr:int, p
 
                     if not argt_defined:
 
-                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, prcode)],"number1": [(eq, marknr)],"number2": [(eq, argtno)],"reslinnr": [(eq, rmcatno)],"number3": [(eq, argt_line.argt_artnr)],"resnr": [(eq, argt_line.departement)],"date1": [(le, datum)],"date2": [(ge, datum)]})
-
+                        # reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, prcode)],"number1": [(eq, marknr)],"number2": [(eq, argtno)],"reslinnr": [(eq, rmcatno)],"number3": [(eq, argt_line.argt_artnr)],"resnr": [(eq, argt_line.departement)],"date1": [(le, datum)],"date2": [(ge, datum)]})
+                        reslin_queasy = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == "argt-line") & (Reslin_queasy.char1 == prcode) & (Reslin_queasy.number1 == marknr) & (Reslin_queasy.number2 == argtno) & (Reslin_queasy.reslinnr == rmcatno) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= datum) & (Reslin_queasy.date2 >= datum)).first() 
                         if reslin_queasy:
 
                             if argt_line.vt_percnt == 0:

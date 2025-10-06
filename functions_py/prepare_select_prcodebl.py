@@ -21,7 +21,7 @@ def prepare_select_prcodebl():
         nonlocal tqueasy
         nonlocal tqueasy_data
 
-        return {"tqueasy": tqueasy_data}
+        return {"tqueasy1": tqueasy_data}
 
     for queasy in db_session.query(Queasy).filter(
              (Queasy.key == 2)).order_by(Queasy.char1).all():

@@ -816,6 +816,8 @@ update_table_name("vhpFOR","bonusNightCheck","resDynarate","ResDynarate")
 update_table_name("vhpFOR","searchByVoucher","tResVoucherno","tResVoucherNo")
 
 update_table_name("vhpSS","addRoomAdmin","dynarateList","dynaRateList")
+update_table_name("vhpSS","ratecodeAdmDynaratePrepare","dynarateList","dynaRateList")
+
 update_table_name("vhpSS","ratecodeAdmWrite","tb3buff","tb3Buff")
 
 #updated 1.0.0.16
