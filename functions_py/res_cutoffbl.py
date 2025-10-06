@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+#------------------------------------------
+# Rd, 6/10/2025
+#
+#------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -56,7 +61,8 @@ def res_cutoffbl(guaranteed:bool, fr_date:date, to_date:date):
                                     Res_line.zipreis, Res_line.anztage, Res_line.erwachs, Res_line.gratis, Res_line.kind1, Res_line.resstatus, \
                                         Res_line._recid, Reservation.grpflag, Reservation.name, Reservation.point_resnr, Reservation.resdat, \
                                             Reservation.groupname, Reservation._recid, Zimkateg.kurzbez, Zimkateg._recid)   \
-                .join(Reservation,(Reservation.resnr == Res_line.resnr) & (((Reservation.point_resnr > 0) & 
+                .join(Reservation,(Reservation.resnr == Res_line.resnr) & ((
+                                                                            # (Reservation.point_resnr > 0) & 
                                                                             (Res_line.ankunft == fr_date)) | ((Reservation.point_resnr > 0) & 
                                                                             ((Res_line.ankunft - Reservation.point_resnr) >= fr_date) & 
                                                                             ((Res_line.ankunft - Reservation.point_resnr) <= to_date)))) \
@@ -108,13 +114,14 @@ def res_cutoffbl(guaranteed:bool, fr_date:date, to_date:date):
                                     Reservation.name, Reservation.point_resnr, Reservation.resdat, Reservation.groupname, Reservation._recid, Zimkateg.kurzbez, \
                                     Zimkateg._recid)    \
                     .join(Reservation,(Reservation.resnr == Res_line.resnr) & 
-                          (((Reservation.point_resnr > 0) & 
+                          (( 
+                            # (Reservation.point_resnr > 0) &
                             (Res_line.ankunft == fr_date)) | ((Reservation.point_resnr > 0) & 
                                                               ((Res_line.ankunft - Reservation.point_resnr) >= fr_date) & 
                                                               ((Res_line.ankunft - Reservation.point_resnr) <= to_date))))  \
-                        .join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
-                            (Res_line.active_flag == 0) & 
-                            (Res_line.resstatus == 1)).order_by(Reservation.point_resnr, Res_line.ankunft, Reservation.name, Reservation.resnr).all():
+                    .join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+                        (Res_line.active_flag == 0) & 
+                        (Res_line.resstatus == 1)).order_by(Reservation.point_resnr, Res_line.ankunft, Reservation.name, Reservation.resnr).all():
             if res_line_obj_list.get(res_line._recid):
                 continue
             else:
