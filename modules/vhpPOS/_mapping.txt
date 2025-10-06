@@ -327,3 +327,4 @@ restInvCancelSubmenu,ts_restinv_cancel_submenu_webbl
 restStatsegment2Custom,rest_statsegment_go2_webbl
 restStatsegment2OutlistCustom,rest_statsegment_go2_outlist_webbl
 closeinvUpdateBillCustom,ts_closeinv_update_bill_webbl
+
