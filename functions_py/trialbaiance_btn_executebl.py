@@ -44,7 +44,6 @@ def trialbaiance_btn_executebl(acct_type:int, from_fibu:string, to_fibu:string, 
     if sorttype == 1:
 
         for output_list in query(output_list_data):
-            # print(output_list.str)
             refno = output_list.ref_no
             begining_bal = output_list.begin_bal
             tot_debit = output_list.tot_debit
@@ -81,12 +80,19 @@ def trialbaiance_btn_executebl(acct_type:int, from_fibu:string, to_fibu:string, 
 
             if matches(ending_bal,r"*)*"):
                 ending_bal = replace_str(ending_bal, ")", "")
+
             tb_list_detail = Tb_list_detail()
             tb_list_detail_data.append(tb_list_detail)
  
             tb_list_detail.marks = output_list.ch
-            tb_list_detail.date = date_mdy(trim(substring(output_list.str, 0, 8)))
-            # print("Date:", substring(output_list.str, 0, 8) )
+
+            if trim(substring(output_list.str, 0, 8)) != '':
+                dt = datetime.strptime(trim(substring(output_list.str, 0, 8)), "%m/%d/%y")
+                new_date_str = dt.strftime("%Y-%m-%d")
+            else:
+                new_date_str = trim(substring(output_list.str, 0, 8))
+                
+            tb_list_detail.date = new_date_str
             tb_list_detail.ref_no = refno
             tb_list_detail.begining_bal = begining_bal
             tb_list_detail.tot_debit = tot_debit
@@ -104,7 +110,7 @@ def trialbaiance_btn_executebl(acct_type:int, from_fibu:string, to_fibu:string, 
     else:
 
         for output_list in query(output_list_data):
-            # print(output_list.str)
+
             refno = substring(output_list.str, 0, 16)
             begining_bal = (replace_str(substring(output_list.str, 54, 22) , ",", ""))
             tot_debit = (replace_str(substring(output_list.str, 76, 22) , ",", ""))
@@ -148,6 +154,7 @@ def trialbaiance_btn_executebl(acct_type:int, from_fibu:string, to_fibu:string, 
 
             if matches(ytd_balance,r"*)*"):
                 ytd_balance = replace_str(ytd_balance, ")", "")
+
             tb_list_summary = Tb_list_summary()
             tb_list_summary_data.append(tb_list_summary)
 
