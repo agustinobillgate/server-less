@@ -2,6 +2,7 @@
 
 #------------------------------------------
 # Rd, 6/10/2025
+# data di point_resnr selalu 
 #
 #------------------------------------------
 
@@ -46,7 +47,8 @@ def res_cutoffbl(guaranteed:bool, fr_date:date, to_date:date):
         #                             Res_line.zipreis, Res_line.anztage, Res_line.erwachs, Res_line.gratis, Res_line.kind1, Res_line.resstatus, \
         #                                 Res_line._recid, Reservation.grpflag, Reservation.name, Reservation.point_resnr, Reservation.resdat, \
         #                                     Reservation.groupname, Reservation._recid, Zimkateg.kurzbez, Zimkateg._recid)   \
-        #         .join(Reservation,(Reservation.resnr == Res_line.resnr) & (((Reservation.point_resnr > 0) & 
+        #         .join(Reservation,(Reservation.resnr == Res_line.resnr) & ((
+        #                                                                     # (Reservation.point_resnr > 0) & 
         #                                                                     (Res_line.ankunft == fr_date)) | ((Reservation.point_resnr > 0) & 
         #                                                                     ((Res_line.ankunft - Reservation.point_resnr) >= fr_date) & 
         #                                                                     ((Res_line.ankunft - Reservation.point_resnr) <= to_date)))) \
@@ -54,27 +56,28 @@ def res_cutoffbl(guaranteed:bool, fr_date:date, to_date:date):
         #         .filter(
         #          (Res_line.active_flag == 0) & (Res_line.resstatus == 3))   \
         #         .order_by(Reservation.point_resnr, Res_line.ankunft, Reservation.name, Reservation.resnr).all():
-        for res_line.resnr, res_line.name, res_line.ankunft, res_line.abreise, res_line.zimmeranz, res_line.arrangement, res_line.zipreis, res_line.anztage, \
-            res_line.erwachs, res_line.gratis, res_line.kind1, res_line.resstatus, res_line._recid, reservation.grpflag, reservation.name, \
-                reservation.point_resnr, reservation.resdat, reservation.groupname, reservation._recid, zimkateg.kurzbez, zimkateg._recid \
-                in db_session.query(Res_line.resnr, Res_line.name, Res_line.ankunft, Res_line.abreise, Res_line.zimmeranz, Res_line.arrangement, \
-                                    Res_line.zipreis, Res_line.anztage, Res_line.erwachs, Res_line.gratis, Res_line.kind1, Res_line.resstatus, \
-                                        Res_line._recid, Reservation.grpflag, Reservation.name, Reservation.point_resnr, Reservation.resdat, \
-                                            Reservation.groupname, Reservation._recid, Zimkateg.kurzbez, Zimkateg._recid)   \
-                .join(Reservation,(Reservation.resnr == Res_line.resnr) & ((
-                                                                            # (Reservation.point_resnr > 0) & 
-                                                                            (Res_line.ankunft == fr_date)) | ((Reservation.point_resnr > 0) & 
-                                                                            ((Res_line.ankunft - Reservation.point_resnr) >= fr_date) & 
-                                                                            ((Res_line.ankunft - Reservation.point_resnr) <= to_date)))) \
-                .join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr))  \
-                .filter(
-                 (Res_line.active_flag == 0) & (Res_line.resstatus == 3))   \
-                .order_by(Reservation.point_resnr, Res_line.ankunft, Reservation.name, Reservation.resnr).all():
+
+        for res_line in db_session.query(Res_line).filter(Res_line.active_flag == 0, Res_line.resstatus == 3).order_by(Res_line.ankunft, Res_line._recid).all():
+            
+
+            reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
+            if not reservation:
+                continue
+
+            # if not reservation.point_resnr or reservation.point_resnr <= 0:
+            #     continue
+            if not ((res_line.ankunft == fr_date) or (((res_line.ankunft - timedelta(days=reservation.point_resnr)) >= fr_date) and ((res_line.ankunft - timedelta(days=reservation.point_resnr)) <= to_date))):
+                continue
+
+
             if res_line_obj_list.get(res_line._recid):
                 continue
             else:
                 res_line_obj_list[res_line._recid] = True
 
+            zimkateg = db_session.query(Zimkateg).filter(Zimkateg.zikatnr == res_line.zikatnr).first()
+            if not zimkateg:
+                continue
 
             t_rescutoff = T_rescutoff()
             t_rescutoff_data.append(t_rescutoff)
@@ -106,27 +109,35 @@ def res_cutoffbl(guaranteed:bool, fr_date:date, to_date:date):
         res_line = Res_line()
         reservation = Reservation()
         zimkateg = Zimkateg()
-        for res_line.resnr, res_line.name, res_line.ankunft, res_line.abreise, res_line.zimmeranz, res_line.arrangement, res_line.zipreis, res_line.anztage, \
-            res_line.erwachs, res_line.gratis, res_line.kind1, res_line.resstatus, res_line._recid, reservation.grpflag, reservation.name, \
-                reservation.point_resnr, reservation.resdat, reservation.groupname, reservation._recid, zimkateg.kurzbez, zimkateg._recid \
-                in db_session.query(Res_line.resnr, Res_line.name, Res_line.ankunft, Res_line.abreise, Res_line.zimmeranz, Res_line.arrangement, Res_line.zipreis, \
-                                    Res_line.anztage, Res_line.erwachs, Res_line.gratis, Res_line.kind1, Res_line.resstatus, Res_line._recid, Reservation.grpflag, \
-                                    Reservation.name, Reservation.point_resnr, Reservation.resdat, Reservation.groupname, Reservation._recid, Zimkateg.kurzbez, \
-                                    Zimkateg._recid)    \
-                    .join(Reservation,(Reservation.resnr == Res_line.resnr) & 
-                          (( 
-                            # (Reservation.point_resnr > 0) &
-                            (Res_line.ankunft == fr_date)) | ((Reservation.point_resnr > 0) & 
-                                                              ((Res_line.ankunft - Reservation.point_resnr) >= fr_date) & 
-                                                              ((Res_line.ankunft - Reservation.point_resnr) <= to_date))))  \
-                    .join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
-                        (Res_line.active_flag == 0) & 
-                        (Res_line.resstatus == 1)).order_by(Reservation.point_resnr, Res_line.ankunft, Reservation.name, Reservation.resnr).all():
-            if res_line_obj_list.get(res_line._recid):
+        # for res_line.resnr, res_line.name, res_line.ankunft, res_line.abreise, res_line.zimmeranz, res_line.arrangement, res_line.zipreis, res_line.anztage, \
+        #     res_line.erwachs, res_line.gratis, res_line.kind1, res_line.resstatus, res_line._recid, reservation.grpflag, reservation.name, \
+        #         reservation.point_resnr, reservation.resdat, reservation.groupname, reservation._recid, zimkateg.kurzbez, zimkateg._recid \
+        #         in db_session.query(Res_line.resnr, Res_line.name, Res_line.ankunft, Res_line.abreise, Res_line.zimmeranz, Res_line.arrangement, Res_line.zipreis, \
+        #                             Res_line.anztage, Res_line.erwachs, Res_line.gratis, Res_line.kind1, Res_line.resstatus, Res_line._recid, Reservation.grpflag, \
+        #                             Reservation.name, Reservation.point_resnr, Reservation.resdat, Reservation.groupname, Reservation._recid, Zimkateg.kurzbez, \
+        #                             Zimkateg._recid)    \
+        #             .join(Reservation,(Reservation.resnr == Res_line.resnr) & 
+        #                   (( 
+        #                     # (Reservation.point_resnr > 0) &
+        #                     (Res_line.ankunft == fr_date)) | ((Reservation.point_resnr > 0) & 
+        #                                                       ((Res_line.ankunft - Reservation.point_resnr) >= fr_date) & 
+        #                                                       ((Res_line.ankunft - Reservation.point_resnr) <= to_date))))  \
+        #             .join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
+        #                 (Res_line.active_flag == 0) & 
+        #                 (Res_line.resstatus == 1)).order_by(Reservation.point_resnr, Res_line.ankunft, Reservation.name, Reservation.resnr).all():
+        for res_line in db_session.query(Res_line).filter(Res_line.active_flag == 0, Res_line.resstatus == 1).order_by(Res_line.ankunft, Res_line._recid).all():
+            
+            reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
+            if not reservation:
                 continue
-            else:
-                res_line_obj_list[res_line._recid] = True
+            # if not reservation.point_resnr or reservation.point_resnr <= 0:
+            #     continue
+            if not ((res_line.ankunft == fr_date) or (((res_line.ankunft - timedelta(days=reservation.point_resnr)) >= fr_date) and ((res_line.ankunft - timedelta(days=reservation.point_resnr)) <= to_date))):
+                continue
 
+            zimkateg = db_session.query(Zimkateg).filter(Zimkateg.zikatnr == res_line.zikatnr).first()
+            if not zimkateg:
+                continue
 
             t_rescutoff = T_rescutoff()
             t_rescutoff_data.append(t_rescutoff)
@@ -150,6 +161,17 @@ def res_cutoffbl(guaranteed:bool, fr_date:date, to_date:date):
             t_rescutoff.resstatus = res_line.resstatus
             t_rescutoff.resdat = reservation.resdat
             t_rescutoff.groupname = reservation.groupname
+
+
+    t_rescutoff_data.sort(
+        key=lambda x: (
+            x.point_resnr or 0,
+            x.ankunft,
+            (x.rsvname or "")
+        )
+    )
+        
+        
 
 
     return generate_output()

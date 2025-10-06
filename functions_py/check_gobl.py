@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 6/10/2025
+#
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -39,6 +43,9 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
 
 
     db_session = local_storage.db_session
+
+    memo_zinr = memo_zinr.strip() 
+
 
     def generate_output():
         nonlocal error_number, still_error, msg_str, pswd_str, flag1, ci_date1, lvcarea, ci_date, min_stay, max_stay, min_adv, max_adv, msg_str1, zinr_ecode, res_line, arrangement, bediener, guest, htparam, zimkateg, segment, waehrung, bill, bill_line, zimmer, outorder, guest_pr, ratecode, reslin_queasy, kontline, zimplan, queasy
