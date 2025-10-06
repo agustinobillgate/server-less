@@ -63,6 +63,8 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
     db_session = local_storage.db_session
 
+    qci_zinr = qci_zinr.strip()
+
     def generate_output():
         nonlocal room_list_data, sum_list_data, lvcarea, logid, logstr, cdstr, col_label, curr_day, datum, tot_room, i, ci_date, co_date, from_date, to_date, last_option, wlist, dlist, j, dd, mm, yyyy, num_day, htl_name, htl_adr, htl_tel, res_allot, tmp_date, tmp_int, week_list, rpt_title, kontline, res_line, zimmer, paramtext, htparam, arrangement, zimkateg, queasy, artikel, fixleist, reslin_queasy, reservation, segment, outorder, resplan
         nonlocal pvilanguage, vhp_limited, op_type, printer_nr, call_from, adult_child_str, statsort, dispsort, curr_date, incl_tentative, mi_inactive, show_rate, indgastnr, qci_zinr
@@ -137,12 +139,15 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
 
             indgastnr, created_list_data, rate_list_data = get_output(available_ratesbl(f_date, tdate, room_avail_list.zikatnr, curr_i, adult_child_str, indgastnr, created_list_data))
+            print(room_avail_list.zikatnr, rate_list_data)
 
             for rate_list in query(rate_list_data, sort_by=[("i_counter",False)]):
 
-                arrangement = get_cache (Arrangement, {"argtnr": [(eq, rate_list.argtno)]})
+                # arrangement = get_cache (Arrangement, {"argtnr": [(eq, rate_list.argtno)]})
+                arrangement = db_session.query(Arrangement).filter(Arrangement.argtnr == rate_list.argtno).first()
 
-                zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, room_avail_list.zikatnr)]})
+                # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, room_avail_list.zikatnr)]})
+                zimkateg = db_session.query(Zimkateg).filter(Zimkateg.zikatnr == room_avail_list.zikatnr).first()
 
                 if arrangement:
                     argt_code = arrangement.arrangement
@@ -188,7 +193,9 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
                     if room_list.minstay < argt_intervall:
                         room_list.minstay = argt_intervall
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, rate_list.ratecode)]})
+                    # queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, rate_list.ratecode)]})
+                    queasy = db_session.query(Queasy).filter((Queasy.key == 2) & (Queasy.char1 == rate_list.ratecode.strip())).first()
+
                     room_list.argt_remark = queasy.char2 + chr_unicode(10)
 
                     if room_list.frdate != None:
@@ -327,7 +334,8 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
                 if int_art != "":
 
-                    artikel = get_cache (Artikel, {"artnr": [(eq, int (int_art))],"departement": [(eq, 0)]})
+                    # artikel = get_cache (Artikel, {"artnr": [(eq, int (int_art))],"departement": [(eq, 0)]})
+                    artikel = db_session.query(Artikel).filter((Artikel.artnr == int(int_art)) & (Artikel.departement == 0)).first()
 
                     if artikel:
                         temp_art = Temp_art()
@@ -417,13 +425,14 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
                                             create_tmpextra(art_nr, "Fix-cost line", to_string(fixleist.sequenz), bdate, tmp_resline.zinr, fixleist.number)
                                             bdate = bdate + timedelta(days=1)
 
-                            bargt = get_cache (Arrangement, {"arrangement": [(eq, tmp_resline.arrangement)]})
+                            # bargt = get_cache (Arrangement, {"arrangement": [(eq, tmp_resline.arrangement)]})
+                            bargt = db_session.query(Arrangement).filter(Arrangement.arrangement == tmp_resline.arrangement).first()
 
                             if bargt:
                                 argtnr = bargt.argtnr
 
                             for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                     (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.resnr == tmp_resline.resnr) & (Reslin_queasy.reslinnr == tmp_resline.reslinnr) & (Reslin_queasy.number1 == 0) & (Reslin_queasy.number3 == art_nr) & (Reslin_queasy.number2 == argtnr)).order_by(Reslin_queasy._recid).all():
+                                     (Reslin_queasy.key == ("fargt-line")) & (Reslin_queasy.resnr == tmp_resline.resnr) & (Reslin_queasy.reslinnr == tmp_resline.reslinnr) & (Reslin_queasy.number1 == 0) & (Reslin_queasy.number3 == art_nr) & (Reslin_queasy.number2 == argtnr)).order_by(Reslin_queasy._recid).all():
 
                                 if reslin_queasy.date1 < f_date:
                                     bdate = f_date
@@ -452,7 +461,8 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
             for temp_art in query(temp_art_data):
 
-                artikel = get_cache (Artikel, {"artnr": [(eq, temp_art.art_nr)],"departement": [(eq, 0)]})
+                # artikel = get_cache (Artikel, {"artnr": [(eq, temp_art.art_nr)],"departement": [(eq, 0)]})
+                artikel = db_session.query(Artikel).filter((Artikel.artnr == temp_art.art_nr) & (Artikel.departement == 0)).first()
 
                 if artikel:
                     art_qty = artikel.anzahl
@@ -488,7 +498,8 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
         for zimmer in db_session.query(Zimmer).filter(
                  (Zimmer.sleeping)).order_by(Zimmer.zikatnr).all():
 
-            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+            # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+            zimkateg = db_session.query(Zimkateg).filter(Zimkateg.zikatnr == zimmer.zikatnr).first()
 
             if zimkateg.verfuegbarkeit:
                 tot_room = tot_room + 1
@@ -511,7 +522,8 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
         for zimmer in db_session.query(Zimmer).filter(
                  (Zimmer.sleeping == False)).order_by(Zimmer.zikatnr).all():
 
-            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+            # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+            zimkateg = db_session.query(Zimkateg).filter(Zimkateg.zikatnr == zimmer.zikatnr).first()
 
             if zimkateg.verfuegbarkeit:
 
@@ -580,9 +592,12 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
                 do_it = True
             else:
 
-                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
-                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
+
                 do_it = None != segment and segment.vip_level == 0
 
             if res_line.resstatus == 3 and not incl_tentative:
@@ -597,7 +612,10 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
                         kline = db_session.query(Kline).filter(
                                  (Kline.kontignr == res_line.kontignr) & (Kline.kontstatus == 1)).first()
 
-                        kontline = get_cache (Kontline, {"kontcode": [(eq, kline.kontcode)],"betriebsnr": [(eq, 0)],"kontstatus": [(eq, 1)]})
+                        # kontline = get_cache (Kontline, {"kontcode": [(eq, kline.kontcode)],"betriebsnr": [(eq, 0)],"kontstatus": [(eq, 1)]})
+                        kontline = db_session.query(Kontline).filter(
+                                 (Kontline.kontcode == kline.kontcode.strip()) & (Kontline.betriebsnr == 0) & (Kontline.kontstatus == 1)).first()
+                        
 
                         if kontline and datum >= (ci_date + timedelta(days=kontline.ruecktage)):
                             res_allot[i - 1] = res_allot[i - 1] + res_line.zimmeranz
@@ -668,9 +686,12 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
                                 do_it = True
                             else:
 
-                                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
-                                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                                # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                                segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
+
                                 do_it = None != segment and segment.vip_level == 0
 
                             if do_it:
@@ -687,7 +708,9 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
                     else:
                         outorder_obj_list[outorder._recid] = True
 
-                    zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+                    # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+                    zimkateg = db_session.query(Zimkateg).filter(Zimkateg.zikatnr == zimmer.zikatnr).first()
+
                     datum = curr_date
 
                     room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.zikatnr == zimmer.zikatnr and room_avail_list.sleeping), first=True)
@@ -719,18 +742,24 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
                             if res_line.zinr != "":
 
-                                zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
-                                do_it = zimmer.sleeping
+                                # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                                zimmer = db_session.query(Zimmer).filter((Zimmer.zinr == res_line.zinr) & not_ (Zimmer.sleeping)).first()
+                                if zimmer:
+                                    do_it = zimmer.sleeping
+
 
                             if res_line.resstatus == 3 and not incl_tentative:
                                 do_it = False
 
                             if do_it and vhp_limited:
 
-                                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
-                                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
-                                do_it = None != segment and segment.vip_level == 0
+                                # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                                segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
+                                if segment:
+                                    do_it = None != segment and segment.vip_level == 0
 
                             if do_it:
                                 room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - res_line.zimmeranz
@@ -768,9 +797,12 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
                                 if zimmer:
 
-                                    reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                    # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                    reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
-                                    segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                                    # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                                    segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
+
 
                                     if segment and segment.vip_level == 0:
                                         room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - 1
@@ -930,9 +962,12 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
                             do_it = True
                         else:
 
-                            reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                            # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                            reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
-                            segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                            # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                            segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
+
                             do_it = None != segment and segment.vip_level == 0
 
                         if do_it:
@@ -949,7 +984,9 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
                 else:
                     outorder_obj_list[outorder._recid] = True
 
-                zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+                # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+                zimkateg = db_session.query(Zimkateg).filter(Zimkateg.zikatnr == zimmer.zikatnr).first()
+
                 datum = curr_date
 
                 room_avail_list = query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.zikatnr == zimmer.zikatnr and room_avail_list.sleeping), first=True)
@@ -981,14 +1018,20 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
                         if res_line.zinr != "":
 
-                            zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
-                            do_it = zimmer.sleeping
+                            # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                            zimmer = db_session.query(Zimmer).filter((Zimmer.zinr == res_line.zinr) & not_ (Zimmer.sleeping)).first()
+                            if zimmer:
+                                do_it = zimmer.sleeping
 
                         if do_it and vhp_limited:
 
-                            reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                            # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                            reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
-                            segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+
+                            # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                            segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
+
                             do_it = None != segment and segment.vip_level == 0
 
                         if do_it:
@@ -1027,9 +1070,13 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
                             if zimmer:
 
-                                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                                reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
-                                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+
+                                # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                                segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
+
 
                                 if segment and segment.vip_level == 0:
                                     room_avail_list.room[i - 1] = room_avail_list.room[i - 1] - 1
@@ -1156,7 +1203,8 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
         for outorder in db_session.query(Outorder).filter(
                  (Outorder.betriebsnr <= 1)).order_by(Outorder._recid).all():
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, outorder.zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, outorder.zinr)]})
+            zimmer = db_session.query(Zimmer).filter((Zimmer.zinr == outorder.zinr) & (Zimmer.sleeping)).first()
 
             if zimmer.sleeping:
                 datum = curr_date
@@ -1180,14 +1228,17 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
                 do_it = True
             else:
 
-                reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
-                segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
                 do_it = None != segment and segment.vip_level == 0
 
             if do_it:
 
-                zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                zimmer = db_session.query(Zimmer).filter((Zimmer.zinr == res_line.zinr) & (Zimmer.sleeping)).first()
 
                 if zimmer.sleeping:
                     datum1 = curr_date + timedelta(days=num_day)
@@ -1236,14 +1287,18 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
                     if res_line.zinr != "":
 
-                        zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
-                        do_it = zimmer.sleeping
+                        # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                        zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == res_line.zinr).first()
+                        if zimmer:
+                            do_it = zimmer.sleeping
 
                     if do_it and vhp_limited:
 
-                        reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                        # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                        reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
-                        segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                        # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                        segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
                         do_it = None != segment and segment.vip_level == 0
 
                     if do_it:
@@ -1273,14 +1328,18 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
                     if res_line.zinr != "":
 
-                        zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
-                        do_it = zimmer.sleeping
+                        # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                        zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == res_line.zinr).first()
+                        if zimmer:
+                            do_it = zimmer.sleeping
 
                     if do_it and vhp_limited:
 
-                        reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                        # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                        reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
-                        segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                        # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                        segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
                         do_it = None != segment and segment.vip_level == 0
 
                     if do_it:
@@ -1305,14 +1364,19 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
                     if res_line.zinr != "":
 
-                        zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
-                        do_it = zimmer.sleeping
+                        # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                        zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == res_line.zinr).first()
+                        if zimmer:
+                            do_it = zimmer.sleeping
 
                     if do_it and vhp_limited:
 
-                        reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                        # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                        reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
-                        segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                        # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                        segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
+
                         do_it = None != segment and segment.vip_level == 0
 
                     if do_it:
@@ -1332,7 +1396,9 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
             while i <= tmp_int:
 
                 for kontline in db_session.query(Kontline).filter(
-                         (Kontline.kontignr > 0) & (Kontline.betriebsnr == 1) & (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & (Kontline.zikatnr == zimkateg.zikatnr) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
+                         (Kontline.kontignr > 0) & (Kontline.betriebsnr == 1) & 
+                         (Kontline.ankunft <= datum) & (Kontline.abreise >= datum) & 
+                         (Kontline.zikatnr == zimkateg.zikatnr) & (Kontline.kontstatus == 1)).order_by(Kontline._recid).all():
                     room_avail_list.room[i - 1] = room_avail_list.room[i - 1] + kontline.zimmeranz
                     tmp_list[i - 1] = tmp_list[i - 1] - kontline.zimmeranz
 
@@ -1342,7 +1408,8 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
                     if res_line.zinr != "":
 
-                        zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                        # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                        zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == res_line.zinr).first()
                         do_it = zimmer.sleeping
 
                     if res_line.resstatus == 3 and not incl_tentative:
@@ -1350,9 +1417,12 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
                     if do_it and vhp_limited:
 
-                        reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                        # reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+                        reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
-                        segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                        # segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+                        segment = db_session.query(Segment).filter(Segment.segmentcode == reservation.segmentcode).first()
+
                         do_it = None != segment and segment.vip_level == 0
 
                     if do_it:
@@ -1360,6 +1430,7 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
                         tmp_list[i - 1] = tmp_list[i - 1] + res_line.zimmeranz
                 i = i + 1
                 datum = datum + timedelta(days=1)
+
         room_avail_list = Room_avail_list()
         room_avail_list_data.append(room_avail_list)
 
@@ -1530,7 +1601,8 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
 
     if qci_zinr != "":
 
-        qci_zimmer = get_cache (Zimmer, {"zinr": [(eq, qci_zinr)]})
+        # qci_zimmer = get_cache (Zimmer, {"zinr": [(eq, qci_zinr)]})
+        qci_zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == qci_zinr).first()
     i = 1
     tmp_int = num_day + 1
     while i <= tmp_int:
