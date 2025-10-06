@@ -2,7 +2,8 @@
 
 #------------------------------------------
 # Rd, 6/10/2025
-# data di point_resnr selalu 0
+# data di point_resnr selalu 
+#
 #------------------------------------------
 
 from functions.additional_functions import *
