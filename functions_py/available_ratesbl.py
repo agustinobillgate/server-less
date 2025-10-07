@@ -117,15 +117,11 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
 
         Zbuff =  create_buffer("Zbuff",Zimkateg)
 
-        # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, rate_list.room_type)]})
-        zimkateg = db_session.query(Zimkateg).filter(Zimkateg.zikatnr == rate_list.room_type).first()
+        zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, rate_list.room_type)]})
 
         if zimkateg.typ == 0:
 
-            # ratecode = get_cache (Ratecode, {"code": [(eq, statcode)],"zikatnr": [(eq, rate_list.room_type)],"argtnr": [(eq, rate_list.argtno)],"startperiode": [(le, curr_date)],"endperiode": [(ge, curr_date)],"num1[0]": [(gt, 0)]})
-            ratecode = db_session.query(Ratecode).filter(
-                     (Ratecode.code == (statcode).lower()) & (Ratecode.zikatnr == rate_list.room_type) & (Ratecode.argtnr == rate_list.argtno) & (Ratecode.startperiode <= curr_date) & (Ratecode.endperiode >= curr_date) & (Ratecode.num1[0] > 0)).first()    
-            
+            ratecode = get_cache (Ratecode, {"code": [(eq, statcode)],"zikatnr": [(eq, rate_list.room_type)],"argtnr": [(eq, rate_list.argtno)],"startperiode": [(le, curr_date)],"endperiode": [(ge, curr_date)],"num1[0]": [(gt, 0)]})
             ratecode_found = None != ratecode
 
             if ratecode_found:
@@ -162,16 +158,14 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
                     doit_flag = False
             else:
 
-                # zbuff = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
-                zbuff = db_session.query(Zimkateg).filter(Zimkateg.zikatnr == res_line.zikatnr).first()
+                zbuff = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
 
                 if zbuff.typ != zimkateg.typ:
                     doit_flag = False
 
             if doit_flag:
 
-                # arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
-                arrangement = db_session.query(Arrangement).filter(Arrangement.arrangement == res_line.arrangement).first()
+                arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
 
                 if arrangement.argtnr != rate_list.argtno:
                     doit_flag = False
@@ -222,9 +216,7 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
         inp_resnr = to_int(entry(4, adult_child_str, ","))
         inp_reslinnr = to_int(entry(5, adult_child_str, ","))
 
-    # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, i_zikatnr)]})
-    zimkateg = db_session.query(Zimkateg).filter(Zimkateg.zikatnr == i_zikatnr).first()
-
+    zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, i_zikatnr)]})
 
     if not zimkateg:
 
@@ -242,8 +234,17 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
     guest_pr_obj_list = {}
     guest_pr = Guest_pr()
     bqueasy = Queasy()
-    for guest_pr.code, guest_pr._recid, bqueasy.char3, bqueasy._recid, bqueasy.number1, bqueasy.number2, bqueasy.deci2, bqueasy.number3, bqueasy.deci3, bqueasy.date1, bqueasy.date2, bqueasy.char1 in db_session.query(Guest_pr.code, Guest_pr._recid, Bqueasy.char3, Bqueasy._recid, Bqueasy.number1, Bqueasy.number2, Bqueasy.deci2, Bqueasy.number3, Bqueasy.deci3, Bqueasy.date1, Bqueasy.date2, Bqueasy.char1).join(Bqueasy,(Bqueasy.key == 2) & (Bqueasy.char1 == Guest_pr.code)).filter(
-             (Guest_pr.gastnr == ind_gastno)).order_by(Bqueasy.logi2, Bqueasy.number3.desc(), Bqueasy.deci3.desc()).all():
+    # for guest_pr.code, guest_pr._recid, bqueasy.char3, bqueasy._recid, bqueasy.number1, bqueasy.number2, bqueasy.deci2, bqueasy.number3, bqueasy.deci3, bqueasy.date1, bqueasy.date2, bqueasy.char1 in db_session.query(Guest_pr.code, Guest_pr._recid, Bqueasy.char3, Bqueasy._recid, Bqueasy.number1, Bqueasy.number2, Bqueasy.deci2, Bqueasy.number3, Bqueasy.deci3, Bqueasy.date1, Bqueasy.date2, Bqueasy.char1).join(Bqueasy,(Bqueasy.key == 2) & (Bqueasy.char1 == Guest_pr.code)).filter(
+    #          (Guest_pr.gastnr == ind_gastno)).order_by(Bqueasy.logi2, Bqueasy.number3.desc(), Bqueasy.deci3.desc()).all():
+
+    for bqueasy in db_session.query(Queasy).filter(
+            (Queasy.key == 2)).order_by(Queasy.logi2, Queasy.number3.desc(), Queasy.deci3.desc()).all():
+        
+        b_char1 = bqueasy.char1.strip()
+        guest_pr = db_session.query(Guest_pr).filter((Guest_pr.code == b_char1) & (Guest_pr.gastnr == ind_gastno)).first()
+        if not guest_pr or guest_pr.gastnr != ind_gastno:
+            continue
+
         if guest_pr_obj_list.get(guest_pr._recid):
             continue
         else:
@@ -272,9 +273,7 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
 
                     if not rate_list:
 
-                        # qsy18 = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, bratecode.marknr)]})
-                        qsy18 = db_session.query(Queasy).filter((Queasy.key == 18) & (Queasy.number1 == bratecode.marknr)).first()
-
+                        qsy18 = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, bratecode.marknr)]})
 
                         waehrung = get_cache (Waehrung, {"wabkurz": [(eq, qsy18.char3)]})
                         rate_list = Rate_list()
@@ -299,9 +298,7 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
 
                         if bqueasy.char3 != "":
 
-                            # segment = get_cache (Segment, {"bezeich": [(eq, bqueasy.char3)]})
-                            segment = db_session.query(Segment).filter(Segment.bezeich == bqueasy.char3.strip()).first()
-
+                            segment = get_cache (Segment, {"bezeich": [(eq, bqueasy.char3)]})
                             if segment:
                                 rate_list.segmentcode = to_string(segment.segmentcode) + " " + segment.bezeich
 
@@ -399,8 +396,7 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
 
                         if not rate_list:
 
-                            # waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, bqueasy.number1)]})
-                            waehrung = db_session.query(Waehrung).filter(Waehrung.waehrungsnr == bqueasy.number1).first()
+                            waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, bqueasy.number1)]})
                             rate_list = Rate_list()
                             rate_list_data.append(rate_list)
 
@@ -424,9 +420,7 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
 
                             if bqueasy.char3 != "":
 
-                                # segment = get_cache (Segment, {"bezeich": [(eq, bqueasy.char3)]})
-                                segment = db_session.query(Segment).filter(Segment.bezeich == bqueasy.char3.strip()).first()
-
+                                segment = get_cache (Segment, {"bezeich": [(eq, bqueasy.char3)]})
                                 if segment:
                                     rate_list.segmentcode = to_string(segment.segmentcode) + " " + segment.bezeich
 
@@ -474,14 +468,10 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
                         mapcode = dynarate_list.rcode
 
                         if not global_occ:
-
-                            # queasy = get_cache (Queasy, {"key": [(eq, 145)],"char1": [(eq, guest_pr.code)],"char2": [(eq, mapcode)],"number1": [(eq, i_zikatnr)],"deci1": [(eq, dynarate_list.w_day)],"deci2": [(eq, dynarate_list.counter)],"date1": [(eq, curr_date)]})
-                            queasy = db_session.query(Queasy).filter((Queasy.key == 145) & (Queasy.char1 == guest_pr.code) & (Queasy.char2 == mapcode) & (Queasy.number1 == i_zikatnr) & (Queasy.deci1 == dynarate_list.w_day) & (Queasy.deci2 == dynarate_list.counter) & (Queasy.date1 == curr_date)).first()
+                            queasy = get_cache (Queasy, {"key": [(eq, 145)],"char1": [(eq, guest_pr.code)],"char2": [(eq, mapcode)],"number1": [(eq, i_zikatnr)],"deci1": [(eq, dynarate_list.w_day)],"deci2": [(eq, dynarate_list.counter)],"date1": [(eq, curr_date)]})
                         else:
-
-                            # queasy = get_cache (Queasy, {"key": [(eq, 145)],"char1": [(eq, guest_pr.code)],"char2": [(eq, mapcode)],"number1": [(eq, 0)],"deci1": [(eq, dynarate_list.w_day)],"deci2": [(eq, dynarate_list.counter)],"date1": [(eq, curr_date)]})
-                            queasy = db_session.query(Queasy).filter((Queasy.key == 145) & (Queasy.char1 == guest_pr.code) & (Queasy.char2 == mapcode) & (Queasy.number1 == 0) & (Queasy.deci1 == dynarate_list.w_day) & (Queasy.deci2 == dynarate_list.counter) & (Queasy.date1 == curr_date)).first()
-
+                            queasy = get_cache (Queasy, {"key": [(eq, 145)],"char1": [(eq, guest_pr.code)],"char2": [(eq, mapcode)],"number1": [(eq, 0)],"deci1": [(eq, dynarate_list.w_day)],"deci2": [(eq, dynarate_list.counter)],"date1": [(eq, curr_date)]})
+                        
 
                         if queasy:
                             mapcode = queasy.char3
@@ -517,15 +507,10 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
                             mapcode = dynarate_list.rcode
 
                             if not global_occ:
-
-                                # queasy = get_cache (Queasy, {"key": [(eq, 145)],"char1": [(eq, guest_pr.code)],"char2": [(eq, mapcode)],"number1": [(eq, i_zikatnr)],"deci1": [(eq, 0)],"deci2": [(eq, dynarate_list.counter)],"date1": [(eq, curr_date)]})
-                                queasy = db_session.query(Queasy).filter((Queasy.key == 145) & (Queasy.char1 == guest_pr.code) & (Queasy.char2 == mapcode) & (Queasy.number1 == i_zikatnr) & (Queasy.deci1 == 0) & (Queasy.deci2 == dynarate_list.counter) & (Queasy.date1 == curr_date)).first()
-
+                                queasy = get_cache (Queasy, {"key": [(eq, 145)],"char1": [(eq, guest_pr.code)],"char2": [(eq, mapcode)],"number1": [(eq, i_zikatnr)],"deci1": [(eq, 0)],"deci2": [(eq, dynarate_list.counter)],"date1": [(eq, curr_date)]})
                             else:
-                                # queasy = get_cache (Queasy, {"key": [(eq, 145)],"char1": [(eq, guest_pr.code)],"char2": [(eq, mapcode)],"number1": [(eq, 0)],"deci1": [(eq, dynarate_list.w_day)],"deci2": [(eq, dynarate_list.counter)],"date1": [(eq, curr_date)]})
-                                queasy = db_session.query(Queasy).filter((Queasy.key == 145) & (Queasy.char1 == guest_pr.code) & (Queasy.char2 == mapcode) & (Queasy.number1 == 0) & (Queasy.deci1 == dynarate_list.w_day) & (Queasy.deci2 == dynarate_list.counter) & (Queasy.date1 == curr_date)).first() 
+                                queasy = get_cache (Queasy, {"key": [(eq, 145)],"char1": [(eq, guest_pr.code)],"char2": [(eq, mapcode)],"number1": [(eq, 0)],"deci1": [(eq, dynarate_list.w_day)],"deci2": [(eq, dynarate_list.counter)],"date1": [(eq, curr_date)]})
                                 
-
                             if queasy:
                                 mapcode = queasy.char3
 
@@ -553,7 +538,6 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
             selected_ratelist.minstay = rate_list.minstay
             selected_ratelist.maxstay = rate_list.maxstay
 
-
         else:
             rate_list_data.remove(rate_list)
 
@@ -569,6 +553,5 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
 
                 buffer_copy(rate_list, created_list)
                 created_list.rmcateg = zimkateg.typ
-
 
     return generate_output()
