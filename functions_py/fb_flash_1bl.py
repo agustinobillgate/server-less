@@ -64,6 +64,31 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
 
         return {"fbflash-list": fbflash_list_data, "done": done}
 
+    def formatting_int(data, format):
+        if type(data) == str:
+            data = int(data)
+
+        digit_count = format.count('9')
+    
+        number_str = str(data)
+        
+        if len(number_str) > digit_count:
+            raise ValueError(f"Number has too many digits for the given mask ({len(number_str)} > {digit_count})")
+ 
+        number_str = number_str.zfill(digit_count)
+        
+        result = ''
+        digit_index = 0
+
+        for char in format:
+            if char == '9':
+                result += number_str[digit_index]
+                digit_index += 1
+            else:
+                result += char
+
+        return result
+
     def step_food1(fl_eknr:int, bl_eknr:int):
 
         nonlocal fbflash_list_data, done, beg_oh, betrag, t_betrag1, t_betrag2, d_betrag, m_betrag, d1_betrag, m1_betrag, f_eknr, b_eknr, main_storage, bev_food, food_bev, ldry, dstore, foreign_nr, exchg_rate, double_currency, f_sales, b_sales, tf_sales, tb_sales, anf_store, long_digit, coa_format, lvcarea, htparam, waehrung, l_lager, l_artikel, l_bestand, l_op, gl_acct, h_artikel, h_compli, exrate, artikel, h_cost, l_ophdr, hoteldpt, umsatz
@@ -299,8 +324,8 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
             s_list_data.append(s_list)
 
             s_list.reihenfolge = 3
-            s_list.bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
-                    gl_acct.bezeich.upper()
+            # s_list.bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+            s_list.bezeich = formatting_int(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
             s_list.flag = 1
 
 
@@ -323,8 +348,8 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
             s_list_data.append(s_list)
 
             s_list.reihenfolge = 3
-            s_list.bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
-                    gl_acct.bezeich.upper()
+            # s_list.bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+            s_list.bezeich = formatting_int(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
             s_list.flag = 2
 
 
@@ -381,8 +406,8 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
 
             gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, artikel.fibukonto)]})
             com_artnr = artikel.artnr
-            com_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
-                    gl_acct.bezeich.upper()
+            # com_bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+            com_bezeich = formatting_int(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
             com_fibu = gl_acct.fibukonto
 
             h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_compli.artnr)],"departement": [(eq, h_compli.departement)]})
@@ -456,8 +481,8 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
             #     l_op_obj_list[l_op._recid] = True
 
             fibukonto = gl_acct.fibukonto
-            bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
-                    gl_acct.bezeich.upper()
+            # bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+            bezeich = formatting_int(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
             type_of_acct = gl_acct.acc_type
 
             if l_op.stornogrund != "":
@@ -467,8 +492,8 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
                 if gl_acct1:
                     type_of_acct = gl_acct1.acc_type
                     fibukonto = gl_acct1.fibukonto
-                    bezeich = to_string(gl_acct1.fibukonto, coa_format) + " " +\
-                        gl_acct1.bezeich.upper()
+                    # bezeich = to_string(gl_acct1.fibukonto, coa_format) + " " + gl_acct1.bezeich.upper()
+                    bezeich = formatting_int(gl_acct1.fibukonto, coa_format) + " " + gl_acct1.bezeich.upper()
 
             if fibukonto.lower()  == (food_bev).lower() :
                 pass
@@ -529,8 +554,8 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
 
 
             fibukonto = gl_acct.fibukonto
-            bezeich = to_string(gl_acct.fibukonto, coa_format) + " " +\
-                    gl_acct.bezeich.upper()
+            # bezeich = to_string(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
+            bezeich = formatting_int(gl_acct.fibukonto, coa_format) + " " + gl_acct.bezeich.upper()
             type_of_acct = gl_acct.acc_type
 
             if l_op.stornogrund != "":
@@ -539,8 +564,8 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
 
                 if gl_acct1:
                     fibukonto = gl_acct1.fibukonto
-                    bezeich = to_string(gl_acct1.fibukonto, coa_format) + " " +\
-                            gl_acct1.bezeich.upper()
+                    # bezeich = to_string(gl_acct1.fibukonto, coa_format) + " " + gl_acct1.bezeich.upper()
+                    bezeich = formatting_int(gl_acct1.fibukonto, coa_format) + " " + gl_acct1.bezeich.upper()
                     type_of_acct = gl_acct1.acc_type
 
             if fibukonto.lower()  == (food_bev).lower() :
@@ -865,7 +890,7 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
         fbflash_list = Fbflash_list()
         fbflash_list_data.append(fbflash_list)
 
-        fbflash_list.cost_alloc = translateExtended ("** food **", lvcarea, "")
+        fbflash_list.cost_alloc = translateExtended ("** FOOD **", lvcarea, "")
 
 
         fbflash_list = Fbflash_list()
@@ -1092,11 +1117,11 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
             fbflash_list_data.append(fbflash_list)
 
         if not long_digit:
-            fbflash_list.trans_to_storage = translateExtended ("GROSS CONSUMPTION cost", lvcarea, "")
+            fbflash_list.trans_to_storage = translateExtended ("GROSS CONSUMPTION COST", lvcarea, "")
             fbflash_list.day_cons = to_string(d_betrag, "->,>>>,>>>,>>9.99")
             fbflash_list.mtd_cons = to_string(m_betrag, "->,>>>,>>>,>>9.99")
         else:
-            fbflash_list.trans_to_storage = translateExtended ("GROSS CONSUMPTION cost", lvcarea, "")
+            fbflash_list.trans_to_storage = translateExtended ("GROSS CONSUMPTION COST", lvcarea, "")
             fbflash_list.day_cons = to_string(d_betrag, " ->>>,>>>,>>>,>>9")
             fbflash_list.mtd_cons = to_string(m_betrag, " ->>>,>>>,>>>,>>9")
 
@@ -1111,7 +1136,7 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
         fbflash_list = Fbflash_list()
         fbflash_list_data.append(fbflash_list)
 
-        fbflash_list.trans_to_storage = translateExtended ("COMPLIMENT cost", lvcarea, "")
+        fbflash_list.trans_to_storage = translateExtended ("COMPLIMENT COST", lvcarea, "")
         betrag =  to_decimal("0")
         t_betrag1 =  to_decimal("0")
 
@@ -1246,11 +1271,11 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
 
 
         if not long_digit:
-            fbflash_list.trans_to_storage = translateExtended ("NET CONSUMPTION cost", lvcarea, "")
+            fbflash_list.trans_to_storage = translateExtended ("NET CONSUMPTION COST", lvcarea, "")
             fbflash_list.day_cons = to_string(d_betrag, "->,>>>,>>>,>>9.99")
             fbflash_list.mtd_cons = to_string(m_betrag, "->,>>>,>>>,>>9.99")
         else:
-            fbflash_list.trans_to_storage = translateExtended ("NET CONSUMPTION cost", lvcarea, "")
+            fbflash_list.trans_to_storage = translateExtended ("NET CONSUMPTION COST", lvcarea, "")
             fbflash_list.day_cons = to_string(d_betrag, " ->>>,>>>,>>>,>>9")
             fbflash_list.mtd_cons = to_string(m_betrag, " ->>>,>>>,>>>,>>9")
 
@@ -1263,11 +1288,11 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
 
 
         if not long_digit:
-            fbflash_list.cost_alloc = translateExtended ("Nett food Sales", lvcarea, "")
+            fbflash_list.cost_alloc = translateExtended ("Nett Food Sales", lvcarea, "")
             fbflash_list.day_cons = to_string(f_sales, "->,>>>,>>>,>>9.99")
             fbflash_list.mtd_cons = to_string(tf_sales, "->,>>>,>>>,>>9.99")
         else:
-            fbflash_list.cost_alloc = translateExtended ("Nett food Sales", lvcarea, "")
+            fbflash_list.cost_alloc = translateExtended ("Nett Food Sales", lvcarea, "")
             fbflash_list.day_cons = to_string(f_sales, " ->>>,>>>,>>>,>>9")
             fbflash_list.mtd_cons = to_string(tf_sales, " ->>>,>>>,>>>,>>9")
 
@@ -1275,7 +1300,7 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
         fbflash_list = Fbflash_list()
         fbflash_list_data.append(fbflash_list)
 
-        fbflash_list.cost_alloc = translateExtended ("R a t i o cost:Sales (%)", lvcarea, "")
+        fbflash_list.cost_alloc = translateExtended ("R a t i o Cost:Sales (%)", lvcarea, "")
 
         if f_sales != 0:
             fbflash_list.day_cons = to_string((d_betrag / f_sales * 100) , "->,>>>,>>>,>>9.99")
@@ -1540,11 +1565,11 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
 
 
         if not long_digit:
-            fbflash_list.trans_to_storage = translateExtended ("GROSS CONSUMPTION cost", lvcarea, "")
+            fbflash_list.trans_to_storage = translateExtended ("GROSS CONSUMPTION COST", lvcarea, "")
             fbflash_list.day_cons = to_string(d_betrag, "->,>>>,>>>,>>9.99")
             fbflash_list.mtd_cons = to_string(m_betrag, "->,>>>,>>>,>>9.99")
         else:
-            fbflash_list.trans_to_storage = translateExtended ("GROSS CONSUMPTION cost", lvcarea, "")
+            fbflash_list.trans_to_storage = translateExtended ("GROSS CONSUMPTION COST", lvcarea, "")
             fbflash_list.day_cons = to_string(d_betrag, " ->>>,>>>,>>>,>>9")
             fbflash_list.mtd_cons = to_string(m_betrag, " ->>>,>>>,>>>,>>9")
 
@@ -1559,7 +1584,7 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
         fbflash_list = Fbflash_list()
         fbflash_list_data.append(fbflash_list)
 
-        fbflash_list.trans_to_storage = translateExtended ("COMPLIMENT cost", lvcarea, "")
+        fbflash_list.trans_to_storage = translateExtended ("COMPLIMENT COST", lvcarea, "")
         betrag =  to_decimal("0")
         t_betrag1 =  to_decimal("0")
 
@@ -1697,13 +1722,13 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
 
 
         if not long_digit:
-            fbflash_list.trans_to_storage = to_string(translateExtended ("NET CONSUMPTION cost", lvcarea, "") , "x(24)")
+            fbflash_list.trans_to_storage = to_string(translateExtended ("NET CONSUMPTION COST", lvcarea, "") , "x(24)")
             fbflash_list.day_cons = to_string(d_betrag, "->,>>>,>>>,>>9.99")
             fbflash_list.mtd_cons = to_string(m_betrag, "->,>>>,>>>,>>9.99")
 
 
         else:
-            fbflash_list.trans_to_storage = to_string(translateExtended ("NET CONSUMPTION cost", lvcarea, "") , "x(24)")
+            fbflash_list.trans_to_storage = to_string(translateExtended ("NET CONSUMPTION COST", lvcarea, "") , "x(24)")
             fbflash_list.day_cons = to_string(d_betrag, " ->>>,>>>,>>>,>>9")
             fbflash_list.mtd_cons = to_string(m_betrag, " ->>>,>>>,>>>,>>9")
 
@@ -1726,7 +1751,7 @@ def fb_flash_1bl(pvilanguage:int, from_grp:int, food:int, bev:int, date1:date, d
         fbflash_list = Fbflash_list()
         fbflash_list_data.append(fbflash_list)
 
-        fbflash_list.cost_alloc = translateExtended ("R a t i o cost:Sales (%)", lvcarea, "")
+        fbflash_list.cost_alloc = translateExtended ("R a t i o Cost:Sales (%)", lvcarea, "")
 
         if b_sales != 0:
             fbflash_list.day_cons = to_string((d_betrag / b_sales * 100) , "->,>>>,>>>,>>9.99")
