@@ -368,7 +368,7 @@ def company_glist_2bl(sort_rmcat:bool, fr_date:date, to_date:date, curr_gastnr:i
                     output_list.ankunft = None
                     output_list.abreise = None
                     output_list.zinr = " "
-                    output_list.gname = "T O T a L"
+                    output_list.gname = "T O T A L"
                     output_list.resnr = 0
                     output_list.night = tot_night
                     output_list.zipreis =  to_decimal(tot_zipreis)
@@ -576,7 +576,7 @@ def company_glist_2bl(sort_rmcat:bool, fr_date:date, to_date:date, curr_gastnr:i
                     output_list.ankunft = None
                     output_list.abreise = None
                     output_list.zinr = " "
-                    output_list.gname = "T O T a L"
+                    output_list.gname = "T O T A L"
                     output_list.resnr = 0
                     output_list.night = tot_night
                     output_list.zipreis =  to_decimal(tot_zipreis)
@@ -778,7 +778,7 @@ def company_glist_2bl(sort_rmcat:bool, fr_date:date, to_date:date, curr_gastnr:i
         output_list.ankunft = None
         output_list.abreise = None
         output_list.zinr = " "
-        output_list.gname = "T O T a L"
+        output_list.gname = "T O T A L"
         output_list.resnr = 0
         output_list.night = tot_night
         output_list.zipreis =  to_decimal(tot_zipreis)
@@ -793,7 +793,7 @@ def company_glist_2bl(sort_rmcat:bool, fr_date:date, to_date:date, curr_gastnr:i
 
         for output_list in query(output_list_data):
 
-            if output_list.gname.lower()  == ("T O T a L").lower() :
+            if output_list.gname.lower()  == ("T O T A L").lower() :
                 gr_zipreis =  to_decimal(gr_zipreis) + to_decimal(output_list.zipreis)
                 gr_amount =  to_decimal(gr_amount) + to_decimal(output_list.amount)
                 gr_night = gr_night + output_list.night
@@ -1175,7 +1175,7 @@ def company_glist_2bl(sort_rmcat:bool, fr_date:date, to_date:date, curr_gastnr:i
         output_list.ankunft = None
         output_list.abreise = None
         output_list.zinr = " "
-        output_list.gname = "T O T a L"
+        output_list.gname = "T O T A L"
         output_list.resnr = 0
         output_list.night = tot_night
         output_list.zipreis =  to_decimal(tot_zipreis)
@@ -1190,7 +1190,7 @@ def company_glist_2bl(sort_rmcat:bool, fr_date:date, to_date:date, curr_gastnr:i
 
         for output_list in query(output_list_data):
 
-            if output_list.gname.lower()  == ("T O T a L").lower() :
+            if output_list.gname.lower()  == ("T O T A L").lower() :
                 gr_zipreis =  to_decimal(gr_zipreis) + to_decimal(output_list.zipreis)
                 gr_amount =  to_decimal(gr_amount) + to_decimal(output_list.amount)
                 gr_night = gr_night + output_list.night
