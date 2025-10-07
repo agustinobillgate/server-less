@@ -196,7 +196,8 @@ def cr_availabilitybl(pvilanguage:int, vhp_limited:bool, op_type:int, printer_nr
                     # queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, rate_list.ratecode)]})
                     queasy = db_session.query(Queasy).filter((Queasy.key == 2) & (Queasy.char1 == rate_list.ratecode.strip())).first()
 
-                    room_list.argt_remark = queasy.char2 + chr_unicode(10)
+                    # room_list.argt_remark = queasy.char2 + chr_unicode(10)
+                    room_list.argt_remark = queasy.char2 
 
                     if room_list.frdate != None:
                         room_list.argt_remark = room_list.argt_remark + translateExtended ("Begin Sell Date:", lvcarea, "") + " " + to_string(room_list.frdate) + "; "
