@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ============================================== 
+# Rulita, 08-10-2025 
+# Adding modify program from the tiket ID CC9976
+# ============================================== 
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -449,6 +454,7 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
                 bqueasy = get_cache (Queasy, {"_recid": [(eq, qsy._recid)]})
 
                 if bqueasy:
+                    pass
                     bqueasy.logi2 = True
                     pass
                     pass
@@ -460,6 +466,7 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
                 bqueasy = get_cache (Queasy, {"_recid": [(eq, qsy._recid)]})
 
                 if bqueasy:
+                    pass
                     bqueasy.logi2 = True
                     pass
                     pass
@@ -1073,7 +1080,7 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
             if not reservation:
 
                 res_line = db_session.query(Res_line).filter(
-                             (Res_line.gastnr == ota_gastnr) & (matches(Res_line.zimmer_wunsch,"*voucher" + bookingid + "*")) & not_ (Res_line.resstatus == 9)).first()
+                         (Res_line.gastnr == ota_gastnr) & (matches(Res_line.zimmer_wunsch,"*voucher" + bookingid + "*")) & not_ (Res_line.resstatus == 9)).first()
 
             if res_line or reservation:
                 error_str = error_str + chr_unicode(10) + "Reservation " + res_info.uniq_id + " already exist."
@@ -1108,6 +1115,7 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
                         bqueasy = get_cache (Queasy, {"_recid": [(eq, qsy._recid)]})
 
                         if bqueasy:
+                            pass
                             bqueasy.logi2 = True
                             pass
                             pass
@@ -1119,6 +1127,7 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
                         bqueasy = get_cache (Queasy, {"_recid": [(eq, qsy._recid)]})
 
                         if bqueasy:
+                            pass
                             bqueasy.logi2 = True
                             pass
                             pass
@@ -1148,22 +1157,22 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
                 if c_code.lower()  == ("VI").lower() :
 
                     artikel = db_session.query(Artikel).filter(
-                                 (Artikel.artart == 7) & (matches(Artikel.bezeich,"*visa*"))).first()
+                             (Artikel.artart == 7) & (matches(Artikel.bezeich,"*visa*"))).first()
 
                 elif c_code.lower()  == ("MC").lower() :
 
                     artikel = db_session.query(Artikel).filter(
-                                 (Artikel.artart == 7) & (matches(Artikel.bezeich,"*master*"))).first()
+                             (Artikel.artart == 7) & (matches(Artikel.bezeich,"*master*"))).first()
 
                 elif c_code.lower()  == ("AX").lower() :
 
                     artikel = db_session.query(Artikel).filter(
-                                 (Artikel.artart == 7) & (matches(Artikel.bezeich,"*american*"))).first()
+                             (Artikel.artart == 7) & (matches(Artikel.bezeich,"*american*"))).first()
 
                 elif c_code.lower()  == ("JC").lower() :
 
                     artikel = db_session.query(Artikel).filter(
-                                 (Artikel.artart == 7) & (matches(Artikel.bezeich,"*japanese*"))).first()
+                             (Artikel.artart == 7) & (matches(Artikel.bezeich,"*japanese*"))).first()
 
                 if not artikel:
 
@@ -1189,13 +1198,13 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
         if res_info.phone.lower()  != "" and res_info.phone.lower()  != ("n/A").lower() :
 
             guest = db_session.query(Guest).filter(
-                             (matches((Guest.telefon,'*' + substring(res_info.phone, 1))) | (matches(Guest.mobil_telefon,'*' + substring(res_info.phone, 1)))) & (Guest.name == res_info.sure_name) & (Guest.vorname1 == res_info.given_name)).first()
+                         (matches((Guest.telefon,'*' + substring(res_info.phone, 1))) | (matches(Guest.mobil_telefon,'*' + substring(res_info.phone, 1)))) & (Guest.name == res_info.sure_name) & (Guest.vorname1 == res_info.given_name)).first()
         else:
 
             if res_info.email.lower()  != "" and res_info.email.lower()  != ("n/A").lower() :
 
                 guest = db_session.query(Guest).filter(
-                                 ((Guest.email_adr == res_info.email) | (Guest.email_adr == ("n/A").lower()) | (Guest.email_adr == "")) & (Guest.name == res_info.sure_name) & (Guest.vorname1 == res_info.given_name)).first()
+                             ((Guest.email_adr == res_info.email) | (Guest.email_adr == ("n/A").lower()) | (Guest.email_adr == "")) & (Guest.name == res_info.sure_name) & (Guest.vorname1 == res_info.given_name)).first()
             else:
 
                 guest = get_cache (Guest, {"name": [(eq, res_info.sure_name)],"vorname1": [(eq, res_info.given_name)],"adresse1": [(eq, res_info.address1)]})
@@ -1221,7 +1230,7 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
                     else:
 
                         nation = db_session.query(Nation).filter(
-                                         (matches(Nation.bezeich,"*Unknown*"))).first()
+                                     (matches(Nation.bezeich,"*Unknown*"))).first()
 
                         if nation:
                             t_guest_nat = nation.kurzbez
@@ -1239,7 +1248,7 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
                 else:
 
                     nation = db_session.query(Nation).filter(
-                                     (matches(Nation.bezeich,"*Unknown*"))).first()
+                                 (matches(Nation.bezeich,"*Unknown*"))).first()
 
                     if nation:
                         t_guest_nat = nation.kurzbez
@@ -1248,13 +1257,14 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
             exist = False
             gastnrmember = 0
 
-            guest = db_session.query(Guest).order_by(Guest._recid.desc()).first()
-
-            if guest:
+            for guest in db_session.query(Guest).order_by(Guest.gastnr.desc()).all():
                 gastnrmember = guest.gastnr + 1
 
-                rgast = get_cache (Guest, {"gastnr": [(eq, gastnrmember)]})
-                exist = None != rgast
+
+                break
+
+            rgast = get_cache (Guest, {"gastnr": [(eq, gastnrmember)]})
+            exist = None != rgast
             while exist :
                 gastnrmember = gastnrmember + 1
 
@@ -1305,6 +1315,7 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
             bguest = get_cache (Guest, {"_recid": [(eq, guest._recid)]})
 
             if bguest and bguest.ausweis_nr2 == "" and c_number != "":
+                pass
                 bguest.ausweis_nr2 = artikel.bezeich + "\\" + c_number + "\\" + c_exp + "|"
                 pass
                 pass
@@ -1353,13 +1364,13 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
             if guest_list.phone.lower()  != "" and guest_list.phone.lower()  != ("n/A").lower() :
 
                 guest = db_session.query(Guest).filter(
-                             (matches((Guest.telefon,'*' + substring(guest_list.phone, 1))) | (matches(Guest.mobil_telefon,'*' + substring(guest_list.phone, 1)))) & (Guest.name == guest_list.sure_name) & (Guest.vorname1 == guest_list.given_name)).first()
+                         (matches((Guest.telefon,'*' + substring(guest_list.phone, 1))) | (matches(Guest.mobil_telefon,'*' + substring(guest_list.phone, 1)))) & (Guest.name == guest_list.sure_name) & (Guest.vorname1 == guest_list.given_name)).first()
             else:
 
                 if guest_list.email.lower()  != "" and guest_list.email.lower()  != ("n/A").lower() :
 
                     guest = db_session.query(Guest).filter(
-                                 ((Guest.email_adr == guest_list.email) | (Guest.email_adr == ("n/A").lower()) | (Guest.email_adr == "")) & (Guest.name == guest_list.sure_name) & (Guest.vorname1 == guest_list.given_name)).first()
+                             ((Guest.email_adr == guest_list.email) | (Guest.email_adr == ("n/A").lower()) | (Guest.email_adr == "")) & (Guest.name == guest_list.sure_name) & (Guest.vorname1 == guest_list.given_name)).first()
                 else:
 
                     guest = get_cache (Guest, {"name": [(eq, guest_list.sure_name)],"vorname1": [(eq, guest_list.given_name)],"adresse1": [(eq, guest_list.address1)]})
@@ -1395,13 +1406,14 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
                 exist = False
                 gastnrmember = 0
 
-                guest = db_session.query(Guest).order_by(Guest._recid.desc()).first()
-
-                if guest:
+                for guest in db_session.query(Guest).order_by(Guest.gastnr.desc()).all():
                     gastnrmember = guest.gastnr + 1
 
-                    rgast = get_cache (Guest, {"gastnr": [(eq, gastnrmember)]})
-                    exist = None != rgast
+
+                    break
+
+                rgast = get_cache (Guest, {"gastnr": [(eq, gastnrmember)]})
+                exist = None != rgast
                 while exist :
                     gastnrmember = gastnrmember + 1
 
@@ -1461,25 +1473,26 @@ def if_vhp_bookeng_store_resbl(res_info_data:[Res_info], room_list_data:[Room_li
             exist = False
             new_resno = 0
 
-            reservation = db_session.query(Reservation).first()
-
-            if reservation:
+            for reservation in db_session.query(Reservation).order_by(Reservation.resnr.desc()).all():
                 new_resno = reservation.resnr + 1
 
-                bres = db_session.query(Bres).filter(
-                             (Bres.resnr == new_resno)).first()
 
-                bres_line = db_session.query(Bres_line).filter(
-                             (Bres_line.resnr == new_resno)).first()
-                exist = None != bres or None != bres_line
+                break
+
+            bres = db_session.query(Bres).filter(
+                     (Bres.resnr == new_resno)).first()
+
+            bres_line = db_session.query(Bres_line).filter(
+                     (Bres_line.resnr == new_resno)).first()
+            exist = None != bres or None != bres_line
             while exist:
                 new_resno = new_resno + 1
 
                 bres = db_session.query(Bres).filter(
-                             (Bres.resnr == new_resno)).first()
+                         (Bres.resnr == new_resno)).first()
 
                 bres_line = db_session.query(Bres_line).filter(
-                             (Bres_line.resnr == new_resno)).first()
+                         (Bres_line.resnr == new_resno)).first()
                 exist = None != bres or None != bres_line
 
             if not exist:
