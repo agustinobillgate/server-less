@@ -40,6 +40,9 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
         nonlocal output_list, argt_list
         nonlocal output_list_data, argt_list_data
+        print("--->", len(output_list_data))
+        for output_list in output_list_data:
+            print(output_list.str)
 
         return {"output-list": output_list_data}
 
@@ -64,8 +67,6 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
         nonlocal output_list_data, ci_date, new_contrate, wd_array, bonus_array, lvcarea, reservation, htparam, res_line, arrangement, guest_pr, waehrung, genstat, reslin_queasy, queasy, katpreis, argt_line, artikel, zwkum, fixleist
         nonlocal pvilanguage, resnr, reslinnr, contcode
-
-
         nonlocal output_list, argt_list
         nonlocal output_list_data, argt_list_data
 
@@ -93,8 +94,6 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
         nonlocal output_list_data, ci_date, new_contrate, wd_array, bonus_array, lvcarea, reservation, htparam, res_line, arrangement, guest_pr, waehrung, genstat, reslin_queasy, queasy, katpreis, argt_line, artikel, zwkum, fixleist
         nonlocal pvilanguage, resnr, reslinnr, contcode
-
-
         nonlocal output_list, argt_list
         nonlocal output_list_data, argt_list_data
 
@@ -192,7 +191,7 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
             if datum >= ci_date or not arrangement:
 
-                arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement.strip())]})
 
             if (datum >= ci_date) or rm_rate == None:
 
@@ -267,7 +266,7 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
             output_list = Output_list()
             output_list_data.append(output_list)
 
-            str = to_string(datum) + " " + translateExtended ("Roomrate", lvcarea, "") + " = " + trim(to_string(rm_rate, "->>>,>>>,>>9.99")) + " - " + trim(ratecode_qsy)
+            output_list.str = to_string(datum) + " " + translateExtended ("Roomrate", lvcarea, "") + " = " + trim(to_string(rm_rate, "->>>,>>>,>>9.99")) + " - " + trim(ratecode_qsy)
             tot_rate =  to_decimal(tot_rate) + to_decimal(rm_rate)
             daily_rate =  to_decimal(rm_rate)
             count_break =  to_decimal("0")
@@ -339,7 +338,7 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                                     else:
 
                                         reslin_queasy = db_session.query(Reslin_queasy).filter(
-                                                 (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= datum) & (Reslin_queasy.date2 >= datum) & ((Reslin_queasy.date1 + (argt_line.intervall - 1)) >= datum)).first()
+                                                 (Reslin_queasy.key == ("fargt-line")) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= datum) & (Reslin_queasy.date2 >= datum) & ((Reslin_queasy.date1 + (argt_line.intervall - 1)) >= datum)).first()
 
                                         if reslin_queasy:
                                             add_it = True
@@ -362,10 +361,10 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                         if reslin_queasy:
 
                             for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                     (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date)).order_by(Reslin_queasy._recid).all():
+                                     (Reslin_queasy.key == ("fargt-line")) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date)).order_by(Reslin_queasy._recid).all():
                                 argt_defined = True
 
-                                if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
+                                if reslin_queasy.char2  != "" and reslin_queasy.char2  != ("0") :
 
                                     zwkum = db_session.query(Zwkum).filter(
                                              (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
@@ -392,7 +391,7 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
                                     output_list.flag = 1
                                     c = to_string(qty) + " " + artikel.bezeich
-                                    str = to_string(translateExtended (" Incl.", lvcarea, "") , "x(10)") + " " + to_string(c, "x(16)") + " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
+                                    output_list.str = to_string(translateExtended (" Incl.", lvcarea, "") , "x(10)") + " " + to_string(c, "x(16)") + " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
                                     count_break =  to_decimal(count_break) + to_decimal(argt_rate)
 
                         if guest_pr and not argt_defined:
@@ -402,10 +401,10 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                             if reslin_queasy:
 
                                 for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                         (Reslin_queasy.key == ("argt-line").lower()) & (Reslin_queasy.char1 == (contcode).lower()) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date)).order_by(Reslin_queasy._recid).all():
+                                         (Reslin_queasy.key == ("argt-line")) & (Reslin_queasy.char1 == (contcode)) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date)).order_by(Reslin_queasy._recid).all():
                                     argt_defined = True
 
-                                    if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
+                                    if reslin_queasy.char2  != "" and reslin_queasy.char2  != ("0") :
 
                                         zwkum = db_session.query(Zwkum).filter(
                                                  (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
@@ -432,7 +431,7 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
                                         output_list.flag = 1
                                         c = to_string(qty) + " " + artikel.bezeich
-                                        str = to_string(translateExtended (" Incl.", lvcarea, "") , "x(10)") + " " + to_string(c, "x(16)") + " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
+                                        output_list.str = to_string(translateExtended (" Incl.", lvcarea, "") , "x(10)") + " " + to_string(c, "x(16)") + " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
                                         count_break =  to_decimal(count_break) + to_decimal(argt_rate)
 
                         if argt_rate2 > 0:
@@ -453,7 +452,7 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
                             output_list.flag = 1
                             c = to_string(qty) + " " + artikel.bezeich
-                            str = to_string(translateExtended (" Incl.", lvcarea, "") , "x(10)") + " " + to_string(c, "x(16)") + " = " + trim(to_string(argt_rate2, "->>>,>>>,>>9.99"))
+                            output_list.str = to_string(translateExtended (" Incl.", lvcarea, "") , "x(10)") + " " + to_string(c, "x(16)") + " = " + trim(to_string(argt_rate2, "->>>,>>>,>>9.99"))
                             count_break =  to_decimal(count_break) + to_decimal(argt_rate2)
 
 
@@ -522,7 +521,7 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                                 else:
 
                                     reslin_queasy = db_session.query(Reslin_queasy).filter(
-                                             (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & ((Reslin_queasy.date1 + (argt_line.intervall - 1)) >= bill_date)).first()
+                                             (Reslin_queasy.key == ("fargt-line")) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & ((Reslin_queasy.date1 + (argt_line.intervall - 1)) >= bill_date)).first()
 
                                     if reslin_queasy:
                                         add_it = True
@@ -545,10 +544,10 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                     if reslin_queasy:
 
                         for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                 (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (bill_date >= Reslin_queasy.date1) & (bill_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
+                                 (Reslin_queasy.key == ("fargt-line")) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (bill_date >= Reslin_queasy.date1) & (bill_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
                             argt_defined = True
 
-                            if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
+                            if reslin_queasy.char2  != "" and reslin_queasy.char2  != ("0") :
 
                                 zwkum = db_session.query(Zwkum).filter(
                                          (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
@@ -573,7 +572,7 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                                 output_list = Output_list()
                                 output_list_data.append(output_list)
 
-                                str = to_string("", "x(5)") + "Excl. " + to_string(artikel.bezeich, "x(16)") + " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
+                                output_list.str = to_string("", "x(5)") + "Excl. " + to_string(artikel.bezeich, "x(16)") + " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
                                 tot_rate =  to_decimal(tot_rate) + to_decimal(argt_rate)
                                 fixcost_rate =  to_decimal(fixcost_rate) + to_decimal(argt_rate)
 
@@ -584,10 +583,10 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                         if reslin_queasy:
 
                             for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                     (Reslin_queasy.key == ("argt-line").lower()) & (Reslin_queasy.char1 == (contcode).lower()) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (bill_date >= Reslin_queasy.date1) & (bill_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
+                                     (Reslin_queasy.key == ("argt-line")) & (Reslin_queasy.char1 == (contcode)) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (bill_date >= Reslin_queasy.date1) & (bill_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
                                 argt_defined = True
 
-                                if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
+                                if reslin_queasy.char2  != "" and reslin_queasy.char2  != ("0") :
 
                                     zwkum = db_session.query(Zwkum).filter(
                                              (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
@@ -612,7 +611,7 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                                     output_list = Output_list()
                                     output_list_data.append(output_list)
 
-                                    str = to_string("", "x(5)") + "Excl. " + to_string(artikel.bezeich, "x(16)") + " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
+                                    output_list.str = to_string("", "x(5)") + "Excl. " + to_string(artikel.bezeich, "x(16)") + " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
                                     tot_rate =  to_decimal(tot_rate) + to_decimal(argt_rate)
                                     fixcost_rate =  to_decimal(fixcost_rate) + to_decimal(argt_rate)
 
@@ -632,7 +631,7 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                         output_list = Output_list()
                         output_list_data.append(output_list)
 
-                        str = to_string("", "x(5)") + "Excl. " + to_string(artikel.bezeich, "x(16)") + " = " + trim(to_string(argt_rate2, "->>>,>>>,>>9.99"))
+                        output_list.str = to_string("", "x(5)") + "Excl. " + to_string(artikel.bezeich, "x(16)") + " = " + trim(to_string(argt_rate2, "->>>,>>>,>>9.99"))
                         tot_rate =  to_decimal(tot_rate) + to_decimal(argt_rate2)
                         fixcost_rate =  to_decimal(fixcost_rate) + to_decimal(argt_rate2)
 
@@ -687,7 +686,7 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                     output_list = Output_list()
                     output_list_data.append(output_list)
 
-                    str = to_string("", "x(8)") + " " + to_string(artikel.bezeich, "x(16)") + " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
+                    output_list.str = to_string("", "x(8)") + " " + to_string(artikel.bezeich, "x(16)") + " = " + trim(to_string(argt_rate, "->>>,>>>,>>9.99"))
                     tot_rate =  to_decimal(tot_rate) + to_decimal(argt_rate)
                     fixcost_rate =  to_decimal(fixcost_rate) + to_decimal(argt_rate)
 
@@ -696,14 +695,14 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                 output_list_data.append(output_list)
 
                 output_list.flag = 2
-                str = to_string(translateExtended (" Lodging", lvcarea, "") , "x(11)") + " = " + trim(to_string(daily_rate - count_break, "->>>,>>>,>>9.99"))
-            str = str + " Total = " + trim(to_string(daily_rate + fixcost_rate, "->>>,>>>,>>9.99"))
+                output_list.str = to_string(translateExtended (" Lodging", lvcarea, "") , "x(11)") + " = " + trim(to_string(daily_rate - count_break, "->>>,>>>,>>9.99"))
+            output_list.str = output_list.str + " Total = " + trim(to_string((daily_rate + fixcost_rate), "->>>,>>>,>>9.99"))
         output_list = Output_list()
         output_list_data.append(output_list)
 
-        str = " " + translateExtended ("Expected total revenue =", lvcarea, "") +\
+        output_list.str = " " + translateExtended ("Expected total revenue =", lvcarea, "") +\
                 " " + trim(to_string(tot_rate, "->,>>>,>>>,>>9.99"))
-        str1 = "expected"
+        output_list.str1 = "expected"
 
     reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
 
@@ -717,7 +716,7 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
     res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
 
-    arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+    arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement.strip())]})
 
     guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, res_line.gastnr)]})
 
