@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ==========================================
+# Rulita, 10-10-2025
+# Tiket ID : 8CF423 | Recompile Program
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -90,7 +95,8 @@ def rest_statsegment_go2_webbl(input_list_data:[Input_list]):
         output_list_data.clear()
         curr_zeit = get_current_time_in_seconds()
 
-        for h_journal in db_session.query(H_journal).filter((H_journal.departement >= input_list.from_outlet) & (H_journal.departement <= input_list.to_outlet) & (H_journal.bill_datum >= start_year) & (H_journal.bill_datum <= input_list.to_date)).order_by(H_journal.departement, H_journal.rechnr).all():
+        for h_journal in db_session.query(H_journal).filter(
+                 (H_journal.departement >= input_list.from_outlet) & (H_journal.departement <= input_list.to_outlet) & (H_journal.bill_datum >= start_year) & (H_journal.bill_datum <= input_list.to_date)).order_by(H_journal.departement, H_journal.rechnr).all():
 
             h_bill = get_cache (H_bill, {"rechnr": [(eq, h_journal.rechnr)],"departement": [(eq, h_journal.departement)]})
 
@@ -150,10 +156,8 @@ def rest_statsegment_go2_webbl(input_list_data:[Input_list]):
 
                             if guestseg:
                                 segm_no = guestseg.segmentcode
-
                         else:
                             segm_no = h_bill.segmentcode
-                            
 
                         if segm_no != 0:
 
@@ -171,12 +175,12 @@ def rest_statsegment_go2_webbl(input_list_data:[Input_list]):
                                     t_list.segm_gr = segment.segmentgrup
                                     t_list.g_segm = entry(0, segment.bezeich, "$$0")
 
-
                             if h_journal.bill_datum == input_list.to_date:
 
                                 if curr_billno != (to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)):
                                     t_list.pax = t_list.pax + h_bill.belegung
                                     tot_pax = tot_pax + h_bill.belegung
+
 
                                 t_list.t_rev =  to_decimal(t_list.t_rev) + to_decimal(rev_amount)
                                 tot_rev =  to_decimal(tot_rev) + to_decimal(rev_amount)
@@ -246,6 +250,7 @@ def rest_statsegment_go2_webbl(input_list_data:[Input_list]):
         queasy.number1 = 1
         queasy.char2 = input_list.id_flag
         queasy.date1 = bill_date
+
 
         pass
 
@@ -443,8 +448,8 @@ def rest_statsegment_go2_webbl(input_list_data:[Input_list]):
     input_list = query(input_list_data, first=True)
 
     if not input_list:
-        return generate_output()
 
+        return generate_output()
     start_year = date_mdy(1, 1, get_year(input_list.from_date))
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 491)]})
