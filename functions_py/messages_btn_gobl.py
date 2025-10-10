@@ -1,8 +1,14 @@
 #using conversion tools version: 1.0.0.117
 
+#------------------------------------------
+# Rd, 10/10/2025
+# update array: gunakan flag_modified
+#------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.intevent_1 import intevent_1
+from sqlalchemy.orm.attributes import flag_modified
 from models import Res_line, Messages, Bediener, Htparam
 
 def messages_btn_gobl(rec_id:int, i_case:int, gastnr:int, resnr:int, reslinnr:int, user_init:string, mess_text_sv:string, caller_sv:string, rufnr_sv:string):
@@ -39,7 +45,6 @@ def messages_btn_gobl(rec_id:int, i_case:int, gastnr:int, resnr:int, reslinnr:in
         bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
         messages.usre = bediener.userinit
         messages.zinr = res_line.zinr
-        print("message save:", mess_text_sv)
         messages.messtext[0] = mess_text_sv
         messages.messtext[1] = caller_sv
         messages.messtext[2] = rufnr_sv
@@ -62,11 +67,14 @@ def messages_btn_gobl(rec_id:int, i_case:int, gastnr:int, resnr:int, reslinnr:in
     if i_case == 1:
         create_messages()
     else:
-        messages = get_cache (Messages, {"_recid": [(eq, rec_id)]})
-        messages.messtext[0] = mess_text_sv
-        bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
-        messages.usre = bediener.userinit
-        db_session.commit()
+        # messages = get_cache (Messages, {"_recid": [(eq, rec_id)]})
+        messages = db_session.query(Messages).filter(Messages._recid == rec_id).first()
+        if messages:
+            messages.messtext[0] = mess_text_sv
+            flag_modified(messages, "messtext")
+            bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+            messages.usre = bediener.userinit
+            db_session.commit()
 
 
     return generate_output()
