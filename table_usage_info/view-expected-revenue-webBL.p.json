@@ -1,0 +1,129 @@
+{
+    "Waehrung": {
+        "read": [],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "flogical",
+            "fdate",
+            "feldtyp",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "resdat",
+            "name",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "erwachs",
+            "zimmer_wunsch",
+            "l_zuordnung",
+            "zikatnr",
+            "zipreis",
+            "resnr",
+            "reslinnr",
+            "reserve_int",
+            "ankunft",
+            "contcode",
+            "abreise",
+            "kind1",
+            "kind2",
+            "reserve_dec",
+            "betriebsnr",
+            "name",
+            "zinr",
+            "gastnr",
+            "arrangement",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest_pr": {
+        "read": [
+            "code",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "kurzbez",
+            "bezeichnung",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Arrangement": {
+        "read": [
+            "arrangement",
+            "options",
+            "argtnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reslin_queasy": {
+        "read": [],
+        "write": []
+    },
+    "Queasy": {
+        "read": [],
+        "write": []
+    },
+    "Katpreis": {
+        "read": [
+            "perspreis",
+            "kindpreis",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Argt_line": {
+        "read": [
+            "betriebsnr",
+            "argtnr",
+            "departement",
+            "argt_artnr",
+            "vt_percnt",
+            "betrag",
+            "fakt_modus",
+            "intervall",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Artikel": {
+        "read": [
+            "zwkum",
+            "departement",
+            "artnr",
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zwkum": {
+        "read": [],
+        "write": []
+    },
+    "Fixleist": {
+        "read": [
+            "sequenz",
+            "lfakt",
+            "dekade",
+            "artnr",
+            "departement",
+            "betrag",
+            "number",
+            "_recid"
+        ],
+        "write": []
+    }
+}

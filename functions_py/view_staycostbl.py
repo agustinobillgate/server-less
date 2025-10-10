@@ -40,9 +40,6 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
         nonlocal output_list, argt_list
         nonlocal output_list_data, argt_list_data
-        print("--->", len(output_list_data))
-        for output_list in output_list_data:
-            print(output_list.str)
 
         return {"output-list": output_list_data}
 
