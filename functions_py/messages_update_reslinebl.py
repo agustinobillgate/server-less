@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 10/10/2025
+# message kosong
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.intevent_1 import intevent_1
@@ -37,7 +40,7 @@ def messages_update_reslinebl(resnr:int, reslinnr:int):
                     get_output(intevent_1(4, res_line.zinr, "Message Lamp on!", res_line.resnr, res_line.reslinnr))
         else:
 
-            if res_line.wabkurz.lower()  == ("M").lower() :
+            if res_line.wabkurz  == ("M") :
                 pass
                 res_line.wabkurz = ""
                 pass
