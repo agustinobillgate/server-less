@@ -1,8 +1,5 @@
 #using conversion tools version: 1.0.0.117
-#------------------------------------------
-# Rd, 10/10/2025
-# fchar -> htparam.fchar
-#------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -210,7 +207,7 @@ def closemonth2bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 979)]})
 
-    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fchar)]})
     gl_acct.actual[curr_month - 1] = gl_acct.actual[curr_month - 1] - profit + lost
     pass
 

@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 10/10/2025
+# fchar -> htparam.fchar
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -47,7 +51,7 @@ def trial_closemon1bl(pvilanguage:int):
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 979)]})
 
-    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fchar)]})
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
 
     if not gl_acct:
         msg_str = msg_str + chr_unicode(2) + translateExtended ("P&L Account not defined (Parameter 979).", lvcarea, "")
