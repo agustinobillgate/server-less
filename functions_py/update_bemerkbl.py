@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 10/10/2025
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_journal
@@ -30,8 +32,6 @@ def update_bemerkbl(jou_recid:int):
 
         nonlocal gl_journal
         nonlocal jou_recid
-
-
         nonlocal note_list
         nonlocal note_list_data
 
@@ -49,8 +49,6 @@ def update_bemerkbl(jou_recid:int):
             note_list.s_recid = gl_journal._recid
             note_list.bemerk = substring(gl_journal.bemerk, 0, n - 1)
             note_list.add_note = substring(gl_journal.bemerk, n - 1, length(gl_journal.bemerk))
-
-
         else:
             note_list.s_recid = gl_journal._recid
             note_list.bemerk = gl_journal.bemerk
@@ -63,15 +61,13 @@ def update_bemerkbl(jou_recid:int):
 
         nonlocal gl_journal
         nonlocal jou_recid
-
-
         nonlocal note_list
         nonlocal note_list_data
 
         gl_jou = None
         Gl_jou =  create_buffer("Gl_jou",Gl_journal)
 
-        for note_list in query(note_list_data, filters=(lambda note_list: note_list.bemerk != orig_note)):
+        for note_list in query(note_list_data, filters=(lambda note_list: note_list.bemerk != note_list.orig_note)):
             note_list.orig_note = note_list.bemerk
 
             gl_jou = get_cache (Gl_journal, {"_recid": [(eq, note_list.s_recid)]})
