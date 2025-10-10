@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 10/10/2025
+# message kosong
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -52,12 +55,8 @@ def get_messages_webbl(gastnr:int, resnr:int, reslinnr:int, v_key:string, v_deac
 
         nonlocal v_success, t_messages_data, mess_list_data, mess_data_data, gname, arrival, depart, zinr, pguest, nr, tot, num, username, mess_text, curr_time, caller, rufnr, curr_date, messages
         nonlocal gastnr, resnr, reslinnr, v_key, v_deactive
-
-
         nonlocal mess_list, t_messages, mess_data
         nonlocal mess_list_data, t_messages_data, mess_data_data
-
-
         nr, tot, mess_list_data = get_output(messages_init_varbl(if_flag, gastnr, resnr, reslinnr))
         mess_text = ""
         curr_date = None
@@ -66,7 +65,7 @@ def get_messages_webbl(gastnr:int, resnr:int, reslinnr:int, v_key:string, v_deac
         caller = ""
         rufnr = ""
 
-        if v_key.lower()  == ("FIRST").lower() :
+        if v_key  == ("FIRST") :
             get_messages(1)
             nr = 1
 
@@ -122,7 +121,7 @@ def get_messages_webbl(gastnr:int, resnr:int, reslinnr:int, v_key:string, v_deac
 
     gname, arrival, depart, zinr, pguest = get_output(prepare_messagesbl(gastnr, resnr, reslinnr))
 
-    if v_key.lower()  == ("DEL").lower()  or v_key.lower()  == ("DEACTIVE").lower() :
+    if v_key  == ("DEL")  or v_key  == ("DEACTIVE") :
         init_var(True)
 
         if v_deactive:
