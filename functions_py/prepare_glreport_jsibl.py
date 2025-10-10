@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 10/10/2025
+# fchar -> htparam.fchar
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -74,7 +77,7 @@ def prepare_glreport_jsibl(lvcarea:string):
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 979)]})
 
-    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fchar)]})
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
 
     if gl_acct:
         pnl_acct = htparam.fchar
