@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 10/10/2025
+# fchar -> htparam.fchar
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date

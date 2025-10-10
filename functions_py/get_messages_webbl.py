@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 10/10/2025
+# message kosong
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -34,7 +37,7 @@ def get_messages_webbl(gastnr:int, resnr:int, reslinnr:int, v_key:string, v_deac
 
     mess_list_data, Mess_list = create_model("Mess_list", {"nr":int, "mess_recid":int})
     t_messages_data, T_messages = create_model_like(Messages, {"rec_id":int})
-    mess_data_data, Mess_data = create_model("Mess_data", {"gname":string, "arrival":date, "depart":date, "zinr":string, "pguest":bool, "nr":int, "tot":int, "username":string, "messtext":string, "currtime":string, "caller":string, "phoneno":string, "currdate":date})
+    mess_data_data, Mess_data = create_model("Mess_data", {"gname":string, "arrival":date, "depart":date, "zinr":string, "pguest":bool, "nr":int, "tot":int, "username":string, "messText":string, "currTime":string, "caller":string, "phoneNo":string, "currDate":date})
 
     db_session = local_storage.db_session
 
@@ -52,12 +55,8 @@ def get_messages_webbl(gastnr:int, resnr:int, reslinnr:int, v_key:string, v_deac
 
         nonlocal v_success, t_messages_data, mess_list_data, mess_data_data, gname, arrival, depart, zinr, pguest, nr, tot, num, username, mess_text, curr_time, caller, rufnr, curr_date, messages
         nonlocal gastnr, resnr, reslinnr, v_key, v_deactive
-
-
         nonlocal mess_list, t_messages, mess_data
         nonlocal mess_list_data, t_messages_data, mess_data_data
-
-
         nr, tot, mess_list_data = get_output(messages_init_varbl(if_flag, gastnr, resnr, reslinnr))
         mess_text = ""
         curr_date = None
@@ -66,7 +65,7 @@ def get_messages_webbl(gastnr:int, resnr:int, reslinnr:int, v_key:string, v_deac
         caller = ""
         rufnr = ""
 
-        if v_key.lower()  == ("FIRST").lower() :
+        if v_key  == ("FIRST") :
             get_messages(1)
             nr = 1
 
@@ -113,16 +112,17 @@ def get_messages_webbl(gastnr:int, resnr:int, reslinnr:int, v_key:string, v_deac
             mess_list = query(mess_list_data, filters=(lambda mess_list: mess_list.nr == i), first=True)
             username, t_messages_data = get_output(messages_get_messagebl(mess_list.mess_recid))
 
-            t_messages = query(t_messages_data, first=True)
-            mess_text = t_messages.messtext[0]
-            caller = t_messages.messtext[1]
-            rufnr = t_messages.messtext[2]
-            curr_date = t_messages.datum
-            curr_time = to_string(t_messages.zeit, "HH:MM:SS")
+            # t_messages = query(t_messages_data, first=True)
+            for t_messages in t_messages_data:
+                mess_text = t_messages.messtext[0]
+                caller = t_messages.messtext[1]
+                rufnr = t_messages.messtext[2]
+                curr_date = t_messages.datum
+                curr_time = to_string(t_messages.zeit, "HH:MM:SS")
 
     gname, arrival, depart, zinr, pguest = get_output(prepare_messagesbl(gastnr, resnr, reslinnr))
 
-    if v_key.lower()  == ("DEL").lower()  or v_key.lower()  == ("DEACTIVE").lower() :
+    if v_key  == ("DEL")  or v_key  == ("DEACTIVE") :
         init_var(True)
 
         if v_deactive:
@@ -140,10 +140,10 @@ def get_messages_webbl(gastnr:int, resnr:int, reslinnr:int, v_key:string, v_deac
     mess_data.nr = nr
     mess_data.tot = tot
     mess_data.username = username
-    mess_data.messtext = mess_text
-    mess_data.currtime = curr_time
+    mess_data.messText = mess_text
+    mess_data.currTime = curr_time
     mess_data.caller = caller
-    mess_data.phoneno = rufnr
-    mess_data.currdate = curr_date
+    mess_data.phoneNo = rufnr
+    mess_data.currDate = curr_date
 
     return generate_output()
