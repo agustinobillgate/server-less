@@ -1,4 +1,7 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 10/10/2025
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -14,6 +17,7 @@ def gl_batchjou_btn_gobl(sorttype:int, from_refno:string, depttype:int, from_dat
     b1_list_data, B1_list = create_model_like(Gl_jouhdr, {"rec_id":int})
 
     db_session = local_storage.db_session
+    from_refno = from_refno.strip()
 
     def generate_output():
         nonlocal b1_list_data, gl_jouhdr
@@ -80,13 +84,13 @@ def gl_batchjou_btn_gobl(sorttype:int, from_refno:string, depttype:int, from_dat
             if depttype == 0:
 
                 for gl_jouhdr in db_session.query(Gl_jouhdr).filter(
-                         (Gl_jouhdr.activeflag == sorttype) & (Gl_jouhdr.jtype > 0) & (Gl_jouhdr.refno == (from_refno).lower()) & (Gl_jouhdr.datum >= from_date) & (Gl_jouhdr.datum <= to_date) & (Gl_jouhdr.batch == b_flag)).order_by(Gl_jouhdr.datum, Gl_jouhdr.refno, Gl_jouhdr.bezeich).all():
+                         (Gl_jouhdr.activeflag == sorttype) & (Gl_jouhdr.jtype > 0) & (Gl_jouhdr.refno == (from_refno)) & (Gl_jouhdr.datum >= from_date) & (Gl_jouhdr.datum <= to_date) & (Gl_jouhdr.batch == b_flag)).order_by(Gl_jouhdr.datum, Gl_jouhdr.refno, Gl_jouhdr.bezeich).all():
                     assign_b1()
 
             else:
 
                 for gl_jouhdr in db_session.query(Gl_jouhdr).filter(
-                         (Gl_jouhdr.activeflag == sorttype) & (Gl_jouhdr.batch == b_flag) & (Gl_jouhdr.refno == (from_refno).lower()) & (Gl_jouhdr.datum >= from_date) & (Gl_jouhdr.datum <= to_date) & (Gl_jouhdr.jtype == depttype) & (Gl_jouhdr.batch == b_flag)).order_by(Gl_jouhdr.datum, Gl_jouhdr.refno, Gl_jouhdr.bezeich).all():
+                         (Gl_jouhdr.activeflag == sorttype) & (Gl_jouhdr.batch == b_flag) & (Gl_jouhdr.refno == (from_refno)) & (Gl_jouhdr.datum >= from_date) & (Gl_jouhdr.datum <= to_date) & (Gl_jouhdr.jtype == depttype) & (Gl_jouhdr.batch == b_flag)).order_by(Gl_jouhdr.datum, Gl_jouhdr.refno, Gl_jouhdr.bezeich).all():
                     assign_b1()
 
 
