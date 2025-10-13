@@ -75,7 +75,7 @@ def closemonth2bl():
                 else:
                     gl_acct.actual[curr_month - 1] = gl_acct.last_yr[end_month - 1]
 
-                if gl_acct.fibukonto.lower()  == ("10001006").lower() :
+                if gl_acct.fibukonto  == ("10001006") :
                     pass
 
 
@@ -98,7 +98,7 @@ def closemonth2bl():
             else:
                 gl_journal_obj_list[gl_journal._recid] = True
 
-            if gl_acct.fibukonto.lower()  == ("10001006").lower() :
+            if gl_acct.fibukonto  == ("10001006") :
                 pass
 
             bacct = get_cache (Gl_acct, {"_recid": [(eq, gl_acct._recid)]})

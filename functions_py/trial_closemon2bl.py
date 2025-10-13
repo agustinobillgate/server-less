@@ -162,7 +162,7 @@ def trial_closemon2bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 979)]})
 
-    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fchar)]})
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
     gl_acct.actual[curr_month - 1] = gl_acct.actual[curr_month - 1] - profit + lost
     pass
 

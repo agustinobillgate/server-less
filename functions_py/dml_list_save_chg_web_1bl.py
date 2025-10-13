@@ -3,6 +3,8 @@
 # Rd 31/7/2025
 # gitlab: 566
 # 
+# Rulita, 10-10-2025
+# Tiket ID : 8CF423 | Added modify program from progress
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -14,7 +16,7 @@ c_list_data, C_list = create_model("C_list", {"zwkum":int, "grp":string, "artnr"
 
 def dml_list_save_chg_web_1bl(c_list_data:[C_list], user_init:string, curr_dept:int, selected_date:date, curr_select:string):
 
-    prepare_cache ([Bediener, Res_history, Queasy])
+    prepare_cache ([Reslin_queasy, Bediener, Res_history, Queasy])
 
     dml_no:string = ""
     counter:int = 0
@@ -86,7 +88,7 @@ def dml_list_save_chg_web_1bl(c_list_data:[C_list], user_init:string, curr_dept:
 
         if c_list.approved:
 
-            qlist = query(qlist_data, filters=(lambda qlist: qlist.datum == selected_date and qlist.depart == curr_dept and qlist.number1 == counter), first=True)
+            qlist = query(qlist_data, filters=(lambda qlist: qlist.datum == selected_date and qlist.depart == curr_dept and ((qlist.number1 == counter) or (counter == 1 and qlist.number1 == 0))), first=True)
 
             if not qlist:
                 qlist = Qlist()

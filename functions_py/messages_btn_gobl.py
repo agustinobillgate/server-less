@@ -1,8 +1,14 @@
 #using conversion tools version: 1.0.0.117
 
+#------------------------------------------
+# Rd, 10/10/2025
+# update array: gunakan flag_modified
+#------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.intevent_1 import intevent_1
+from sqlalchemy.orm.attributes import flag_modified
 from models import Res_line, Messages, Bediener, Htparam
 
 def messages_btn_gobl(rec_id:int, i_case:int, gastnr:int, resnr:int, reslinnr:int, user_init:string, mess_text_sv:string, caller_sv:string, rufnr_sv:string):
@@ -15,10 +21,11 @@ def messages_btn_gobl(rec_id:int, i_case:int, gastnr:int, resnr:int, reslinnr:in
 
     db_session = local_storage.db_session
 
+    print("Message:", mess_text_sv)
     def generate_output():
         nonlocal res_line_zinr, recid_msg, res_line, messages, bediener, htparam
         nonlocal rec_id, i_case, gastnr, resnr, reslinnr, user_init, mess_text_sv, caller_sv, rufnr_sv
-
+        db_session.commit()
         return {"res_line_zinr": res_line_zinr, "recid_msg": recid_msg}
 
     def create_messages():
@@ -28,7 +35,7 @@ def messages_btn_gobl(rec_id:int, i_case:int, gastnr:int, resnr:int, reslinnr:in
 
 
         messages = Messages()
-        db_session.add(messages)
+        
 
         messages.gastnr = gastnr
         messages.resnr = resnr
@@ -43,6 +50,9 @@ def messages_btn_gobl(rec_id:int, i_case:int, gastnr:int, resnr:int, reslinnr:in
         messages.messtext[2] = rufnr_sv
         res_line_zinr = res_line.zinr
         recid_msg = messages._recid
+
+        db_session.add(messages)
+        db_session.commit()
         pass
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 310)]})
@@ -57,13 +67,14 @@ def messages_btn_gobl(rec_id:int, i_case:int, gastnr:int, resnr:int, reslinnr:in
     if i_case == 1:
         create_messages()
     else:
+        # messages = get_cache (Messages, {"_recid": [(eq, rec_id)]})
+        messages = db_session.query(Messages).filter(Messages._recid == rec_id).first()
+        if messages:
+            messages.messtext[0] = mess_text_sv
+            flag_modified(messages, "messtext")
+            bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+            messages.usre = bediener.userinit
+            db_session.commit()
 
-        messages = get_cache (Messages, {"_recid": [(eq, rec_id)]})
-        pass
-        messages.messtext[0] = mess_text_sv
-
-        bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
-        messages.usre = bediener.userinit
-        pass
 
     return generate_output()

@@ -15,7 +15,6 @@ def messages_init_varbl(if_flag:bool, gastnr:int, resnr:int, reslinnr:int):
     res_line = messages = htparam = None
 
     mess_list = None
-
     mess_list_data, Mess_list = create_model("Mess_list", {"nr":int, "mess_recid":int})
 
     db_session = local_storage.db_session
@@ -33,11 +32,14 @@ def messages_init_varbl(if_flag:bool, gastnr:int, resnr:int, reslinnr:int):
 
     mess_list_data.clear()
 
-    res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+    # res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+    res_line = db_session.query(Res_line).filter(
+             (Res_line.resnr == resnr) & (Res_line.reslinnr == reslinnr)).first()
     nr = 0
 
     for messages in db_session.query(Messages).filter(
-             (Messages.gastnr == gastnr) & (Messages.resnr == resnr) & (Messages.reslinnr == reslinnr)).order_by((to_string(get_year(datum)) + to_string(get_month(datum)) + to_string(get_day(datum)) + to_string(zeit))).all():
+             (Messages.gastnr == gastnr) & (Messages.resnr == resnr) & 
+             (Messages.reslinnr == reslinnr)).order_by((to_string(get_year(Messages.datum)) + to_string(get_month(Messages.datum)) + to_string(get_day(Messages.datum)) + to_string(Messages.zeit))).all():
         mess_list = Mess_list()
         mess_list_data.append(mess_list)
 
