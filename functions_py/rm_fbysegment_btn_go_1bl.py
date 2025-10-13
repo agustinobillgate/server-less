@@ -509,7 +509,7 @@ def rm_fbysegment_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_year
 
                 counter = counter + 1
                 boutput.counter = counter
-                boutput.segment = to_string(output_list.datum, "99/99/9999")
+                boutput.segment = output_list.datum.strftime("%d/%m/%Y")
 
             elif curr_date != None and curr_date != output_list.datum:
                 boutput = Boutput()
@@ -542,7 +542,7 @@ def rm_fbysegment_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_year
 
                 counter = counter + 1
                 boutput.counter = counter
-                boutput.segment = to_string(output_list.datum, "99/99/9999")
+                boutput.segment = output_list.datum.strftime("%d/%m/%Y")
 
             if output_list.room != 0 and output_list.room != None:
                 output_list.avrg_rev =  to_decimal(output_list.revenue) / to_decimal(output_list.room)
@@ -566,7 +566,7 @@ def rm_fbysegment_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_year
         counter = counter + 1
         boutput.counter = counter
         boutput.datum = curr_date
-        boutput.str_datum = to_string(curr_date, "99/99/9999")
+        boutput.str_datum = curr_date
         boutput.segment = "TOTAL"
         boutput.room = tot_rm
         boutput.revenue =  to_decimal(tot_rev)
@@ -595,13 +595,14 @@ def rm_fbysegment_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_year
         boutput.str_avrg = to_string(boutput.avrg_rev, "->>>,>>>,>>>,>>9.99")
 
     elif sum_month :
+
         if to_year <= get_year(ci_date):
             create_browse2()
         else:
             create_browse3()
 
         for output_list1 in query(output_list1_data, filters=(lambda output_list1: output_list1.check_flag), sort_by=[("segmentcode",False)]):
-            for loopi in range(1,12 + 1):
+            for loopi in range(1,12 + 1) :
                 counter = counter + 1
                 output_list1.counter = counter
                 output_list1.avrg_rev[loopi - 1] = output_list1.revenue[loopi - 1] / output_list1.room[loopi - 1]
@@ -611,7 +612,9 @@ def rm_fbysegment_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_year
                 if output_list1.avrg_rev[loopi - 1] == None:
                     output_list1.avrg_rev[loopi - 1] = 0
 
+
             output_list1.check_flag = False
+
 
         boutput1 = Boutput1()
         boutput1_data.append(boutput1)
@@ -619,6 +622,7 @@ def rm_fbysegment_btn_go_1bl(sum_month:bool, fr_date:date, to_date:date, to_year
         counter = counter + 1
         boutput1.counter = counter
         boutput1.segment = "TOTAL"
+
 
         for loopi in range(1,12 + 1) :
             boutput1.room[loopi - 1] = trm1[loopi - 1]
