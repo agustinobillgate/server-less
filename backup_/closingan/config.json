@@ -1,0 +1,8 @@
+{
+    "DB_HOST": "psql.staging.e1-vhp.com",
+    "DB_NAME": "qctest",
+    "DB_USER": "postgres",
+    "DB_PASSWORD": "DevPostgreSQL#2024",
+    "DB_PORT": 5432,
+    "HOTEL_SCHEMA": "qcserverless3"
+}
