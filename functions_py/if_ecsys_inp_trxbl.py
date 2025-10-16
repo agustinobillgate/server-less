@@ -1,10 +1,5 @@
 #using conversion tools version: 1.0.0.117
 
-# =========================================
-# Rulita, 08-10-2025 
-# Tiket ID : D76DAA | New compile program
-# =========================================
-
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
