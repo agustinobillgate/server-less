@@ -63,6 +63,8 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
         timestamp_str = human_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]  # trim to milliseconds
 
         return timestamp_str
+    
+    
     htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
 
     if htparam:

@@ -6,7 +6,7 @@
 
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, time
 from functions.intevent_1 import intevent_1
 from functions.create_historybl import create_historybl
 from models import Bill, Res_line, Zimmer, Htparam, Mealcoup, Zimkateg, Resplan, Messages, Queasy, Guest, Reslin_queasy
@@ -212,7 +212,7 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
                 new_zkat = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
 
                 if new_zkat.zikatnr != res_line2.zikatnr:
-                    for curr_datum in date_range(beg_datum,(res_line2.abreise - 1)) :
+                    for curr_datum in date_range(beg_datum,(res_line2.abreise - timedelta(days=1))) :
 
                         resplan = get_cache (Resplan, {"zikatnr": [(eq, res_line2.zikatnr)],"datum": [(eq, curr_datum)]})
 
@@ -336,7 +336,7 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
             res_line2 = get_cache (Res_line, {"_recid": [(eq, rline2._recid)]})
 
             if zimmer.zikatnr != res_line2.zikatnr:
-                for curr_datum in date_range(res_line2.ankunft,(res_line2.abreise - 1)) :
+                for curr_datum in date_range(res_line2.ankunft,(res_line2.abreise - timedelta(days=1))) :
 
                     resplan = get_cache (Resplan, {"zikatnr": [(eq, res_line2.zikatnr)],"datum": [(eq, curr_datum)]})
 

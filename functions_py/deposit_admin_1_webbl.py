@@ -8,7 +8,7 @@
 
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from sqlalchemy import func
 from models import Res_line, Reservation, Exrate, Waehrung, Arrangement, Zimkateg, Fixleist
 
@@ -1274,7 +1274,7 @@ def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
             b1_list.rmtype = zimkateg.bezeichnung
 
 
-        for datum in date_range(res_line.ankunft,res_line.abreise - 1) :
+        for datum in date_range(res_line.ankunft,res_line.abreise - timedelta(days=1)) :
 
             for fixleist in db_session.query(Fixleist).filter(
                      (Fixleist.resnr == res_line.resnr) & (Fixleist.reslinnr == res_line.reslinnr)).order_by(Fixleist._recid).all():
@@ -1350,7 +1350,7 @@ def deposit_admin_1_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
             b1_print.rmtype = zimkateg.bezeichnung
 
 
-        for datum in date_range(res_line.ankunft,res_line.abreise - 1) :
+        for datum in date_range(res_line.ankunft,res_line.abreise - timedelta(days=1)) :
 
             for fixleist in db_session.query(Fixleist).filter(
                      (Fixleist.resnr == res_line.resnr) & (Fixleist.reslinnr == res_line.reslinnr)).order_by(Fixleist._recid).all():

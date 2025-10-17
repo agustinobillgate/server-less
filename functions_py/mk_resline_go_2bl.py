@@ -5,7 +5,7 @@
 
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from functions.htpint import htpint
 from functions.htpdate import htpdate
 from sqlalchemy import func
@@ -2290,7 +2290,7 @@ def mk_resline_go_2bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
             elif res_line.ankunft == reslin_list.ankunft and res_line.abreise != reslin_list.abreise:
 
                 if res_line.abreise > reslin_list.abreise:
-                    for datum in date_range(reslin_list.abreise,res_line.abreise - 1) :
+                    for datum in date_range(reslin_list.abreise,res_line.abreise - timedelta(days=1)) :
 
                         queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, "")]})
 
@@ -2317,7 +2317,7 @@ def mk_resline_go_2bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                                     pass
 
                 elif reslin_list.abreise > res_line.abreise:
-                    # for datum in date_range(res_line.abreise,reslin_list.abreise - 1) :
+                    # for datum in date_range(res_line.abreise,reslin_list.abreise - timedelta(days=1)) :
                     start_date = reslin_list.abreise
                     end_date = res_line.abreise - timedelta(days=1)
                     days = (end_date - start_date).days + 1  # +1 to include end_date
