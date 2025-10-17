@@ -7,7 +7,7 @@
 
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from functions.post_dayuse import post_dayuse
 from functions.intevent_1 import intevent_1
 from functions.mk_mcoupon import mk_mcoupon
