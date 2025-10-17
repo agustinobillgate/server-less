@@ -1,0 +1,13 @@
+{
+    "Htparam": {
+        "read": [
+            "fdate",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [],
+        "write": []
+    }
+}
