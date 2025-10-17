@@ -2,7 +2,7 @@ docker_version = "1.0.0.24.691"
 
 #Version 1.0.0.26
 
-print("Start:", docker_version)
+print("Re Start:", docker_version)
 
 # ---------------------------------------------------------------------------------
 # Main.py FASTAPI
@@ -1715,7 +1715,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                         local_storage.debugging = local_storage.debugging + ',Run'
                         db_session.commit()
                     if importlib.util.find_spec(module_name):
-                        print("Masuk Module:", module_name)
+                        print("Import Module:", module_name)
                         module = importlib.import_module(module_name)
                         # Rd, just to re-test, develop mode only
                         module = importlib.reload(module)   
