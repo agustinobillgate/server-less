@@ -1,10 +1,15 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 14/10/2025
+# finteger -> htparam.finteger  
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from models import Gl_acct, Gl_jouhdr, Htparam, Artikel, Hoteldpt, Umsatz
+from sqlalchemy import case
 
 trans_dept_data, Trans_dept = create_model("Trans_dept", {"nr":int})
 
@@ -111,8 +116,31 @@ def gl_linkfobl(trans_dept_data:[Trans_dept], from_date:date, to_date:date, user
                 else:
                     hoteldpt_obj_list[hoteldpt._recid] = True
 
-                for artikel in db_session.query(Artikel).filter(
-                         (Artikel.departement == hoteldpt.num) & ((Artikel.artart == 0) | (Artikel.artart == 5) | (Artikel.artart == 8) | (Artikel.artart == 2) | (Artikel.artart == 6) | (Artikel.artart == 7))).order_by(artart_list[Artikel.artart + 1 - 1], Artikel.artnr).all():
+                # for artikel in db_session.query(Artikel).filter(
+                #          (Artikel.departement == hoteldpt.num) & 
+                #          ((Artikel.artart == 0) | 
+                #           (Artikel.artart == 5) | 
+                #           (Artikel.artart == 8) | 
+                #           (Artikel.artart == 2) | 
+                #           (Artikel.artart == 6) | 
+                #           (Artikel.artart == 7))).order_by(artart_list[Artikel.artart + 1 - 1], Artikel.artnr).all():
+                custom_order = case(
+                    (Artikel.artart == 5, 1),
+                    (Artikel.artart == 2, 2),
+                    (Artikel.artart == 8, 3),
+                    (Artikel.artart == 6, 4),
+                    (Artikel.artart == 7, 5),
+                    (Artikel.artart == 0, 6),
+                )
+
+                for artikel in (
+                    db_session.query(Artikel)
+                    .filter(
+                        (Artikel.departement == hoteldpt.num) &
+                        (Artikel.artart.in_([0, 2, 5, 6, 7, 8]))
+                    )
+                    .order_by(custom_order, Artikel.artnr)
+                    .all()):
 
                     umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, curr_date)]})
 
@@ -327,8 +355,26 @@ def gl_linkfobl(trans_dept_data:[Trans_dept], from_date:date, to_date:date, user
                                 else:
                                     add_list(1, False, (to_string(hoteldpt.num) + " - " + artikel.bezeich + ";&&;" + to_string(artikel.departement) + ";" + to_string(artikel.artnr)), artikel.artnr, artikel.departement)
 
-                for artikel in db_session.query(Artikel).filter(
-                         (Artikel.departement == hoteldpt.num) & (Artikel.artart == 13)).order_by(artart_list[Artikel.artart + 1 - 1], Artikel.artnr).all():
+                # for artikel in db_session.query(Artikel).filter(
+                #          (Artikel.departement == hoteldpt.num) & (Artikel.artart == 13)).order_by(artart_list[Artikel.artart + 1 - 1], Artikel.artnr).all():
+                custom_order = case(
+                    (Artikel.artart == 13, 1),
+                    (Artikel.artart == 2, 2),
+                    (Artikel.artart == 5, 3),
+                    (Artikel.artart == 6, 4),
+                    (Artikel.artart == 7, 5),
+                    (Artikel.artart == 8, 6)
+                )
+
+                for artikel in (
+                        db_session.query(Artikel)
+                        .filter(
+                            (Artikel.departement == hoteldpt.num) &
+                            (Artikel.artart == 13)
+                        )
+                        .order_by(custom_order, Artikel.artnr)
+                        .all()
+                    ):
 
                     umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, curr_date)]})
 
@@ -485,8 +531,22 @@ def gl_linkfobl(trans_dept_data:[Trans_dept], from_date:date, to_date:date, user
         modify_glist()
 
         gl_acct1_obj_list = {}
-        for gl_acct1 in db_session.query(Gl_acct1).filter(
-                 ((Gl_acct1.fibukonto.in_(list(set([g_list.fibukonto for g_list in g_list_data])))))).order_by(g_list.flag, g_list.sysdate, g_list.zeit).all():
+        # for gl_acct1 in db_session.query(Gl_acct1).filter(
+        #          ((Gl_acct1.fibukonto.in_(list(set([g_list.fibukonto for g_list in g_list_data])))))).order_by(g_list.flag, g_list.sysdate, g_list.zeit).all():
+        # Re write, pisah list dari main loop
+        fibukonto_list = list({g_list.fibukonto for g_list in g_list_data})
+        query_result = (
+            db_session.query(Gl_acct1)
+            .filter(Gl_acct1.fibukonto.in_(fibukonto_list))
+            .all()
+        )
+        g_index = {
+            g.fibukonto: (g.flag, g.sysdate, g.zeit)
+            for g in g_list_data
+        }
+
+        query_result.sort(key=lambda x: g_index.get(x.fibukonto, (0, None, None)))
+        for gl_acct1 in query_result:
             if gl_acct1_obj_list.get(gl_acct1._recid):
                 continue
             else:
@@ -621,14 +681,14 @@ def gl_linkfobl(trans_dept_data:[Trans_dept], from_date:date, to_date:date, user
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 133)]})
 
-    artikel = get_cache (Artikel, {"artnr": [(eq, finteger)],"departement": [(eq, 0)]})
+    artikel = get_cache (Artikel, {"artnr": [(eq, htparam.finteger)],"departement": [(eq, 0)]})
 
     if artikel:
         serv_acctno = artikel.fibukonto
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 132)]})
 
-    artikel = get_cache (Artikel, {"artnr": [(eq, finteger)],"departement": [(eq, 0)]})
+    artikel = get_cache (Artikel, {"artnr": [(eq, htparam.finteger)],"departement": [(eq, 0)]})
 
     if artikel:
         vat_acctno = artikel.fibukonto
