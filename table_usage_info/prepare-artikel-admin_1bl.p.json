@@ -1,0 +1,56 @@
+{
+    "Artikel": {
+        "read": [],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "fchar",
+            "finteger",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [
+            "waehrungsnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Hoteldpt": {
+        "read": [
+            "depart",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zwkum": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Ekum": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Arrangement": {
+        "read": [
+            "argt_bez",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "logi1",
+            "_recid"
+        ],
+        "write": []
+    }
+}
