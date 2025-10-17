@@ -1271,7 +1271,7 @@ def deposit_admin_2_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
 
         # Rd, 31/7/2025
         # date timedelta
-        # for datum in date_range(res_line.ankunft,res_line.abreise - 1) :
+        # for datum in date_range(res_line.ankunft,res_line.abreise - timedelta(days=1)) :
         tmpdate = res_line.abreise - timedelta(days=1)
         for datum in date_range(res_line.ankunft, tmpdate) :
 
@@ -1350,7 +1350,7 @@ def deposit_admin_2_webbl(case_type:int, depo_foreign:bool, lname:string, deposi
 
         # Rd, 31/7/2025
         # date timedelta
-        # for datum in date_range(res_line.ankunft,res_line.abreise - 1) :
+        # for datum in date_range(res_line.ankunft,res_line.abreise - timedelta(days=1)) :
         tmpdate = res_line.abreise - timedelta(days=1)
         for datum in date_range(res_line.ankunft, tmpdate ) :
 
