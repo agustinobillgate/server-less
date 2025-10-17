@@ -1,0 +1,38 @@
+{
+    "Artikel": {
+        "read": [
+            "bezeich",
+            "zwkum",
+            "endkum",
+            "epreis",
+            "artart",
+            "mwst_code",
+            "service_code",
+            "activeflag",
+            "fibukonto",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "key",
+            "number1",
+            "number2",
+            "logi1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_history": {
+        "read": [
+            "aenderung",
+            "nr",
+            "datum",
+            "zeit",
+            "action",
+            "_recid"
+        ],
+        "write": []
+    }
+}
