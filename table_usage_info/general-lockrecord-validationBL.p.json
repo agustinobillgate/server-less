@@ -1,0 +1,21 @@
+{
+    "Queasy": {
+        "read": [],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "fdate",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "resnr",
+            "reslinnr",
+            "_recid"
+        ],
+        "write": []
+    }
+}
