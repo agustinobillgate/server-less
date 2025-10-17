@@ -44,39 +44,33 @@ def dml_list_create_listbl(curr_dept:int, selected_date:date):
         hoteldpt = get_cache (Hoteldpt, {"num": [(eq, curr_dept)]})
 
         if curr_dept == 0:
-            # Rd 13/8/2025
-            # dml_art = db_session.query(Dml_art).filter(
-            #          (Dml_art.datum == selected_date) & (num_entries(Dml_art.chginit, ";") > 1) & (entry(1, Dml_art.chginit, ";") != "")).first()
+
             dml_art = db_session.query(Dml_art).filter(
-                     (Dml_art.datum == selected_date) & 
-                     
-                     (entry(1, Dml_art.chginit, ";") != "")).first()
-            if (num_entries(dml_art.chginit, ";") > 1):
-                if not dml_art:
+                     (Dml_art.datum == selected_date) & (num_entries(Dml_art.chginit, ";") > 1) & (entry(1, Dml_art.chginit, ";") != "")).first()
 
-                    dml_art = get_cache (Dml_art, {"datum": [(eq, selected_date)]})
+            if not dml_art:
 
-                if dml_art:
-                    dml_list = Dml_list()
-                    dml_list_data.append(dml_list)
+                dml_art = get_cache (Dml_art, {"datum": [(eq, selected_date)]})
 
-                    counter = 1
-                    dept = hoteldpt.depart
-                    id = dml_art.userinit
+            if dml_art:
+                dml_list = Dml_list()
+                dml_list_data.append(dml_list)
 
-                    if num_entries(dml_art.chginit, ";") > 1:
-                        dml_nr = entry(1, dml_art.chginit, ";")
-                    else:
-                        dml_nr = ""
+                counter = 1
+                dept = hoteldpt.depart
+                id = dml_art.userinit
 
-                    if matches(dml_art.chginit,r"*!*"):
-                        approved = True
-                    else:
-                        approved = False
+                if num_entries(dml_art.chginit, ";") > 1:
+                    dml_nr = entry(1, dml_art.chginit, ";")
+                else:
+                    dml_nr = ""
+
+                if matches(dml_art.chginit,r"*!*"):
+                    approved = True
+                else:
+                    approved = False
         else:
-            # Rd 13/8/2025
-            # dml_artdep = db_session.query(Dml_artdep).filter(
-            #          (Dml_artdep.datum == selected_date) & (Dml_artdep.departement == curr_dept) & (num_entries(Dml_artdep.chginit, ";") > 1) & (entry(1, Dml_artdep.chginit, ";") != "") & (Dml_artdep.anzahl > 0)).first()
+
             dml_artdep = db_session.query(Dml_artdep).filter(
                      (Dml_artdep.datum == selected_date) & 
                      (Dml_artdep.departement == curr_dept) & 
@@ -86,23 +80,23 @@ def dml_list_create_listbl(curr_dept:int, selected_date:date):
 
                     dml_artdep = get_cache (Dml_artdep, {"datum": [(eq, selected_date)],"departement": [(eq, curr_dept)],"anzahl": [(gt, 0)]})
 
-                if dml_artdep:
-                    dml_list = Dml_list()
-                    dml_list_data.append(dml_list)
+            if dml_artdep:
+                dml_list = Dml_list()
+                dml_list_data.append(dml_list)
 
-                    counter = 1
-                    dept = hoteldpt.depart
-                    id = dml_artdep.userinit
+                counter = 1
+                dept = hoteldpt.depart
+                id = dml_artdep.userinit
 
-                    if num_entries(dml_artdep.chginit, ";") > 1:
-                        dml_nr = entry(1, dml_artdep.chginit, ";")
-                    else:
-                        dml_nr = ""
+                if num_entries(dml_artdep.chginit, ";") > 1:
+                    dml_nr = entry(1, dml_artdep.chginit, ";")
+                else:
+                    dml_nr = ""
 
-                    if matches(dml_artdep.chginit,r"*!*"):
-                        approved = True
-                    else:
-                        approved = False
+                if matches(dml_artdep.chginit,r"*!*"):
+                    approved = True
+                else:
+                    approved = False
 
         for rqueasy in db_session.query(Rqueasy).filter(
                  (Rqueasy.key == ("DML").lower()) & (Rqueasy.date1 == selected_date) & (to_int(entry(1, Rqueasy.char1, ";")) == curr_dept)).order_by(Rqueasy._recid).all():
@@ -118,6 +112,62 @@ def dml_list_create_listbl(curr_dept:int, selected_date:date):
                 id = rqueasy.char2
 
                 if matches(rqueasy.char3,r"*!*"):
+                    approved = True
+                else:
+                    approved = False
+    else:
+
+        hoteldpt = get_cache (Hoteldpt, {"num": [(eq, curr_dept)]})
+
+        if curr_dept == 0:
+
+            dml_art = db_session.query(Dml_art).filter(
+                     (Dml_art.datum == selected_date) & (num_entries(Dml_art.chginit, ";") > 1) & (entry(1, Dml_art.chginit, ";") != "")).first()
+
+            if not dml_art:
+
+                dml_art = get_cache (Dml_art, {"datum": [(eq, selected_date)]})
+
+            if dml_art:
+                dml_list = Dml_list()
+                dml_list_data.append(dml_list)
+
+                counter = 1
+                dept = hoteldpt.depart
+                id = dml_art.userinit
+
+                if num_entries(dml_art.chginit, ";") > 1:
+                    dml_nr = entry(1, dml_art.chginit, ";")
+                else:
+                    dml_nr = ""
+
+                if matches(dml_art.chginit,r"*!*"):
+                    approved = True
+                else:
+                    approved = False
+        else:
+
+            dml_artdep = db_session.query(Dml_artdep).filter(
+                     (Dml_artdep.datum == selected_date) & (Dml_artdep.departement == curr_dept) & (num_entries(Dml_artdep.chginit, ";") > 1) & (entry(1, Dml_artdep.chginit, ";") != "") & (Dml_artdep.anzahl > 0)).first()
+
+            if not dml_artdep:
+
+                dml_artdep = get_cache (Dml_artdep, {"datum": [(eq, selected_date)],"departement": [(eq, curr_dept)],"anzahl": [(gt, 0)]})
+
+            if dml_artdep:
+                dml_list = Dml_list()
+                dml_list_data.append(dml_list)
+
+                counter = 1
+                dept = hoteldpt.depart
+                id = dml_artdep.userinit
+
+                if num_entries(dml_artdep.chginit, ";") > 1:
+                    dml_nr = entry(1, dml_artdep.chginit, ";")
+                else:
+                    dml_nr = ""
+
+                if matches(dml_artdep.chginit,r"*!*"):
                     approved = True
                 else:
                     approved = False
