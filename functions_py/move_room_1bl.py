@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 17/10/2025
+# .NAME -> .name
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -57,7 +61,7 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
         else:
             res_mode = "modify"
 
-        if res_mode.lower()  == ("inhouse").lower() :
+        if res_mode  == ("inhouse") :
 
             zimmer = get_cache (Zimmer, {"zinr": [(eq, moved_room)]})
 
@@ -96,7 +100,7 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
             get_output(create_historybl(res_line.resnr, res_line.reslinnr, prev_zinr, "roomchg", user_init, movereason))
 
             resline = db_session.query(Resline).filter(
-                         (Resline.resnr == res_line.resnr) & ((Resline.active_flag == 0) | (Resline.active_flag == 1)) & (Resline.resstatus != 12) & (Resline.zinr == (prev_zinr).lower())).first()
+                         (Resline.resnr == res_line.resnr) & ((Resline.active_flag == 0) | (Resline.active_flag == 1)) & (Resline.resstatus != 12) & (Resline.zinr == (prev_zinr))).first()
 
             if not resline:
 
@@ -133,7 +137,7 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
 
             zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, rline.zikatnr)]})
 
-            if res_mode.lower()  == ("inhouse").lower() :
+            if res_mode  == ("inhouse") :
                 beg_datum = get_current_date()
             else:
                 beg_datum = rline.ankunft
@@ -180,11 +184,11 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
         res_recid1 = 0
 
         for messages in db_session.query(Messages).filter(
-                     (Messages.zinr == (act_zinr).lower()) & (Messages.resnr == res_line.resnr) & (Messages.reslinnr >= 1)).order_by(Messages._recid).all():
+                     (Messages.zinr == (act_zinr)) & (Messages.resnr == res_line.resnr) & (Messages.reslinnr >= 1)).order_by(Messages._recid).all():
             messages.zinr = new_zinr
 
         for res_line1 in db_session.query(Res_line1).filter(
-                     (Res_line1.resnr == resnr) & (Res_line1.zinr == (act_zinr).lower()) & (Res_line1.resstatus == 13)).order_by(Res_line1._recid).all():
+                     (Res_line1.resnr == resnr) & (Res_line1.zinr == (act_zinr)) & (Res_line1.resstatus == 13)).order_by(Res_line1._recid).all():
 
             if end_datum <= res_line1.abreise:
                 res_recid1 = res_line1._recid
@@ -201,7 +205,7 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
             res_line1 = get_cache (Res_line, {"_recid": [(eq, res_recid1)]})
 
             for res_line2 in db_session.query(Res_line2).filter(
-                             (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr).lower()) & (Res_line2.resstatus == 13) & (Res_line2.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line2._recid).all():
+                             (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr)) & (Res_line2.resstatus == 13) & (Res_line2.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line2._recid).all():
 
                 zimmer = get_cache (Zimmer, {"zinr": [(eq, new_zinr)]})
 
@@ -245,7 +249,7 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
                 pass
 
             for res_line2 in db_session.query(Res_line2).filter(
-                             (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr).lower()) & (Res_line2.resstatus == 12)).order_by(Res_line2._recid).all():
+                             (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr)) & (Res_line2.resstatus == 12)).order_by(Res_line2._recid).all():
                 res_line2.zinr = new_zinr
                 res_line2.zikatnr = new_zkat.zikatnr
                 res_line2.setup = zimmer.setup
@@ -327,7 +331,7 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
         zimmer = get_cache (Zimmer, {"zinr": [(eq, moved_room)]})
 
         for rline2 in db_session.query(Rline2).filter(
-                 (Rline2.resnr == resnr) & (Rline2.zinr != "") & (Rline2.zinr == (act_zinr).lower()) & (Rline2.resstatus == 11)).order_by(Rline2._recid).all():
+                 (Rline2.resnr == resnr) & (Rline2.zinr != "") & (Rline2.zinr == (act_zinr)) & (Rline2.resstatus == 11)).order_by(Rline2._recid).all():
 
             res_line2 = get_cache (Res_line, {"_recid": [(eq, rline2._recid)]})
 
@@ -436,7 +440,7 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
 
             zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, rline.zikatnr)]})
 
-            if res_mode.lower()  == ("inhouse").lower() :
+            if res_mode  == ("inhouse") :
                 beg_datum = get_current_date()
             else:
                 beg_datum = rline.ankunft
@@ -509,7 +513,7 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
             reslin_queasy.char3 = reslin_queasy.char3 + to_string(res_line.zipreis, ">,>>>,>>9.99") + ";" + to_string(res_line.zipreis, ">,>>>,>>9.99") + ";"
         else:
             reslin_queasy.char3 = reslin_queasy.char3 + to_string(res_line.zipreis, ">>>>,>>>,>>9") + ";" + to_string(res_line.zipreis, ">>>>,>>>,>>9") + ";"
-        reslin_queasy.char3 = reslin_queasy.char3 + to_string(cid, "x(2)") + ";" + to_string(user_init, "x(2)") + ";" + to_string(cdate, "x(8)") + ";" + to_string(get_current_date()) + ";" + to_string(res_line.name, "x(16)") + ";" + to_string(res_line.NAME, "x(16)") + ";"
+        reslin_queasy.char3 = reslin_queasy.char3 + to_string(cid, "x(2)") + ";" + to_string(user_init, "x(2)") + ";" + to_string(cdate, "x(8)") + ";" + to_string(get_current_date()) + ";" + to_string(res_line.name, "x(16)") + ";" + to_string(res_line.name, "x(16)") + ";"
 
         if res_line.was_status == 0:
             reslin_queasy.char3 = reslin_queasy.char3 + to_string(" NO", "x(3)") + ";"

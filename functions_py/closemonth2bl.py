@@ -259,6 +259,6 @@ def closemonth2bl():
         else:
             exrate.betrag =  to_decimal("1")
         pass
-        pass
+
 
     return generate_output()
