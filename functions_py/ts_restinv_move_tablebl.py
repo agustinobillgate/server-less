@@ -3,14 +3,17 @@
 # Rd 3/8/2025
 # if available, geser indent
 #----------------------------------------
+# Rulita, 17-10-2025
+# modify program update tiketID : 6526C2
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from models import H_bill, Queasy, Htparam, H_bill_line, Tisch, H_journal
+from models import H_bill, Queasy, Htparam, H_bill_line, Tisch, H_mjourn, H_journal
 
 def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int, tischnr:int, bilrecid:int, rechnr:int, curr_waiter:int, new_waiter:int):
 
-    prepare_cache ([H_bill, Queasy, Htparam, H_bill_line, H_journal])
+    prepare_cache ([H_bill, Queasy, Htparam, H_bill_line, H_mjourn, H_journal])
 
     bill_date = None
     printed = ""
@@ -24,7 +27,7 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
     old_billno:int = 0
     curr_recid:int = 0
     active_deposit:bool = False
-    h_bill = queasy = htparam = h_bill_line = tisch = h_journal = None
+    h_bill = queasy = htparam = h_bill_line = tisch = h_mjourn = h_journal = None
 
     t_h_bill = buf_bill = buffq251 = buffq33 = None
 
@@ -38,7 +41,7 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal bill_date, printed, balance, balance_foreign, fl_code, fl_code1, fl_code2, t_h_bill_data, flag_move, old_billno, curr_recid, active_deposit, h_bill, queasy, htparam, h_bill_line, tisch, h_journal
+        nonlocal bill_date, printed, balance, balance_foreign, fl_code, fl_code1, fl_code2, t_h_bill_data, flag_move, old_billno, curr_recid, active_deposit, h_bill, queasy, htparam, h_bill_line, tisch, h_mjourn, h_journal
         nonlocal pax, curr_tischnr, rec_id, curr_dept, tischnr, bilrecid, rechnr, curr_waiter, new_waiter
         nonlocal buf_bill, buffq251, buffq33
 
@@ -50,7 +53,7 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
 
     def move_table():
 
-        nonlocal bill_date, printed, balance, balance_foreign, fl_code, fl_code1, fl_code2, t_h_bill_data, flag_move, old_billno, curr_recid, active_deposit, h_bill, queasy, htparam, h_bill_line, tisch, h_journal
+        nonlocal bill_date, printed, balance, balance_foreign, fl_code, fl_code1, fl_code2, t_h_bill_data, flag_move, old_billno, curr_recid, active_deposit, h_bill, queasy, htparam, h_bill_line, tisch, h_mjourn, h_journal
         nonlocal pax, curr_tischnr, rec_id, curr_dept, tischnr, bilrecid, rechnr, curr_waiter, new_waiter
         nonlocal buf_bill, buffq251, buffq33
 
@@ -133,6 +136,15 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
         for h_bill_line in db_session.query(H_bill_line).filter(
                      (H_bill_line.rechnr == rechnr) & (H_bill_line.departement == curr_dept)).order_by(H_bill_line._recid).all():
 
+            for h_mjourn in db_session.query(H_mjourn).filter(
+                         (H_mjourn.departement == h_bill_line.departement) & (H_mjourn.h_artnr == h_bill_line.artnr) & (H_mjourn.rechnr == h_bill_line.rechnr) & (H_mjourn.bill_datum == h_bill_line.bill_datum) & (H_mjourn.sysdate == h_bill_line.sysdate) & (H_mjourn.zeit == h_bill_line.zeit) & (num_entries(H_mjourn.request, "|") > 1) & (to_int(entry(0, H_mjourn.request, "|")) == to_int(h_bill_line._recid))).order_by(H_mjourn._recid).all():
+                h_mjourn.rechnr = new_rechnr
+                h_mjourn.tischnr = tischnr
+                h_mjourn.kellner_nr = curr_waiter
+
+
+            pass
+
             hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
             pass
             bill_date = h_bill_line.bill_datum
@@ -204,7 +216,7 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
 
     def selforder_moveto_emptytable():
 
-        nonlocal bill_date, printed, balance, balance_foreign, fl_code, fl_code1, fl_code2, t_h_bill_data, flag_move, old_billno, curr_recid, active_deposit, h_bill, queasy, htparam, h_bill_line, tisch, h_journal
+        nonlocal bill_date, printed, balance, balance_foreign, fl_code, fl_code1, fl_code2, t_h_bill_data, flag_move, old_billno, curr_recid, active_deposit, h_bill, queasy, htparam, h_bill_line, tisch, h_mjourn, h_journal
         nonlocal pax, curr_tischnr, rec_id, curr_dept, tischnr, bilrecid, rechnr, curr_waiter, new_waiter
         nonlocal buf_bill, buffq251, buffq33
 
@@ -386,7 +398,7 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
 
     def selforder_moveto_occtable():
 
-        nonlocal bill_date, printed, balance, balance_foreign, fl_code, fl_code1, fl_code2, t_h_bill_data, flag_move, old_billno, curr_recid, active_deposit, h_bill, queasy, htparam, h_bill_line, tisch, h_journal
+        nonlocal bill_date, printed, balance, balance_foreign, fl_code, fl_code1, fl_code2, t_h_bill_data, flag_move, old_billno, curr_recid, active_deposit, h_bill, queasy, htparam, h_bill_line, tisch, h_mjourn, h_journal
         nonlocal pax, curr_tischnr, rec_id, curr_dept, tischnr, bilrecid, rechnr, curr_waiter, new_waiter
         nonlocal buf_bill, buffq251, buffq33
 

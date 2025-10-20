@@ -28,8 +28,21 @@ def write_mast_artbl(case_type:int, resno:int, artikel_list_data:[Artikel_list])
                  (Mast_art.resnr == resno)).order_by(Mast_art._recid).all():
             db_session.delete(mast_art)
 
-        artikel_list = query(artikel_list_data, first=True)
-        while None != artikel_list:
+        # change query -> for loop
+        #------------------------------
+        # artikel_list = query(artikel_list_data, first=True)
+        # while None != artikel_list:
+        #     mast_art = Mast_art()
+        #     db_session.add(mast_art)
+
+        #     mast_art.resnr = resno
+        #     mast_art.artnr = artikel_list.artnr
+        #     mast_art.departement = artikel_list.departement
+        #     mast_art.reslinnr = 1
+
+        #     artikel_list = query(artikel_list_data, next=True)
+
+        for artikel_list in artikel_list_data:
             mast_art = Mast_art()
             db_session.add(mast_art)
 
@@ -37,8 +50,8 @@ def write_mast_artbl(case_type:int, resno:int, artikel_list_data:[Artikel_list])
             mast_art.artnr = artikel_list.artnr
             mast_art.departement = artikel_list.departement
             mast_art.reslinnr = 1
+        
 
-            artikel_list = query(artikel_list_data, next=True)
     elif case_type == 2:
         pass
 

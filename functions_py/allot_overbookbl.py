@@ -2,7 +2,7 @@
 
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from functions.res_overbookbl import res_overbookbl
 from models import Kontline, Bediener, Htparam, Zimkateg, Res_line, Queasy, Counters
 
@@ -132,7 +132,7 @@ def allot_overbookbl(pvilanguage:int, res_mode:string, curr_resnr:int, curr_resl
                     if res_line.resnr == curr_resnr and res_line.reslinnr == curr_reslinnr:
                         pass
                     else:
-                        for datum in date_range(res_line.ankunft,(res_line.abreise - 1)) :
+                        for datum in date_range(res_line.ankunft,(res_line.abreise - timedelta(days=1))) :
 
                             allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == datum), first=True)
 
@@ -154,7 +154,7 @@ def allot_overbookbl(pvilanguage:int, res_mode:string, curr_resnr:int, curr_resl
                     if res_line.resnr == curr_resnr and res_line.reslinnr == curr_reslinnr:
                         pass
                     else:
-                        for datum in date_range(res_line.ankunft,(res_line.abreise - 1)) :
+                        for datum in date_range(res_line.ankunft,(res_line.abreise - timedelta(days=1))) :
 
                             allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == datum), first=True)
 
@@ -177,7 +177,7 @@ def allot_overbookbl(pvilanguage:int, res_mode:string, curr_resnr:int, curr_resl
                 if res_line.resnr == curr_resnr and res_line.reslinnr == curr_reslinnr:
                     pass
                 else:
-                    for datum in date_range(res_line.ankunft,(res_line.abreise - 1)) :
+                    for datum in date_range(res_line.ankunft,(res_line.abreise - timedelta(days=1))) :
 
                         allot_list = query(allot_list_data, filters=(lambda allot_list: allot_list.datum == datum), first=True)
 

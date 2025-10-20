@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 17/10/2025
+# lower di boolean, err
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -82,14 +86,14 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
         else:
             reservation.verstat = 0
 
-        if res_mode.lower()  == ("new").lower() :
+        if res_mode  == ("new") :
             reservation.useridanlage = user_init
 
-        elif res_mode.lower()  == ("modify").lower() :
+        elif res_mode  == ("modify") :
             reservation.useridmutat = user_init
             reservation.mutdat = get_current_date()
 
-        if res_mode.lower()  != ("new").lower()  and ((reservation.segmentcode != curr_segm) or (reservation.bemerk.lower()  != (comments)).lower()):
+        if res_mode  != ("new")  and ((reservation.segmentcode != curr_segm) or (reservation.bemerk  != (comments))):
             add_reslog(reservation.segmentcode, curr_segm)
         reservation.segmentcode = curr_segm
         reservation.groupname = groupname
@@ -322,7 +326,7 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
 
         if not res_line:
 
-            if (reservation.bemerk.lower()  == (comments).lower()):
+            if (reservation.bemerk  == (comments)):
 
                 return
 
@@ -357,7 +361,7 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
             pass
             pass
 
-        if reservation.bemerk.lower()  != (comments).lower() :
+        if reservation.bemerk  != (comments) :
             res_history = Res_history()
             db_session.add(res_history)
 

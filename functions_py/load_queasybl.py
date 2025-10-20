@@ -13,7 +13,6 @@ def load_queasybl(case_type:int, qno:int):
     t_queasy_data, T_queasy = create_model_like(Queasy)
 
     db_session = local_storage.db_session
-
     def generate_output():
         nonlocal t_queasy_data, queasy, gl_acct
         nonlocal case_type, qno
@@ -21,7 +20,7 @@ def load_queasybl(case_type:int, qno:int):
 
         nonlocal t_queasy
         nonlocal t_queasy_data
-
+        db_session.commit()
         return {"t-queasy": t_queasy_data}
 
     if case_type == 1:

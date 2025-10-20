@@ -54,9 +54,8 @@ def dml_list_save_chg_web_1bl(c_list_data:[C_list], user_init:string, curr_dept:
     if dml_artdep:
         counter = counter + 1
 
-    reslin_queasy = db_session.query(Reslin_queasy).filter(
-             (Reslin_queasy.key == ("DML").lower()) & (Reslin_queasy.date1 == selected_date) & (to_int(entry(1, Reslin_queasy.char1, ";")) == curr_dept)).first()
-    while None != reslin_queasy:
+    for reslin_queasy in db_session.query(Reslin_queasy).filter(
+             (Reslin_queasy.key == ("DML").lower()) & (Reslin_queasy.date1 == selected_date) & (to_int(entry(1, Reslin_queasy.char1, ";")) == curr_dept)).order_by(Reslin_queasy.number2.desc()).all():
         counter = reslin_queasy.number2
 
         curr_recid = reslin_queasy._recid
