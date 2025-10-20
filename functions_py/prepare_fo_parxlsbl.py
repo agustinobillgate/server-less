@@ -5,7 +5,6 @@ from decimal import Decimal
 from datetime import date
 from models import Parameters, Brief, Htparam, Waehrung, Zimmer, Briefzei
 
-print("Masuk ke prepare_fo_parxlsbl")
 def prepare_fo_parxlsbl(pvilanguage:int, briefnr:int):
 
     prepare_cache ([Htparam, Waehrung, Briefzei])
@@ -87,6 +86,7 @@ def prepare_fo_parxlsbl(pvilanguage:int, briefnr:int):
 
                 htp_list.paramnr = htparam.paramnr
                 htp_list.fchar = keycmd + htparam.fchar
+
         htv_list = Htv_list()
         htv_list_data.append(htv_list)
 
@@ -1161,28 +1161,37 @@ def prepare_fo_parxlsbl(pvilanguage:int, briefnr:int):
 
         for briefzei in db_session.query(Briefzei).filter(
                  (Briefzei.briefnr == briefnr)).order_by(Briefzei.briefzeilnr).all():
-            j = 1
-            for i in range(1,length(briefzei.texte)  + 1) :
 
-                if asc(substring(briefzei.texte, i - 1, 1)) == 10:
-                    n = i - j
-                    c = substring(briefzei.texte, j - 1, n)
-                    l = length(c)
+            for text_loop in briefzei.texte.split("\\n"):
+                if not continued:
+                    brief_list = Brief_list()
+                    brief_list_data.append(brief_list)
 
-                    if not continued:
-                        brief_list = Brief_list()
-                        brief_list_data.append(brief_list)
+                    brief_list.b_text = text_loop
 
-                    brief_list.b_text = brief_list.b_text + c
-                    j = i + 1
-            n = length(briefzei.texte) - j + 1
-            c = substring(briefzei.texte, j - 1, n)
+            # j = 1
+            # for i in range(len(briefzei.texte)) :
 
-            if not continued:
-                brief_list = Brief_list()
-                brief_list_data.append(brief_list)
+            #     if asc(substring(briefzei.texte, i - 1, 1)) == 10:
+            #         n = i - j
+            #         c = substring(briefzei.texte, j - 1, n)
+            #         l = length(c)
 
-            b_text = b_text + c
+            #         if not continued:
+            #             brief_list = Brief_list()
+            #             brief_list_data.append(brief_list)
+
+            #         brief_list.b_text = brief_list.b_text + c
+            #         j = i + 1
+
+            # n = length(briefzei.texte) - j + 1
+            # c = substring(briefzei.texte, j - 1, n)
+
+            # if not continued:
+            #     brief_list = Brief_list()
+            #     brief_list_data.append(brief_list)
+
+            # brief_list.b_text = brief_list.b_text + c
 
 
     for parameters in db_session.query(Parameters).filter(
@@ -1196,8 +1205,8 @@ def prepare_fo_parxlsbl(pvilanguage:int, briefnr:int):
 
     if htparam.fchar == "":
         msg_str = msg_str + chr_unicode(2) + translateExtended ("Excel Output Directory not defined (Param 418 Grp 15)", lvcarea, "")
-
         return generate_output()
+        
     xls_dir = htparam.fchar
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 479)]})
@@ -1220,6 +1229,7 @@ def prepare_fo_parxlsbl(pvilanguage:int, briefnr:int):
     htparam = get_cache (Htparam, {"paramnr": [(eq, 491)]})
     price_decimal = htparam.finteger
     no_decimal = (price_decimal == 0)
+
     fill_list()
 
     brief = get_cache (Brief, {"briefnr": [(eq, briefnr)]})
