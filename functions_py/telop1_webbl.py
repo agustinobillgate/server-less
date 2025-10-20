@@ -1,5 +1,12 @@
 #using conversion tools version: 1.0.0.118
 
+# =========================================
+# Rulita, 20-10-2025
+# Issue :
+# - Fixing input param lname if string " "
+# - Fixing re sortiong in output telop_list
+# =========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -23,10 +30,12 @@ def telop1_webbl(sorttype:int, room:string, fdate1:date, fdate2:date, ci_date:da
 
     gmember = telop_list = None
 
-    telop_list_data, Telop_list = create_model("Telop_list", {"resli_wabkurz":string, "voucher_nr":string, "grpflag":bool, "reser_name":string, "zinr":string, "resli_name":string, "segmentcode":int, "nation1":string, "resstatus":int, "l_zuordnung":int, "ankunft":date, "abreise":date, "ankzeit":int, "abreisezeit":int, "flight_nr":string, "zimmeranz":int, "kurzbez":string, "erwachs":int, "kind1":int, "gratis":int, "waeh_wabkurz":string, "resnr":int, "reslinnr":int, "betrieb_gast":int, "groupname":string, "cancelled_id":string, "changed_id":string, "bemerk":string, "active_flag":int, "gastnrmember":int, "gastnr":int, "betrieb_gastmem":int, "pseudofix":bool, "zikatnr":int, "arrangement":string, "zipreis":Decimal, "resname":string, "address":string, "city":string, "b_comments":string, "message_flag":bool, "flag_color":int, "flight1":string, "eta":string, "flight2":string, "etd":string, "voucher_str":string})
+    telop_list_data, Telop_list = create_model("Telop_list", {"resli_wabkurz":string, "voucher_nr":string, "grpflag":bool, "reser_name":string, "zinr":string, "resli_name":string, "segmentcode":int, "nation1":string, "resstatus":int, "l_zuordnung":int, "ankunft":date, "abreise":date, "ankzeit":int, "abreisezeit":int, "flight_nr":string, "zimmeranz":int, "kurzbez":string, "erwachs":int, "kind1":int, "gratis":int, "waeh_wabkurz":string, "resnr":int, "reslinnr":int, "betrieb_gast":int, "groupname":string, "cancelled_id":string, "changed_id":string, "bemerk":string, "active_flag":int, "gastnrmember":int, "gastnr":int, "betrieb_gastmem":int, "pseudofix":bool, "zikatnr":int, "arrangement":string, "zipreis":Decimal, "resname":string, "address":string, "city":string, "b_comments":string, "message_flag":bool, "flag_color":int, "flight1":string, "eta":string, "flight2":string, "etd":string, "voucher_str":string, "kontakt_nr":int})
 
     Gmember = create_buffer("Gmember",Guest)
 
+    # Rulita, fixing input param string " "
+    lname = lname.strip(" ")
 
     db_session = local_storage.db_session
 
@@ -35,9 +44,14 @@ def telop1_webbl(sorttype:int, room:string, fdate1:date, fdate2:date, ci_date:da
         nonlocal sorttype, room, fdate1, fdate2, ci_date, lname, last_sort, lnat, lresnr, lvoucher
         nonlocal gmember
 
-
         nonlocal gmember, telop_list
         nonlocal telop_list_data
+
+        # Rulita, Resorting
+        telop_list_data = sorted(
+            telop_list_data,
+            key=lambda x: (x.kontakt_nr * x.resnr, x.resstatus, x.resli_name)
+        )
 
         return {"troom": troom, "tpax": tpax, "telop-list": telop_list_data}
 
@@ -4809,6 +4823,8 @@ def telop1_webbl(sorttype:int, room:string, fdate1:date, fdate2:date, ci_date:da
         telop_list.address = guest.adresse1
         telop_list.city = guest.wohnort + " " + guest.plz
         telop_list.b_comments = reservation.bemerk
+        telop_list.kontakt_nr = res_line.kontakt_nr         
+        # Rulita, add telop_list.kontakt_nr for serverless resorting output
 
         reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "flag")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"betriebsnr": [(eq, 0)]})
 
