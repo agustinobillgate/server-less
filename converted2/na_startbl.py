@@ -1,4 +1,15 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.
+#------------------------------------------
+# Rd, 20/10/2025
+
+# vhpNA/reprintNaPrepare -> prepare_reprint_nabl
+# vhpFOC/naStartPrepare -> prepare_na_startbl
+# vhpFOC/naCheck1 -> na_check1bl
+# vhpFOC/naStart -> na_start_webbl
+# vhpFOC/naStart2 -> na_start_web2bl
+# vhpFOC/naStartGetInfo -> na_start_get_info_webbl
+#------------------------------------------
+
 
 from functions.additional_functions import *
 from decimal import Decimal

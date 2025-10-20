@@ -115,32 +115,32 @@ def na_check1bl(pvilanguage:int, def_natcode:string):
     #     return generate_inner_output()
 
 
-    def ass_progname(abschlussart:int, progname:string):
+    # def ass_progname(abschlussart:int, progname:string):
 
-        nonlocal msg_str, msg_str2, msg_str3, w_flag, names_ok, its_ok, htparam_recid, lvcarea, localregion_exist, sharerok, rmno, cidate, billdate, frate, lodg_betrag, var_argt_betrag, ex_rate, vat_art, service_art, vat2_art, fact_art, gross_argt, net_argt, bfast_value, lunch_value, dinner_value, luncdin_value, other_value, bfast_art, lunch_art, dinner_art, lundin_art, segment_type, passfirst, tmpdate, na_date, na_time, na_name, res_line, htparam, bill, guest, nation, h_bill, waehrung, arrangement, artikel, argt_line, reslin_queasy, nightaudit
-        nonlocal pvilanguage, def_natcode
-        nonlocal rbuff
-
-
-        nonlocal rbuff
-
-        a:int = 0
-
-        def generate_inner_output():
-            return (progname)
+    #     nonlocal msg_str, msg_str2, msg_str3, w_flag, names_ok, its_ok, htparam_recid, lvcarea, localregion_exist, sharerok, rmno, cidate, billdate, frate, lodg_betrag, var_argt_betrag, ex_rate, vat_art, service_art, vat2_art, fact_art, gross_argt, net_argt, bfast_value, lunch_value, dinner_value, luncdin_value, other_value, bfast_art, lunch_art, dinner_art, lundin_art, segment_type, passfirst, tmpdate, na_date, na_time, na_name, res_line, htparam, bill, guest, nation, h_bill, waehrung, arrangement, artikel, argt_line, reslin_queasy, nightaudit
+    #     nonlocal pvilanguage, def_natcode
+    #     nonlocal rbuff
 
 
-        if matches(progname,r"*bl.p*"):
-            pass
-        else:
+    #     nonlocal rbuff
 
-            if to_int(abschlussart) == 1:
-                pass
-            else:
-                a = R_INDEX (progname, ".p")
-                progname = substring(progname.lower() , 0, a - 1) + "bl.p"
+    #     a:int = 0
 
-        return generate_inner_output()
+    #     def generate_inner_output():
+    #         return (progname)
+
+
+    #     if matches(progname,r"*bl.p*"):
+    #         pass
+    #     else:
+
+    #         if to_int(abschlussart) == 1:
+    #             pass
+    #         else:
+    #             a = R_INDEX (progname, ".p")
+    #             progname = substring(progname.lower() , 0, a - 1) + "bl.p"
+
+    #     return generate_inner_output()
 
 
     cidate = get_output(htpdate(87))
