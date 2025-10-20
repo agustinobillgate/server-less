@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 20/10/2025
+# nama var: argt_betrag, sama dengan fungsi di functions_py/argt_betrag.py
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -26,7 +30,9 @@ def na_check1bl(pvilanguage:int, def_natcode:string):
     billdate:date = None
     frate:Decimal = 1
     lodg_betrag:Decimal = to_decimal("0.0")
-    argt_betrag:Decimal = to_decimal("0.0")
+    # nama var: argt_betrag, sama dengan fungsi di functions_py/argt_betrag.py
+    # argt_betrag:Decimal = to_decimal("0.0")
+    var_argt_betrag:Decimal = to_decimal("0.0")
     ex_rate:Decimal = to_decimal("0.0")
     vat_art:Decimal = to_decimal("0.0")
     service_art:Decimal = to_decimal("0.0")
@@ -59,7 +65,7 @@ def na_check1bl(pvilanguage:int, def_natcode:string):
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal msg_str, msg_str2, msg_str3, w_flag, names_ok, its_ok, htparam_recid, lvcarea, localregion_exist, sharerok, rmno, cidate, billdate, frate, lodg_betrag, argt_betrag, ex_rate, vat_art, service_art, vat2_art, fact_art, gross_argt, net_argt, bfast_value, lunch_value, dinner_value, luncdin_value, other_value, bfast_art, lunch_art, dinner_art, lundin_art, segment_type, passfirst, tmpdate, na_date, na_time, na_name, res_line, htparam, bill, guest, nation, h_bill, waehrung, arrangement, artikel, argt_line, reslin_queasy, nightaudit
+        nonlocal msg_str, msg_str2, msg_str3, w_flag, names_ok, its_ok, htparam_recid, lvcarea, localregion_exist, sharerok, rmno, cidate, billdate, frate, lodg_betrag, var_argt_betrag, ex_rate, vat_art, service_art, vat2_art, fact_art, gross_argt, net_argt, bfast_value, lunch_value, dinner_value, luncdin_value, other_value, bfast_art, lunch_art, dinner_art, lundin_art, segment_type, passfirst, tmpdate, na_date, na_time, na_name, res_line, htparam, bill, guest, nation, h_bill, waehrung, arrangement, artikel, argt_line, reslin_queasy, nightaudit
         nonlocal pvilanguage, def_natcode
         nonlocal rbuff
 
@@ -68,50 +74,50 @@ def na_check1bl(pvilanguage:int, def_natcode:string):
 
         return {"msg_str": msg_str, "msg_str2": msg_str2, "msg_str3": msg_str3, "w_flag": w_flag, "names_ok": names_ok, "its_ok": its_ok, "htparam_recid": htparam_recid}
 
-    def check_na_program_names():
+    # def check_na_program_names():
 
-        nonlocal msg_str, msg_str2, msg_str3, w_flag, names_ok, its_ok, htparam_recid, lvcarea, localregion_exist, sharerok, rmno, cidate, billdate, frate, lodg_betrag, argt_betrag, ex_rate, vat_art, service_art, vat2_art, fact_art, gross_argt, net_argt, bfast_value, lunch_value, dinner_value, luncdin_value, other_value, bfast_art, lunch_art, dinner_art, lundin_art, segment_type, passfirst, tmpdate, na_date, na_time, na_name, res_line, htparam, bill, guest, nation, h_bill, waehrung, arrangement, artikel, argt_line, reslin_queasy, nightaudit
-        nonlocal pvilanguage, def_natcode
-        nonlocal rbuff
-
-
-        nonlocal rbuff
-
-        names_ok = True
-        progname:string = ""
-        not_found:bool = False
-
-        def generate_inner_output():
-            return (names_ok)
+    #     nonlocal msg_str, msg_str2, msg_str3, w_flag, names_ok, its_ok, htparam_recid, lvcarea, localregion_exist, sharerok, rmno, cidate, billdate, frate, lodg_betrag, var_argt_betrag, ex_rate, vat_art, service_art, vat2_art, fact_art, gross_argt, net_argt, bfast_value, lunch_value, dinner_value, luncdin_value, other_value, bfast_art, lunch_art, dinner_art, lundin_art, segment_type, passfirst, tmpdate, na_date, na_time, na_name, res_line, htparam, bill, guest, nation, h_bill, waehrung, arrangement, artikel, argt_line, reslin_queasy, nightaudit
+    #     nonlocal pvilanguage, def_natcode
+    #     nonlocal rbuff
 
 
-        for nightaudit in db_session.query(Nightaudit).filter(
-                 (Nightaudit.selektion)).order_by((1 - Nightaudit.hogarest), Nightaudit.reihenfolge).all():
-            progname = nightaudit.programm
-            progname = ass_progname(nightaudit.abschlussart, progname)
-            not_found = SEARCH (progname.lower()) == None
+    #     nonlocal rbuff
 
-            if not_found:
-                progname = replace_str(progname, ".p", ".r")
-                progname = replace_str(progname, ".w", ".r")
-                not_found = (SEARCH (progname.lower()) == None)
+    #     names_ok = True
+    #     progname:string = ""
+    #     not_found:bool = False
 
-            if not_found:
+    #     def generate_inner_output():
+    #         return (names_ok)
 
-                if matches(progname,r"nt-tauziarpt.r") or matches(progname,r"nt-exportgcf.r") or matches(progname,r"nt-exportghs.r") or matches(progname,r"nt-exportghs2.r") or matches(progname,r"nt-salesboard.r") or matches(progname,r"nt-dashboardohm-daily.r") or matches(progname,r"nt-dashboard-daily.r") or matches(progname,r"nt-exportguestsense.r") or matches(progname,r"nt-exportghs-phm.r") or matches(progname,r"nt-guestlist-csv.r"):
-                    pass
-                else:
-                    msg_str = msg_str + chr_unicode(2) + translateExtended ("N/a Program does not exist:", lvcarea, "") + " " + nightaudit.program
-                    names_ok = False
 
-                    return generate_inner_output()
+    #     for nightaudit in db_session.query(Nightaudit).filter(
+    #              (Nightaudit.selektion)).order_by((1 - Nightaudit.hogarest), Nightaudit.reihenfolge).all():
+    #         progname = nightaudit.programm
+    #         progname = ass_progname(nightaudit.abschlussart, progname)
+    #         not_found = SEARCH (progname.lower()) == None
 
-        return generate_inner_output()
+    #         if not_found:
+    #             progname = replace_str(progname, ".p", ".r")
+    #             progname = replace_str(progname, ".w", ".r")
+    #             not_found = (SEARCH (progname.lower()) == None)
+
+    #         if not_found:
+
+    #             if matches(progname,r"nt-tauziarpt.r") or matches(progname,r"nt-exportgcf.r") or matches(progname,r"nt-exportghs.r") or matches(progname,r"nt-exportghs2.r") or matches(progname,r"nt-salesboard.r") or matches(progname,r"nt-dashboardohm-daily.r") or matches(progname,r"nt-dashboard-daily.r") or matches(progname,r"nt-exportguestsense.r") or matches(progname,r"nt-exportghs-phm.r") or matches(progname,r"nt-guestlist-csv.r"):
+    #                 pass
+    #             else:
+    #                 msg_str = msg_str + chr_unicode(2) + translateExtended ("N/a Program does not exist:", lvcarea, "") + " " + nightaudit.program
+    #                 names_ok = False
+
+    #                 return generate_inner_output()
+
+    #     return generate_inner_output()
 
 
     def ass_progname(abschlussart:int, progname:string):
 
-        nonlocal msg_str, msg_str2, msg_str3, w_flag, names_ok, its_ok, htparam_recid, lvcarea, localregion_exist, sharerok, rmno, cidate, billdate, frate, lodg_betrag, argt_betrag, ex_rate, vat_art, service_art, vat2_art, fact_art, gross_argt, net_argt, bfast_value, lunch_value, dinner_value, luncdin_value, other_value, bfast_art, lunch_art, dinner_art, lundin_art, segment_type, passfirst, tmpdate, na_date, na_time, na_name, res_line, htparam, bill, guest, nation, h_bill, waehrung, arrangement, artikel, argt_line, reslin_queasy, nightaudit
+        nonlocal msg_str, msg_str2, msg_str3, w_flag, names_ok, its_ok, htparam_recid, lvcarea, localregion_exist, sharerok, rmno, cidate, billdate, frate, lodg_betrag, var_argt_betrag, ex_rate, vat_art, service_art, vat2_art, fact_art, gross_argt, net_argt, bfast_value, lunch_value, dinner_value, luncdin_value, other_value, bfast_art, lunch_art, dinner_art, lundin_art, segment_type, passfirst, tmpdate, na_date, na_time, na_name, res_line, htparam, bill, guest, nation, h_bill, waehrung, arrangement, artikel, argt_line, reslin_queasy, nightaudit
         nonlocal pvilanguage, def_natcode
         nonlocal rbuff
 
@@ -305,21 +311,21 @@ def na_check1bl(pvilanguage:int, def_natcode:string):
                     argt_line_obj_list[argt_line._recid] = True
 
 
-                argt_betrag, ex_rate = get_output(argt_betrag(res_line._recid, argt_line._recid))
+                var_argt_betrag, ex_rate = get_output(argt_betrag(res_line._recid, argt_line._recid))
 
                 if artikel.zwkum == bfast_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
-                    lodg_betrag =  to_decimal(lodg_betrag) - to_decimal(argt_betrag)
+                    lodg_betrag =  to_decimal(lodg_betrag) - to_decimal(var_argt_betrag)
 
                 elif artikel.zwkum == lunch_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
-                    lodg_betrag =  to_decimal(lodg_betrag) - to_decimal(argt_betrag)
+                    lodg_betrag =  to_decimal(lodg_betrag) - to_decimal(var_argt_betrag)
 
                 elif artikel.zwkum == dinner_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
-                    lodg_betrag =  to_decimal(lodg_betrag) - to_decimal(argt_betrag)
+                    lodg_betrag =  to_decimal(lodg_betrag) - to_decimal(var_argt_betrag)
 
                 elif artikel.zwkum == lundin_art and (artikel.umsatzart == 3 or artikel.umsatzart >= 5):
-                    lodg_betrag =  to_decimal(lodg_betrag) - to_decimal(argt_betrag)
+                    lodg_betrag =  to_decimal(lodg_betrag) - to_decimal(var_argt_betrag)
                 else:
-                    lodg_betrag =  to_decimal(lodg_betrag) - to_decimal(argt_betrag)
+                    lodg_betrag =  to_decimal(lodg_betrag) - to_decimal(var_argt_betrag)
 
             if lodg_betrag < 0:
                 msg_str = msg_str + chr_unicode(2) + translateExtended ("Minus lodging found with reservation : ", lvcarea, "") + to_string(res_line.resnr) + "/" + to_string(res_line.reslinnr, "999")
@@ -352,7 +358,11 @@ def na_check1bl(pvilanguage:int, def_natcode:string):
     if w_flag :
 
         return generate_output()
-    names_ok = check_na_program_names()
+    
+    # Rd, 20/10/2025: comment karena fungsi check_na_program_names belum diimplementasi
+    # names_ok = check_na_program_names()
+    names_ok = True
+
 
     if not names_ok:
 

@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 20/10/2025
+# options -> arrangement.options
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -551,8 +555,8 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
         arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
         j = 1
         for i in range(1,4 + 1) :
-            stay = to_int(substring(options, j - 1, 2))
-            pay = to_int(substring(options, j + 2 - 1, 2))
+            stay = to_int(substring(arrangement.options, j - 1, 2))
+            pay = to_int(substring(arrangement.options, j + 2 - 1, 2))
 
             if (stay - pay) > 0:
                 n = num_bonus + pay + 1

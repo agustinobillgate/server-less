@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 20/10/2025
+# kurang nama table
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal

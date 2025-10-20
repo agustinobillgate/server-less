@@ -1,0 +1,13 @@
+{
+    "Htparam": {
+        "read": [
+            "flogical",
+            "fdate",
+            "finteger",
+            "fchar",
+            "feldtyp",
+            "_recid"
+        ],
+        "write": []
+    }
+}
