@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+# =======================================
+# Rd, 21/10/2025
+# timedelta
+# =======================================
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from models import Htparam, Hoteldpt, Artikel, Umsatz
 
 def mn_del_old_outlet_umsatzbl():
@@ -33,7 +36,7 @@ def mn_del_old_outlet_umsatzbl():
             for artikel in db_session.query(Artikel).filter(
                      (Artikel.departement == hoteldpt.num) & (Artikel.artart == 1) & (Artikel.activeflag)).order_by(Artikel._recid).all():
 
-                umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(le, (billdate - 14))]})
+                umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(le, (billdate - timedelta(days=14)))]})
                 while None != umsatz:
                     i = i + 1
                     pass

@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 21/10/2025
+# time delta
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from models import Htparam, Bill, Bill_line, Blinehis, Billhis
 
 def mn_del_old_billsbl():
@@ -33,7 +36,9 @@ def mn_del_old_billsbl():
         if anz == 0:
             anz = 60
 
-        bill = get_cache (Bill, {"flag": [(eq, 1)],"datum": [(lt, (ci_date - anz))]})
+        # bill = get_cache (Bill, {"flag": [(eq, 1)],"datum": [(lt, (ci_date -    timedelta(days=anz)))]}, order_by="datum", first=True)
+        bill = db_session.query(Bill).filter(
+                 (Bill.flag == 1) & (Bill.datum < (ci_date - timedelta(days=anz)))).order_by(Bill.datum, Bill._recid).first()
         while None != bill:
             i = i + 1
 

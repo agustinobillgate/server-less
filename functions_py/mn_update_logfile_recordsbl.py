@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 21/10/2025
+# timedelta
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from sqlalchemy import func
 from models import Htparam, Res_history, Reslin_queasy, Queasy
 
@@ -34,7 +37,9 @@ def mn_update_logfile_recordsbl():
         R_queasy =  create_buffer("R_queasy",Reslin_queasy)
         Qsy =  create_buffer("Qsy",Queasy)
 
-        queasy = get_cache (Queasy, {"key": [(eq, 39)],"date1": [(lt, (ci_date - anz_tage))]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 39)],"date1": [(lt, (ci_date - anz_tage))]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 39) & (Queasy.date1 < (ci_date - timedelta(days=anz_tage)))).order_by(Queasy._recid).first()
         while None != queasy:
 
             qsy = db_session.query(Qsy).filter(
@@ -46,7 +51,9 @@ def mn_update_logfile_recordsbl():
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 39) & (Queasy.date1 < (ci_date - timedelta(days=anz_tage))) & (Queasy._recid > curr_recid)).first()
 
-        queasy = get_cache (Queasy, {"key": [(eq, 36)],"date1": [(lt, (ci_date - anz_tage))]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 36)],"date1": [(lt, (ci_date - anz_tage))]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 36) & (Queasy.date1 < (ci_date - timedelta(days=anz_tage)))).order_by(Queasy._recid).first()
         while None != queasy:
 
             qsy = db_session.query(Qsy).filter(
@@ -59,7 +66,7 @@ def mn_update_logfile_recordsbl():
                      (Queasy.key == 36) & (Queasy.date1 < (ci_date - timedelta(days=anz_tage))) & (Queasy._recid > curr_recid)).first()
 
         res_history = db_session.query(Res_history).filter(
-                 (Res_history.action == ("HouseKeeping").lower()) & (Res_history.datum < (ci_date - timedelta(days=anz_tage))) & (Res_history.zeit >= 0) & (matches(Res_history.aenderung,("*Status Changed*")))).first()
+                 (Res_history.action == ("HouseKeeping")) & (Res_history.datum < (ci_date - timedelta(days=anz_tage))) & (Res_history.zeit >= 0) & (matches(Res_history.aenderung,("*Status Changed*")))).first()
         while None != res_history:
 
             reshis = db_session.query(Reshis).filter(
@@ -69,9 +76,11 @@ def mn_update_logfile_recordsbl():
 
             curr_recid = res_history._recid
             res_history = db_session.query(Res_history).filter(
-                     (Res_history.action == ("HouseKeeping").lower()) & (Res_history.datum < (ci_date - timedelta(days=anz_tage))) & (Res_history.zeit >= 0) & (matches(Res_history.aenderung,("*Status Changed*"))) & (Res_history._recid > curr_recid)).first()
+                     (Res_history.action == ("HouseKeeping")) & (Res_history.datum < (ci_date - timedelta(days=anz_tage))) & (Res_history.zeit >= 0) & (matches(Res_history.aenderung,("*Status Changed*"))) & (Res_history._recid > curr_recid)).first()
 
-        res_history = get_cache (Res_history, {"action": [(eq, "housekeeping")],"datum": [(lt, (ci_date - hist_tage))],"zeit": [(ge, 0)]})
+        # res_history = get_cache (Res_history, {"action": [(eq, "housekeeping")],"datum": [(lt, (ci_date - hist_tage))],"zeit": [(ge, 0)]})
+        res_history = db_session.query(Res_history).filter(
+                 (Res_history.action == ("Housekeeping")) & (Res_history.datum < (ci_date - timedelta(days=anz_tage))) & (Res_history.zeit >= 0)).first()
         while None != res_history:
 
             reshis = db_session.query(Reshis).filter(
@@ -81,16 +90,16 @@ def mn_update_logfile_recordsbl():
 
             curr_recid = res_history._recid
             res_history = db_session.query(Res_history).filter(
-                     (Res_history.action == ("HouseKeeping").lower()) & (Res_history.datum < (ci_date - timedelta(days=anz_tage))) & (Res_history.zeit >= 0) & (Res_history._recid > curr_recid)).first()
+                     (Res_history.action == ("HouseKeeping")) & (Res_history.datum < (ci_date - timedelta(days=anz_tage))) & (Res_history.zeit >= 0) & (Res_history._recid > curr_recid)).first()
 
         res_history = get_cache (Res_history, {"datum": [(lt, (ci_date - hist_tage))],"zeit": [(ge, 0)]})
         while None != res_history:
             do_it = True
 
-            if res_history.action.lower()  == ("G/L").lower()  and res_history.datum >= (ci_date - timedelta(days=750)):
+            if res_history.action  == ("G/L")  and res_history.datum >= (ci_date - timedelta(days=750)):
                 do_it = False
 
-            elif res_history.action.lower()  == ("reservation").lower()  and matches(res_history.aenderung,r"*delete*") and res_history.datum >= (ci_date - timedelta(days=365)):
+            elif res_history.action  == ("reservation")  and matches(res_history.aenderung,r"*delete*") and res_history.datum >= (ci_date - timedelta(days=365)):
                 do_it = False
 
             if do_it:
@@ -104,7 +113,9 @@ def mn_update_logfile_recordsbl():
             res_history = db_session.query(Res_history).filter(
                      (Res_history.datum < (ci_date - timedelta(days=hist_tage))) & (Res_history.zeit >= 0) & (Res_history._recid > curr_recid)).first()
 
-        res_history = get_cache (Res_history, {"action": [(eq, "g/l")],"datum": [(lt, (ci_date - anz_tage))],"zeit": [(ge, 0)]})
+        # res_history = get_cache (Res_history, {"action": [(eq, "g/l")],"datum": [(lt, (ci_date - anz_tage))],"zeit": [(ge, 0)]})
+        res_history = db_session.query(Res_history).filter(
+                 (Res_history.action == ("G/L")) & (Res_history.datum < (ci_date - timedelta(days=anz_tage))) & (Res_history.zeit >= 0)).first()
         while None != res_history:
 
             reshis = db_session.query(Reshis).filter(
@@ -114,7 +125,7 @@ def mn_update_logfile_recordsbl():
 
             curr_recid = res_history._recid
             res_history = db_session.query(Res_history).filter(
-                     (Res_history.action == ("G/L").lower()) & (Res_history.datum < (ci_date - timedelta(days=anz_tage))) & (Res_history.zeit >= 0) & (Res_history._recid > curr_recid)).first()
+                     (Res_history.action == ("G/L")) & (Res_history.datum < (ci_date - timedelta(days=anz_tage))) & (Res_history.zeit >= 0) & (Res_history._recid > curr_recid)).first()
 
         reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "reschanges")],"char1": [(ne, "")]})
 
@@ -130,7 +141,7 @@ def mn_update_logfile_recordsbl():
 
             curr_recid = reslin_queasy._recid
             reslin_queasy = db_session.query(Reslin_queasy).filter(
-                     (Reslin_queasy.key == ("ResChanges").lower()) & (Reslin_queasy.char1 != "") & (Reslin_queasy._recid > curr_recid)).first()
+                     (Reslin_queasy.key == ("ResChanges")) & (Reslin_queasy.char1 != "") & (Reslin_queasy._recid > curr_recid)).first()
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate

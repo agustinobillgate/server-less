@@ -1,14 +1,24 @@
+#using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 21/10/2025
+# timedelta
+#------------------------------------------
 from functions.additional_functions import *
-import decimal
+from date import date, timedelta
+from decimal import Decimal
 from models import Queasy, H_artikel, Htparam, Bediener, Res_history
 
 def nt_changedprice1():
+
+    prepare_cache ([H_artikel, Htparam, Bediener, Res_history])
+
     queasy = h_artikel = htparam = bediener = res_history = None
 
     qbuff = hbuff = None
 
     Qbuff = create_buffer("Qbuff",Queasy)
     Hbuff = create_buffer("Hbuff",H_artikel)
+
 
     db_session = local_storage.db_session
 
@@ -22,28 +32,24 @@ def nt_changedprice1():
         return {}
 
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 110)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
 
-    queasy = db_session.query(Queasy).filter(
-             (Queasy.key == 142) & (Queasy.date1 == (htparam.fdate + 1))).first()
+    queasy = get_cache (Queasy, {"key": [(eq, 142)],"date1": [(eq, htparam.fdate + timedelta(days=1))]})
     while None != queasy:
 
-        h_artikel = db_session.query(H_artikel).filter(
-                 (H_artikel.artnr == queasy.number1) & (H_artikel.departement == queasy.number2)).first()
+        h_artikel = get_cache (H_artikel, {"artnr": [(eq, queasy.number1)],"departement": [(eq, queasy.number2)]})
 
         if h_artikel:
 
-            hbuff = db_session.query(Hbuff).filter(
-                     (Hbuff._recid == h_artikel._recid)).first()
+            hbuff = get_cache (H_artikel, {"_recid": [(eq, h_artikel._recid)]})
             hbuff.epreis1 =  to_decimal(queasy.deci1)
             hbuff.epreis2 =  to_decimal(queasy.deci2)
 
 
             pass
+            pass
 
-            bediener = db_session.query(Bediener).filter(
-                     (Bediener.userinit == queasy.char2)).first()
+            bediener = get_cache (Bediener, {"userinit": [(eq, queasy.char2)]})
             res_history = Res_history()
             db_session.add(res_history)
 
@@ -60,14 +66,15 @@ def nt_changedprice1():
             if bediener:
                 res_history.nr = bediener.nr
             pass
+            pass
 
             qbuff = db_session.query(Qbuff).filter(
                      (Qbuff._recid == queasy._recid)).first()
-            qbuff_list.remove(qbuff)
+            db_session.delete(qbuff)
             pass
 
         curr_recid = queasy._recid
         queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 142) & (Queasy.date1 == (htparam.fdate + 1)) & (Queasy._recid > curr_recid)).first()
+                 (Queasy.key == 142) & (Queasy.date1 == (htparam.fdate + timedelta(days=1))) & (Queasy._recid > curr_recid)).first()
 
     return generate_output()

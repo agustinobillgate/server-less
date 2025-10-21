@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 21/10/2025
+# time delta
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from models import Htparam, Hoteldpt, Billjournal
 
 def mn_del_old_billjournalbl():
@@ -35,7 +38,10 @@ def mn_del_old_billjournalbl():
 
         for hoteldpt in db_session.query(Hoteldpt).order_by(Hoteldpt._recid).all():
 
-            billjournal = get_cache (Billjournal, {"bill_datum": [(lt, (ci_date - anz))],"departement": [(eq, hoteldpt.num)],"zeit": [(ge, 0)],"subtime": [(ge, 0)]})
+            # billjournal = get_cache (Billjournal, {"bill_datum": [(lt, (ci_date - anz))],"departement": [(eq, hoteldpt.num)],"zeit": [(ge, 0)],"subtime": [(ge, 0)]})
+            billjournal = db_session.query(Billjournal).filter(
+                     (Billjournal.bill_datum < (ci_date - timedelta(days=anz))) & (Billjournal.departement == hoteldpt.num) & (Billjournal.zeit >= 0) & (Billjournal.subtime >= 0)).first()
+            
             while None != billjournal:
                 i = i + 1
                 pass

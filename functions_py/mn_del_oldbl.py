@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 21/10/2025
+# timedelta
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from models import Htparam, H_compli, Queasy, Kontline, Res_line, L_quote, Guestbook
 
 def mn_del_oldbl(case_type:int):
@@ -55,7 +58,9 @@ def mn_del_oldbl(case_type:int):
         qbuff = None
         Qbuff =  create_buffer("Qbuff",Queasy)
 
-        queasy = get_cache (Queasy, {"key": [(eq, 28)],"number1": [(eq, 2)],"date1": [(lt, (ci_date - 60))]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 28)],"number1": [(eq, 2)],"date1": [(lt, (ci_date - 60))]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 28) & (Queasy.number1 == 2) & (Queasy.date1 < (ci_date - timedelta(days=60)))).order_by(Queasy._recid).first()
         while None != queasy:
 
             qbuff = db_session.query(Qbuff).filter(

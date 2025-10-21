@@ -1,8 +1,12 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 21/10/2025
+# time delta
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from models import Htparam, Bill, Bill_line
 
 def mn_fix_bill_datumbl():
@@ -27,7 +31,9 @@ def mn_fix_bill_datumbl():
         htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
         bill_date = htparam.fdate
 
-        bill = get_cache (Bill, {"rechnr": [(gt, 0)],"datum": [(ge, (bill_date - 400))]})
+        # bill = get_cache (Bill, {"rechnr": [(gt, 0)],"datum": [(ge, (bill_date - timedelta(days=400)))]}, order_by="datum,_recid")
+        bill = db_session.query(Bill).filter(
+                 (Bill.rechnr > 0) & (Bill.datum >= (bill_date - timedelta(days=400)))).order_by(Bill.datum,Bill._recid).first()
         while None != bill:
 
             bill_line = db_session.query(Bill_line).filter(

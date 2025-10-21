@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 21/10/2025
+# timedelta
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from models import Htparam, Interface, Queasy, Res_line
 
 def mn_del_interfacebl(case_type:int):
@@ -30,7 +33,9 @@ def mn_del_interfacebl(case_type:int):
         Interf =  create_buffer("Interf",Interface)
         Qsy =  create_buffer("Qsy",Queasy)
 
-        interface = get_cache (Interface, {"key": [(ge, 0)],"intdate": [(le, (ci_date - 2))],"int_time": [(ge, 0)]})
+        # interface = get_cache (Interface, {"key": [(ge, 0)],"intdate": [(le, (ci_date - 2))],"int_time": [(ge, 0)]})
+        interface = db_session.query(Interface).filter(
+                 (Interface.key >= 0) & (Interface.intdate <= (ci_date - timedelta(days=2))) & (Interface.int_time >= 0)).order_by(Interface._recid).first()
         while None != interface:
 
             interf = db_session.query(Interf).filter(
@@ -42,7 +47,9 @@ def mn_del_interfacebl(case_type:int):
             interface = db_session.query(Interface).filter(
                      (Interface.key >= 0) & (Interface.intdate <= (ci_date - timedelta(days=2))) & (Interface.int_time >= 0) & (Interface._recid > curr_recid)).first()
 
-        queasy = get_cache (Queasy, {"key": [(eq, 35)],"date1": [(le, (ci_date - 2))]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 35)],"date1": [(le, (ci_date - 2))]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 35) & (Queasy.date1 <= (ci_date - timedelta(days=2)))).order_by(Queasy._recid).first()
         while None != queasy:
 
             qsy = db_session.query(Qsy).filter(
@@ -54,7 +61,9 @@ def mn_del_interfacebl(case_type:int):
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 35) & (Queasy.date1 <= (ci_date - timedelta(days=2))) & (Queasy._recid > curr_recid)).first()
 
-        queasy = get_cache (Queasy, {"key": [(eq, 30)],"betriebsnr": [(eq, 1)],"date1": [(le, (ci_date - 2))]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 30)],"betriebsnr": [(eq, 1)],"date1": [(le, (ci_date - 2))]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 30) & (Queasy.betriebsnr == 1) & (Queasy.date1 <= (ci_date - timedelta(days=2)))).order_by(Queasy._recid).first()
         while None != queasy:
 
             qsy = db_session.query(Qsy).filter(
@@ -66,7 +75,9 @@ def mn_del_interfacebl(case_type:int):
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 30) & (Queasy.betriebsnr == 1) & (Queasy.date1 <= (ci_date - timedelta(days=2))) & (Queasy._recid > curr_recid)).first()
 
-        queasy = get_cache (Queasy, {"key": [(eq, 30)],"betriebsnr": [(eq, 2)],"date1": [(le, (ci_date - 2))]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 30)],"betriebsnr": [(eq, 2)],"date1": [(le, (ci_date - 2))]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 30) & (Queasy.betriebsnr == 2) & (Queasy.date1 <= (ci_date - timedelta(days=2)))).order_by(Queasy._recid).first()
         while None != queasy:
 
             qsy = db_session.query(Qsy).filter(
@@ -78,7 +89,9 @@ def mn_del_interfacebl(case_type:int):
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 30) & (Queasy.betriebsnr == 2) & (Queasy.date1 <= (ci_date - timedelta(days=2))) & (Queasy._recid > curr_recid)).first()
 
-        queasy = get_cache (Queasy, {"key": [(eq, 37)],"betriebsnr": [(eq, 1)],"date1": [(le, (ci_date - 2))]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 37)],"betriebsnr": [(eq, 1)],"date1": [(le, (ci_date - 2))]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 37) & (Queasy.betriebsnr == 1) & (Queasy.date1 <= (ci_date - timedelta(days=2)))).order_by(Queasy._recid).first()
         while None != queasy:
 
             qsy = db_session.query(Qsy).filter(
@@ -90,7 +103,9 @@ def mn_del_interfacebl(case_type:int):
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 37) & (Queasy.betriebsnr == 1) & (Queasy.date1 <= (ci_date - timedelta(days=2))) & (Queasy._recid > curr_recid)).first()
 
-        queasy = get_cache (Queasy, {"key": [(eq, 37)],"betriebsnr": [(eq, 2)],"date1": [(le, (ci_date - 2))]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 37)],"betriebsnr": [(eq, 2)],"date1": [(le, (ci_date - 2))]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 37) & (Queasy.betriebsnr == 2) & (Queasy.date1 <= (ci_date - timedelta(days=2)))).order_by(Queasy._recid).first()
         while None != queasy:
 
             qsy = db_session.query(Qsy).filter(

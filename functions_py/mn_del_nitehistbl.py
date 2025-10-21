@@ -1,9 +1,14 @@
 #using conversion tools version: 1.0.0.117
 
+#------------------------------------------
+# Rd, 21/10/2025
+# mnstart_arch -> diremark, khusus Archi
+#------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from functions.mnstart_arch import mnstart_arch
+# from functions.mnstart_arch import mnstart_arch
 from models import Htparam, Nitehist, Nightaudit
 
 def mn_del_nitehistbl():
@@ -46,27 +51,27 @@ def mn_del_nitehistbl():
         if anz == 0:
             anz = 60
 
-        if CONNECTED ("vhparch"):
-            datum1 = ci_date - timedelta(days=anz)
-            get_output(mnstart_arch('del-nitehist', 0, datum1))
-        else:
+        # if CONNECTED ("vhparch"):
+        #     datum1 = ci_date - timedelta(days=anz)
+        #     get_output(mnstart_arch('del-nitehist', 0, datum1))
+        # else:
 
-            nitehist = db_session.query(Nitehist).first()
-            while None != nitehist:
+        nitehist = db_session.query(Nitehist).first()
+        while None != nitehist:
 
-                if nitehist.datum > (ci_date - timedelta(days=anz)):
-                    return
+            if nitehist.datum > (ci_date - timedelta(days=anz)):
+                return
 
-                nbuff = db_session.query(Nbuff).filter(
-                             (Nbuff._recid == nitehist._recid)).first()
-                db_session.delete(nbuff)
-                pass
+            nbuff = db_session.query(Nbuff).filter(
+                            (Nbuff._recid == nitehist._recid)).first()
+            db_session.delete(nbuff)
+            pass
 
-                curr_recid = nitehist._recid
-                nitehist = db_session.query(Nitehist).filter(Nitehist._recid > curr_recid).first()
+            curr_recid = nitehist._recid
+            nitehist = db_session.query(Nitehist).filter(Nitehist._recid > curr_recid).first()
 
         nightaudit = db_session.query(Nightaudit).filter(
-                 (Nightaudit.programm == ("nt-onlinetax.p").lower()) | (Nightaudit.programm == ("nt-aiirevenue.p").lower())).first()
+                 (Nightaudit.programm == ("nt-onlinetax.p")) | (Nightaudit.programm == ("nt-aiirevenue.p"))).first()
 
         if not nightaudit:
 

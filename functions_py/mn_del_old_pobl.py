@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 21/10/2025
+# timedelta
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from models import Htparam, L_order, L_orderhdr
 
 def mn_del_old_pobl():
@@ -38,10 +41,15 @@ def mn_del_old_pobl():
         else:
             anz = 60
 
-        l_order = get_cache (L_order, {"loeschflag": [(ge, 1)],"pos": [(eq, 0)]})
-        while None != l_order:
+        # l_order = get_cache (L_order, {"loeschflag": [(ge, 1)],"pos": [(eq, 0)]})
+        recs = db_session.query(L_order).filter(
+                 (L_order.loeschflag >= 1) & (L_order.pos == 0)).order_by(L_order._recid).all()
+        for l_order in recs:
 
-            if (l_order.lieferdatum_eff + anz) < ci_date:
+            # if (l_order.lieferdatum_eff + anz) < ci_date:
+            if l_order.lieferdatum_eff is None:
+                continue
+            if (l_order.lieferdatum_eff + timedelta(days=anz)) < ci_date:
                 i = i + 1
 
                 for l_od in db_session.query(L_od).filter(
@@ -56,8 +64,8 @@ def mn_del_old_pobl():
                 db_session.delete(l_order)
 
             curr_recid = l_order._recid
-            l_order = db_session.query(L_order).filter(
-                     (L_order.loeschflag >= 1) & (L_order.pos == 0) & (L_order._recid > curr_recid)).first()
+            # l_order = db_session.query(L_order).filter(
+            #          (L_order.loeschflag >= 1) & (L_order.pos == 0) & (L_order._recid > curr_recid)).first()
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate

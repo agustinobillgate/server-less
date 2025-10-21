@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
+# =======================================
+# Rd, 21/10/2025
+# =======================================
 
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from models import Htparam, Counters, Queasy, H_bill, H_bill_line
 
 def mn_del_old_rbillbl():
@@ -36,7 +39,9 @@ def mn_del_old_rbillbl():
         if anz == 0:
             anz = 7
 
-        h_bill_line = get_cache (H_bill_line, {"bill_datum": [(lt, (ci_date - anz))]})
+        # h_bill_line = get_cache (H_bill_line, {"bill_datum": [(lt, (ci_date - anz))]})
+        h_bill_line = db_session.query(H_bill_line).filter(
+                     (H_bill_line.bill_datum < (ci_date - timedelta(days=anz)))).first()
         while None != h_bill_line:
 
             lbuff = db_session.query(Lbuff).filter(

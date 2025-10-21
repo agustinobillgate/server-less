@@ -12,6 +12,11 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
+
+from models import Paramtext, Queasy
+
+
+print("starting na_start_web2bl")
 from functions.prepare_mn_startbl import prepare_mn_startbl
 from functions.mn_chg_sysdatesbl import mn_chg_sysdatesbl
 from functions.na_startbl import na_startbl
@@ -42,8 +47,7 @@ from functions.mn_del_nitehistbl import mn_del_nitehistbl
 from functions.mn_del_old_baresbl import mn_del_old_baresbl
 from functions.mn_update_logfile_recordsbl import mn_update_logfile_recordsbl
 from functions.mn_del_oldbl import mn_del_oldbl
-from functions.mn_club_softwarebl import mn_club_softwarebl
-from models import Paramtext, Queasy
+# from functions.mn_club_softwarebl import mn_club_softwarebl
 
 def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_arrguest:bool):
 
@@ -71,16 +75,10 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
     paramtext = queasy = None
 
     na_list = t_nightaudit = None
-
     na_list_data, Na_list = create_model("Na_list", {"reihenfolge":int, "flag":int, "anz":int, "bezeich":string})
     t_nightaudit_data, T_nightaudit = create_model("T_nightaudit", {"bezeichnung":string, "hogarest":int, "reihenfolge":int, "programm":string, "abschlussart":bool})
 
-    db_session = local_storage.
-
-    def clear_log(key: int):    
-        sql = f"DELETE FROM queasy WHERE key = {key}"
-        db_session.execute(text(sql))
-        db_session.commit()
+    db_session = local_storage.db_session
 
     def log_process(key: int, message:string):
         queasy = Queasy()
@@ -88,6 +86,9 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         queasy.key = key
         queasy.char1 = "Log NA"
         queasy.char2 = message
+
+    log_process(270001,"Starting na_start_web2bl")
+    
 
     def run_program(program_name:string):
         log_process(270001, f"Running program: {program_name}")
@@ -149,24 +150,27 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
             #         run_program(substring(t_nightaudit.programm.lower() , 0, a - 1) + "bl")
 
             programm = t_nightaudit.programm.lower()
+            programm = programm.lower().replace("-", "_")
             abschlussart = int(t_nightaudit.abschlussart)
 
             if "bl.p" in programm:
-                log_process(270001, f"Running program bl.p: {programm}")
+                programm = programm.replace("bl.p", "bl.py")
+                log_process(270001, f"Run bl.p: {programm}")
                 # run_program(programm)
             else:
                 if abschlussart == 1:
-                    log_process(270001, f"Running program, abschlussart=1: {programm}")
+                    log_process(270001, f"Run: {programm}")
                     # run_program(programm)
                 else:
                     a = programm.rfind(".p")
                     new_programm = (programm[:a] + "bl.p") if a != -1 else (programm + "bl.p")
-                    log_process(270001, f"Running new program .p: {new_programm}")
+                    new_programm = new_programm.replace("bl.p", "bl.py")
+                    log_process(270001, f"Run .p: {new_programm}")
                     # run_program(new_programm)
 
             if store_flag:
-                log_process(270001, f"Deleting nitehist records for billdate {billdate} and reihenfolge {t_nightaudit.reihenfolge}")
                 success_flag = get_output(delete_nitehistbl(1, billdate, t_nightaudit.reihenfolge))
+
             cqueasy(to_string(t_nightaudit.bezeichnung, "x(40)"), "DONE")
             log_process(270001, f"Completed night audit task: {t_nightaudit.bezeichnung}")
 
@@ -300,8 +304,8 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         cqueasy("Deleting old Work Order Records", "DONE")
         cqueasy("Deleting old Quotation Attachment Records", "PROCESS")
         i = get_output(mn_del_oldbl(4))
-        cqueasy("Deleting old Quotation Attachment Records", "DONE")
-        get_output(mn_club_softwarebl())
+        # cqueasy("Deleting old Quotation Attachment Records", "DONE")
+        # get_output(mn_club_softwarebl())
 
 
     def del_allotment():
@@ -373,6 +377,7 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
             pass
 
 
+
     paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
     log_process(270001,"Retrieving license number from Paramtext record 243")
     if paramtext:
@@ -380,7 +385,6 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
 
     for queasy in db_session.query(Queasy).filter(
              (Queasy.key == 232)).order_by(Queasy._recid).all():
-        log_process(270001, f"Deleting Queasy record: {queasy.char2} - {queasy.char3}")
         db_session.delete(queasy)
 
     if ans_arrguest:
@@ -391,15 +395,14 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         pass
     else:
         log_process(270001, "Starting midnight programs")
-        # midnite_prog()
+        midnite_prog()
         log_process(270001, "Changing system dates")
-        # get_output(mn_chg_sysdatesbl())
-        log_process(270001, "Running NA Programs:na_startbl")
-        # mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date1, na_time1, na_name1 = get_output(na_startbl(2, user_init, htparam_recid))
+        get_output(mn_chg_sysdatesbl())
+        log_process(270001, "Running NA Programs:na_startbl. 402")
+        mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date1, na_time1, na_name1 = get_output(na_startbl(2, user_init, htparam_recid))
 
-    log_process(270001, "Running NA Programs")
     na_prog()
-    # mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date, na_time, na_name = get_output(na_startbl(3, user_init, htparam_recid))
+    mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date, na_time, na_name = get_output(na_startbl(3, user_init, htparam_recid))
     success_flag = True
 
     # for queasy in db_session.query(Queasy).filter(
@@ -408,7 +411,7 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
 
     for queasy in db_session.query(Queasy).filter(
              (Queasy.key == 232) & (Queasy.date1 == date.today())).order_by(Queasy._recid).all():
-        log_process(270001, f"Deleting Queasy record: {queasy.char2} - {queasy.char3}")
         db_session.delete(queasy)
 
+    log_process(270001, "NA Process: na_start_web2bl, completed successfully")
     return generate_output()

@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+# =======================================
+# Rd, 21/10/2025
+# timedelta
+# =======================================
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from models import Htparam, H_journal, H_queasy, Guest_queasy
 
 def mn_del_old_rjournalbl():
@@ -37,7 +40,9 @@ def mn_del_old_rjournalbl():
         if anz == 0:
             anz = 60
 
-        h_journal = get_cache (H_journal, {"bill_datum": [(le, (ci_date - anz))]})
+        # h_journal = get_cache (H_journal, {"bill_datum": [(le, (ci_date - anz))]})
+        h_journal = db_session.query(H_journal).filter(
+                     (H_journal.bill_datum <= (ci_date - timedelta(days=anz)))).first()
         while None != h_journal:
 
             guest_queasy = get_cache (Guest_queasy, {"betriebsnr": [(eq, 0)],"key": [(eq, "gast-info")],"char1": [(eq, to_string(h_journal.rechnr))],"number1": [(eq, h_journal.departement)],"date1": [(eq, h_journal.bill_datum)]})
@@ -55,7 +60,7 @@ def mn_del_old_rjournalbl():
                      (H_journal.bill_datum <= (ci_date - timedelta(days=anz))) & (H_journal._recid > curr_recid)).first()
         j = 0
 
-        h_queasy = get_cache (H_queasy, {"datum": [(le, (ci_date - 2))]})
+        h_queasy = get_cache (H_queasy, {"datum": [(le, (ci_date - timedelta(days=2)))]})
         while None != h_queasy:
             j = j + 1
 

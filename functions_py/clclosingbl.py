@@ -104,7 +104,7 @@ def clclosingbl():
         Membr =  create_buffer("Membr",Cl_member)
 
         for cl_member in db_session.query(Cl_member).filter(
-                 (Cl_member.checked_in) & (Cl_member.last_visit < TODAY)).order_by(Cl_member._recid).all():
+                 (Cl_member.checked_in) & (Cl_member.last_visit < date.today())).order_by(Cl_member._recid).all():
 
             membr = get_cache (Cl_member, {"_recid": [(eq, cl_member._recid)]})
 

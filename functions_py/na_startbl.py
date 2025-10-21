@@ -14,7 +14,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from models import Bediener, Htparam, Nightaudit
+from models import Bediener, Htparam, Nightaudit, Queasy
 
 def na_startbl(case_type:int, user_init:string, htparam_recid:int):
 
@@ -35,6 +35,13 @@ def na_startbl(case_type:int, user_init:string, htparam_recid:int):
     t_nightaudit_data, T_nightaudit = create_model("T_nightaudit", {"bezeichnung":string, "hogarest":int, "reihenfolge":int, "programm":string, "abschlussart":bool})
 
     db_session = local_storage.db_session
+
+    def log_process(key: int, message:string):
+        queasy = Queasy()
+        db_session.add(queasy)
+        queasy.key = key
+        queasy.char1 = "Log NA"
+        queasy.char2 = message
 
     def generate_output():
         nonlocal mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date, na_time, na_name, ci_date, bediener, htparam, nightaudit
@@ -68,6 +75,7 @@ def na_startbl(case_type:int, user_init:string, htparam_recid:int):
             t_nightaudit.reihenfolge = nightaudit.reihenfolge
             t_nightaudit.programm = nightaudit.programm
             t_nightaudit.abschlussart = nightaudit.abschlussart
+            log_process(270001, f"___add List program: {nightaudit.programm}")
 
 
     def check_mn_start():
@@ -84,7 +92,7 @@ def na_startbl(case_type:int, user_init:string, htparam_recid:int):
         if htparam.fdate < get_current_date():
             mnstart_flag = True
 
-
+    log_process(270001, f"na_startbl called with case_type: {case_type}, user_init: {user_init}, htparam_recid: {htparam_recid}")
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 230)]})

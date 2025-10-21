@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+# =======================================
+# Rd, 21/10/2025
+# timedelta
+# =======================================
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -54,7 +57,7 @@ def mn_del_old_bonsbl():
                      (Queasy.key == 3) & (Queasy.date1 < bill_date) & (Queasy._recid > curr_recid)).first()
 
         qkds_line = db_session.query(Qkds_line).filter(
-                 (Qkds_line.key == 255) & (Qkds_line.char1 == ("kds-line").lower()) & (Qkds_line.date1 == bill_date)).first()
+                 (Qkds_line.key == 255) & (Qkds_line.char1 == ("kds-line")) & (Qkds_line.date1 == bill_date)).first()
         while None != qkds_line:
             pass
             qkds_line.char3 = "4"
@@ -63,10 +66,10 @@ def mn_del_old_bonsbl():
 
             curr_recid = qkds_line._recid
             qkds_line = db_session.query(Qkds_line).filter(
-                     (Qkds_line.key == 255) & (Qkds_line.char1 == ("kds-line").lower()) & (Qkds_line.date1 == bill_date) & (Qkds_line._recid > curr_recid)).first()
+                     (Qkds_line.key == 255) & (Qkds_line.char1 == ("kds-line")) & (Qkds_line.date1 == bill_date) & (Qkds_line._recid > curr_recid)).first()
 
         qkds_header = db_session.query(Qkds_header).filter(
-                 (Qkds_header.key == 257) & (Qkds_header.char1 == ("kds-header").lower()) & (Qkds_header.date1 == bill_date)).first()
+                 (Qkds_header.key == 257) & (Qkds_header.char1 == ("kds-header")) & (Qkds_header.date1 == bill_date)).first()
         while None != qkds_header:
             pass
             qkds_header.deci2 =  to_decimal("4")
@@ -75,11 +78,13 @@ def mn_del_old_bonsbl():
 
             curr_recid = qkds_header._recid
             qkds_header = db_session.query(Qkds_header).filter(
-                     (Qkds_header.key == 257) & (Qkds_header.char1 == ("kds-header").lower()) & (Qkds_header.date1 == bill_date) & (Qkds_header._recid > curr_recid)).first()
+                     (Qkds_header.key == 257) & (Qkds_header.char1 == ("kds-header")) & (Qkds_header.date1 == bill_date) & (Qkds_header._recid > curr_recid)).first()
 
         if active_deposit:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 33)],"date1": [(le, (ci_date - anz))]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 33)],"date1": [(le, (ci_date - anz))]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 33) & (Queasy.date1 <= (ci_date - timedelta(days=anz)))).first()
             while None != queasy:
 
                 q251 = db_session.query(Q251).filter(
@@ -99,7 +104,9 @@ def mn_del_old_bonsbl():
                          (Queasy.key == 33) & (Queasy.date1 <= (ci_date - timedelta(days=anz))) & (Queasy._recid > curr_recid)).first()
         else:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 33)],"date1": [(le, (ci_date - 730))]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 33)],"date1": [(le, (ci_date - 730))]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 33) & (Queasy.date1 <= (ci_date - timedelta(days=730)))).first()
             while None != queasy:
 
                 qsy = db_session.query(Qsy).filter(
