@@ -510,4 +510,8 @@
   <prgs:resource consumes="application/json" name="_splitBillLeasingPrepare" path="/splitBillLeasingPrepare" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-split-bill-web_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-split-bill-web_1bl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_bookJournUserListCustom" path="/bookJournUserListCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fo-usrjournal-list-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fo-usrjournal-list-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+
 </prgs:model>
