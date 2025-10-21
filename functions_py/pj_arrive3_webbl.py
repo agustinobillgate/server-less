@@ -306,7 +306,7 @@ def pj_arrive3_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         for loop_i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
             str_rsv = entry(loop_i - 1, res_line.zimmer_wunsch, ";")
 
-            if substring(str_rsv, 0, 6) == ("$CODE$").lower() :
+            if substring(str_rsv, 0, 6) == ("$CODE$") :
                 contcode = substring(str_rsv, 6)
         cl_list = Cl_list()
         cl_list_data.append(cl_list)
@@ -1601,7 +1601,8 @@ def pj_arrive3_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
         t_cl_list.rmcat = "100.00"
         t_cl_list.rate_code = to_string(tot_c, " >>>>9")
 
-        for t_cl_list in query(t_cl_list_data, sort_by=[("datum",False),("nr",False)]):
+        # for t_cl_list in query(t_cl_list_data, sort_by=[("datum",False),("nr",False)]):
+        for t_cl_list in query(t_cl_list_data, sort_by=[("nr",False)]):
 
             if total_flag and t_cl_list.gastnr > 0:
 
@@ -1800,3 +1801,618 @@ def pj_arrive3_webbl(pvilanguage:int, from_date:date, to_date:date, ci_date:date
     create_browse()
 
     return generate_output()
+
+"""
+{
+    "request": {
+        "pvILanguage": 1,
+        "fromDate": "2025-10-02",
+        "toDate": "2025-10-02",
+        "ciDate": "2025-10-01",
+        "disptype": 1,
+        "inclTentative": false,
+        "sorttype": 1,
+        "commentType": 0,
+        "inclAccompany": false,
+        "totalFlag": false,
+        "splitRsvPrint": true,
+        "segm1List": {
+            "segm1-list": [
+                {
+                    "selected": true,
+                    "segm": 1,
+                    "bezeich": "  1FIT",
+                    "bezeich1": "FIT",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "segm": 2,
+                    "bezeich": "  2WIG",
+                    "bezeich1": "WIG",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "segm": 3,
+                    "bezeich": "  3COR",
+                    "bezeich1": "COR",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "segm": 4,
+                    "bezeich": "  4GOV",
+                    "bezeich1": "GOV",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "segm": 5,
+                    "bezeich": "  5TA",
+                    "bezeich1": "TA",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "segm": 6,
+                    "bezeich": "  6OTA",
+                    "bezeich1": "OTA",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "segm": 7,
+                    "bezeich": "  7WEBSITE",
+                    "bezeich1": "WEBSITE",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "segm": 8,
+                    "bezeich": "  8OTH",
+                    "bezeich1": "OTH",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "segm": 9,
+                    "bezeich": "  9SOSIAL EVENT",
+                    "bezeich1": "SOSIAL EVENT",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "segm": 10,
+                    "bezeich": " 10BUMN",
+                    "bezeich1": "BUMN",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "segm": 11,
+                    "bezeich": " 11WEDDING",
+                    "bezeich1": "WEDDING",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "segm": 12,
+                    "bezeich": " 12EVEN ORGANIZER",
+                    "bezeich1": "EVEN ORGANIZER",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "segm": 80,
+                    "bezeich": " 80COM",
+                    "bezeich1": "COM",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "segm": 81,
+                    "bezeich": " 81HU",
+                    "bezeich1": "HU",
+                    "SELECTED": false
+                }
+            ]
+        },
+        "arrangementList": {
+            "arrangement-list": [
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "101",
+                    "bezeich": "101   MINI BAG",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "102",
+                    "bezeich": "102   SLING BAG",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "103",
+                    "bezeich": "103   BACK PACK",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "104",
+                    "bezeich": "104   HAND BAG",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "105",
+                    "bezeich": "105   TOTEBAG",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "106",
+                    "bezeich": "106   TOPI",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "107",
+                    "bezeich": "107   Totebag Canvas",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "19",
+                    "bezeich": "19    B'FAST POOL ACCESS ADULT",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "20",
+                    "bezeich": "20    B'FAST POOL ACCESS CHILD",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "201",
+                    "bezeich": "201   IFTAR",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "21",
+                    "bezeich": "21    PANORAM POOL",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "41",
+                    "bezeich": "41    JAVANESE TRADITIONAL MASSAGE 60 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "42",
+                    "bezeich": "42    JAVANESE TRADITIONAL MASSAGE 90 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "43",
+                    "bezeich": "43    DEEP TISSUE MASSAGE 60 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "44",
+                    "bezeich": "44    DEEP TISSUE MASSAGE 90 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "45",
+                    "bezeich": "45    AMARANTA SIGNATURE MASSAGE 60 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "46",
+                    "bezeich": "46    AMARANTA SIGNATURE MASSAGE 90 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "47",
+                    "bezeich": "47    RELAXTION RETRET 120 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "48",
+                    "bezeich": "48    JAVANESE HERITAGE RITUALS 120 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "49",
+                    "bezeich": "49    REFLEXOLOGY 60 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "50",
+                    "bezeich": "50    FACE MASSAGE 30 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "51",
+                    "bezeich": "51    JAVANESES 90 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "52",
+                    "bezeich": "52    JAVANESES 120 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "53",
+                    "bezeich": "53    BALINESES 90 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "54",
+                    "bezeich": "54    BALINESES 120 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "55",
+                    "bezeich": "55    DRY 60 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "56",
+                    "bezeich": "56    DRY 90 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "61",
+                    "bezeich": "61    LUMINOUS GLOW BODY POLISH 30 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "62",
+                    "bezeich": "62    GENTLE FLOW MASSAGE 30 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "63",
+                    "bezeich": "63    BACK, NECK & SHOULDER 30 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "64",
+                    "bezeich": "64    FEET REFLEX 30 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "65",
+                    "bezeich": "65    ROMATIC DESIRE 150 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "66",
+                    "bezeich": "66    SERENITY FOR TWO 120 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "67",
+                    "bezeich": "67    BLISSFULL DUO 120 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "68",
+                    "bezeich": "68    BIOKOS SERVICE 45 MINUTES",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "69",
+                    "bezeich": "69    CLASSICS NAILS POLISH",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "70",
+                    "bezeich": "70    NAIL ART",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "71",
+                    "bezeich": "71    MENICURE",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "72",
+                    "bezeich": "72    PEDICURE",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "ADHOCRB",
+                    "bezeich": "ADHOCRB ROOM B'FAST ADHOC",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "B'Fast",
+                    "bezeich": "B'Fast B'fast Pool Access",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "CORRB",
+                    "bezeich": "CORRB ROOM B'FAST COR",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "DU",
+                    "bezeich": "DU    DAY USE",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "FBEB",
+                    "bezeich": "FBEB  FULLBOARD E1-BOOKING",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "GOVRB",
+                    "bezeich": "GOVRB ROOM B'FAST GOV",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "HBEB",
+                    "bezeich": "HBEB  HALFBOARD E1-BOOKING",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "HBVHP",
+                    "bezeich": "HBVHP HalfBoard VHP",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "INSFB1",
+                    "bezeich": "INSFB1 FULLBOARD PACKAGE FOR INSTITUTION",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "INSRB",
+                    "bezeich": "INSRB ROOM B'FAST INST",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "PLS",
+                    "bezeich": "PLS   PLUS ",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "Pool Acc",
+                    "bezeich": "Pool Acc POOL ACCESS",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "RB",
+                    "bezeich": "RB    ROOM BREAKFAST",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "RBD",
+                    "bezeich": "RBD   ROOM BREAKFAST DINNER",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "RBHP",
+                    "bezeich": "RBHP  Room Breakfast Honeymoon Package",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "RBHP2",
+                    "bezeich": "RBHP2 Room Breakfast Honeymoon Package for 2 nights stay",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "RBP",
+                    "bezeich": "RBP   ROOM B'FAST PLUS",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "RD",
+                    "bezeich": "RD    Room And Dine",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "RDE",
+                    "bezeich": "RDE   EXTENDED ROOM AND DINE",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "RO",
+                    "bezeich": "RO    ROOM ONLY",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "ROP",
+                    "bezeich": "ROP   ROOM ONLY PLUS",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "argtnr": 0,
+                    "argt": "SUNSET",
+                    "bezeich": "SUNSET Sunset From Party",
+                    "SELECTED": false
+                }
+            ]
+        },
+        "zikatList": {
+            "zikat-list": [
+                {
+                    "selected": true,
+                    "zikatnr": 8,
+                    "kurzbez": "1BR VILLA",
+                    "bezeich": "Suite Villa - One Bedroom with Private Pool",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "zikatnr": 7,
+                    "kurzbez": "3BR VILLA",
+                    "bezeich": "Cliff Villa - Three Bedroom with Private Pool",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "zikatnr": 1,
+                    "kurzbez": "PFRQ",
+                    "bezeich": "Premier Queens Queen",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "zikatnr": 6,
+                    "kurzbez": "PKGPA",
+                    "bezeich": "Premier King Garden Pool Access",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "zikatnr": 3,
+                    "kurzbez": "PRBK",
+                    "bezeich": "Premier Room with Balcony King",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "zikatnr": 2,
+                    "kurzbez": "PRBT",
+                    "bezeich": "Premier Room with Balcony Twin",
+                    "SELECTED": false
+                },
+                {
+                    "selected": true,
+                    "zikatnr": 4,
+                    "kurzbez": "PTGPA",
+                    "bezeich": "Premier Twin Garden Pool Access",
+                    "SELECTED": false
+                }
+            ]
+        },
+        "payloadList": {
+            "payload-list": [
+                {
+                    "summary-roomtype": false
+                }
+            ]
+        },
+        "inputUserkey": "9EA2E2E7FFCAA4F31E41D1C7B632D704F6CA3DB3",
+        "inputUsername": "sys",
+        "hotel_schema": "MT1"
+        }
+}
+
+"""
