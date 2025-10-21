@@ -7947,8 +7947,7 @@ def fo_parxls_gs_1bl(pvilanguage:int, ytd_flag:bool, jan1:date, ljan1:date, lfro
         for loop_str in range(1, length(str) + 1):
             found = False
             for loop_col in range(1, 26 + 1):
-
-                if substring(str, loop_str - 1, 1) == chcol[loop_col - 1]:
+                if substring(str, loop_str - 1, 1).lower() == chcol[loop_col - 1].lower():
                     found = True
                     break
             if found:
@@ -7983,12 +7982,12 @@ def fo_parxls_gs_1bl(pvilanguage:int, ytd_flag:bool, jan1:date, ljan1:date, lfro
 
         if length(last_column) == 2:
             for i in range(1,26 + 1) :
-                if chcol[i - 1] == substring(last_column, 0, 1):
+                if chcol[i - 1].lower() == substring(last_column, 0, 1).lower():
                     ind1 = i * 26
                     break
 
             for i in range(1,26 + 1) :
-                if chcol[i - 1] == substring(last_column, 1, 1):
+                if chcol[i - 1].lower() == substring(last_column, 1, 1).lower():
                     ind2 = i
                     break
 
@@ -7996,7 +7995,7 @@ def fo_parxls_gs_1bl(pvilanguage:int, ytd_flag:bool, jan1:date, ljan1:date, lfro
 
         else:
             for i in range(1,26 + 1) :
-                if chcol[i - 1] == last_column:
+                if chcol[i - 1].lower() == last_column.lower():
                     ind = i
                     break
 
@@ -8082,21 +8081,21 @@ def fo_parxls_gs_1bl(pvilanguage:int, ytd_flag:bool, jan1:date, ljan1:date, lfro
             
         ch = trim(to_string(exrate_betrag, ">>>,>>9.99"))
 
-    lfr_date = from_date - timedelta(days=1)
+        lfr_date = from_date - timedelta(days=1)
 
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
+        paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
 
-    if paramtext and paramtext.ptexte != "":
-        htl_no = decode_string(paramtext.ptexte)
+        if paramtext and paramtext.ptexte != "":
+            htl_no = decode_string(paramtext.ptexte)
 
-    file_path = f"/usr1/vhp/tmp/outputFO_{htl_no}.txt"
+        file_path = f"/usr1/vhp/tmp/outputFO_{htl_no}.txt"
 
-    if os.path.exists(file_path):
-        os.remove(file_path)
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
-    os.makedirs(os.path.dirname(file_path), exist_ok=True) 
+        os.makedirs(os.path.dirname(file_path), exist_ok=True) 
 
-    open(file_path, "w").close()
+        open(file_path, "w").close()
 
         for parameters in db_session.query(Parameters).filter((Parameters.progname == ("FO-macro").lower()) & (Parameters.section == to_string(briefnr))).order_by(Parameters.varname).all():
 
@@ -8328,20 +8327,18 @@ def fo_parxls_gs_1bl(pvilanguage:int, ytd_flag:bool, jan1:date, ljan1:date, lfro
                     f.write(f"{stream_list.crow};{stream_list.ccol};\n")
 
             
-    #     # OS_COMMAND SILENT VALUE ("php /usr1/vhp/php-script/write-sheet.php /usr1/vhp/tmp/outputFO_" + htl_no + ".txt " + link)
+    # OS_COMMAND SILENT VALUE ("php /usr1/vhp/php-script/write-sheet.php /usr1/vhp/tmp/outputFO_" + htl_no + ".txt " + link
+    # cmd = [
+    #     "php",
+    #     "/usr1/vhp/php-script/write-sheet.php",
+    #     f"/usr1/vhp/tmp/outputFO_{htl_no}.txt",
+    #     link
+    # ]
 
-    #     # cmd = [
-    #     #     "php",
-    #     #     "/usr1/vhp/php-script/write-sheet.php",
-    #     #     f"/usr1/vhp/tmp/outputFO_{htl_no}.txt",
-    #     #     link
-    #     # ]
-        
-    #     # if shutil.which("php") is None:
-    #     #     raise RuntimeError("php not found in PATH")
-
-    #     # with open(os.devnull, "wb") as devnull:
-    #     #     result = subprocess.run(cmd, stdout=devnull, stderr=devnull)
+    # if shutil.which("php") is None:
+    #     raise RuntimeError("php not found in PATH"
+    # with open(os.devnull, "wb") as devnull:
+    #     result = subprocess.run(cmd, stdout=devnull, stderr=devnull)
 
     try:
         SERVICE_ACCOUNT_FILE = '/usr1/serverless/src/additional_files/service-account.json'
@@ -8351,7 +8348,6 @@ def fo_parxls_gs_1bl(pvilanguage:int, ytd_flag:bool, jan1:date, ljan1:date, lfro
         TXT_FILE_PATH = trim(file_path) if file_path != "" else None
 
         match = re.search(r'/spreadsheets/d/([a-zA-Z0-9-_]+)', SPREADSHEET_URL)
-        
         spreadsheet_id = match.group(1)
 
         creds = service_account.Credentials.from_service_account_file(
@@ -8360,35 +8356,35 @@ def fo_parxls_gs_1bl(pvilanguage:int, ytd_flag:bool, jan1:date, ljan1:date, lfro
 
         service = build('sheets', 'v4', credentials=creds)
 
-        data = []
         with open(TXT_FILE_PATH, 'r', encoding='utf-8') as file:
             for line in file:
                 line = line.strip()
                 if not line:
                     continue
-                parts = [p.strip() for p in line.split(';')]
-                data.append(parts)
 
-        max_cols = max(len(row) for row in data)
-        for row in data:
-            while len(row) < max_cols:
-                row.append('')
+                parts = line.split(';')
+                if len(parts) < 3:
+                    continue
 
-        body = {'values': data}
-        result = (
-            service.spreadsheets()
-            .values()
-            .update(
-                spreadsheetId=spreadsheet_id,
-                range=RANGE_NAME,
-                valueInputOption='USER_ENTERED',
-                body=body,
-            )
-            .execute()
-        )
+                row, col, value = parts
+                row = int(row)
+                col = int(col)
+
+                if value.strip() == "":
+                    continue
+
+                col_letter = chr(ord('A') + col - 1)
+                cell_ref = f"{col_letter}{row}"
+
+                service.spreadsheets().values().update(
+                    spreadsheetId=spreadsheet_id,
+                    range=f"{RANGE_NAME}!{cell_ref}",
+                    valueInputOption='USER_ENTERED',
+                    body={'values': [[value]]}
+                ).execute()
 
     except Exception as e:
-        pass
+        print(f"An error occurred: {e}")
 
     queasy = get_cache (Queasy, {"key": [(eq, 293)],"deci1": [(eq, briefnr)],"char2": [(eq, trim(link))],"date1": [(eq, get_current_date())],"char1": [(eq, trim(user_init))]})
 

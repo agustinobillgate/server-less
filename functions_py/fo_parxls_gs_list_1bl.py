@@ -4,7 +4,6 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Brief, Parameters
-
 from functions.fo_parxls_gs_1bl import fo_parxls_gs_1bl
 from functions.prepare_fo_parxlsbl import prepare_fo_parxlsbl
 
@@ -547,11 +546,11 @@ def fo_parxls_gs_list_1bl(pvilanguage:int, briefnr:int, from_date:date, to_date:
         stopped = False
         j = 1
         while not stopped:
-
             if j == length(texte) or substring(texte, j + 1 - 1, 1) == " ":
                 stopped = True
             else:
                 j = j + 1
+
         subtext = substring(texte, 0, j)
         curr_column = curr_column + j + 1
 
@@ -735,7 +734,6 @@ def fo_parxls_gs_list_1bl(pvilanguage:int, briefnr:int, from_date:date, to_date:
         ljan1 = date_mdy(get_month(jan1) , get_day(jan1) , get_year(jan1) - 1)
     pto_date = from_date - timedelta(days=1)
 
-    # TODO
     if (get_month(to_date) == get_month(to_date + timedelta(days=1))):
 
         if get_month(pto_date) == 2:

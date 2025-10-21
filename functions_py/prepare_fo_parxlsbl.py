@@ -1162,7 +1162,9 @@ def prepare_fo_parxlsbl(pvilanguage:int, briefnr:int):
         for briefzei in db_session.query(Briefzei).filter(
                  (Briefzei.briefnr == briefnr)).order_by(Briefzei.briefzeilnr).all():
 
-            for text_loop in briefzei.texte.split("\\n"):
+            tmp_briefzei_texte = briefzei.texte.replace("\\n", "\n")
+
+            for text_loop in tmp_briefzei_texte.split("\n"):
                 if not continued:
                     brief_list = Brief_list()
                     brief_list_data.append(brief_list)
