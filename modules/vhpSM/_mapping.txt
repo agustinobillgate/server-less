@@ -130,3 +130,4 @@ rmProductrateCreateUmsatz2,rm_productrate_create_umsatz2_webbl
 nationStatCustom,nationstat_webbl
 groupDayfcast,group_dayfcast_webbl
 salesPerformBtnGoCustom,sales_perform_btn_go_webbl
+purposeStatCustom,purpose_stat2_webbl

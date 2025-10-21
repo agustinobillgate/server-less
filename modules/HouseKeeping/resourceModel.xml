@@ -222,5 +222,9 @@
   <prgs:resource consumes="application/json" name="_getStoreRoomDiscrepancyList1" path="/getStoreRoomDiscrepancyList1" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hk-discrepancy-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hk-discrepancy-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_getAvailOOO" path="/getAvailOOO" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-hk-check-availability-ooobl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-hk-check-availability-ooobl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+
 
 </prgs:model>

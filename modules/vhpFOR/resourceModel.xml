@@ -1368,6 +1368,9 @@
   <prgs:resource consumes="application/json" name="_reslinePrepare3Custom" path="/reslinePrepare3Custom" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-resline_3-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-resline_3-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+   <prgs:resource consumes="application/json" name="_pjArrive3" path="/pjArrive3" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-pj-arrive3-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-pj-arrive3-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 
 
 </prgs:model>

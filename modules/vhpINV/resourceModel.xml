@@ -1401,5 +1401,17 @@
   <prgs:resource consumes="application/json" name="_invHadjustlistBtnGo" path="/invHadjustlistBtnGo" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-inv-hadjustlist-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-inv-hadjustlist-btn-go-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+ <prgs:resource consumes="application/json" name="_stockOutlistListCustom" path="/stockOutlistListCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-stock-outlist-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-stock-outlist-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkReceivingUpdate1" path="/checkReceivingUpdate1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-check-receiving-update-web_1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-check-receiving-update-web_1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_checkReceivingAPPayment" path="/checkReceivingAPPayment" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-check-receiving-ap-payment-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-check-receiving-ap-payment-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_poUnrelease1Custom" path="/poUnrelease1Custom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-unrelease-po1-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-unrelease-po1-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 
 </prgs:model>
