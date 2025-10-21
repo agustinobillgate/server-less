@@ -47,11 +47,8 @@ def na_startbl(case_type:int, user_init:string, htparam_recid:int):
         return {"mnstart_flag": mnstart_flag, "store_flag": store_flag, "printer_nr": printer_nr, "t-nightaudit": t_nightaudit_data, "na_date": na_date, "na_time": na_time, "na_name": na_name}
 
     def na_prog():
-
         nonlocal mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date, na_time, na_name, ci_date, bediener, htparam, nightaudit
         nonlocal case_type, user_init, htparam_recid
-
-
         nonlocal t_nightaudit
         nonlocal t_nightaudit_data
 
@@ -110,7 +107,6 @@ def na_startbl(case_type:int, user_init:string, htparam_recid:int):
         na_prog()
 
     if case_type == 3:
-
         htparam = get_cache (Htparam, {"paramnr": [(eq, 253)]})
         htparam.fchar = bediener.username
         htparam.fdate = get_current_date()

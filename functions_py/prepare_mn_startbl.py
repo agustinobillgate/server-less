@@ -32,10 +32,17 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
     htparam = bill = res_line = guest = reslin_queasy = res_history = waehrung = reservation = arrangement = artikel = guest_pr = queasy = segment = zimkateg = fixleist = katpreis = pricecod = argt_line = pricegrp = resplan = zimplan = zimmer = outorder = None
 
     na_list = None
-
     na_list_data, Na_list = create_model("Na_list", {"reihenfolge":int, "flag":int, "anz":int, "bezeich":string})
-
     db_session = local_storage.db_session
+    
+
+    def log_process(key: int, message:string):
+        queasy = Queasy()
+        db_session.add(queasy)
+        queasy.key = key
+        queasy.char1 = "Log NA"
+        queasy.char2 = message
+
 
     def generate_output():
         nonlocal mn_stopped, stop_it, arrival_guest, msg_str, mess_str, crm_license, banquet_license, na_list_data, lvcarea, ci_date, new_contrate, contcode, created_date, wd_array, htparam, bill, res_line, guest, reslin_queasy, res_history, waehrung, reservation, arrangement, artikel, guest_pr, queasy, segment, zimkateg, fixleist, katpreis, pricecod, argt_line, pricegrp, resplan, zimplan, zimmer, outorder
@@ -79,6 +86,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
 
             if htparam.fdate < get_current_date():
                 stop_it = True
+                log_process
                 msg_str = msg_str + chr_unicode(2) + translateExtended ("Your License was valid until", lvcarea, "") + " " + to_string(htparam.fdate) + " " + translateExtended ("only.", lvcarea, "") + chr_unicode(10) + translateExtended ("Please contact your next Our Technical Support for further information.", lvcarea, "")
         else:
             stop_it = True
@@ -109,6 +117,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
                  (Res_line.active_flag == 0) & ((Res_line.resstatus <= 2) | (Res_line.resstatus == 5) | (Res_line.resstatus == 11)) & (Res_line.ankunft == ci_date)).first()
 
         if res_line:
+            log_process
             msg_str = msg_str + chr_unicode(2) + "&Q" + translateExtended ("Today's arrival guest(s) record found.", lvcarea, "") + chr_unicode(10) + translateExtended ("Are you sure you want to proceed the Midnight Program?", lvcarea, "")
             arrival_guest = True
             stop_it = True
@@ -135,6 +144,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
                      (Rbuff.active_flag == 1) & (Rbuff.zinr == res_line.zinr) & (Rbuff.resstatus == 6)).first()
 
             if not rbuff:
+                log_process(270001, f"Difference rate between Reservation and Fixed rate found. The Night Audit process not possible.")
                 msg_str = msg_str + chr_unicode(2) + translateExtended ("Difference rate between Reservation and Fixed rate found. The Night Audit process not posibble.", lvcarea, "")
                 stop_it = True
 
@@ -163,6 +173,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
             reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, cdate)],"date2": [(ge, cdate)]})
 
             if reslin_queasy and res_line.zipreis != reslin_queasy.deci1:
+                log_process(270001, f"Different rate found! Night Audit process not possible.")
                 msg_str = msg_str + chr_unicode(2) + translateExtended ("Different rate found! Night Audit process not possible.", lvcarea, "")
                 stop_it = True
 
@@ -302,12 +313,15 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
         nonlocal na_list
         nonlocal na_list_data
 
+
+        log_process(270001, "Starting Reorganization of Roomplan")
         htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
         ci_date = htparam.fdate
         na_list_data.clear()
         na_list = Na_list()
         na_list_data.append(na_list)
 
+        log_process
         na_list.reihenfolge = 1
         na_list.bezeich = "Deleting Roomplan Records"
         na_list.flag = 3
@@ -315,6 +329,8 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
         na_list = Na_list()
         na_list_data.append(na_list)
 
+
+        log_process(270001, "Creating Roomplan Records")
         na_list.reihenfolge = 2
         na_list.bezeich = "Creating Roomplan records"
         na_list.flag = 3
@@ -322,6 +338,8 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
         na_list = Na_list()
         na_list_data.append(na_list)
 
+
+        log_process(270001, "Updating Room Status")
         na_list.reihenfolge = 3
         na_list.bezeich = "Updating Room Status"
         na_list.flag = 3
@@ -1205,6 +1223,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
             zimkateg.maxzimanz = i
 
 
+    log_process(270001, "Starting prepareMN Program Checks")
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
 
@@ -1226,12 +1245,16 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
             mn_stopped = True
 
             return generate_output()
+        
+        log_process(270001, "Checking License Date")
         check_license_date()
 
         if stop_it:
             mn_stopped = True
 
             return generate_output()
+        
+        log_process(270001, "Checking Room Sharers")
         check_room_sharers()
 
         if stop_it:
@@ -1242,6 +1265,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
         htparam = get_cache (Htparam, {"paramnr": [(eq, 208)]})
 
         if not htparam.flogical:
+            log_process(270001, "Checking Opened Master Bill")
             mess_str = translateExtended ("Checking Opened Master Bill.", lvcarea, "")
 
             for bill in db_session.query(Bill).filter(
@@ -1252,16 +1276,21 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
                 if not res_line:
 
                     guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+                    log_process(270001, f"Opened master bill found but all guests checked-out: {bill.rechnr} - {guest.name}")
                     msg_str = msg_str + chr_unicode(2) + translateExtended ("Opened master bill found but all guests checked-out:", lvcarea, "") + " " + to_string(bill.rechnr) + " - " + guest.name + chr_unicode(10) + translateExtended ("Midnight Program stopped.", lvcarea, "")
                     mn_stopped = True
 
                     return generate_output()
+                
+        log_process(270001, "Checking Room Rates")
         check_room_rate()
 
         if stop_it:
             mn_stopped = True
 
             return generate_output()
+        
+        log_process(270001, "Checking Today's Arrival Guests")
         check_today_arrival_guest()
 
         if stop_it:
@@ -1271,6 +1300,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
             case_type = 2
 
     if case_type == 2:
+        log_process(270001, "Starting Midnight Program Updates")
         midnite_prog()
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1459)]})

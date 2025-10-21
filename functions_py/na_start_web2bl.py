@@ -75,7 +75,23 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
     na_list_data, Na_list = create_model("Na_list", {"reihenfolge":int, "flag":int, "anz":int, "bezeich":string})
     t_nightaudit_data, T_nightaudit = create_model("T_nightaudit", {"bezeichnung":string, "hogarest":int, "reihenfolge":int, "programm":string, "abschlussart":bool})
 
-    db_session = local_storage.db_session
+    db_session = local_storage.
+
+    def clear_log(key: int):    
+        sql = f"DELETE FROM queasy WHERE key = {key}"
+        db_session.execute(text(sql))
+        db_session.commit()
+
+    def log_process(key: int, message:string):
+        queasy = Queasy()
+        db_session.add(queasy)
+        queasy.key = key
+        queasy.char1 = "Log NA"
+        queasy.char2 = message
+
+    def run_program(program_name:string):
+        log_process(270001, f"Running program: {program_name}")
+        # Placeholder for actual program execution logic
 
     def generate_output():
         nonlocal printer_nr, success_flag, mn_stopped, stop_it, arrival_guest, msg_str, mess_str, crm_license, banquet_license, na_date1, na_time1, na_name1, mnstart_flag, store_flag, billdate, na_date, na_time, na_name, lic_nr, paramtext, queasy
@@ -92,7 +108,6 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         nonlocal printer_nr, stop_it, arrival_guest, msg_str, mess_str, crm_license, banquet_license, na_date1, na_time1, na_name1, mnstart_flag, store_flag, billdate, na_date, na_time, na_name, lic_nr, paramtext, queasy
         nonlocal language_code, htparam_recid, user_init, ans_arrguest
 
-
         nonlocal na_list, t_nightaudit
         nonlocal na_list_data, t_nightaudit_data
 
@@ -104,31 +119,56 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         success_flag:bool = False
         i = 0
 
-        for t_nightaudit in query(t_nightaudit_data, sort_by=[("(",False),("reihenfolge",False))]:
+        # for t_nightaudit in query(t_nightaudit_data, sort_by=[("(",False),("reihenfolge",False))]:
+        t_nightaudit_sorted_list = sorted(
+            t_nightaudit_data,
+            key=lambda x: (-x.hogarest, x.reihenfolge)
+        )
+        for t_nightaudit in t_nightaudit_sorted_list:
             i = i + 1
             cqueasy(to_string(t_nightaudit.bezeichnung, "x(40)"), "PROCESS")
-
+            log_process(270001, f"Processing night audit task: {t_nightaudit.bezeichnung}")
             if store_flag:
 
                 if t_nightaudit.hogarest == 0:
                     night_type = 0
                 else:
                     night_type = 2
+
+                log_process(270001, f"Deleting nitestor records for night_type {night_type} and reihenfolge {t_nightaudit.reihenfolge}")
                 success_flag = get_output(delete_nitestorbl(1, night_type, t_nightaudit.reihenfolge))
 
-            if matches(t_nightaudit.programm,r"*bl.p*"):
-                run_program(t_nightauditrogramm.lower())
-            else:
+            # if matches(t_nightaudit.programm,r"*bl.p*"):
+            #     run_program(t_nightaudit.programm.lower())
+            # else:
 
-                if to_int(t_nightaudit.abschlussart) == 1:
-                    run_program(t_nightauditrogramm.lower())
+            #     if to_int(t_nightaudit.abschlussart) == 1:
+            #         run_program(t_nightaudit.programm.lower())
+            #     else:
+            #         a = R_INDEX (t_nightaudit.programm, ".p")
+            #         run_program(substring(t_nightaudit.programm.lower() , 0, a - 1) + "bl")
+
+            programm = t_nightaudit.programm.lower()
+            abschlussart = int(t_nightaudit.abschlussart)
+
+            if "bl.p" in programm:
+                log_process(270001, f"Running program bl.p: {programm}")
+                # run_program(programm)
+            else:
+                if abschlussart == 1:
+                    log_process(270001, f"Running program, abschlussart=1: {programm}")
+                    # run_program(programm)
                 else:
-                    a = R_INDEX (t_nightaudit.programm, ".p")
-                    run_program(substring(t_nightauditrogramm.lower() , 0, a - 1) + "bl")
+                    a = programm.rfind(".p")
+                    new_programm = (programm[:a] + "bl.p") if a != -1 else (programm + "bl.p")
+                    log_process(270001, f"Running new program .p: {new_programm}")
+                    # run_program(new_programm)
 
             if store_flag:
+                log_process(270001, f"Deleting nitehist records for billdate {billdate} and reihenfolge {t_nightaudit.reihenfolge}")
                 success_flag = get_output(delete_nitehistbl(1, billdate, t_nightaudit.reihenfolge))
             cqueasy(to_string(t_nightaudit.bezeichnung, "x(40)"), "DONE")
+            log_process(270001, f"Completed night audit task: {t_nightaudit.bezeichnung}")
 
 
     def midnite_prog():
@@ -332,30 +372,43 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
             pass
             pass
 
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
 
+    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
+    log_process(270001,"Retrieving license number from Paramtext record 243")
     if paramtext:
         lic_nr = decode_string(paramtext.ptexte)
 
     for queasy in db_session.query(Queasy).filter(
              (Queasy.key == 232)).order_by(Queasy._recid).all():
+        log_process(270001, f"Deleting Queasy record: {queasy.char2} - {queasy.char3}")
         db_session.delete(queasy)
 
     if ans_arrguest:
+        log_process(270001, "Retrieving arrival guest information")
         mn_stopped, stop_it, arrival_guest, msg_str, mess_str, crm_license, banquet_license, na_list_data = get_output(prepare_mn_startbl(2, language_code))
 
     if mn_stopped:
         pass
     else:
-        midnite_prog()
-        get_output(mn_chg_sysdatesbl())
-        mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date1, na_time1, na_name1 = get_output(na_startbl(2, user_init, htparam_recid))
+        log_process(270001, "Starting midnight programs")
+        # midnite_prog()
+        log_process(270001, "Changing system dates")
+        # get_output(mn_chg_sysdatesbl())
+        log_process(270001, "Running NA Programs:na_startbl")
+        # mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date1, na_time1, na_name1 = get_output(na_startbl(2, user_init, htparam_recid))
+
+    log_process(270001, "Running NA Programs")
     na_prog()
-    mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date, na_time, na_name = get_output(na_startbl(3, user_init, htparam_recid))
+    # mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date, na_time, na_name = get_output(na_startbl(3, user_init, htparam_recid))
     success_flag = True
 
+    # for queasy in db_session.query(Queasy).filter(
+    #          (Queasy.key == 232) & (Queasy.date1 == TODAY)).order_by(Queasy._recid).all():
+
+
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 232) & (Queasy.date1 == TODAY)).order_by(Queasy._recid).all():
+             (Queasy.key == 232) & (Queasy.date1 == date.today())).order_by(Queasy._recid).all():
+        log_process(270001, f"Deleting Queasy record: {queasy.char2} - {queasy.char3}")
         db_session.delete(queasy)
 
     return generate_output()
