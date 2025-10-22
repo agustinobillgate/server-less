@@ -16,6 +16,10 @@ def cust_turnover_list_webbl(cardtype:int, sort_type:int, curr_sort1:int, fdate:
 
     sort1:int = 0
     tmp_counter:int = 0
+    gastnr_str:string = ""
+    sales_id_str:string = ""
+    resno_str:string = ""
+    reslinnr_str:string = ""
     queasy = None
 
     cust_list = bqueasy = pqueasy = None
@@ -31,14 +35,15 @@ def cust_turnover_list_webbl(cardtype:int, sort_type:int, curr_sort1:int, fdate:
     currency = currency.strip()
 
     def generate_output():
-        nonlocal sort1, tmp_counter, queasy
+        nonlocal sort1, tmp_counter, gastnr_str, sales_id_str, resno_str, reslinnr_str, queasy
         nonlocal cardtype, sort_type, curr_sort1, fdate, tdate, check_ftd, currency, excl_other, curr_sort2, idflag
         nonlocal bqueasy, pqueasy
+
 
         nonlocal cust_list, bqueasy, pqueasy
         nonlocal cust_list_data
 
-        return {"idflag": idflag}
+        return {}
 
 
     # Rd, 1/10/2025 - simpan start flag
@@ -63,52 +68,65 @@ def cust_turnover_list_webbl(cardtype:int, sort_type:int, curr_sort1:int, fdate:
         pqueasy.char3 = idflag
         pqueasy.number1 = tmp_counter
 
-        if cust_list.gastnr == None or cust_list.sales_id == None:
-            pqueasy.char2 = to_string(" ") + "|" +\
-                    to_string(cust_list.cust_name) + "|" +\
-                    to_string(cust_list.gesamtumsatz) + "|" +\
-                    to_string(cust_list.logiernachte) + "|" +\
-                    to_string(cust_list.argtumsatz) + "|" +\
-                    to_string(cust_list.f_b_umsatz) + "|" +\
-                    to_string(cust_list.sonst_umsatz) + "|" +\
-                    to_string(cust_list.wohnort) + "|" +\
-                    to_string(cust_list.plz) + "|" +\
-                    to_string(cust_list.land) + "|" +\
-                    to_string(" ") + "|" +\
-                    to_string(cust_list.ba_umsatz) + "|" +\
-                    to_string(cust_list.ly_rev) + "|" +\
-                    to_string(cust_list.region) + "|" +\
-                    to_string(cust_list.region1) + "|" +\
-                    to_string(cust_list.stayno) + "|" +\
-                    to_string("0") + "|" +\
-                    to_string(cust_list.counter) + "|" +\
-                    to_string(cust_list.counterall) + "|" +\
-                    to_string(cust_list.resno) + "|" +\
-                    to_string(cust_list.reslinnr) + "|" +\
-                    to_string(cust_list.curr_pos)
+        if cust_list.gastnr == None:
+            gastnr_str = " "
         else:
-            pqueasy.char2 = to_string(cust_list.gastnr) + "|" +\
-                    to_string(cust_list.cust_name) + "|" +\
-                    to_string(cust_list.gesamtumsatz) + "|" +\
-                    to_string(cust_list.logiernachte) + "|" +\
-                    to_string(cust_list.argtumsatz) + "|" +\
-                    to_string(cust_list.f_b_umsatz) + "|" +\
-                    to_string(cust_list.sonst_umsatz) + "|" +\
-                    to_string(cust_list.wohnort) + "|" +\
-                    to_string(cust_list.plz) + "|" +\
-                    to_string(cust_list.land) + "|" +\
-                    to_string(cust_list.sales_id) + "|" +\
-                    to_string(cust_list.ba_umsatz) + "|" +\
-                    to_string(cust_list.ly_rev) + "|" +\
-                    to_string(cust_list.region) + "|" +\
-                    to_string(cust_list.region1) + "|" +\
-                    to_string(cust_list.stayno) + "|" +\
-                    to_string("0") + "|" +\
-                    to_string(cust_list.counter) + "|" +\
-                    to_string(cust_list.counterall) + "|" +\
-                    to_string(cust_list.resno) + "|" +\
-                    to_string(cust_list.reslinnr) + "|" +\
-                    to_string(cust_list.curr_pos)
+            gastnr_str = to_string(cust_list.gastnr)
+
+        if cust_list.sales_id == None:
+            sales_id_str = " "
+        else:
+            sales_id_str = to_string(cust_list.sales_id)
+
+        if cust_list.resno == None:
+            resno_str = " "
+        else:
+            resno_str = to_string(cust_list.resno)
+
+        if cust_list.reslinnr == None:
+            reslinnr_str = " "
+        else:
+            reslinnr_str = to_string(cust_list.reslinnr)
+
+        if cust_list.cust_name == None:
+            cust_list.cust_name = " "
+
+        if cust_list.wohnort == None:
+            cust_list.wohnort = " "
+
+        if cust_list.region == None:
+            cust_list.region = " "
+
+        if cust_list.region1 == None:
+            cust_list.region1 = " "
+
+        if cust_list.plz == None:
+            cust_list.plz = " "
+
+        if cust_list.land == None:
+            cust_list.land = " "
+        pqueasy.char2 = gastnr_str + "|" +\
+                to_string(cust_list.cust_name) + "|" +\
+                to_string(cust_list.gesamtumsatz) + "|" +\
+                to_string(cust_list.logiernachte) + "|" +\
+                to_string(cust_list.argtumsatz) + "|" +\
+                to_string(cust_list.f_b_umsatz) + "|" +\
+                to_string(cust_list.sonst_umsatz) + "|" +\
+                to_string(cust_list.wohnort) + "|" +\
+                to_string(cust_list.plz) + "|" +\
+                to_string(cust_list.land) + "|" +\
+                sales_id_str + "|" +\
+                to_string(cust_list.ba_umsatz) + "|" +\
+                to_string(cust_list.ly_rev) + "|" +\
+                to_string(cust_list.region) + "|" +\
+                to_string(cust_list.region1) + "|" +\
+                to_string(cust_list.stayno) + "|" +\
+                to_string("0") + "|" +\
+                to_string(cust_list.counter) + "|" +\
+                to_string(cust_list.counterall) + "|" +\
+                resno_str + "|" +\
+                reslinnr_str + "|" +\
+                to_string(cust_list.curr_pos)
 
         
     db_session.commit()
