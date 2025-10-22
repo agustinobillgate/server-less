@@ -126,7 +126,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
         res_line_obj_list = {}
         res_line = Res_line()
         guest = Guest()
-        for res_line.resnr, res_line.arrangement, res_line.reslinnr, res_line.zinr, res_line.gastnr, res_line.ankunft, res_line.abreise, res_line._recid, res_line.resstatus, res_line.zimmerfix, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest._recid in db_session.query(Res_line.resnr, Res_line.arrangement, Res_line.reslinnr, Res_line.zinr, Res_line.gastnr, Res_line.ankunft, Res_line.abreise, Res_line._recid, Res_line.resstatus, Res_line.zimmerfix, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest._recid).join(Guest,(Guest.gastnr == Res_line.gastnr) & (Guest.karteityp == cardtype)).filter(
+        for res_line.resnr, res_line.arrangement, res_line.reslinnr, res_line.zinr, res_line.gastnr, res_line.ankunft, res_line.abreise, res_line._recid, res_line.resstatus, res_line.zimmerfix, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest.anredefirma, guest._recid in db_session.query(Res_line.resnr, Res_line.arrangement, Res_line.reslinnr, Res_line.zinr, Res_line.gastnr, Res_line.ankunft, Res_line.abreise, Res_line._recid, Res_line.resstatus, Res_line.zimmerfix, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest.anredefirma, Guest._recid).join(Guest,(Guest.gastnr == Res_line.gastnr) & (Guest.karteityp == cardtype)).filter(
                  ((Res_line.active_flag <= 1) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (Res_line.resstatus != 12) & (not_ (Res_line.ankunft > tdate)) & (not_ (Res_line.abreise <= fdate))) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.ankunft == ci_date) & (Res_line.abreise == ci_date)) & (Res_line.gastnr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.gastnr, Res_line.resnr, Res_line.reslinnr).all():
             if res_line_obj_list.get(res_line._recid):
                 continue
@@ -174,8 +174,8 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                     cust_list = Cust_list()
                     cust_list_data.append(cust_list)
 
-                    cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                            guest.anredefirma)
+                    cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma)
+
                     cust_list.gastnr = guest.gastnr
                     cust_list.wohnort = guest.wohnort
                     cust_list.plz = guest.plz
@@ -415,7 +415,8 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
         genstat_obj_list = {}
         genstat = Genstat()
         guest = Guest()
-        for genstat.datum, genstat.logis, genstat.res_deci, genstat.resnr, genstat.res_int, genstat.gastnr, genstat.resstatus, genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest._recid in db_session.query(Genstat.datum, Genstat.logis, Genstat.res_deci, Genstat.resnr, Genstat.res_int, Genstat.gastnr, Genstat.resstatus, Genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr) & (Guest.karteityp == cardtype)).filter(
+
+        for genstat.datum, genstat.logis, genstat.res_deci, genstat.resnr, genstat.res_int, genstat.gastnr, genstat.resstatus, genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest.anredefirma, guest._recid in db_session.query(Genstat.datum, Genstat.logis, Genstat.res_deci, Genstat.resnr, Genstat.res_int, Genstat.gastnr, Genstat.resstatus, Genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest.anredefirma, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr) & (Guest.karteityp == cardtype)).filter(
                  (Genstat.datum >= fdate) & (Genstat.datum <= tdate) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat.gastnr, Genstat.resnr, Guest.land).all():
             if genstat_obj_list.get(genstat._recid):
                 continue
@@ -428,8 +429,8 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                 cust_list = Cust_list()
                 cust_list_data.append(cust_list)
 
-                cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                        guest.anredefirma)
+                cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma)
+                
                 cust_list.gastnr = guest.gastnr
                 cust_list.wohnort = guest.wohnort
                 cust_list.plz = guest.plz
@@ -589,7 +590,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
         t_genstat_obj_list = {}
         t_genstat = Genstat()
         guest = Guest()
-        for t_genstat.datum, t_genstat.logis, t_genstat.res_deci, t_genstat.resnr, t_genstat.res_int, t_genstat.gastnr, t_genstat.resstatus, t_genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest._recid in db_session.query(T_genstat.datum, T_genstat.logis, T_genstat.res_deci, T_genstat.resnr, T_genstat.res_int, T_genstat.gastnr, T_genstat.resstatus, T_genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest._recid).join(Guest,(Guest.gastnr == T_genstat.gastnr) & (Guest.karteityp == cardtype)).filter(
+        for t_genstat.datum, t_genstat.logis, t_genstat.res_deci, t_genstat.resnr, t_genstat.res_int, t_genstat.gastnr, t_genstat.resstatus, t_genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest.anredefirma, guest._recid in db_session.query(T_genstat.datum, T_genstat.logis, T_genstat.res_deci, T_genstat.resnr, T_genstat.res_int, T_genstat.gastnr, T_genstat.resstatus, T_genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest.anredefirma, Guest._recid).join(Guest,(Guest.gastnr == T_genstat.gastnr) & (Guest.karteityp == cardtype)).filter(
                  (T_genstat.datum >= fdate) & (T_genstat.datum <= tdate) & (T_genstat.res_deci[inc_value(6)] != 0)).order_by(T_genstat._recid).all():
             if t_genstat_obj_list.get(t_genstat._recid):
                 continue
@@ -618,8 +619,8 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                 cust_list = Cust_list()
                 cust_list_data.append(cust_list)
 
-                cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                        guest.anredefirma)
+                cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma)
+                
                 cust_list.gastnr = guest.gastnr
                 cust_list.wohnort = guest.wohnort
                 cust_list.plz = guest.plz
@@ -682,7 +683,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
         res_line_obj_list = {}
         res_line = Res_line()
         guest = Guest()
-        for res_line.resnr, res_line.arrangement, res_line.reslinnr, res_line.zinr, res_line.gastnr, res_line.ankunft, res_line.abreise, res_line._recid, res_line.resstatus, res_line.zimmerfix, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest._recid in db_session.query(Res_line.resnr, Res_line.arrangement, Res_line.reslinnr, Res_line.zinr, Res_line.gastnr, Res_line.ankunft, Res_line.abreise, Res_line._recid, Res_line.resstatus, Res_line.zimmerfix, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest._recid).join(Guest,(Guest.gastnr == Res_line.gastnr)).filter(
+        for res_line.resnr, res_line.arrangement, res_line.reslinnr, res_line.zinr, res_line.gastnr, res_line.ankunft, res_line.abreise, res_line._recid, res_line.resstatus, res_line.zimmerfix, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest.anredefirma, guest._recid in db_session.query(Res_line.resnr, Res_line.arrangement, Res_line.reslinnr, Res_line.zinr, Res_line.gastnr, Res_line.ankunft, Res_line.abreise, Res_line._recid, Res_line.resstatus, Res_line.zimmerfix, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest.anredefirma, Guest._recid).join(Guest,(Guest.gastnr == Res_line.gastnr)).filter(
                  ((Res_line.active_flag <= 1) & (Res_line.resstatus <= 13) & (Res_line.resstatus != 4) & (Res_line.resstatus != 12) & (not_ (Res_line.ankunft > tdate)) & (not_ (Res_line.abreise <= fdate))) | ((Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.ankunft == ci_date) & (Res_line.abreise == ci_date)) & (Res_line.gastnr > 0) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.gastnr, Res_line.resnr, Res_line.reslinnr).all():
             if res_line_obj_list.get(res_line._recid):
                 continue
@@ -730,8 +731,8 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                     cust_list = Cust_list()
                     cust_list_data.append(cust_list)
 
-                    cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                            guest.anredefirma)
+                    cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma)
+                    
                     cust_list.gastnr = guest.gastnr
                     cust_list.wohnort = guest.wohnort
                     cust_list.plz = guest.plz
@@ -975,7 +976,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
         genstat_obj_list = {}
         genstat = Genstat()
         guest = Guest()
-        for genstat.datum, genstat.logis, genstat.res_deci, genstat.resnr, genstat.res_int, genstat.gastnr, genstat.resstatus, genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest._recid in db_session.query(Genstat.datum, Genstat.logis, Genstat.res_deci, Genstat.resnr, Genstat.res_int, Genstat.gastnr, Genstat.resstatus, Genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr)).filter(
+        for genstat.datum, genstat.logis, genstat.res_deci, genstat.resnr, genstat.res_int, genstat.gastnr, genstat.resstatus, genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest.anredefirma, guest._recid in db_session.query(Genstat.datum, Genstat.logis, Genstat.res_deci, Genstat.resnr, Genstat.res_int, Genstat.gastnr, Genstat.resstatus, Genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest.anredefirma, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr)).filter(
                  (Genstat.datum >= fdate) & (Genstat.datum <= tdate) & (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat.gastnr, Genstat.resnr, Guest.land).all():
             if genstat_obj_list.get(genstat._recid):
                 continue
@@ -988,8 +989,8 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                 cust_list = Cust_list()
                 cust_list_data.append(cust_list)
 
-                cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                        guest.anredefirma)
+                cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma)
+                
                 cust_list.gastnr = guest.gastnr
                 cust_list.wohnort = guest.wohnort
                 cust_list.plz = guest.plz
@@ -1148,7 +1149,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
         t_genstat_obj_list = {}
         t_genstat = Genstat()
         guest = Guest()
-        for t_genstat.datum, t_genstat.logis, t_genstat.res_deci, t_genstat.resnr, t_genstat.res_int, t_genstat.gastnr, t_genstat.resstatus, t_genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest._recid in db_session.query(T_genstat.datum, T_genstat.logis, T_genstat.res_deci, T_genstat.resnr, T_genstat.res_int, T_genstat.gastnr, T_genstat.resstatus, T_genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest._recid).join(Guest,(Guest.gastnr == T_genstat.gastnr)).filter(
+        for t_genstat.datum, t_genstat.logis, t_genstat.res_deci, t_genstat.resnr, t_genstat.res_int, t_genstat.gastnr, t_genstat.resstatus, t_genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest.anredefirma, guest._recid in db_session.query(T_genstat.datum, T_genstat.logis, T_genstat.res_deci, T_genstat.resnr, T_genstat.res_int, T_genstat.gastnr, T_genstat.resstatus, T_genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest.anredefirma, Guest._recid).join(Guest,(Guest.gastnr == T_genstat.gastnr)).filter(
                  (T_genstat.datum >= fdate) & (T_genstat.datum <= tdate) & (T_genstat.res_deci[inc_value(6)] != 0)).order_by(T_genstat._recid).all():
             if t_genstat_obj_list.get(t_genstat._recid):
                 continue
@@ -1177,8 +1178,8 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                 cust_list = Cust_list()
                 cust_list_data.append(cust_list)
 
-                cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                        guest.anredefirma)
+                cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma)
+                
                 cust_list.gastnr = guest.gastnr
                 cust_list.wohnort = guest.wohnort
                 cust_list.plz = guest.plz
@@ -1237,7 +1238,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
             genstat_obj_list = {}
             genstat = Genstat()
             guest = Guest()
-            for genstat.datum, genstat.logis, genstat.res_deci, genstat.resnr, genstat.res_int, genstat.gastnr, genstat.resstatus, genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest._recid in db_session.query(Genstat.datum, Genstat.logis, Genstat.res_deci, Genstat.resnr, Genstat.res_int, Genstat.gastnr, Genstat.resstatus, Genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr)).filter(
+            for genstat.datum, genstat.logis, genstat.res_deci, genstat.resnr, genstat.res_int, genstat.gastnr, genstat.resstatus, genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest.anredefirma, guest._recid in db_session.query(Genstat.datum, Genstat.logis, Genstat.res_deci, Genstat.resnr, Genstat.res_int, Genstat.gastnr, Genstat.resstatus, Genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest.anredefirma, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr)).filter(
                      (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Guest.gesamtumsatz.desc(), Guest.logiernachte.desc(), Guest.name).all():
                 if genstat_obj_list.get(genstat._recid):
                     continue
@@ -1250,8 +1251,8 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                     cust_list = Cust_list()
                     cust_list_data.append(cust_list)
 
-                    cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                            guest.anredefirma)
+                    cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma)
+
                     cust_list.gastnr = guest.gastnr
                     cust_list.wohnort = guest.wohnort
                     cust_list.plz = guest.plz
@@ -1389,7 +1390,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
             t_genstat_obj_list = {}
             t_genstat = Genstat()
             guest = Guest()
-            for t_genstat.datum, t_genstat.logis, t_genstat.res_deci, t_genstat.resnr, t_genstat.res_int, t_genstat.gastnr, t_genstat.resstatus, t_genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest._recid in db_session.query(T_genstat.datum, T_genstat.logis, T_genstat.res_deci, T_genstat.resnr, T_genstat.res_int, T_genstat.gastnr, T_genstat.resstatus, T_genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest._recid).join(Guest,(Guest.gastnr == T_genstat.gastnr)).filter(
+            for t_genstat.datum, t_genstat.logis, t_genstat.res_deci, t_genstat.resnr, t_genstat.res_int, t_genstat.gastnr, t_genstat.resstatus, t_genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest.anredefirma, guest._recid in db_session.query(T_genstat.datum, T_genstat.logis, T_genstat.res_deci, T_genstat.resnr, T_genstat.res_int, T_genstat.gastnr, T_genstat.resstatus, T_genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest.anredefirma, Guest._recid).join(Guest,(Guest.gastnr == T_genstat.gastnr)).filter(
                      (T_genstat.datum >= fdate) & (T_genstat.datum <= tdate) & (T_genstat.res_deci[inc_value(6)] != 0)).order_by(Guest.gesamtumsatz.desc(), Guest.logiernachte.desc(), Guest.name).all():
                 if t_genstat_obj_list.get(t_genstat._recid):
                     continue
@@ -1418,8 +1419,8 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                     cust_list = Cust_list()
                     cust_list_data.append(cust_list)
 
-                    cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                            guest.anredefirma)
+                    cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma)
+
                     cust_list.gastnr = guest.gastnr
                     cust_list.wohnort = guest.wohnort
                     cust_list.plz = guest.plz
@@ -1461,7 +1462,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
             genstat_obj_list = {}
             genstat = Genstat()
             guest = Guest()
-            for genstat.datum, genstat.logis, genstat.res_deci, genstat.resnr, genstat.res_int, genstat.gastnr, genstat.resstatus, genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest._recid in db_session.query(Genstat.datum, Genstat.logis, Genstat.res_deci, Genstat.resnr, Genstat.res_int, Genstat.gastnr, Genstat.resstatus, Genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr) & (Guest.karteityp == cardtype)).filter(
+            for genstat.datum, genstat.logis, genstat.res_deci, genstat.resnr, genstat.res_int, genstat.gastnr, genstat.resstatus, genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest.anredefirma, guest._recid in db_session.query(Genstat.datum, Genstat.logis, Genstat.res_deci, Genstat.resnr, Genstat.res_int, Genstat.gastnr, Genstat.resstatus, Genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest.anredefirma, Guest._recid).join(Guest,(Guest.gastnr == Genstat.gastnr) & (Guest.karteityp == cardtype)).filter(
                      (Genstat.segmentcode != 0) & (Genstat.nationnr != 0) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Guest.gesamtumsatz.desc(), Guest.logiernachte.desc(), Guest.name).all():
                 if genstat_obj_list.get(genstat._recid):
                     continue
@@ -1474,8 +1475,8 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                     cust_list = Cust_list()
                     cust_list_data.append(cust_list)
 
-                    cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                            guest.anredefirma)
+                    cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma)
+                    
                     cust_list.gastnr = guest.gastnr
                     cust_list.wohnort = guest.wohnort
                     cust_list.plz = guest.plz
@@ -1608,7 +1609,7 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
             t_genstat_obj_list = {}
             t_genstat = Genstat()
             guest = Guest()
-            for t_genstat.datum, t_genstat.logis, t_genstat.res_deci, t_genstat.resnr, t_genstat.res_int, t_genstat.gastnr, t_genstat.resstatus, t_genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest._recid in db_session.query(T_genstat.datum, T_genstat.logis, T_genstat.res_deci, T_genstat.resnr, T_genstat.res_int, T_genstat.gastnr, T_genstat.resstatus, T_genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest._recid).join(Guest,(Guest.gastnr == T_genstat.gastnr) & (Guest.karteityp == cardtype)).filter(
+            for t_genstat.datum, t_genstat.logis, t_genstat.res_deci, t_genstat.resnr, t_genstat.res_int, t_genstat.gastnr, t_genstat.resstatus, t_genstat._recid, guest.name, guest.vorname1, guest.anrede1, guest.gastnr, guest.wohnort, guest.plz, guest.land, guest.phonetik3, guest.anredefirma, guest._recid in db_session.query(T_genstat.datum, T_genstat.logis, T_genstat.res_deci, T_genstat.resnr, T_genstat.res_int, T_genstat.gastnr, T_genstat.resstatus, T_genstat._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.gastnr, Guest.wohnort, Guest.plz, Guest.land, Guest.phonetik3, Guest.anredefirma, Guest._recid).join(Guest,(Guest.gastnr == T_genstat.gastnr) & (Guest.karteityp == cardtype)).filter(
                      (T_genstat.datum >= fdate) & (T_genstat.datum <= tdate) & (T_genstat.res_deci[inc_value(6)] != 0)).order_by(Guest.gesamtumsatz.desc(), Guest.logiernachte.desc(), Guest.name).all():
                 if t_genstat_obj_list.get(t_genstat._recid):
                     continue
@@ -1635,8 +1636,8 @@ def cust_turnover_2bl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, t
                     cust_list = Cust_list()
                     cust_list_data.append(cust_list)
 
-                    cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 +\
-                            guest.anredefirma)
+                    cust_list.cust_name = (guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma)
+
                     cust_list.gastnr = guest.gastnr
                     cust_list.wohnort = guest.wohnort
                     cust_list.plz = guest.plz
