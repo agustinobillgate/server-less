@@ -1,7 +1,6 @@
 #using conversion tools version: 1.0.0.117
 
 from functions.additional_functions import *
-from datetime import datetime, timezone
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Queasy
@@ -28,35 +27,14 @@ def mn_del_lockrecord_queasybl(v_mode:int):
 
         return {"i": i}
 
-    def get_timestamp_with_ms() -> str:
-        """
-        Returns current timestamp as a string with millisecond precision,
-        equivalent to the Progress ABL getTimestampWithMs function.
-        """
-        # current UTC time
-        now = datetime.now(timezone.utc)
 
-        # Epoch (1970-01-01 UTC)
-        epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
-
-        # milliseconds since epoch
-        epoch_milliseconds = int((now - epoch).total_seconds() * 1000)
-
-        # reconstruct human-readable datetime from milliseconds
-        human_date = datetime.fromtimestamp(epoch_milliseconds / 1000, tz=timezone.utc)
-
-        # format string same as ABL STRING(DATETIME) output: "YYYY-MM-DDTHH:MM:SS.mmm"
-        timestamp_str = human_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]  # trim to milliseconds
-
-        return timestamp_str
-    
     htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
 
     if htparam:
         vbilldate = htparam.fdate
 
     if v_mode == 1:
-        timestamp_str = get_timestamp_with_ms()
+
         if timestamp_str != "" and num_entries(timestamp_str, " ") >= 1:
             v_date = date_mdy(entry(0, timestamp_str, " "))
             v_time_msecond = entry(1, timestamp_str, " ")
