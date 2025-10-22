@@ -6,7 +6,7 @@
 
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 import re
 from functions.ratecode_rate import ratecode_rate
 from models import Htparam, Bill, Res_line, Guest, Reslin_queasy, Res_history, Waehrung, Reservation, Arrangement, Artikel, Guest_pr, Queasy, Segment, Zimkateg, Fixleist, Katpreis, Pricecod, Argt_line, Pricegrp, Resplan, Zimplan, Zimmer, Outorder
@@ -481,7 +481,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
                 else:
                     roomrate, argt, pax = update_zipreis(roomrate, argt, pax)
 
-            if (res_line.zipreis != roomrate) or (res_line.arrangement.lower()  != (argt).lower()) or (res_line.erwachs != pax):
+            if (res_line.zipreis != roomrate) or (res_line.arrangement  != (argt)) or (res_line.erwachs != pax):
                 cid = " "
                 cdate = " "
 
@@ -641,7 +641,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
         if reslin_queasy:
             roomrate =  to_decimal(reslin_queasy.deci1)
 
-            if reslin_queasy.char1.lower()  != "" and reslin_queasy.char1.lower()  != (argt).lower() :
+            if reslin_queasy.char1  != "" and reslin_queasy.char1  != (argt) :
                 argt = reslin_queasy.char1
 
             if reslin_queasy.number3 != 0:
@@ -763,7 +763,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
         if reslin_queasy:
             roomrate =  to_decimal(reslin_queasy.deci1)
 
-            if reslin_queasy.char1.lower()  != "" and reslin_queasy.char1.lower()  != (argt).lower() :
+            if reslin_queasy.char1  != "" and reslin_queasy.char1  != (argt) :
                 argt = reslin_queasy.char1
 
             if reslin_queasy.number3 != 0:
@@ -847,7 +847,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
                         elif argt_line.fakt_modus == 4 and get_day(post_date) == 1:
                             add_it = True
 
-                        elif argt_line.fakt_modus == 5 and get_day(post_date + 1) == 1:
+                        elif argt_line.fakt_modus == 5 and get_day(post_date + timedelta(days=1)) == 1:
                             add_it = True
 
                         elif argt_line.fakt_modus == 6:

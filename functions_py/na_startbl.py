@@ -75,7 +75,6 @@ def na_startbl(case_type:int, user_init:string, htparam_recid:int):
             t_nightaudit.reihenfolge = nightaudit.reihenfolge
             t_nightaudit.programm = nightaudit.programm
             t_nightaudit.abschlussart = nightaudit.abschlussart
-            log_process(270001, f"___add List program: {nightaudit.programm}")
 
 
     def check_mn_start():

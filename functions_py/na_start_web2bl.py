@@ -90,9 +90,9 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
     log_process(270001,"Starting na_start_web2bl")
     
 
-    def run_program(program_name:string):
-        log_process(270001, f"Running program: {program_name}")
-        # Placeholder for actual program execution logic
+    # def run_program(program_name:string):
+    #     log_process(270001, f"Running program: {program_name}")
+    #     # Placeholder for actual program execution logic
 
     def generate_output():
         nonlocal printer_nr, success_flag, mn_stopped, stop_it, arrival_guest, msg_str, mess_str, crm_license, banquet_license, na_date1, na_time1, na_name1, mnstart_flag, store_flag, billdate, na_date, na_time, na_name, lic_nr, paramtext, queasy
@@ -128,7 +128,7 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         for t_nightaudit in t_nightaudit_sorted_list:
             i = i + 1
             cqueasy(to_string(t_nightaudit.bezeichnung, "x(40)"), "PROCESS")
-            log_process(270001, f"Processing night audit task: {t_nightaudit.bezeichnung}")
+            log_process(270001, f"Processing: {t_nightaudit.bezeichnung}")
             if store_flag:
 
                 if t_nightaudit.hogarest == 0:
@@ -136,7 +136,6 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
                 else:
                     night_type = 2
 
-                log_process(270001, f"Deleting nitestor records for night_type {night_type} and reihenfolge {t_nightaudit.reihenfolge}")
                 success_flag = get_output(delete_nitestorbl(1, night_type, t_nightaudit.reihenfolge))
 
             # if matches(t_nightaudit.programm,r"*bl.p*"):
@@ -151,10 +150,12 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
 
             programm = t_nightaudit.programm.lower()
             programm = programm.lower().replace("-", "_")
+            programm = programm.replace(".r", ".p")
+            programm = programm.replace(".p", ".py")
+            
             abschlussart = int(t_nightaudit.abschlussart)
 
-            if "bl.p" in programm:
-                programm = programm.replace("bl.p", "bl.py")
+            if "bl.py" in programm:
                 log_process(270001, f"Run bl.p: {programm}")
                 # run_program(programm)
             else:
@@ -163,8 +164,8 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
                     # run_program(programm)
                 else:
                     a = programm.rfind(".p")
-                    new_programm = (programm[:a] + "bl.p") if a != -1 else (programm + "bl.p")
-                    new_programm = new_programm.replace("bl.p", "bl.py")
+                    new_programm = (programm[:a] + "bl.py") if a != -1 else (programm + "bl.py")
+                    # new_programm = new_programm.replace("bl.p", "bl.py")
                     log_process(270001, f"Run .p: {new_programm}")
                     # run_program(new_programm)
 
@@ -172,7 +173,7 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
                 success_flag = get_output(delete_nitehistbl(1, billdate, t_nightaudit.reihenfolge))
 
             cqueasy(to_string(t_nightaudit.bezeichnung, "x(40)"), "DONE")
-            log_process(270001, f"Completed night audit task: {t_nightaudit.bezeichnung}")
+            log_process(270001, f"Completed: {t_nightaudit.bezeichnung}")
 
 
     def midnite_prog():
@@ -398,7 +399,6 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         midnite_prog()
         log_process(270001, "Changing system dates")
         get_output(mn_chg_sysdatesbl())
-        log_process(270001, "Running NA Programs:na_startbl. 402")
         mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date1, na_time1, na_name1 = get_output(na_startbl(2, user_init, htparam_recid))
 
     na_prog()

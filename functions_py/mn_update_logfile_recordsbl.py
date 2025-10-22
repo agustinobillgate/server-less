@@ -92,7 +92,9 @@ def mn_update_logfile_recordsbl():
             res_history = db_session.query(Res_history).filter(
                      (Res_history.action == ("HouseKeeping")) & (Res_history.datum < (ci_date - timedelta(days=anz_tage))) & (Res_history.zeit >= 0) & (Res_history._recid > curr_recid)).first()
 
-        res_history = get_cache (Res_history, {"datum": [(lt, (ci_date - hist_tage))],"zeit": [(ge, 0)]})
+        # res_history = get_cache (Res_history, {"datum": [(lt, (ci_date - hist_tage))],"zeit": [(ge, 0)]})
+        res_history = db_session.query(Res_history).filter(
+                 (Res_history.datum < (ci_date - timedelta(days=hist_tage))) & (Res_history.zeit >= 0)).first()
         while None != res_history:
             do_it = True
 
