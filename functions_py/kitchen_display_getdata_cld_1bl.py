@@ -158,24 +158,24 @@ def kitchen_display_getdata_cld_1bl(casetype:int, kp_number:int):
             if kds_line.char3 == "":
                 kitchen_display_list.status_order = "NEW"
 
-            elif kds_line.char3.lower()  == ("1").lower() :
+            elif kds_line.char3  == ("1") :
                 kitchen_display_list.status_order = "COOKING"
 
-            elif kds_line.char3.lower()  == ("2").lower() :
+            elif kds_line.char3  == ("2") :
                 kitchen_display_list.status_order = "DONE"
 
-            elif kds_line.char3.lower()  == ("3").lower() :
+            elif kds_line.char3  == ("3") :
                 kitchen_display_list.status_order = "SERVED"
 
-            elif kds_line.char3.lower()  == ("4").lower() :
+            elif kds_line.char3  == ("4") :
                 kitchen_display_list.status_order = "SERVEDBYSYSTEM"
 
-            if qtime and kds_line.char3.lower()  == ("3").lower() :
+            if qtime and kds_line.char3  == ("3") :
                 kitchen_display_list.served_time = entry(2, qtime.char1, "|")
         else:
             kitchen_display_list.artikel_qty = kitchen_display_list.artikel_qty + 1
 
-        if (kitchen_display_list.status_order.lower()  != ("SERVED").lower()  and kitchen_display_list.status_order.lower()  != ("SERVEDBYSYSTEM").lower()):
+        if (kitchen_display_list.status_order  != ("SERVED")  and kitchen_display_list.status_order  != ("SERVEDBYSYSTEM")):
 
             summary_artlist = query(summary_artlist_list, filters=(lambda summary_artlist: summary_artlist.artikel_no == h_artikel.artnr and summary_artlist.artikel_dept == h_artikel.departement), first=True)
 
@@ -231,8 +231,29 @@ def kitchen_display_getdata_cld_1bl(casetype:int, kp_number:int):
         count_i = 0
 
         h_bill_line_obj_list = []
-        for h_bill_line, h_artikel in db_session.query(H_bill_line, H_artikel).join(H_artikel,(H_artikel.departement == H_bill_line.departement) & (H_artikel.artnr == H_bill_line.artnr) & (H_artikel.bondruckernr[inc_value(0)] == kp_number)).filter(
-                 (H_bill_line._recid.in_(list(set([kds_line.number3 for kds_line in kds_line_list if kds_line.logi1]))))).order_by(kds_line.date1, kds_line.deci1).all():
+        # Rd, 13/10/2025
+        # list dikeluarkan dari for loop
+        # for h_bill_line, h_artikel in db_session.query(H_bill_line, H_artikel).join(H_artikel,(H_artikel.departement == H_bill_line.departement) & (H_artikel.artnr == H_bill_line.artnr) & (H_artikel.bondruckernr[inc_value(0)] == kp_number)).filter(
+        #          (H_bill_line._recid.in_(list(set([kds_line.number3 for kds_line in kds_line_list if kds_line.logi1]))))).order_by(kds_line.date1, kds_line.deci1).all():
+        recid_list = list({kds.number3 for kds in kds_line_list if kds.logi1})
+        
+        if recid_list:
+            results = (
+                db_session.query(H_bill_line, H_artikel)
+                .join(
+                    H_artikel,
+                    (H_artikel.departement == H_bill_line.departement)
+                    & (H_artikel.artnr == H_bill_line.artnr)
+                    & (H_artikel.bondruckernr[inc_value(0)] == kp_number)
+                )
+                .filter(H_bill_line._recid.in_(recid_list))
+                .order_by(H_bill_line.date1, H_bill_line.deci1)  # ✅ fixed
+                .all()
+            )
+        else:
+            results = []  # nothing to query if list empty
+
+        for h_bill_line, h_artikel in results:
             if h_bill_line._recid in h_bill_line_obj_list:
                 continue
             else:
@@ -297,7 +318,7 @@ def kitchen_display_getdata_cld_1bl(casetype:int, kp_number:int):
             void_menu.transferred = False
 
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 257) & (func.lower(Queasy.char1) == ("kds-header").lower()) & (Queasy.date1 == bill_date) & (not Queasy.logi1)).order_by(Queasy._recid).all():
+             (Queasy.key == 257) & (func.lower(Queasy.char1) == ("kds-header")) & (Queasy.date1 == bill_date) & (not Queasy.logi1)).order_by(Queasy._recid).all():
         kds_header = Kds_header()
         kds_header_list.append(kds_header)
 
@@ -305,7 +326,7 @@ def kitchen_display_getdata_cld_1bl(casetype:int, kp_number:int):
         kds_header.q_recid = queasy._recid
 
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 255) & (func.lower(Queasy.char1) == ("kds-line").lower()) & (Queasy.date1 == bill_date) & (not Queasy.logi1)).order_by(Queasy._recid).all():
+             (Queasy.key == 255) & (func.lower(Queasy.char1) == ("kds-line")) & (Queasy.date1 == bill_date) & (not Queasy.logi1)).order_by(Queasy._recid).all():
         kds_line = Kds_line()
         kds_line_list.append(kds_line)
 
@@ -329,7 +350,7 @@ def kitchen_display_getdata_cld_1bl(casetype:int, kp_number:int):
                 if h_artikel:
                     create_line()
 
-        for kitchen_display_list in query(kitchen_display_list_list, filters=(lambda kitchen_display_list: kitchen_display_list.curr_flag.lower()  == ("kds-line").lower())):
+        for kitchen_display_list in query(kitchen_display_list_list, filters=(lambda kitchen_display_list: kitchen_display_list.curr_flag  == ("kds-line"))):
 
             void_menu = query(void_menu_list, filters=(lambda void_menu: void_menu.departemen == kitchen_display_list.dept_no and void_menu.rechnr == kitchen_display_list.bill_no and void_menu.artnr == kitchen_display_list.artikel_no and void_menu.transferred == False), first=True)
 
@@ -351,9 +372,9 @@ def kitchen_display_getdata_cld_1bl(casetype:int, kp_number:int):
     
     create_done()
 
-    for bkds in query(bkds_list, filters=(lambda bkds: bkds.curr_flag.lower()  == ("kds-header").lower()), sort_by=[("count_pos",False)]):
+    for bkds in query(bkds_list, filters=(lambda bkds: bkds.curr_flag  == ("kds-header")), sort_by=[("count_pos",False)]):
 
-        kitchen_display_list = query(kitchen_display_list_list, filters=(lambda kitchen_display_list: kitchen_display_list.curr_flag.lower()  == ("kds-line").lower()  and kitchen_display_list.qhead_recid == bkds.qhead_recid), first=True)
+        kitchen_display_list = query(kitchen_display_list_list, filters=(lambda kitchen_display_list: kitchen_display_list.curr_flag  == ("kds-line")  and kitchen_display_list.qhead_recid == bkds.qhead_recid), first=True)
 
         if not kitchen_display_list:
             bkds_list.remove(bkds)
@@ -361,7 +382,7 @@ def kitchen_display_getdata_cld_1bl(casetype:int, kp_number:int):
             recount = recount + 1
             bkds.count_pos = recount
 
-            for kitchen_display_list in query(kitchen_display_list_list, filters=(lambda kitchen_display_list: kitchen_display_list.curr_flag.lower()  == ("kds-line").lower()  and kitchen_display_list.qhead_recid == bkds.qhead_recid)):
+            for kitchen_display_list in query(kitchen_display_list_list, filters=(lambda kitchen_display_list: kitchen_display_list.curr_flag  == ("kds-line")  and kitchen_display_list.qhead_recid == bkds.qhead_recid)):
                 kitchen_display_list.count_pos = recount
 
     return generate_output()

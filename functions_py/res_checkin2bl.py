@@ -7,7 +7,7 @@
 
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 from functions.post_dayuse import post_dayuse
 from functions.intevent_1 import intevent_1
 from functions.mk_mcoupon import mk_mcoupon
@@ -304,15 +304,16 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
 
         if zinr != "" and not sharer:
 
-            if res_mode.lower()  == ("inhouse").lower() :
+            if res_mode  == ("inhouse") :
                 beg_datum = htparam.fdate
             else:
                 beg_datum = ankunft
             room_blocked = False
-            for curr_datum in date_range(beg_datum,(abreise - 1)) :
+            # for curr_datum in date_range(beg_datum,(abreise - 1)) :
+            for curr_datum in date_range(beg_datum,(abreise - timedelta(days=1))) :
 
                 zimplan1 = db_session.query(Zimplan1).filter(
-                         (Zimplan1.datum == curr_datum) & (Zimplan1.zinr == (zinr).lower())).first()
+                         (Zimplan1.datum == curr_datum) & (Zimplan1.zinr == (zinr))).first()
 
                 if (not zimplan1) and (not room_blocked):
                     zimplan = Zimplan()
@@ -333,7 +334,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
 
                         resline = get_cache (Res_line, {"_recid": [(eq, zimplan1.res_recid)]})
 
-                        if resline and resline.zinr.lower()  == (zinr).lower()  and resline.active_flag < 2 and resline.ankunft <= zimplan1.datum and resline.abreise > zimplan1.datum:
+                        if resline and resline.zinr  == (zinr)  and resline.active_flag < 2 and resline.ankunft <= zimplan1.datum and resline.abreise > zimplan1.datum:
                             curr_datum = abreise
                             room_blocked = True
                         else:
@@ -347,7 +348,8 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
                             pass
 
             if room_blocked:
-                for curr_datum in date_range(beg_datum,(abreise - 1)) :
+                # for curr_datum in date_range(beg_datum,(abreise - 1)) :
+                for curr_datum in date_range(beg_datum,(abreise - timedelta(days=1))) :
 
                     zimplan = get_cache (Zimplan, {"datum": [(eq, curr_datum)],"zinr": [(eq, zinr)],"res_recid": [(eq, resline_recid)]})
 
@@ -419,7 +421,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
             beg_datum = rline.ankunft
             res_recid1 = 0
 
-            if res_mode.lower()  == ("delete").lower()  or res_mode.lower()  == ("cancel").lower()  and rline.resstatus == 1:
+            if res_mode  == ("delete")  or res_mode  == ("cancel")  and rline.resstatus == 1:
 
                 res_line1 = get_cache (Res_line, {"resnr": [(eq, resnr)],"zinr": [(eq, rline.zinr)],"resstatus": [(eq, 11)]})
 
@@ -429,11 +431,11 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
                     pass
                     res_recid1 = res_line1._recid
 
-            if res_mode.lower()  == ("inhouse").lower() :
+            if res_mode  == ("inhouse") :
                 answer = True
                 beg_datum = htparam.fdate
 
-                if rline.resstatus == 6 and (rline.zinr.lower()  != (new_zinr).lower()):
+                if rline.resstatus == 6 and (rline.zinr  != (new_zinr)):
 
                     res_line1 = get_cache (Res_line, {"resnr": [(eq, resnr)],"zinr": [(eq, rline.zinr)],"resstatus": [(eq, 13)]})
 
@@ -506,7 +508,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
 
             zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, rline.zikatnr)]})
 
-            if res_mode.lower()  == ("inhouse").lower() :
+            if res_mode  == ("inhouse") :
                 beg_datum = get_current_date()
             else:
                 beg_datum = rline.ankunft
@@ -564,7 +566,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
 
             zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, rline.zikatnr)]})
 
-            if res_mode.lower()  == ("inhouse").lower() :
+            if res_mode  == ("inhouse") :
                 beg_datum = get_current_date()
             else:
                 beg_datum = rline.ankunft
@@ -614,11 +616,11 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
         res_recid1 = 0
 
         for messages in db_session.query(Messages).filter(
-                     (Messages.zinr == (act_zinr).lower()) & (Messages.resnr == res_line.resnr) & (Messages.reslinnr >= 1)).order_by(Messages._recid).all():
+                     (Messages.zinr == (act_zinr)) & (Messages.resnr == res_line.resnr) & (Messages.reslinnr >= 1)).order_by(Messages._recid).all():
             messages.zinr = new_zinr
 
         for res_line1 in db_session.query(Res_line1).filter(
-                     (Res_line1.resnr == resnr) & (Res_line1.zinr == (act_zinr).lower()) & (Res_line1.resstatus == 13)).order_by(Res_line1._recid).all():
+                     (Res_line1.resnr == resnr) & (Res_line1.zinr == (act_zinr)) & (Res_line1.resstatus == 13)).order_by(Res_line1._recid).all():
 
             if end_datum <= res_line1.abreise:
                 res_recid1 = res_line1._recid
@@ -635,14 +637,15 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
             res_line1 = get_cache (Res_line, {"_recid": [(eq, res_recid1)]})
 
             for res_line2 in db_session.query(Res_line2).filter(
-                             (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr).lower()) & (Res_line2.resstatus == 13) & (Res_line2.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line2._recid).all():
+                             (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr)) & (Res_line2.resstatus == 13) & (Res_line2.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line2._recid).all():
 
                 zimmer = get_cache (Zimmer, {"zinr": [(eq, new_zinr)]})
 
                 new_zkat = get_cache (Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
 
                 if new_zkat.zikatnr != res_line2.zikatnr:
-                    for curr_datum in date_range(beg_datum,(res_line2.abreise - 1)) :
+                    # for curr_datum in date_range(beg_datum,(res_line2.abreise - 1)) :
+                    for curr_datum in date_range(beg_datum,(res_line2.abreise - timedelta(days=1))) :
 
                         resplan = get_cache (Resplan, {"zikatnr": [(eq, res_line2.zikatnr)],"datum": [(eq, curr_datum)]})
 
@@ -681,7 +684,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
                 pass
 
             for res_line2 in db_session.query(Res_line2).filter(
-                             (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr).lower()) & (Res_line2.resstatus == 12)).order_by(Res_line2._recid).all():
+                             (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr)) & (Res_line2.resstatus == 12)).order_by(Res_line2._recid).all():
                 res_line2.zinr = new_zinr
                 res_line2.zikatnr = new_zkat.zikatnr
                 res_line2.setup = zimmer.setup
@@ -783,7 +786,7 @@ def res_checkin2bl(pvilanguage:int, resnr:int, reslinnr:int, user_init:string, s
         for curr_i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
             curr_st = entry(curr_i - 1, res_line.zimmer_wunsch, ";")
 
-            if substring(curr_st, 0, 7) == ("abreise").lower() :
+            if substring(curr_st, 0, 7) == ("abreise") :
                 pass
             else:
                 curr_ct = curr_ct + curr_st + ";"

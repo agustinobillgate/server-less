@@ -3,26 +3,29 @@
 # Rd 3/8/2025
 # if not availble -> return
 #----------------------------------------
+# Rulita, 17-10-2025
+# modify program update tiketID : 6526C2
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from models import H_bill, Htparam, Counters, Hoteldpt, H_bill_line, H_journal, Queasy
+from models import H_bill, Htparam, Counters, Hoteldpt, H_bill_line, H_mjourn, H_journal, Queasy
 
 temp_data, Temp = create_model("Temp", {"pos":int, "bezeich":string, "artnr":int})
 rhbline_data, Rhbline = create_model("Rhbline", {"nr":int, "rid":int})
 
 def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:int, bilrecid:int, new_waiter:int, rec_id:int, curr_waiter:int, dept:int, tischnr:int):
 
-    prepare_cache ([H_bill, Htparam, Counters, Hoteldpt, H_bill_line, H_journal, Queasy])
+    prepare_cache ([H_bill, Htparam, Counters, Hoteldpt, H_bill_line, H_mjourn, H_journal, Queasy])
 
-    h_bill = htparam = counters = hoteldpt = h_bill_line = h_journal = queasy = None
+    h_bill = htparam = counters = hoteldpt = h_bill_line = h_mjourn = h_journal = queasy = None
 
     temp = rhbline = None
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal h_bill, htparam, counters, hoteldpt, h_bill_line, h_journal, queasy
+        nonlocal h_bill, htparam, counters, hoteldpt, h_bill_line, h_mjourn, h_journal, queasy
         nonlocal tableno, bilrecid, new_waiter, rec_id, curr_waiter, dept, tischnr
 
 
@@ -32,7 +35,7 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
 
     def move_table():
 
-        nonlocal h_bill, htparam, counters, hoteldpt, h_bill_line, h_journal, queasy
+        nonlocal h_bill, htparam, counters, hoteldpt, h_bill_line, h_mjourn, h_journal, queasy
         nonlocal tableno, bilrecid, new_waiter, rec_id, curr_waiter, dept, tischnr
 
 
@@ -113,6 +116,15 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
             rhbline = query(rhbline_data, filters=(lambda rhbline: rhbline.Rhbline.nr == temp.pos), first=True)
 
             h_bill_line = get_cache (H_bill_line, {"_recid": [(eq, rhbline.rid)]})
+
+            for h_mjourn in db_session.query(H_mjourn).filter(
+                     (H_mjourn.departement == h_bill_line.departement) & (H_mjourn.h_artnr == h_bill_line.artnr) & (H_mjourn.rechnr == h_bill_line.rechnr) & (H_mjourn.bill_datum == h_bill_line.bill_datum) & (H_mjourn.sysdate == h_bill_line.sysdate) & (H_mjourn.zeit == h_bill_line.zeit) & (num_entries(H_mjourn.request, "|") > 1) & (to_int(entry(0, H_mjourn.request, "|")) == to_int(h_bill_line._recid))).order_by(H_mjourn._recid).all():
+                h_mjourn.rechnr = hbill.rechnr
+                h_mjourn.tischnr = tableno
+                h_mjourn.kellner_nr = new_waiter
+
+
+            pass
             move_amt =  to_decimal(move_amt) + to_decimal(h_bill_line.betrag)
             billdate = h_bill_line.bill_datum
 

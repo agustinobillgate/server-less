@@ -113,7 +113,7 @@ def close_adjustmentbl(pvilanguage:int, user_init:string):
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 980)]})
 
-    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fchar)]})
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
 
     if not gl_acct:
         msg_str = msg_str + chr_unicode(2) + translateExtended ("P&L Last Year Adjustment Account not defined (Parameter 980).", lvcarea, "")
@@ -154,7 +154,7 @@ def close_adjustmentbl(pvilanguage:int, user_init:string):
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 980)]})
 
-    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fchar)]})
+    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
     gl_acct.last_yr[curr_month - 1] = gl_acct.last_yr[curr_month - 1] -\
             profit + lost
 

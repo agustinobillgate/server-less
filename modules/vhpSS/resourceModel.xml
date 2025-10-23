@@ -1524,5 +1524,11 @@
   <prgs:resource consumes="application/json" name="_rarticleAdminBtnExit3" path="/rarticleAdminBtnExit3" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rarticle-admin-btn-exit3-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rarticle-admin-btn-exit3-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+   <prgs:resource consumes="application/json" name="_bookengineMappingSalesArticleBtnExit1" path="/bookengineMappingSalesArticleBtnExit1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-bookengine-mapping-sales-article-btn-exit1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-bookengine-mapping-sales-article-btn-exit1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_bookengineMappingSalesArticlePrepare1" path="/bookengineMappingSalesArticlePrepare1" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-bookengine-mapping-sales-article1bl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-bookengine-mapping-sales-article1bl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 
 </prgs:model>
