@@ -1,0 +1,198 @@
+{
+    "Guest": {
+        "read": [
+            "geburtdatum1",
+            "vorname1",
+            "name",
+            "anrede1",
+            "email_adr",
+            "geburt_ort1",
+            "ausweis_nr1",
+            "wohnort",
+            "land",
+            "nation1",
+            "beruf",
+            "mobil_telefon",
+            "telefon",
+            "gastnr",
+            "anlage_datum",
+            "adresse1",
+            "adresse2",
+            "adresse3",
+            "geschlecht",
+            "_recid",
+            "steuernr",
+            "karteityp"
+        ],
+        "write": []
+    },
+    "H_artikel": {
+        "read": [
+            "artart",
+            "artnrfront",
+            "departement",
+            "artnr",
+            "service_code",
+            "mwst_code",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "char1",
+            "_recid",
+            "char2"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "finteger",
+            "flogical",
+            "fdate",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Hoteldpt": {
+        "read": [
+            "depart",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Genstat": {
+        "read": [
+            "resnr",
+            "res_int",
+            "res_date",
+            "res_char",
+            "zinr",
+            "resstatus",
+            "gastnrmember",
+            "gastnr",
+            "zikatnr",
+            "segmentcode",
+            "wahrungsnr",
+            "argt",
+            "datum",
+            "logis",
+            "res_deci",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "resart",
+            "vesrdepot",
+            "resnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "zimmer_wunsch",
+            "resstatus",
+            "ankunft",
+            "abreise",
+            "resnr",
+            "betrieb_gastmem",
+            "reslinnr",
+            "zinr",
+            "gastnrmember",
+            "gastnr",
+            "zikatnr",
+            "betriebsnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bill": {
+        "read": [
+            "rechnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "kurzbez",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Sourccod": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Segment": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [
+            "wabkurz",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Arrangement": {
+        "read": [
+            "argt_artikelnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Artikel": {
+        "read": [
+            "artnr",
+            "departement",
+            "umsatzart",
+            "service_code",
+            "mwst_code",
+            "artart",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_bill": {
+        "read": [
+            "rechnr",
+            "departement",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_bill_line": {
+        "read": [
+            "artnr",
+            "departement",
+            "bill_datum",
+            "betrag",
+            "rechnr",
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bill_line": {
+        "read": [
+            "artnr",
+            "departement",
+            "bill_datum",
+            "betrag",
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    }
+}
