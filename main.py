@@ -112,10 +112,19 @@ local_storage.dblog_session = dblog_session
 
 log_id = 0
 
+skip_list = {   "Common/checkPermission2",
+                "Common/getHTParam0", 
+                "Common/checkPermission", 
+                "Common/loadDateTimeServer1",
+                "Common/checkStrongPassword"}
 
 # ----------------- log activity -----------------------------#
 def log_activity(endpoint:string, userid:string, hotel_schema:string) -> int:
     global dblog_session
+
+    if endpoint in skip_list:
+        return 0
+    
     recid = 0
     try:
         sql = """
