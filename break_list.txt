@@ -1,4 +1,0 @@
-ascottrpt-crmBL.p
-ascottrpt-reservationBL.p
-tauziarpt-ascottreservation2BL.p
-tauziarpt-ascottreservation_1bl.p
