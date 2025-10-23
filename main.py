@@ -71,7 +71,9 @@ from starlette import status
 from typing import Dict, Any
 
 import typing
+from dotenv import load_dotenv
 from _demo_config import * 
+from sqlalchemy.engine import URL
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -91,6 +93,51 @@ response_headers = {
     "Access-Control-Max-Age": "600",  # Preflight request cache time
 }
 
+#------------ Log Table -------------------------------------
+load_dotenv()
+db_session = None
+dblogin_session = None
+url = URL.create(
+    "postgresql",
+    username=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    host=os.getenv("DB_HOST"),
+    port=os.getenv("DB_PORT"),
+    database=os.getenv("DB_NAME")
+)
+engine = create_engine(url)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+dblog_session = SessionLocal()
+local_storage.dblog_session = dblog_session
+
+log_id = 0
+
+
+# ----------------- log activity -----------------------------#
+def log_activity(endpoint:string, userid:string, hotel_schema:string) -> int:
+    global dblog_session
+    recid = 0
+    try:
+        sql = """
+            INSERT INTO public.logs_endpoint (endpoint, userid, hotel_schema) 
+            VALUES (:endpoint, :userid, :hotel_schema) RETURNING id
+            """
+        # print("Logging activity:", sql)
+        log_results = dblog_session.execute(text(sql), {
+                    "endpoint": endpoint,
+                    "userid": userid,
+                    "hotel_schema": hotel_schema
+                })
+        dblog_session.commit()
+        recid = log_results.scalar()
+        # print("Logged activity with recid:", recid)
+    except Exception as e:
+        print("Error logging activity:", e)
+        recid = 0
+    finally:
+        return recid
+
+#------------------ end of log session ------------------#
 
 #updated 1.0.0.14
 update_table_name_list = {}
@@ -1599,6 +1646,8 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                 service_name += entry(4,path,"/")
 
             print("Module/Service:", vhp_module, service_name)
+            endpoint = vhp_module + "/" + service_name
+            log_id = log_activity(endpoint, inputUsername, hotel_schema)
 
             set_db_and_schema(hotel_schema)
             db_session = local_storage.db_session

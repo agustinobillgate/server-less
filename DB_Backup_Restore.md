@@ -24,3 +24,6 @@ pg_dump -U postgres -h psql.staging.e1-vhp.com -d qctest -F c --schema=mt5 -f ".
 
 
 DevPostgreSQL#2024
+
+
+pg_restore -U postgres -h psql.staging.e1-vhp.com -d qctest -n mt2 "./dump-ec2-db-qctest-mt2.dump"
