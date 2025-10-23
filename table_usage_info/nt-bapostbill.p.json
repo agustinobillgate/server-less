@@ -1,0 +1,150 @@
+{
+    "Bk_rart": {
+        "read": [
+            "fakturiert",
+            "preis",
+            "anzahl",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "finteger",
+            "fdate",
+            "flogical",
+            "fchar",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [
+            "ankauf",
+            "einheit",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bk_reser": {
+        "read": [
+            "raum",
+            "veran_nr",
+            "veran_seite",
+            "fakturiert",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bk_veran": {
+        "read": [
+            "veran_nr",
+            "gastnrver",
+            "deposit_payment",
+            "rechnr",
+            "last_paid_date",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest": {
+        "read": [
+            "gastnr",
+            "name",
+            "vorname1",
+            "anredefirma",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Counters": {
+        "read": [
+            "counter",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bill": {
+        "read": [
+            "logisumsatz",
+            "argtumsatz",
+            "f_b_umsatz",
+            "sonst_umsatz",
+            "gesamtumsatz",
+            "saldo",
+            "mwst",
+            "rechnr",
+            "rgdruck",
+            "datum",
+            "gastnr",
+            "billtyp",
+            "name",
+            "reslinnr",
+            "flag",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bk_func": {
+        "read": [
+            "rpreis",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Artikel": {
+        "read": [
+            "bezeich",
+            "umsatzart",
+            "artnr",
+            "departement",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bill_line": {
+        "read": [
+            "rechnr",
+            "artnr",
+            "anzahl",
+            "epreis",
+            "betrag",
+            "fremdwbetrag",
+            "bezeich",
+            "departement",
+            "zeit",
+            "userinit",
+            "bill_datum",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Umsatz": {
+        "read": [
+            "betrag",
+            "anzahl",
+            "artnr",
+            "datum",
+            "departement",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Billjournal": {
+        "read": [
+            "rechnr",
+            "artnr",
+            "anzahl",
+            "fremdwaehrng",
+            "betrag",
+            "bezeich",
+            "departement",
+            "epreis",
+            "zeit",
+            "userinit",
+            "bill_datum",
+            "_recid"
+        ],
+        "write": []
+    }
+}
