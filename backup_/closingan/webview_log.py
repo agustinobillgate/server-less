@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 import io, re
 from datetime import datetime
 
-
 app = FastAPI(title="CPU Log API")
 
 LOG_FILE = "cpu_stats_20schema.txt"
