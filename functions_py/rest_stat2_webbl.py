@@ -12,7 +12,7 @@ from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from models import Htparam, H_journal, H_bill, H_artikel, Artikel, Res_line, Guestseg, Guest
 
-input_list_data, Input_list = create_model("Input_list", {"sorttype":int, "segmcode":int, "start_jan":date, "from_date":date, "to_date":date, "excl_tax":bool})
+input_list_data, Input_list = create_model("Input_list", {"sorttype":int, "segmcode":int, "start_jan":date, "from_date":date, "to_date":date, "excl_tax":bool, "from_outlet":int, "to_outlet":int})
 
 def rest_stat2_webbl(input_list_data:[Input_list]):
 
@@ -99,112 +99,113 @@ def rest_stat2_webbl(input_list_data:[Input_list]):
         detail_list_data.clear()
         curr_zeit = get_current_time_in_seconds()
 
-        for h_journal in db_session.query(H_journal).filter(
-                 (H_journal.bill_datum >= input_list.start_jan) & (H_journal.bill_datum <= input_list.to_date)).order_by(H_journal.rechnr).all():
+        for h_journal in db_session.query(H_journal).filter((H_journal.bill_datum >= input_list.start_jan) & (H_journal.bill_datum <= input_list.to_date)).order_by(H_journal.rechnr).all():
 
-            if input_list.segmcode != 9999:
+            if h_journal.departement >= input_list.from_outlet and h_journal.departement <= input_list.to_outlet:
 
-                h_bill = get_cache (H_bill, {"rechnr": [(eq, h_journal.rechnr)],"departement": [(eq, h_journal.departement)]})
+                if input_list.segmcode != 9999:
 
-            if h_bill:
+                    h_bill = get_cache (H_bill, {"rechnr": [(eq, h_journal.rechnr)],"departement": [(eq, h_journal.departement)]})
 
-                h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_journal.artnr)],"departement": [(eq, h_journal.departement)],"artart": [(eq, 0)]})
+                if h_bill:
 
-                if h_artikel:
+                    h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_journal.artnr)],"departement": [(eq, h_journal.departement)],"artart": [(eq, 0)]})
 
-                    if input_list.sorttype == 1:
+                    if h_artikel:
 
-                        artikel = db_session.query(Artikel).filter(
-                                 (Artikel.artnr == h_artikel.artnrfront) & (Artikel.departement == h_artikel.departement) & ((Artikel.umsatzart == 3) | (Artikel.umsatzart == 5))).first()
+                        if input_list.sorttype == 1:
 
-                    elif input_list.sorttype == 2:
+                            artikel = db_session.query(Artikel).filter(
+                                     (Artikel.artnr == h_artikel.artnrfront) & (Artikel.departement == h_artikel.departement) & ((Artikel.umsatzart == 3) | (Artikel.umsatzart == 5))).first()
 
-                        artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)],"umsatzart": [(eq, 6)]})
+                        elif input_list.sorttype == 2:
 
-                    elif input_list.sorttype == 3:
+                            artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)],"umsatzart": [(eq, 6)]})
 
-                        artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)],"umsatzart": [(eq, 4)]})
+                        elif input_list.sorttype == 3:
 
-                    elif input_list.sorttype == 4:
+                            artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)],"umsatzart": [(eq, 4)]})
 
-                        artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)],"umsatzart": [(ge, 3),(le, 6)]})
+                        elif input_list.sorttype == 4:
 
-                    if artikel:
-                        segm_no = 0
-                        guest_no = 0
+                            artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)],"umsatzart": [(ge, 3),(le, 6)]})
 
-                        if h_bill.resnr > 0 and h_bill.reslinnr > 0:
+                        if artikel:
+                            segm_no = 0
+                            guest_no = 0
 
-                            res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                            if h_bill.resnr > 0 and h_bill.reslinnr > 0:
 
-                            if res_line:
-                                guest_no = res_line.gastnrmember
+                                res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
 
-                        elif h_bill.resnr > 0:
-                            guest_no = h_bill.resnr
+                                if res_line:
+                                    guest_no = res_line.gastnrmember
 
-                        if h_bill.segmentcode == 0:
+                            elif h_bill.resnr > 0:
+                                guest_no = h_bill.resnr
 
-                            guestseg = get_cache (Guestseg, {"gastnr": [(eq, guest_no)],"reihenfolge": [(eq, 1)]})
+                            if h_bill.segmentcode == 0:
 
-                            if guestseg:
-                                segm_no = guestseg.segmentcode
-                        else:
-                            segm_no = h_bill.segmentcode
+                                guestseg = get_cache (Guestseg, {"gastnr": [(eq, guest_no)],"reihenfolge": [(eq, 1)]})
 
-                        if input_list.segmcode == segm_no:
+                                if guestseg:
+                                    segm_no = guestseg.segmentcode
+                            else:
+                                segm_no = h_bill.segmentcode
 
-                            t_list = query(t_list_data, filters=(lambda t_list: t_list.bill_no == h_bill.rechnr and t_list.dept == h_bill.departement), first=True)
+                            if input_list.segmcode == segm_no:
 
-                            if not t_list:
-                                t_list = T_list()
-                                t_list_data.append(t_list)
+                                t_list = query(t_list_data, filters=(lambda t_list: t_list.bill_no == h_bill.rechnr and t_list.dept == h_bill.departement), first=True)
 
-                                t_list.bill_no = h_bill.rechnr
-                                t_list.dept = h_bill.departement
-                                t_list.segm_no = input_list.segmcode
+                                if not t_list:
+                                    t_list = T_list()
+                                    t_list_data.append(t_list)
 
-                                if guest_no != 0:
+                                    t_list.bill_no = h_bill.rechnr
+                                    t_list.dept = h_bill.departement
+                                    t_list.segm_no = input_list.segmcode
 
-                                    guest = get_cache (Guest, {"gastnr": [(eq, guest_no)]})
+                                    if guest_no != 0:
 
-                                    if guest:
-                                        t_list.guest_name = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+                                        guest = get_cache (Guest, {"gastnr": [(eq, guest_no)]})
+
+                                        if guest:
+                                            t_list.guest_name = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
 
 
-                                    else:
-                                        t_list.guest_name = h_bill.bilname
+                                        else:
+                                            t_list.guest_name = h_bill.bilname
 
-                            if h_journal.bill_datum == input_list.to_date:
+                                if h_journal.bill_datum == input_list.to_date:
+
+                                    if curr_billno != (to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)):
+                                        t_list.pax = h_bill.belegung
+                                        tot_pax = tot_pax + h_bill.belegung
+
+
+                                    t_list.t_rev =  to_decimal(t_list.t_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
+                                    tot_rev =  to_decimal(tot_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
+
+                                if h_journal.bill_datum >= input_list.from_date and h_journal.bill_datum <= input_list.to_date:
+
+                                    if curr_billno != (to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)):
+                                        t_list.m_pax = h_bill.belegung
+                                        tot_mpax = tot_mpax + h_bill.belegung
+
+
+                                    t_list.m_rev =  to_decimal(t_list.m_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
+                                    tot_mrev =  to_decimal(tot_mrev) + to_decimal(calculate_betrag (h_journal.betrag) )
 
                                 if curr_billno != (to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)):
-                                    t_list.pax = h_bill.belegung
-                                    tot_pax = tot_pax + h_bill.belegung
+                                    t_list.y_pax = h_bill.belegung
+                                    tot_ypax = tot_ypax + h_bill.belegung
 
 
-                                t_list.t_rev =  to_decimal(t_list.t_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
-                                tot_rev =  to_decimal(tot_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
-
-                            if h_journal.bill_datum >= input_list.from_date and h_journal.bill_datum <= input_list.to_date:
-
-                                if curr_billno != (to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)):
-                                    t_list.m_pax = h_bill.belegung
-                                    tot_mpax = tot_mpax + h_bill.belegung
+                                t_list.y_rev =  to_decimal(t_list.y_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
+                                tot_yrev =  to_decimal(tot_yrev) + to_decimal(calculate_betrag (h_journal.betrag) )
 
 
-                                t_list.m_rev =  to_decimal(t_list.m_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
-                                tot_mrev =  to_decimal(tot_mrev) + to_decimal(calculate_betrag (h_journal.betrag) )
-
-                            if curr_billno != (to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)):
-                                t_list.y_pax = h_bill.belegung
-                                tot_ypax = tot_ypax + h_bill.belegung
-
-
-                            t_list.y_rev =  to_decimal(t_list.y_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
-                            tot_yrev =  to_decimal(tot_yrev) + to_decimal(calculate_betrag (h_journal.betrag) )
-
-
-                            curr_billno = to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)
+                                curr_billno = to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)
 
         for t_list in query(t_list_data, filters=(lambda t_list: t_list.pax == 0 and t_list.t_rev == 0 and t_list.m_pax == 0 and t_list.m_rev == 0 and t_list.y_pax == 0 and t_list.y_rev == 0)):
             t_list_data.remove(t_list)
@@ -305,96 +306,97 @@ def rest_stat2_webbl(input_list_data:[Input_list]):
         detail_list_data.clear()
         curr_zeit = get_current_time_in_seconds()
 
-        for h_journal in db_session.query(H_journal).filter(
-                 (H_journal.bill_datum >= input_list.start_jan) & (H_journal.bill_datum <= input_list.to_date)).order_by(H_journal.departement, H_journal.rechnr).all():
+        for h_journal in db_session.query(H_journal).filter((H_journal.bill_datum >= input_list.start_jan) & (H_journal.bill_datum <= input_list.to_date)).order_by(H_journal.departement, H_journal.rechnr).all():
 
-            h_bill = get_cache (H_bill, {"rechnr": [(eq, h_journal.rechnr)],"departement": [(eq, h_journal.departement)],"segmentcode": [(eq, 0)]})
+            if h_journal.departement >= input_list.from_outlet and h_journal.departement <= input_list.to_outlet:
 
-            if h_bill:
+                h_bill = get_cache (H_bill, {"rechnr": [(eq, h_journal.rechnr)],"departement": [(eq, h_journal.departement)],"segmentcode": [(eq, 0)]})
 
-                h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_journal.artnr)],"departement": [(eq, h_journal.departement)],"artart": [(eq, 0)]})
+                if h_bill:
 
-                if h_artikel:
+                    h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_journal.artnr)],"departement": [(eq, h_journal.departement)],"artart": [(eq, 0)]})
 
-                    if input_list.sorttype == 1:
+                    if h_artikel:
 
-                        artikel = db_session.query(Artikel).filter(
-                                 (Artikel.artnr == h_artikel.artnrfront) & (Artikel.departement == h_artikel.departement) & ((Artikel.umsatzart == 3) | (Artikel.umsatzart == 5))).first()
+                        if input_list.sorttype == 1:
 
-                    elif input_list.sorttype == 2:
+                            artikel = db_session.query(Artikel).filter(
+                                     (Artikel.artnr == h_artikel.artnrfront) & (Artikel.departement == h_artikel.departement) & ((Artikel.umsatzart == 3) | (Artikel.umsatzart == 5))).first()
 
-                        artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)],"umsatzart": [(eq, 6)]})
+                        elif input_list.sorttype == 2:
 
-                    elif input_list.sorttype == 3:
+                            artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)],"umsatzart": [(eq, 6)]})
 
-                        artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)],"umsatzart": [(eq, 4)]})
+                        elif input_list.sorttype == 3:
 
-                    elif input_list.sorttype == 4:
+                            artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)],"umsatzart": [(eq, 4)]})
 
-                        artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)],"umsatzart": [(ge, 3),(le, 6)]})
+                        elif input_list.sorttype == 4:
 
-                    if artikel:
-                        segm_no = 0
-                        guest_no = 0
+                            artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)],"umsatzart": [(ge, 3),(le, 6)]})
 
-                        if h_bill.resnr > 0 and h_bill.reslinnr > 0:
+                        if artikel:
+                            segm_no = 0
+                            guest_no = 0
 
-                            res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+                            if h_bill.resnr > 0 and h_bill.reslinnr > 0:
 
-                            if res_line:
-                                guest_no = res_line.gastnrmember
+                                res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
 
-                        elif h_bill.resnr > 0:
-                            guest_no = h_bill.resnr
+                                if res_line:
+                                    guest_no = res_line.gastnrmember
 
-                        if h_bill.segmentcode == 0:
+                            elif h_bill.resnr > 0:
+                                guest_no = h_bill.resnr
 
-                            guestseg = get_cache (Guestseg, {"gastnr": [(eq, guest_no)],"reihenfolge": [(eq, 1)]})
+                            if h_bill.segmentcode == 0:
 
-                            if guestseg:
-                                segm_no = guestseg.segmentcode
-                        else:
-                            segm_no = h_bill.segmentcode
+                                guestseg = get_cache (Guestseg, {"gastnr": [(eq, guest_no)],"reihenfolge": [(eq, 1)]})
 
-                        if segm_no == 0:
+                                if guestseg:
+                                    segm_no = guestseg.segmentcode
+                            else:
+                                segm_no = h_bill.segmentcode
 
-                            t_list = query(t_list_data, filters=(lambda t_list: t_list.bill_no == h_bill.rechnr and t_list.dept == h_bill.departement), first=True)
+                            if segm_no == 0:
 
-                            if not t_list:
-                                t_list = T_list()
-                                t_list_data.append(t_list)
+                                t_list = query(t_list_data, filters=(lambda t_list: t_list.bill_no == h_bill.rechnr and t_list.dept == h_bill.departement), first=True)
 
-                                t_list.bill_no = h_bill.rechnr
-                                t_list.dept = h_bill.departement
-                                t_list.guest_name = h_bill.bilname
-                                t_list.segm_no = 9999
+                                if not t_list:
+                                    t_list = T_list()
+                                    t_list_data.append(t_list)
 
-                            if h_journal.bill_datum == input_list.to_date:
+                                    t_list.bill_no = h_bill.rechnr
+                                    t_list.dept = h_bill.departement
+                                    t_list.guest_name = h_bill.bilname
+                                    t_list.segm_no = 9999
+
+                                if h_journal.bill_datum == input_list.to_date:
+
+                                    if curr_billno != (to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)):
+                                        t_list.pax = h_bill.belegung
+                                        tot_pax = tot_pax + h_bill.belegung
+                                    t_list.t_rev =  to_decimal(t_list.t_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
+                                    tot_rev =  to_decimal(tot_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
+
+                                if h_journal.bill_datum >= input_list.from_date and h_journal.bill_datum <= input_list.to_date:
+
+                                    if curr_billno != (to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)):
+                                        t_list.m_pax = h_bill.belegung
+                                        tot_mpax = tot_mpax + h_bill.belegung
+                                    t_list.m_rev =  to_decimal(t_list.m_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
+                                    tot_mrev =  to_decimal(tot_mrev) + to_decimal(calculate_betrag (h_journal.betrag) )
 
                                 if curr_billno != (to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)):
-                                    t_list.pax = h_bill.belegung
-                                    tot_pax = tot_pax + h_bill.belegung
-                                t_list.t_rev =  to_decimal(t_list.t_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
-                                tot_rev =  to_decimal(tot_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
-
-                            if h_journal.bill_datum >= input_list.from_date and h_journal.bill_datum <= input_list.to_date:
-
-                                if curr_billno != (to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)):
-                                    t_list.m_pax = h_bill.belegung
-                                    tot_mpax = tot_mpax + h_bill.belegung
-                                t_list.m_rev =  to_decimal(t_list.m_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
-                                tot_mrev =  to_decimal(tot_mrev) + to_decimal(calculate_betrag (h_journal.betrag) )
-
-                            if curr_billno != (to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)):
-                                t_list.y_pax = h_bill.belegung
-                                tot_ypax = tot_ypax + h_bill.belegung
+                                    t_list.y_pax = h_bill.belegung
+                                    tot_ypax = tot_ypax + h_bill.belegung
 
 
-                            t_list.y_rev =  to_decimal(t_list.y_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
-                            tot_yrev =  to_decimal(tot_yrev) + to_decimal(calculate_betrag (h_journal.betrag) )
+                                t_list.y_rev =  to_decimal(t_list.y_rev) + to_decimal(calculate_betrag (h_journal.betrag) )
+                                tot_yrev =  to_decimal(tot_yrev) + to_decimal(calculate_betrag (h_journal.betrag) )
 
 
-                            curr_billno = to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)
+                                curr_billno = to_string(h_bill.rechnr) + "-" + to_string(h_bill.departement)
 
         for t_list in query(t_list_data, filters=(lambda t_list: t_list.pax == 0 and t_list.t_rev == 0 and t_list.m_pax == 0 and t_list.m_rev == 0 and t_list.y_pax == 0 and t_list.y_rev == 0)):
             t_list_data.remove(t_list)
