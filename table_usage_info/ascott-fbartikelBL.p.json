@@ -1,0 +1,85 @@
+{
+    "Htparam": {
+        "read": [
+            "finteger",
+            "fdecimal",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Billjournal": {
+        "read": [
+            "artnr",
+            "departement",
+            "bill_datum",
+            "betrag",
+            "zeit",
+            "zinr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Artikel": {
+        "read": [
+            "umsatzart",
+            "zwkum",
+            "endkum",
+            "departement",
+            "artnr",
+            "service_code",
+            "mwst_code",
+            "artart",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Hoteldpt": {
+        "read": [
+            "depart",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_bill": {
+        "read": [
+            "rechnr",
+            "departement",
+            "belegung",
+            "resnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_bill_line": {
+        "read": [
+            "artnr",
+            "departement",
+            "bill_datum",
+            "zeit",
+            "betrag",
+            "betriebsnr",
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_artikel": {
+        "read": [
+            "artart",
+            "departement",
+            "zwkum",
+            "endkum",
+            "artnrfront",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "number3",
+            "char3",
+            "_recid"
+        ],
+        "write": []
+    }
+}
