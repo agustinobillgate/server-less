@@ -58,6 +58,7 @@ def pilih_schema():
     if args.schema:
         return args.schema
 
+    # Dapatkan semua schema hotel
     cur_temp.execute("""
         SELECT schema_name
         FROM information_schema.schemata
@@ -66,16 +67,36 @@ def pilih_schema():
         ORDER BY schema_name
     """)
     schemas = [row[0] for row in cur_temp.fetchall()]
-    cur_temp.close()
-    conn_temp.close()
 
     if not schemas:
         print("❌ Tidak ada schema hotel ditemukan.")
+        cur_temp.close()
+        conn_temp.close()
         sys.exit(1)
 
-    print("\nPilih hotel schema:")
+    print("\nDaftar hotel schema beserta param 597 dan 558:")
+    print("--------------------------------------------------------------")
+
     for i, s in enumerate(schemas, start=1):
-        print(f" {i}. {s}")
+        try:
+            cur_temp.execute(f"""
+                SELECT paramnr, fdate
+                FROM {s}.htparam
+                WHERE paramnr IN (597, 558)
+                ORDER BY paramnr
+            """)
+            rows = cur_temp.fetchall()
+            if len(rows) == 2:
+                p597 = rows[1][1] if rows[1][0] == 597 else rows[0][1]
+                p558 = rows[0][1] if rows[0][0] == 558 else rows[1][1]
+                print(f"{i:>2}. {s:<20} | 597: {p597} | 558: {p558}")
+            else:
+                print(f"{i:>2}. {s:<20} | ⚠️ param 597/558 tidak lengkap")
+        except Exception as e:
+            print(f"{i:>2}. {s:<20} | ❌ Gagal baca htparam: {e}")
+
+    cur_temp.close()
+    conn_temp.close()
 
     choice = input("\nMasukkan nomor schema yang ingin digunakan: ").strip()
     try:
