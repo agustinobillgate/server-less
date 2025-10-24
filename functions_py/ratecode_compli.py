@@ -1,5 +1,11 @@
 #using conversion tools version: 1.0.0.117
 
+# =======================================
+# Rulita, 24-10-2025
+# Issue :
+# - up server
+# =======================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
