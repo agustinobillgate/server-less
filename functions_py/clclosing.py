@@ -5,22 +5,25 @@
 # Issue : 
 # - New compile program
 # - modify buffer table name class to tmp_class
-# - fixing integer to to_int
 # ==============================================
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from functions.clcount_expiredbl import clcount_expiredbl
-from models import Htparam, Cl_memtype, Cl_class, Cl_member, Cl_histci, Cl_locker, Queasy, Cl_histvisit, Guest, Mc_fee, Cl_log, Cl_histstatus, Cl_enroll, Cl_checkin
+from functions.clcount_expired import clcount_expired
+from functions.create_ar_membershipbl import create_ar_membershipbl
+from models import Htparam, Cl_memtype, Cl_class, Cl_member, Cl_histci, Guest, Cl_locker, Queasy, Cl_histvisit, Mc_fee, Cl_log, Cl_histstatus, Cl_enroll, Cl_checkin
 
-def clclosingbl():
+def clclosing():
 
-    prepare_cache ([Htparam, Cl_memtype, Cl_class, Cl_member, Cl_locker, Queasy, Mc_fee, Cl_log, Cl_histstatus])
+    prepare_cache ([Htparam, Cl_memtype, Cl_class, Cl_member, Guest, Cl_locker, Queasy, Mc_fee, Cl_log, Cl_histstatus])
 
+    lvcarea:string = "clclosing"
+    curr_bezeich:string = ""
+    curr_bezeich1:string = ""
     billdate:date = None
     store_dur:int = 360
-    htparam = cl_memtype = cl_class = cl_member = cl_histci = cl_locker = queasy = cl_histvisit = guest = mc_fee = cl_log = cl_histstatus = cl_enroll = cl_checkin = None
+    htparam = cl_memtype = cl_class = cl_member = cl_histci = guest = cl_locker = queasy = cl_histvisit = mc_fee = cl_log = cl_histstatus = cl_enroll = cl_checkin = None
 
     visit = checkin = clhist = None
 
@@ -32,7 +35,7 @@ def clclosingbl():
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, cl_locker, queasy, cl_histvisit, guest, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
+        nonlocal lvcarea, curr_bezeich, curr_bezeich1, billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, guest, cl_locker, queasy, cl_histvisit, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
         nonlocal visit, checkin, clhist
 
 
@@ -42,7 +45,7 @@ def clclosingbl():
 
     def check_memtype():
 
-        nonlocal billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, cl_locker, queasy, cl_histvisit, guest, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
+        nonlocal lvcarea, curr_bezeich, curr_bezeich1, billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, guest, cl_locker, queasy, cl_histvisit, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
         nonlocal visit, checkin, clhist
 
 
@@ -50,6 +53,7 @@ def clclosingbl():
 
         memtype = None
         Memtype =  create_buffer("Memtype",Cl_memtype)
+        curr_bezeich = translateExtended ("Checking active memberships type...", lvcarea, "")
 
         for cl_memtype in db_session.query(Cl_memtype).order_by(Cl_memtype._recid).all():
 
@@ -68,19 +72,23 @@ def clclosingbl():
                 if memtype:
                     memtype.activeflag = True
                     pass
+            curr_bezeich1 = cl_memtype.DESCRIPT
+            pass
 
 
     def check_class():
 
-        nonlocal billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, cl_locker, queasy, cl_histvisit, guest, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
+        nonlocal lvcarea, curr_bezeich, curr_bezeich1, billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, guest, cl_locker, queasy, cl_histvisit, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
         nonlocal visit, checkin, clhist
+
 
         nonlocal visit, checkin, clhist
 
         # Rulita
         # - modify buffer table name class to tmp_class
         tmp_class = None
-        tmp_class =  create_buffer("Class",Cl_class)
+        tmp_Class =  create_buffer("Class",Cl_class)
+        curr_bezeich = translateExtended ("Checking active classes...", lvcarea, "")
 
         for cl_class in db_session.query(Cl_class).order_by(Cl_class._recid).all():
 
@@ -99,11 +107,13 @@ def clclosingbl():
                 if tmp_class:
                     tmp_class.activeflag = True
                     pass
+            curr_bezeich1 = cl_class.name
+            pass
 
 
     def check_inhouse():
 
-        nonlocal billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, cl_locker, queasy, cl_histvisit, guest, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
+        nonlocal lvcarea, curr_bezeich, curr_bezeich1, billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, guest, cl_locker, queasy, cl_histvisit, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
         nonlocal visit, checkin, clhist
 
 
@@ -111,6 +121,7 @@ def clclosingbl():
 
         membr = None
         Membr =  create_buffer("Membr",Cl_member)
+        curr_bezeich = translateExtended ("Checking inhouse members...", lvcarea, "")
 
         for cl_member in db_session.query(Cl_member).filter(
                  (Cl_member.checked_in) & (Cl_member.last_visit < get_current_date())).order_by(Cl_member._recid).all():
@@ -128,10 +139,16 @@ def clclosingbl():
                 cl_histci.endtime = cl_member.co_time
                 pass
 
+            guest = get_cache (Guest, {"gastnr": [(eq, cl_member.gastnr)]})
+
+            if guest:
+                curr_bezeich1 = guest.name + ", " + guest.vorname1 + guest.anrede1
+            pass
+
 
     def check_others():
 
-        nonlocal billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, cl_locker, queasy, cl_histvisit, guest, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
+        nonlocal lvcarea, curr_bezeich, curr_bezeich1, billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, guest, cl_locker, queasy, cl_histvisit, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
         nonlocal visit, checkin, clhist
 
 
@@ -153,11 +170,14 @@ def clclosingbl():
 
     def check_locker():
 
-        nonlocal billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, cl_locker, queasy, cl_histvisit, guest, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
+        nonlocal lvcarea, curr_bezeich, curr_bezeich1, billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, guest, cl_locker, queasy, cl_histvisit, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
         nonlocal visit, checkin, clhist
 
 
         nonlocal visit, checkin, clhist
+
+
+        curr_bezeich = translateExtended ("Checking occupied lockers...", lvcarea, "")
 
         for cl_locker in db_session.query(Cl_locker).filter(
                  (Cl_locker.valid_flag) & (Cl_locker.to_date < get_current_date()) & (Cl_locker.locknum != "")).order_by(Cl_locker._recid).all():
@@ -173,12 +193,13 @@ def clclosingbl():
             queasy.number3 = cl_locker.to_time
 
 
+            curr_bezeich1 = cl_locker.locknum
             pass
 
 
     def check_visit():
 
-        nonlocal billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, cl_locker, queasy, cl_histvisit, guest, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
+        nonlocal lvcarea, curr_bezeich, curr_bezeich1, billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, guest, cl_locker, queasy, cl_histvisit, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
         nonlocal visit, checkin, clhist
 
 
@@ -190,6 +211,7 @@ def clclosingbl():
         Visit =  create_buffer("Visit",Cl_histvisit)
         Gbuff =  create_buffer("Gbuff",Guest)
         Mbuff =  create_buffer("Mbuff",Cl_member)
+        curr_bezeich = translateExtended ("Checking inhouse members in classes/service area...", lvcarea, "")
 
         for cl_histvisit in db_session.query(Cl_histvisit).filter(
                  (Cl_histvisit.datum < get_current_date()) & (Cl_histvisit.endtime == None)).order_by(Cl_histvisit._recid).all():
@@ -201,8 +223,6 @@ def clclosingbl():
                 visit = db_session.query(Visit).filter(
                          (Visit._recid == cl_histvisit._recid)).first()
 
-                # Rulita
-                # - fixing integer to to_int
                 if visit:
                     visit.endtime = (to_int(substring(cl_class.end_time, 0, 2)) * 3600) + (to_int(substring(cl_class.end_time, 2, 2)) * 60)
                     pass
@@ -218,12 +238,17 @@ def clclosingbl():
             mbuff = get_cache (Cl_member, {"codenum": [(eq, cl_histvisit.codenum)]})
 
             if mbuff:
-                pass
+
+                gbuff = get_cache (Guest, {"gastnr": [(eq, mbuff.gastnr)]})
+
+                if gbuff:
+                    curr_bezeich1 = gbuff.name + ", " + gbuff.vorname1 + gbuff.anrede1
+            pass
 
 
     def create_renewal():
 
-        nonlocal billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, cl_locker, queasy, cl_histvisit, guest, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
+        nonlocal lvcarea, curr_bezeich, curr_bezeich1, billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, guest, cl_locker, queasy, cl_histvisit, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
         nonlocal visit, checkin, clhist
 
 
@@ -233,6 +258,7 @@ def clclosingbl():
         curr_date:date = None
         exp_date:date = None
         mfee:Decimal = to_decimal("0.0")
+        init_fee:Decimal = to_decimal("0.0")
         gbuff = None
         mbuff = None
         mbuff1 = None
@@ -245,11 +271,14 @@ def clclosingbl():
         if (not htparam) or (htparam and htparam.finteger > 0):
             ndays = htparam.finteger
 
+
+        curr_bezeich = translateExtended ("Create new bill for renewal...", lvcarea, "")
+
         for mbuff in db_session.query(Mbuff).filter(
                  (Mbuff.memstatus == 1) & ((Mbuff.expired_date - billdate) == ndays)).order_by(Mbuff._recid).all():
 
             cl_memtype = get_cache (Cl_memtype, {"nr": [(eq, mbuff.membertype)]})
-            exp_date = get_output(clcount_expiredbl(mbuff.codenum))
+            exp_date = get_output(clcount_expired(mbuff.codenum))
             mfee =  to_decimal(cl_memtype.fee1)
 
             if mbuff.deci2 != 0 or mbuff.logi1:
@@ -274,10 +303,24 @@ def clclosingbl():
             mc_fee.gastnr = mbuff.gastnr
             mc_fee.betrag =  to_decimal(mfee)
 
+            if mbuff.memstatus == 0:
+
+                if mbuff.deci2 != 0 or mbuff.logi1:
+                    init_fee =  to_decimal(mbuff.deci1)
+                else:
+                    init_fee =  to_decimal(cl_memtype.fee)
+            get_output(create_ar_membershipbl(mc_fee.gastnr, init_fee, mfee, user_init))
+
+            gbuff = get_cache (Guest, {"gastnr": [(eq, mbuff.gastnr)]})
+
+            if gbuff:
+                curr_bezeich1 = gbuff.name + ", " + gbuff.vorname1
+        pass
+
 
     def check_expired():
 
-        nonlocal billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, cl_locker, queasy, cl_histvisit, guest, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
+        nonlocal lvcarea, curr_bezeich, curr_bezeich1, billdate, store_dur, htparam, cl_memtype, cl_class, cl_member, cl_histci, guest, cl_locker, queasy, cl_histvisit, mc_fee, cl_log, cl_histstatus, cl_enroll, cl_checkin
         nonlocal visit, checkin, clhist
 
 
@@ -290,6 +333,7 @@ def clclosingbl():
         mbuff = None
         Guest1 =  create_buffer("Guest1",Guest)
         Mbuff =  create_buffer("Mbuff",Cl_member)
+        curr_bezeich = translateExtended ("Checking expired members...", lvcarea, "")
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1040)]})
         max_freeze = htparam.finteger
@@ -301,8 +345,7 @@ def clclosingbl():
                  (Cl_member.memstatus == 1) & ((billdate - Cl_member.expired_date - add_days) >= 0)).order_by(Cl_member._recid).all():
             curr_status = 2
 
-            guest1 = db_session.query(Guest1).filter(
-                         (Guest1.gastnr == cl_member.gastnr)).first()
+            guest1 = get_cache (Guest, {"gastnr": [(eq, cl_member.gastnr)]})
             cl_log = Cl_log()
             db_session.add(cl_log)
 
@@ -327,6 +370,11 @@ def clclosingbl():
 
 
             pass
+
+            guest = get_cache (Guest, {"gastnr": [(eq, cl_member.gastnr)]})
+
+            if guest:
+                curr_bezeich1 = guest.name + " " + guest.vorname1
             cl_histstatus = Cl_histstatus()
             db_session.add(cl_histstatus)
 
@@ -339,11 +387,15 @@ def clclosingbl():
             for cl_enroll in db_session.query(Cl_enroll).filter(
                          (Cl_enroll.codenum == cl_member.codenum)).order_by(Cl_enroll._recid).all():
                 db_session.delete(cl_enroll)
+        pass
+
+
+    # DEFINE FRAME Frame1 curr_bezeich AT ROW 1.5 COLUMN 3 LABEL "Activity" FGCOLOR 12 SKIP (0.5) curr_bezeich1 AT ROW 3 COLUMN 5.5 LABEL "Item" FGCOLOR 15 BGCOL 1 SKIP (0.5) skip (0.5) WITH SIDE_LABELS CENTERED OVERLAY WIDTH 55 THREE_D VIEW_AS DIALOG_BOX TITLE "Checking...."
+    # VIEW FRAME frame1
+    # translatewidgetwinctx(FRAME frame1:HANDLE, lvcarea)
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
-
-    if htparam:
-        billdate = htparam.fdate
+    billdate = htparam.fdate
     check_class()
     check_inhouse()
     check_locker()
@@ -357,6 +409,7 @@ def clclosingbl():
 
     if htparam:
         store_dur = htparam.finteger
+    curr_bezeich = translateExtended ("Deleting old history..", lvcarea, "")
 
     for cl_checkin in db_session.query(Cl_checkin).filter(
              ((Cl_checkin.datum - get_current_date()) > store_dur)).order_by(Cl_checkin._recid).all():

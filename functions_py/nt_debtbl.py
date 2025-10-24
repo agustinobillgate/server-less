@@ -12,10 +12,12 @@ from decimal import Decimal
 from datetime import date
 from models import Htparam, Paramtext, Nightaudit, Artikel, Debitor, Bediener, Guest, Nitestor
 
-def nt_debt():
+def nt_debtbl():
 
     prepare_cache ([Htparam, Paramtext, Nightaudit, Artikel, Debitor, Bediener, Guest, Nitestor])
 
+    pvilanguage:int = 0
+    lvcarea:string = "nt-debt"
     long_digit:bool = False
     n:int = 0
     progname:string = "nt-debt.p"
@@ -35,13 +37,13 @@ def nt_debt():
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal long_digit, n, progname, night_type, reihenfolge, line_nr, line, p_width, p_length, curr_date, from_dept, htl_name, htl_adr, htl_tel, htparam, paramtext, nightaudit, artikel, debitor, bediener, guest, nitestor
+        nonlocal pvilanguage, lvcarea, long_digit, n, progname, night_type, reihenfolge, line_nr, line, p_width, p_length, curr_date, from_dept, htl_name, htl_adr, htl_tel, htparam, paramtext, nightaudit, artikel, debitor, bediener, guest, nitestor
 
         return {}
 
     def journal_list():
 
-        nonlocal long_digit, n, progname, night_type, reihenfolge, line_nr, line, p_width, p_length, curr_date, from_dept, htl_name, htl_adr, htl_tel, htparam, paramtext, nightaudit, artikel, debitor, bediener, guest, nitestor
+        nonlocal pvilanguage, lvcarea, long_digit, n, progname, night_type, reihenfolge, line_nr, line, p_width, p_length, curr_date, from_dept, htl_name, htl_adr, htl_tel, htparam, paramtext, nightaudit, artikel, debitor, bediener, guest, nitestor
 
         i:int = 0
         it_exist:bool = False
@@ -59,23 +61,23 @@ def nt_debt():
         
         # Rulita,
         # - Fix space in string
-        line = line + "Date/Time :" + " " + to_string(get_current_date()) + "  " + to_string(get_current_time_in_seconds(), "HH:MM")
+        line = line + translateExtended ("Date/Time :", lvcarea, "") + " " + to_string(get_current_date()) + "  " + to_string(get_current_time_in_seconds(), "HH:MM")
         add_line(line)
         line = to_string(htl_adr, "x(40)")
         for i in range(1,20 + 1) :
             line = line + " "
-        line = line + "Bill.Date :" + " " + to_string(curr_date)
+        line = line + translateExtended ("Bill.Date :", lvcarea, "") + " " + to_string(curr_date)
         add_line(line)
-        line = "Tel" + " " + to_string(htl_tel, "x(36)")
+        line = translateExtended ("Tel", lvcarea, "") + " " + to_string(htl_tel, "x(36)")
         for i in range(1,20 + 1) :
             line = line + " "
         
         # Rulita,
         # - Fix space in string
-        line = line + "Page      :" + " " + "##page"
+        line = line + translateExtended ("Page      :", lvcarea, "") + " " + "##page"
         add_line(line)
         add_line(" ")
-        line = "List of transferred debts"
+        line = translateExtended ("List of transferred debts", lvcarea, "")
         add_line(line)
         line = ""
         for i in range(1,80 + 1) :
@@ -113,13 +115,13 @@ def nt_debt():
                     line = ""
                     for i in range(1,46 + 1) :
                         line = line + " "
-                    
+
                     # Rulita,
                     # - Fix space in string
                     if not long_digit:
-                        line = line + "T o t a l   = " + to_string(t_amt, "->>,>>>,>>9.99")
+                        line = line + "T o t a l   =  " + to_string(t_amt, "->>,>>>,>>9.99")
                     else:
-                        line = line + "T o t a l   = " + to_string(t_amt, "->,>>>,>>>,>>9")
+                        line = line + "T o t a l   =  " + to_string(t_amt, "->,>>>,>>>,>>9")
                     add_line(line)
                     add_line(" ")
                 curr_artnr = debitor.artnr
@@ -130,7 +132,7 @@ def nt_debt():
 
                 # Rulita,
                 # - Fix space in string
-                line = "Bill Receiver            GuestName               BillNo RmNo        Balance ID"
+                line = translateExtended ("Bill Receiver            GuestName               BillNo RmNo        Balance ID", lvcarea, "")
                 add_line(line)
                 line = ""
                 for i in range(1,78 + 1) :
@@ -165,9 +167,9 @@ def nt_debt():
         # Rulita,
         # - Fix space in string
         if not long_digit:
-            line = line + "T o t a l   = " + to_string(t_amt, " ->>>,>>>,>>9.99")
+            line = line + "T o t a l   =  " + to_string(t_amt, " ->>>,>>>,>>9.99")
         else:
-            line = line + "T o t a l   = " + to_string(t_amt, "->>>,>>>,>>>,>>9")
+            line = line + "T o t a l   =  " + to_string(t_amt, "->>>,>>>,>>>,>>9")
         add_line(line)
         add_line(" ")
         line = ""
@@ -190,7 +192,7 @@ def nt_debt():
 
     def add_line(s:string):
 
-        nonlocal long_digit, n, progname, night_type, reihenfolge, line_nr, line, p_width, p_length, curr_date, from_dept, htl_name, htl_adr, htl_tel, htparam, paramtext, nightaudit, artikel, debitor, bediener, guest, nitestor
+        nonlocal pvilanguage, lvcarea, long_digit, n, progname, night_type, reihenfolge, line_nr, line, p_width, p_length, curr_date, from_dept, htl_name, htl_adr, htl_tel, htparam, paramtext, nightaudit, artikel, debitor, bediener, guest, nitestor
 
         nitestor = get_cache (Nitestor, {"night_type": [(eq, night_type)],"reihenfolge": [(eq, reihenfolge)],"line_nr": [(eq, line_nr)]})
 
