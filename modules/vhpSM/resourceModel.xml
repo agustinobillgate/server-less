@@ -393,4 +393,8 @@
   <prgs:resource consumes="application/json" name="_salesPerformBtnGoCustom" path="/salesPerformBtnGoCustom" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-sales-perform-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-sales-perform-btn-go-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_purposeStatCustom" path="/purposeStatCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-purpose-stat2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-purpose-stat2-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+
 </prgs:model>

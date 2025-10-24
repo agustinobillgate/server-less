@@ -2,7 +2,7 @@
 
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 import random
 from functions.available_ratesbl import available_ratesbl
 from sqlalchemy import func
@@ -460,7 +460,7 @@ def cr_availability1_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, print
 
                             for argt_line in db_session.query(Argt_line).filter(
                                      (Argt_line.argtnr == argtnr) & (Argt_line.argt_artnr == art_nr)).order_by(Argt_line._recid).all():
-                                for bill_date in date_range(tmp_resline.ankunft,(tmp_resline.abreise - 1)) :
+                                for bill_date in date_range(tmp_resline.ankunft,(tmp_resline.abreise - timedelta(days=1))) :
                                     pax = tmp_resline.erwachs
 
                                     if bill_date < ci_date:

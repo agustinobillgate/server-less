@@ -1,5 +1,4 @@
 #using conversion tools version: 1.0.0.117
-
 # =======================================
 # Rulita, 17-10-2025 
 # Tiket ID : 6526C2 | New compile program
@@ -11,6 +10,7 @@ from datetime import date
 from functions.na_startbl import na_startbl
 from functions.prepare_mn_startbl import prepare_mn_startbl
 from functions.na_start_update_flagbl import na_start_update_flagbl
+from models import Queasy
 
 def na_start_webbl(case_type:int, user_init:string, language_code:int, htparam_recid:int):
     mn_stopped = False
@@ -34,6 +34,18 @@ def na_start_webbl(case_type:int, user_init:string, language_code:int, htparam_r
 
     db_session = local_storage.db_session
 
+    def clear_log(key: int):    
+        sql = f"DELETE FROM queasy WHERE key = {key}"
+        db_session.execute(text(sql))
+        db_session.commit()
+
+    def log_process(key: int, message:string):
+        queasy = Queasy()
+        db_session.add(queasy)
+        queasy.key = key
+        queasy.char1 = "Log NA"
+        queasy.char2 = message
+
     def generate_output():
         nonlocal mn_stopped, stop_it, msg_str, mess_str, crm_license, banquet_license, printer_nr, store_flag, arrival_guest, mnstart_flag, na_date1, na_time1, na_name1
         nonlocal case_type, user_init, language_code, htparam_recid
@@ -45,16 +57,21 @@ def na_start_webbl(case_type:int, user_init:string, language_code:int, htparam_r
         return {"mn_stopped": mn_stopped, "stop_it": stop_it, "msg_str": msg_str, "mess_str": mess_str, "crm_license": crm_license, "banquet_license": banquet_license, "printer_nr": printer_nr, "store_flag": store_flag, "arrival_guest": arrival_guest}
 
 
+    clear_log(270001)
     if case_type == 1:
+        log_process(270001, f"Starting na_startbl, night audit process for user {user_init} with htparam_recid {htparam_recid}")
         mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date1, na_time1, na_name1 = get_output(na_startbl(1, user_init, htparam_recid))
 
         if mnstart_flag:
+            log_process(270001, "Preparing MN Start")
             mn_stopped, stop_it, arrival_guest, msg_str, mess_str, crm_license, banquet_license, na_list_data = get_output(prepare_mn_startbl(1, language_code))
 
             if mn_stopped:
+                log_process(270001, "MN process has been stopped, na_start_update_flagbl")
                 get_output(na_start_update_flagbl(htparam_recid))
 
     elif case_type == 2:
+        log_process(270001, f"casetype:2, Updating flags after night audit process for user {user_init} with htparam_recid {htparam_recid}")
         get_output(na_start_update_flagbl(htparam_recid))
 
     return generate_output()

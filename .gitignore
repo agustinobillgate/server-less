@@ -1,4 +1,4 @@
-venv
+.venv
 lenv
 __pycache__
 temp_table_and_db_loop.txt

@@ -1,7 +1,8 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 10/10/2025
-# fchar -> htparam.fchar
+# fchar -> htparam.
+#
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -86,48 +87,48 @@ def closemonth1bl(pvilanguage:int):
     if param996:
 
         if param1003 < curr_date:
-            msg_str = msg_str + chr_unicode(2) + translateExtended ("Closing month not possible, please check Parameter 1003.", lvcarea, "")
+            msg_str = msg_str +translateExtended ("Closing month not possible, please check Parameter 1003.", lvcarea, "")
 
             return generate_output()
 
     if param1016:
 
         if param1118 < curr_date:
-            msg_str = msg_str + chr_unicode(2) + translateExtended ("Closing month not possible, please check Parameter 1118.", lvcarea, "")
+            msg_str = msg_str +translateExtended ("Closing month not possible, please check Parameter 1118.", lvcarea, "")
 
             return generate_output()
 
     if param997:
 
         if param1014 < curr_date:
-            msg_str = msg_str + chr_unicode(2) + translateExtended ("Closing month not possible, please check Parameter 1014.", lvcarea, "")
+            msg_str = msg_str +translateExtended ("Closing month not possible, please check Parameter 1014.", lvcarea, "")
 
             return generate_output()
 
     if param988:
 
         if param269 < curr_date:
-            msg_str = msg_str + chr_unicode(2) + translateExtended ("Closing month not possible, please check Parameter 269.", lvcarea, "")
+            msg_str = msg_str +translateExtended ("Closing month not possible, please check Parameter 269.", lvcarea, "")
 
             return generate_output()
 
         elif param1035 < curr_date:
-            msg_str = msg_str + chr_unicode(2) + translateExtended ("Closing month not possible, please check Parameter 1035.", lvcarea, "")
+            msg_str = msg_str +translateExtended ("Closing month not possible, please check Parameter 1035.", lvcarea, "")
 
             return generate_output()
 
         elif param1123 < curr_date:
-            msg_str = msg_str + chr_unicode(2) + translateExtended ("Closing month not possible, please check Parameter 1123.", lvcarea, "")
+            msg_str = msg_str +translateExtended ("Closing month not possible, please check Parameter 1123.", lvcarea, "")
 
             return generate_output()
 
         if param221 <= curr_date:
-            msg_str = msg_str + chr_unicode(2) + translateExtended ("Closing month not possible, inventory has not yet closed.", lvcarea, "") + chr_unicode(10) + translateExtended ("Please check Parameter 221.", lvcarea, "")
+            msg_str = msg_str +translateExtended ("Closing month not possible, inventory has not yet closed.", lvcarea, "") + chr_unicode(10) + translateExtended ("Please check Parameter 221.", lvcarea, "")
 
             return generate_output()
 
         elif param224 <= curr_date:
-            msg_str = msg_str + chr_unicode(2) + translateExtended ("Closing month not possible, inventory has not yet closed.", lvcarea, "") + chr_unicode(10) + translateExtended ("Please check Parameter 224.", lvcarea, "")
+            msg_str = msg_str +translateExtended ("Closing month not possible, inventory has not yet closed.", lvcarea, "") + chr_unicode(10) + translateExtended ("Please check Parameter 224.", lvcarea, "")
 
             return generate_output()
 
@@ -135,7 +136,7 @@ def closemonth1bl(pvilanguage:int):
     first_date = htparam.fdate + timedelta(days=1)
 
     if htparam.fdate >= curr_date:
-        msg_str = msg_str + chr_unicode(2) + translateExtended ("Closing date incorrect (Parameter 558).", lvcarea, "")
+        msg_str = msg_str +translateExtended ("Closing date incorrect (Parameter 558).", lvcarea, "")
 
         return generate_output()
 
@@ -143,7 +144,7 @@ def closemonth1bl(pvilanguage:int):
     curr_closeyr = get_year(htparam.fdate) + 1
 
     if get_year(curr_date) > curr_closeyr:
-        msg_str = msg_str + chr_unicode(2) + translateExtended ("Closing Year has not been done yet.", lvcarea, "")
+        msg_str = msg_str +translateExtended ("Closing Year has not been done yet.", lvcarea, "")
 
         return generate_output()
 
@@ -151,7 +152,7 @@ def closemonth1bl(pvilanguage:int):
              (Gl_jouhdr.activeflag == 0) & (Gl_jouhdr.batch) & (Gl_jouhdr.datum <= curr_date)).first()
 
     if gl_jouhdr:
-        msg_str = msg_str + chr_unicode(2) + translateExtended ("Batch journal(s) still exists, closing not possible.", lvcarea, "") + chr_unicode(10) + to_string(gl_jouhdr.datum) + " - " + gl_jouhdr.refno
+        msg_str = msg_str +translateExtended ("Batch journal(s) still exists, closing not possible.", lvcarea, "") + chr_unicode(10) + to_string(gl_jouhdr.datum) + " - " + gl_jouhdr.refno
 
         return generate_output()
 
@@ -160,7 +161,7 @@ def closemonth1bl(pvilanguage:int):
     gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
 
     if not gl_acct:
-        msg_str = msg_str + chr_unicode(2) + translateExtended ("P&L Account not defined (Parameter 979).", lvcarea, "")
+        msg_str = msg_str +translateExtended ("P&L Account not defined (Parameter 979).", lvcarea, "")
 
         return generate_output()
     pnl_acct = gl_acct.fibukonto
@@ -168,7 +169,7 @@ def closemonth1bl(pvilanguage:int):
     gl_jouhdr = get_cache (Gl_jouhdr, {"activeflag": [(eq, 1)],"datum": [(ge, first_date),(le, curr_date)]})
 
     if gl_jouhdr:
-        msg_str = msg_str + chr_unicode(2) + translateExtended ("Closed Journal found! Re-check it.", lvcarea, "")
+        msg_str = msg_str +translateExtended ("Closed Journal found! Re-check it.", lvcarea, "")
 
         return generate_output()
 
@@ -181,7 +182,7 @@ def closemonth1bl(pvilanguage:int):
             balance =  to_decimal(balance) + to_decimal(gl_journal.debit) - to_decimal(gl_journal.credit)
 
         if balance > 0 and balance > 0.01 or balance < 0 and balance < (- 0.01):
-            msg_str = msg_str + chr_unicode(2) + translateExtended ("Not balanced Journals found (closing not possible).", lvcarea, "") + chr_unicode(10) + translateExtended ("Date : ", lvcarea, "") + to_string(gl_jouhdr.datum) + " - " + translateExtended ("RefNo : ", lvcarea, "") + gl_jouhdr.refno
+            msg_str = msg_str + translateExtended ("Not balanced Journals found (closing not possible).", lvcarea, "") + chr_unicode(10) + translateExtended ("Date : ", lvcarea, "") + to_string(gl_jouhdr.datum) + " - " + translateExtended ("RefNo : ", lvcarea, "") + gl_jouhdr.refno
 
             return generate_output()
 

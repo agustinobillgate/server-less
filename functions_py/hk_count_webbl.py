@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 16/9/2025
-# show detail overview, tdk tampil
+# show detail overview, tdk tampil 
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal

@@ -402,7 +402,7 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                             for loopi in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
                                 s = entry(loopi - 1, res_line.zimmer_wunsch, ";")
 
-                                if substring(s, 0, 5) == ("ChAge").lower() :
+                                if substring(s, 0, 5) == ("ChAge") :
                                     cl_list.age2 = substring(s, 5)
 
                         if matches(res_line.zimmer_wunsch,r"*$CODE$*"):
@@ -795,9 +795,9 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                                 if reslin_queasy:
 
                                     for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                             (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (curr_date >= Reslin_queasy.date1) & (curr_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
+                                             (Reslin_queasy.key == ("fargt-line")) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (curr_date >= Reslin_queasy.date1) & (curr_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
 
-                                        if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
+                                        if reslin_queasy.char2  != "" and reslin_queasy.char2  != ("0") :
 
                                             zwkum = db_session.query(Zwkum).filter(
                                                      (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
@@ -1075,7 +1075,7 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                             for loop2 in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
                                 s = entry(loop2 - 1, res_line.zimmer_wunsch, ";")
 
-                                if substring(s, 0, 5) == ("ChAge").lower() :
+                                if substring(s, 0, 5) == ("ChAge") :
                                     cl_list.age2 = substring(s, 5)
 
                         if matches(res_line.zimmer_wunsch,r"*$CODE$*"):
@@ -1461,9 +1461,9 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                                 if reslin_queasy:
 
                                     for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                             (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (curr_date >= Reslin_queasy.date1) & (curr_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
+                                             (Reslin_queasy.key == ("fargt-line")) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (curr_date >= Reslin_queasy.date1) & (curr_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
 
-                                        if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
+                                        if reslin_queasy.char2  != "" and reslin_queasy.char2  != ("0") :
 
                                             zwkum = db_session.query(Zwkum).filter(
                                                      (Zwkum.zknr == artikel.zwkum) & (Zwkum.departement == artikel.departement) & (matches(Zwkum.bezeich,"*DISCOUNT*"))).first()
@@ -1707,7 +1707,7 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
         cl_list.ch2 = curr_ch2
         cl_list.comch = curr_comch
 
-        for cl_list in query(cl_list_data, filters=(lambda cl_list: cl_list.flag.lower() != ("*").lower())):
+        for cl_list in query(cl_list_data, filters=(lambda cl_list: cl_list.flag != ("*"))):
 
             if exc_taxserv:
                 cl_list.zipreis = to_decimal(round((cl_list.zipreis / (1 + vat + service)) , price_decimal))
@@ -1962,7 +1962,7 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
 
             if reslin_queasy:
 
-                if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
+                if reslin_queasy.char2  != "" and reslin_queasy.char2  != ("0") :
                     argt_betrag = ( to_decimal(res_line.zipreis) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal(100)) * to_decimal(qty)
                 else:
 
