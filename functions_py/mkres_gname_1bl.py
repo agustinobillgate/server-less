@@ -1,4 +1,7 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 21/10/2025
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -21,6 +24,9 @@ def mkres_gname_1bl(case_type:int, temp_flag:int, create_guestseg:bool, gastno:i
 
     db_session = local_storage.db_session
 
+    famname = famname.strip()
+
+
     def generate_output():
         nonlocal guest_list_data, resline_list_data, fit_gastnr, htparam, guest, reservation, zimkateg, res_line, segment, guestseg
         nonlocal case_type, temp_flag, create_guestseg, gastno, sorttype, famname, inp_compno, wiguestflag, adult
@@ -41,7 +47,6 @@ def mkres_gname_1bl(case_type:int, temp_flag:int, create_guestseg:bool, gastno:i
         nonlocal resline_list_data, guest_list_data
 
         if sorttype == 11:
-
             htparam = get_cache (Htparam, {"paramnr": [(eq, 123)]})
             fit_gastnr = htparam.finteger
             sorttype = 1
