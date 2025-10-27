@@ -54,7 +54,8 @@ def change_guesttypebl(gastno:int, new_type:int, user_init:string):
                     to_string(t_guest.gastnr) + " - " + t_guest.name +\
                     " " + to_string(t_guest.karteityp) + "->" + to_string(new_type)
 
-
+            t_guest_data[0].karteityp = new_type
+            t_guest.karteityp = new_type
             success_flag = get_output(write_guestbl(1, t_guest_data))
             mess_str = "Cardtype change successfull!"
 
