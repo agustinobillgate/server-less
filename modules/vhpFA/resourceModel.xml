@@ -309,4 +309,7 @@
   <prgs:resource consumes="application/json" name="_faValuateBtnGo2" path="/faValuateBtnGo2" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-valuate-btn-go2-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-valuate-btn-go2-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_faSaleLoadCustom" path="/faSaleLoadCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-fa-sale-btn-go-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-fa-sale-btn-go-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 </prgs:model>

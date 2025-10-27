@@ -198,7 +198,7 @@ def nt_kngfbrev():
 
         if do_it:
             f_pax = 0 
-            b_pax = 0
+            b_pax == 0
 
             if h_bill.belegung != 0:
                 get_anzahl()
@@ -233,7 +233,6 @@ def nt_kngfbrev():
 
                 shift = 0 
                 shift_art = 0
-
                 shift = hb_buff.betriebsnr
 
                 if shift == 0:

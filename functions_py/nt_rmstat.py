@@ -1,11 +1,5 @@
 #using conversion tools version: 1.0.0.117
 
-# =======================================
-# Rulita, 21-10-2025
-# Issue :
-# - Missing table name arrangement
-# =======================================
-
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -220,16 +214,13 @@ def nt_rmstat():
 
             return generate_inner_output()
 
-        if length(arrangement.OPTIONS) != 16:
+        if length(arrangement.options) != 16:
 
             return generate_inner_output()
         j = 1
         for i in range(1,4 + 1) :
             stay = 0
             pay = 0
-            
-            # Rulita,
-            # - Missing table name arrangement
             stay = to_int(substring(arrangement.options, j - 1, 2))
             pay = to_int(substring(arrangement.options, j + 2 - 1, 2))
 

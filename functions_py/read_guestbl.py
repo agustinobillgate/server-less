@@ -4,6 +4,7 @@
 # validate fname, gname is ? -> ""
 #------------------------------------------
 from functions.additional_functions import *
+from sqlalchemy import func, or_
 from decimal import Decimal
 from models import Guest, Bill
 
@@ -58,7 +59,7 @@ def read_guestbl(case_type:int, gastno:int, gname:string, fname:string):
     elif case_type == 2:
 
         guest = db_session.query(Guest).filter(
-                 (Guest.name == (gname).lower()) & ((Guest.vorname1 + Guest.anredefirma) == (fname).lower()) & (Guest.gastnr > 0)).first()
+                 (func.lower(Guest.name) == (gname).lower()) & (func.lower(Guest.vorname1 + Guest.anredefirma) == (fname).lower()) & (Guest.gastnr > 0)).first()
     elif case_type == 3:
 
         if gastno > 0:
@@ -77,14 +78,14 @@ def read_guestbl(case_type:int, gastno:int, gname:string, fname:string):
         if fname != "":
 
             guest = db_session.query(Guest).filter(
-                     (Guest.name == (gname).lower()) & ((Guest.vorname1 + Guest.anredefirma) == (fname).lower()) & (Guest.gastnr > 0)).first()
+                     (func.lower(Guest.name) == (gname).lower()) & (func.lower(Guest.vorname1 + Guest.anredefirma) == (fname).lower()) & (Guest.gastnr > 0)).first()
         else:
 
             guest = get_cache (Guest, {"name": [(eq, gname)],"gastnr": [(gt, 0)]})
     elif case_type == 6:
 
         guest = db_session.query(Guest).filter(
-                 (Guest.name == (gname).lower()) & ((Guest.vorname1 + Guest.anredefirma) == (fname).lower()) & (Guest.karteityp == gastno) & (Guest.gastnr > 0)).first()
+                 (func.lower(Guest.name) == (gname).lower()) & (func.lower(Guest.vorname1 + Guest.anredefirma) == (fname).lower()) & (Guest.karteityp == gastno) & (Guest.gastnr > 0)).first()
     elif case_type == 7:
 
         guest = get_cache (Guest, {"karteityp": [(ge, 1)],"gastnr": [(gt, gastno)],"firmen_nr": [(gt, 0)]})
@@ -94,7 +95,7 @@ def read_guestbl(case_type:int, gastno:int, gname:string, fname:string):
     elif case_type == 9:
 
         guest = db_session.query(Guest).filter(
-                 (Guest.name == (gname).lower()) | ((Guest.name + ", " + Guest.anredefirma) == (gname).lower())).first()
+                 (func.lower(Guest.name) == (gname).lower()) | ((func.lower(Guest.name) + ", " + func.lower(Guest.anredefirma)  ) == (gname).lower())).first()
     elif case_type == 10:
 
         guest = db_session.query(Guest).order_by(Guest._recid.desc()).first()
