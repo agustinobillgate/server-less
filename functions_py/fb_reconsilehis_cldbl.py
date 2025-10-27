@@ -8,13 +8,13 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from sqlalchemy import func
-from functions.calc_servvat import calc_servvat
 from functions.fb_cost_count_recipe_costbl import fb_cost_count_recipe_costbl
-from models import Htparam, H_artikel, L_besthis, Gl_acct, L_lager, L_ophis, L_ophhis, Hoteldpt, H_compli, Exrate, Artikel, Gl_main, H_cost, L_artikel, Umsatz, Waehrung
+from functions.calc_servvat import calc_servvat
+from models import Htparam, Waehrung, H_artikel, L_besthis, Gl_acct, L_lager, L_ophis, L_ophhis, Hoteldpt, H_compli, Exrate, Artikel, Gl_main, H_cost, L_artikel, H_rezept, Umsatz
 
 def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from_date:date, to_date:date, ldry:int, dstore:int, double_currency:bool, foreign_nr:int, exchg_rate:Decimal, mi_opt_chk:bool, date1:date, date2:date):
 
-    prepare_cache ([Htparam, H_artikel, L_besthis, Gl_acct, L_lager, L_ophis, Hoteldpt, H_compli, Exrate, Artikel, Gl_main, H_cost, Umsatz, Waehrung])
+    prepare_cache ([Htparam, Waehrung, H_artikel, L_besthis, Gl_acct, L_lager, L_ophis, Hoteldpt, H_compli, Exrate, Artikel, Gl_main, H_cost, L_artikel, H_rezept, Umsatz])
 
     done = False
     output_list_data = []
@@ -25,13 +25,16 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
     curr_reihe:int = 0
     coa_format:string = ""
     betrag:Decimal = to_decimal("0.0")
-    long_digit:bool = False
-    htparam = h_artikel = l_besthis = gl_acct = l_lager = l_ophis = l_ophhis = hoteldpt = h_compli = exrate = artikel = gl_main = h_cost = l_artikel = umsatz = None
-    bill_date = date(1,1,1)
-    price_type:int = 0
+    bill_date:date = date(1,1,1)
+    cost:Decimal = to_decimal("0.0")
+    price:Decimal = to_decimal("0.0")
     exchange_val:int = 0
+    price_type:int = 0
     incl_service:bool = False
     incl_mwst:bool = False
+    long_digit:bool = False
+    htparam = waehrung = h_artikel = l_besthis = gl_acct = l_lager = l_ophis = l_ophhis = hoteldpt = h_compli = exrate = artikel = gl_main = h_cost = l_artikel = h_rezept = umsatz = None
+    
 
     output_list = s_list = None
 
@@ -41,7 +44,7 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, umsatz
+        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
         nonlocal pvilanguage, from_grp, food, bev, from_date, to_date, ldry, dstore, double_currency, foreign_nr, exchg_rate, mi_opt_chk, date1, date2
 
 
@@ -82,7 +85,7 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
     def create_list():
 
-        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, umsatz
+        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
         nonlocal pvilanguage, from_grp, food, bev, from_date, to_date, ldry, dstore, double_currency, foreign_nr, exchg_rate, mi_opt_chk, date1, date2, bill_date, price_type
 
 
@@ -392,18 +395,12 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
                                     b_cost = h_compli.anzahl * cost
                                 elif artikel.umsatzart == 3 or artikel.umsatzart == 5:
                                     f_cost = h_compli.anzahl * cost
-
                         else:
+
                             if artikel.umsatzart == 6:
                                 b_cost = to_decimal(h_artikel.prozent) / 100 * to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * rate
                             elif artikel.umsatzart == 3 or artikel.umsatzart == 5:
                                 f_cost = to_decimal(h_artikel.prozent) / 100 * to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * rate
-
-                    if artikel.umsatzart == 6:
-                        b_cost =  to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(rate)
-
-                    elif artikel.umsatzart == 3 or artikel.umsatzart == 5:
-                        f_cost =  to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(rate)
 
                 if f_cost != 0:
 
@@ -1315,7 +1312,7 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
     def create_food():
 
-        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, umsatz
+        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
         nonlocal pvilanguage, from_grp, food, bev, from_date, to_date, ldry, dstore, double_currency, foreign_nr, exchg_rate, mi_opt_chk, date1, date2, bill_date, price_type
 
 
@@ -2093,7 +2090,7 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
     def create_beverage():
 
-        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, umsatz
+        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
         nonlocal pvilanguage, from_grp, food, bev, from_date, to_date, ldry, dstore, double_currency, foreign_nr, exchg_rate, mi_opt_chk, date1, date2, bill_date, price_type
 
 
@@ -2399,7 +2396,6 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
                     if artikel.umsatzart == 6:
                         b_cost =  to_decimal(h_compli.anzahl) * to_decimal(betrag)
-
                 else:
                     if (not h_cost and h_compli.datum < bill_date) or (h_cost and h_cost.betrag == 0):
 
@@ -2877,7 +2873,7 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
     def fb_sales(f_eknr:int, b_eknr:int):
 
-        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, umsatz
+        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
         nonlocal pvilanguage, from_grp, food, bev, from_date, to_date, ldry, dstore, double_currency, foreign_nr, exchg_rate, mi_opt_chk, date1, date2
 
 
