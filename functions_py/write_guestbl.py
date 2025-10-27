@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 27/10/2025
+#--------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Guest
@@ -31,6 +33,8 @@ def write_guestbl(case_type:int, t_guest_data:[T_guest]):
 
         if guest:
             buffer_copy(t_guest, guest)
+            guest.karteityp = t_guest.karteityp
+            db_session.commit()
             pass
             pass
             success_flag = True

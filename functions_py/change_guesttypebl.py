@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 27/10/2025
+#--------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.read_guestbl import read_guestbl
@@ -33,7 +35,8 @@ def change_guesttypebl(gastno:int, new_type:int, user_init:string):
 
     t_guest_data = get_output(read_guestbl(1, gastno, "", ""))
 
-    t_guest = query(t_guest_data, filters=(lambda t_guest: t_guest.gastnr == gastno), first=True)
+    # t_guest = query(t_guest_data, filters=(lambda t_guest: t_guest.gastnr == gastno), first=True)
+    t_guest = db_session.query(Guest).filter(Guest.gastnr == gastno).first()
 
     if t_guest:
 
