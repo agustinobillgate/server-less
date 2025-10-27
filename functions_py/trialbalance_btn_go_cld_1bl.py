@@ -96,15 +96,18 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
         nonlocal output_list_data, num_acctype, sales, cost, gop_credit, gop_debit, tot_diff, curr_i, in_procedure, numsend, last_acct_close_priod, t_from_date, t_to_date, t_strgrp, t_str, t_int, t_date, from_datehis, to_datehis, readflag, coa_format, counter, lastprevmonthdate, firstmonthdate, tt_pbal2, gl_acct, gl_jouhdr, gl_journal, gl_jhdrhis, gl_jourhis, gl_department, gl_main, htparam, gl_accthis
         nonlocal acct_type, from_fibu, to_fibu, sorttype, from_dept, from_date, to_date, close_month, close_date, pnl_acct, close_year, prev_month, show_longbal, pbal_flag, asremoteflag
 
+
         nonlocal output_list, output_listhis, result_list, t_res_list, t_res_listhis, g_list, g_listpre, g_listhis
         nonlocal output_list_data, output_listhis_data, result_list_data, t_res_list_data, t_res_listhis_data, g_list_data, g_listpre_data, g_listhis_data
 
         lastmonthdate:date = None
         nextmonth:int = 0
         firstdate:date = None
-        nextmonth = get_month(d) + 1
-        firstdate = date_mdy(nextmonth, 1, get_year(d))
-        lastmonthdate = firstdate - timedelta(days=1)
+
+        if get_month(d) == 12:
+            lastmonthdate = date_mdy(1, 1, get_year(d) + 1) - timedelta(days=1)
+        else:
+            lastmonthdate = date_mdy(get_month(d) + 1, 1, get_year(d)) - timedelta(days=1)
         return lastmonthdate
 
 
@@ -202,6 +205,8 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
 
                     konto = gl_acct.fibukonto
                     do_it = True
+                    prev_bal =  to_decimal("0")
+                    tot_bal =  to_decimal("0")
 
                     if from_dept > 0 and gl_acct.deptnr != from_dept:
                         do_it = False
@@ -216,7 +221,7 @@ def trialbalance_btn_go_cld_1bl(acct_type:int, from_fibu:string, to_fibu:string,
                         c = convert_fibu(gl_acct.fibukonto)
                         # output_list.str = "        " + to_string(c, "x(16)") + substring(gl_acct.bezeich, 0, 20)
                         # output_list.str = to_string("", "x(8)") + to_string(c, "x(16)") + substring(gl_acct.bezeich, 0, 20)
-                        output_list.str = to_string("", "x(8)") + format_fixed_length(c, 16) + substring(gl_acct.bezeich.replace("\\n", "\n"), 0, 20)
+                        output_list.str = to_string(" ", "x(8)") + format_fixed_length(c, 16) + substring(gl_acct.bezeich.replace("\\n", "\n"), 0, 20)
                         # output_list.ref_no = to_string(c, "x(32)")
                         output_list.ref_no = format_fixed_length(c, 32)
                         output_list.begin_bal = gl_acct.bezeich.replace("\\n", "\n")

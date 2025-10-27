@@ -6,12 +6,20 @@
 # - Comment VIEW_AS EDITOR INNER_CHARS 17
 #   INNER_LINES 1 False_WORD_WRAP
 # - Missing table name arrangement
+
+# Rulita, 24-10-2025
+# Issue :
+# - Fixing round var amount
+# - Fixing run program argt_betragbl
+# - New compile program argt_betragbl
+# - New compile program create_newbillbl
+# - New compile program ratecode_compli
 # =======================================
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from functions.argt_betrag import argt_betrag
+from functions.argt_betrag import argt_betragbl
 from sqlalchemy import func
 from functions.create_newbillbl import create_newbillbl
 from functions.ratecode_compli import ratecode_compli
@@ -167,7 +175,8 @@ def rmchargebl():
                 amount_foreign =  to_decimal(roomrate)
             else:
                 amount_foreign =  to_decimal("0")
-            amount =  to_decimal(round (roomrate) * to_decimal(frate , price_decimal))
+            amount = round(to_decimal(round(roomrate) * frate), price_decimal)
+
 
             if foreign_rate and price_decimal == 0:
 
@@ -292,7 +301,7 @@ def rmchargebl():
         for argt_line in db_session.query(Argt_line).filter(
                  (Argt_line.argtnr == arrangement.argtnr) & not_ (Argt_line.kind2)).order_by(Argt_line._recid).all():
             qty1 = queasy.number1
-            argt_betrag, ex_rate = get_output(argt_betrag(res_line._recid, argt_line._recid))
+            argt_betrag, ex_rate = get_output(argt_betragbl(res_line._recid, argt_line._recid))
 
             artikel1 = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
 
@@ -698,7 +707,7 @@ def rmchargebl():
                             amount_foreign =  to_decimal(roomrate) / to_decimal(exchg_rate)
                     else:
                         amount_foreign =  to_decimal("0")
-                    amount =  to_decimal(round (roomrate) * to_decimal(frate , price_decimal))
+                    amount = round(to_decimal(round(roomrate) * frate), price_decimal)
 
                     if foreign_rate and price_decimal == 0:
 
@@ -1321,7 +1330,7 @@ def rmchargebl():
                 else:
                     qty1 = argt_line.betriebsnr
             post_it = False
-            argt_betrag0, ex_rate = get_output(argt_betrag(res_line._recid, argt_line._recid))
+            argt_betrag0, ex_rate = get_output(argt_betragbl(res_line._recid, argt_line._recid))
             argt_betrag = to_decimal(round(argt_betrag0 * ex_rate , price_decimal))
 
             artikel1 = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
@@ -1605,7 +1614,7 @@ def rmchargebl():
 
             artikel1 = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
             post_it = False
-            argt_betrag0, ex_rate = get_output(argt_betrag(res_line._recid, argt_line._recid))
+            argt_betrag0, ex_rate = get_output(argt_betragbl(res_line._recid, argt_line._recid))
             argt_betrag =  to_decimal(round (argt_betrag0) * to_decimal(ex_rate , price_decimal))
 
             if argt_betrag != 0:
