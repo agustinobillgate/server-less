@@ -134,7 +134,9 @@ def read_zimmerbl(case_type:int, rmno:string, zikatno:int, setupno:int):
             buffer_copy(zimmer, t_zimmer)
     elif case_type == 11:
 
-        zimmer = get_cache (Zimmer, {"nebenstelle": [(ne, "")]})
+        # zimmer = get_cache (Zimmer, {"nebenstelle": [(ne, "")]})
+        zimmer = db_session.query(Zimmer).filter(
+                 (Zimmer.nebenstelle != "")).first()
 
         if zimmer:
             t_zimmer = T_zimmer()

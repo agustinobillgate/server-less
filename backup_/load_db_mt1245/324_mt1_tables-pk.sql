@@ -1,4 +1,4 @@
-SET search_path='mt1',public;
+SET search_path='na1',public;
 
 CREATE COLLATION case_insensitive (
     provider = icu,

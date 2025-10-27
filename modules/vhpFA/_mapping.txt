@@ -102,3 +102,5 @@ faArtlistPrepareCreateOutput,prepare_fa_artlist_create_output_webbl
 faArtlist2Prepare,prepare_fa_artlist2_webbl
 faDepreciationReportList1,fa_depreciation_report1_webbl
 faValuateBtnGo2,fa_valuate_btn_go2_webbl
+faSaleLoadCustom,fa_sale_btn_go_webbl
+
