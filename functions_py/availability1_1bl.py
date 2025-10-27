@@ -1051,6 +1051,7 @@ def availability1_1bl(pvilanguage:int, printer_nr:int, call_from:int, txt_file:s
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
+    
     for i in range(1,21 + 1) :
         ttl_room[i - 1] = 0
         occ_room[i - 1] = 0

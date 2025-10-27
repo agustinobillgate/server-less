@@ -1,5 +1,13 @@
 #using conversion tools version: 1.0.0.117
 
+# ============================
+# Rulita, 21-10-2025 
+# Issue : New compile program
+
+# Rulita, 27-10-2025
+# - Fixing issue where s_list.hb_buff.zeit
+# ============================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -229,7 +237,11 @@ def nt_kngfbrev():
 
                 if shift == 0:
 
-                    s_list = query(s_list_data, filters=(lambda s_list: s_list.hb_buff.zeit >= s_list.ftime and hb_buff.zeit <= s_list.ttime), first=True)
+                    # Rulita, 27-10-2025
+                    # - Fixing issue where s_list.hb_buff.zeit
+                    # s_list = query(s_list_data, filters=(lambda s_list: s_list.hb_buff.zeit <= s_list.ftime and hb_buff.zeit <= s_list.ttime), first=True)
+                    
+                    s_list = query(s_list_data, filters=(lambda s_list: s_list.ftime <= hb_buff.zeit and s_list.ttime >= hb_buff.zeit), first=True)
 
                     if s_list and s_list.shift <= 4:
                         shift = s_list.shift

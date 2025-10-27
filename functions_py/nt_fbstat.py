@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
 
-# ============================
+# ========================================
 # Rulita, 21-10-2025 
 # Issue : New compile program
-# ============================
+
+# Rulita, 27-10-2025
+# - Fixing where s_list.h_journal.zeit
+# ========================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -124,8 +127,11 @@ def nt_fbstat():
             shift = h_journal.betriebsnr
 
             if shift == 0:
-
-                s_list = query(s_list_data, filters=(lambda s_list: s_list.h_journal.zeit >= s_list.ftime and h_journal.zeit <= s_list.ttime), first=True)
+                
+                # Rulita, 27-10-2025
+                # - Fixing where s_list.h_journal.zeit
+                # s_list = query(s_list_data, filters=(lambda s_list: s_list.h_journal.zeit >= s_list.ftime and h_journal.zeit <= s_list.ttime), first=True)
+                s_list = query(s_list_data, filters=(lambda s_list: s_list.ftime <= h_journal.zeit and s_list.ttime >= h_journal.zeit), first=True)
 
                 if s_list and s_list.shift <= 4:
                     shift = s_list.shift

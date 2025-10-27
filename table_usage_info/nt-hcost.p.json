@@ -1,0 +1,100 @@
+{
+    "H_journal": {
+        "read": [],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "flogical",
+            "finteger",
+            "fdate",
+            "fchar",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [
+            "ankauf",
+            "einheit",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_artikel": {
+        "read": [
+            "artnrlager",
+            "artnrrezept",
+            "artnrfront",
+            "departement",
+            "prozent",
+            "artnr",
+            "epreis1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_cost": {
+        "read": [
+            "anzahl",
+            "artnr",
+            "departement",
+            "flag",
+            "datum",
+            "betrag",
+            "_recid"
+        ],
+        "write": []
+    },
+    "L_artikel": {
+        "read": [
+            "ek_aktuell",
+            "inhalt",
+            "vk_preis",
+            "artnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_rezept": {
+        "read": [
+            "artnrrezept",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_rezlin": {
+        "read": [
+            "menge",
+            "artnrlager",
+            "lostfact",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_compli": {
+        "read": [
+            "anzahl",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_artcost": {
+        "read": [
+            "anzahl",
+            "cost",
+            "artnr",
+            "datum",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Artikel": {
+        "read": [
+            "artnr",
+            "departement",
+            "_recid"
+        ],
+        "write": []
+    }
+}
