@@ -1,16 +1,13 @@
 #using conversion tools version: 1.0.0.117
 
-# ============================
-# Rulita, 21-10-2025 
-# Issue : New compile program
-# ============================
-
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.fb_cost_count_recipe_costbl import fb_cost_count_recipe_costbl
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from models import H_journal, Htparam, Waehrung, H_artikel, H_cost, L_artikel, H_rezept, H_rezlin, H_compli, H_artcost, Artikel
+
+debug_test = dict()
 
 def nt_hcost():
 
@@ -45,7 +42,7 @@ def nt_hcost():
         nonlocal t_hjournal, s_rezlin
         nonlocal t_hjournal_data, s_rezlin_data
 
-        return {}
+        return {"debug_test":debug_test}
 
     def cal_cost(p_artnr:int, menge:Decimal, cost:Decimal):
 
@@ -255,15 +252,10 @@ def nt_hcost():
     if double_currency and waehrung:
         exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
 
-    h_journal_obj_list = {}
-    for h_journal, h_artikel in db_session.query(H_journal, H_artikel).join(H_artikel,(H_artikel.departement == H_journal.departement) & (H_artikel.artnr == H_journal.artnr) & (H_artikel.artart == 0)).filter(
+    for h_journal in db_session.query(H_journal).filter(
              (H_journal.bill_datum == bill_date) & (H_journal.zeit >= 0) & (H_journal.sysdate >= bill_date)).order_by(H_journal.departement, H_journal.artnr).all():
-        if h_journal_obj_list.get(h_journal._recid):
-            continue
-        else:
-            h_journal_obj_list[h_journal._recid] = True
 
-
+        h_artikel = get_cache (H_artikel, {"departement": [(eq, h_journal.departement)],"artnr": [(eq, h_journal.artnr)],"artart": [(eq, 0)]})
         create_it = True
 
         t_hjournal = query(t_hjournal_data, filters=(lambda t_hjournal: t_hjournal.artnr == h_journal.artnr and t_hjournal.departement == h_journal.departement and t_hjournal.betrag == - h_journal.betrag and t_hjournal.bill_datum == h_journal.bill_datum), first=True)
@@ -278,15 +270,11 @@ def nt_hcost():
 
             buffer_copy(h_journal, t_hjournal)
 
-    h_artikel_obj_list = {}
-    for h_artikel in db_session.query(H_artikel).filter(
-             ((H_artikel.departement.in_(list(set([t_hjournal.departement for t_hjournal in t_hjournal_data if t_hjournal.bill_datum == bill_date] & (t_hjournal.zeit >= 0) & (t_hjournal.sysdate >= bill_date))))) & (H_artikel.artnr == t_hjournal.artnr) & (H_artikel.artart == 0))).order_by(t_hjournal.departement, t_hjournal.artnr).all():
-        if h_artikel_obj_list.get(h_artikel._recid):
-            continue
-        else:
-            h_artikel_obj_list[h_artikel._recid] = True
+    for t_hjournal in query(t_hjournal_data, filters=(lambda t_hjournal: t_hjournal.bill_datum == bill_date and t_hjournal.zeit >= 0 and t_hjournal.sysdate >= bill_date), sort_by=[("departement",False),("artnr",False)]):
 
-        t_hjournal = query(t_hjournal_data, (lambda t_hjournal: (h_artikel.departement == t_hjournal.departement)), first=True)
+        debug_test["h_artikel"] = t_hjournal.departement
+
+        h_artikel = get_cache (H_artikel, {"departement": [(eq, t_hjournal.departement)],"artnr": [(eq, t_hjournal.artnr)],"artart": [(eq, 0)]})
 
         if h_artikel.artnrlager != 0 or h_artikel.artnrrezept != 0 or h_artikel.prozent != 0:
 

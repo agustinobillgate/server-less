@@ -1,9 +1,9 @@
 #using conversion tools version: 1.0.0.117
 
-# ==========================================
-# Rulita, 10-10-2025
-# Tiket ID : 8CF423 | Recompile Program
-# ==========================================
+# =======================================
+# Rulita, 15-10-2025 
+# Tiket ID : 6526C2 | New compile program
+# =======================================
 
 from functions.additional_functions import *
 from decimal import Decimal

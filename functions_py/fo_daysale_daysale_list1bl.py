@@ -9,6 +9,8 @@ from decimal import Decimal
 from datetime import date
 from models import Bediener, Artikel, Billjournal, Bill, Res_line, Waehrung
 
+from functions import log_program
+
 bline_list_data, Bline_list = create_model("Bline_list", {"flag":int, "userinit":string, "selected":bool, "name":string, "bl_recid":int})
 
 def fo_daysale_daysale_list1bl(bline_list_data:[Bline_list], pvilanguage:int, shift:int, from_date:date, to_date:date):
