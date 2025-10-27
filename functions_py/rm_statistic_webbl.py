@@ -1,4 +1,5 @@
 #using conversion tools version: 1.0.0.117
+#after fix from compare report - Oscar
 
 from functions.additional_functions import *
 from decimal import Decimal
