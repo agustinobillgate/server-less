@@ -7,7 +7,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from models import L_kredit, Htparam, L_lieferant, L_ophis, L_artikel, L_untergrup, Gl_acct, L_ophhis, Queasy
+from models import L_kredit, Htparam, L_lieferant, L_ophis, L_artikel, L_untergrup, Gl_acct, L_ophhis, Queasy, Bediener
 
 from sqlalchemy import cast, Numeric
 
@@ -15,7 +15,7 @@ taxcode_list_data, Taxcode_list = create_model("Taxcode_list", {"taxcode":string
 
 def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:string, sorttype:int, from_grp:int, to_grp:int, store:int, all_supp:bool, all_doc:bool, from_date:date, to_date:date, taxcode_list_data:[Taxcode_list]):
 
-    prepare_cache ([L_kredit, Htparam, L_lieferant, L_ophis, L_artikel, L_untergrup, Gl_acct, L_ophhis, Queasy])
+    prepare_cache ([L_kredit, Htparam, L_lieferant, L_ophis, L_artikel, L_untergrup, Gl_acct, L_ophhis, Queasy, Bediener])
     # Rd 26/8/2025
     from_supp = from_supp.strip()
     from_doc = from_doc.strip()
@@ -33,7 +33,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
     loopi:int = 0
     unit_price:Decimal = to_decimal("0.0")
     lvcarea:string = "supply-hinlist"
-    l_kredit = htparam = l_lieferant = l_ophis = l_artikel = l_untergrup = gl_acct = l_ophhis = queasy = None
+    l_kredit = htparam = l_lieferant = l_ophis = l_artikel = l_untergrup = gl_acct = l_ophhis = queasy = bediener = None
 
     str_list = taxcode_list = buff_l_kredit = None
 
@@ -45,7 +45,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -57,7 +57,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list1a():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -186,7 +186,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list1ar():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -315,7 +315,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list11():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -350,23 +350,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             l_ophis = L_ophis()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, \
-                l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, \
-                l_lieferant.firma, l_lieferant.plz, l_lieferant._recid \
-                    in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, \
-                                        L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, \
-                                        L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid)\
-                                .join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp))\
-                                .join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr))\
-                                .filter(
-                                        (L_ophis.datum >= from_date) & 
-                                        (L_ophis.datum <= to_date) & 
-                                        (L_ophis.lief_nr > 0) & 
-                                        (L_ophis.op_art == 1) & 
-                                        (L_ophis.anzahl != 0) & 
-                                        (not_ ((length(L_ophis.fibukonto) > 8) & 
-                                                (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED" ), length(L_ophis.fibukonto)) == "CANCELLED")))
-                                ).order_by(L_lieferant.firma, L_ophis.datum, L_artikel.bezeich).all():
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED"), length(L_ophis.fibukonto)) == "CANCELLED"))).order_by(L_lieferant.firma, L_ophis.datum, L_artikel.bezeich).all():
                 if l_ophis_obj_list.get(l_ophis._recid):
                     continue
                 else:
@@ -384,24 +369,8 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             l_ophis = L_ophis()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, \
-                l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, \
-                    l_lieferant.firma, l_lieferant.plz, l_lieferant._recid \
-                in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, \
-                                    L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, \
-                                    L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, \
-                                    L_lieferant.plz, L_lieferant._recid)\
-                .join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp))\
-                .join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr))\
-                .filter(
-                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & 
-                     (L_ophis.op_art == 1) & 
-                     (L_ophis.anzahl != 0) & 
-                     (L_ophis.lager_nr == store) & 
-                     # Rd 26/8/2025
-                     (not_ ((length(L_ophis.fibukonto) > 8) & 
-                                                (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED" ), length(L_ophis.fibukonto)) == "CANCELLED")))
-                     ).order_by(L_lieferant.firma, L_ophis.datum, L_artikel.bezeich).all():
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED"), length(L_ophis.fibukonto)) == ("CANCELLED")))).order_by(L_lieferant.firma, L_ophis.datum, L_artikel.bezeich).all():
                 if l_ophis_obj_list.get(l_ophis._recid):
                     continue
                 else:
@@ -465,7 +434,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list11a():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -495,71 +464,32 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
         tot_amt =  to_decimal("0")
 
         if store == 0:
-           
+
             l_ophis_obj_list = {}
             l_ophis = L_ophis()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, \
-                l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, \
-                    l_lieferant.firma, l_lieferant.plz, l_lieferant._recid \
-                in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, \
-                                    L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, \
-                                    L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid)\
-                            .join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & 
-                                  (L_artikel.endkum >= from_grp) & 
-                                  (L_artikel.endkum <= to_grp)) \
-                            .join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr))\
-                .filter(
-                        (L_ophis.datum >= from_date) & 
-                        (L_ophis.datum <= to_date) & 
-                        (L_ophis.lief_nr > 0) & 
-                        (L_ophis.op_art == 1) & 
-                        (L_ophis.anzahl != 0) &
-                        # Rd 26/8/2025
-                        (not_ ((length(L_ophis.fibukonto) > 8) & 
-                                                    (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED" ), length(L_ophis.fibukonto)) == "CANCELLED")))
-                ).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
-                
-                """
-                        (
-                            not_   (length(L_ophis.fibukonto) > 8) & 
-                                (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED" ), length(L_ophis.fibukonto)) == "CANCELLED")
-                        )
-
-                """
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED"), length(L_ophis.fibukonto)) == "CANCELLED"))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
                 if l_ophis_obj_list.get(l_ophis._recid):
                     continue
                 else:
                     l_ophis_obj_list[l_ophis._recid] = True
 
- 
+
                 count_data = count_data + 1
-                # print("LS:", lscheinnr, l_ophis.fibukonto , "|")
+
                 if lscheinnr == "":
                     lscheinnr = l_ophis.lscheinnr
-                
                 lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt = processing_data_in_loop(sorttype, show_total, lief_nr, lscheinnr, utt_bezeich, t_anz, t_amt, t_tax, t_inv, t_price, t_amountexcl, amt)
-                
         else:
 
             l_ophis_obj_list = {}
             l_ophis = L_ophis()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid \
-                in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr))\
-                .filter(
-                     (L_ophis.datum >= from_date) & 
-                     (L_ophis.datum <= to_date) & 
-                     (L_ophis.lief_nr > 0) & 
-                     (L_ophis.op_art == 1) & 
-                     (L_ophis.anzahl != 0) & 
-                     (L_ophis.lager_nr == store) & 
-                     # Rd 26/8/2025
-                     (not_ ((length(L_ophis.fibukonto) > 8) & 
-                                                (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED" ), length(L_ophis.fibukonto)) == "CANCELLED")))
-                    ).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
+            for l_ophis.lscheinnr, l_ophis.datum, l_ophis.anzahl, l_ophis.artnr, l_ophis.warenwert, l_ophis.docu_nr, l_ophis.lager_nr, l_ophis.einzelpreis, l_ophis.lief_nr, l_ophis.fibukonto, l_ophis._recid, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_ophis.lscheinnr, L_ophis.datum, L_ophis.anzahl, L_ophis.artnr, L_ophis.warenwert, L_ophis.docu_nr, L_ophis.lager_nr, L_ophis.einzelpreis, L_ophis.lief_nr, L_ophis.fibukonto, L_ophis._recid, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_ophis.lief_nr)).filter(
+                     (L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.lief_nr > 0) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lager_nr == store) & (not_ (length(L_ophis.fibukonto) > 8) & (substring(L_ophis.fibukonto, length(L_ophis.fibukonto) - length("CANCELLED"), length(L_ophis.fibukonto)) == "CANCELLED"))).order_by(L_ophis.lscheinnr, L_ophis.datum, L_artikel.bezeich).all():
                 if l_ophis_obj_list.get(l_ophis._recid):
                     continue
                 else:
@@ -623,7 +553,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list11ar():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -758,7 +688,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list22():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -907,7 +837,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list1b():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -1047,7 +977,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list11b():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -1184,7 +1114,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list1br():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -1323,7 +1253,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list11br():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -1461,7 +1391,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list1as():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -1590,7 +1520,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list11as():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -1719,7 +1649,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list1bs():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -1853,7 +1783,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def create_list11bs():
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -1987,7 +1917,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def convert_fibu(konto:string):
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -2028,7 +1958,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
     def processing_data_in_loop(sorttype:int, show_total:bool, lief_nr:int, lscheinnr:string, utt_bezeich:string, t_anz:Decimal, t_amt:Decimal, t_tax:Decimal, t_inv:Decimal, t_price:Decimal, t_amountexcl:Decimal, amt:Decimal):
 
-        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
         nonlocal pvilanguage, from_supp, from_doc, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
         nonlocal buff_l_kredit
 
@@ -2191,6 +2121,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
             str_list = Str_list()
             str_list_data.append(str_list)
 
+            add_id()
 
             if l_ophhis:
                 str_list.invoice_nr = l_ophhis.fibukonto
@@ -2292,6 +2223,33 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
 
         return generate_inner_output()
 
+
+    def add_id():
+
+        nonlocal err_code, str_list_data, supp_nr, long_digit, tot_anz, tot_amount, tot_amountexcl, tot_tax, tot_amt, tot_price, counter, loopi, unit_price, lvcarea, l_kredit, htparam, l_lieferant, l_ophis, l_artikel, l_untergrup, gl_acct, l_ophhis, queasy, bediener
+        nonlocal pvilanguage, from_supp, from_doc, sorttype, from_grp, to_grp, store, all_supp, all_doc, from_date, to_date
+        nonlocal buff_l_kredit
+
+
+        nonlocal str_list, taxcode_list, buff_l_kredit
+        nonlocal str_list_data
+
+        usr = None
+        Usr =  create_buffer("Usr",Bediener)
+
+        queasy = get_cache (Queasy, {"key": [(eq, 363)],"char1": [(eq, l_ophis.docu_nr)],"char2": [(eq, l_ophis.lscheinnr)],"number1": [(eq, l_ophis.artnr)]})
+
+        if queasy:
+
+            usr = get_cache (Bediener, {"nr": [(eq, queasy.number2)]})
+
+            if usr:
+                str_list.id = usr.userinit
+            else:
+                str_list.id = " "
+        else:
+            str_list.id = " "
+
     htparam = get_cache (Htparam, {"paramnr": [(eq, 246)]})
     long_digit = htparam.flogical
 
@@ -2325,6 +2283,7 @@ def supply_hinlist_btn_go_1_webbl(pvilanguage:int, from_supp:string, from_doc:st
         if all_supp:
             create_list11()
         else:
+
             if supp_nr != 0:
                 create_list22()
 
