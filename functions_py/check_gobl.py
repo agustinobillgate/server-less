@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 6/10/2025
-#
+# strip issues with res_dynarate.rmcat and arrangement.argt, memo_zinr
 #------------------------------------------
 
 from functions.additional_functions import *
