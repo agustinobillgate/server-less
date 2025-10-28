@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 28/10/2025
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -216,7 +218,8 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
         inp_resnr = to_int(entry(4, adult_child_str, ","))
         inp_reslinnr = to_int(entry(5, adult_child_str, ","))
 
-    zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, i_zikatnr)]})
+    # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, i_zikatnr)]})
+    zimkateg = db_session.query(Zimkateg).filter(Zimkateg.zikatnr == i_zikatnr).first()
 
     if not zimkateg:
 
