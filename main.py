@@ -1590,6 +1590,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
         local_storage.app = app
     output_data_size = 0
     newRequest_recid = 0
+    log_id = 0
     ServerInfo = {}
     hotel_schema = inputUsername = function_name = request_id = "" 
     

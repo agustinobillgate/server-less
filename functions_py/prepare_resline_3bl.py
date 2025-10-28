@@ -1087,7 +1087,9 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
         f_resline.zimmeranz = res_line.zimmeranz
         f_resline.sharer = (res_line.resstatus == 11) or (res_line.resstatus == 13)
 
-        zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
+        # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
+        zimkateg = db_session.query(Zimkateg).filter(
+                 (Zimkateg.zikatnr == res_line.zikatnr)).first()
 
         if zimkateg:
             f_resline.zikatstr = zimkateg.kurzbez
