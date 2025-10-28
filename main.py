@@ -113,7 +113,8 @@ local_storage.dblog_session = dblog_session
 log_id = 0
 
 skip_list = {   "Common/checkPermission2",
-                "Common/getHTParam0", 
+                "Common/getHTParam0",
+                "Common/checkTime",
                 "Common/checkPermission", 
                 "Common/loadDateTimeServer1",
                 "Common/checkStrongPassword"}
