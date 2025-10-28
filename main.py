@@ -1917,10 +1917,10 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
     ServerInfo["ui_request_id"] = ui_request_id
     ServerInfo["newRequest_recid"] = newRequest_recid
     ServerInfo["orig_infostr"] = orig_infostr
-    ServerInfo["aws_request_id"] = aws_request_id
-    
-    ServerInfo["AWSFunction"] =  lambda_function_name
-    ServerInfo["AWSCloudWatch"] = log_stream_name
+    ServerInfo["log_id"] = log_id
+    # ServerInfo["aws_request_id"] = aws_request_id    
+    # ServerInfo["AWSFunction"] =  lambda_function_name
+    # ServerInfo["AWSCloudWatch"] = log_stream_name
     log_activity_end(log_id)
     return {
         "response": output_data,
