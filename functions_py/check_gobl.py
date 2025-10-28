@@ -44,6 +44,8 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
 
     db_session = local_storage.db_session
 
+    memo_zinr = memo_zinr.strip()
+
     def generate_output():
         nonlocal error_number, still_error, msg_str, pswd_str, flag1, ci_date1, lvcarea, ci_date, min_stay, max_stay, min_adv, max_adv, msg_str1, zinr_ecode, res_line, arrangement, bediener, guest, htparam, zimkateg, segment, waehrung, bill, bill_line, zimmer, outorder, guest_pr, ratecode, reslin_queasy, kontline, zimplan, queasy
         nonlocal pvilanguage, user_init, gastno, res_mode, curr_segm, curr_source, currency, zikat_screen, memo_zinr, guestname, origcontcode, contcode, marknr, rm_bcol, inactive_flag, zikatstr
@@ -335,9 +337,10 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
 
             return
 
+        
         if memo_zinr != "":
-
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, memo_zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, memo_zinr.strip())]})
+            zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == memo_zinr).first()
 
             if not zimmer:
                 msg_str = translateExtended ("Wrong Memo RmNo / no such room number.", lvcarea, "")
