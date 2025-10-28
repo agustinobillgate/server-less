@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 28/10/2025
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -89,6 +91,9 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
 
     db_session = local_storage.db_session
+    
+    # qci_zinr = qci_zinr.strip()
+    print("QCI_ZINR:", qci_zinr)
 
     def generate_output():
         nonlocal msg_str, error_flag, record_use, init_time, init_date, avail_gdpr, avail_mark, avail_news, save_gdpr, curr_date, serv_date, f_resline_data, curr_resline_data, reslin_list_data, reschanged_list_data, t_history_data, rline_list_data, weekdays, i, str, loopi, loopj, str1, foreign_nr, tokcounter, iftask, mestoken, mesvalue, rcode, prevcode, do_it, do_it1, flag_ok, dayuse_flag, split_modify, logic_p1109, priscilla_active, loopk, resbemerk, lvcarea, new_reslinnr, curr_time, res_line, history, zimkateg, ratecode, zimmer, guest, queasy, htparam, nation, bediener, master, reslin_queasy, reservation, kontline, gentable, outorder, arrangement, guest_pr, pricecod, prmarket, fixleist, paramtext, waehrung, katpreis
@@ -919,9 +924,9 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
         return generate_output()
 
-    if qci_zinr != "":
-
+    if qci_zinr.strip() != "":
         qci_zimmer = get_cache (Zimmer, {"zinr": [(eq, qci_zinr)]})
+
     f_resline = F_resline()
     f_resline_data.append(f_resline)
 
@@ -1411,19 +1416,19 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
     for i in range(1,num_entries(reslin_list.zimmer_wunsch, ";") - 1 + 1) :
         str = entry(i - 1, reslin_list.zimmer_wunsch, ";")
 
-        if substring(str, 0, 7) == ("voucher").lower() :
+        if substring(str, 0, 7) == ("voucher") :
             f_resline.voucher = substring(str, 7)
 
-        elif substring(str, 0, 5) == ("ChAge").lower() :
+        elif substring(str, 0, 5) == ("ChAge") :
             f_resline.child_age = substring(str, 5)
 
-        elif substring(str, 0, 6) == ("$CODE$").lower() :
+        elif substring(str, 0, 6) == ("$CODE$") :
             f_resline.contcode = substring(str, 6)
 
-        elif substring(str, 0, 5) == ("DATE,").lower() :
+        elif substring(str, 0, 5) == ("DATE,") :
             f_resline.bookdate = date_mdy(to_int(substring(str, 9, 2)) , to_int(substring(str, 11, 2)) , to_int(substring(str, 5, 4)))
 
-        elif substring(str, 0, 8) == ("SEGM_PUR").lower() :
+        elif substring(str, 0, 8) == ("SEGM_PUR") :
             f_resline.i_purpose = to_int(substring(str, 8))
 
         elif matches(str,r"*WCI-req*"):
@@ -1443,13 +1448,13 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
                             break
 
-        elif substring(str, 0, 4) == ("GDPR").lower() :
+        elif substring(str, 0, 4) == ("GDPR") :
             f_resline.gdpr_flag = substring(str, 4)
 
-        elif substring(str, 0, 9) == ("MARKETING").lower() :
+        elif substring(str, 0, 9) == ("MARKETING") :
             f_resline.mark_flag = substring(str, 9)
 
-        elif substring(str, 0, 10) == ("NEWSLETTER").lower() :
+        elif substring(str, 0, 10) == ("NEWSLETTER") :
             f_resline.news_flag = substring(str, 10)
 
     reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "specialrequest")],"resnr": [(eq, reslin_list.resnr)],"reslinnr": [(eq, reslin_list.reslinnr)]})
@@ -1488,7 +1493,7 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
         for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
             str = entry(i - 1, res_line.zimmer_wunsch, ";")
 
-            if substring(str, 0, 10) == ("$OrigCode$").lower() :
+            if substring(str, 0, 10) == ("$OrigCode$") :
                 prevcode = substring(str, 10)
                 f_resline.origcontcode = prevcode
 
