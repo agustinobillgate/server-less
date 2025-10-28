@@ -288,9 +288,13 @@ def argt_betrag(res_recid:int, argt_recid:int):
 
             elif argt_line.vt_percnt == 2:
                 betrag =  to_decimal(reslin_queasy.deci3) * to_decimal(qty)
-        get_exrate1()
 
-        return generate_output()
+        if betrag == 0:
+            add_it = False
+        else:
+            get_exrate1()
+
+            return generate_output()
 
     guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, res_line.gastnr)]})
 
@@ -320,9 +324,13 @@ def argt_betrag(res_recid:int, argt_recid:int):
 
                 elif argt_line.vt_percnt == 2:
                     betrag =  to_decimal(reslin_queasy.deci3) * to_decimal(qty)
-            get_exrate2()
 
-            return generate_output()
+            if betrag == 0:
+                add_it = False
+            else:
+                get_exrate2()
+
+                return generate_output()
 
     if argt_line.betrag > 0:
         betrag =  to_decimal(argt_line.betrag) * to_decimal(qty)

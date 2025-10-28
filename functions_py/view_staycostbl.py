@@ -64,6 +64,8 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
         nonlocal output_list_data, ci_date, new_contrate, wd_array, bonus_array, lvcarea, reservation, htparam, res_line, arrangement, guest_pr, waehrung, genstat, reslin_queasy, queasy, katpreis, argt_line, artikel, zwkum, fixleist
         nonlocal pvilanguage, resnr, reslinnr, contcode
+
+
         nonlocal output_list, argt_list
         nonlocal output_list_data, argt_list_data
 
@@ -91,6 +93,8 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
         nonlocal output_list_data, ci_date, new_contrate, wd_array, bonus_array, lvcarea, reservation, htparam, res_line, arrangement, guest_pr, waehrung, genstat, reslin_queasy, queasy, katpreis, argt_line, artikel, zwkum, fixleist
         nonlocal pvilanguage, resnr, reslinnr, contcode
+
+
         nonlocal output_list, argt_list
         nonlocal output_list_data, argt_list_data
 
@@ -357,8 +361,17 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
                         if reslin_queasy:
 
-                            for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                     (Reslin_queasy.key == ("fargt-line")) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date)).order_by(Reslin_queasy._recid).all():
+                            if argt_line.vt_percnt == 0:
+                                query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= curr_date) & (Reslin_queasy.date2 >= curr_date) & (Reslin_queasy.deci1 != 0))
+
+                            elif argt_line.vt_percnt == 1:
+                                query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= curr_date) & (Reslin_queasy.date2 >= curr_date) & (Reslin_queasy.deci2 != 0))
+
+                            elif argt_line.vt_percnt == 2:
+                                query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= curr_date) & (Reslin_queasy.date2 >= curr_date) & (Reslin_queasy.deci3 != 0))
+
+                            for reslin_queasy in query.all():
+
                                 argt_defined = True
 
                                 if reslin_queasy.char2  != "" and reslin_queasy.char2  != ("0") :
@@ -372,13 +385,13 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                                         argt_rate =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
                                 else:
 
-                                    if reslin_queasy.deci1 != 0:
+                                    if reslin_queasy.deci1 != 0 and argt_line.vt_percnt == 0:
                                         argt_rate =  to_decimal(reslin_queasy.deci1)
 
-                                    elif reslin_queasy.deci2 != 0:
+                                    elif reslin_queasy.deci2 != 0 and argt_line.vt_percnt == 1:
                                         argt_rate =  to_decimal(reslin_queasy.deci2)
 
-                                    elif reslin_queasy.deci3 != 0:
+                                    elif reslin_queasy.deci3 != 0 and argt_line.vt_percnt == 2:
                                         argt_rate =  to_decimal(reslin_queasy.deci3)
                                 argt_rate =  to_decimal(argt_rate) * to_decimal(qty)
 
@@ -393,12 +406,21 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
                         if guest_pr and not argt_defined:
 
-                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, res_line.reserve_int)],"number2": [(eq, arrangement.argtnr)],"reslinnr": [(eq, res_line.zikatnr)],"number3": [(eq, argt_line.argt_artnr)],"resnr": [(eq, argt_line.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
+                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, res_line.reserve_int)],"number2": [(eq, arrangement.argtnr)],"reslinnr": [(eq, curr_zikatnr)],"number3": [(eq, argt_line.argt_artnr)],"resnr": [(eq, argt_line.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
 
                             if reslin_queasy:
 
-                                for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                         (Reslin_queasy.key == ("argt-line")) & (Reslin_queasy.char1 == (contcode)) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date)).order_by(Reslin_queasy._recid).all():
+                                if argt_line.vt_percnt == 0:
+
+                                    query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
+
+                                elif argt_line.vt_percnt == 1:
+                                    query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci2 != 0))
+
+                                elif argt_line.vt_percnt == 2:
+                                    query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci3 != 0))
+
+                                for reslin_queasy in query.all():
                                     argt_defined = True
 
                                     if reslin_queasy.char2  != "" and reslin_queasy.char2  != ("0") :
@@ -412,13 +434,13 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                                             argt_rate =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
                                     else:
 
-                                        if reslin_queasy.deci1 != 0:
+                                        if reslin_queasy.deci1 != 0 and argt_line.vt_percnt == 0:
                                             argt_rate =  to_decimal(reslin_queasy.deci1)
 
-                                        elif reslin_queasy.deci2 != 0:
+                                        elif reslin_queasy.deci2 != 0 and argt_line.vt_percnt == 1:
                                             argt_rate =  to_decimal(reslin_queasy.deci2)
 
-                                        elif reslin_queasy.deci3 != 0:
+                                        elif reslin_queasy.deci3 != 0 and argt_line.vt_percnt == 2:
                                             argt_rate =  to_decimal(reslin_queasy.deci3)
                                     argt_rate =  to_decimal(argt_rate) * to_decimal(qty)
 
@@ -540,8 +562,18 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
                     if reslin_queasy:
 
-                        for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                 (Reslin_queasy.key == ("fargt-line")) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (bill_date >= Reslin_queasy.date1) & (bill_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
+                        if argt_line.vt_percnt == 0:
+                            query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
+
+                        elif argt_line.vt_percnt == 1:
+                            query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci2 != 0))
+
+                        elif argt_line.vt_percnt == 2:
+                            query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci3 != 0))
+
+
+                        for reslin_queasy in query.all():
+                            
                             argt_defined = True
 
                             if reslin_queasy.char2  != "" and reslin_queasy.char2  != ("0") :
@@ -555,13 +587,13 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                                     argt_rate =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
                             else:
 
-                                if reslin_queasy.deci1 != 0:
+                                if reslin_queasy.deci1 != 0 and argt_line.vt_percnt == 0:
                                     argt_rate =  to_decimal(reslin_queasy.deci1)
 
-                                elif reslin_queasy.deci2 != 0:
+                                elif reslin_queasy.deci2 != 0 and argt_line.vt_percnt == 1:
                                     argt_rate =  to_decimal(reslin_queasy.deci2)
 
-                                elif reslin_queasy.deci3 != 0:
+                                elif reslin_queasy.deci3 != 0 and argt_line.vt_percnt == 2:
                                     argt_rate =  to_decimal(reslin_queasy.deci3)
                             argt_rate =  to_decimal(argt_rate) * to_decimal(qty)
 
@@ -575,12 +607,20 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
 
                     if guest_pr and not argt_defined:
 
-                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, res_line.reserve_int)],"number2": [(eq, arrangement.argtnr)],"reslinnr": [(eq, res_line.zikatnr)],"number3": [(eq, argt_line.argt_artnr)],"resnr": [(eq, argt_line.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
+                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, res_line.reserve_int)],"number2": [(eq, arrangement.argtnr)],"reslinnr": [(eq, curr_zikatnr)],"number3": [(eq, argt_line.argt_artnr)],"resnr": [(eq, argt_line.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
 
                         if reslin_queasy:
 
-                            for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                     (Reslin_queasy.key == ("argt-line")) & (Reslin_queasy.char1 == (contcode)) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (bill_date >= Reslin_queasy.date1) & (bill_date <= Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
+                            if argt_line.vt_percnt == 0:
+                                query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci1 != 0))
+
+                            elif argt_line.vt_percnt == 1:
+                                query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci2 != 0))
+
+                            elif argt_line.vt_percnt == 2:
+                                query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.resnr == argt_line.departement) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & (Reslin_queasy.deci3 != 0))
+
+                            for reslin_queasy in query.all():
                                 argt_defined = True
 
                                 if reslin_queasy.char2  != "" and reslin_queasy.char2  != ("0") :
@@ -594,13 +634,13 @@ def view_staycostbl(pvilanguage:int, resnr:int, reslinnr:int, contcode:string):
                                         argt_rate =  to_decimal(rm_rate) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal("100")
                                 else:
 
-                                    if reslin_queasy.deci1 != 0:
+                                    if reslin_queasy.deci1 != 0 and argt_line.vt_percnt == 0:
                                         argt_rate =  to_decimal(reslin_queasy.deci1)
 
-                                    elif reslin_queasy.deci2 != 0:
+                                    elif reslin_queasy.deci2 != 0 and argt_line.vt_percnt == 1:
                                         argt_rate =  to_decimal(reslin_queasy.deci2)
 
-                                    elif reslin_queasy.deci3 != 0:
+                                    elif reslin_queasy.deci3 != 0 and argt_line.vt_percnt == 2:
                                         argt_rate =  to_decimal(reslin_queasy.deci3)
                                 argt_rate =  to_decimal(argt_rate) * to_decimal(qty)
 
