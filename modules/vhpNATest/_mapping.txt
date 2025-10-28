@@ -1,7 +1,7 @@
 service,function
 rmcharge,rmcharge
-newbdate,newbdate
-ntrmrate,nt_rmrate
+newbdate,newbdatebl
+ntrmrate,nt_rmratebl
 ntrmstat,nt_rmstat
 ntexrate,nt_exrate
 ntgenfcast,nt_genfcast
@@ -9,8 +9,8 @@ ntgenstat,nt_genstat
 ntbalan,nt_balan
 ntarrival,nt_arrival
 ntdeparture,nt_departure
-ntPJarrive,nt_PJarrive
-ntPJrmrecap,nt_PJrmrecap
+ntpjarrive,nt_pjarrive
+ntpjrmrecap,nt_pjrmrecap
 ntrmrev,nt_rmrev
 ntrevbdown,nt_revbdown
 ntfjnal,nt_fjnal
