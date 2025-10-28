@@ -1,4 +1,7 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 28/10/2025
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -83,7 +86,6 @@ def reservation_btn_delbl(pvilanguage:int, curr_select:string, resno:int, reslin
         nonlocal pvilanguage, curr_select, resno, reslinno
 
         if not reservation:
-
             return
 
         res_line = db_session.query(Res_line).filter(
@@ -108,7 +110,9 @@ def reservation_btn_delbl(pvilanguage:int, curr_select:string, resno:int, reslin
 
             return
 
-        guest = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+        # guest = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
+        guest = db_session.query(Guest).filter(
+                 (Guest.gastnr == reservation.gastnr)).first()
 
         if guest:
             msg_str = "&Q" + translateExtended ("Do you really want to DELETE the main reservation of", lvcarea, "") + chr_unicode(10) + guest.name + ", " + guest.vorname1 + guest.anredefirma + " " + guest.anrede1 + chr_unicode(10) + translateExtended ("including it's all reservation members ?", lvcarea, "")
@@ -177,12 +181,16 @@ def reservation_btn_delbl(pvilanguage:int, curr_select:string, resno:int, reslin
         contcode:string = ""
         resline = None
 
+        argt = argt.strip()
+
         def generate_inner_output():
             return (still_error)
 
         Resline =  create_buffer("Resline",Res_line)
 
-        arrangement = get_cache (Arrangement, {"arrangement": [(eq, argt)]})
+        # arrangement = get_cache (Arrangement, {"arrangement": [(eq, argt)]})
+        arrangement = db_session.query(Arrangement).filter(
+                 (Arrangement.arrangement == argt)).first()
 
         if not arrangement:
 
@@ -257,8 +265,9 @@ def reservation_btn_delbl(pvilanguage:int, curr_select:string, resno:int, reslin
         if com_rm <= max_comp:
 
             return generate_inner_output()
-        msg_str = translateExtended ("Wrong total number of compliment rooms:", lvcarea, "") + chr_unicode(10) + chr_unicode(10) + translateExtended ("Max allowed =", lvcarea, "") + " " + to_string(max_comp) + chr_unicode(10) + translateExtended ("Actual compliment rooms =", lvcarea, "") + " " + to_string(com_rm)
+        
 
+        msg_str = translateExtended ("Wrong total number of compliment rooms:", lvcarea, "") + chr_unicode(10) + chr_unicode(10) + translateExtended ("Max allowed =", lvcarea, "") + " " + to_string(max_comp) + chr_unicode(10) + translateExtended ("Actual compliment rooms =", lvcarea, "") + " " + to_string(com_rm)
         htparam = get_cache (Htparam, {"paramnr": [(eq, 141)]})
 
         if htparam.fchar == "":
@@ -271,11 +280,18 @@ def reservation_btn_delbl(pvilanguage:int, curr_select:string, resno:int, reslin
 
     reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
 
-    res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslinno)]})
+    if reservation:
+        print("Reservasion found.")
+    else:
+        print("Res not found.")
 
-    if not res_line:
+    # res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslinno)]})
+    res_line = db_session.query(Res_line).filter(
+             (Res_line.resnr == resno) & (Res_line.reslinnr == reslinno)).first()
 
-        return generate_output()
+    # if not res_line:
+    #     print("No Res line found.")
+    #     return generate_output()
 
     if curr_select.lower()  == ("res-line").lower() :
         delete_resline()
