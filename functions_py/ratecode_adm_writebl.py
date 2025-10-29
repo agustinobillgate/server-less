@@ -161,7 +161,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
         for child_list in query(child_list_data):
 
             for ratecode in db_session.query(Ratecode).filter(
-                     (Ratecode.code == (prcode).lower()) & (Ratecode.startperiode == p_list.startperiode) & (Ratecode.endperiode == p_list.endperiode)).order_by(Ratecode._recid).all():
+                     (Ratecode.code == (prcode)) & (Ratecode.startperiode == p_list.startperiode) & (Ratecode.endperiode == p_list.endperiode)).order_by(Ratecode._recid).all():
 
                 rbuff = get_cache (Ratecode, {"code": [(eq, child_list.child_code)],"startperiode": [(eq, ratecode.startperiode)],"endperiode": [(eq, ratecode.endperiode)],"wday": [(eq, ratecode.wday)],"erwachs": [(eq, ratecode.erwachs)],"argtnr": [(eq, ratecode.argtnr)],"zikatnr": [(eq, ratecode.zikatnr)]})
 
@@ -208,7 +208,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
                 curr_recid = prtable._recid
                 prtable = db_session.query(Prtable).filter(
-                         (Prtable.prcode == (prcode).lower()) & (Prtable._recid > curr_recid)).first()
+                         (Prtable.prcode == (prcode)) & (Prtable._recid > curr_recid)).first()
 
             child_list = query(child_list_data, next=True)
 
@@ -267,10 +267,10 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
         # Rd 14/8/2025
         # for queasy in db_session.query(Queasy).filter(
         #          (Queasy.key == 2) & not_ (Queasy.logi2) & 
-        #          (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode).lower())).order_by(Queasy._recid).all():
+        #          (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode))).order_by(Queasy._recid).all():
         for queasy in db_session.query(Queasy).filter(
             (Queasy.key == 2) & not_ (Queasy.logi2)).order_by(Queasy._recid).all():
-            if (num_entries(queasy.char3, ";") > 2) & (entry(1, queasy.char3, ";") == (prcode).lower()):
+            if (num_entries(queasy.char3, ";") > 2) & (entry(1, queasy.char3, ";") == (prcode)):
                 child_list = Child_list()
                 child_list_data.append(child_list)
 
@@ -479,7 +479,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
         # for tb3buff in query(tb3buff_data):
 
             # for ratecode in db_session.query(Ratecode).filter(
-            #          (Ratecode.marknr == markno) & (Ratecode.code == (prcode).lower()) & (Ratecode.argtnr == argtno) & 
+            #          (Ratecode.marknr == markno) & (Ratecode.code == (prcode)) & (Ratecode.argtnr == argtno) & 
             #          (Ratecode.zikatnr == tb3buff.zikatnr) & (Ratecode.erwachs == tb3buff.erwachs) & 
             #          (Ratecode.kind1 == tb3buff.kind1) & (Ratecode.kind2 == tb3buff.kind2) & 
             #          (Ratecode.wday == tb3buff.wday) & not_ (Ratecode.endperiode < tb3buff.startperiode) & 
@@ -495,7 +495,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
             query = db_session.query(Ratecode).filter(
                 (Ratecode.marknr == markno) &
-                (Ratecode.code == prcode.lower()) &
+                (Ratecode.code == prcode) &
                 (Ratecode.argtnr == argtno) &
                 (Ratecode.zikatnr == tb3buff.zikatnr) &
                 (Ratecode.erwachs == tb3buff.erwachs) &
@@ -633,7 +633,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
                     if mestoken == "RC":
 
-                        if mesvalue.lower()  == (prcode).lower() :
+                        if mesvalue  == (prcode) :
                             dyna = dyna + qsy.char1 + ";"
         for curr_1 in range(1,num_entries(p_list.rmcat_str, ",")  + 1) :
             mesval = trim(entry(curr_1 - 1, p_list.rmcat_str, ","))
@@ -690,7 +690,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
                                                 for loopj in range(1,num_entries(p_list.child_str, ",")  + 1) :
 
                                                     queasy = db_session.query(Queasy).filter(
-                                                             (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == mesvalue) & (entry(2, Queasy.char1, ";") == (str).lower())).first()
+                                                             (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == mesvalue) & (entry(2, Queasy.char1, ";") == (str))).first()
                                                     while None != queasy:
                                                         queasy = Queasy()
                                                         db_session.add(queasy)
@@ -739,11 +739,11 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
                                                         curr_recid = queasy._recid
                                                         queasy = db_session.query(Queasy).filter(
-                                                                 (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == mesvalue) & (entry(2, Queasy.char1, ";") == (str).lower()) & (Queasy._recid > curr_recid)).first()
+                                                                 (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == mesvalue) & (entry(2, Queasy.char1, ";") == (str)) & (Queasy._recid > curr_recid)).first()
                                             else:
 
                                                 queasy = db_session.query(Queasy).filter(
-                                                         (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == mesvalue) & (entry(2, Queasy.char1, ";") == (str).lower())).first()
+                                                         (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == mesvalue) & (entry(2, Queasy.char1, ";") == (str))).first()
                                                 while None != queasy:
                                                     queasy = Queasy()
                                                     db_session.add(queasy)
@@ -791,7 +791,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
                                                     curr_recid = queasy._recid
                                                     queasy = db_session.query(Queasy).filter(
-                                                             (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == mesvalue) & (entry(2, Queasy.char1, ";") == (str).lower()) & (Queasy._recid > curr_recid)).first()
+                                                             (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == mesvalue) & (entry(2, Queasy.char1, ";") == (str)) & (Queasy._recid > curr_recid)).first()
                     else:
                         for datum in date_range(p_list.startperiode,p_list.endperiode) :
 
@@ -813,7 +813,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
                                     curr_recid = qsy._recid
                                     qsy = db_session.query(Qsy).filter(
-                                             (Qsy.key == 170) & (Qsy.date1 == datum) & (Qsy.number1 == roomnr) & (Qsy.char1 == (prcode).lower()) & (Qsy._recid > curr_recid)).first()
+                                             (Qsy.key == 170) & (Qsy.date1 == datum) & (Qsy.number1 == roomnr) & (Qsy.char1 == (prcode)) & (Qsy._recid > curr_recid)).first()
 
                             elif not queasy:
                                 for loopi in range(1,num_entries(p_list.adult_str, ",")  + 1) :
@@ -822,7 +822,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
                                         for loopj in range(1,num_entries(p_list.child_str, ",")  + 1) :
 
                                             queasy = db_session.query(Queasy).filter(
-                                                     (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == (prcode).lower()) & (entry(2, Queasy.char1, ";") == (str).lower())).first()
+                                                     (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == (prcode)) & (entry(2, Queasy.char1, ";") == (str))).first()
                                             while None != queasy:
                                                 queasy = Queasy()
                                                 db_session.add(queasy)
@@ -870,11 +870,11 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
                                                 curr_recid = queasy._recid
                                                 queasy = db_session.query(Queasy).filter(
-                                                         (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == mesvalue) & (entry(2, Queasy.char1, ";") == (str).lower()) & (Queasy._recid > curr_recid)).first()
+                                                         (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == mesvalue) & (entry(2, Queasy.char1, ";") == (str)) & (Queasy._recid > curr_recid)).first()
                                     else:
 
                                         queasy = db_session.query(Queasy).filter(
-                                                 (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == (prcode).lower()) & (entry(2, Queasy.char1, ";") == (str).lower())).first()
+                                                 (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == (prcode)) & (entry(2, Queasy.char1, ";") == (str))).first()
                                         while None != queasy:
                                             queasy = Queasy()
                                             db_session.add(queasy)
@@ -921,7 +921,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
                                             curr_recid = queasy._recid
                                             queasy = db_session.query(Queasy).filter(
-                                                     (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == mesvalue) & (entry(2, Queasy.char1, ";") == (str).lower()) & (Queasy._recid > curr_recid)).first()
+                                                     (Queasy.key == 161) & (entry(0, Queasy.char1, ";") == mesvalue) & (entry(2, Queasy.char1, ";") == (str)) & (Queasy._recid > curr_recid)).first()
 
 
     p_list = query(p_list_data, first=True)
@@ -929,7 +929,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
 
-    if mode_str.lower()  == ("insert").lower() :
+    if mode_str  == ("insert") :
         check_overlapping()
 
     if error_flag:
@@ -966,7 +966,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
         pass
         pass
 
-    if mode_str.lower()  == ("update").lower() :
+    if mode_str  == ("update") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1013)]})
 
@@ -991,7 +991,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
     create_childrate()
 
     for guest_pr in db_session.query(Guest_pr).filter(
-             (Guest_pr.code == (prcode).lower())).order_by(Guest_pr._recid).all():
+             (Guest_pr.code == (prcode))).order_by(Guest_pr._recid).all():
 
         guest = get_cache (Guest, {"gastnr": [(eq, guest_pr.gastnr)]})
 
