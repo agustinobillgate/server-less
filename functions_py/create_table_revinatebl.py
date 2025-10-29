@@ -1,4 +1,5 @@
 # using conversion tools version: 1.0.0.117
+# pyright: reportAttributeAccessIssue=false
 
 """_yusufwijasena_ 10/10/2025
 
@@ -81,7 +82,6 @@ def create_table_revinatebl():
         }
 
     def find_inhouse_guests():
-
         nonlocal nite_status, nite_date, data_list_data, ci_date, reihenfolge, cidate, codate, loop_i, str_rsv, progname, nitehist, guest, htparam, nightaudit, zimmer, zimkateg, res_line, guest_pr
         nonlocal buff_nite, gmember
 
@@ -132,79 +132,69 @@ def create_table_revinatebl():
                 data_list = Data_list()
                 data_list_data.append(data_list)
 
-                data_list.guest_title = gmember.anrede1  # type: ignore
-                data_list.first_name = gmember.vorname1  # type: ignore
-                data_list.last_name = gmember.name  # type: ignore
-                data_list.email = gmember.email_adr  # type: ignore
-                data_list.nation = gmember.nation1  # type: ignore
-                data_list.rmno = res_line.zinr  # type: ignore
-                data_list.ci_date = (  # type: ignore
-                    to_string(get_month(res_line.ankunft), "99")
-                    + "/"  # type: ignore
-                    + to_string(get_day(res_line.ankunft), "99")
-                    + "/"
-                    + to_string(get_year(res_line.ankunft), "9999")
-                )
-                data_list.co_date = (  # type: ignore
-                    to_string(get_month(res_line.abreise), "99")
-                    + "/"  # type: ignore
-                    + to_string(get_day(res_line.abreise), "99")
-                    + "/"
-                    + to_string(get_year(res_line.abreise), "9999")
-                )
+                data_list.guest_title = gmember.anrede1  
+                data_list.first_name = gmember.vorname1  
+                data_list.last_name = gmember.name  
+                data_list.email = gmember.email_adr  
+                data_list.nation = gmember.nation1  
+                data_list.rmno = res_line.zinr  
+                data_list.ci_date = str(to_string(get_month(res_line.ankunft), "99")) + "/"  + str(to_string(get_day(res_line.ankunft), "99")) + "/" + str(to_string(get_year(res_line.ankunft), "9999"))
+                data_list.co_date = str(to_string(get_month(res_line.abreise), "99")) + "/"  + str(to_string(get_day(res_line.abreise), "99")) + "/" + str(to_string(get_year(res_line.abreise), "9999"))
 
-                zimmer = get_cache(Zimmer, {"zinr": [(eq, data_list.rmno)]}) # type: ignore
+                zimmer = get_cache(Zimmer, {
+                    "zinr": [(eq, data_list.rmno)]}) 
 
                 if zimmer:
-
                     zimkateg = get_cache(
                     Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
 
                     if zimkateg:
-                        data_list.rmtype = zimkateg.kurzbez # type: ignore
-                        for loop_i in range(1, num_entries(res_line.zimmer_wunsch, ";") - 1 + 1): # type: ignore
-                            str_rsv = entry(loop_i - 1, res_line.zimmer_wunsch, ";") # type: ignore
+                        data_list.rmtype = zimkateg.kurzbez 
+                        for loop_i in range(1, int(str(num_entries(res_line.zimmer_wunsch, ";"))) - 1 + 1): 
+                            str_rsv = str(entry(loop_i - 1, res_line.zimmer_wunsch, ";")) 
 
-                    if substring(str_rsv, 0, 6) == ("$CODE$").lower(): # type: ignore
-                        data_list.rcode = substring(str_rsv, 6) # type: ignore
+                    if str(substring(str_rsv, 0, 6)) == ("$code$"): 
+                        data_list.rcode = substring(str_rsv, 6) 
 
-                # change if data_list.rcode == "" to if not data_list.rcode // yusufwijasena
-                if not data_list.rcode: # type: ignore
+                if str(data_list.rcode) == "": 
 
-                    guest_pr = get_cache(Guest_pr, {"gastnr": [(eq, res_line.gastnr)]})
+                    guest_pr = get_cache(Guest_pr, {
+                        "gastnr": [(eq, res_line.gastnr)]})
 
                     if guest_pr:
-                        data_list.rcode = guest_pr.code # type: ignore
+                        data_list.rcode = guest_pr.code 
                     nite_status = 2
                     nite_date = ci_date
-                    data_list.guest_title = replace_str( # type: ignore
-                        data_list.guest_title, chr_unicode(44), chr_unicode(46) # type: ignore
+                    data_list.guest_title = replace_str( 
+                        data_list.guest_title, chr_unicode(44), chr_unicode(46) 
                     )
-                    data_list.first_name = replace_str( # type: ignore
-                        data_list.first_name, chr_unicode(44), chr_unicode(46) # type: ignore
+                    data_list.first_name = replace_str( 
+                        data_list.first_name, chr_unicode(44), chr_unicode(46) 
                     )
-                    data_list.last_name = replace_str( # type: ignore
-                        data_list.last_name, chr_unicode(44), chr_unicode(46) # type: ignore
+                    data_list.last_name = replace_str( 
+                        data_list.last_name, chr_unicode(44), chr_unicode(46) 
                     )
-                    data_list.email = replace_str( # type: ignore
-                        data_list.email, chr_unicode(44), chr_unicode(46) # type: ignore
+                    data_list.email = replace_str( 
+                        data_list.email, chr_unicode(44), chr_unicode(46) 
                     )
 
-    htparam = get_cache(Htparam, {"paramnr": [(eq, 87)]})
+    htparam = get_cache(Htparam, {
+        "paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
 
-    nightaudit = get_cache(Nightaudit, {"programm": [(eq, progname)]})
+    nightaudit = get_cache(Nightaudit, {
+        "programm": [(eq, progname)]})
 
     if not nightaudit:
-
         return generate_output()
     
     reihenfolge = nightaudit.reihenfolge
     nite_status = 0
 
     nitehist = get_cache(
-        Nitehist, {"reihenfolge": [(eq, reihenfolge)], "line": [
-            (eq, "send|0")]}
+        Nitehist, {
+            "reihenfolge": [(eq, reihenfolge)], 
+            "line": [(eq, "send|0")]}
     )
 
     if nitehist:
@@ -224,25 +214,27 @@ def create_table_revinatebl():
             data_list = Data_list()
             data_list_data.append(data_list)
 
-            data_list.guest_title = entry(0, buff_nite.line, "|") #type: ignore
-            data_list.first_name = entry(1, buff_nite.line, "|") #type: ignore
-            data_list.last_name = entry(2, buff_nite.line, "|") #type: ignore
-            data_list.email = entry(4, buff_nite.line, "|") #type: ignore
-            data_list.nation = entry(5, buff_nite.line, "|") #type: ignore
-            data_list.ci_date = entry(6, buff_nite.line, "|") #type: ignore
-            data_list.co_date = entry(7, buff_nite.line, "|") #type: ignore
-            data_list.rmno = entry(8, buff_nite.line, "|") #type: ignore
-            data_list.rcode = entry(14, buff_nite.line, "|") #type: ignore
+            data_list.guest_title = entry(0, buff_nite.line, "|") 
+            data_list.first_name = entry(1, buff_nite.line, "|") 
+            data_list.last_name = entry(2, buff_nite.line, "|") 
+            data_list.email = entry(4, buff_nite.line, "|") 
+            data_list.nation = entry(5, buff_nite.line, "|") 
+            data_list.ci_date = entry(6, buff_nite.line, "|") 
+            data_list.co_date = entry(7, buff_nite.line, "|") 
+            data_list.rmno = entry(8, buff_nite.line, "|") 
+            data_list.rcode = entry(14, buff_nite.line, "|") 
 
-            zimmer = get_cache(Zimmer, {"zinr": [(eq, data_list.rmno)]}) #type: ignore
+            zimmer = get_cache(Zimmer, {
+                "zinr": [(eq, data_list.rmno)]}) 
 
             if zimmer:
 
                 zimkateg = get_cache(
-                    Zimkateg, {"zikatnr": [(eq, zimmer.zikatnr)]})
+                    Zimkateg, {
+                        "zikatnr": [(eq, zimmer.zikatnr)]})
 
                 if zimkateg:
-                    data_list.rmtype = zimkateg.kurzbez #type: ignore
+                    data_list.rmtype = zimkateg.kurzbez 
 
     elif not nitehist:
         nite_status = 0

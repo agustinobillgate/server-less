@@ -1,25 +1,23 @@
 {
-    "Htparam": {
+    "Paramtext": {
         "read": [
-            "fdate",
-            "flogical",
+            "ptexte",
             "_recid"
         ],
         "write": []
     },
-    "Queasy": {
-        "read": [],
-        "write": []
-    },
-    "Guest_remark": {
-        "read": [],
+    "Htparam": {
+        "read": [
+            "fchar",
+            "_recid"
+        ],
         "write": []
     },
     "Guest": {
         "read": [
+            "email_adr",
             "name",
             "vorname1",
-            "anredefirma",
             "anrede1",
             "_recid"
         ],

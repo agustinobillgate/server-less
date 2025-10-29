@@ -4817,7 +4817,7 @@ def convert_files(read_table_usage_info=False):
 
     file_path = os.path.join(".", "")
     source_file_path = os.path.join(file_path, "check-p-files2/")
-    target_file_path = os.path.join(file_path, "converted2/")
+    target_file_path = os.path.join(file_path, "check-p-files2/check-py-converted2/")
 
 
 
