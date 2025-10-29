@@ -12,7 +12,27 @@ from functions.calc_servtaxesbl import calc_servtaxesbl
 from functions.calc_servvat import calc_servvat
 from models import Htparam, Billjournal, Artikel, Hoteldpt, H_bill, H_bill_line, H_artikel, Queasy
 
-fbartikel_data, Fbartikel = create_model("Fbartikel", {"artnr":int, "artdesc":string, "outletcode":int, "outletname":string, "maingrp":int, "subgrp":int, "rev_excltax":Decimal, "tax_total":Decimal, "totalrev__incltax":Decimal, "covers":int, "billno":int, "shift":int, "billdate":date, "timestamp":string, "stay_flag":int, "ascott_code":string, "tot_bill":int})
+fbartikel_data, Fbartikel = create_model(
+    "Fbartikel", {
+        "artnr":int, 
+        "artdesc":string, 
+        "outletcode":int, 
+        "outletname":string, 
+        "maingrp":int, 
+        "subgrp":int, 
+        "rev_excltax":Decimal, 
+        "tax_total":Decimal, 
+        "totalrev__incltax":Decimal, 
+        "covers":int, 
+        "billno":int, 
+        "shift":int, 
+        "billdate":date, 
+        "timestamp":string, 
+        "stay_flag":int, 
+        "ascott_code":string, 
+        "tot_bill":int
+        }
+    )
 
 def ascott_fbartikelbl(fdate:date, tdate:date, propid:string, fbartikel_data:[Fbartikel]):
 
@@ -63,18 +83,13 @@ def ascott_fbartikelbl(fdate:date, tdate:date, propid:string, fbartikel_data:[Fb
     def generate_output():
         nonlocal flag_artnr, billflag, billno, totalfb, totgrossfb, totalother, totgrossother, flodging, lodging, breakfast, lunch, dinner, others, rmrate, net_vat, net_service, loop_i, betragvalue, grossbetrag, newbetrag, deptdesc, subgroup, maingroup, coversvalue, service, tstamp, stay_flag, serv, vat, netto, serv_betrag, vat2, vat_betrag, fact_scvat, vat_proz, bqt_dept, htparam, billjournal, artikel, hoteldpt, h_bill, h_bill_line, h_artikel, queasy
         nonlocal fdate, tdate, propid
-
-
         nonlocal fbartikel
 
         return {"fbartikel": fbartikel_data}
 
     def fo_bill():
-
         nonlocal flag_artnr, billflag, billno, totalfb, totgrossfb, totalother, totgrossother, flodging, lodging, breakfast, lunch, dinner, others, rmrate, net_vat, net_service, loop_i, betragvalue, grossbetrag, newbetrag, deptdesc, subgroup, maingroup, coversvalue, service, tstamp, stay_flag, serv, vat, netto, serv_betrag, vat2, vat_betrag, fact_scvat, vat_proz, bqt_dept, htparam, billjournal, artikel, hoteldpt, h_bill, h_bill_line, h_artikel, queasy
         nonlocal fdate, tdate, propid
-
-
         nonlocal fbartikel
 
         doit:bool = False
@@ -155,11 +170,8 @@ def ascott_fbartikelbl(fdate:date, tdate:date, propid:string, fbartikel_data:[Fb
 
 
     def pos_nonstay_bill():
-
         nonlocal flag_artnr, billflag, billno, totalfb, totgrossfb, totalother, totgrossother, flodging, lodging, breakfast, lunch, dinner, others, rmrate, net_vat, net_service, loop_i, betragvalue, grossbetrag, newbetrag, deptdesc, subgroup, maingroup, coversvalue, service, tstamp, stay_flag, serv, vat, netto, serv_betrag, vat2, vat_betrag, fact_scvat, vat_proz, bqt_dept, htparam, billjournal, artikel, hoteldpt, h_bill, h_bill_line, h_artikel, queasy
         nonlocal fdate, tdate, propid
-
-
         nonlocal fbartikel
 
         curr_shift:int = 0
@@ -265,11 +277,8 @@ def ascott_fbartikelbl(fdate:date, tdate:date, propid:string, fbartikel_data:[Fb
 
 
     def create_bill_list(artnum:int, artdesc:string, bill_date:date, outlet_code:int, outlet_name:string, main_grp:int, sub_grp:int, revenueexcltax:Decimal, totaltaxes:Decimal, revenueincltax:Decimal, covers:int, bill_rechnr:int, shift:int, tstamp:string, stay_flag:int):
-
         nonlocal flag_artnr, billflag, billno, totalfb, totgrossfb, totalother, totgrossother, flodging, lodging, breakfast, lunch, dinner, others, rmrate, net_vat, net_service, loop_i, betragvalue, grossbetrag, newbetrag, deptdesc, subgroup, maingroup, coversvalue, service, serv, vat, netto, serv_betrag, vat2, vat_betrag, fact_scvat, vat_proz, bqt_dept, htparam, billjournal, artikel, hoteldpt, h_bill, h_bill_line, h_artikel, queasy
         nonlocal fdate, tdate, propid
-
-
         nonlocal fbartikel
 
         mgrp:int = 0

@@ -9,7 +9,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
-from functions.argt_betrag import argt_betrag
+from functions.argt_betragbl import argt_betragbl
 from sqlalchemy import func
 from models import Guest, Segment, Res_line, Htparam, Nation, Reservation, Arrangement, Zimmer, Zimkateg, Bill_line, Genstat, Reslin_queasy, Akt_cust, Bediener, Waehrung, Artikel, Argt_line, Zwkum, Fixleist, Kontline, Bill, Guestseg, Segmentstat, Nationstat, Natstat1, Sources, Landstat, Guestat1, Guestat, Zinrstat, Zkstat, H_artikel, H_bill_line
 
@@ -1061,7 +1061,7 @@ def nt_genstat():
                         argt_line_obj_list[argt_line._recid] = True
 
 
-                    argt_betrag, ex_rate = get_output(argt_betrag(res_line._recid, argt_line._recid))
+                    argt_betrag, ex_rate = get_output(argt_betragbl(res_line._recid, argt_line._recid))
                     service_art, vat_art, vat2_art, fact_art = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, bill_date))
                     argt_betrag =  to_decimal(argt_betrag) * to_decimal(ex_rate)
                     gross_argt =  to_decimal(gross_argt) + to_decimal(argt_betrag)

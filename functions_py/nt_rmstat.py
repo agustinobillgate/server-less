@@ -1,10 +1,15 @@
 #using conversion tools version: 1.0.0.117
 
+# ===========================================================
+# Rulita, 28-10-2025
+# - Fixing calculate days res_line.abreise - res_line.ankunft
+# ===========================================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
-from functions.argt_betrag import argt_betrag
+from functions.argt_betragbl import argt_betragbl
 from functions.ratecode_compli import ratecode_compli
 from models import Zimmer, Guest, Segmentstat, Segment, Res_line, Bill, Zinrstat, Htparam, Zimkateg, Zkstat, Reservation, Arrangement, Bill_line, Queasy, Waehrung, Artikel, Argt_line, Sources, Nation, Nationstat, Natstat1, Landstat, Guestat1, Guestat, Guestseg, Sourccod, Outorder, Prmarket, Kontline, Reslin_queasy, Guest_pr, Kontplan, Umsatz
 
@@ -605,8 +610,10 @@ def nt_rmstat():
                     zinrstat.datum = bill_date
                     zinrstat.zinr = "AvrgStay"
 
+                # Rulita, 28-10-2025
+                # - Fixing calculate days res_line.abreise - res_line.ankunft
                 if res_line.abreise > res_line.ankunft:
-                    zinrstat.personen = zinrstat.personen + res_line.abreise - res_line.ankunft
+                    zinrstat.personen = zinrstat.personen + (res_line.abreise - res_line.ankunft).days
                 else:
                     zinrstat.personen = zinrstat.personen + 1
                 zinrstat.zimmeranz = zinrstat.zimmeranz + 1
@@ -732,7 +739,7 @@ def nt_rmstat():
                              (Argt_line.argtnr == arrangement.argtnr) & not_ (Argt_line.kind2)).order_by(Argt_line._recid).all():
 
                         artikel = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
-                        argt_betrag, ex_rate = get_output(argt_betrag(res_line._recid, argt_line._recid))
+                        argt_betrag, ex_rate = get_output(argt_betragbl(res_line._recid, argt_line._recid))
                         lodg_betrag =  to_decimal(lodg_betrag) - to_decimal(argt_betrag) * to_decimal(ex_rate)
 
             lodg_betrag = to_decimal(round(lodg_betrag , price_decimal))

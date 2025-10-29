@@ -38,19 +38,19 @@ def if_lgtv_save_tokenbl(bookengid:int, lg_token:string, refresh_token:string, t
     t_list = query(t_list_data, first=True)
 
     if t_list:
-        ct = "$autostart$" + to_string(t_list.autostart) + ";" + #type: ignore
-            "$period$" + to_string(t_list.period) + ";" + #type: ignore
-            "$delay$" + to_string(t_list.delay) + ";" + #type: ignore
-            "$liveflag$" + to_string(t_list.liveflag) + ";" + #type: ignore
-            "$defcurr$" + to_string(t_list.defcurr) + ";" + #type: ignore
-            "$workpath$" + to_string(t_list.workpath) + ";" + #type: ignore
-            "$progname$" + to_string(t_list.progavail) + ";" + #type: ignore
-            "$htlcode$" + to_string(t_list.hotelcode) + ";" + #type: ignore
-            "$username$" + to_string(lg_token) + ";" + #type: ignore
-            "$password$" + to_string(refresh_token) + ";" + #type: ignore
-            "$pushrate$" + to_string(t_list.pushrateflag) + ";" + #type: ignore
-            "$pullbook$" + to_string(t_list.pullbookflag) + ";" + #type: ignore
-            "$pushavail$" + to_string(t_list.pushavailflag) # type: ignore
+        ct = "$autostart$" + to_string(t_list.autostart) + ";" +\
+            "$period$" + to_string(t_list.period) + ";" +\
+            "$delay$" + to_string(t_list.delay) + ";" +\
+            "$liveflag$" + to_string(t_list.liveflag) + ";" +\
+            "$defcurr$" + to_string(t_list.defcurr) + ";" +\
+            "$workpath$" + to_string(t_list.workpath) + ";" +\
+            "$progname$" + to_string(t_list.progavail) + ";" +\
+            "$htlcode$" + to_string(t_list.hotelcode) + ";" +\
+            "$username$" + to_string(lg_token) + ";" +\
+            "$password$" + to_string(refresh_token) + ";" +\
+            "$pushrate$" + to_string(t_list.pushrateflag) + ";" +\
+            "$pullbook$" + to_string(t_list.pullbookflag) + ";" +\
+            "$pushavail$" + to_string(t_list.pushavailflag) 
 
     queasy = get_cache (Queasy, {"key": [(eq, 160)],"number1": [(eq, bookengid)]})
 
