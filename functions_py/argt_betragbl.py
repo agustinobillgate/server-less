@@ -11,7 +11,7 @@ from decimal import Decimal
 from datetime import date
 from models import Waehrung, Htparam, Res_line, Argt_line, Reservation, Arrangement, Reslin_queasy, Guest_pr, Queasy
 
-def argt_betragbl(resno:int, reslinno:int, argt_recid:int):
+def argt_betrag(res_recid:int, argt_recid:int):
 
     prepare_cache ([Waehrung, Htparam, Res_line, Argt_line, Reservation, Arrangement, Reslin_queasy, Guest_pr, Queasy])
 
@@ -27,9 +27,12 @@ def argt_betragbl(resno:int, reslinno:int, argt_recid:int):
     ex2:Decimal = 1
     ct:string = ""
     contcode:string = ""
+    curr_zikatnr:int = 0
     waehrung = htparam = res_line = argt_line = reservation = arrangement = reslin_queasy = guest_pr = queasy = None
 
-    w1 = None
+    argt_list = w1 = None
+
+    argt_list_data, Argt_list = create_model("Argt_list", {"argtnr":int, "argt_artnr":int, "departement":int, "is_charged":int, "period":int, "vt_percnt":int})
 
     W1 = create_buffer("W1",Waehrung)
 
@@ -37,23 +40,25 @@ def argt_betragbl(resno:int, reslinno:int, argt_recid:int):
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal betrag, ex_rate, add_it, marknr, bill_date, argt_defined, qty, foreign_rate, exrate1, ex2, ct, contcode, waehrung, htparam, res_line, argt_line, reservation, arrangement, reslin_queasy, guest_pr, queasy
-        nonlocal resno, reslinno, argt_recid
+        nonlocal betrag, ex_rate, add_it, marknr, bill_date, argt_defined, qty, foreign_rate, exrate1, ex2, ct, contcode, curr_zikatnr, waehrung, htparam, res_line, argt_line, reservation, arrangement, reslin_queasy, guest_pr, queasy
+        nonlocal res_recid, argt_recid
         nonlocal w1
 
 
-        nonlocal w1
+        nonlocal argt_list, w1
+        nonlocal argt_list_data
 
         return {"betrag": betrag, "ex_rate": ex_rate}
 
     def get_exrate1():
 
-        nonlocal betrag, ex_rate, add_it, marknr, bill_date, argt_defined, qty, foreign_rate, exrate1, ex2, ct, contcode, waehrung, htparam, res_line, argt_line, reservation, arrangement, reslin_queasy, guest_pr, queasy
-        nonlocal resno, reslinno, argt_recid
+        nonlocal betrag, ex_rate, add_it, marknr, bill_date, argt_defined, qty, foreign_rate, exrate1, ex2, ct, contcode, curr_zikatnr, waehrung, htparam, res_line, argt_line, reservation, arrangement, reslin_queasy, guest_pr, queasy
+        nonlocal res_recid, argt_recid
         nonlocal w1
 
 
-        nonlocal w1
+        nonlocal argt_list, w1
+        nonlocal argt_list_data
 
         if reservation.insurance and res_line.reserve_dec != 0:
             ex_rate =  to_decimal(res_line.reserve_dec)
@@ -85,12 +90,13 @@ def argt_betragbl(resno:int, reslinno:int, argt_recid:int):
 
     def get_exrate2():
 
-        nonlocal betrag, ex_rate, add_it, marknr, bill_date, argt_defined, qty, foreign_rate, exrate1, ex2, ct, contcode, waehrung, htparam, res_line, argt_line, reservation, arrangement, reslin_queasy, guest_pr, queasy
-        nonlocal resno, reslinno, argt_recid
+        nonlocal betrag, ex_rate, add_it, marknr, bill_date, argt_defined, qty, foreign_rate, exrate1, ex2, ct, contcode, curr_zikatnr, waehrung, htparam, res_line, argt_line, reservation, arrangement, reslin_queasy, guest_pr, queasy
+        nonlocal res_recid, argt_recid
         nonlocal w1
 
 
-        nonlocal w1
+        nonlocal argt_list, w1
+        nonlocal argt_list_data
 
         if reservation.insurance and res_line.reserve_dec != 0:
             ex_rate =  to_decimal(res_line.reserve_dec)
@@ -129,12 +135,13 @@ def argt_betragbl(resno:int, reslinno:int, argt_recid:int):
 
     def get_exrate3():
 
-        nonlocal betrag, ex_rate, add_it, marknr, bill_date, argt_defined, qty, foreign_rate, exrate1, ex2, ct, contcode, waehrung, htparam, res_line, argt_line, reservation, arrangement, reslin_queasy, guest_pr, queasy
-        nonlocal resno, reslinno, argt_recid
+        nonlocal betrag, ex_rate, add_it, marknr, bill_date, argt_defined, qty, foreign_rate, exrate1, ex2, ct, contcode, curr_zikatnr, waehrung, htparam, res_line, argt_line, reservation, arrangement, reslin_queasy, guest_pr, queasy
+        nonlocal res_recid, argt_recid
         nonlocal w1
 
 
-        nonlocal w1
+        nonlocal argt_list, w1
+        nonlocal argt_list_data
 
         local_nr:int = 0
         foreign_nr:int = 0
@@ -165,19 +172,25 @@ def argt_betragbl(resno:int, reslinno:int, argt_recid:int):
             if waehrung:
                 ex_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
 
+
     htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
     bill_date = htparam.fdate
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 143)]})
     foreign_rate = htparam.flogical
 
-    res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslinno)]})
+    res_line = get_cache (Res_line, {"_recid": [(eq, res_recid)]})
 
     argt_line = get_cache (Argt_line, {"_recid": [(eq, argt_recid)]})
 
     reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
 
     arrangement = get_cache (Arrangement, {"argtnr": [(eq, argt_line.argtnr)]})
+
+    if res_line.l_zuordnung[0] != 0:
+        curr_zikatnr = res_line.l_zuordnung[0]
+    else:
+        curr_zikatnr = res_line.zikatnr
 
     if argt_line.vt_percnt == 0:
 
@@ -217,8 +230,41 @@ def argt_betragbl(resno:int, reslinno:int, argt_recid:int):
 
     elif argt_line.fakt_modus == 6:
 
-        if (res_line.ankunft + (argt_line.intervall - 1)) >= bill_date:
-            add_it = True
+        argt_list = query(argt_list_data, filters=(lambda argt_list: argt_list.argtnr == argt_line.argtnr and argt_list.departement == argt_line.departement and argt_list.argt_artnr == argt_line.argt_artnr and argt_list.vt_percnt == argt_line.vt_percnt and argt_list.is_charged == 0), first=True)
+
+        if not argt_list:
+            argt_list = Argt_list()
+            argt_list_data.append(argt_list)
+
+            argt_list.argtnr = argt_line.argtnr
+            argt_list.departement = argt_line.departement
+            argt_list.argt_artnr = argt_line.argt_artnr
+            argt_list.vt_percnt = argt_line.vt_percnt
+            argt_list.is_charged = 0
+            argt_list.period = 0
+
+        if argt_list.period < argt_line.intervall:
+
+            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, argt_line.departement)],"number2": [(eq, argt_line.argtnr)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"number3": [(eq, argt_line.argt_artnr)],"date1": [(le, res_line.abreise)],"date2": [(ge, res_line.ankunft)]})
+
+            if reslin_queasy:
+
+                if reslin_queasy.date1 <= bill_date and reslin_queasy.date2 >= bill_date and (reslin_queasy.date1 + (argt_line.intervall - 1)) >= bill_date:
+                    add_it = True
+                    argt_list.period = argt_list.period + 1
+                else:
+
+                    reslin_queasy = db_session.query(Reslin_queasy).filter(
+                             (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == argt_line.departement) & (Reslin_queasy.number2 == argt_line.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argt_line.argt_artnr) & (Reslin_queasy.date1 <= bill_date) & (Reslin_queasy.date2 >= bill_date) & ((Reslin_queasy.date1 + (argt_line.intervall - 1)) >= bill_date)).first()
+
+                    if reslin_queasy:
+                        add_it = True
+                        argt_list.period = argt_list.period + 1
+            else:
+
+                if res_line.ankunft + (argt_line.intervall - 1) >= bill_date:
+                    add_it = True
+                    argt_list.period = argt_list.period + 1
 
     if not add_it:
 
@@ -233,7 +279,15 @@ def argt_betragbl(resno:int, reslinno:int, argt_recid:int):
         if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
             betrag = ( to_decimal(res_line.zipreis) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal(100)) * to_decimal(qty)
         else:
-            betrag =  to_decimal(reslin_queasy.deci1) * to_decimal(qty)
+
+            if argt_line.vt_percnt == 0:
+                betrag =  to_decimal(reslin_queasy.deci1) * to_decimal(qty)
+
+            elif argt_line.vt_percnt == 1:
+                betrag =  to_decimal(reslin_queasy.deci2) * to_decimal(qty)
+
+            elif argt_line.vt_percnt == 2:
+                betrag =  to_decimal(reslin_queasy.deci3) * to_decimal(qty)
         get_exrate1()
 
         return generate_output()
@@ -248,12 +302,24 @@ def argt_betragbl(resno:int, reslinno:int, argt_recid:int):
             ct = substring(ct, get_index(ct, "$CODE$") + 6 - 1)
             contcode = substring(ct, 0, get_index(ct, ";") - 1)
 
-    if guest_pr and marknr != 0 and not argt_defined:
+    if guest_pr and not argt_defined:
 
-        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, marknr)],"number2": [(eq, argt_line.argtnr)],"reslinnr": [(eq, res_line.zikatnr)],"number3": [(eq, argt_line.argt_artnr)],"resnr": [(eq, argt_line.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
+        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, marknr)],"number2": [(eq, argt_line.argtnr)],"reslinnr": [(eq, curr_zikatnr)],"number3": [(eq, argt_line.argt_artnr)],"resnr": [(eq, argt_line.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
 
         if reslin_queasy:
-            betrag =  to_decimal(reslin_queasy.deci1) * to_decimal(qty)
+
+            if reslin_queasy.char2 != "":
+                betrag = ( to_decimal(res_line.zipreis) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal(100)) * to_decimal(qty)
+            else:
+
+                if argt_line.vt_percnt == 0:
+                    betrag =  to_decimal(reslin_queasy.deci1) * to_decimal(qty)
+
+                elif argt_line.vt_percnt == 1:
+                    betrag =  to_decimal(reslin_queasy.deci2) * to_decimal(qty)
+
+                elif argt_line.vt_percnt == 2:
+                    betrag =  to_decimal(reslin_queasy.deci3) * to_decimal(qty)
             get_exrate2()
 
             return generate_output()
