@@ -244,8 +244,8 @@ def nt_rmrev():
                 mbill = get_cache (Bill, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, 0)]})
 
                 # Rulita, 
-                # Issue : Fix missing query zimkateg 
-                zimkateg = get_cache (Zimkateg, {"zimkateg": [(eq, res_line.zikatnr)]})
+                # Issue : Fix missing query zimkateg.zikatnr
+                zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
 
                 cl_list = Cl_list()
                 cl_list_data.append(cl_list)

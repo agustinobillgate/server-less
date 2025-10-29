@@ -4,6 +4,9 @@
 # Rulita, 24-10-2025
 # Issue :
 # - up server
+
+# Rulita, 28-10-2025
+# - Fixing datum - 1 days
 # =======================================
 
 from functions.additional_functions import *
@@ -60,7 +63,10 @@ def ratecode_compli(resnr:int, reslinnr:int, prcode:string, rmcatno:int, datum:d
 
     niteofstay = (res_line.abreise - res_line.ankunft).days
     argtno = arrangement.argtnr
-    w_day = wd_array[get_weekday(datum - 1) - 1]
+
+    # Rulita, 281025
+    # - Fixing datum - 1 days 
+    w_day = wd_array[get_weekday(datum - timedelta(days=1)) - 1]
     ct = res_line.zimmer_wunsch
 
     if matches(ct,r"*$CODE$*"):

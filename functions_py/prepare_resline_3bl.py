@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 28/10/2025
+# strip issues with res_dynarate.rmcat and arrangement.argt, memo_zinr
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -89,7 +92,9 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
 
     db_session = local_storage.db_session
-
+    
+    qci_zinr = qci_zinr.strip()
+    
     def generate_output():
         nonlocal msg_str, error_flag, record_use, init_time, init_date, avail_gdpr, avail_mark, avail_news, save_gdpr, curr_date, serv_date, f_resline_data, curr_resline_data, reslin_list_data, reschanged_list_data, t_history_data, rline_list_data, weekdays, i, str, loopi, loopj, str1, foreign_nr, tokcounter, iftask, mestoken, mesvalue, rcode, prevcode, do_it, do_it1, flag_ok, dayuse_flag, split_modify, logic_p1109, priscilla_active, loopk, resbemerk, lvcarea, new_reslinnr, curr_time, res_line, history, zimkateg, ratecode, zimmer, guest, queasy, htparam, nation, bediener, master, reslin_queasy, reservation, kontline, gentable, outorder, arrangement, guest_pr, pricecod, prmarket, fixleist, paramtext, waehrung, katpreis
         nonlocal pvilanguage, res_mode, session_date, user_init, inp_gastnr, inp_resnr, inp_reslinnr, rate_readonly, qci_zinr
@@ -716,7 +721,6 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
 
     def check_dynarate():
-
         nonlocal msg_str, error_flag, record_use, init_time, init_date, avail_gdpr, avail_mark, avail_news, save_gdpr, curr_date, serv_date, f_resline_data, curr_resline_data, reslin_list_data, reschanged_list_data, t_history_data, rline_list_data, weekdays, i, str, loopi, loopj, str1, foreign_nr, tokcounter, iftask, mestoken, mesvalue, rcode, prevcode, do_it, do_it1, flag_ok, dayuse_flag, split_modify, logic_p1109, priscilla_active, loopk, resbemerk, lvcarea, new_reslinnr, curr_time, res_line, history, zimkateg, ratecode, zimmer, guest, queasy, htparam, nation, bediener, master, reslin_queasy, reservation, kontline, gentable, outorder, arrangement, guest_pr, pricecod, prmarket, fixleist, paramtext, waehrung, katpreis
         nonlocal pvilanguage, res_mode, session_date, user_init, inp_gastnr, inp_resnr, inp_reslinnr, rate_readonly, qci_zinr
         nonlocal resline, resbuff, zimkateg1, rbuff, qci_zimmer, bresline, bguest, q359, qsy
@@ -725,13 +729,14 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
         nonlocal rline_list, reslin_list, curr_resline, t_history, currency_list, res_dynarate, reschanged_list, f_resline, nation_list, resline, resbuff, zimkateg1, rbuff, qci_zimmer, bresline, bguest, q359, qsy
         nonlocal rline_list_data, reslin_list_data, curr_resline_data, t_history_data, currency_list_data, reschanged_list_data, f_resline_data, nation_list_data
 
-        res_dynarate = query(res_dynarate_data, first=True)
+        # res_dynarate = query(res_dynarate_data, first=True)
+        res_dynarate = res_dynarate_data[0]
 
-        if not res_dynarate or res_dynarate.rmcat == "":
+        if not res_dynarate or res_dynarate.rmcat == "" or res_dynarate.rmcat == " ":
 
             return
 
-        arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_dynarate.argt)]})
+        arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_dynarate.argt.strip())]})
 
         paramtext = get_cache (Paramtext, {"txtnr": [(eq, (9200 + res_dynarate.setup))]})
 
@@ -762,9 +767,11 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
         if res_dynarate.date1 != None:
             reslin_list.ankunft = res_dynarate.date1
+
         reslin_list.arrangement = res_dynarate.argt
         reslin_list.reserve_int = res_dynarate.markno
         f_resline.zikatstr = res_dynarate.rmcat
+
         f_resline.rate_zikat = res_dynarate.rmcat
         f_resline.marknr = res_dynarate.markno
         f_resline.contcode = res_dynarate.prcode
@@ -872,7 +879,7 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
     if num_entries(res_mode, chr_unicode(2)) > 1:
 
-        if entry(1, res_mode, chr_unicode(2)) == ("DU").lower() :
+        if entry(1, res_mode, chr_unicode(2)) == ("DU") :
             dayuse_flag = True
         res_mode = entry(0, res_mode, chr_unicode(2))
 
@@ -919,9 +926,10 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
         return generate_output()
 
+    qci_zinr = qci_zinr.strip()
     if qci_zinr != "":
-
         qci_zimmer = get_cache (Zimmer, {"zinr": [(eq, qci_zinr)]})
+
     f_resline = F_resline()
     f_resline_data.append(f_resline)
 
@@ -1087,7 +1095,9 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
         f_resline.zimmeranz = res_line.zimmeranz
         f_resline.sharer = (res_line.resstatus == 11) or (res_line.resstatus == 13)
 
-        zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
+        # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
+        zimkateg = db_session.query(Zimkateg).filter(
+                 (Zimkateg.zikatnr == res_line.zikatnr)).first()
 
         if zimkateg:
             f_resline.zikatstr = zimkateg.kurzbez
@@ -1227,15 +1237,15 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
     reslin_list.resnr = inp_resnr
 
     if res_mode.lower()  != ("split").lower() :
-
         guest = get_cache (Guest, {"gastnr": [(eq, f_resline.guestnr)]})
-        f_resline.billname = guest.name + ", " + guest.vorname1 +\
-                guest.anredefirma +\
-                " " + guest.anrede1
-        f_resline.billadress = guest.adresse1
-        f_resline.billcity = guest.wohnort + " " + guest.plz
+        if guest:
+            f_resline.billname = guest.name + ", " + guest.vorname1 +\
+                    guest.anredefirma +\
+                    " " + guest.anrede1
+            f_resline.billadress = guest.adresse1
+            f_resline.billcity = guest.wohnort + " " + guest.plz
 
-        nation = get_cache (Nation, {"kurzbez": [(eq, guest.land)]})
+            nation = get_cache (Nation, {"kurzbez": [(eq, guest.land)]})
 
         if nation:
             f_resline.billland = nation.bezeich
@@ -1409,19 +1419,19 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
     for i in range(1,num_entries(reslin_list.zimmer_wunsch, ";") - 1 + 1) :
         str = entry(i - 1, reslin_list.zimmer_wunsch, ";")
 
-        if substring(str, 0, 7) == ("voucher").lower() :
+        if substring(str, 0, 7) == ("voucher") :
             f_resline.voucher = substring(str, 7)
 
-        elif substring(str, 0, 5) == ("ChAge").lower() :
+        elif substring(str, 0, 5) == ("ChAge") :
             f_resline.child_age = substring(str, 5)
 
-        elif substring(str, 0, 6) == ("$CODE$").lower() :
+        elif substring(str, 0, 6) == ("$CODE$") :
             f_resline.contcode = substring(str, 6)
 
-        elif substring(str, 0, 5) == ("DATE,").lower() :
+        elif substring(str, 0, 5) == ("DATE,") :
             f_resline.bookdate = date_mdy(to_int(substring(str, 9, 2)) , to_int(substring(str, 11, 2)) , to_int(substring(str, 5, 4)))
 
-        elif substring(str, 0, 8) == ("SEGM_PUR").lower() :
+        elif substring(str, 0, 8) == ("SEGM_PUR") :
             f_resline.i_purpose = to_int(substring(str, 8))
 
         elif matches(str,r"*WCI-req*"):
@@ -1441,13 +1451,13 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
                             break
 
-        elif substring(str, 0, 4) == ("GDPR").lower() :
+        elif substring(str, 0, 4) == ("GDPR") :
             f_resline.gdpr_flag = substring(str, 4)
 
-        elif substring(str, 0, 9) == ("MARKETING").lower() :
+        elif substring(str, 0, 9) == ("MARKETING") :
             f_resline.mark_flag = substring(str, 9)
 
-        elif substring(str, 0, 10) == ("NEWSLETTER").lower() :
+        elif substring(str, 0, 10) == ("NEWSLETTER") :
             f_resline.news_flag = substring(str, 10)
 
     reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "specialrequest")],"resnr": [(eq, reslin_list.resnr)],"reslinnr": [(eq, reslin_list.reslinnr)]})
@@ -1462,7 +1472,9 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
     if f_resline.contcode != "":
 
-        queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, f_resline.contcode)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, f_resline.contcode)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 2) & (Queasy.char1 == f_resline.contcode.strip())).first()
         f_resline.combo_code = f_resline.contcode
 
         if queasy:
@@ -1486,7 +1498,7 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
         for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
             str = entry(i - 1, res_line.zimmer_wunsch, ";")
 
-            if substring(str, 0, 10) == ("$OrigCode$").lower() :
+            if substring(str, 0, 10) == ("$OrigCode$") :
                 prevcode = substring(str, 10)
                 f_resline.origcontcode = prevcode
 
@@ -1522,7 +1534,7 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
                 if do_it:
 
-                    if trim(f_resline.combo_code) != "":
+                    if f_resline.combo_code != "":
                         f_resline.combo_code = f_resline.combo_code + ";" + guest_pr.code
                     else:
                         f_resline.combo_code = guest_pr.code
@@ -1577,7 +1589,7 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
                                 currency_list.wabkurz = qsy.char3
 
-    if (res_line.resstatus == 11 or res_line.resstatus == 13) and f_resline.contcode == " ":
+    if (res_line.resstatus == 11 or res_line.resstatus == 13) and f_resline.contcode == "":
 
         bresline = get_cache (Res_line, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(ne, res_line.reslinnr)],"kontakt_nr": [(eq, res_line.kontakt_nr)]})
 
@@ -1585,7 +1597,7 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
             for i in range(1,num_entries(bresline.zimmer_wunsch, ";") - 1 + 1) :
                 str = entry(i - 1, bresline.zimmer_wunsch, ";")
 
-                if substring(str, 0, 6) == ("$CODE$").lower() :
+                if substring(str, 0, 6) == ("$CODE$") :
                     f_resline.contcode = substring(str, 6)
                     f_resline.combo_code = f_resline.contcode
 
@@ -1609,7 +1621,9 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
     if f_resline.fixed_rate and reslin_list.l_zuordnung[0] == 0:
 
-        zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, reslin_list.zikatnr)]})
+        # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, reslin_list.zikatnr)]})
+        zimkateg = db_session.query(Zimkateg).filter(
+                 (Zimkateg.zikatnr == reslin_list.zikatnr)).first()
 
         if zimkateg:
             f_resline.rate_zikat = zimkateg.kurzbez

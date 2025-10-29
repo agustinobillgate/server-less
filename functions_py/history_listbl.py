@@ -13,7 +13,7 @@ from models import History, Guest, Reservation, Segment
 
 def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, all_flag:bool, f_date:date, t_date:date):
 
-    prepare_cache ([Reservation])
+    prepare_cache ([Reservation, Guest])
 
     history_list_data = []
     zeit:int = 0
@@ -263,8 +263,11 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
 
         elif sorttype == 1:
 
-            guest = get_cache (Guest, {"gastnr": [(gt, 0)],"name": [(ge, from_name)],"karteityp": [(eq, disptype)]})
-            while None != guest:
+            # guest = get_cache (Guest, {"gastnr": [(gt, 0)],"name": [(ge, from_name)],"karteityp": [(eq, disptype)]})
+            # while None != guest:
+
+            for guest in db_session.query(Guest).filter(
+                         (Guest.gastnr > 0) & (Guest.name >= (from_name).lower()) & (Guest.karteityp == disptype)).all():
 
                 for history in db_session.query(History).filter(
                          (History.betriebsnr <= 1) & (History.abreise >= f_date) & (History.abreise <= t_date) & (History.gastnr == guest.gastnr)).order_by(History.abreise).all():
@@ -299,9 +302,9 @@ def history_listbl(from_name:string, zinr:string, disptype:int, sorttype:int, al
                         i_list.s_recid = h_list._recid
                         i_list.ind = curr_i
 
-                curr_recid = guest._recid
-                guest = db_session.query(Guest).filter(
-                         (Guest.gastnr > 0) & (Guest.name >= (from_name).lower()) & (Guest.karteityp == disptype) & (Guest._recid > curr_recid)).first()
+                # curr_recid = guest._recid
+                # guest = db_session.query(Guest).filter(
+                #          (Guest.gastnr > 0) & (Guest.name >= (from_name).lower()) & (Guest.karteityp == disptype) & (Guest._recid > curr_recid)).first()
 
         for h_list in query(h_list_data, sort_by=[("ind",False)]):
             i_list = query(i_list_data, (lambda i_list: i_list.s_recid == to_int(h_list._recid)), first=True)

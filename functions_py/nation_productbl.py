@@ -2,7 +2,7 @@
 # ==========================================================================
 # Rulita 24-09-2025, 
 # Issue: perbaikan lates program membuat semua nation name menjadi UNKNOWN
-# Fiing di kembalikan ke program yg first commit 
+# Fixing di kembalikan ke program yg first commit 
 # ==========================================================================
 
 from functions.additional_functions import *

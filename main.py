@@ -105,8 +105,8 @@ url = URL.create(
     port=os.getenv("DB_PORT"),
     database=os.getenv("DB_NAME")
 )
-engine = create_engine(url)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+log_engine = create_engine(url)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=log_engine)
 dblog_session = SessionLocal()
 local_storage.dblog_session = dblog_session
 
@@ -114,6 +114,7 @@ log_id = 0
 
 skip_list = {   "Common/checkPermission2",
                 "Common/getHTParam0", 
+                "Common/checkTime",
                 "Common/checkPermission", 
                 "Common/loadDateTimeServer1",
                 "Common/checkStrongPassword"}
@@ -138,6 +139,7 @@ def log_activity(endpoint:string, userid:string, hotel_schema:string) -> int:
                     "hotel_schema": hotel_schema
                 })
         dblog_session.commit()
+        dblog_session.close()
         recid = log_results.scalar()
         # print("Logged activity with recid:", recid)
     except Exception as e:
@@ -145,6 +147,30 @@ def log_activity(endpoint:string, userid:string, hotel_schema:string) -> int:
         recid = 0
     finally:
         return recid
+
+def log_activity_end(log_id: int) -> int:
+    global dblog_session
+
+    if log_id <= 0:
+        return 0
+
+    try:
+        sql = """
+            UPDATE public.logs_endpoint SET time_end = NOW() WHERE id = :log_id
+            """
+        log_results = dblog_session.execute(text(sql), {
+                    "log_id": log_id
+                })
+        dblog_session.commit()
+        
+    except Exception as e:
+        print("Error ending activity log:", e)
+    finally:
+        dblog_session.close()
+        dblog_session.close()
+        log_engine.dispose()
+
+    return log_id
 
 #------------------ end of log session ------------------#
 
@@ -1564,6 +1590,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
         local_storage.app = app
     output_data_size = 0
     newRequest_recid = 0
+    log_id = 0
     ServerInfo = {}
     hotel_schema = inputUsername = function_name = request_id = "" 
     
@@ -1891,15 +1918,15 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
     ServerInfo["ui_request_id"] = ui_request_id
     ServerInfo["newRequest_recid"] = newRequest_recid
     ServerInfo["orig_infostr"] = orig_infostr
-    ServerInfo["aws_request_id"] = aws_request_id
-    
-    ServerInfo["AWSFunction"] =  lambda_function_name
-    ServerInfo["AWSCloudWatch"] = log_stream_name
+    ServerInfo["log_id"] = log_id
+    # ServerInfo["aws_request_id"] = aws_request_id    
+    # ServerInfo["AWSFunction"] =  lambda_function_name
+    # ServerInfo["AWSCloudWatch"] = log_stream_name
+    log_activity_end(log_id)
     return {
         "response": output_data,
         "serverinfo": ServerInfo
     }
-
 
     aws_request_id = request.headers.get("X-Amzn-RequestId", "Not Available")
     print("AWS Request ID:", aws_request_id)

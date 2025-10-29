@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 28/10/2025
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -216,7 +218,8 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
         inp_resnr = to_int(entry(4, adult_child_str, ","))
         inp_reslinnr = to_int(entry(5, adult_child_str, ","))
 
-    zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, i_zikatnr)]})
+    # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, i_zikatnr)]})
+    zimkateg = db_session.query(Zimkateg).filter(Zimkateg.zikatnr == i_zikatnr).first()
 
     if not zimkateg:
 
@@ -431,7 +434,7 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
 
                 for rate_list in query(rate_list_data):
 
-                    created_list = query(created_list_data, filters=(lambda created_list: created_list.rateCode == rate_list.ratecode and created_list.marknr == rate_list.marknr and created_list.rmcateg == zimkateg.typ and created_list.argtno == rate_list.argtno), first=True)
+                    created_list = query(created_list_data, filters=(lambda created_list: created_list.ratecode == rate_list.ratecode and created_list.marknr == rate_list.marknr and created_list.rmcateg == zimkateg.typ and created_list.argtno == rate_list.argtno), first=True)
 
                     if created_list:
                         rate_created = True
@@ -439,7 +442,8 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
 
 
                         for curr_i in range(1,30 + 1) :
-                            rate_list.rmrate[curr_i - 1] = created_list.rmRate[curr_i - 1]
+                            # rate_list.rmrate[curr_i - 1] = created_list.rmRate[curr_i - 1]
+                            rate_list.rmrate[curr_i - 1] = created_list.rmrate[curr_i - 1]
                             rate_list.statcode[curr_i - 1] = created_list.statcode[curr_i - 1]
 
 
@@ -516,7 +520,8 @@ def available_ratesbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int, ad
 
                             for rate_list in query(rate_list_data, filters=(lambda rate_list: rate_list.dynaflag  and rate_list.ratecode == guest_pr.code)):
 
-                                if rate_list.rmRate[curr_i - 1] == 0:
+                                # if rate_list.rmRate[curr_i - 1] == 0:
+                                if rate_list.rmrate[curr_i - 1] == 0:
                                     rate_found, rm_rate, restricted, kback_flag = get_output(ratecode_rate(False, False, 0, 1, ("!" + mapcode), ci_date, curr_date, curr_date, curr_date, rate_list.marknr, rate_list.argtno, i_zikatnr, rate_list.adult, rate_list.child, 0, 0, rate_list.currency))
 
                                     if rate_found:

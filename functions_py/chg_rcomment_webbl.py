@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 28/10/2025
+# remark ke-4 blm muncul
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -26,6 +29,11 @@ def chg_rcomment_webbl(icase:int, resno:int, reslinno:int, user_init:string, res
 
 
     db_session = local_storage.db_session
+
+    web_com = web_com.strip()
+    res_com = res_com.strip()
+    resl_com = resl_com.strip()
+    g_com = g_com.strip()
 
     def generate_output():
         nonlocal str1, str2, loopi, loopj, loopk, heute, zeit, cid, cdate, queasy, res_line, reservation, guest, reslin_queasy, bediener, res_history
@@ -81,7 +89,8 @@ def chg_rcomment_webbl(icase:int, resno:int, reslinno:int, user_init:string, res
             elif matches(str1,r"*PRCODE*"):
                 web_com = web_com + "PromoCode: " + entry(2, str1, "$")
 
-        buf_q = get_cache (Queasy, {"key": [(eq, 267)],"number1": [(eq, resno)],"number2": [(eq, reslinno)]})
+        # buf_q = get_cache (Queasy, {"key": [(eq, 267)],"number1": [(eq, resno)],"number2": [(eq, reslinno)]})
+        buf_q = db_session.query(Queasy).filter((Queasy.key == 267) & (Queasy.number1 == resno) & (Queasy.number2 == reslinno)).first() 
 
         if buf_q:
             web_com = web_com + buf_q.char1
@@ -163,27 +172,22 @@ def chg_rcomment_webbl(icase:int, resno:int, reslinno:int, user_init:string, res
         reservation.bemerk = res_com
         res_line.bemerk = resl_com
 
-        buf_q = get_cache (Queasy, {"key": [(eq, 267)],"number1": [(eq, resno)],"number2": [(eq, reslinno)]})
+        # buf_q = get_cache (Queasy, {"key": [(eq, 267)],"number1": [(eq, resno)],"number2": [(eq, reslinno)]})
+        buf_q = db_session.query(Queasy).filter((Queasy.key == 267) & (Queasy.number1 == resno) & (Queasy.number2 == reslinno)).first()
 
         if not buf_q:
             buf_q = Queasy()
-            db_session.add(buf_q)
-
+            buf_q.key = 267
             buf_q.number1 = resno
             buf_q.number2 = reslinno
             buf_q.char1 = web_com
-
+            db_session.add(buf_q)
 
         else:
             pass
             buf_q.char1 = web_com
-            pass
-        pass
-        pass
-        pass
-        pass
-        pass
-        pass
+
+        db_session.commit()
 
     if icase == 1:
         read_comment()

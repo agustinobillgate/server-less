@@ -1109,11 +1109,14 @@ def nt_aiirevenue():
                 temp_reslin_queasy.modify_date = res_line.abreise
                 temp_reslin_queasy.number2 = res_line.abreisezeit
 
-            elif res_line.resstatus == 6 or res_line.resstatus == 13 or res_line.resstatus == 10:
+            elif res_line.resstatus == 6 \
+                or res_line.resstatus == 13 \
+                or res_line.resstatus == 10:
                 temp_reslin_queasy.modify_date = res_line.ankunft
                 temp_reslin_queasy.number2 = res_line.ankzeit
 
-            elif res_line.resstatus == 9 or res_line.resstatus == 99:
+            elif res_line.resstatus == 9 \
+                or res_line.resstatus == 99:
                 temp_reslin_queasy.modify_date = res_line.cancelled
                 temp_reslin_queasy.number2 = temp_reslin_queasy.number2
 

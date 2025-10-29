@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 28/10/2025
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -54,7 +56,7 @@ def res_zimkateg1bl(datum:date, origcode:string, prcode:string, curr_marknr:int)
 
             if paramtext.notes != "":
                 anz_setup = anz_setup + 1
-                csetup_array[anz_setup - 1] = substring(notes, 0, 1)
+                csetup_array[anz_setup - 1] = substring(paramtext.notes, 0, 1)
                 isetup_array[anz_setup - 1] = paramtext.txtnr - 9200
 
 
@@ -382,7 +384,7 @@ def res_zimkateg1bl(datum:date, origcode:string, prcode:string, curr_marknr:int)
 
 
         for dynarate_list in query(dynarate_list_data):
-            occ_rooms = get_output(calculate_occupied_roomsbl(datum, dynarate_list.rmType, global_occ))
+            occ_rooms = get_output(calculate_occupied_roomsbl(datum, dynarate_list.rmtype, global_occ))
             use_it = True
 
             if dynarate_list.days1 != 0 and (datum - ci_date) <= dynarate_list.days1:

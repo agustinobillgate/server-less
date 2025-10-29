@@ -10,7 +10,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
-from functions.argt_betrag import argt_betrag
+from functions.argt_betragbl import argt_betragbl
 from functions.ratecode_compli import ratecode_compli
 from models import Paramtext, Htparam, Waehrung, Nightaudit, Nitestor, Res_line, Artikel, Zimmer, Zimkateg, Bill_line, Arrangement, Bill, Guest, Reservation, Nation, Segmentstat, Zinrstat, Argt_line, Reslin_queasy, Guest_pr
 
@@ -823,7 +823,7 @@ def nt_pjrmrecap():
                          (Argt_line.argtnr == arrangement.argtnr) & not_ (Argt_line.kind2)).order_by(Argt_line._recid).all():
 
                     artikel = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
-                    argt_betrag, ex_rate = get_output(argt_betrag(res_line._recid, argt_line._recid))
+                    argt_betrag, ex_rate = get_output(argt_betragbl(res_line._recid, argt_line._recid))
                     lodg_betrag =  to_decimal(lodg_betrag) - to_decimal(argt_betrag) * to_decimal(ex_rate)
 
         lodg_betrag = to_decimal(round(lodg_betrag , price_decimal))

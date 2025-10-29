@@ -1962,27 +1962,36 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
 
             if reslin_queasy:
 
-                if reslin_queasy.char2  != "" and reslin_queasy.char2  != ("0") :
-                    argt_betrag = ( to_decimal(res_line.zipreis) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal(100)) * to_decimal(qty)
-                else:
+                if argtline.vt_percnt == 0:
+                    query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argtline.departement) & (Reslin_queasy.number2 == argtline.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argtline.argt_artnr) & (Reslin_queasy.date1 <= curr_date) & (Reslin_queasy.date2 >= curr_date) & (Reslin_queasy.deci1 != 0))
 
-                    if argt_line.vt_percnt == 0:
-                        argt_betrag =  to_decimal(reslin_queasy.deci1) * to_decimal(qty)
+                elif argtline.vt_percnt == 1:
+                    query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argtline.departement) & (Reslin_queasy.number2 == argtline.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argtline.argt_artnr) & (Reslin_queasy.date1 <= curr_date) & (Reslin_queasy.date2 >= curr_date) & (Reslin_queasy.deci2 != 0))
 
-                    elif argt_line.vt_percnt == 1:
-                        argt_betrag =  to_decimal(reslin_queasy.deci2) * to_decimal(qty)
+                elif argtline.vt_percnt == 2:
+                    query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'fargt-line') & (Reslin_queasy.char1 == '') & (Reslin_queasy.number1 == argtline.departement) & (Reslin_queasy.number2 == argtline.argtnr) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.number3 == argtline.argt_artnr) & (Reslin_queasy.date1 <= curr_date) & (Reslin_queasy.date2 >= curr_date) & (Reslin_queasy.deci3 != 0))
 
-                    elif argt_line.vt_percnt == 2:
-                        argt_betrag =  to_decimal(reslin_queasy.deci3) * to_decimal(qty)
-                f_betrag =  to_decimal(argt_betrag)
+                for reslin_queasy in query.all():
+                    if reslin_queasy.char2.lower()  != "" and reslin_queasy.char2.lower()  != ("0").lower() :
+                        argt_betrag = ( to_decimal(res_line.zipreis) * to_decimal(to_int(reslin_queasy.char2)) / to_decimal(100)) * to_decimal(qty)
+                    else:
+                        if argt_line.vt_percnt == 0:
+                            argt_betrag =  to_decimal(reslin_queasy.deci1) * to_decimal(qty)
 
-                waehrung = get_cache (Waehrung, {"_recid": [(eq, waehrung1._recid)]})
+                        elif argt_line.vt_percnt == 1:
+                            argt_betrag =  to_decimal(reslin_queasy.deci2) * to_decimal(qty)
 
-                if argt_betrag == 0:
-                    add_it = False
-                else:
+                        elif argt_line.vt_percnt == 2:
+                            argt_betrag =  to_decimal(reslin_queasy.deci3) * to_decimal(qty)
 
-                    return generate_inner_output()
+                    f_betrag =  to_decimal(argt_betrag)
+
+                    waehrung = get_cache (Waehrung, {"_recid": [(eq, waehrung1._recid)]})
+
+                    if argt_betrag == 0:
+                        add_it = False
+                    else:
+                        return generate_inner_output()
 
             if contcode != "":
 
@@ -1991,22 +2000,33 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
                 if reslin_queasy:
 
                     if argt_line.vt_percnt == 0:
-                        argt_betrag =  to_decimal(reslin_queasy.deci1) * to_decimal(qty)
+                        query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == argtline.argt_artnr) & (Reslin_queasy.resnr == argtline.departement) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.date1 <= curr_date) & (Reslin_queasy.date2 >= curr_date) & (Reslin_queasy.deci1 != 0))
 
                     elif argt_line.vt_percnt == 1:
-                        argt_betrag =  to_decimal(reslin_queasy.deci2) * to_decimal(qty)
+                        query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == argtline.argt_artnr) & (Reslin_queasy.resnr == argtline.departement) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.date1 <= curr_date) & (Reslin_queasy.date2 >= curr_date) & (Reslin_queasy.deci2 != 0))
 
                     elif argt_line.vt_percnt == 2:
-                        argt_betrag =  to_decimal(reslin_queasy.deci3) * to_decimal(qty)
-                    f_betrag =  to_decimal(argt_betrag)
+                        query = db_session.query(Reslin_queasy).filter((Reslin_queasy.key == 'argt-line') & (Reslin_queasy.char1 == contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == argtline.argt_artnr) & (Reslin_queasy.resnr == argtline.departement) & (Reslin_queasy.reslinnr == curr_zikatnr) & (Reslin_queasy.date1 <= curr_date) & (Reslin_queasy.date2 >= curr_date) & (Reslin_queasy.deci3 != 0))
 
-                    waehrung = get_cache (Waehrung, {"_recid": [(eq, waehrung1._recid)]})
+                    for reslin_queasy in query.all():
+                        if argt_line.vt_percnt == 0:
+                            argt_betrag =  to_decimal(reslin_queasy.deci1) * to_decimal(qty)
 
-                    if argt_betrag == 0:
-                        add_it = False
-                    else:
+                        elif argt_line.vt_percnt == 1:
+                            argt_betrag =  to_decimal(reslin_queasy.deci2) * to_decimal(qty)
 
-                        return generate_inner_output()
+                        elif argt_line.vt_percnt == 2:
+                            argt_betrag =  to_decimal(reslin_queasy.deci3) * to_decimal(qty)
+                        f_betrag =  to_decimal(argt_betrag)
+
+                        waehrung = get_cache (Waehrung, {"_recid": [(eq, waehrung1._recid)]})
+
+                        if argt_betrag == 0:
+                            add_it = False
+                        else:
+                            return generate_inner_output()
+
+                    
             argt_betrag =  to_decimal(argt_line.betrag)
 
             arrangement = get_cache (Arrangement, {"argtnr": [(eq, argt_line.argtnr)]})

@@ -7,15 +7,13 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from functions.calc_servtaxesbl import calc_servtaxesbl
 from functions.fb_cost_count_recipe_costbl import fb_cost_count_recipe_costbl
-from models import Htparam, Waehrung, H_artikel, L_bestand, L_besthis, Gl_acct, L_lager, L_artikel, L_op, L_ophdr, Hoteldpt, H_compli, Exrate, Artikel, Gl_main, H_cost, Umsatz, H_bill_line
-
-from sqlalchemy import literal
+from functions.calc_servtaxesbl import calc_servtaxesbl
+from models import Htparam, Waehrung, H_artikel, L_bestand, L_besthis, Gl_acct, L_lager, L_artikel, L_op, L_ophdr, Hoteldpt, H_compli, Exrate, Artikel, Gl_main, H_cost, H_rezept, Umsatz
 
 def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date, from_grp:int, mi_opt:bool, date1:date, date2:date):
 
-    prepare_cache ([Htparam, Waehrung, H_artikel, L_bestand, Gl_acct, L_lager, L_artikel, L_op, Hoteldpt, H_compli, Exrate, Artikel, Gl_main, H_cost, Umsatz, H_bill_line])
+    prepare_cache ([Htparam, Waehrung, H_artikel, L_bestand, Gl_acct, L_lager, L_artikel, L_op, Hoteldpt, H_compli, Exrate, Artikel, Gl_main, H_cost, H_rezept, Umsatz])
 
     done = False
     fbreconsile_list_data = []
@@ -31,13 +29,16 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
     counter:int = 0
     coa_format:string = ""
     f_date:date = None
-    lvcarea:string = "fb-reconsile"
-    htparam = waehrung = h_artikel = l_bestand = l_besthis = gl_acct = l_lager = l_artikel = l_op = l_ophdr = hoteldpt = h_compli = exrate = artikel = gl_main = h_cost = umsatz = h_bill_line = None
+    bill_date:date = date(1,1,1)
+    cost:Decimal = to_decimal("0.0")
+    price:Decimal = to_decimal("0.0")
+    exrate_val:Decimal = 0
     price_type:int = 0
-    bill_date = date(1,1,1)
-    exrate_val = 0
-    incl_mwst = False
-    incl_service = False
+    incl_service:bool = False
+    incl_mwst:bool = False
+    lvcarea:string = "fb-reconsile"
+    htparam = waehrung = h_artikel = l_bestand = l_besthis = gl_acct = l_lager = l_artikel = l_op = l_ophdr = hoteldpt = h_compli = exrate = artikel = gl_main = h_cost = h_rezept = umsatz = None
+    
 
     fbreconsile_list = s_list = None
 
@@ -47,7 +48,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, umsatz, h_bill_line
+        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz
         nonlocal pvilanguage, case_type, from_date, to_date, from_grp, mi_opt, date1, date2
 
 
@@ -88,7 +89,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
 
     def create_list():
 
-        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, umsatz, h_bill_line, bill_date, price_type
+        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz, bill_date, price_type
         nonlocal pvilanguage, case_type, from_date, to_date, from_grp, mi_opt, date1, date2
 
 
@@ -1459,7 +1460,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
 
     def create_food():
 
-        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, umsatz, h_bill_line, bill_date, price_type
+        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz, bill_date, price_type
         nonlocal pvilanguage, case_type, from_date, to_date, from_grp, mi_opt, date1, date2
 
 
@@ -2307,7 +2308,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
 
     def create_beverage():
 
-        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, umsatz, h_bill_line, bill_date, price_type
+        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz, bill_date, price_type
         nonlocal pvilanguage, case_type, from_date, to_date, from_grp, mi_opt, date1, date2
 
 
@@ -3161,7 +3162,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
 
     def fb_sales(f_eknr:int, b_eknr:int):
 
-        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, umsatz, h_bill_line
+        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz
         nonlocal pvilanguage, case_type, from_date, to_date, from_grp, mi_opt, date1, date2
 
 
@@ -3218,31 +3219,6 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
 
         return generate_inner_output()
 
-
-    # def cost_correction(cost:Decimal):
-
-    #     nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, umsatz, h_bill_line
-    #     nonlocal pvilanguage, case_type, from_date, to_date, from_grp, mi_opt, date1, date2
-
-
-    #     nonlocal fbreconsile_list, s_list
-    #     nonlocal fbreconsile_list_data, s_list_data
-
-    #     def generate_inner_output():
-    #         return (cost)
-
-
-    #     h_bill_line = get_cache (H_bill_line, {"rechnr": [(eq, h_compli.rechnr)],"bill_datum": [(eq, h_compli.datum)],"departement": [(eq, h_compli.departement)],"artnr": [(eq, h_compli.artnr)],"epreis": [(eq, h_compli.epreis)]})
-
-    #     if h_bill_line and substring(h_bill_line.bezeich, length(h_bill_line.bezeich) - 1, 1) == ("*").lower()  and h_bill_line.epreis != 0:
-
-    #         h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_bill_line.artnr)],"departement": [(eq, h_bill_line.departement)]})
-
-    #         if h_artikel and h_artikel.artart == 0 and h_artikel.epreis1 > h_bill_line.epreis:
-    #             cost =  to_decimal(cost) * to_decimal(h_bill_line.epreis) / to_decimal(h_artikel.epreis1)
-
-    #     return generate_inner_output()
-
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1081)]})
     ldry = htparam.finteger
 
@@ -3259,21 +3235,25 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
     bill_date = htparam.fdate
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1024)]})
-    price_type = htparam.finteger
+
+    if htparam:
+        price_type = htparam.finteger
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
     waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
     if waehrung:
-        exrate_val = waehrung.ankauf / waehrung.einheit
+        exrate_val = to_decimal(waehrung.ankauf / waehrung.einheit)
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 135)]})
-    incl_service = htparam.flogical
+    if htparam:
+        incl_service = htparam.flogical
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 134)]})
-    incl_mwst = htparam.flogical
+    if htparam:
+        incl_mwst = htparam.flogical
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 240)]})
-    
+
     if htparam.flogical:
         double_currency = True
 
@@ -3286,7 +3266,6 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
             exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
         else:
             exchg_rate =  to_decimal("1")
-
 
     if case_type == 0:
         create_list()
