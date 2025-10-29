@@ -5,13 +5,13 @@ from decimal import Decimal, ROUND_HALF_UP
 from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from functions.fb_cost_count_recipe_costbl import fb_cost_count_recipe_costbl
-from models import Htparam, H_artikel, Hoteldpt, Artikel, H_cost, H_umsatz, H_journal, H_rezept, Waehrung, Wgrpdep
+from models import Htparam, Waehrung, H_artikel, Hoteldpt, Artikel, L_artikel, H_rezept, H_umsatz, H_cost, Wgrpdep
 
 subgr_list_data, Subgr_list = create_model("Subgr_list", {"selected":bool, "subnr":int, "bezeich":string}, {"selected": True})
 
 def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:int, to_dept:int, dstore:int, ldry_dept:int, all_sub:bool, from_date:date, to_date:date, fact1:int, exchg_rate:Decimal, vat_included:bool, mi_subgrp:bool, detailed:bool, curr_sort:int, short_flag:bool):
 
-    prepare_cache ([Htparam, H_artikel, Hoteldpt, Artikel, H_journal, Wgrpdep])
+    prepare_cache ([Htparam, Waehrung, H_artikel, Hoteldpt, Artikel, L_artikel, H_rezept, H_cost, Wgrpdep])
 
     fb_cost_analyst_data = []
     t_anz:int = 0
@@ -25,12 +25,12 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
     s_anzahl:int = 0
     s_proz1:Decimal = 0
     price_type:int = 0
-    htparam = h_artikel = hoteldpt = artikel = h_umsatz = h_journal = wgrpdep = None
     double_currency:bool = False
     incl_service:bool = False
     incl_mwst:bool = False
-    exrate:Decimal = to_decimal("0.0")
+    exrate:Decimal = 1
     bill_date:date = date(1,1,1)
+    htparam = waehrung = h_artikel = hoteldpt = artikel = l_artikel = h_rezept = h_umsatz = h_cost = wgrpdep = None
 
     subgr_list = h_list = fb_cost_analyst = None
 
@@ -40,7 +40,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, htparam, h_artikel, hoteldpt, artikel, h_umsatz, h_journal, wgrpdep
+        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, double_currency, incl_service, incl_mwst, exrate, bill_date, htparam, waehrung, h_artikel, hoteldpt, artikel, l_artikel, h_rezept, h_umsatz, h_cost, wgrpdep
         nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag
 
 
@@ -51,23 +51,25 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
 
     def calculate_price(price:Decimal):
 
-        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, htparam, h_artikel, hoteldpt, artikel, h_umsatz, h_journal, wgrpdep
+        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, double_currency, incl_service, incl_mwst, exrate, bill_date, htparam, waehrung, h_artikel, hoteldpt, artikel, l_artikel, h_rezept, h_umsatz, h_cost, wgrpdep
         nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag
+
 
         nonlocal subgr_list, h_list, fb_cost_analyst
         nonlocal h_list_data, fb_cost_analyst_data
-        
-        nonlocal exrate, incl_mwst, incl_service, to_date, double_currency
 
-        serv:Decimal = to_decimal("0")
-        vat:Decimal = to_decimal("0")
-        vat2:Decimal = to_decimal("0")
-        fact:Decimal = 1.0
+        artikel1 = None
+        serv:Decimal = to_decimal("0.0")
+        vat:Decimal = to_decimal("0.0")
+        vat2:Decimal = to_decimal("0.0")
+        fact:Decimal = 1
 
+        def generate_inner_output():
+            return (price)
         artikel1 = db_session.query(Artikel).filter((Artikel.artnr == h_artikel.artnrfront) & (Artikel.departement == h_artikel.departement)).first()
         
         if artikel1 and artikel1.pricetab and not double_currency:
-            price = to_decimal(price) * to_decimal(exrate)
+            price =  to_decimal(price) * to_decimal(exrate)
 
         if incl_mwst or incl_service:
             serv, vat, vat2, fact = get_output(calc_servtaxesbl(3, artikel1.artnr, artikel1.departement, to_date))
@@ -83,8 +85,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
 
         price = to_decimal(round(price, 2))
 
-        
-        return price
+        return generate_inner_output()
 
     def format_fixed_length(text: str, length: int) -> str:
         if len(text) > length:
@@ -94,8 +95,8 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
 
     def create_h_umsatz1():
 
-        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, htparam, h_artikel, hoteldpt, artikel, h_umsatz, h_journal, wgrpdep
-        nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag, price_type
+        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, double_currency, incl_service, incl_mwst, exrate, bill_date, htparam, waehrung, h_artikel, hoteldpt, artikel, l_artikel, h_rezept, h_umsatz, h_cost, wgrpdep
+        nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag
 
 
         nonlocal subgr_list, h_list, fb_cost_analyst
@@ -115,6 +116,9 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
         tmp_anzahl:int = 0
         cost:Decimal = to_decimal("0.0")
         anz:int = 0
+        cost_todate:Decimal = to_decimal("0.0")
+        cost_open_price:Decimal = to_decimal("0.0")
+        price:Decimal = to_decimal("0.0")
         h_art = None
         H_art =  create_buffer("H_art",H_artikel)
         fb_cost_analyst_data.clear()
@@ -124,6 +128,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                     (Hoteldpt.num >= from_dept) & (Hoteldpt.num <= to_dept) & (Hoteldpt.num != dstore) & (Hoteldpt.num != ldry_dept)).order_by(Hoteldpt.num).all():
 
             h_artikel = get_cache (H_artikel, {"departement": [(eq, hoteldpt.num)]})
+
             if h_artikel:
                 pos = True
             else:
@@ -141,19 +146,20 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
             h_artikel_obj_list = {}
             h_artikel = H_artikel()
             artikel = Artikel()
+            for h_artikel.zwkum, h_artikel.departement, h_artikel.artnr, h_artikel.bezeich, h_artikel.epreis1, h_artikel.artnrlager, h_artikel.artnrrezept, h_artikel.prozent, h_artikel.artnrfront, h_artikel._recid, artikel.artnr, artikel.departement, artikel._recid in db_session.query(H_artikel.zwkum, H_artikel.departement, H_artikel.artnr, H_artikel.bezeich, H_artikel.epreis1, H_artikel.artnrlager, H_artikel.artnrrezept, H_artikel.prozent, H_artikel.artnrfront, H_artikel._recid, Artikel.artnr, Artikel.departement, Artikel._recid).join(Artikel,(Artikel.artnr == H_artikel.artnrfront) & (Artikel.departement == H_artikel.departement) & ((Artikel.umsatzart == 3) | (Artikel.umsatzart == 5)) & (Artikel.endkum != disc_nr)).filter(
+                     (H_artikel.artart == 0) & (H_artikel.departement == hoteldpt.num)).order_by(H_artikel.bezeich).all():
+                if h_artikel_obj_list.get(h_artikel._recid):
+                    continue
+                else:
+                    h_artikel_obj_list[h_artikel._recid] = True
 
-            for h_artikel.zwkum, h_artikel.artnrrezept, h_artikel.departement, h_artikel.artnr, h_artikel.bezeich, h_artikel.epreis1, h_artikel.prozent, h_artikel._recid, artikel.artnr, artikel.departement, artikel._recid in db_session.query(H_artikel.zwkum, H_artikel.artnrrezept, H_artikel.departement, H_artikel.artnr, H_artikel.bezeich, H_artikel.epreis1, H_artikel.prozent, H_artikel._recid, Artikel.artnr, Artikel.departement, Artikel._recid).join(Artikel,(Artikel.artnr == H_artikel.artnrfront) & (Artikel.departement == H_artikel.departement) & ((Artikel.umsatzart == 3) | (Artikel.umsatzart == 5)) & (Artikel.endkum != disc_nr)).filter((H_artikel.artart == 0) & (H_artikel.departement == hoteldpt.num)).order_by(H_artikel.bezeich).all():
-
-                # if h_artikel_obj_list.get(h_artikel._recid):
-                #     continue
-                # else:
-                #     h_artikel_obj_list[h_artikel._recid] = True
 
                 do_it = False
 
                 if all_sub:
                     do_it = True
                 else:
+
                     subgr_list = query(subgr_list_data, filters=(lambda subgr_list: subgr_list.subnr == h_artikel.zwkum and subgr_list.selected), first=True)
                     do_it = None != subgr_list
 
@@ -234,11 +240,8 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                         h_cost = db_session.query(H_cost).filter((H_cost.artnr == h_artikel.artnr) & (H_cost.departement == h_artikel.departement) & (H_cost.datum == h_umsatz.datum) & (H_cost.flag == 1)).first()
 
                         if h_cost and h_cost.betrag != 0:
-
                             cost = anz * h_cost.betrag
-
                             h_list.cost = h_cost.betrag
-
                         else:
                             if h_artikel.artnrlager != 0:
                                 l_artikel = db_session.query(L_artikel).filter(L_artikel.artnr == h_artikel.artnrlager).first()
@@ -258,9 +261,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                                     cost_todate = 0
 
                                     cost_todate = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost_todate))
-
-                                    h_listcost = cost_todate
-
+                                    h_list.cost = cost_todate
                             else:
                                 if h_artikel.epreis1 != 0:
                                     price = h_artikel.epreis1
@@ -274,19 +275,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                                     h_list.cost = h_artikel.prozent / 100 * price * exchg_rate
 
                             cost = anz * h_list.cost
-
-                        # if h_list.cost != 0:
-                        #     cost =  to_decimal(anz) * to_decimal(h_list.cost)
-                        # else:
-                        #     h_journal = get_cache (H_journal, {"artnr": [(eq, h_artikel.artnr)],"departement": [(eq, h_artikel.departement)],"bill_datum": [(eq, h_umsatz.datum)]})
-
-                        #     if h_journal:
-                        #         cost =  to_decimal(anz) * to_decimal(h_journal.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100")
-                        #         h_list.cost =  to_decimal(h_journal.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100")
-                        #     else:
-                        #         cost =  to_decimal(anz) * to_decimal(h_artikel.epreis1) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(exchg_rate)
-                        #         h_list.cost =  to_decimal(h_artikel.epreis1) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(exchg_rate)
-
+                            
                         cost =  cost / fact1
 
                         h_list.anzahl = h_list.anzahl + anz
@@ -304,7 +293,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                         if vat_included and tmp_anzahl != 0:
                             h_list.epreis = ( h_list.t_sales / tmp_anzahl) * exchg_rate / fact
                             
-                            if h_artikel.epreis1 == 0:
+                            if h_artikel.epreis1 == 0 and ((not h_cost) or (h_cost and h_cost.betrag == 0)):
                                 h_list.cost = h_list.epreis * h_artikel.prozent / 100
                                 
                                 h_list.t_cost = h_list.t_sales * h_artikel.prozent / 100
@@ -313,7 +302,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                         elif tmp_anzahl != 0:
                             h_list.epreis = ( h_list.t_sales / tmp_anzahl) * exchg_rate / fact1
 
-                            if h_artikel.epreis1 == 0:
+                            if h_artikel.epreis1 == 0 and ((not h_cost) or (h_cost and h_cost.betrag == 0)):
                                 h_list.cost = h_list.epreis * h_artikel.prozent / 100
 
                                 h_list.t_cost = h_list.t_sales * h_artikel.prozent / 100
@@ -337,10 +326,11 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
             t_sales =  to_decimal("0")
             t_cost =  to_decimal("0")
 
+
     def create_h_umsatz2():
 
-        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, htparam, h_artikel, hoteldpt, artikel, h_umsatz, h_journal, wgrpdep
-        nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag, price_type
+        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, double_currency, incl_service, incl_mwst, exrate, bill_date, htparam, waehrung, h_artikel, hoteldpt, artikel, l_artikel, h_rezept, h_umsatz, h_cost, wgrpdep
+        nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag
 
 
         nonlocal subgr_list, h_list, fb_cost_analyst
@@ -357,9 +347,12 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
         serv_vat:bool = False
         fact:Decimal = to_decimal("0.0")
         do_it:bool = False
-        tmp_anzahl:int = 0
         cost:Decimal = to_decimal("0.0")
         anz:int = 0
+        cost_todate:Decimal = to_decimal("0.0")
+        cost_open_price:Decimal = to_decimal("0.0")
+        price:Decimal = to_decimal("0.0")
+        tmp_anzahl:int = 0
         h_art = None
         H_art =  create_buffer("H_art",H_artikel)
         fb_cost_analyst_data.clear()
@@ -369,6 +362,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                     (Hoteldpt.num >= from_dept) & (Hoteldpt.num <= to_dept) & (Hoteldpt.num != dstore) & (Hoteldpt.num != ldry_dept)).order_by(Hoteldpt.num).all():
 
             h_artikel = get_cache (H_artikel, {"departement": [(eq, hoteldpt.num)]})
+
             if h_artikel:
                 pos = True
             else:
@@ -386,19 +380,20 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
             h_artikel_obj_list = {}
             h_artikel = H_artikel()
             artikel = Artikel()
+            for h_artikel.zwkum, h_artikel.departement, h_artikel.artnr, h_artikel.bezeich, h_artikel.epreis1, h_artikel.artnrlager, h_artikel.artnrrezept, h_artikel.prozent, h_artikel.artnrfront, h_artikel._recid, artikel.artnr, artikel.departement, artikel._recid in db_session.query(H_artikel.zwkum, H_artikel.departement, H_artikel.artnr, H_artikel.bezeich, H_artikel.epreis1, H_artikel.artnrlager, H_artikel.artnrrezept, H_artikel.prozent, H_artikel.artnrfront, H_artikel._recid, Artikel.artnr, Artikel.departement, Artikel._recid).join(Artikel,(Artikel.artnr == H_artikel.artnrfront) & (Artikel.departement == H_artikel.departement) & (Artikel.umsatzart == 6) & (Artikel.endkum != disc_nr)).filter(
+                     (H_artikel.artart == 0) & (H_artikel.departement == hoteldpt.num)).order_by(H_artikel.bezeich).all():
+                if h_artikel_obj_list.get(h_artikel._recid):
+                    continue
+                else:
+                    h_artikel_obj_list[h_artikel._recid] = True
 
-            for h_artikel.zwkum, h_artikel.artnrrezept, h_artikel.departement, h_artikel.artnr, h_artikel.bezeich, h_artikel.epreis1, h_artikel.prozent, h_artikel._recid, artikel.artnr, artikel.departement, artikel._recid in db_session.query(H_artikel.zwkum, H_artikel.artnrrezept, H_artikel.departement, H_artikel.artnr, H_artikel.bezeich, H_artikel.epreis1, H_artikel.prozent, H_artikel._recid, Artikel.artnr, Artikel.departement, Artikel._recid).join(Artikel,(Artikel.artnr == H_artikel.artnrfront) & (Artikel.departement == H_artikel.departement) & (Artikel.umsatzart == 6) & (Artikel.endkum != disc_nr)).filter((H_artikel.artart == 0) & (H_artikel.departement == hoteldpt.num)).order_by(H_artikel.bezeich).all():
-
-                # if h_artikel_obj_list.get(h_artikel._recid):
-                #     continue
-                # else:
-                #     h_artikel_obj_list[h_artikel._recid] = True
 
                 do_it = False
 
                 if all_sub:
                     do_it = True
                 else:
+
                     subgr_list = query(subgr_list_data, filters=(lambda subgr_list: subgr_list.subnr == h_artikel.zwkum and subgr_list.selected), first=True)
                     do_it = None != subgr_list
 
@@ -440,15 +435,11 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                         h_rezept = db_session.query(H_rezept).filter(H_rezept.artnrrezept == h_artikel.artnrrezept).first()
 
                         if h_rezept:
-
                             cost_todate = 0
 
                             cost_todate = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost_todate))
-
                             h_list.cost = cost_todate
-
                     else:
-
                         price = h_artikel.epreis1
                         if price != 0:
                             price = calculate_price(price)
@@ -479,11 +470,8 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                         h_cost = db_session.query(H_cost).filter((H_cost.artnr == h_artikel.artnr) & (H_cost.departement == h_artikel.departement) & (H_cost.datum == h_umsatz.datum) & (H_cost.flag == 1)).first()
 
                         if h_cost and h_cost.betrag != 0:
-
                             cost = anz * h_cost.betrag
-
                             h_list.cost = h_cost.betrag
-
                         else:
                             if h_artikel.artnrlager != 0:
                                 l_artikel = db_session.query(L_artikel).filter(L_artikel.artnr == h_artikel.artnrlager).first()
@@ -503,10 +491,9 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                                     cost_todate = 0
 
                                     cost_todate = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost_todate))
-
-                                    h_listcost = cost_todate
-
+                                    h_list.cost = cost_todate
                             else:
+
                                 if h_artikel.epreis1 != 0:
                                     price = h_artikel.epreis1
 
@@ -519,19 +506,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                                     h_list.cost = h_artikel.prozent / 100 * price * exchg_rate
 
                             cost = anz * h_list.cost
-
-                        # if h_list.cost != 0:
-                        #     cost =  to_decimal(anz) * to_decimal(h_list.cost)
-                        # else:
-                        #     h_journal = get_cache (H_journal, {"artnr": [(eq, h_artikel.artnr)],"departement": [(eq, h_artikel.departement)],"bill_datum": [(eq, h_umsatz.datum)]})
-
-                        #     if h_journal:
-                        #         cost =  to_decimal(anz) * to_decimal(h_journal.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100")
-                        #         h_list.cost =  to_decimal(h_journal.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100")
-                        #     else:
-                        #         cost =  to_decimal(anz) * to_decimal(h_artikel.epreis1) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(exchg_rate)
-                        #         h_list.cost =  to_decimal(h_artikel.epreis1) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(exchg_rate)
-
+                        
                         cost =  cost / fact1
 
                         h_list.anzahl = h_list.anzahl + anz
@@ -549,7 +524,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                         if vat_included and tmp_anzahl != 0:
                             h_list.epreis = ( h_list.t_sales / tmp_anzahl) * exchg_rate / fact
                             
-                            if h_artikel.epreis1 == 0:
+                            if h_artikel.epreis1 == 0 and ((not h_cost) or (h_cost and h_cost.betrag == 0)):
                                 h_list.cost = h_list.epreis * h_artikel.prozent / 100
                                 
                                 h_list.t_cost = h_list.t_sales * h_artikel.prozent / 100
@@ -558,7 +533,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                         elif tmp_anzahl != 0:
                             h_list.epreis = ( h_list.t_sales / tmp_anzahl) * exchg_rate / fact1
 
-                            if h_artikel.epreis1 == 0:
+                            if h_artikel.epreis1 == 0 and ((not h_cost) or (h_cost and h_cost.betrag == 0)):
                                 h_list.cost = h_list.epreis * h_artikel.prozent / 100
 
                                 h_list.t_cost = h_list.t_sales * h_artikel.prozent / 100
@@ -584,8 +559,8 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
 
     def create_h_umsatz3():
 
-        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, htparam, h_artikel, hoteldpt, artikel, h_umsatz, h_journal, wgrpdep
-        nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag, price_type
+        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, double_currency, incl_service, incl_mwst, exrate, bill_date, htparam, waehrung, h_artikel, hoteldpt, artikel, l_artikel, h_rezept, h_umsatz, h_cost, wgrpdep
+        nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag
 
 
         nonlocal subgr_list, h_list, fb_cost_analyst
@@ -602,9 +577,12 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
         serv_vat:bool = False
         fact:Decimal = to_decimal("0.0")
         do_it:bool = False
-        tmp_anzahl:int = 0
         cost:Decimal = to_decimal("0.0")
         anz:int = 0
+        cost_todate:Decimal = to_decimal("0.0")
+        cost_open_price:Decimal = to_decimal("0.0")
+        price:Decimal = to_decimal("0.0")
+        tmp_anzahl:int = 0
         h_art = None
         H_art =  create_buffer("H_art",H_artikel)
         fb_cost_analyst_data.clear()
@@ -631,19 +609,20 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
             h_artikel_obj_list = {}
             h_artikel = H_artikel()
             artikel = Artikel()
+            for h_artikel.zwkum, h_artikel.departement, h_artikel.artnr, h_artikel.bezeich, h_artikel.epreis1, h_artikel.artnrlager, h_artikel.artnrrezept, h_artikel.prozent, h_artikel.artnrfront, h_artikel._recid, artikel.artnr, artikel.departement, artikel._recid in db_session.query(H_artikel.zwkum, H_artikel.departement, H_artikel.artnr, H_artikel.bezeich, H_artikel.epreis1, H_artikel.artnrlager, H_artikel.artnrrezept, H_artikel.prozent, H_artikel.artnrfront, H_artikel._recid, Artikel.artnr, Artikel.departement, Artikel._recid).join(Artikel,(Artikel.artnr == H_artikel.artnrfront) & (Artikel.departement == H_artikel.departement) & (Artikel.umsatzart == 4) & (Artikel.endkum != disc_nr)).filter(
+                     (H_artikel.artart == 0) & (H_artikel.departement == hoteldpt.num)).order_by(H_artikel.bezeich).all():
+                if h_artikel_obj_list.get(h_artikel._recid):
+                    continue
+                else:
+                    h_artikel_obj_list[h_artikel._recid] = True
 
-            for h_artikel.zwkum, h_artikel.artnrrezept, h_artikel.departement, h_artikel.artnr, h_artikel.bezeich, h_artikel.epreis1, h_artikel.prozent, h_artikel._recid, artikel.artnr, artikel.departement, artikel._recid in db_session.query(H_artikel.zwkum, H_artikel.artnrrezept, H_artikel.departement, H_artikel.artnr, H_artikel.bezeich, H_artikel.epreis1, H_artikel.prozent, H_artikel._recid, Artikel.artnr, Artikel.departement, Artikel._recid).join(Artikel,(Artikel.artnr == H_artikel.artnrfront) & (Artikel.departement == H_artikel.departement) & (Artikel.umsatzart == 4) & (Artikel.endkum != disc_nr)).filter((H_artikel.artart == 0) & (H_artikel.departement == hoteldpt.num)).order_by(H_artikel.bezeich).all():
-                
-                # if h_artikel_obj_list.get(h_artikel._recid):
-                #     continue
-                # else:
-                #     h_artikel_obj_list[h_artikel._recid] = True
 
                 do_it = False
 
                 if all_sub:
                     do_it = True
                 else:
+
                     subgr_list = query(subgr_list_data, filters=(lambda subgr_list: subgr_list.subnr == h_artikel.zwkum and subgr_list.selected), first=True)
                     do_it = None != subgr_list
 
@@ -724,11 +703,8 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                         h_cost = db_session.query(H_cost).filter((H_cost.artnr == h_artikel.artnr) & (H_cost.departement == h_artikel.departement) & (H_cost.datum == h_umsatz.datum) & (H_cost.flag == 1)).first()
 
                         if h_cost and h_cost.betrag != 0:
-
                             cost = anz * h_cost.betrag
-
                             h_list.cost = h_cost.betrag
-
                         else:
                             if h_artikel.artnrlager != 0:
                                 l_artikel = db_session.query(L_artikel).filter(L_artikel.artnr == h_artikel.artnrlager).first()
@@ -748,9 +724,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                                     cost_todate = 0
 
                                     cost_todate = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost_todate))
-
-                                    h_listcost = cost_todate
-
+                                    h_list.cost = cost_todate
                             else:
                                 if h_artikel.epreis1 != 0:
                                     price = h_artikel.epreis1
@@ -762,21 +736,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                                         price = 0
 
                                     h_list.cost = h_artikel.prozent / 100 * price * exchg_rate
-
                             cost = anz * h_list.cost
-
-                        # if h_list.cost != 0:
-                        #     cost =  to_decimal(anz) * to_decimal(h_list.cost)
-                        # else:
-                        #     h_journal = get_cache (H_journal, {"artnr": [(eq, h_artikel.artnr)],"departement": [(eq, h_artikel.departement)],"bill_datum": [(eq, h_umsatz.datum)]})
-
-                        #     if h_journal:
-                        #         cost =  to_decimal(anz) * to_decimal(h_journal.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100")
-                        #         h_list.cost =  to_decimal(h_journal.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100")
-                        #     else:
-                        #         cost =  to_decimal(anz) * to_decimal(h_artikel.epreis1) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(exchg_rate)
-                        #         h_list.cost =  to_decimal(h_artikel.epreis1) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(exchg_rate)
-
                         cost =  cost / fact1
 
                         h_list.anzahl = h_list.anzahl + anz
@@ -794,7 +754,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                         if vat_included and tmp_anzahl != 0:
                             h_list.epreis = ( h_list.t_sales / tmp_anzahl) * exchg_rate / fact
 
-                            if h_artikel.epreis1 == 0:
+                            if h_artikel.epreis1 == 0 and ((not h_cost) or (h_cost and h_cost.betrag == 0)):
                                 h_list.cost = h_list.epreis * h_artikel.prozent / 100
                                 
                                 h_list.t_cost = h_list.t_sales * h_artikel.prozent / 100
@@ -803,7 +763,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
                         elif tmp_anzahl != 0:
                             h_list.epreis = ( h_list.t_sales / tmp_anzahl) * exchg_rate / fact1
 
-                            if h_artikel.epreis1 == 0:
+                            if h_artikel.epreis1 == 0 and ((not h_cost) or (h_cost and h_cost.betrag == 0)):
                                 h_list.cost = h_list.epreis * h_artikel.prozent / 100
 
                                 h_list.t_cost = h_list.t_sales * h_artikel.prozent / 100
@@ -830,7 +790,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
 
     def create_list(pos:bool):
 
-        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, htparam, h_artikel, hoteldpt, artikel, h_umsatz, h_journal, wgrpdep
+        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, double_currency, incl_service, incl_mwst, exrate, bill_date, htparam, waehrung, h_artikel, hoteldpt, artikel, l_artikel, h_rezept, h_umsatz, h_cost, wgrpdep
         nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag
 
 
@@ -1142,7 +1102,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
 
     def create_list1(pos:bool):
 
-        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, htparam, h_artikel, hoteldpt, artikel, h_umsatz, h_journal, wgrpdep
+        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, double_currency, incl_service, incl_mwst, exrate, bill_date, htparam, waehrung, h_artikel, hoteldpt, artikel, l_artikel, h_rezept, h_umsatz, h_cost, wgrpdep
         nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag
 
 
@@ -1536,7 +1496,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
 
     def create_sub(curr_grp:int):
 
-        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, htparam, h_artikel, hoteldpt, artikel, h_umsatz, h_journal, wgrpdep
+        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, double_currency, incl_service, incl_mwst, exrate, bill_date, htparam, waehrung, h_artikel, hoteldpt, artikel, l_artikel, h_rezept, h_umsatz, h_cost, wgrpdep
         nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag
 
 
@@ -1594,7 +1554,7 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
 
     def add_sub():
 
-        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, htparam, h_artikel, hoteldpt, artikel, h_umsatz, h_journal, wgrpdep
+        nonlocal fb_cost_analyst_data, t_anz, t_sales, t_cost, t_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, double_currency, incl_service, incl_mwst, exrate, bill_date, htparam, waehrung, h_artikel, hoteldpt, artikel, l_artikel, h_rezept, h_umsatz, h_cost, wgrpdep
         nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag
 
 
@@ -1611,18 +1571,20 @@ def menu_eng_btn_go_webbl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1024)]})
     price_type = htparam.finteger
-    
+
     htparam = get_cache (Htparam, {"paramnr": [(eq, 135)]})
     incl_service = htparam.flogical
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 134)]})
     incl_mwst = htparam.flogical
-    
+
     htparam = get_cache (Htparam, {"paramnr": [(eq, 240)]})
     double_currency = htparam.flogical
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
+
     waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
+
     if waehrung:
         exrate = waehrung.ankauf / waehrung.einheit
 
