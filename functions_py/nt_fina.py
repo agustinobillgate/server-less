@@ -206,8 +206,8 @@ def nt_fina():
         dd = get_day(to_date)
         yy = get_year(to_date) - 1
         jan1 = date_mdy(1, 1, get_year(to_date))
-        ljan1 = date_mdy(1, 1, get_year(to_date) - timedelta(days=1))
-        lfdate = date_mdy(get_month(from_date) , get_day(from_date) , get_year(from_date) - timedelta(days=1))
+        ljan1 = date_mdy(1, 1, get_year(to_date) - 1)
+        lfdate = date_mdy(get_month(from_date) , get_day(from_date) , get_year(from_date) - 1)
 
         # Rulita,
         # - Fixing issue condition if with modulo
