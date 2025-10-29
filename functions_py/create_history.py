@@ -1,10 +1,15 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 29/10/2025
+# tambah user_init di create_history
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Res_line, Bill, History, Guest, Bediener, Reservation, Zimkateg, Htparam, Akt_kont, Bill_line, Artikel, Res_history
 
-def create_history(resnr:int, reslinnr:int, old_zinr:string, res_mode:string):
+# Rd 29/10/2025
+# tambah user_init di create_history
+def create_history(resnr:int, reslinnr:int, old_zinr:string, res_mode:string, user_init:string):
 
     prepare_cache ([Res_line, Bill, History, Guest, Bediener, Reservation, Zimkateg, Htparam, Akt_kont, Artikel, Res_history])
 
