@@ -1,10 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
-# =======================================
-# Rulita, 21-10-2025
-# Issue :
+# =================================================
+# Rulita, 29-10-2025
+# - Recompile program  
 # - Missing table name arrangement
-# =======================================
+# - Fixing find fist do while resline to foreach
+# - Fixing find first arrangement
+# =================================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -89,17 +90,26 @@ def nt_rmratebl():
         rbuff = None
         Rbuff =  create_buffer("Rbuff",Res_line)
 
-        res_line = db_session.query(Res_line).filter(
-                 (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & ((Res_line.erwachs != 0) | (Res_line.kind1 != 0) | (Res_line.kind2 != 0)) & (Res_line.l_zuordnung[inc_value(2)] == 0)).first()
-        while None != res_line:
+        for res_line in db_session.query(Res_line).filter(
+                 (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & ((Res_line.erwachs != 0) | (Res_line.kind1 != 0) | (Res_line.kind2 != 0)) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
 
-            reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+            reservation = db_session.query(Reservation).filter(
+                        (Reservation.resnr == res_line.resnr)).first()
 
-            guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+            guest = db_session.query(Guest).filter(
+                        (Guest.gastnr == res_line.gastnr)).first()
+            
+            # Rulita,
+            # - Fixing find first arrangement
+            # arrangement = db_session.query(Arrangement).filter(
+            #                 (Arrangement.arrangement == res_line.arrangement)).first()
+            arrangement = db_session.query(Arrangement).filter(
+                            func.lower(func.trim(Arrangement.arrangement)) == func.lower(func.trim(res_line.arrangement))).first()
 
-            arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
-
-            artikel = get_cache (Artikel, {"artnr": [(eq, arrangement.argt_artikelnr)],"departement": [(eq, 0)]})
+            artikel = db_session.query(Artikel).filter(
+                            (Artikel.artnr == arrangement.argt_artikelnr) \
+                            & (Artikel.departement == 0)).first()
+        
             n = 0
 
             if matches(res_line.zimmer_wunsch,r"*DATE,*"):
@@ -213,10 +223,6 @@ def nt_rmratebl():
             na_list.zinr = res_line.zinr
             na_list.name = res_line.name
             na_list.zipreis =  to_decimal(roomrate)
-
-            curr_recid = res_line._recid
-            res_line = db_session.query(Res_line).filter(
-                     (Res_line.active_flag == 1) & (Res_line.resstatus != 12) & ((Res_line.erwachs != 0) | (Res_line.kind1 != 0) | (Res_line.kind2 != 0)) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line._recid > curr_recid)).first()
 
 
     def check_bonus():

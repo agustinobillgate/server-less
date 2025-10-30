@@ -30,7 +30,7 @@ ntaskhistory,nt_askhistory
 ntdisthistory,nt_disthistory
 ntdistmember,nt_distmember
 ntaiirevenue,nt_aiirevenue
-ntfina,nt_fina
+ntfina,nt_finabl
 clclosing,clclosing
 clcountexpiredbl,clcount_expiredbl
 ntropentable,nt_ropentable
@@ -43,3 +43,4 @@ ntfbstat,nt_fbstat
 ntresumsz,nt_resumsz
 ntbapostbill,nt_bapostbill
 ntshiftcover1,nt_shiftcover_1
+ntrevinatesurvey,nt_revinatesurvey

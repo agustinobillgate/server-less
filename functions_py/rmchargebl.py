@@ -23,11 +23,11 @@ from functions.argt_betrag import argt_betragbl
 from sqlalchemy import func
 from functions.create_newbillbl import create_newbillbl
 from functions.ratecode_compli import ratecode_compli
-from models import Bill_line, Bill, Htparam, Waehrung, Arrangement, Zimmer, Queasy, Counters, Guest, Artikel, Umsatz, Billjournal, Argt_line, Res_line, Res_history, Exrate, Reservation, Segment, Reslin_queasy, Zwkum, Fixleist, Master, Interface, Mast_art, Zimkateg, Guest_pr
+from models import Bill_line, Bill, Artikel, Htparam, Waehrung, Arrangement, Zimmer, Queasy, Counters, Guest, Umsatz, Billjournal, Argt_line, Res_line, Res_history, Exrate, Reservation, Segment, Reslin_queasy, Zwkum, Fixleist, Master, Interface, Mast_art, Zimkateg, Guest_pr
 
 def rmchargebl():
 
-    prepare_cache ([Bill, Htparam, Waehrung, Arrangement, Queasy, Counters, Guest, Artikel, Umsatz, Billjournal, Argt_line, Res_line, Res_history, Exrate, Reservation, Segment, Reslin_queasy, Fixleist, Master, Zimkateg, Guest_pr])
+    prepare_cache ([Bill, Artikel, Htparam, Waehrung, Arrangement, Queasy, Counters, Guest, Umsatz, Billjournal, Argt_line, Res_line, Res_history, Exrate, Reservation, Segment, Reslin_queasy, Fixleist, Master, Zimkateg, Guest_pr])
 
     user_init:string = ""
     new_contrate:bool = False
@@ -47,6 +47,7 @@ def rmchargebl():
     master_exist:bool = False
     master_rechnr:string = ""
     curr_posting:string = ""
+    divered_rental:int = 0
     
     # Rulita,
     # - Comment VIEW_AS EDITOR INNER_CHARS 17 INNER_LINES 1 False_WORD_WRAP
@@ -56,40 +57,41 @@ def rmchargebl():
     price:Decimal = to_decimal("0.0")
     amount:Decimal = to_decimal("0.0")
     curr_amount:Decimal = to_decimal("0.0")
-    bill_line = bill = htparam = waehrung = arrangement = zimmer = queasy = counters = guest = artikel = umsatz = billjournal = argt_line = res_line = res_history = exrate = reservation = segment = reslin_queasy = zwkum = fixleist = master = interface = mast_art = zimkateg = guest_pr = None
+    bill_line = bill = artikel = htparam = waehrung = arrangement = zimmer = queasy = counters = guest = umsatz = billjournal = argt_line = res_line = res_history = exrate = reservation = segment = reslin_queasy = zwkum = fixleist = master = interface = mast_art = zimkateg = guest_pr = None
 
-    art_list = jou_list = argt_list = bline_list = mbill = na_list = s_list = None
+    art_list = jou_list = bline_list = argt_list = mbill = bartikel = na_list = s_list = None
 
     art_list_data, Art_list = create_model("Art_list", {"artnr":int})
     jou_list_data, Jou_list = create_model("Jou_list", {"artnr":int, "rechnr":int, "amount":Decimal})
-    argt_list_data, Argt_list = create_model("Argt_list", {"argtnr":int, "argt_artnr":int, "departement":int, "is_charged":int, "period":int, "vt_percnt":int})
     bline_list_data, Bline_list = create_model_like(Bill_line)
+    argt_list_data, Argt_list = create_model("Argt_list", {"argtnr":int, "argt_artnr":int, "departement":int, "is_charged":int, "period":int, "vt_percnt":int})
     na_list_data, Na_list = create_model("Na_list", {"zinr":string, "name":string, "zipreis":Decimal})
     s_list_data, S_list = create_model("S_list", {"s_gastnr":int, "s_rechnr":int})
 
     Mbill = create_buffer("Mbill",Bill)
+    Bartikel = create_buffer("Bartikel",Artikel)
 
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, description, amount_foreign, price, amount, curr_amount, bill_line, bill, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, artikel, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
-        nonlocal mbill
+        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
+        nonlocal mbill, bartikel
 
 
-        nonlocal art_list, jou_list, argt_list, bline_list, mbill, na_list, s_list
-        nonlocal art_list_data, jou_list_data, argt_list_data, bline_list_data, na_list_data, s_list_data
+        nonlocal art_list, jou_list, bline_list, argt_list, mbill, bartikel, na_list, s_list
+        nonlocal art_list_data, jou_list_data, bline_list_data, argt_list_data, na_list_data, s_list_data
 
         return {}
 
     def create_list():
 
-        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, description, amount_foreign, price, amount, curr_amount, bill_line, bill, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, artikel, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
-        nonlocal mbill
+        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
+        nonlocal mbill, bartikel
 
 
-        nonlocal art_list, jou_list, argt_list, bline_list, mbill, na_list, s_list
-        nonlocal art_list_data, jou_list_data, argt_list_data, bline_list_data, na_list_data, s_list_data
+        nonlocal art_list, jou_list, bline_list, argt_list, mbill, bartikel, na_list, s_list
+        nonlocal art_list_data, jou_list_data, bline_list_data, argt_list_data, na_list_data, s_list_data
 
         do_it:bool = False
         rechnr:int = 0
@@ -119,12 +121,12 @@ def rmchargebl():
 
     def rm_revenue():
 
-        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, description, amount_foreign, price, amount, curr_amount, bill_line, bill, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, artikel, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
-        nonlocal mbill
+        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
+        nonlocal mbill, bartikel
 
 
-        nonlocal art_list, jou_list, argt_list, bline_list, mbill, na_list, s_list
-        nonlocal art_list_data, jou_list_data, argt_list_data, bline_list_data, na_list_data, s_list_data
+        nonlocal art_list, jou_list, bline_list, argt_list, mbill, bartikel, na_list, s_list
+        nonlocal art_list_data, jou_list_data, bline_list_data, argt_list_data, na_list_data, s_list_data
 
         roomrate:Decimal = to_decimal("0.0")
         i:int = 0
@@ -269,12 +271,12 @@ def rmchargebl():
 
     def tax_service1():
 
-        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, description, amount_foreign, price, amount, curr_amount, bill_line, bill, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, artikel, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
-        nonlocal mbill
+        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
+        nonlocal mbill, bartikel
 
 
-        nonlocal art_list, jou_list, argt_list, bline_list, mbill, na_list, s_list
-        nonlocal art_list_data, jou_list_data, argt_list_data, bline_list_data, na_list_data, s_list_data
+        nonlocal art_list, jou_list, bline_list, argt_list, mbill, bartikel, na_list, s_list
+        nonlocal art_list_data, jou_list_data, bline_list_data, argt_list_data, na_list_data, s_list_data
 
         service:Decimal = to_decimal("0.0")
         vat:Decimal = to_decimal("0.0")
@@ -516,12 +518,12 @@ def rmchargebl():
 
     def rm_charge():
 
-        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, description, amount_foreign, price, amount, curr_amount, bill_line, bill, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, artikel, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
-        nonlocal mbill
+        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
+        nonlocal mbill, bartikel
 
 
-        nonlocal art_list, jou_list, argt_list, bline_list, mbill, na_list, s_list
-        nonlocal art_list_data, jou_list_data, argt_list_data, bline_list_data, na_list_data, s_list_data
+        nonlocal art_list, jou_list, bline_list, argt_list, mbill, bartikel, na_list, s_list
+        nonlocal art_list_data, jou_list_data, bline_list_data, argt_list_data, na_list_data, s_list_data
 
         posted:bool = False
         post_it:bool = False
@@ -548,6 +550,13 @@ def rmchargebl():
 
         if htparam.flogical:
             limited_flag = True
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 1052)]})
+
+        if htparam:
+            divered_rental = htparam.finteger
+
+
         currzeit = get_current_time_in_seconds() - 3
 
         for res_line in db_session.query(Res_line).filter(
@@ -730,6 +739,26 @@ def rmchargebl():
 
                     update_bill(currzeit)
 
+                    queasy = get_cache (Queasy, {"key": [(eq, 301)],"number1": [(eq, res_line.resnr)],"logi1": [(eq, True)]})
+
+                    if queasy:
+
+                        # bartikel = get_cache (Artikel, {"artnr": [(eq, divered_rental)],"departement": [(eq, 0)]})
+                        bartikel = db_session.query(Artikel).filter((Artikel.artnr == divered_rental) & (Artikel.departement == 0)).first()
+
+                        curr_posting = "Diverred Rental"
+                        currzeit = currzeit + 3
+                        roomrate =  - to_decimal(res_line.zipreis)
+                        billart = divered_rental
+                        qty = 1
+                        description = bartikel.bezeich
+                        price =  to_decimal(roomrate)
+                        amount =  - to_decimal(res_line.zipreis)
+                        amount =  to_decimal(round (amount , price_decimal) )
+
+
+                        update_bill2(currzeit)
+
             if do_it:
 
                 for argt_line in db_session.query(Argt_line).filter(
@@ -890,12 +919,12 @@ def rmchargebl():
 
     def update_bill(currzeit:int):
 
-        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, description, amount_foreign, price, amount, curr_amount, bill_line, bill, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, artikel, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
-        nonlocal mbill
+        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
+        nonlocal mbill, bartikel
 
 
-        nonlocal art_list, jou_list, argt_list, bline_list, mbill, na_list, s_list
-        nonlocal art_list_data, jou_list_data, argt_list_data, bline_list_data, na_list_data, s_list_data
+        nonlocal art_list, jou_list, bline_list, argt_list, mbill, bartikel, na_list, s_list
+        nonlocal art_list_data, jou_list_data, bline_list_data, argt_list_data, na_list_data, s_list_data
 
         master_flag:bool = False
         bil_recid:int = 0
@@ -980,22 +1009,116 @@ def rmchargebl():
             billjournal.comment = to_string(res_line.resnr) + ";" +\
                     to_string(res_line.reslinnr)
 
+            if curr_posting.lower()  == ("room charge").lower() and amount != 0:
+                tax_service(currzeit)
+
+    def update_bill2(currzeit:int):
+
+        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
+        nonlocal mbill, bartikel
+
+
+        nonlocal art_list, jou_list, bline_list, argt_list, mbill, bartikel, na_list, s_list
+        nonlocal art_list_data, jou_list_data, bline_list_data, argt_list_data, na_list_data, s_list_data
+
+        master_flag:bool = False
+        bil_recid:int = 0
+        bill1 = None
+        Bill1 =  create_buffer("Bill1",Bill)
+        master_flag = update_masterbill(currzeit)
+
+        if not master_flag:
+
+            bill = get_cache (Bill, {"zinr": [(eq, res_line.zinr)],"resnr": [(eq, res_line.resnr)],"billtyp": [(eq, 0)],"parent_nr": [(eq, res_line.reslinnr)],"billnr": [(eq, billno)],"flag": [(eq, 0)]})
+
+            if not bill:
+
+                bill1 = get_cache (Bill, {"zinr": [(eq, res_line.zinr)],"gastnr": [(eq, res_line.gastnrpay)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"billtyp": [(eq, 0)],"billnr": [(eq, 1)],"flag": [(eq, 0)]})
+                bil_recid = get_output(create_newbillbl(res_line.resnr, res_line.reslinnr, bill1.parent_nr, billno))
+
+                bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+            bill.argtumsatz =  to_decimal(bill.argtumsatz) + to_decimal(amount)
+            bill.gesamtumsatz =  to_decimal(bill.gesamtumsatz) + to_decimal(amount)
+            bill.rgdruck = 0
+            bill.datum = bill_date
+            bill.saldo =  to_decimal(bill.saldo) + to_decimal(amount)
+            bill.mwst[98] = bill.mwst[98] + amount_foreign
+
+            if bill.rechnr == 0:
+
+                counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                counters.counter = counters.counter + 1
+                bill.rechnr = counters.counter
+                pass
+            bill_line = Bill_line()
+            db_session.add(bill_line)
+
+            bill_line.rechnr = bill.rechnr
+            bill_line.artnr = billart
+            bill_line.bezeich = description
+            bill_line.anzahl = qty
+            bill_line.betrag =  to_decimal(amount)
+            bill_line.fremdwbetrag =  to_decimal(amount_foreign)
+            bill_line.zinr = res_line.zinr
+            bill_line.departement = bartikel.departement
+            bill_line.epreis =  to_decimal(price)
+            bill_line.massnr = res_line.resnr
+            bill_line.billin_nr = res_line.reslinnr
+            bill_line.zeit = currzeit
+            bill_line.userinit = userinit
+            bill_line.massnr = res_line.resnr
+            bill_line.billin_nr = res_line.reslinnr
+            bill_line.arrangement = res_line.arrangement
+            bill_line.bill_datum = bill_date
+
+
+            pass
+
+            umsatz = get_cache (Umsatz, {"artnr": [(eq, billart)],"departement": [(eq, bartikel.departement)],"datum": [(eq, bill_date)]})
+
+            if not umsatz:
+                umsatz = Umsatz()
+                db_session.add(umsatz)
+
+                umsatz.artnr = billart
+                umsatz.datum = bill_date
+                umsatz.departement = bartikel.departement
+            umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(amount)
+            umsatz.anzahl = umsatz.anzahl + qty
+            pass
+            billjournal = Billjournal()
+            db_session.add(billjournal)
+
+            billjournal.rechnr = bill.rechnr
+            billjournal.artnr = billart
+            billjournal.anzahl = qty
+            billjournal.betrag =  to_decimal(amount)
+            billjournal.fremdwaehrng =  to_decimal(amount_foreign)
+            billjournal.bezeich = description
+            billjournal.zinr = res_line.zinr
+            billjournal.departement = bartikel.departement
+            billjournal.epreis =  to_decimal(price)
+            billjournal.zeit = currzeit
+            billjournal.userinit = userinit
+            billjournal.bill_datum = bill_date
+            billjournal.comment = to_string(res_line.resnr) + ";" +\
+                    to_string(res_line.reslinnr)
+
 
             pass
 
             if curr_posting.lower()  == ("room charge").lower()  and amount != 0:
                 tax_service(currzeit)
-            pass
 
 
     def update_masterbill(currzeit:int):
 
-        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, description, amount_foreign, price, amount, curr_amount, bill_line, bill, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, artikel, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
-        nonlocal mbill
+        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
+        nonlocal mbill, bartikel
 
 
-        nonlocal art_list, jou_list, argt_list, bline_list, mbill, na_list, s_list
-        nonlocal art_list_data, jou_list_data, argt_list_data, bline_list_data, na_list_data, s_list_data
+        nonlocal art_list, jou_list, bline_list, argt_list, mbill, bartikel, na_list, s_list
+        nonlocal art_list_data, jou_list_data, bline_list_data, argt_list_data, na_list_data, s_list_data
 
         master_flag = False
         mbill = None
@@ -1278,12 +1401,12 @@ def rmchargebl():
 
     def tax_service(currzeit:int):
 
-        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, description, amount_foreign, price, amount, curr_amount, bill_line, bill, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, artikel, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
-        nonlocal mbill
+        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
+        nonlocal mbill, bartikel
 
 
-        nonlocal art_list, jou_list, argt_list, bline_list, mbill, na_list, s_list
-        nonlocal art_list_data, jou_list_data, argt_list_data, bline_list_data, na_list_data, s_list_data
+        nonlocal art_list, jou_list, bline_list, argt_list, mbill, bartikel, na_list, s_list
+        nonlocal art_list_data, jou_list_data, bline_list_data, argt_list_data, na_list_data, s_list_data
 
         service:Decimal = to_decimal("0.0")
         vat:Decimal = to_decimal("0.0")
@@ -1556,12 +1679,12 @@ def rmchargebl():
 
     def master_taxserv(currzeit:int, billrecid:int):
 
-        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, description, amount_foreign, price, amount, curr_amount, bill_line, bill, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, artikel, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
-        nonlocal mbill
+        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
+        nonlocal mbill, bartikel
 
 
-        nonlocal art_list, jou_list, argt_list, bline_list, mbill, na_list, s_list
-        nonlocal art_list_data, jou_list_data, argt_list_data, bline_list_data, na_list_data, s_list_data
+        nonlocal art_list, jou_list, bline_list, argt_list, mbill, bartikel, na_list, s_list
+        nonlocal art_list_data, jou_list_data, bline_list_data, argt_list_data, na_list_data, s_list_data
 
         service:Decimal = to_decimal("0.0")
         vat:Decimal = to_decimal("0.0")
@@ -1915,12 +2038,12 @@ def rmchargebl():
 
     def check_fixargt_posted(artnr:int, dept:int, fakt_modus:int, intervall:int, start_date:date):
 
-        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, description, amount_foreign, price, amount, curr_amount, bill_line, bill, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, artikel, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
-        nonlocal mbill
+        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
+        nonlocal mbill, bartikel
 
 
-        nonlocal art_list, jou_list, argt_list, bline_list, mbill, na_list, s_list
-        nonlocal art_list_data, jou_list_data, argt_list_data, bline_list_data, na_list_data, s_list_data
+        nonlocal art_list, jou_list, bline_list, argt_list, mbill, bartikel, na_list, s_list
+        nonlocal art_list_data, jou_list_data, bline_list_data, argt_list_data, na_list_data, s_list_data
 
         posted = False
         master_flag:bool = False
@@ -1975,12 +2098,12 @@ def rmchargebl():
 
     def check_posted():
 
-        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, description, amount_foreign, price, amount, curr_amount, bill_line, bill, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, artikel, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
-        nonlocal mbill
+        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
+        nonlocal mbill, bartikel
 
 
-        nonlocal art_list, jou_list, argt_list, bline_list, mbill, na_list, s_list
-        nonlocal art_list_data, jou_list_data, argt_list_data, bline_list_data, na_list_data, s_list_data
+        nonlocal art_list, jou_list, bline_list, argt_list, mbill, bartikel, na_list, s_list
+        nonlocal art_list_data, jou_list_data, bline_list_data, argt_list_data, na_list_data, s_list_data
 
         posted = False
         master_flag:bool = False
@@ -2078,12 +2201,12 @@ def rmchargebl():
 
     def check_bonus():
 
-        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, description, amount_foreign, price, amount, curr_amount, bill_line, bill, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, artikel, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
-        nonlocal mbill
+        nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
+        nonlocal mbill, bartikel
 
 
-        nonlocal art_list, jou_list, argt_list, bline_list, mbill, na_list, s_list
-        nonlocal art_list_data, jou_list_data, argt_list_data, bline_list_data, na_list_data, s_list_data
+        nonlocal art_list, jou_list, bline_list, argt_list, mbill, bartikel, na_list, s_list
+        nonlocal art_list_data, jou_list_data, bline_list_data, argt_list_data, na_list_data, s_list_data
 
         bonus = False
         bonus_array:List[bool] = create_empty_list(999, False)
