@@ -20,7 +20,7 @@ from models import Htparam, Uebertrag, Bill_line, Bill, Res_line, Guest, Artikel
 
 def correct_guest_ledgerbl(fdate:date, tdate:date):
 
-    prepare_cache ([Htparam, Uebertrag, Bill_line, Bill, Res_line, Guest, Artikel])
+    prepare_cache ([Htparam, Uebertrag, Bill_line, Res_line, Guest, Artikel])
 
     success_flag = False
     billdate:date = None
