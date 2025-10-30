@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -3584,21 +3584,6 @@ def add_htp5bl():
 
         pass
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 81)]})
-
-    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
-
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 81)]})
-        htparam.paramgruppe = 99
-        htparam.bezeichnung = "License for Interface Keycard"
-        htparam.flogical = False
-        htparam.feldtyp = 4
-        htparam.fchar = ""
-        htparam.reihenfolge = 1086
-
-
-        pass
-
     htparam = get_cache (Htparam, {"paramnr": [(eq, 292)]})
 
     if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
@@ -3875,15 +3860,24 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1363)]})
 
-    if htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1363)]})
-        htparam.paramgruppe = 7
-        htparam.bezeichnung = "Activate Leasing Feature"
+        htparam.paramgruppe = 99
+        htparam.bezeichnung = "License for Service Apartement"
         htparam.flogical = False
         htparam.feldtyp = 4
         htparam.fchar = ""
         htparam.reihenfolge = 421
+
+
+        pass
+
+    elif htparam.paramgruppe != 99:
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 1363)]})
+        htparam.paramgruppe = 99
+        htparam.bezeichnung = "License for Service Apartement"
 
 
         pass
@@ -4277,6 +4271,158 @@ def add_htp5bl():
 
 
         pass
+        pass
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 101)]})
+
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+        pass
+        htparam.paramgruppe = 7
+        htparam.bezeichnung = "Screen Lock Timeout When Idle (in seconds)"
+        htparam.feldtyp = 1
+        htparam.flogical = False
+        htparam.fchar = ""
+        htparam.finteger = 0
+        htparam.reihenfolge = 2342
+
+        pass
+        pass
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 955)]})
+
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+        pass
+        htparam.paramgruppe = 7
+        htparam.bezeichnung = "TOTP Session Timeout Duration (Days)"
+        htparam.feldtyp = 1
+        htparam.flogical = False
+        htparam.fchar = ""
+        htparam.finteger = 7
+        htparam.reihenfolge = 2343
+
+        pass
+        pass
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 1372)]})
+
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+        pass
+        htparam.paramgruppe = 7
+        htparam.bezeichnung = "Enable Print for QRIS Digital Payment"
+        htparam.feldtyp = 4
+        htparam.flogical = False
+        htparam.fchar = ""
+        htparam.finteger = 0
+        htparam.reihenfolge = 2344
+
+        pass
+        pass
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 1375)]})
+
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+        pass
+        htparam.paramgruppe = 7
+        htparam.bezeichnung = "Enable Direct Print After Payment"
+        htparam.feldtyp = 4
+        htparam.flogical = False
+        htparam.fchar = ""
+        htparam.finteger = 0
+        htparam.reihenfolge = 2345
+
+        pass
+        pass
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 1376)]})
+
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+        pass
+        htparam.paramgruppe = 7
+        htparam.bezeichnung = "Minimum Due Days for Payment Link Digital Payment"
+        htparam.feldtyp = 1
+        htparam.flogical = False
+        htparam.fchar = ""
+        htparam.finteger = 0
+        htparam.reihenfolge = 2346
+
+        pass
+        pass
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 426)]})
+
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+        pass
+        htparam.paramgruppe = 7
+        htparam.bezeichnung = "Digital Payment Secret Key"
+        htparam.feldtyp = 5
+        htparam.flogical = False
+        htparam.fchar = ""
+        htparam.finteger = 0
+        htparam.reihenfolge = 2347
+
+        pass
+        pass
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 427)]})
+
+    if htparam and htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+        pass
+        htparam.paramgruppe = 99
+        htparam.bezeichnung = "License SelfOrder for No. of Total Outlet"
+        htparam.feldtyp = 4
+        htparam.flogical = False
+        htparam.fchar = ""
+        htparam.finteger = 0
+        htparam.reihenfolge = 1100
+
+        pass
+        pass
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 951)]})
+
+    if htparam and htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+        pass
+        htparam.paramgruppe = 99
+        htparam.bezeichnung = "License For Digital Payment"
+        htparam.feldtyp = 4
+        htparam.flogical = False
+        htparam.fchar = ""
+        htparam.finteger = 0
+        htparam.reihenfolge = 1101
+
+
+        pass
+        pass
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 952)]})
+
+    if htparam and htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+        pass
+        htparam.paramgruppe = 99
+        htparam.bezeichnung = "License For Self Service Digital Payment"
+        htparam.feldtyp = 4
+        htparam.flogical = False
+        htparam.fchar = ""
+        htparam.finteger = 0
+        htparam.reihenfolge = 1102
+
+
+        pass
+        pass
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 81)]})
+
+    if htparam.paramgruppe != 7 and (htparam.bezeichnung.lower()  == ("not used").lower()  or htparam.bezeichnung.lower()  == ("License for Interface Keycard").lower()):
+
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 81)]})
+        htparam.paramgruppe = 7
+        htparam.bezeichnung = "Payment Expired Duration (Minutes):minutes; D(deptno),D(deptno), minutes;minutes"
+        htparam.flogical = False
+        htparam.feldtyp = 5
+        htparam.fchar = ""
+        htparam.reihenfolge = 2348
+
+
         pass
 
     return generate_output()

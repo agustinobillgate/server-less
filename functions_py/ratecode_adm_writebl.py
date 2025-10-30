@@ -17,7 +17,9 @@ early_discount_data, Early_discount = create_model("Early_discount", {"disc_rate
 kickback_discount_data, Kickback_discount = create_model("Kickback_discount", {"disc_rate":Decimal, "max_days":int, "min_stay":int, "max_occ":int})
 stay_pay_data, Stay_pay = create_model("Stay_pay", {"f_date":date, "t_date":date, "stay":int, "pay":int})
 
-def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int, user_init:string, book_room:int, comp_room:int, max_room:int, p_list_data:[P_list], early_discount_data:[Early_discount], kickback_discount_data:[Kickback_discount], stay_pay_data:[Stay_pay]):
+def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int, user_init:string, book_room:int, 
+                         comp_room:int, max_room:int, p_list_data:[P_list], early_discount_data:[Early_discount], 
+                         kickback_discount_data:[Kickback_discount], stay_pay_data:[Stay_pay]):
 
     prepare_cache ([Ratecode, Queasy, Htparam, Bediener, Res_history, Zimkateg, Guest_pr, Guest, Arrangement, Artikel, Waehrung])
 
@@ -58,6 +60,9 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
     db_session = local_storage.db_session
 
+    mode_str = mode_str.strip()
+    prcode = prcode.strip()
+    
     def generate_output():
         nonlocal tb3_data, error_flag, tb3buff_data, zikatno, wday, adult, child1, curr_1, curr_2, curr_3, curr_4, mesval, ci_date, round_betrag, round_method, length_round, adjust_value, in_percent, tax_included, curr_time, ratecode, queasy, htparam, bediener, res_history, zimkateg, guest_pr, guest, prtable, arrangement, artikel, waehrung
         nonlocal mode_str, markno, prcode, argtno, user_init, book_room, comp_room, max_room
@@ -98,7 +103,8 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
         child_list = query(child_list_data, first=True)
         while None != child_list:
 
-            prtable = get_cache (Prtable, {"prcode": [(eq, child_list.child_code)]})
+            # prtable = get_cache (Prtable, {"prcode": [(eq, child_list.child_code)]})
+            prtable = db_session.query(Prtable).filter(Prtable.prcode == child_list.child_code).first()
             while None != prtable :
                 product_list = Product_list()
                 product_list_data.append(product_list)
@@ -109,8 +115,10 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
                 for curr_i in range(1,99 + 1) :
 
+                    # if prtable.product[curr_i - 1] == 0:
+                    #     return
                     if prtable.product[curr_i - 1] == 0:
-                        return
+                        continue
 
                     if prtable.product[curr_i - 1] >= 90001:
 

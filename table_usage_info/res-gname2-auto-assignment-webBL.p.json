@@ -1,0 +1,26 @@
+{
+    "Zimmer": {
+        "read": [],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "zikatnr",
+            "setup",
+            "resnr",
+            "ankunft",
+            "abreise",
+            "_recid",
+            "reslinnr"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [],
+        "write": []
+    },
+    "Outorder": {
+        "read": [],
+        "write": []
+    }
+}

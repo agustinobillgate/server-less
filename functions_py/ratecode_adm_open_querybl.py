@@ -1,4 +1,7 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 30/10/2025
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -18,6 +21,8 @@ def ratecode_adm_open_querybl(pvilanguage:int, prcode:string, market:string, mar
     tb3_data, Tb3 = create_model_like(Ratecode, {"s_recid":int})
 
     db_session = local_storage.db_session
+    prcode = prcode.strip()
+    market = market.strip()
 
     def generate_output():
         nonlocal comments, tb3_data, lvcarea, ratecode, arrangement, guest, guest_pr, prmarket
@@ -48,7 +53,7 @@ def ratecode_adm_open_querybl(pvilanguage:int, prcode:string, market:string, mar
 
         guest_pr_obj_list = {}
         for guest_pr, guest in db_session.query(Guest_pr, Guest).join(Guest,(Guest.gastnr == Guest_pr.gastnr)).filter(
-                 (Guest_pr.code == (prcode).lower())).order_by(Guest.name).all():
+                 (Guest_pr.code == (prcode))).order_by(Guest.name).all():
             if guest_pr_obj_list.get(guest_pr._recid):
                 continue
             else:
@@ -62,7 +67,7 @@ def ratecode_adm_open_querybl(pvilanguage:int, prcode:string, market:string, mar
         if prmarket:
 
             for ratecode in db_session.query(Ratecode).filter(
-                     (Ratecode.marknr == prmarket.nr) & (Ratecode.code == (prcode).lower()) & (Ratecode.argtnr == argtnr) & (Ratecode.zikatnr == zikatnr)).order_by(Ratecode.startperiode, Ratecode.wday, Ratecode.erwachs, Ratecode.kind1, Ratecode.kind2).all():
+                     (Ratecode.marknr == prmarket.nr) & (Ratecode.code == (prcode)) & (Ratecode.argtnr == argtnr) & (Ratecode.zikatnr == zikatnr)).order_by(Ratecode.startperiode, Ratecode.wday, Ratecode.erwachs, Ratecode.kind1, Ratecode.kind2).all():
                 tb3 = Tb3()
                 tb3_data.append(tb3)
 

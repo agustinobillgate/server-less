@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -25,6 +25,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
     waehrungnr = None
     reserve_dec = None
     dyna_rmrate = None
+    add_list_data = []
     accompany_tmpnr:List[int] = create_empty_list(3,0)
     ci_date:date = None
     dynarate_created:bool = False
@@ -53,10 +54,11 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
     move_str:string = ""
     res_line = bill = queasy = htparam = nation = arrangement = reservation = bediener = outorder = zimmer = mealcoup = reslin_queasy = resplan = zimkateg = messages = waehrung = guest_pr = guest = res_history = master = brief = segment = sourccod = counters = mc_guest = interface = guestseg = None
 
-    res_dynarate = reslin_list = nation_list = periode_list = resline = bbuff = buff_bill = bqueasy = pqueasy = tqueasy = None
+    res_dynarate = reslin_list = nation_list = periode_list = add_list = resline = bbuff = buff_bill = bqueasy = pqueasy = tqueasy = mqueasy = None
 
     nation_list_data, Nation_list = create_model("Nation_list", {"nr":int, "kurzbez":string, "bezeich":string})
     periode_list_data, Periode_list = create_model("Periode_list", {"counter":int, "periode1":date, "periode2":date, "diff_day":int, "amt_periode":Decimal, "tamount":Decimal})
+    add_list_data, Add_list = create_model("Add_list", {"avail_chg_rate":bool, "service_apart":bool, "printed_actual":bool})
 
     Resline = create_buffer("Resline",Res_line)
     Bbuff = create_buffer("Bbuff",Bill)
@@ -64,34 +66,37 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
     Bqueasy = create_buffer("Bqueasy",Queasy)
     Pqueasy = create_buffer("Pqueasy",Queasy)
     Tqueasy = create_buffer("Tqueasy",Queasy)
+    Mqueasy = create_buffer("Mqueasy",Queasy)
 
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
-        return {"update_kcard": update_kcard, "msg_str": msg_str, "waehrungnr": waehrungnr, "reserve_dec": reserve_dec, "dyna_rmrate": dyna_rmrate, "tot_qty": tot_qty}
+        return {"update_kcard": update_kcard, "msg_str": msg_str, "waehrungnr": waehrungnr, "reserve_dec": reserve_dec, "dyna_rmrate": dyna_rmrate, "tot_qty": tot_qty, "add-list": add_list_data}
 
     def update_repeat_charge():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         counter:int = 0
         curr_amount:Decimal = to_decimal("0.0")
         amount_periode:Decimal = to_decimal("0.0")
+        mqueasy = None
+        Mqueasy =  create_buffer("Mqueasy",Queasy)
 
         bqueasy = get_cache (Queasy, {"key": [(eq, 301)],"number1": [(eq, reslin_list.resnr)]})
 
@@ -107,18 +112,21 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
             bqueasy.logi1 = repeat_charge
 
 
-        else:
-            pass
-            bqueasy.logi1 = repeat_charge
-            bqueasy.char1 = user_init
-            bqueasy.date3 = get_current_date()
-            bqueasy.number3 = get_current_time_in_seconds()
+            else:
+                pass
+                bqueasy.logi1 = repeat_charge
+                bqueasy.char1 = user_init
+                bqueasy.date3 = get_current_date()
+                bqueasy.number3 = get_current_time_in_seconds()
 
 
-            pass
-            pass
+                pass
+                pass
+        add_list = Add_list()
+        add_list_data.append(add_list)
 
-        pqueasy = get_cache (Queasy, {"key": [(eq, 329)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)]})
+
+        pqueasy = get_cache (Queasy, {"key": [(eq, 329)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)],"logi3": [(eq, False)]})
 
         if not pqueasy:
 
@@ -143,6 +151,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
             tqueasy.number1 = res_line.resnr
             tqueasy.number2 = res_line.reslinnr
             tqueasy.number3 = counter
+            add_list.service_apart = True
 
             for reslin_queasy in db_session.query(Reslin_queasy).filter(
                      (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).all():
@@ -153,33 +162,94 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
             tqueasy.deci1 =  to_decimal(curr_amount)
 
 
-        else:
-            pass
-            pqueasy.date2 = reslin_list.ankunft
-            pqueasy.date3 = reslin_list.abreise
+            else:
 
-            for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                     (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == reslin_list.resnr) & (Reslin_queasy.reslinnr == reslin_list.reslinnr)).order_by(Reslin_queasy._recid).all():
-                curr_amount =  to_decimal(curr_amount) + to_decimal(reslin_queasy.deci1)
+                if res_line.resstatus == 6 and reslin_list.abreise > res_line.abreise:
 
-
-            amount_periode =  to_decimal(curr_amount) / to_decimal((get_month(reslin_list.abreise)) - to_decimal(get_month(reslin_list.ankunft)) )
-            pqueasy.deci1 =  to_decimal(curr_amount)
+                    for queasy in db_session.query(Queasy).filter(
+                             (Queasy.key == 329)).order_by(Queasy.number3).all():
+                        counter = queasy.number3 + 1
 
 
-            pass
-            pass
+                        break
+
+                    if counter == 0:
+                        counter = 1
+
+
+                    tqueasy = Queasy()
+                    db_session.add(tqueasy)
+
+                    tqueasy.key = 329
+                    tqueasy.date1 = ci_date
+                    tqueasy.date2 = res_line.abreise
+                    tqueasy.date3 = reslin_list.abreise
+                    tqueasy.number1 = res_line.resnr
+                    tqueasy.number2 = res_line.reslinnr
+                    tqueasy.number3 = counter
+                    tqueasy.logi3 = True
+                    add_list.service_apart = True
+
+                    for reslin_queasy in db_session.query(Reslin_queasy).filter(
+                             (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.date1 >= tqueasy.date2) & (Reslin_queasy.date1 <= tqueasy.date3)).order_by(Reslin_queasy._recid).all():
+                        curr_amount =  to_decimal(curr_amount) + to_decimal(reslin_queasy.deci1)
+
+
+                    amount_periode =  to_decimal(curr_amount) / to_decimal((get_month(tqueasy.date3)) - to_decimal(get_month(tqueasy.date2)) )
+                    tqueasy.deci1 =  to_decimal(curr_amount)
+
+
+                else:
+
+                    mqueasy = get_cache (Queasy, {"key": [(eq, 329)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)],"logi3": [(eq, True)]})
+
+                    if not mqueasy:
+                        pass
+                        pqueasy.date2 = reslin_list.ankunft
+                        pqueasy.date3 = reslin_list.abreise
+                        add_list.service_apart = True
+
+                        for reslin_queasy in db_session.query(Reslin_queasy).filter(
+                                 (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == reslin_list.resnr) & (Reslin_queasy.reslinnr == reslin_list.reslinnr)).order_by(Reslin_queasy._recid).all():
+                            curr_amount =  to_decimal(curr_amount) + to_decimal(reslin_queasy.deci1)
+
+                        if pqueasy.deci1 != curr_amount:
+
+                            if pqueasy.char2 != "":
+                                add_list.printed_actual = True
+
+
+                            mqueasy = Queasy()
+                            db_session.add(mqueasy)
+
+                            mqueasy.key = 356
+                            mqueasy.number1 = res_line.resnr
+                            mqueasy.number2 = res_line.reslinnr
+                            mqueasy.deci1 = to_decimal(round(pqueasy.deci1 , 0))
+                            mqueasy.deci2 = to_decimal(round(curr_amount , 0))
+                            mqueasy.char1 = user_init
+                            mqueasy.date1 = ci_date
+                            mqueasy.number3 = get_current_time_in_seconds()
+                            add_list.avail_chg_rate = True
+
+
+                        amount_periode =  to_decimal(curr_amount) / to_decimal((get_month(reslin_list.abreise)) - to_decimal(get_month(reslin_list.ankunft)) )
+                        pqueasy.deci1 =  to_decimal(curr_amount)
+
+
+                        pass
+                        pass
 
 
     def create_fixedrated():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         datum:date = None
         counter:int = 0
@@ -220,13 +290,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def static_ratecode_rates():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         to_date:date = None
         bill_date:date = None
@@ -244,8 +314,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if reslin_list.ankunft == reslin_list.abreise:
             to_date = reslin_list.abreise
-        else:
-            to_date = reslin_list.abreise - timedelta(days=1)
+            else:
+                to_date = reslin_list.abreise - timedelta(days=1)
         curr_zikatnr = reslin_list.zikatnr
 
         if reslin_list.l_zuordnung[0] != 0:
@@ -269,13 +339,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def calc_periode():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         periode_rsv1:date = None
         periode_rsv2:date = None
@@ -339,13 +409,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def min_resplan():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         curr_date:date = None
         beg_datum:date = None
@@ -362,40 +432,40 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if zimmer and (not zimmer.sleeping):
             pass
-        else:
-            i = rline.resstatus
-
-            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, rline.zikatnr)]})
-
-            if res_mode.lower()  == ("inhouse").lower() :
-                beg_datum = get_current_date()
             else:
-                beg_datum = rline.ankunft
-            curr_date = beg_datum
-            while curr_date >= beg_datum and curr_date < rline.abreise:
+                i = rline.resstatus
 
-                resplan = get_cache (Resplan, {"zikatnr": [(eq, zimkateg.zikatnr)],"datum": [(eq, curr_date)]})
+                zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, rline.zikatnr)]})
 
-                if resplan:
+                if res_mode.lower()  == ("inhouse").lower() :
+                    beg_datum = get_current_date()
+                else:
+                    beg_datum = rline.ankunft
+                curr_date = beg_datum
+                while curr_date >= beg_datum and curr_date < rline.abreise:
 
-                    rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                    resplan = get_cache (Resplan, {"zikatnr": [(eq, zimkateg.zikatnr)],"datum": [(eq, curr_date)]})
 
-                    if rpbuff:
-                        rpbuff.anzzim[i - 1] = rpbuff.anzzim[i - 1] - rline.zimmeranz
-                        pass
-                        pass
-                curr_date = curr_date + timedelta(days=1)
+                    if resplan:
+
+                        rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+
+                        if rpbuff:
+                            rpbuff.anzzim[i - 1] = rpbuff.anzzim[i - 1] - rline.zimmeranz
+                            pass
+                            pass
+                    curr_date = curr_date + timedelta(days=1)
 
 
     def rmchg_ressharer(act_zinr:string, new_zinr:string, main_nr:int):
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         curr_datum:date = None
         res_line2 = None
@@ -462,13 +532,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def rmchg_sharer(act_zinr:string, new_zinr:string):
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         res_recid1:int = 0
         parent_nr:int = 0
@@ -624,13 +694,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def update_billzinr():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         old_zinr:string = ""
         new_zinr:string = ""
@@ -712,13 +782,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def check_currency():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         waehrung1 = None
         Waehrung1 =  create_buffer("Waehrung1",Waehrung)
@@ -769,13 +839,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def add_keycard():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         maxkey:int = 2
         errcode:int = 0
@@ -795,13 +865,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def res_changes():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         do_it:bool = False
         guest1 = None
@@ -883,13 +953,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def res_changes0():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         guest1 = None
         cid:string = " "
@@ -909,26 +979,26 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if reslin_list.was_status == 0:
             reslin_queasy.char3 = reslin_queasy.char3 + to_string("NO") + ";"
-        else:
-            reslin_queasy.char3 = reslin_queasy.char3 + to_string("YES") + ";"
+            else:
+                reslin_queasy.char3 = reslin_queasy.char3 + to_string("YES") + ";"
 
         if not fixed_rate:
             reslin_queasy.char3 = reslin_queasy.char3 + to_string("NO") + ";"
-        else:
-            reslin_queasy.char3 = reslin_queasy.char3 + to_string("YES") + ";"
+            else:
+                reslin_queasy.char3 = reslin_queasy.char3 + to_string("YES") + ";"
         pass
         pass
 
 
     def add_resplan():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         curr_date:date = None
         beg_datum:date = None
@@ -947,51 +1017,51 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if zimmer and (not zimmer.sleeping):
             pass
-        else:
-            i = rline.resstatus
-
-            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, rline.zikatnr)]})
-
-            if res_mode.lower()  == ("inhouse").lower() :
-                beg_datum = get_current_date()
             else:
-                beg_datum = rline.ankunft
-            end_datum = rline.abreise - timedelta(days=1)
-            curr_date = beg_datum
+                i = rline.resstatus
 
+                zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, rline.zikatnr)]})
 
-            for curr_date in date_range(beg_datum,end_datum) :
-
-                resplan = get_cache (Resplan, {"zikatnr": [(eq, zimkateg.zikatnr)],"datum": [(eq, curr_date)]})
-
-                if not resplan:
-                    rpbuff = Resplan()
-                    db_session.add(rpbuff)
-
-                    rpbuff.datum = curr_date
-                    rpbuff.zikatnr = zimkateg.zikatnr
-                    rpbuff.anzzim[i - 1] = rpbuff.anzzim[i - 1] + rline.zimmeranz
-
-
+                if res_mode.lower()  == ("inhouse").lower() :
+                    beg_datum = get_current_date()
                 else:
+                    beg_datum = rline.ankunft
+                end_datum = rline.abreise - timedelta(days=1)
+                curr_date = beg_datum
 
-                    rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
-                    rpbuff.anzzim[i - 1] = rpbuff.anzzim[i - 1] + rline.zimmeranz
+
+                for curr_date in date_range(beg_datum,end_datum) :
+
+                    resplan = get_cache (Resplan, {"zikatnr": [(eq, zimkateg.zikatnr)],"datum": [(eq, curr_date)]})
+
+                    if not resplan:
+                        rpbuff = Resplan()
+                        db_session.add(rpbuff)
+
+                        rpbuff.datum = curr_date
+                        rpbuff.zikatnr = zimkateg.zikatnr
+                        rpbuff.anzzim[i - 1] = rpbuff.anzzim[i - 1] + rline.zimmeranz
 
 
-                    pass
-                    pass
+                    else:
+
+                        rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                        rpbuff.anzzim[i - 1] = rpbuff.anzzim[i - 1] + rline.zimmeranz
+
+
+                        pass
+                        pass
 
 
     def update_mainres():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         ct:string = ""
         answer:bool = True
@@ -1017,8 +1087,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if master and master.active:
             reservation.verstat = 1
-        else:
-            reservation.verstat = 0
+            else:
+                reservation.verstat = 0
 
         if res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("qci").lower() :
             reservation.useridanlage = user_init
@@ -1028,8 +1098,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if brief:
             reservation.briefnr = brief.briefnr
-        else:
-            reservation.briefnr = 0
+            else:
+                reservation.briefnr = 0
         ct = segm_svalue
 
         if to_int(substring(ct, 0, get_index(ct, " "))) != reservation.segmentcode:
@@ -1175,13 +1245,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def update_resline():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         hh:int = 0
         mm:int = 0
@@ -1743,8 +1813,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if reslin_list.ankunft >= ci_date:
             ratecode_date = reslin_list.ankunft
-        else:
-            ratecode_date = ci_date
+            else:
+                ratecode_date = ci_date
 
         reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, reslin_list.resnr)],"reslinnr": [(eq, reslin_list.reslinnr)],"date1": [(le, ratecode_date)],"date2": [(ge, ratecode_date)]})
 
@@ -1858,8 +1928,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if res_line.gastnrmember != reslin_list.gastnrmember:
             gname_chged = True
-        else:
-            gname_chged = False
+            else:
+                gname_chged = False
         res_line.gastnrmember = reslin_list.gastnrmember
 
         if res_line.gastnrpay != reslin_list.gastnrpay and res_line.active_flag == 1:
@@ -1908,8 +1978,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if fixed_rate:
             res_line.was_status = 1
-        else:
-            res_line.was_status = 0
+            else:
+                res_line.was_status = 0
 
         if res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("insert").lower()  or res_mode.lower()  == ("qci").lower() :
             res_line.reserve_char = to_string(get_year(get_current_date()) - 2000, "99") + "/" +\
@@ -1952,13 +2022,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def check_vhponline_conf_email():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 39)]})
 
@@ -1986,13 +2056,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def store_vip():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         gmember = None
         Gmember =  create_buffer("Gmember",Guest)
@@ -2008,19 +2078,19 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if guestseg:
             res_line.betrieb_gastmem = guestseg.segmentcode
-        else:
-            res_line.betrieb_gastmem = 0
+            else:
+                res_line.betrieb_gastmem = 0
 
 
     def accompany_vip():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         gmember = None
         Gmember =  create_buffer("Gmember",Guest)
@@ -2049,20 +2119,20 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if guestseg:
             resline.betrieb_gastmem = guestseg.segmentcode
-        else:
-            resline.betrieb_gastmem = 0
+            else:
+                resline.betrieb_gastmem = 0
         pass
 
 
     def resline_reserve_dec():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         exchg_rate:Decimal = to_decimal("0.0")
         rline = None
@@ -2091,13 +2161,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def res_dyna_rmrate():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         rmrate:Decimal = None
         arrival_date:date = None
@@ -2180,13 +2250,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def update_qsy171():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, end_date, tot_qty
-        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
+        nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, periode_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy
-        nonlocal nation_list_data, periode_list_data
+        nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
+        nonlocal nation_list_data, periode_list_data, add_list_data
 
         qsy = None
         bqsy = None
@@ -2674,7 +2744,6 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                 res_history.betriebsnr = bediener.nr
             pass
 
-
     wig_gastnr = get_output(htpint(109))
     ind_gastnr = get_output(htpint(123))
     accompany_tmpnr[0] = accompany_tmpnr1
@@ -2755,7 +2824,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         nation_obj_list = {}
         nation = Nation()
         queasy = Queasy()
-        for nation.nationnr, nation.kurzbez, nation.bezeich, nation._recid, queasy.char1, queasy.logi2, queasy._recid, queasy.key, queasy.number1, queasy.date3, queasy.number3, queasy.logi1, queasy.date2, queasy.deci1, queasy.date1, queasy.number2 in db_session.query(Nation.nationnr, Nation.kurzbez, Nation.bezeich, Nation._recid, Queasy.char1, Queasy.logi2, Queasy._recid, Queasy.key, Queasy.number1, Queasy.date3, Queasy.number3, Queasy.logi1, Queasy.date2, Queasy.deci1, Queasy.date1, Queasy.number2).join(Queasy,(Queasy.key == 6) & (Queasy.number1 == Nation.untergruppe) & (matches(Queasy.char1,"*europe*"))).filter(
+        for nation.nationnr, nation.kurzbez, nation.bezeich, nation._recid, queasy.char1, queasy.logi2, queasy._recid, queasy.key, queasy.number1, queasy.date3, queasy.number3, queasy.logi1, queasy.deci1, queasy.date2, queasy.char2, queasy.date1, queasy.number2, queasy.logi3, queasy.deci2 in db_session.query(Nation.nationnr, Nation.kurzbez, Nation.bezeich, Nation._recid, Queasy.char1, Queasy.logi2, Queasy._recid, Queasy.key, Queasy.number1, Queasy.date3, Queasy.number3, Queasy.logi1, Queasy.deci1, Queasy.date2, Queasy.char2, Queasy.date1, Queasy.number2, Queasy.logi3, Queasy.deci2).join(Queasy,(Queasy.key == 6) & (Queasy.number1 == Nation.untergruppe) & (matches(Queasy.char1,"*europe*"))).filter(
                  (Nation.natcode == 0)).order_by(Nation.kurzbez).all():
             if nation_obj_list.get(nation._recid):
                 continue

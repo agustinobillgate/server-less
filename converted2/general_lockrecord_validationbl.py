@@ -95,7 +95,7 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
             queasy.key = 359
             queasy.char1 = t_input_list.curr_room
             queasy.char2 = t_input_list.user_initial
-            queasy.char3 = gettimestampwithms()
+            queasy.char3 = getTimestampWithMs()
             queasy.number1 = t_input_list.res_number
             queasy.number2 = t_input_list.reslin_number
             queasy.number3 = 1
