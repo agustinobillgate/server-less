@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# =========================================
+# Rulita, 30-10-2025 
+# Issue : 
+# - New compile program
+# =========================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -146,9 +151,12 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
                             val =  to_decimal(val) + to_decimal(t_list.val)
                             t_val =  to_decimal(t_val) + to_decimal(t_list.val)
 
-                qty =  to_decimal(qty) + to_decimal(l_op.anzahl)
-                t_list.qty =  to_decimal(l_op.anzahl)
-                t_qty =  to_decimal(t_qty) + to_decimal(l_op.anzahl)
+
+                qty = to_decimal(qty + round(l_op.anzahl , 2))
+                t_list.qty = to_decimal(round(l_op.anzahl , 2))
+                t_qty = to_decimal(t_qty + round(l_op.anzahl , 2))
+
+
         else:
             l_op_obj_list = {}
             l_op = L_op()
@@ -234,9 +242,10 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
                             val =  to_decimal(val) + to_decimal(t_list.val)
                             t_val =  to_decimal(t_val) + to_decimal(t_list.val)
 
-                qty =  to_decimal(qty) + to_decimal(l_op.anzahl)
-                t_list.qty =  to_decimal(l_op.anzahl)
-                t_qty =  to_decimal(t_qty) + to_decimal(l_op.anzahl)
+
+                qty = to_decimal(qty + round(l_op.anzahl , 2))
+                t_list.qty = to_decimal(round(l_op.anzahl , 2))
+                t_qty = to_decimal(t_qty + round(l_op.anzahl , 2))
 
         if qty != 0:
             t_list = T_list()
@@ -318,15 +327,15 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
 
                 it_exist = True
 
-                l_lager = get_cache (L_lager, {"lager_nr": [(eq, lager_nr)]})
+                l_lager = get_cache (L_lager, {"lager_nr": [(eq, l_op.lager_nr)]})
 
-                l_store = get_cache (L_lager, {"lager_nr": [(eq, pos)]})
+                l_store = get_cache (L_lager, {"lager_nr": [(eq, l_op.pos)]})
 
-                l_untergrup = get_cache (L_untergrup, {"zwkum": [(eq, zwkum)]})
+                l_untergrup = get_cache (L_untergrup, {"zwkum": [(eq, l_artikel.zwkum)]})
 
-                l_hauptgrp = get_cache (L_hauptgrp, {"endkum": [(eq, endkum)]})
+                l_hauptgrp = get_cache (L_hauptgrp, {"endkum": [(eq, l_artikel.endkum)]})
 
-                if lscheinnr != lscheinnr and qty != 0:
+                if lscheinnr != l_op.lscheinnr and qty != 0:
                     t_list = T_list()
                     t_list_data.append(t_list)
 
@@ -345,13 +354,13 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
                 l_op.fuellflag = fuellflag
 
                 add_id()
-                t_list.lager_nr = lager_nr
-                t_list.pos = pos
-                t_list.op_art = op_art
-                t_list.datum = datum
+                t_list.lager_nr = l_op.lager_nr
+                t_list.pos = l_op.pos
+                t_list.op_art = l_op.op_art
+                t_list.datum = l_op.datum
                 t_list.lscheinnr = lscheinnr
 
-                if op_art == 4:
+                if l_op.op_art == 4:
                     t_list.f_bezeich = l_lager.bezeich
 
                     if l_store:
@@ -361,20 +370,18 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
 
                     if l_store:
                         t_list.f_bezeich = l_store.bezeich
-
-                t_list.artnr = to_string(artnr, "9999999")
-                t_list.bezeich = bezeich
-                t_list.einheit = masseinheit
-                t_list.content =  to_decimal(inhalt)
+                t_list.artnr = to_string(l_op.artnr, "9999999")
+                t_list.bezeich = l_artikel.bezeich
+                t_list.einheit = l_artikel.masseinheit
+                t_list.content =  to_decimal(l_artikel.inhalt)
                 t_list.cat_bez = l_lager.bezeich
                 t_list.main_bez = l_hauptgrp.bezeich
                 t_list.subgrp_bez = l_untergrup.bezeich
 
-                if anzahl != 0 and show_price:
+                if l_op.anzahl != 0 and show_price:
 
                     if not expense_amt:
-                        # t_list.price = to_string((l_op.warenwert / l_op.anzahl) , ">>>,>>>,>>9.99")
-                        t_list.price = to_string(l_artikel_vk_preis, ">>>,>>>,>>9.99")
+                        t_list.price = to_string(l_artikel.vk_preis, ">>>,>>>,>>9.99")
 
                         if show_price:
                             # t_list.val =  to_decimal(l_op.warenwert)
@@ -388,23 +395,25 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
                         unit_expense =  to_decimal("0")
 
                         for queasy in db_session.query(Queasy).filter(
-                                 (Queasy.key == 121) & (Queasy.number1 == artnr) & (Queasy.date1 <= datum)).order_by(Queasy.date1.desc()).yield_per(100):
-
+                                 (Queasy.key == 121) & (Queasy.number1 == l_op.artnr) & (Queasy.date1 <= l_op.datum)).order_by(Queasy.date1.desc()).yield_per(100):
                             unit_expense =  to_decimal(queasy.deci1)
                             break
 
                         t_list.price = to_string(unit_expense, ">>>,>>>,>>9.99")
 
                         if show_price:
-                            t_list.val =  to_decimal(unit_expense) * to_decimal(anzahl)
+                            t_list.val =  to_decimal(unit_expense) * to_decimal(l_op.anzahl)
                             val =  to_decimal(val) + to_decimal(t_list.val)
                             t_val =  to_decimal(t_val) + to_decimal(t_list.val)
 
-                qty =  to_decimal(qty) + to_decimal(anzahl)
-                t_list.qty =  to_decimal(anzahl)
-                t_qty =  to_decimal(t_qty) + to_decimal(anzahl)
+
+                qty = to_decimal(qty + round(l_op.anzahl , 2))
+                t_list.qty = to_decimal(round(l_op.anzahl , 2))
+                t_qty = to_decimal(t_qty + round(l_op.anzahl , 2))
+
 
         else:
+
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
@@ -490,9 +499,9 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
                             t_val =  to_decimal(t_val) + to_decimal(t_list.val)
 
 
-                qty =  to_decimal(qty) + to_decimal(l_op.anzahl)
-                t_list.qty =  to_decimal(l_op.anzahl)
-                t_qty =  to_decimal(t_qty) + to_decimal(l_op.anzahl)
+                qty = to_decimal(qty + round(l_op.anzahl , 2))
+                t_list.qty = to_decimal(round(l_op.anzahl , 2))
+                t_qty = to_decimal(t_qty + round(l_op.anzahl , 2))
 
         if qty != 0:
             t_list = T_list()
@@ -627,9 +636,10 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
                                 val =  to_decimal(val) + to_decimal(t_list.val)
                                 t_val =  to_decimal(t_val) + to_decimal(t_list.val)
 
-                    qty =  to_decimal(qty) + to_decimal(l_op.anzahl)
-                    t_list.qty =  to_decimal(l_op.anzahl)
-                    t_qty =  to_decimal(t_qty) + to_decimal(l_op.anzahl)
+
+                    t_list.qty = to_decimal(round(l_op.anzahl , 2))
+                    qty = to_decimal(qty + round(l_op.anzahl , 2))
+                    t_qty = to_decimal(t_qty + round(l_op.anzahl , 2))
         else:
             l_op_obj_list = {}
             l_op = L_op()
@@ -720,9 +730,10 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
                                 val =  to_decimal(val) + to_decimal(t_list.val)
                                 t_val =  to_decimal(t_val) + to_decimal(t_list.val)
 
-                    qty =  to_decimal(qty) + to_decimal(l_op.anzahl)
-                    t_list.qty =  to_decimal(l_op.anzahl)
-                    t_qty =  to_decimal(t_qty) + to_decimal(l_op.anzahl)
+
+                    t_list.qty = to_decimal(round(l_op.anzahl , 2))
+                    qty = to_decimal(qty + round(l_op.anzahl , 2))
+                    t_qty = to_decimal(t_qty + round(l_op.anzahl , 2))
 
         if qty != 0:
             t_list = T_list()
@@ -863,9 +874,10 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
                                 val =  to_decimal(val) + to_decimal(t_list.val)
                                 t_val =  to_decimal(t_val) + to_decimal(t_list.val)
 
-                    qty =  to_decimal(qty) + to_decimal(l_op.anzahl)
-                    t_list.qty =  to_decimal(l_op.anzahl)
-                    t_qty =  to_decimal(t_qty) + to_decimal(l_op.anzahl)
+
+                    t_list.qty = to_decimal(round(l_op.anzahl , 2))
+                    qty = to_decimal(qty + round(l_op.anzahl , 2))
+                    t_qty = to_decimal(t_qty + round(l_op.anzahl , 2))
         else:
             l_op_obj_list = {}
             l_op = L_op()
@@ -956,9 +968,10 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
                                 val =  to_decimal(val) + to_decimal(t_list.val)
                                 t_val =  to_decimal(t_val) + to_decimal(t_list.val)
 
-                    qty =  to_decimal(qty) + to_decimal(l_op.anzahl)
-                    t_list.qty =  to_decimal(l_op.anzahl)
-                    t_qty =  to_decimal(t_qty) + to_decimal(l_op.anzahl)
+
+                    t_list.qty = to_decimal(round(l_op.anzahl , 2))
+                    qty = to_decimal(qty + round(l_op.anzahl , 2))
+                    t_qty = to_decimal(t_qty + round(l_op.anzahl , 2))
 
         if qty != 0:
             t_list = T_list()
@@ -1101,9 +1114,10 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
                                 val =  to_decimal(val) + to_decimal(t_list.val)
                                 t_val =  to_decimal(t_val) + to_decimal(t_list.val)
 
-                    qty =  to_decimal(qty) + to_decimal(l_op.anzahl)
-                    t_list.qty =  to_decimal(l_op.anzahl)
-                    t_qty =  to_decimal(t_qty) + to_decimal(l_op.anzahl)
+
+                    t_list.qty = to_decimal(round(l_op.anzahl , 2))
+                    qty = to_decimal(qty + round(l_op.anzahl , 2))
+                    t_qty = to_decimal(t_qty + round(l_op.anzahl , 2))
         else:
 
             l_op_obj_list = {}
@@ -1195,9 +1209,10 @@ def stock_translist1_btn_go_1bl(trans_code:string, m_grp:int, sorttype:int, m_st
                                 val =  to_decimal(val) + to_decimal(t_list.val)
                                 t_val =  to_decimal(t_val) + to_decimal(t_list.val)
 
-                    t_list.qty =  to_decimal(l_op.anzahl)
-                    qty =  to_decimal(qty) + to_decimal(l_op.anzahl)
-                    t_qty =  to_decimal(t_qty) + to_decimal(l_op.anzahl)
+
+                    t_list.qty = to_decimal(round(l_op.anzahl , 2))
+                    qty = to_decimal(qty + round(l_op.anzahl , 2))
+                    t_qty = to_decimal(t_qty + round(l_op.anzahl , 2))
 
         if qty != 0:
             t_list = T_list()
