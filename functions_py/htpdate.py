@@ -26,5 +26,3 @@ def htpdate(htparamnum:int):
         htpdate = htparam.fdate
 
     return generate_output()
-
-    return generate_output()

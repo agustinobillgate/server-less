@@ -14,7 +14,7 @@ import re
 from functions.ratecode_rate import ratecode_rate
 from functions.pricecod_rate import pricecod_rate
 from functions.calc_servtaxesbl import calc_servtaxesbl
-from functions.argt_betrag import argt_betrag
+from functions.argt_betragbl import argt_betragbl
 from models import Guest, Segment, Res_line, Htparam, Nation, Arrangement, Bill_line, Genfcast, Reservation, Zimkateg, Akt_cust, Bediener, Kontline, Waehrung, Artikel, Reslin_queasy, Argt_line
 
 def nt_genfcast():
@@ -118,10 +118,11 @@ def nt_genfcast():
 
         segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
         created = None
+
         yy = to_int(substring(res_line.reserve_char, 0, 2)) + 2000
         mm = to_int(substring(res_line.reserve_char, 3, 2))
         dd = to_int(substring(res_line.reserve_char, 6, 2))
-        created = date_mdy(mm, dd, yy)
+        created = date_mdy(yy, mm, dd)
 
         if (created == None) or (created > res_line.ankunft):
             created = res_line.ankunft
@@ -338,7 +339,7 @@ def nt_genfcast():
                          (Argt_line.argtnr == arrangement.argtnr) & not_ (Argt_line.kind2)).order_by(Argt_line._recid).all():
 
                     artikel = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
-                    argt_betrag, ex_rate = get_output(argt_betrag(res_line._recid, argt_line._recid))
+                    argt_betrag, ex_rate = get_output(argt_betragbl(res_line._recid, argt_line._recid))
                     lodg_betrag =  to_decimal(lodg_betrag) - to_decimal(argt_betrag) * to_decimal(ex_rate)
 
             lodg_betrag = to_decimal(round(lodg_betrag , price_decimal))
