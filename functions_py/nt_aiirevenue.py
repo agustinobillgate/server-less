@@ -1,11 +1,18 @@
 #using conversion tools version: 1.0.0.117
 
-# =========================================
+# =======================================================
 # Rulita, 23-10-2025 
 # Issue : 
 # - New compile program
 # - Fix lowercase variable and temp-table
-# =========================================
+
+# Rulita, 30-10-2025 
+# Fixing table name lowercase segmentrevenue.segmentcode
+# Fixing table name lowercase rsv_list.ta_code
+# Fixing table name lowercase guest.name
+# Fixing table name lowercase roomtype.roomtypecode
+# Fixing input param res_line.segmentcode change to str
+# =======================================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -502,13 +509,13 @@ def nt_aiirevenue():
         if gbuff:
             rsv_list.ta_code = to_string(gbuff.gastnr)
 
-            ta_list = query(ta_list_data, filters=(lambda ta_list: ta_list.gastnr == rsv_list.TA_code), first=True)
+            ta_list = query(ta_list_data, filters=(lambda ta_list: ta_list.gastnr == rsv_list.ta_code), first=True)
 
-            if not ta_list and rsv_list.TA_code != "":
+            if not ta_list and rsv_list.ta_code != "":
                 ta_list = Ta_list()
                 ta_list_data.append(ta_list)
 
-                ta_list.gastnr = rsv_list.TA_code
+                ta_list.gastnr = rsv_list.ta_code
                 ta_list.name = gbuff.name
                 ta_list.ta_title = gbuff.anredefirma
                 ta_list.address = gbuff.adresse1 + ", " + gbuff.adresse2 + ", " + gbuff.adresse3
@@ -675,7 +682,7 @@ def nt_aiirevenue():
 
         if guest:
 
-            guest_list = query(guest_list_data, filters=(lambda guest_list: guest_list.to_int(guest_list.gastnr) == guest.gastnr), first=True)
+            guest_list = query(guest_list_data, filters=(lambda guest_list: to_int(guest_list.gastnr) == guest.gastnr), first=True)
 
             if not guest_list:
                 guest_list = Guest_list()
@@ -694,7 +701,7 @@ def nt_aiirevenue():
                     guest_list.modifydate = to_string(get_year(guest.modif_datum) , "9999") + "-" + to_string(get_month(guest.modif_datum) , "99") + "-" + to_string(get_day(guest.modif_datum) , "99") + "T00:00:00"
 
                 if reservation:
-                    guest_list.mainsegment = validate_field(reservation.segmentcode)
+                    guest_list.mainsegment = validate_field(to_string(reservation.segmentcode))
                 guest_list.vip = "0"
 
                 for guestseg in db_session.query(Guestseg).filter(
@@ -733,7 +740,7 @@ def nt_aiirevenue():
                 if matches(guest_list.comments,r"*|*"):
                     guest_list.comments = replace_str(guest_list.comments, "|", "-")
                 guest_list.gastnr = validate_field(to_string(guest.gastnr))
-                guest_list.lastname = validate_field(guest.NAME)
+                guest_list.lastname = validate_field(guest.name)
                 guest_list.firstname = validate_field(guest.vorname1)
                 guest_list.city = validate_field(guest.wohnort)
                 guest_list.prov = validate_field(guest.geburt_ort2)
@@ -1148,7 +1155,7 @@ def nt_aiirevenue():
 
     for rsv_list in query(rsv_list_data, filters=(lambda rsv_list: rsv_list.resnr != "")):
         i_counter = i_counter + 1
-        outstr = "RSV" + "|" + rsv_list.resnr + "|" + rsv_list.reslinnr + "|" + rsv_list.arr_date + "|" + rsv_list.dep_date + "|" + rsv_list.flight1 + "|" + rsv_list.flight2 + "|" + rsv_list.eta + "|" + rsv_list.etd + "|" + rsv_list.pickup + "|" + rsv_list.dropoff + "|" + rsv_list.nights + "|" + rsv_list.adults + "|" + rsv_list.childs + "|" + rsv_list.infants + "|" + rsv_list.infantage + "|" + rsv_list.comp + "|" + rsv_list.comp_ch + "|" + rsv_list.voucher + "|" + rsv_list.TA_code + "|" + rsv_list.ratecode + "|" + rsv_list.qty + "|" + rsv_list.roomcat + "|" + rsv_list.argt + "|" + rsv_list.curr + "|" + rsv_list.roomrate + "|" + rsv_list.roomcharge + "|" + rsv_list.roomtax + "|" + rsv_list.roomserv + "|" + rsv_list.room_bf + "|" + rsv_list.room_lunch + "|" + rsv_list.room_dinner + "|" + rsv_list.room_others + "|" + rsv_list.discount + "|" + rsv_list.commission + "|" + rsv_list.fixrate + "|" + rsv_list.billinstruction + "|" + rsv_list.purpose + "|" + rsv_list.memo + "|" + rsv_list.gastnrmember + "|" + rsv_list.guest_status + "|" + rsv_list.rsv_type + "|" + rsv_list.rsv_status + "|" + rsv_list.rsv_time + "|" + rsv_list.cancel_nr + "|" + rsv_list.cancel_date + "|" + rsv_list.cancel + "|" + rsv_list.co_time + "|" + rsv_list.ci_time + "|" + to_string(rsv_list.resstatus) + "|" + to_string(rsv_list.active_flag) + "|" + rsv_list.zinr + "|" + rsv_list.isdayuseincluded + "|" + rsv_list.modifydate
+        outstr = "RSV" + "|" + rsv_list.resnr + "|" + rsv_list.reslinnr + "|" + rsv_list.arr_date + "|" + rsv_list.dep_date + "|" + rsv_list.flight1 + "|" + rsv_list.flight2 + "|" + rsv_list.eta + "|" + rsv_list.etd + "|" + rsv_list.pickup + "|" + rsv_list.dropoff + "|" + rsv_list.nights + "|" + rsv_list.adults + "|" + rsv_list.childs + "|" + rsv_list.infants + "|" + rsv_list.infantage + "|" + rsv_list.comp + "|" + rsv_list.comp_ch + "|" + rsv_list.voucher + "|" + rsv_list.ta_code + "|" + rsv_list.ratecode + "|" + rsv_list.qty + "|" + rsv_list.roomcat + "|" + rsv_list.argt + "|" + rsv_list.curr + "|" + rsv_list.roomrate + "|" + rsv_list.roomcharge + "|" + rsv_list.roomtax + "|" + rsv_list.roomserv + "|" + rsv_list.room_bf + "|" + rsv_list.room_lunch + "|" + rsv_list.room_dinner + "|" + rsv_list.room_others + "|" + rsv_list.discount + "|" + rsv_list.commission + "|" + rsv_list.fixrate + "|" + rsv_list.billinstruction + "|" + rsv_list.purpose + "|" + rsv_list.memo + "|" + rsv_list.gastnrmember + "|" + rsv_list.guest_status + "|" + rsv_list.rsv_type + "|" + rsv_list.rsv_status + "|" + rsv_list.rsv_time + "|" + rsv_list.cancel_nr + "|" + rsv_list.cancel_date + "|" + rsv_list.cancel + "|" + rsv_list.co_time + "|" + rsv_list.ci_time + "|" + to_string(rsv_list.resstatus) + "|" + to_string(rsv_list.active_flag) + "|" + rsv_list.zinr + "|" + rsv_list.isdayuseincluded + "|" + rsv_list.modifydate
         add_line(outstr, i_counter)
 
     for guest_list in query(guest_list_data, filters=(lambda guest_list: guest_list.gastnr != "")):
@@ -1416,9 +1423,9 @@ def nt_aiirevenue():
         else:
             genstat_obj_list[genstat._recid] = True
 
-        segmentrevenue = query(segmentrevenue_data, filters=(lambda segmentrevenue: segmentrevenue.segmentRevenue.segmentcode == genstat.segmentcode), first=True)
+        segmentrevenue = query(segmentrevenue_data, filters=(lambda segmentrevenue: segmentrevenue.segmentcode == genstat.segmentcode), first=True)
 
-        roomtype = query(roomtype_data, filters=(lambda roomtype: roomtype.roomType.RoomTypeCode == zimkateg.kurzbez), first=True)
+        roomtype = query(roomtype_data, filters=(lambda roomtype: roomtype.roomtypecode == zimkateg.kurzbez), first=True)
 
         if genstat.datum == ci_date:
 
@@ -1484,7 +1491,7 @@ def nt_aiirevenue():
     for segmentstat in db_session.query(Segmentstat).filter(
              (Segmentstat.datum >= fr_date1) & (Segmentstat.datum <= ci_date)).order_by(Segmentstat._recid).all():
 
-        segmentrevenue = query(segmentrevenue_data, filters=(lambda segmentrevenue: segmentrevenue.SegmentRevenue.segmentcode == segmentstat.segmentcode), first=True)
+        segmentrevenue = query(segmentrevenue_data, filters=(lambda segmentrevenue: segmentrevenue.segmentcode == segmentstat.segmentcode), first=True)
 
         if segmentrevenue:
             segmentrevenue.budget =  to_decimal(segmentrevenue.budget) + to_decimal(segmentstat.budlogis)
