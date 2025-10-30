@@ -1,11 +1,15 @@
 #using conversion tools version: 1.0.0.117
 
-# ============================
+# ============================================
 # Rulita, 22-10-2025 
 # Issue : 
 # - New compile program
 # - Fix space in string
-# ============================
+
+# Rulita, 29-10-2025 
+# Issue : 
+# - Fixing issue find fist arrangement is null
+# ============================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -262,7 +266,11 @@ def nt_revbdown():
                     rguest = db_session.query(Rguest).filter(
                              (Rguest.gastnr == res_line.gastnr)).first()
 
-                    arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                    # Rulita,
+                    # - Fixing issue find fist arrangement is null
+                    # arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+                    arrangement = db_session.query(Arrangement).filter(
+                             (func.lower(func.trim(Arrangement.arrangement)) == func.lower(func.trim(res_line.arrangement)))).first()
 
                     guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, rguest.gastnr)]})
 
