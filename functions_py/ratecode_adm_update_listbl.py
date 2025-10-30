@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 30/10/2025
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Prtable, Ratecode, Queasy, Waehrung
@@ -23,6 +25,7 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
     t_prtable_data, T_prtable = create_model_like(Prtable)
 
     db_session = local_storage.db_session
+    prcode = prcode.strip()
 
     def generate_output():
         nonlocal pr_list_data, msg_str, error_flag, lvcarea, chcode, prtable, ratecode, queasy, waehrung
@@ -61,7 +64,7 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
             pr_list.flag = 0
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 2) & not_ (Queasy.logi2) & (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode).lower())).order_by(Queasy._recid).all():
+                 (Queasy.key == 2) & not_ (Queasy.logi2) & (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode))).order_by(Queasy._recid).all():
 
             pr_list = query(pr_list_data, filters=(lambda pr_list: pr_list.zikatnr == prbuff.zikatnr and pr_list.argtnr == prbuff.argtnr), first=True)
 
@@ -92,7 +95,7 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
             pr_list.flag = 1
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 2) & not_ (Queasy.logi2) & (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode).lower())).order_by(Queasy._recid).all():
+                 (Queasy.key == 2) & not_ (Queasy.logi2) & (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode))).order_by(Queasy._recid).all():
 
             pr_list = query(pr_list_data, filters=(lambda pr_list: pr_list.zikatnr == prbuff.zikatnr and pr_list.argtnr == prbuff.argtnr), first=True)
             pr_list.flag = 1
@@ -137,6 +140,12 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
             prtable.nr = market_no
             prtable.marknr = market_no
 
+        if not prtable.product or len(prtable.product) < 99:
+            prtable.product = [0] * 99
+        if not prtable.zikatnr or len(prtable.zikatnr) < 99:
+            prtable.zikatnr = [0] * 99
+        if not prtable.argtnr or len(prtable.argtnr) < 99:
+            prtable.argtnr = [0] * 99
 
         for i in range(1,99 + 1) :
             prtable.product[i - 1] = 0
@@ -164,7 +173,7 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
         pass
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 2) & not_ (Queasy.logi2) & (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode).lower())).order_by(Queasy._recid).all():
+                 (Queasy.key == 2) & not_ (Queasy.logi2) & (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode))).order_by(Queasy._recid).all():
 
             prtable = get_cache (Prtable, {"prcode": [(eq, queasy.char1)],"marknr": [(eq, market_no)]})
 
@@ -176,6 +185,12 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
                 prtable.nr = market_no
                 prtable.marknr = market_no
 
+            if not prtable.product or len(prtable.product) < 99:
+                prtable.product = [0] * 99
+            if not prtable.zikatnr or len(prtable.zikatnr) < 99:
+                prtable.zikatnr = [0] * 99
+            if not prtable.argtnr or len(prtable.argtnr) < 99:
+                prtable.argtnr = [0] * 99
 
             for i in range(1,99 + 1) :
                 prtable.product[i - 1] = 0

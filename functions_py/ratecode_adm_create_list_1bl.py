@@ -128,7 +128,7 @@ def ratecode_adm_create_list_1bl(prcode:string, market_nr:int):
                                     pr_list.argtnr = arrangement.argtnr
                                     pr_list.prcode = prcode
                                     pr_list.i_typ = zimkateg.typ
-                                    print("prcode:", prcode, "rmcat:", pr_list.rmcat, "argt:", pr_list.argt, "zikatnr:", pr_list.zikatnr, "argtnr:", pr_list.argtnr, "i_typ:", pr_list.i_typ, "found1:", found1)
+                                    # print("prcode:", prcode, "rmcat:", pr_list.rmcat, "argt:", pr_list.argt, "zikatnr:", pr_list.zikatnr, "argtnr:", pr_list.argtnr, "i_typ:", pr_list.i_typ, "found1:", found1)
                                     pr_list.flag = to_int(found1)
 
     create_list()
