@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.119
+#------------------------------------------
+# Rd, 31/10/2025
+# Ticket: 630632
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -20,7 +24,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 41)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 6
         htparam.feldtyp = 1
@@ -63,7 +67,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 30)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 5
         htparam.feldtyp = 1
@@ -76,7 +80,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 786)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 786)]})
         htparam.paramgruppe = 7
@@ -87,7 +91,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 279)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 279)]})
         htparam.paramgruppe = 6
@@ -107,7 +111,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 78)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 78)]})
         htparam.bezeichnung = "Web CI (IP;Port;Website)"
@@ -116,7 +120,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 79)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 79)]})
         htparam.bezeichnung = "LetterNo for WebCI email (NAT,No;..;DEF,No)"
@@ -146,7 +150,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 789)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 789)]})
         htparam.bezeichnung = "Loyalty Setup"
@@ -321,7 +325,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 569)]})
 
-    if htparam.bezeichnung.lower()  == ("Not Used").lower() :
+    if htparam.bezeichnung  == ("Not Used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 569)]})
         htparam.feldtyp = 1
@@ -483,7 +487,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1070)]})
 
-    if htparam.bezeichnung.lower()  == ("Not used").lower() :
+    if htparam.bezeichnung  == ("Not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1070)]})
         htparam.feldtyp = 4
@@ -754,7 +758,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 733)]})
 
-    if htparam.paramgruppe != 17 or htparam.fchar.lower()  == ("COMPANY").lower() :
+    if htparam.paramgruppe != 17 or htparam.fchar  == ("COMPANY") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 733)]})
         htparam.paramgruppe = 17
@@ -837,7 +841,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 347)]})
 
-    if htparam.paramgruppe != 13 or htparam.bezeichnung.lower()  == ("Not used").lower()  or htparam.feldtyp != 5:
+    if htparam.paramgruppe != 13 or htparam.bezeichnung  == ("Not used")  or htparam.feldtyp != 5:
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 347)]})
         htparam.paramgruppe = 13
@@ -1017,7 +1021,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 430)]})
 
-    if htparam.bezeichnung.lower()  == ("Not used").lower()  or htparam.fchar == "":
+    if htparam.bezeichnung  == ("Not used")  or htparam.fchar == "":
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 430)]})
         htparam.bezeichnung = "Directory for Confirmation Attached File"
@@ -1100,7 +1104,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 358)]})
 
-    if htparam.bezeichnung.lower()  != ("License for Internet Billing System").lower() :
+    if htparam.bezeichnung  != ("License for Internet Billing System") :
         pass
         htparam.bezeichnung = "License for Internet Billing System"
 
@@ -1346,7 +1350,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 116)]})
 
-    if htparam.bezeichnung.lower()  == ("Not Used").lower() :
+    if htparam.bezeichnung  == ("Not Used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 116)]})
         htparam.bezeichnung = "F/O SubgrpNo for unallocated C/L article"
@@ -1355,7 +1359,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 738)]})
 
-    if htparam.bezeichnung.lower()  == ("Not Used").lower() :
+    if htparam.bezeichnung  == ("Not Used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 738)]})
         htparam.bezeichnung = "F/O Article for rounding of Bill Amount"
@@ -1372,7 +1376,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 437)]})
 
-    if htparam.bezeichnung.lower()  == ("Not used").lower() :
+    if htparam.bezeichnung  == ("Not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 437)]})
         htparam.bezeichnung = "Allow cancel Reservation after generating keycard?"
@@ -1419,7 +1423,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1047)]})
 
-    if htparam.feldtyp == 4 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.feldtyp == 4 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.bezeichnung = "F/O ArtNo for Club Initial Fee"
         htparam.feldtyp = 1
@@ -1794,7 +1798,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1114)]})
 
-    if htparam.bezeichnung.lower()  != ("License for CLUB Software").lower() :
+    if htparam.bezeichnung  != ("License for CLUB Software") :
         htparam.feldtyp = 4
         htparam.bezeichnung = "License for CLUB Software"
         htparam.flogical = False
@@ -2164,7 +2168,7 @@ def add_htp5bl():
 
     if htparam:
 
-        if htparam.bezeichnung.lower()  == ("Not used").lower()  or htparam.paramgruppe != 14:
+        if htparam.bezeichnung  == ("Not used")  or htparam.paramgruppe != 14:
             pass
             htparam.paramgruppe = 14
             htparam.bezeichnung = "Block new reservation when A/R Over CrLimit?"
@@ -2264,7 +2268,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1083)]})
 
-    if htparam.bezeichnung.lower()  != ("Store Duration for FB Compliment").lower() :
+    if htparam.bezeichnung  != ("Store Duration for FB Compliment") :
         htparam.bezeichnung = "Store Duration for FB Compliment"
         htparam.finteger = 180
 
@@ -2350,7 +2354,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1086)]})
 
-    if htparam.bezeichnung.lower()  == ("Not Used").lower() :
+    if htparam.bezeichnung  == ("Not Used") :
         htparam.bezeichnung = "Max F/O Unit Price in local currency"
         htparam.feldtyp = 2
 
@@ -2375,7 +2379,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 185)]})
 
-    if htparam.bezeichnung.lower()  == ("Not Used").lower() :
+    if htparam.bezeichnung  == ("Not Used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 185)]})
         htparam.fchar = ".LYTODAY"
@@ -2432,7 +2436,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 138)]})
 
-    if htparam.bezeichnung.lower()  == ("Not Used").lower() :
+    if htparam.bezeichnung  == ("Not Used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 138)]})
         htparam.bezeichnung = "ArtNo with Cash Receipt Printout [A1;A2;..]"
@@ -2473,7 +2477,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 483)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 483)]})
         htparam.paramgruppe = 7
@@ -2483,7 +2487,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 740)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 740)]})
         htparam.paramgruppe = 7
@@ -2538,7 +2542,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 494)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 494)]})
         htparam.paramgruppe = 7
@@ -2549,7 +2553,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 493)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 493)]})
         htparam.paramgruppe = 7
@@ -2590,7 +2594,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 458)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 7
         htparam.feldtyp = 1
@@ -2610,7 +2614,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 235)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower()  or htparam.bezeichnung.lower()  == "":
+    if htparam.bezeichnung  == ("not used")  or htparam.bezeichnung  == "":
         pass
         htparam.bezeichnung = "Access Right to release P/O (2 or 3, def = 2)"
         htparam.paramgruppe = 21
@@ -2623,7 +2627,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 243)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower()  or htparam.bezeichnung.lower()  == "":
+    if htparam.bezeichnung  == ("not used")  or htparam.bezeichnung  == "":
         pass
         htparam.bezeichnung = "Access Right to Approve DML (2 or 3, def = 2)"
         htparam.paramgruppe = 21
@@ -2636,7 +2640,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 473)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 7
         htparam.feldtyp = 4
@@ -2648,7 +2652,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 451)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 5
         htparam.feldtyp = 5
@@ -2661,7 +2665,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 452)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 5
         htparam.feldtyp = 5
@@ -2674,7 +2678,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 461)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 5
         htparam.feldtyp = 5
@@ -2687,7 +2691,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 462)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 5
         htparam.feldtyp = 2
@@ -2700,7 +2704,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 466)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 7
         htparam.feldtyp = 1
@@ -2713,7 +2717,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 346)]})
 
-    if htparam.paramgruppe != 6 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 6 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 6
         htparam.feldtyp = 4
@@ -2727,7 +2731,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1345)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 7
         htparam.feldtyp = 1
@@ -2740,7 +2744,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 615)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.reihenfolge == 417:
+    if htparam.bezeichnung  == ("not used")  and htparam.reihenfolge == 417:
         pass
         htparam.bezeichnung = "Dummy Guest Card for OTA"
         htparam.paramgruppe = 7
@@ -2753,7 +2757,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1020)]})
 
-    if htparam.paramgruppe != 23 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 23 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 23
         htparam.feldtyp = 5
@@ -2855,7 +2859,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 747)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.bezeichnung  == ("not used") :
         htparam.paramgruppe = 7
         htparam.reihenfolge = 2327
         htparam.feldtyp = 5
@@ -2864,7 +2868,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 598)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.bezeichnung  == ("not used") :
         htparam.paramgruppe = 7
         htparam.reihenfolge = 2328
         htparam.feldtyp = 5
@@ -2873,7 +2877,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 80)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.bezeichnung  == ("not used") :
         htparam.paramgruppe = 40
         htparam.reihenfolge = 102
         htparam.feldtyp = 4
@@ -2882,7 +2886,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 345)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.bezeichnung  == ("not used") :
         htparam.paramgruppe = 13
         htparam.reihenfolge = 39
         htparam.feldtyp = 5
@@ -2891,7 +2895,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 735)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 7:
+    if htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 7:
         htparam.paramgruppe = 7
         htparam.reihenfolge = 420
         htparam.feldtyp = 4
@@ -2900,7 +2904,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 360)]})
 
-    if htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 7:
+    if htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 7:
         htparam.paramgruppe = 7
         htparam.reihenfolge = 2329
         htparam.feldtyp = 5
@@ -2953,7 +2957,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 477)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 7
         htparam.feldtyp = 4
@@ -2966,7 +2970,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1344)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 4:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 4:
         pass
         htparam.paramgruppe = 4
         htparam.feldtyp = 1
@@ -2979,7 +2983,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1346)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 4:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 4:
         pass
         htparam.paramgruppe = 4
         htparam.feldtyp = 1
@@ -2992,7 +2996,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1347)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 4:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 4:
         pass
         htparam.paramgruppe = 4
         htparam.feldtyp = 1
@@ -3005,7 +3009,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1348)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 4:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 4:
         pass
         htparam.paramgruppe = 4
         htparam.feldtyp = 1
@@ -3018,7 +3022,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1349)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 4:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 4:
         pass
         htparam.paramgruppe = 4
         htparam.feldtyp = 1
@@ -3031,7 +3035,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 90)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 15:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 15:
         pass
         htparam.paramgruppe = 15
         htparam.feldtyp = 4
@@ -3044,7 +3048,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1350)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 6:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 6:
         pass
         htparam.paramgruppe = 6
         htparam.feldtyp = 4
@@ -3057,7 +3061,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1351)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 19:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 19:
         pass
         htparam.paramgruppe = 19
         htparam.feldtyp = 4
@@ -3070,7 +3074,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1352)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 3:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 3:
         pass
         htparam.paramgruppe = 3
         htparam.feldtyp = 1
@@ -3083,7 +3087,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1353)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 5:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 5:
         pass
         htparam.paramgruppe = 5
         htparam.feldtyp = 1
@@ -3096,7 +3100,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1354)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 21:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 21:
         pass
         htparam.paramgruppe = 21
         htparam.feldtyp = 4
@@ -3109,7 +3113,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1355)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 3:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 3:
         pass
         htparam.paramgruppe = 3
         htparam.feldtyp = 4
@@ -3237,7 +3241,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 485)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 485)]})
         htparam.paramgruppe = 7
@@ -3265,7 +3269,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 561)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 561)]})
         htparam.paramgruppe = 7
@@ -3281,7 +3285,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 586)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 586)]})
         htparam.paramgruppe = 7
@@ -3295,7 +3299,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1361)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 5:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 5:
         pass
         htparam.paramgruppe = 5
         htparam.feldtyp = 1
@@ -3308,7 +3312,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 978)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 6:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 6:
         pass
         htparam.paramgruppe = 6
         htparam.feldtyp = 5
@@ -3321,7 +3325,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 583)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 9:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 9:
         pass
         htparam.paramgruppe = 9
         htparam.feldtyp = 1
@@ -3335,7 +3339,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 588)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 19:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 19:
         pass
         htparam.paramgruppe = 19
         htparam.feldtyp = 4
@@ -3364,7 +3368,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 589)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 589)]})
         htparam.paramgruppe = 7
@@ -3379,7 +3383,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 594)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 594)]})
         htparam.paramgruppe = 7
@@ -3398,7 +3402,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 438)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 15:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 15:
         pass
         htparam.paramgruppe = 15
         htparam.feldtyp = 5
@@ -3411,7 +3415,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1204)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1204)]})
         htparam.paramgruppe = 19
@@ -3435,7 +3439,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 838)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 19:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 19:
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 838)]})
         htparam.paramgruppe = 19
@@ -3449,7 +3453,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 448)]})
 
-    if htparam.paramgruppe != 6 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 6 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 6
         htparam.feldtyp = 5
@@ -3463,7 +3467,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 449)]})
 
-    if htparam.paramgruppe != 6 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 6 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 6
         htparam.feldtyp = 5
@@ -3492,7 +3496,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 585)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 585)]})
         htparam.paramgruppe = 7
@@ -3507,7 +3511,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 950)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 950)]})
         htparam.paramgruppe = 23
@@ -3522,7 +3526,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1362)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1362)]})
         htparam.paramgruppe = 7
@@ -3541,7 +3545,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 89)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 89)]})
         htparam.paramgruppe = 21
@@ -3556,7 +3560,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 91)]})
 
-    if htparam.paramgruppe != 6 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 6 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 6
         htparam.feldtyp = 5
@@ -3571,7 +3575,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 282)]})
 
-    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 282)]})
         htparam.paramgruppe = 99
@@ -3586,7 +3590,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 292)]})
 
-    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 292)]})
         htparam.paramgruppe = 99
@@ -3601,7 +3605,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 294)]})
 
-    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 294)]})
         htparam.paramgruppe = 99
@@ -3616,7 +3620,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 296)]})
 
-    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 296)]})
         htparam.paramgruppe = 99
@@ -3631,7 +3635,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 298)]})
 
-    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 298)]})
         htparam.paramgruppe = 99
@@ -3646,7 +3650,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 379)]})
 
-    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 379)]})
         htparam.paramgruppe = 99
@@ -3661,7 +3665,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 389)]})
 
-    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 389)]})
         htparam.paramgruppe = 99
@@ -3676,7 +3680,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 420)]})
 
-    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 420)]})
         htparam.paramgruppe = 99
@@ -3691,7 +3695,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 421)]})
 
-    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 421)]})
         htparam.paramgruppe = 99
@@ -3706,7 +3710,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 422)]})
 
-    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 422)]})
         htparam.paramgruppe = 99
@@ -3721,7 +3725,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1027)]})
 
-    if htparam.paramgruppe != 5 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 5 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1027)]})
         htparam.paramgruppe = 5
@@ -3737,7 +3741,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1028)]})
 
-    if htparam.paramgruppe != 5 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 5 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1028)]})
         htparam.paramgruppe = 5
@@ -3753,7 +3757,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1029)]})
 
-    if htparam.paramgruppe != 5 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 5 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1029)]})
         htparam.paramgruppe = 5
@@ -3769,7 +3773,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1030)]})
 
-    if htparam.paramgruppe != 5 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 5 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1030)]})
         htparam.paramgruppe = 5
@@ -3785,7 +3789,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1377)]})
 
-    if htparam.paramgruppe != 8 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 8 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1377)]})
         htparam.paramgruppe = 8
@@ -3800,7 +3804,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 436)]})
 
-    if htparam.paramgruppe != 19 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 19 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 436)]})
         htparam.paramgruppe = 19
@@ -3815,7 +3819,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 98)]})
 
-    if htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 7 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 7
         htparam.feldtyp = 5
@@ -3830,7 +3834,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1033)]})
 
-    if htparam.paramgruppe != 6 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 6 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1033)]})
         htparam.paramgruppe = 6
@@ -3845,7 +3849,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 280)]})
 
-    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 280)]})
         htparam.paramgruppe = 99
@@ -3860,7 +3864,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1363)]})
 
-    if htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1363)]})
         htparam.paramgruppe = 99
@@ -3884,7 +3888,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 108)]})
 
-    if htparam.paramgruppe != 9 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 9 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 108)]})
         htparam.paramgruppe = 9
@@ -3900,7 +3904,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1364)]})
 
-    if htparam.paramgruppe != 6 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 6 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1364)]})
         htparam.paramgruppe = 6
@@ -3916,7 +3920,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1068)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 6:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 6:
         pass
         htparam.paramgruppe = 6
         htparam.bezeichnung = "Article Number for Guest Deposit"
@@ -3931,7 +3935,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1366)]})
 
-    if htparam.paramgruppe != 20 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 20 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1366)]})
         htparam.paramgruppe = 20
@@ -3947,7 +3951,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1367)]})
 
-    if htparam.paramgruppe != 20 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 20 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1367)]})
         htparam.paramgruppe = 20
@@ -3963,7 +3967,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1368)]})
 
-    if htparam.paramgruppe != 20 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam.paramgruppe != 20 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1368)]})
         htparam.paramgruppe = 20
@@ -3979,7 +3983,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 178)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower()  and htparam.paramgruppe != 10:
+    if htparam and htparam.bezeichnung  == ("not used")  and htparam.paramgruppe != 10:
         pass
         htparam.paramgruppe = 10
         htparam.bezeichnung = "Password For Payment Compliment POS"
@@ -3994,7 +3998,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 428)]})
 
-    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 428)]})
         htparam.paramgruppe = 7
@@ -4010,7 +4014,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 392)]})
 
-    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 392)]})
         htparam.paramgruppe = 7
@@ -4026,7 +4030,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1051)]})
 
-    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1051)]})
         htparam.paramgruppe = 5
@@ -4042,7 +4046,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1052)]})
 
-    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1052)]})
         htparam.paramgruppe = 5
@@ -4058,7 +4062,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 487)]})
 
-    if htparam and htparam.paramgruppe != 21 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 21 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 487)]})
         htparam.paramgruppe = 21
@@ -4074,7 +4078,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 488)]})
 
-    if htparam and htparam.paramgruppe != 21 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 21 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 21
         htparam.bezeichnung = "Max tolerance in % (Param No 487)"
@@ -4089,7 +4093,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 293)]})
 
-    if htparam and htparam.paramgruppe != 20 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 20 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 20
         htparam.bezeichnung = "Activate counter number 6 digit asset number"
@@ -4103,7 +4107,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 423)]})
 
-    if htparam and htparam.paramgruppe != 19 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 19 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 423)]})
         htparam.paramgruppe = 19
@@ -4119,7 +4123,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1054)]})
 
-    if htparam and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1054)]})
         htparam.paramgruppe = 25
@@ -4135,7 +4139,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1053)]})
 
-    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1053)]})
         htparam.paramgruppe = 5
@@ -4151,7 +4155,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1043)]})
 
-    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1043)]})
         htparam.paramgruppe = 5
@@ -4167,7 +4171,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1039)]})
 
-    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1039)]})
         htparam.paramgruppe = 5
@@ -4183,7 +4187,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1026)]})
 
-    if htparam and htparam.paramgruppe != 14 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 14 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 14
         htparam.bezeichnung = "Allow Payment CL When Over CreditLimit"
@@ -4197,7 +4201,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 425)]})
 
-    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 7
         htparam.bezeichnung = "TOTP Reminder"
@@ -4211,7 +4215,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1365)]})
 
-    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1365)]})
         htparam.paramgruppe = 5
@@ -4227,7 +4231,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1369)]})
 
-    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1369)]})
         htparam.paramgruppe = 5
@@ -4243,7 +4247,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1370)]})
 
-    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 5 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1370)]})
         htparam.paramgruppe = 5
@@ -4259,7 +4263,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1371)]})
 
-    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung  == ("not used") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1371)]})
         htparam.paramgruppe = 7
@@ -4275,7 +4279,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 101)]})
 
-    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 7
         htparam.bezeichnung = "Screen Lock Timeout When Idle (in seconds)"
@@ -4290,7 +4294,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 955)]})
 
-    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 7
         htparam.bezeichnung = "TOTP Session Timeout Duration (Days)"
@@ -4305,7 +4309,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1372)]})
 
-    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 7
         htparam.bezeichnung = "Enable Print for QRIS Digital Payment"
@@ -4320,7 +4324,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1375)]})
 
-    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 7
         htparam.bezeichnung = "Enable Direct Print After Payment"
@@ -4335,7 +4339,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1376)]})
 
-    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 7
         htparam.bezeichnung = "Minimum Due Days for Payment Link Digital Payment"
@@ -4350,7 +4354,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 426)]})
 
-    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 7 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 7
         htparam.bezeichnung = "Digital Payment Secret Key"
@@ -4365,7 +4369,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 427)]})
 
-    if htparam and htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 99
         htparam.bezeichnung = "License SelfOrder for No. of Total Outlet"
@@ -4380,7 +4384,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 951)]})
 
-    if htparam and htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 99
         htparam.bezeichnung = "License For Digital Payment"
@@ -4396,7 +4400,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 952)]})
 
-    if htparam and htparam.paramgruppe != 99 and htparam.bezeichnung.lower()  == ("not used").lower() :
+    if htparam and htparam.paramgruppe != 99 and htparam.bezeichnung  == ("not used") :
         pass
         htparam.paramgruppe = 99
         htparam.bezeichnung = "License For Self Service Digital Payment"
@@ -4412,7 +4416,7 @@ def add_htp5bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 81)]})
 
-    if htparam.paramgruppe != 7 and (htparam.bezeichnung.lower()  == ("not used").lower()  or htparam.bezeichnung.lower()  == ("License for Interface Keycard").lower()):
+    if htparam.paramgruppe != 7 and (htparam.bezeichnung  == ("not used")  or htparam.bezeichnung  == ("License for Interface Keycard")):
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 81)]})
         htparam.paramgruppe = 7
