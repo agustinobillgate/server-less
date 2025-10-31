@@ -681,8 +681,8 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
                 else:
                     reslin_list.zipreis, rate_found = get_output(pricecod_rate(reslin_list.resnr, reslin_list.reslinnr, ("!" + f_resline.contcode), datum, reslin_list.ankunft, reslin_list.abreise, reslin_list.reserve_int, arrangement.argtnr, curr_zikatnr, reslin_list.erwachs, reslin_list.kind1, reslin_list.kind2, reslin_list.reserve_dec, reslin_list.betriebsnr))
 
-                    if rate_found:
-                        check_bonus(datum)
+                    # if rate_found:
+                    #     check_bonus(datum)
 
                 if queasy and queasy.logi1:
                     reslin_list.adrflag = True
@@ -878,7 +878,6 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
         split_modify = True
 
     if num_entries(res_mode, chr_unicode(2)) > 1:
-
         if entry(1, res_mode, chr_unicode(2)) == ("DU") :
             dayuse_flag = True
         res_mode = entry(0, res_mode, chr_unicode(2))
@@ -1512,7 +1511,8 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
         if guest_pr:
 
             guest_pr_obj_list = {}
-            for guest_pr, queasy in db_session.query(Guest_pr, Queasy).join(Queasy,(Queasy.key == 2) & (Queasy.char1 == Guest_pr.code)).filter(
+            for guest_pr, queasy in db_session.query(Guest_pr, Queasy).join(Queasy,(Queasy.key == 2) & 
+                                                                            (Queasy.char1 == Guest_pr.code)).filter(
                      (Guest_pr.gastnr == inp_gastnr) & (Guest_pr.code != f_resline.contcode)).order_by(Queasy.logi2.desc(), Queasy.char1).all():
                 if guest_pr_obj_list.get(guest_pr._recid):
                     continue
