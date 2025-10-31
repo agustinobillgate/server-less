@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 31/10/2025
 # Ticket:F6D79E
+# Issue: When the contact code has leading or trailing spaces, it causes issues in matching with guest preferences.
 #------------------------------------------
 
 from functions.additional_functions import *
