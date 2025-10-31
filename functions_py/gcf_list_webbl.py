@@ -41,6 +41,9 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
 
     db_session = local_storage.db_session
 
+    lname = lname.strip()
+    fname = fname.strip()
+
     def generate_output():
         nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
@@ -49,7 +52,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
         nonlocal t_guest
         nonlocal t_guest_data
 
-        return {"first_gastnr": first_gastnr, "curr_lname": curr_lname, "curr_fname": curr_fname, "total_record": total_record, "t-guest": t_guest_data}
+        return { "first_gastnr": first_gastnr, "curr_lname": curr_lname, "curr_fname": curr_fname, "total_record": total_record, "t-guest": t_guest_data}
 
     def case2a():
 
@@ -63,7 +66,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
         count_i:int = 0
         guest_name:string = ""
 
-        if lname.lower()  == ("�").lower() :
+        if lname  == ("") :
             curr_lname = lname
 
             return
@@ -89,8 +92,8 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                 curr_lname = guest.name
                 curr_fname = guest.vorname1
 
-                if (guest.name + guest.vorname1) == (guest_name).lower() :
-                    curr_fname = "�"
+                if (guest.name + guest.vorname1) == (guest_name) :
+                    curr_fname = ""
 
                 if counter == 1:
                     first_gastnr = guest.gastnr
@@ -103,7 +106,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                 for guest in db_session.query(Guest).filter(
                          (Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (matches((Guest.name + Guest.vorname1),("*" + fname + "*")))).order_by(Guest.name).all():
 
-                    if (guest.name + guest.vorname1) > (lname).lower() :
+                    if (guest.name + guest.vorname1) > (lname) :
                         counter = counter + 1
                         t_guest = T_guest()
                         t_guest_data.append(t_guest)
@@ -116,13 +119,13 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                         curr_lname = guest.name
                         curr_fname = guest.vorname1
 
-                        if (guest.name + guest.vorname1) == (guest_name).lower() :
-                            curr_fname = "�"
+                        if (guest.name + guest.vorname1) == (guest_name) :
+                            curr_fname = ""
 
                         if counter == 1:
                             first_gastnr = guest.gastnr
 
-                        if (counter >= 30) and (guest.name.lower()  != (lname).lower()):
+                        if (counter >= 30) and (guest.name  != (lname)):
                             break
                         check_prcode()
 
@@ -136,7 +139,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
         nonlocal t_guest
         nonlocal t_guest_data
 
-        if substring(lname, length(lname) - 1, 1) != ("*").lower() :
+        if substring(lname, length(lname) - 1, 1) != ("*") :
             lname = lname + "*"
 
         for guest in db_session.query(Guest).filter(
@@ -199,7 +202,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
         nonlocal t_guest_data
 
         for guest in db_session.query(Guest).filter(
-                 ((Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (substring(Guest.name, 0, length((lname).lower() )) == (lname).lower()) & ((Guest.vorname1 + Guest.anredefirma) >= ""))).order_by(Guest.name).all():
+                 ((Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (substring(Guest.name, 0, length((lname) )) == (lname)) & ((Guest.vorname1 + Guest.anredefirma) >= ""))).order_by(Guest.name).all():
             t_guest = T_guest()
             t_guest_data.append(t_guest)
 
@@ -224,11 +227,11 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
         nonlocal t_guest
         nonlocal t_guest_data
 
-        if substring(lname, length(lname) - 1, 1) != ("*").lower() :
+        if substring(lname, length(lname) - 1, 1) != ("*") :
             lname = lname + "*"
 
         for guest in db_session.query(Guest).filter(
-                 ((Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (matches((Guest.name + Guest.vorname1),(lname))) & ((Guest.vorname1 + Guest.anredefirma) >= (fname).lower()))).order_by(Guest.name).all():
+                 ((Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (matches((Guest.name + Guest.vorname1),(lname))) & ((Guest.vorname1 + Guest.anredefirma) >= (fname)))).order_by(Guest.name).all():
             t_guest = T_guest()
             t_guest_data.append(t_guest)
 
@@ -296,7 +299,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                 t_guest.membership_card = mc_guest.cardnum
 
                 if mc_guest.cardnum == mc_guest.cardnum:
-                    curr_fname = "�"
+                    curr_fname = ""
 
                 if counter == 1:
                     curr_fname = mc_guest.cardnum
@@ -327,7 +330,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                             t_guest.membership_card = mc_guest.cardnum
 
                             if mc_guest.cardnum == mc_guest.cardnum:
-                                curr_fname = "�"
+                                curr_fname = ""
 
                             if counter == 1:
                                 curr_fname = mc_guest.cardnum
@@ -377,13 +380,13 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                 t_guest.firma = guest.name + ", " + guest.anredefirma
                 curr_lname = guest.ausweis_nr1
 
-                if guest.ausweis_nr1.lower()  == (last_idcard).lower() :
-                    curr_fname = "�"
+                if guest.ausweis_nr1  == (last_idcard) :
+                    curr_fname = ""
 
                 if counter == 1:
                     curr_fname = guest.ausweis_nr1
 
-                if (counter >= 30) and (guest.ausweis_nr1.lower()  != (guest_idcard).lower()):
+                if (counter >= 30) and (guest.ausweis_nr1  != (guest_idcard)):
                     break
                 check_prcode()
             else:
@@ -391,7 +394,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                 for guest in db_session.query(Guest).filter(
                          (matches(Guest.ausweis_nr1,("*" + fname + "*"))) & (Guest.karteityp == sorttype)).order_by(Guest.ausweis_nr1).all():
 
-                    if guest.ausweis_nr1.lower()  > (guest_idcard).lower() :
+                    if guest.ausweis_nr1  > (guest_idcard) :
                         counter = counter + 1
                         t_guest = T_guest()
                         t_guest_data.append(t_guest)
@@ -403,13 +406,13 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                         t_guest.firma = guest.name + ", " + guest.anredefirma
                         curr_lname = guest.ausweis_nr1
 
-                        if guest.ausweis_nr1.lower()  == (last_idcard).lower() :
-                            curr_fname = "�"
+                        if guest.ausweis_nr1  == (last_idcard) :
+                            curr_fname = ""
 
                         if counter == 1:
                             curr_fname = guest.ausweis_nr1
 
-                        if (counter >= 30) and (guest.ausweis_nr1.lower()  != (guest_idcard).lower()):
+                        if (counter >= 30) and (guest.ausweis_nr1  != (guest_idcard)):
                             break
                     check_prcode()
 
@@ -533,7 +536,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                 curr_lname = to_string(guest.gastnr)
 
                 if guest.gastnr == last_gastnr:
-                    curr_fname = "�"
+                    curr_fname = ""
 
                 if counter == 1:
                     first_gastnr = guest.gastnr
@@ -558,7 +561,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                     curr_lname = to_string(guest.gastnr)
 
                     if guest.gastnr == last_gastnr:
-                        curr_fname = "�"
+                        curr_fname = ""
 
                     if counter == 1:
                         first_gastnr = guest.gastnr
@@ -689,7 +692,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
     if case_type == 1:
 
         for guest in db_session.query(Guest).filter(
-                 ((Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (Guest.name > (lname).lower()) & ((Guest.vorname1 + Guest.anredefirma) >= (fname).lower()))).order_by(Guest.name).yield_per(100):
+                 ((Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (Guest.name > (lname)) & ((Guest.vorname1 + Guest.anredefirma) >= (fname)))).order_by(Guest.name).yield_per(100):
 
             akt_kont = db_session.query(Akt_kont).first()
             counter = counter + 1
@@ -720,20 +723,20 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
             check_prcode()
     elif case_type == 2:
 
-        if substring(lname, 0, 1) != ("*").lower()  and lname != " ":
+        if substring(lname, 0, 1) != ("*")  and lname != " ":
             case2a()
 
-        elif length(lname) >= 2 and substring(lname, 0, 1) == ("*").lower() :
+        elif length(lname) >= 2 and substring(lname, 0, 1) == ("*") :
             case2b()
 
         elif lname == " " and fname != " ":
             case2c()
     elif case_type == 3:
 
-        if lname != "" and substring(lname, 0, 1) != ("*").lower() :
+        if lname != "" and substring(lname, 0, 1) != ("*") :
             case3a()
 
-        elif length(lname) >= 2 and substring(lname, 0, 1) == ("*").lower() :
+        elif length(lname) >= 2 and substring(lname, 0, 1) == ("*") :
             case3b()
     elif case_type == 4:
         case4()

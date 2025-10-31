@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.119
+#------------------------------------------
+# Rd, 31/10/2025
+# Ticket:4ED7C7
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -213,7 +217,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                                 if not it_exist and bonus_array[datum - resline.ankunft + 1 - 1] :
                                     rm_rate =  to_decimal("0")
 
-                s_list = query(s_list_data, filters=(lambda s_list: s_list.bezeich.lower()  == (argt_rgbez_temp).lower()  and s_list.rmcat.lower()  == (zimkateg_kurzbez_tmp).lower()  and s_list.preis == rm_rate and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2), first=True)
+                s_list = query(s_list_data, filters=(lambda s_list: s_list.bezeich  == (argt_rgbez_temp)  and s_list.rmcat  == (zimkateg_kurzbez_tmp)  and s_list.preis == rm_rate and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2), first=True)
 
                 if not s_list:
                     s_list = S_list()
@@ -754,7 +758,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                     if waehrung:
                         lrate =  to_decimal(rm_rate) * to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
 
-                s_list = query(s_list_data, filters=(lambda s_list: s_list.bezeich.lower()  == (argt_rgbez_temp1).lower()  and s_list.rmcat.lower()  == (zimkateg_kurzbez_tmp).lower()  and s_list.preis == rm_rate and s_list.lrate == lrate and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2), first=True)
+                s_list = query(s_list_data, filters=(lambda s_list: s_list.bezeich  == (argt_rgbez_temp1)  and s_list.rmcat  == (zimkateg_kurzbez_tmp)  and s_list.preis == rm_rate and s_list.lrate == lrate and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2), first=True)
 
                 if not s_list:
                     s_list = S_list()
