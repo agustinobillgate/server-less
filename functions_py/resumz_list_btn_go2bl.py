@@ -6,7 +6,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from functions.calc_servvat import calc_servvat
+from functions.calc_servtaxesbl import calc_servtaxesbl
 from models import Htparam, Hoteldpt, H_artikel, H_umsatz
 
 def resumz_list_btn_go2bl(ldry_flag:bool, ldry:int, dstore:int, from_dept:int, to_dept:int, from_date:date, to_date:date, detailed:bool, long_digit:bool):
@@ -50,6 +50,7 @@ def resumz_list_btn_go2bl(ldry_flag:bool, ldry:int, dstore:int, from_dept:int, t
         ynet:Decimal = to_decimal("0.0")
         ygros:Decimal = to_decimal("0.0")
         vat:Decimal = to_decimal("0.0")
+        vat2:Decimal = to_decimal("0.0")
         serv:Decimal = to_decimal("0.0")
         it_exist:bool = False
         serv_vat:bool = False
@@ -92,11 +93,13 @@ def resumz_list_btn_go2bl(ldry_flag:bool, ldry:int, dstore:int, from_dept:int, t
                 it_exist = False
                 serv =  to_decimal("0")
                 vat =  to_decimal("0")
+                vat2 =  to_decimal("0")
+                fact =  to_decimal("1")
 
                 for h_umsatz in db_session.query(H_umsatz).filter(
                          (H_umsatz.artnr == h_artikel.artnr) & (H_umsatz.departement == h_artikel.departement) & (H_umsatz.datum >= from_date) & (H_umsatz.datum <= to_date)).order_by(H_umsatz.datum).all():
-                    serv, vat = get_output(calc_servvat(h_umsatz.departement, h_umsatz.artnr, h_umsatz.datum, h_artikel.service_code, h_artikel.mwst_code))
-                    fact =  to_decimal(1.00) + to_decimal(serv) + to_decimal(vat)
+                    serv, vat, vat2, fact = get_output(calc_servtaxesbl(1, h_artikel.artnrfront, h_artikel.departement, h_umsatz.datum))
+                    vat =  to_decimal(vat) + to_decimal(vat2)
 
                     if not it_exist:
                         it_exist = True
