@@ -5,7 +5,7 @@
 # Add safe_divide, if argm, if room
 #-----------------------------------------
 from functions.additional_functions import *
-from decimal import Decimal 
+from decimal import Decimal
 from datetime import date
 from functions.calc_servvat import calc_servvat
 from functions.get_room_breakdown import get_room_breakdown
@@ -57,13 +57,15 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
     sum_comp:Decimal = to_decimal("0.0")
     post_it:bool = False
     fcost:Decimal = to_decimal("0.0")
+    t_avg_rmrate:Decimal = to_decimal("0.0")
+    t_avg_rmrate2:Decimal = to_decimal("0.0")
     curr_time:int = 0
     tmpint:int = 0
     res_line = htparam = waehrung = kontline = zimmer = guest = zimkateg = segment = genstat = exrate = fixleist = artikel = reservation = arrangement = bill_line = queasy = reslin_queasy = argt_line = guestseg = zinrstat = outorder = zkstat = umsatz = None
 
     room_list = segm_list = argt_list = zikat_list = outlook_list = print_list = print_list2 = print_list3 = argt6_list = rline1 = active_rm_list = dayuse_list = s_list = a_list = z_list = o_list = bsegm = bargt = broom = s_list = a_list = z_list = o_list = s_list = z_list = None
 
-    room_list_data, Room_list = create_model("Room_list", {"wd":int, "datum":date, "bezeich":string, "room":[Decimal,17], "coom":[string,17], "k_pax":int, "t_pax":int, "lodg":[Decimal,7], "avrglodg":Decimal, "avrglodg2":Decimal, "avrgrmrev":Decimal, "avrgrmrev2":Decimal, "others":[Decimal,8], "ly_fcast":string, "ly_actual":string, "ly_avlodge":string, "room_exccomp":int, "room_comp":int, "fixleist":Decimal, "fixleist2":Decimal, "rmrate":Decimal, "rmrate2":Decimal, "revpar":Decimal, "revpar2":Decimal, "avrglodg_inclcomp":Decimal, "avrglodg_exclcomp":Decimal, "rmocc_exclcomp":Decimal})
+    room_list_data, Room_list = create_model("Room_list", {"wd":int, "datum":date, "bezeich":string, "room":[Decimal,17], "coom":[string,17], "k_pax":int, "t_pax":int, "lodg":[Decimal,7], "avrglodg":Decimal, "avrglodg2":Decimal, "avrgrmrev":Decimal, "avrgrmrev2":Decimal, "others":[Decimal,8], "ly_fcast":string, "ly_actual":string, "ly_avlodge":string, "room_exccomp":int, "room_comp":int, "fixleist":Decimal, "fixleist2":Decimal, "rmrate":Decimal, "rmrate2":Decimal, "revpar":Decimal, "revpar2":Decimal, "avrglodg_inclcomp":Decimal, "avrglodg_exclcomp":Decimal, "rmocc_exclcomp":Decimal, "avg_rmrate":Decimal, "avg_rmrate2":Decimal})
     print_list_data, Print_list = create_model("Print_list", {"code_name":string})
     print_list2_data, Print_list2 = create_model("Print_list2", {"argm":string})
     print_list3_data, Print_list3 = create_model("Print_list3", {"room":string})
@@ -81,7 +83,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
 
@@ -93,7 +95,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
     def create_browse():
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
 
@@ -890,8 +892,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                             (pax + res_line.kind1 + res_line.kind2 + res_line.l_zuordnung[3] +\
                                             res_line.gratis) * res_line.zimmeranz
 
-                            #--------------------------
                             if datum == res_line.abreise and (res_line.resstatus != 3 or (res_line.resstatus == 3 and incl_tent)) and consider_it:
+
                                 if res_line.resstatus != 11 and res_line.resstatus != 13 and not res_line.zimmerfix:
                                     room_list.room[4] = room_list.room[4] + res_line.zimmeranz
                                     room_list.lodg[2] = room_list.lodg[2] + net_lodg
@@ -906,7 +908,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                 rm_array[5] = rm_array[5] +\
                                         (pax + res_line.kind1 + res_line.kind2 + res_line.l_zuordnung[3] +\
                                         res_line.gratis) * res_line.zimmeranz
-                            #--------------------------
+
                             if (res_line.resstatus != 3 or (res_line.resstatus == 3 and incl_tent)) and \
                                     res_line.resstatus != 4 and \
                                     consider_it and \
@@ -923,6 +925,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                     room_list.lodg[5] = room_list.lodg[3] / exchg_rate
                                     rm_array[6] = rm_array[6] + res_line.zimmeranz
                                     t_lodg[3] = t_lodg[3] + net_lodg
+
+
                                     t_lodg[5] = t_lodg[5] + (net_lodg / exchg_rate)
 
                                     if res_line.erwachs == 0 and res_line.gratis > 0 and res_line.zipreis == 0:
@@ -951,6 +955,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                 if (res_line.kontignr < 0) and kont_doit:
                                     room_list.room[15] = room_list.room[15] - res_line.zimmeranz
                                     rm_array[15] = rm_array[15] - res_line.zimmeranz
+
+
                                     room_list.room[16] = room_list.room[16] -\
                                             (pax + res_line.kind1 + res_line.kind2 + res_line.l_zuordnung[3] +\
                                             res_line.gratis) * res_line.zimmeranz
@@ -984,6 +990,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                 room_list.t_pax = room_list.t_pax + (res_line.erwachs * res_line.zimmeranz)
                                 tent_pers = tent_pers + (res_line.erwachs * res_line.zimmeranz)
                                 room_list.lodg[3] = room_list.lodg[3] + net_lodg
+
+
                                 room_list.lodg[5] = room_list.lodg[3] / exchg_rate
 
                                 if res_line.erwachs == 0 and res_line.gratis > 0 and res_line.zipreis == 0:
@@ -1008,11 +1016,6 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
                                     if kontline and datum >= (ci_date + timedelta(days=kontline.ruecktage)):
                                         room_list.room[13] = room_list.room[13] - res_line.zimmeranz
                                         rm_array[13] = rm_array[13] - res_line.zimmeranz
-
-
-        
-        
-         #-----------------------
 
         for datum in date_range(d2,to_date) :
 
@@ -1321,6 +1324,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             if (room_list.room[6] - room_list.room[15]) != 0:
                 room_list.avrglodg =  to_decimal(room_list.lodg[3]) / to_decimal((room_list.room[6] - room_list.room[15]))
             room_list.avrglodg2 =  to_decimal(room_list.avrglodg) / to_decimal(exchg_rate)
+            room_list.avg_rmrate =  to_decimal(room_list.rmrate) / to_decimal(room_list.room[6])
+            room_list.avg_rmrate2 =  to_decimal(room_list.rmrate2) / to_decimal(room_list.room[6])
 
             if (room_list.room_exccomp - room_list.room[15]) != 0:
                 room_list.avrgrmrev =  to_decimal(room_list.lodg[4]) / to_decimal((room_list.room[6] - room_list.room[15]) )
@@ -1446,11 +1451,13 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
 
         room_list.avrglodg2 =  to_decimal(room_list.avrglodg) / to_decimal(exchg_rate)
+        room_list.avg_rmrate =  to_decimal(room_list.rmrate) / to_decimal(room_list.room[6])
+        room_list.avg_rmrate2 =  to_decimal(room_list.rmrate2) / to_decimal(room_list.room[6])
 
 
     def segm_code_name():
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
 
@@ -1507,7 +1514,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
     def argt_code_name():
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
 
@@ -1566,7 +1573,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
     def room_code_name():
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
 
@@ -1627,9 +1634,10 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
     def create_browse1():
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
+
 
         nonlocal room_list, segm_list, argt_list, zikat_list, outlook_list, print_list, print_list2, print_list3, argt6_list, rline1, active_rm_list, dayuse_list, s_list, a_list, z_list, o_list, bsegm, bargt, broom, s_list, a_list, z_list, o_list, s_list, z_list
         nonlocal room_list_data, print_list_data, print_list2_data, print_list3_data, argt6_list_data, active_rm_list_data, dayuse_list_data
@@ -2533,6 +2541,8 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
             if (room_list.room[6] - room_list.room[15]) != 0:
                 room_list.avrglodg =  to_decimal(room_list.lodg[3]) / to_decimal((room_list.room[6] - room_list.room[15]))
             room_list.avrglodg2 =  to_decimal(room_list.avrglodg) / to_decimal(exchg_rate)
+            room_list.avg_rmrate =  to_decimal(room_list.rmrate) / to_decimal(room_list.room[6])
+            room_list.avg_rmrate2 =  to_decimal(room_list.rmrate2) / to_decimal(room_list.room[6])
 
             if (room_list.room_exccomp - room_list.room[15]) != 0:
                 room_list.avrgrmrev =  to_decimal(room_list.lodg[4]) / to_decimal((room_list.room[6] - room_list.room[15]))
@@ -2553,6 +2563,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
         if troom_exccomp != 0:
             tavg_rmrev =  to_decimal(t_lodg[4]) / to_decimal(troom_exccomp)
+
         tavg_rmrev2 =  to_decimal(tavg_rmrev) / to_decimal(exchg_rate)
         avrg_rate =  to_decimal(tot_avrg) / to_decimal(jml_date)
 
@@ -2588,6 +2599,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
         room_list.lodg[5] = t_lodg[5]
         room_list.lodg[6] = t_lodg[6]
         room_list.rmocc_exclcomp =  to_decimal(t_rmocc_exclcomp)
+
 
         room_list.avrglodg_inclcomp =  to_decimal(t_avrglodg_inclcomp)
         room_list.avrglodg_exclcomp =  to_decimal(t_avrglodg_exclcomp)
@@ -2646,11 +2658,13 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
         if room_list.room[6] != 0:
             room_list.avrglodg =  to_decimal(room_list.lodg[3]) / to_decimal(room_list.room[6])
         room_list.avrglodg2 =  to_decimal(room_list.avrglodg) / to_decimal(exchg_rate)
+        room_list.avg_rmrate =  to_decimal(room_list.rmrate) / to_decimal(room_list.room[6])
+        room_list.avg_rmrate2 =  to_decimal(room_list.rmrate2) / to_decimal(room_list.room[6])
 
 
     def cal_lastday_occ():
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
 
@@ -2708,7 +2722,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
     def rsv_closeout(datum:date):
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
 
@@ -2743,7 +2757,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
     def check_bonus():
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
 
@@ -2773,7 +2787,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
     def create_active_room_list():
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
 
@@ -2827,7 +2841,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
     def get_active_room(curr_datum:date):
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
 
@@ -2839,6 +2853,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
         def generate_inner_output():
             return (active_room)
+
 
         if curr_datum >= ci_date:
             active_room = actual_tot_room
@@ -2855,7 +2870,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
     def get_mtd_active_room():
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
 
@@ -2879,7 +2894,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
     def calc_othrev(datum:date):
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
 
@@ -2926,9 +2941,10 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
     def check_fixleist_posted(curr_date:date, artnr:int, dept:int, fakt_modus:int, intervall:int, lfakt:date, cidate:date, codate:date):
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
+
 
         nonlocal room_list, segm_list, argt_list, zikat_list, outlook_list, print_list, print_list2, print_list3, argt6_list, rline1, active_rm_list, dayuse_list, s_list, a_list, z_list, o_list, bsegm, bargt, broom, s_list, a_list, z_list, o_list, s_list, z_list
         nonlocal room_list_data, print_list_data, print_list2_data, print_list3_data, argt6_list_data, active_rm_list_data, dayuse_list_data
@@ -2994,7 +3010,7 @@ def cr_occfcast1_2_webbl(segm_list_data:[Segm_list], argt_list_data:[Argt_list],
 
     def check_fixargt_posted(artnr:int, dept:int, fakt_modus:int, intervall:int, cidate:date):
 
-        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
+        nonlocal room_list_data, lvcarea, tot_rmrev, bonus_array, week_list, tent_pers, datum, tot_room, mtd_tot_room, accum_tot_room, actual_tot_room, segm_name, argm_name, room_name, ci_date, pax, t_lodg, jml_date, tot_avrg, t_rmrate, t_rmrate2, t_revpar, t_revpar2, price, price_decimal, new_contrate, rm_vat, rm_serv, rm_array, exchg_rate, sum_comp, post_it, fcost, t_avg_rmrate, t_avg_rmrate2, curr_time, tmpint, res_line, htparam, waehrung, kontline, zimmer, guest, zimkateg, segment, genstat, exrate, fixleist, artikel, reservation, arrangement, bill_line, queasy, reslin_queasy, argt_line, guestseg, zinrstat, outorder, zkstat, umsatz
         nonlocal pvilanguage, op_type, flag_i, curr_date, to_date, all_segm, all_argt, all_zikat, exclooo, incl_tent, show_rev, vhp_limited, excl_compl, all_outlook, incl_oth
         nonlocal rline1
 
