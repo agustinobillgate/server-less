@@ -110,7 +110,11 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
         nonlocal rline_list, reslin_list, curr_resline, t_history, currency_list, res_dynarate, reschanged_list, f_resline, nation_list, periode_list, resline, resbuff, zimkateg1, rbuff, qci_zimmer, bresline, bguest, bqueasy, qsy
         nonlocal rline_list_data, reslin_list_data, curr_resline_data, t_history_data, currency_list_data, reschanged_list_data, f_resline_data, nation_list_data, periode_list_data
 
-        return {"res_mode": res_mode, "msg_str": msg_str, "error_flag": error_flag, "record_use": record_use, "init_time": init_time, "init_date": init_date, "avail_gdpr": avail_gdpr, "avail_mark": avail_mark, "avail_news": avail_news, "save_gdpr": save_gdpr, "curr_date": curr_date, "serv_date": serv_date, "f-resline": f_resline_data, "curr-resline": curr_resline_data, "reslin-list": reslin_list_data, "reschanged-list": reschanged_list_data, "t-history": t_history_data, "rline-list": rline_list_data}
+        return {"res_mode": res_mode, "msg_str": msg_str, "error_flag": error_flag, "record_use": record_use, 
+                "init_time": init_time, "init_date": init_date, "avail_gdpr": avail_gdpr, "avail_mark": avail_mark, "avail_news": avail_news, 
+                "save_gdpr": save_gdpr, "curr_date": curr_date, "serv_date": serv_date, "f-resline": f_resline_data, 
+                "curr-resline": curr_resline_data, "reslin-list": reslin_list_data, "reschanged-list": reschanged_list_data, 
+                "t-history": t_history_data, "rline-list": rline_list_data}
 
     def get_rackrate(erwachs:int, kind1:int, kind2:int):
 
@@ -534,13 +538,13 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
                     f_resline.currency = f_resline.currency + waehrung1.wabkurz + ";"
 
                 waehrung1 = get_cache (Waehrung, {"waehrungsnr": [(eq, curr_wabnr)]})
-            else:
+        else:
 
-                for waehrung1 in db_session.query(Waehrung1).filter(
-                         (Waehrung1.waehrungsnr != reslin_list.betriebsnr) & (Waehrung1.betriebsnr == 0)).order_by(Waehrung1.bezeich).all():
-                    f_resline.currency = f_resline.currency + waehrung1.wabkurz + ";"
+            for waehrung1 in db_session.query(Waehrung1).filter(
+                        (Waehrung1.waehrungsnr != reslin_list.betriebsnr) & (Waehrung1.betriebsnr == 0)).order_by(Waehrung1.bezeich).all():
+                f_resline.currency = f_resline.currency + waehrung1.wabkurz + ";"
 
-                waehrung1 = get_cache (Waehrung, {"waehrungsnr": [(eq, reslin_list.betriebsnr)]})
+            waehrung1 = get_cache (Waehrung, {"waehrungsnr": [(eq, reslin_list.betriebsnr)]})
         f_resline.currency = waehrung1.wabkurz + ";" + f_resline.currency
 
 
@@ -938,12 +942,12 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
                 paramtext = get_cache (Paramtext, {"txtnr": [(eq, (9200 + curr_setup))]})
                 f_resline.c_setup = substring(paramtext.notes, 0, 1)
 
+    
     if res_mode == "split+modify":
         res_mode = "modify"
         split_modify = True
 
     if num_entries(res_mode, chr_unicode(2)) > 1:
-
         if entry(1, res_mode, chr_unicode(2)) == ("DU") :
             dayuse_flag = True
         res_mode = entry(0, res_mode, chr_unicode(2))
@@ -991,9 +995,10 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
         return generate_output()
 
+    qci_zinr = qci_zinr.strip()
     if qci_zinr != "":
-
         qci_zimmer = get_cache (Zimmer, {"zinr": [(eq, qci_zinr)]})
+
     f_resline = F_resline()
     f_resline_data.append(f_resline)
 
@@ -1027,8 +1032,6 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
     if htparam.flogical  and htparam.bezeichnung  != ("not used") :
         f_resline.ci_date = get_current_date()
         f_resline.billdate = get_current_date()
-
-
     else:
         f_resline.ci_date = curr_date
 
@@ -1039,8 +1042,6 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
     guest = get_cache (Guest, {"gastnr": [(eq, inp_gastnr)]})
     f_resline.main_resname = guest.name
-
-
     f_resline.karteityp = guest.karteityp
 
     reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "rate-prog")],"char1": [(eq, "")],"reslinnr": [(eq, 1)],"number1": [(eq, inp_resnr)],"number2": [(eq, 0)]})
@@ -1522,7 +1523,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
             f_resline.voucher = f_resline.voucher + chr_unicode(2) +\
                 reslin_queasy.char3
 
-    if f_resline.contcode != "":
+    if f_resline.contcode.strip() != "":
 
         queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, f_resline.contcode)]})
         f_resline.combo_code = f_resline.contcode
@@ -1562,13 +1563,20 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
         if guest_pr:
 
             guest_pr_obj_list = {}
-            for guest_pr, queasy in db_session.query(Guest_pr, Queasy).join(Queasy,(Queasy.key == 2) & (Queasy.char1 == Guest_pr.code.strip())).filter(
-                     (Guest_pr.gastnr == inp_gastnr) & (Guest_pr.code != f_resline.contcode)).order_by(Queasy.logi2.desc(), Queasy.char1).all():
+            for guest_pr, queasy in db_session.query(Guest_pr, Queasy).join(Queasy,(Queasy.key == 2) & 
+                                                                            (func.trim(Queasy.char1) == func.trim(Guest_pr.code))).filter(
+                     (Guest_pr.gastnr == inp_gastnr) & 
+                     (func.trim(Guest_pr.code) != func.trim(f_resline.contcode))).order_by(Queasy.logi2.desc(), Queasy.char1).all():
                 if guest_pr_obj_list.get(guest_pr._recid):
                     continue
                 else:
                     guest_pr_obj_list[guest_pr._recid] = True
 
+                # Rd, validasi date1, date tidak kosong
+                if queasy.date1 is None:
+                    continue
+                if queasy.date2 is None:
+                    continue
 
                 do_it = True
 

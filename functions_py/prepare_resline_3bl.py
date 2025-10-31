@@ -878,7 +878,6 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
         split_modify = True
 
     if num_entries(res_mode, chr_unicode(2)) > 1:
-
         if entry(1, res_mode, chr_unicode(2)) == ("DU") :
             dayuse_flag = True
         res_mode = entry(0, res_mode, chr_unicode(2))
@@ -1512,7 +1511,8 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
         if guest_pr:
 
             guest_pr_obj_list = {}
-            for guest_pr, queasy in db_session.query(Guest_pr, Queasy).join(Queasy,(Queasy.key == 2) & (Queasy.char1 == Guest_pr.code)).filter(
+            for guest_pr, queasy in db_session.query(Guest_pr, Queasy).join(Queasy,(Queasy.key == 2) & 
+                                                                            (Queasy.char1 == Guest_pr.code)).filter(
                      (Guest_pr.gastnr == inp_gastnr) & (Guest_pr.code != f_resline.contcode)).order_by(Queasy.logi2.desc(), Queasy.char1).all():
                 if guest_pr_obj_list.get(guest_pr._recid):
                     continue
