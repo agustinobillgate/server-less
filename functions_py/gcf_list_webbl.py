@@ -1,10 +1,13 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
+#------------------------------------------
+# Rd, 31/10/2025
+# Ticket:6CE187
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from sqlalchemy import func
-from functions.htpint import htpint
 from models import Guest, Akt_kont, Mc_guest, Segment, Guestseg, Cl_member, Guest_pr, Ratecode, Htparam
 
 def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1:int):
@@ -28,16 +31,18 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
     vipnr9:int = 999999999
     vipnr10:int = 999999999
     priority_flag:int = 0
+    guest_number:int = 0
+    guest_idcard:string = ""
     guest = akt_kont = mc_guest = segment = guestseg = cl_member = guest_pr = ratecode = htparam = None
 
     t_guest = None
 
-    t_guest_data, T_guest = create_model("T_guest", {"akt_gastnr":int, "karteityp":int, "master_gastnr":int, "pr_flag":int, "mc_flag":bool, "gname":string, "adresse":string, "steuernr":string, "firma":string, "namekontakt":string, "phonetik3":string, "rabatt":Decimal, "endperiode":date, "firmen_nr":int, "land":string, "wohnort":string, "telefon":string, "plz":string, "geschlecht":string, "ausweis_nr1":string, "gastnr":int, "zahlungsart":int, "kreditlimit":Decimal, "bezeich":string, "alertbox":bool, "warningbox":bool, "zimmeranz":int, "bemerk":string, "geburt_ort1":string, "nation1":string, "nation2":string, "fax":string, "geburtdatum1":date, "email_adr":string, "mobil_telefon":string, "beruf":string, "main_segment":string})
+    t_guest_data, T_guest = create_model("T_guest", {"akt_gastnr":int, "karteityp":int, "master_gastnr":int, "pr_flag":int, "mc_flag":bool, "gname":string, "adresse":string, "steuernr":string, "firma":string, "namekontakt":string, "phonetik3":string, "rabatt":Decimal, "endperiode":date, "firmen_nr":int, "land":string, "wohnort":string, "telefon":string, "plz":string, "geschlecht":string, "ausweis_nr1":string, "gastnr":int, "zahlungsart":int, "kreditlimit":Decimal, "bezeich":string, "alertbox":bool, "warningbox":bool, "zimmeranz":int, "bemerk":string, "geburt_ort1":string, "nation1":string, "nation2":string, "fax":string, "geburtdatum1":date, "email_adr":string, "mobil_telefon":string, "beruf":string, "main_segment":string, "membership_card":string})
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 
@@ -48,72 +53,31 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
 
     def case2a():
 
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 
         nonlocal t_guest
         nonlocal t_guest_data
 
+        count_i:int = 0
+        guest_name:string = ""
 
-        pass
+        if lname.lower()  == ("�").lower() :
+            curr_lname = lname
+
+            return
+
+        for guest in db_session.query(Guest).filter(
+                 (Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (matches((Guest.name + Guest.vorname1),("*" + fname + "*")))).order_by(Guest.name).all():
+            count_i = count_i + 1
+            guest_name = guest.name + guest.vorname1
 
         if num1 == 0:
 
-            guest = get_cache (Guest, {"name": [(eq, lname)],"karteityp": [(eq, sorttype)],"gastnr": [(gt, 0)]})
-
-        if guest:
-
-            if fname != " ":
-
-                for guest in db_session.query(Guest).filter(
-                         ((Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (Guest.name == (lname).lower()) & ((Guest.vorname1 + Guest.anredefirma) >= (fname).lower()))).order_by(Guest.name).all():
-                    t_guest = T_guest()
-                    t_guest_data.append(t_guest)
-
-                    buffer_copy(guest, t_guest)
-                    t_guest.gname = guest.name + ", " + guest.vorname1 + guest.anredefirma +\
-                            " " + guest.anrede1
-                    t_guest.adresse = guest.adresse1 + " " + guest.adresse2
-                    t_guest.firma = guest.name + ", " + guest.anredefirma
-                    curr_lname = chr_unicode(255)
-                    curr_fname = chr_unicode(255)
-
-
-                    check_prcode()
-            else:
-
-                for guest in db_session.query(Guest).filter(
-                         ((Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (Guest.name == (lname).lower()))).order_by(Guest.name).all():
-                    t_guest = T_guest()
-                    t_guest_data.append(t_guest)
-
-                    buffer_copy(guest, t_guest)
-                    t_guest.gname = guest.name + ", " + guest.vorname1 + guest.anredefirma +\
-                            " " + guest.anrede1
-                    t_guest.adresse = guest.adresse1 + " " + guest.adresse2
-                    t_guest.firma = guest.name + ", " + guest.anredefirma
-                    curr_lname = chr_unicode(255)
-                    curr_fname = chr_unicode(255)
-
-
-                    check_prcode()
-        else:
-
-            if lname == chr_unicode(255):
-                curr_lname = lname
-
-                return
-
             for guest in db_session.query(Guest).filter(
-                     ((Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (Guest.name > (lname).lower()) & ((Guest.vorname1 + Guest.anredefirma) >= (fname).lower()))).order_by(Guest.name).yield_per(100):
+                     (Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (matches((Guest.name + Guest.vorname1),("*" + fname + "*")))).order_by(Guest.name).all():
                 counter = counter + 1
-
-                if counter == 1:
-                    first_gastnr = guest.gastnr
-
-                if (counter >= 30) and (curr_lname != guest.name):
-                    break
                 t_guest = T_guest()
                 t_guest_data.append(t_guest)
 
@@ -123,15 +87,49 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                 t_guest.adresse = guest.adresse1 + " " + guest.adresse2
                 t_guest.firma = guest.name + ", " + guest.anredefirma
                 curr_lname = guest.name
-                curr_fname = guest.vorname1 + guest.anredefirma
+                curr_fname = guest.vorname1
 
+                if (guest.name + guest.vorname1) == (guest_name).lower() :
+                    curr_fname = "�"
 
+                if counter == 1:
+                    first_gastnr = guest.gastnr
+
+                if counter >= 30:
+                    break
                 check_prcode()
+            else:
+
+                for guest in db_session.query(Guest).filter(
+                         (Guest.gastnr > 0) & (Guest.karteityp == sorttype) & (matches((Guest.name + Guest.vorname1),("*" + fname + "*")))).order_by(Guest.name).all():
+
+                    if (guest.name + guest.vorname1) > (lname).lower() :
+                        counter = counter + 1
+                        t_guest = T_guest()
+                        t_guest_data.append(t_guest)
+
+                        buffer_copy(guest, t_guest)
+                        t_guest.gname = guest.name + ", " + guest.vorname1 + guest.anredefirma +\
+                                " " + guest.anrede1
+                        t_guest.adresse = guest.adresse1 + " " + guest.adresse2
+                        t_guest.firma = guest.name + ", " + guest.anredefirma
+                        curr_lname = guest.name
+                        curr_fname = guest.vorname1
+
+                        if (guest.name + guest.vorname1) == (guest_name).lower() :
+                            curr_fname = "�"
+
+                        if counter == 1:
+                            first_gastnr = guest.gastnr
+
+                        if (counter >= 30) and (guest.name.lower()  != (lname).lower()):
+                            break
+                        check_prcode()
 
 
     def case2b():
 
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 
@@ -160,7 +158,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
 
     def case2c():
 
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 
@@ -193,7 +191,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
 
     def case3a():
 
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 
@@ -219,7 +217,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
 
     def case3b():
 
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 
@@ -248,7 +246,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
 
     def case4():
 
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 
@@ -258,40 +256,90 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
         cardnum:string = ""
         from_pos:int = 0
         to_pos:int = 0
+        count_i:int = 0
+        last_cardnum:string = ""
         cardnum = lname
 
-        mc_guest = get_cache (Mc_guest, {"cardnum": [(eq, cardnum)]})
-
-        if not mc_guest:
-            from_pos = get_output(htpint(337))
-            to_pos = get_output(htpint(338))
-
-            if from_pos > 0 and to_pos > 0:
-                cardnum = substring(cardnum, from_pos - 1, (to_pos - from_pos + 1))
-                curr_fname = cardnum
-
-                mc_guest = get_cache (Mc_guest, {"cardnum": [(eq, cardnum)]})
-
-        if mc_guest:
-
-            guest = get_cache (Guest, {"gastnr": [(eq, mc_guest.gastnr)]})
-            t_guest = T_guest()
-            t_guest_data.append(t_guest)
-
-            buffer_copy(guest, t_guest)
-            t_guest.gname = guest.name + ", " + guest.vorname1 + guest.anredefirma +\
-                    " " + guest.anrede1
-            t_guest.adresse = guest.adresse1 + " " + guest.adresse2
-            t_guest.firma = guest.name + ", " + guest.anredefirma
-            curr_lname = chr_unicode(255)
+        mc_guest_obj_list = {}
+        for mc_guest, guest in db_session.query(Mc_guest, Guest).join(Guest,(Guest.gastnr == Mc_guest.gastnr)).filter(
+                 (matches(Mc_guest.cardnum,("*" + fname + "*")))).order_by(Mc_guest.cardnum).all():
+            if mc_guest_obj_list.get(mc_guest._recid):
+                continue
+            else:
+                mc_guest_obj_list[mc_guest._recid] = True
 
 
-            check_prcode()
+            count_i = count_i + 1
+            last_cardnum = mc_guest.cardnum
+
+        if num1 == 0:
+
+            mc_guest_obj_list = {}
+            for mc_guest, guest in db_session.query(Mc_guest, Guest).join(Guest,(Guest.gastnr == Mc_guest.gastnr)).filter(
+                     (matches(Mc_guest.cardnum,("*" + fname + "*")))).order_by(Mc_guest.cardnum).all():
+                if mc_guest_obj_list.get(mc_guest._recid):
+                    continue
+                else:
+                    mc_guest_obj_list[mc_guest._recid] = True
+
+
+                counter = counter + 1
+                t_guest = T_guest()
+                t_guest_data.append(t_guest)
+
+                buffer_copy(guest, t_guest)
+                t_guest.gname = guest.name + ", " + guest.vorname1 + guest.anredefirma +\
+                        " " + guest.anrede1
+                t_guest.adresse = guest.adresse1 + " " + guest.adresse2
+                t_guest.firma = guest.name + ", " + guest.anredefirma
+                curr_lname = mc_guest.cardnum
+                t_guest.membership_card = mc_guest.cardnum
+
+                if mc_guest.cardnum == mc_guest.cardnum:
+                    curr_fname = "�"
+
+                if counter == 1:
+                    curr_fname = mc_guest.cardnum
+
+                if (counter >= 30) and (mc_guest.cardnum != cardnum):
+                    break
+                check_prcode()
+            else:
+
+                for mc_guest in db_session.query(Mc_guest).filter(
+                         (matches(Mc_guest.cardnum,("*" + fname + "*")))).order_by(Mc_guest.cardnum).all():
+
+                    if mc_guest.cardnum > cardnum:
+
+                        guest = get_cache (Guest, {"gastnr": [(eq, mc_guest.gastnr)]})
+
+                        if guest:
+                            counter = counter + 1
+                            t_guest = T_guest()
+                            t_guest_data.append(t_guest)
+
+                            buffer_copy(guest, t_guest)
+                            t_guest.gname = guest.name + ", " + guest.vorname1 + guest.anredefirma +\
+                                    " " + guest.anrede1
+                            t_guest.adresse = guest.adresse1 + " " + guest.adresse2
+                            t_guest.firma = guest.name + ", " + guest.anredefirma
+                            curr_lname = mc_guest.cardnum
+                            t_guest.membership_card = mc_guest.cardnum
+
+                            if mc_guest.cardnum == mc_guest.cardnum:
+                                curr_fname = "�"
+
+                            if counter == 1:
+                                curr_fname = mc_guest.cardnum
+
+                            if (counter >= 30) and (mc_guest.cardnum != cardnum):
+                                break
+                            check_prcode()
 
 
     def case5():
 
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 
@@ -301,31 +349,74 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
         cardnum:string = ""
         from_pos:int = 0
         to_pos:int = 0
+        count_i:int = 0
+        last_idcard:string = ""
 
         if lname == "":
 
             return
 
         for guest in db_session.query(Guest).filter(
-                 (Guest.karteityp == 0) & (Guest.gastnr > 0) & (matches(Guest.ausweis_nr1,"*" + lname + "*"))).order_by(Guest.name).all():
-            t_guest = T_guest()
-            t_guest_data.append(t_guest)
+                 (matches(Guest.ausweis_nr1,("*" + fname + "*"))) & (Guest.karteityp == sorttype)).order_by(Guest.ausweis_nr1).all():
+            count_i = count_i + 1
+            last_idcard = guest.ausweis_nr1
+        guest_idcard = lname
 
-            buffer_copy(guest, t_guest)
-            t_guest.gname = guest.name + ", " + guest.vorname1 + guest.anredefirma +\
-                    " " + guest.anrede1
-            t_guest.adresse = guest.adresse1 + " " + guest.adresse2
-            t_guest.firma = guest.name + ", " + guest.anredefirma
-            curr_lname = chr_unicode(255)
-            curr_fname = chr_unicode(255)
+        if num1 == 0:
 
+            for guest in db_session.query(Guest).filter(
+                     (matches(Guest.ausweis_nr1,("*" + fname + "*"))) & (Guest.karteityp == sorttype)).order_by(Guest.ausweis_nr1).all():
+                counter = counter + 1
+                t_guest = T_guest()
+                t_guest_data.append(t_guest)
 
-            check_prcode()
+                buffer_copy(guest, t_guest)
+                t_guest.gname = guest.name + ", " + guest.vorname1 + guest.anredefirma +\
+                        " " + guest.anrede1
+                t_guest.adresse = guest.adresse1 + " " + guest.adresse2
+                t_guest.firma = guest.name + ", " + guest.anredefirma
+                curr_lname = guest.ausweis_nr1
+
+                if guest.ausweis_nr1.lower()  == (last_idcard).lower() :
+                    curr_fname = "�"
+
+                if counter == 1:
+                    curr_fname = guest.ausweis_nr1
+
+                if (counter >= 30) and (guest.ausweis_nr1.lower()  != (guest_idcard).lower()):
+                    break
+                check_prcode()
+            else:
+
+                for guest in db_session.query(Guest).filter(
+                         (matches(Guest.ausweis_nr1,("*" + fname + "*"))) & (Guest.karteityp == sorttype)).order_by(Guest.ausweis_nr1).all():
+
+                    if guest.ausweis_nr1.lower()  > (guest_idcard).lower() :
+                        counter = counter + 1
+                        t_guest = T_guest()
+                        t_guest_data.append(t_guest)
+
+                        buffer_copy(guest, t_guest)
+                        t_guest.gname = guest.name + ", " + guest.vorname1 + guest.anredefirma +\
+                                " " + guest.anrede1
+                        t_guest.adresse = guest.adresse1 + " " + guest.adresse2
+                        t_guest.firma = guest.name + ", " + guest.anredefirma
+                        curr_lname = guest.ausweis_nr1
+
+                        if guest.ausweis_nr1.lower()  == (last_idcard).lower() :
+                            curr_fname = "�"
+
+                        if counter == 1:
+                            curr_fname = guest.ausweis_nr1
+
+                        if (counter >= 30) and (guest.ausweis_nr1.lower()  != (guest_idcard).lower()):
+                            break
+                    check_prcode()
 
 
     def case6():
 
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 
@@ -361,7 +452,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
 
     def case7():
 
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 
@@ -410,33 +501,76 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
 
     def case8():
 
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 
         nonlocal t_guest
         nonlocal t_guest_data
 
+        count_i:int = 0
+        last_gastnr:int = 0
+
         for guest in db_session.query(Guest).filter(
-                 (matches(to_string(Guest.gastnr),"*" + lname + "*"))).order_by(Guest._recid).all():
-            t_guest = T_guest()
-            t_guest_data.append(t_guest)
+                 (matches(to_string(Guest.gastnr),("*" + fname + "*"))) & (Guest.karteityp == sorttype)).order_by(Guest.gastnr).all():
+            count_i = count_i + 1
+            last_gastnr = guest.gastnr
 
-            buffer_copy(guest, t_guest)
-            t_guest.gname = guest.name + ", " + guest.vorname1 + guest.anredefirma +\
-                    " " + guest.anrede1
-            t_guest.adresse = guest.adresse1 + " " + guest.adresse2
-            t_guest.firma = guest.name + ", " + guest.anredefirma
-            curr_lname = chr_unicode(255)
-            curr_fname = chr_unicode(255)
+        if num1 == 0:
+            guest_number = to_int(lname)
 
+            for guest in db_session.query(Guest).filter(
+                     (matches(to_string(Guest.gastnr),("*" + fname + "*"))) & (Guest.karteityp == sorttype)).order_by(Guest.gastnr).all():
+                counter = counter + 1
+                t_guest = T_guest()
+                t_guest_data.append(t_guest)
 
-            check_prcode()
+                buffer_copy(guest, t_guest)
+                t_guest.gname = guest.name + ", " + guest.vorname1 + guest.anredefirma +\
+                        " " + guest.anrede1
+                t_guest.adresse = guest.adresse1 + " " + guest.adresse2
+                t_guest.firma = guest.name + ", " + guest.anredefirma
+                curr_lname = to_string(guest.gastnr)
+
+                if guest.gastnr == last_gastnr:
+                    curr_fname = "�"
+
+                if counter == 1:
+                    first_gastnr = guest.gastnr
+
+                if (counter >= 30) and (guest.gastnr != guest_number):
+                    break
+                check_prcode()
+            else:
+                guest_number = to_int(lname)
+
+                for guest in db_session.query(Guest).filter(
+                         (matches(to_string(Guest.gastnr),("*" + fname + "*"))) & (Guest.karteityp == sorttype) & (Guest.gastnr > guest_number)).order_by(Guest.gastnr).all():
+                    counter = counter + 1
+                    t_guest = T_guest()
+                    t_guest_data.append(t_guest)
+
+                    buffer_copy(guest, t_guest)
+                    t_guest.gname = guest.name + ", " + guest.vorname1 + guest.anredefirma +\
+                            " " + guest.anrede1
+                    t_guest.adresse = guest.adresse1 + " " + guest.adresse2
+                    t_guest.firma = guest.name + ", " + guest.anredefirma
+                    curr_lname = to_string(guest.gastnr)
+
+                    if guest.gastnr == last_gastnr:
+                        curr_fname = "�"
+
+                    if counter == 1:
+                        first_gastnr = guest.gastnr
+
+                    if (counter >= 30) and (guest.gastnr != guest_number):
+                        break
+                    check_prcode()
 
 
     def case9():
 
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 
@@ -467,7 +601,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
 
     def check_prcode():
 
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 
@@ -493,7 +627,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
 
     def get_vipnr():
 
-        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
+        nonlocal first_gastnr, curr_lname, curr_fname, total_record, t_guest_data, counter, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, priority_flag, guest_number, guest_idcard, guest, akt_kont, mc_guest, segment, guestseg, cl_member, guest_pr, ratecode, htparam
         nonlocal case_type, sorttype, lname, fname, num1
 
 

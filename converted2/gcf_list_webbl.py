@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.119
+#------------------------------------------
+# Rd, 31/10/2025
+# Ticket:6CE187
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -59,7 +63,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
         count_i:int = 0
         guest_name:string = ""
 
-        if lname.lower()  == ("ÿ").lower() :
+        if lname.lower()  == ("ï¿½").lower() :
             curr_lname = lname
 
             return
@@ -86,7 +90,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                 curr_fname = guest.vorname1
 
                 if (guest.name + guest.vorname1) == (guest_name).lower() :
-                    curr_fname = "ÿ"
+                    curr_fname = "ï¿½"
 
                 if counter == 1:
                     first_gastnr = guest.gastnr
@@ -113,7 +117,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                         curr_fname = guest.vorname1
 
                         if (guest.name + guest.vorname1) == (guest_name).lower() :
-                            curr_fname = "ÿ"
+                            curr_fname = "ï¿½"
 
                         if counter == 1:
                             first_gastnr = guest.gastnr
@@ -292,7 +296,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                 t_guest.membership_card = mc_guest.cardnum
 
                 if mc_guest.cardnum == mc_guest.cardnum:
-                    curr_fname = "ÿ"
+                    curr_fname = "ï¿½"
 
                 if counter == 1:
                     curr_fname = mc_guest.cardnum
@@ -323,7 +327,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                             t_guest.membership_card = mc_guest.cardnum
 
                             if mc_guest.cardnum == mc_guest.cardnum:
-                                curr_fname = "ÿ"
+                                curr_fname = "ï¿½"
 
                             if counter == 1:
                                 curr_fname = mc_guest.cardnum
@@ -374,7 +378,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                 curr_lname = guest.ausweis_nr1
 
                 if guest.ausweis_nr1.lower()  == (last_idcard).lower() :
-                    curr_fname = "ÿ"
+                    curr_fname = "ï¿½"
 
                 if counter == 1:
                     curr_fname = guest.ausweis_nr1
@@ -400,7 +404,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                         curr_lname = guest.ausweis_nr1
 
                         if guest.ausweis_nr1.lower()  == (last_idcard).lower() :
-                            curr_fname = "ÿ"
+                            curr_fname = "ï¿½"
 
                         if counter == 1:
                             curr_fname = guest.ausweis_nr1
@@ -529,7 +533,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                 curr_lname = to_string(guest.gastnr)
 
                 if guest.gastnr == last_gastnr:
-                    curr_fname = "ÿ"
+                    curr_fname = "ï¿½"
 
                 if counter == 1:
                     first_gastnr = guest.gastnr
@@ -554,7 +558,7 @@ def gcf_list_webbl(case_type:int, sorttype:int, lname:string, fname:string, num1
                     curr_lname = to_string(guest.gastnr)
 
                     if guest.gastnr == last_gastnr:
-                        curr_fname = "ÿ"
+                        curr_fname = "ï¿½"
 
                     if counter == 1:
                         first_gastnr = guest.gastnr
