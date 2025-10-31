@@ -1,8 +1,13 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
+#------------------------------------------
+# Rd, 31/10/2025
+# Ticket:F6D79E
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
+from dateutil.relativedelta import relativedelta
 from sqlalchemy import func
 from functions.check_timebl import check_timebl
 from functions.htplogic import htplogic
@@ -18,7 +23,8 @@ from models import Res_line, History, Zimkateg, Ratecode, Zimmer, Guest, Queasy,
 
 res_dynarate_data, Res_dynarate = create_model("Res_dynarate", {"date1":date, "date2":date, "rate":Decimal, "rmcat":string, "argt":string, "prcode":string, "rcode":string, "markno":int, "setup":int, "adult":int, "child":int})
 
-def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, user_init:string, inp_gastnr:int, inp_resnr:int, inp_reslinnr:int, rate_readonly:bool, qci_zinr:string, res_dynarate_data:[Res_dynarate]):
+def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, user_init:string, inp_gastnr:int, 
+                        inp_resnr:int, inp_reslinnr:int, rate_readonly:bool, qci_zinr:string, res_dynarate_data:[Res_dynarate]):
 
     prepare_cache ([Res_line, Zimkateg, Ratecode, Zimmer, Queasy, Htparam, Nation, Bediener, Reservation, Kontline, Arrangement, Prmarket, Paramtext, Waehrung, Katpreis])
 
@@ -90,6 +96,10 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
 
     db_session = local_storage.db_session
+
+    qci_zinr = qci_zinr.strip()
+    session_date = session_date.strip()
+
 
     def generate_output():
         nonlocal msg_str, error_flag, record_use, init_time, init_date, avail_gdpr, avail_mark, avail_news, save_gdpr, curr_date, serv_date, f_resline_data, curr_resline_data, reslin_list_data, reschanged_list_data, t_history_data, rline_list_data, weekdays, i, str, loopi, loopj, str1, foreign_nr, tokcounter, iftask, mestoken, mesvalue, rcode, prevcode, do_it, do_it1, flag_ok, dayuse_flag, split_modify, logic_p1109, priscilla_active, loopk, resbemerk, lvcarea, new_reslinnr, curr_time, res_line, history, zimkateg, ratecode, zimmer, guest, queasy, htparam, nation, bediener, master, reslin_queasy, reservation, kontline, gentable, outorder, arrangement, guest_pr, pricecod, prmarket, fixleist, paramtext, waehrung, katpreis
@@ -262,7 +272,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
                 pass
 
                 for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                         (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).all():
+                         (Reslin_queasy.key == ("fargt-line")) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).all():
                     m_queasy = Reslin_queasy()
                     db_session.add(m_queasy)
 
@@ -275,7 +285,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
                 if resmember.zipreis != 0:
 
                     for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                             (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).all():
+                             (Reslin_queasy.key == ("arrangement")) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).all():
                         m_queasy = Reslin_queasy()
                         db_session.add(m_queasy)
 
@@ -453,7 +463,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
         if reslin_list.betriebsnr == 0 or f_resline.marknr != 0:
 
-            if (res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("insert").lower()  or res_mode.lower()  == ("qci").lower()  or f_resline.marknr != 0):
+            if (res_mode  == ("new")  or res_mode  == ("insert")  or res_mode  == ("qci")  or f_resline.marknr != 0):
                 pass
 
                 if f_resline.contcode != "":
@@ -524,13 +534,13 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
                     f_resline.currency = f_resline.currency + waehrung1.wabkurz + ";"
 
                 waehrung1 = get_cache (Waehrung, {"waehrungsnr": [(eq, curr_wabnr)]})
-        else:
+            else:
 
-            for waehrung1 in db_session.query(Waehrung1).filter(
-                     (Waehrung1.waehrungsnr != reslin_list.betriebsnr) & (Waehrung1.betriebsnr == 0)).order_by(Waehrung1.bezeich).all():
-                f_resline.currency = f_resline.currency + waehrung1.wabkurz + ";"
+                for waehrung1 in db_session.query(Waehrung1).filter(
+                         (Waehrung1.waehrungsnr != reslin_list.betriebsnr) & (Waehrung1.betriebsnr == 0)).order_by(Waehrung1.bezeich).all():
+                    f_resline.currency = f_resline.currency + waehrung1.wabkurz + ";"
 
-            waehrung1 = get_cache (Waehrung, {"waehrungsnr": [(eq, reslin_list.betriebsnr)]})
+                waehrung1 = get_cache (Waehrung, {"waehrungsnr": [(eq, reslin_list.betriebsnr)]})
         f_resline.currency = waehrung1.wabkurz + ";" + f_resline.currency
 
 
@@ -594,13 +604,13 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
             return
 
-        if res_mode.lower()  != ("new").lower()  and res_mode.lower()  != ("insert").lower()  and res_mode.lower()  != ("qci").lower() :
+        if res_mode  != ("new")  and res_mode  != ("insert")  and res_mode  != ("qci") :
 
             if not direct_change and reslin_list.zipreis != 0:
 
                 return
 
-            if substring(bediener.permissions, 42, 1) < ("2").lower() :
+            if substring(bediener.permissions, 42, 1) < ("2") :
 
                 return
         current_rate =  to_decimal(reslin_list.zipreis)
@@ -608,10 +618,10 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
         datum = reslin_list.ankunft
 
-        if res_mode.lower()  == ("inhouse").lower() :
+        if res_mode  == ("inhouse") :
             datum = f_resline.ci_date
 
-        if res_mode.lower()  == ("inhouse").lower()  and reslin_list.resstatus == 8:
+        if res_mode  == ("inhouse")  and reslin_list.resstatus == 8:
 
             if reslin_list.ankunft == reslin_list.abreise:
                 datum = reslin_list.abreise
@@ -660,8 +670,8 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
                 else:
                     reslin_list.zipreis, rate_found = get_output(pricecod_rate(reslin_list.resnr, reslin_list.reslinnr, ("!" + f_resline.contcode), datum, reslin_list.ankunft, reslin_list.abreise, reslin_list.reserve_int, arrangement.argtnr, curr_zikatnr, reslin_list.erwachs, reslin_list.kind1, reslin_list.kind2, reslin_list.reserve_dec, reslin_list.betriebsnr))
 
-                    if rate_found:
-                        check_bonus(datum)
+                    # if rate_found:
+                    #     check_bonus(datum)
 
                 if queasy and queasy.logi1:
                     reslin_list.adrflag = True
@@ -669,7 +679,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
             if not rate_found:
 
-                if res_mode.lower()  == ("inhouse").lower() :
+                if res_mode  == ("inhouse") :
 
                     katpreis = get_cache (Katpreis, {"zikatnr": [(eq, curr_zikatnr)],"argtnr": [(eq, arrangement.argtnr)],"startperiode": [(le, datum)],"endperiode": [(ge, datum)],"betriebsnr": [(eq, wd_array[get_weekday(datum) - 1])]})
 
@@ -692,7 +702,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
         if not direct_change and not rate_readonly and current_rate != 0 and reslin_list.zipreis == 0:
             reslin_list.zipreis =  to_decimal(current_rate)
 
-        if rate_found and reslin_list.zipreis == 0 and (res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("insert").lower()  or res_mode.lower()  == ("qci").lower()) and (reslin_list.erwachs > 0 or reslin_list.kind1 > 0):
+        if rate_found and reslin_list.zipreis == 0 and (res_mode  == ("new")  or res_mode  == ("insert")  or res_mode  == ("qci")) and (reslin_list.erwachs > 0 or reslin_list.kind1 > 0):
             reslin_list.gratis = reslin_list.erwachs + reslin_list.kind1
             reslin_list.erwachs = 0
             reslin_list.kind1 = 0
@@ -772,28 +782,30 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
         f_resline.arrday = weekdays[get_weekday(reslin_list.ankunft) - 1]
         f_resline.depday = weekdays[get_weekday(reslin_list.abreise) - 1]
 
-        for res_dynarate in query(res_dynarate_data):
-            reslin_queasy = Reslin_queasy()
-            db_session.add(reslin_queasy)
-
-            reslin_queasy.key = "arrangement"
-            reslin_queasy.resnr = inp_resnr
-            reslin_queasy.reslinnr = f_resline.reslinnr
-            reslin_queasy.date1 = res_dynarate.date1
-            reslin_queasy.date2 = res_dynarate.date2
-            reslin_queasy.deci1 =  to_decimal(res_dynarate.rate)
-            reslin_queasy.char2 = res_dynarate.prcode
-            reslin_queasy.char3 = user_init
-
-            if reslin_queasy.deci1 < 0:
-                reslin_queasy.deci1 =  - to_decimal(reslin_queasy.deci1)
-                res_dynarate_data.remove(res_dynarate)
-            f_resline.fixed_rate = True
-
         queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, f_resline.origcontcode)]})
+
+        for res_dynarate in query(res_dynarate_data):
+
+            if res_dynarate.date1 >= f_resline.ci_date:
+                reslin_queasy = Reslin_queasy()
+                db_session.add(reslin_queasy)
+
+                reslin_queasy.key = "arrangement"
+                reslin_queasy.resnr = inp_resnr
+                reslin_queasy.reslinnr = f_resline.reslinnr
+                reslin_queasy.date1 = res_dynarate.date1
+                reslin_queasy.date2 = res_dynarate.date2
+                reslin_queasy.deci1 =  to_decimal(res_dynarate.rate)
+                reslin_queasy.char2 = res_dynarate.prcode
+                reslin_queasy.char3 = user_init
+
+                if reslin_queasy.deci1 < 0:
+                    reslin_queasy.deci1 =  - to_decimal(reslin_queasy.deci1)
+                    res_dynarate_data.remove(res_dynarate)
+                f_resline.fixed_rate = True
         f_resline.restricted = None != queasy and queasy.logi2
 
-        if (res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("qci").lower()) and f_resline.restricted:
+        if (res_mode  == ("new")  or res_mode  == ("qci")) and f_resline.restricted:
             reslin_list.zimmer_wunsch = reslin_list.zimmer_wunsch +\
                 "restricted;"
 
@@ -827,11 +839,21 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
             periode_rsv2 = bbresline.abreise
 
             if get_month(periode_rsv1) + 1 > 12:
-                periode = date_mdy(1, get_day(periode_rsv1) , get_year(periode_rsv1) + timedelta(days=1) - 1)
+                # periode = date_mdy(1, get_day(periode_rsv1) , get_year(periode_rsv1) + timedelta(days=1) - 1)
+                periode = datetime(
+                    year=periode_rsv1.year + 1,
+                    month=1,
+                    day=periode_rsv1.day
+                ) - timedelta(days=1)
 
 
             else:
-                periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
+                # periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
+                periode = datetime(
+                    year=periode_rsv1.year,
+                    month=periode_rsv1.month + 1,
+                    day=periode_rsv1.day
+                ) - timedelta(days=1)
 
 
             for loopi in date_range(periode_rsv1,periode_rsv2 - 1) :
@@ -840,11 +862,21 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
                     periode_rsv1 = loopi
 
                     if get_month(periode_rsv1) + 1 > 12:
-                        periode = date_mdy(1, get_day(periode_rsv1) , get_year(periode_rsv1) + timedelta(days=1) - 1)
+                        # periode = date_mdy(1, get_day(periode_rsv1) , get_year(periode_rsv1) + timedelta(days=1) - 1)
+                        periode = datetime(
+                            year=periode_rsv1.year + 1,
+                            month=1,
+                            day=periode_rsv1.day
+                        ) - timedelta(days=1)
 
 
                     else:
-                        periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
+                        # periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
+                        periode = datetime(
+                            year=periode_rsv1.year, 
+                            month=periode_rsv1.month + 1,
+                            day=periode_rsv1.day
+                        ) - timedelta(days=1)
 
                 if loopi <= periode:
 
@@ -912,13 +944,13 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
     if num_entries(res_mode, chr_unicode(2)) > 1:
 
-        if entry(1, res_mode, chr_unicode(2)) == ("DU").lower() :
+        if entry(1, res_mode, chr_unicode(2)) == ("DU") :
             dayuse_flag = True
         res_mode = entry(0, res_mode, chr_unicode(2))
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 346)]})
 
-    if htparam and htparam.bezeichnung.lower()  != ("not used").lower() :
+    if htparam and htparam.bezeichnung  != ("not used") :
         avail_gdpr = htparam.flogical
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 466)]})
@@ -948,7 +980,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 477)]})
 
-    if htparam and htparam.bezeichnung.lower()  != ("not used").lower() :
+    if htparam and htparam.bezeichnung  != ("not used") :
         avail_mark = htparam.flogical
         avail_news = htparam.flogical
     flag_ok, init_time, init_date = get_output(check_timebl(1, inp_resnr, inp_reslinnr, "res-line", None, None))
@@ -966,7 +998,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
     f_resline_data.append(f_resline)
 
 
-    if res_mode.lower()  == ("modify").lower()  or res_mode.lower()  == ("inhouse").lower() :
+    if res_mode  == ("modify")  or res_mode  == ("inhouse") :
 
         resbuff = get_cache (Res_line, {"resnr": [(eq, inp_resnr)],"reslinnr": [(eq, inp_reslinnr)]})
 
@@ -976,7 +1008,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
             return generate_output()
 
-        if res_mode.lower()  == ("modify").lower()  and resbuff.active_flag == 1:
+        if res_mode  == ("modify")  and resbuff.active_flag == 1:
             msg_str = translateExtended ("Guest already checked-in.", lvcarea, "")
             error_flag = True
 
@@ -992,7 +1024,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1355)]})
 
-    if htparam.flogical  and htparam.bezeichnung.lower()  != ("not used").lower() :
+    if htparam.flogical  and htparam.bezeichnung  != ("not used") :
         f_resline.ci_date = get_current_date()
         f_resline.billdate = get_current_date()
 
@@ -1016,7 +1048,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
     if reslin_queasy:
         f_resline.prog_str = reslin_queasy.char3
 
-    if res_mode.lower()  == ("earlyci").lower() :
+    if res_mode  == ("earlyci") :
         f_resline.earlyci = True
         res_mode = "modify"
 
@@ -1028,7 +1060,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
     f_resline.allot_tooltip = translateExtended ("Allotment", lvcarea, "")
 
-    if res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("qci").lower() :
+    if res_mode  == ("new")  or res_mode  == ("qci") :
 
         for res_line in db_session.query(Res_line).filter(
                  (Res_line.resnr == inp_resnr)).order_by(Res_line.reslinnr.desc()).yield_per(100):
@@ -1036,7 +1068,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
             break
         f_resline.reslinnr = new_reslinnr
 
-    elif res_mode.lower()  == ("modify").lower()  or res_mode.lower()  == ("inhouse").lower() :
+    elif res_mode  == ("modify")  or res_mode  == ("inhouse") :
 
         res_line = get_cache (Res_line, {"resnr": [(eq, inp_resnr)],"reslinnr": [(eq, inp_reslinnr)]})
 
@@ -1086,14 +1118,14 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
         if resline:
             f_resline.accompany_gastnr3 = resline.gastnrmember
 
-        if session_date.lower()  == ("dmy").lower() :
+        if session_date  == ("dmy") :
             f_resline.rsv_tooltip = substring(res_line.reserve_char, 6, 2) + "/" +\
                 substring(res_line.reserve_char, 3, 2) + "/" +\
                 substring(res_line.reserve_char, 0, 2) + " " +\
                 substring(res_line.reserve_char, 8, 5) + " " +\
                 substring(res_line.reserve_char, 13)
 
-        elif session_date_format() == ("mdy").lower() :
+        elif session_date_format() == ("mdy") :
             f_resline.rsv_tooltip = substring(res_line.reserve_char, 3, 2) + "/" +\
                 substring(res_line.reserve_char, 6, 2) + "/" +\
                 substring(res_line.reserve_char, 0, 2) + " " +\
@@ -1106,15 +1138,15 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
                 substring(res_line.reserve_char, 8, 5) + " " +\
                 substring(res_line.reserve_char, 13)
 
-        if res_mode.lower()  == ("modify").lower()  and (res_line.resstatus <= 2 or res_line.resstatus == 5) and res_line.zinr != "":
+        if res_mode  == ("modify")  and (res_line.resstatus <= 2 or res_line.resstatus == 5) and res_line.zinr != "":
 
             outorder = get_cache (Outorder, {"zinr": [(eq, res_line.zinr)],"betriebsnr": [(eq, res_line.resnr)]})
             f_resline.offmarket = None != outorder
 
-        if res_line.code != "" and res_line.code.lower()  != ("0").lower() :
+        if res_line.code != "" and res_line.code  != ("0") :
             f_resline.bill_instruct = to_int(res_line.code)
 
-            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, bill_instruct)]})
+            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, f_resline.bill_instruct)]})
 
             if queasy:
                 f_resline.instruct_str = queasy.char1
@@ -1132,7 +1164,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
         if zimkateg:
             f_resline.zikatstr = zimkateg.kurzbez
 
-    elif res_mode.lower()  == ("insert").lower()  or res_mode.lower()  == ("split").lower() :
+    elif res_mode  == ("insert")  or res_mode  == ("split") :
         f_resline.reslinnr = 1
         f_resline.tot_qty = 0
 
@@ -1185,10 +1217,10 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
     if length(f_resline.rline_bemerk) == None:
         f_resline.rline_bemerk = ""
 
-    if res_mode.lower()  == ("split").lower() :
+    if res_mode  == ("split") :
         split_resline()
 
-    if res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("insert").lower()  or res_mode.lower()  == ("qci").lower() :
+    if res_mode  == ("new")  or res_mode  == ("insert")  or res_mode  == ("qci") :
         f_resline.bill_instruct = 0
         f_resline.instruct_str = ""
 
@@ -1220,7 +1252,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
         if htparam.finteger != 0:
             res_line.erwachs = htparam.finteger
 
-        if res_mode.lower()  == ("insert").lower() :
+        if res_mode  == ("insert") :
 
             resline = get_cache (Res_line, {"resnr": [(eq, inp_resnr)],"active_flag": [(le, 1)],"resstatus": [(ne, 12)],"l_zuordnung[2]": [(eq, 0)]})
 
@@ -1260,7 +1292,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
     reslin_list.reserve_dec =  to_decimal("0")
     reslin_list.resnr = inp_resnr
 
-    if res_mode.lower()  != ("split").lower() :
+    if res_mode  != ("split") :
 
         guest = get_cache (Guest, {"gastnr": [(eq, f_resline.guestnr)]})
         f_resline.billname = guest.name + ", " + guest.vorname1 +\
@@ -1347,7 +1379,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
             if zimkateg1:
                 f_resline.rate_zikat = zimkateg1.kurzbez
 
-        if res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("insert").lower()  or res_mode.lower()  == ("qci").lower() :
+        if res_mode  == ("new")  or res_mode  == ("insert")  or res_mode  == ("qci") :
 
             if f_resline.res_status == 1:
                 reslin_list.resstatus = 3
@@ -1397,7 +1429,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
                     if queasy:
                         do_it = True
 
-                        if (res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("insert").lower()  or res_mode.lower()  == ("qci").lower()):
+                        if (res_mode  == ("new")  or res_mode  == ("insert")  or res_mode  == ("qci")):
 
                             if f_resline.ci_date < queasy.date1:
                                 do_it = False
@@ -1412,7 +1444,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
                             if ratecode:
                                 f_resline.enable_frate = True
 
-                                if (res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("insert").lower()  or res_mode.lower()  == ("qci").lower()) and reslin_list.reserve_int == 0 and ratecode.marknr > 0:
+                                if (res_mode  == ("new")  or res_mode  == ("insert")  or res_mode  == ("qci")) and reslin_list.reserve_int == 0 and ratecode.marknr > 0:
                                     reslin_list.reserve_int = ratecode.marknr
                                     f_resline.contcode = ratecode.code
                                     f_resline.origcontcode = ratecode.code
@@ -1439,19 +1471,19 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
     for i in range(1,num_entries(reslin_list.zimmer_wunsch, ";") - 1 + 1) :
         str = entry(i - 1, reslin_list.zimmer_wunsch, ";")
 
-        if substring(str, 0, 7) == ("voucher").lower() :
+        if substring(str, 0, 7) == ("voucher") :
             f_resline.voucher = substring(str, 7)
 
-        elif substring(str, 0, 5) == ("ChAge").lower() :
+        elif substring(str, 0, 5) == ("ChAge") :
             f_resline.child_age = substring(str, 5)
 
-        elif substring(str, 0, 6) == ("$CODE$").lower() :
+        elif substring(str, 0, 6) == ("$CODE$") :
             f_resline.contcode = substring(str, 6)
 
-        elif substring(str, 0, 5) == ("DATE,").lower() :
+        elif substring(str, 0, 5) == ("DATE,") :
             f_resline.bookdate = date_mdy(to_int(substring(str, 9, 2)) , to_int(substring(str, 11, 2)) , to_int(substring(str, 5, 4)))
 
-        elif substring(str, 0, 8) == ("SEGM_PUR").lower() :
+        elif substring(str, 0, 8) == ("SEGM_PUR") :
             f_resline.i_purpose = to_int(substring(str, 8))
 
         elif matches(str,r"*WCI-req*"):
@@ -1471,13 +1503,13 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
                             break
 
-        elif substring(str, 0, 4) == ("GDPR").lower() :
+        elif substring(str, 0, 4) == ("GDPR") :
             f_resline.gdpr_flag = substring(str, 4)
 
-        elif substring(str, 0, 9) == ("MARKETING").lower() :
+        elif substring(str, 0, 9) == ("MARKETING") :
             f_resline.mark_flag = substring(str, 9)
 
-        elif substring(str, 0, 10) == ("NEWSLETTER").lower() :
+        elif substring(str, 0, 10) == ("NEWSLETTER") :
             f_resline.news_flag = substring(str, 10)
 
     reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "specialrequest")],"resnr": [(eq, reslin_list.resnr)],"reslinnr": [(eq, reslin_list.reslinnr)]})
@@ -1509,14 +1541,14 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
                     f_resline.tip_code = f_resline.tip_code + " [" +\
                         prmarket.bezeich + "]"
 
-    if (res_mode.lower()  == ("modify").lower()  or res_mode.lower()  == ("inhouse").lower()) and substring(bediener.permissions, 42, 2) < ("2").lower() :
+    if (res_mode  == ("modify")  or res_mode  == ("inhouse")) and substring(bediener.permissions, 42, 2) < ("2") :
         f_resline.enable_disc = False
 
-    if res_mode.lower()  == ("modify").lower()  or res_mode.lower()  == ("inhouse").lower()  or res_mode.lower()  == ("split").lower() :
+    if res_mode  == ("modify")  or res_mode  == ("inhouse")  or res_mode  == ("split") :
         for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
             str = entry(i - 1, res_line.zimmer_wunsch, ";")
 
-            if substring(str, 0, 10) == ("$OrigCode$").lower() :
+            if substring(str, 0, 10) == ("$OrigCode$") :
                 prevcode = substring(str, 10)
                 f_resline.origcontcode = prevcode
 
@@ -1530,7 +1562,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
         if guest_pr:
 
             guest_pr_obj_list = {}
-            for guest_pr, queasy in db_session.query(Guest_pr, Queasy).join(Queasy,(Queasy.key == 2) & (Queasy.char1 == Guest_pr.code)).filter(
+            for guest_pr, queasy in db_session.query(Guest_pr, Queasy).join(Queasy,(Queasy.key == 2) & (Queasy.char1 == Guest_pr.code.strip())).filter(
                      (Guest_pr.gastnr == inp_gastnr) & (Guest_pr.code != f_resline.contcode)).order_by(Queasy.logi2.desc(), Queasy.char1).all():
                 if guest_pr_obj_list.get(guest_pr._recid):
                     continue
@@ -1601,7 +1633,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
 
                                 currency_list.wabkurz = qsy.char3
 
-    if (res_line.resstatus == 11 or res_line.resstatus == 13) and f_resline.contcode == " ":
+    if (res_line.resstatus == 11 or res_line.resstatus == 13) and f_resline.contcode.strip() == "":
 
         bresline = get_cache (Res_line, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(ne, res_line.reslinnr)],"kontakt_nr": [(eq, res_line.kontakt_nr)]})
 
@@ -1609,7 +1641,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
             for i in range(1,num_entries(bresline.zimmer_wunsch, ";") - 1 + 1) :
                 str = entry(i - 1, bresline.zimmer_wunsch, ";")
 
-                if substring(str, 0, 6) == ("$CODE$").lower() :
+                if substring(str, 0, 6) == ("$CODE$") :
                     f_resline.contcode = substring(str, 6)
                     f_resline.combo_code = f_resline.contcode
 
@@ -1647,10 +1679,10 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
     if not f_resline.fixed_rate and (bediener.char1 != ""):
         f_resline.enable_disc = True
 
-    if res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("insert").lower()  or res_mode.lower()  == ("qci").lower() :
+    if res_mode  == ("new")  or res_mode  == ("insert")  or res_mode  == ("qci") :
         set_roomrate(True)
 
-    if res_mode.lower()  == ("inhouse").lower()  and reslin_list.resstatus == 8:
+    if res_mode  == ("inhouse")  and reslin_list.resstatus == 8:
         set_roomrate(True)
 
     if not split_modify:
@@ -1659,7 +1691,7 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
     if f_resline.restricted:
         msg_str = msg_str + chr_unicode(2) + "&W" + translateExtended ("This is Reservation with Restricted Discounted rate", lvcarea, "") + chr_unicode(10) + translateExtended ("Any reservation data changes such as C/i- or C/O-date", lvcarea, "") + chr_unicode(10) + translateExtended ("might have impact to the given room rate.", lvcarea, "") + chr_unicode(10)
 
-    if res_mode.lower()  == ("split").lower() :
+    if res_mode  == ("split") :
         flag_ok, init_time, init_date = get_output(check_timebl(2, inp_resnr, inp_reslinnr, "res-line", init_time, init_date))
 
     fixleist = get_cache (Fixleist, {"resnr": [(eq, inp_resnr)],"reslinnr": [(eq, inp_reslinnr)]})

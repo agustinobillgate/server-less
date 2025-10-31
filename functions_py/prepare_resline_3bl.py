@@ -681,8 +681,8 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
                 else:
                     reslin_list.zipreis, rate_found = get_output(pricecod_rate(reslin_list.resnr, reslin_list.reslinnr, ("!" + f_resline.contcode), datum, reslin_list.ankunft, reslin_list.abreise, reslin_list.reserve_int, arrangement.argtnr, curr_zikatnr, reslin_list.erwachs, reslin_list.kind1, reslin_list.kind2, reslin_list.reserve_dec, reslin_list.betriebsnr))
 
-                    if rate_found:
-                        check_bonus(datum)
+                    # if rate_found:
+                    #     check_bonus(datum)
 
                 if queasy and queasy.logi1:
                     reslin_list.adrflag = True
