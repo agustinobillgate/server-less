@@ -2,22 +2,24 @@
 #------------------------------------------
 # Rd, 30/10/2025
 #------------------------------------------
-
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
+from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from functions.htpint import htpint
 from functions.get_vipnrbl import get_vipnrbl
 from sqlalchemy import func
-from functions.prepare_gcf_history_1bl import prepare_gcf_history_1bl
-from functions.gcf_history_4blho import gcf_history_4blho
+# from functions.prepare_gcf_history_1bl import prepare_gcf_history_1bl
+# from functions.gcf_history_4blho import gcf_history_4blho
 from models import Guest, History, Paramtext, Queasy, Htparam, Res_line, Waehrung, Reservation, Zimkateg, Bresline, Guestseg, Master, Messages, Kontline, Gentable, Mc_guest, Reslin_queasy, Zimmer, Fixleist, Bill, Bill_line
 
 t_payload_list_data, T_payload_list = create_model("T_payload_list", {"argt_str":string})
 
+
 def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:bool, last_sort:int, lresnr:int, 
                                 long_stay:int, ci_date:date, grpflag:bool, 
-                                room:string, lname:string, sorttype:int, fdate1:date, fdate2:date, fdate:date, excl_rmshare:bool, voucher_no:string, nation_str:string, disp_option:int):
+                                room:string, lname:string, sorttype:int, fdate1:date, fdate2:date, fdate:date, excl_rmshare:bool, 
+                                voucher_no:string, nation_str:string, disp_option:int):
 
     prepare_cache ([Guest, Paramtext, Queasy, Htparam, Waehrung, Reservation, Zimkateg, Bresline, Kontline, Reslin_queasy, Zimmer, Bill, Bill_line])
 
@@ -79,14 +81,12 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
     Bqueasy = create_buffer("Bqueasy",Queasy)
     Pqueasy = create_buffer("Pqueasy",Queasy)
 
-
     db_session = local_storage.db_session
 
     room = room.strip()
     lname = lname.strip()
     voucher_no = voucher_no.strip()
     nation_str = nation_str.strip()
-
 
     def generate_output():
         nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, art_security, security_amount, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, queasy, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, fixleist, bill, bill_line
@@ -96,7 +96,6 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, periode_list, t_payload_list, ghistory, summ_list, gmember, bqueasy, pqueasy
         nonlocal setup_list_data, arl_list_data, b_arl_list_data, periode_list_data, ghistory_data, summ_list_data
-
         return {"fdate1": fdate1, "fdate2": fdate2, "rmlen": rmlen, "arl-list": arl_list_data}
 
     def get_toname(lname:string):
@@ -144,7 +143,6 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
             curr_recid = res_line._recid
             res_line = db_session.query(Res_line).filter(
                      (Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resname == "") & (Res_line._recid > curr_recid)).first()
-
 
     def disp_arlist1():
 
@@ -1466,7 +1464,6 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
                     create_it()
 
-
     def sqry6():
 
         nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, art_security, security_amount, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, queasy, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, fixleist, bill, bill_line
@@ -1604,7 +1601,7 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         if sorttype == 1:
 
-            if nation_str == " ":
+            if nation_str == "":
 
                 res_line_obj_list = {}
                 for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
@@ -1641,7 +1638,7 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         elif sorttype == 2:
 
-            if nation_str == " ":
+            if nation_str == "":
 
                 res_line_obj_list = {}
                 for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
@@ -1678,7 +1675,7 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         elif sorttype == 3:
 
-            if nation_str == " ":
+            if nation_str == "":
 
                 res_line_obj_list = {}
                 for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
@@ -1715,7 +1712,7 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         elif sorttype == 4:
 
-            if nation_str == " ":
+            if nation_str == "":
 
                 res_line_obj_list = {}
                 for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
@@ -1772,7 +1769,7 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         if sorttype == 1:
 
-            if t_payload_list.argt_str == " " or t_payload_list.argt_str == None:
+            if t_payload_list.argt_str == "" or t_payload_list.argt_str == None:
 
                 res_line_obj_list = {}
                 for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
@@ -1807,7 +1804,7 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         elif sorttype == 2:
 
-            if t_payload_list.argt_str == " " or t_payload_list.argt_str == None:
+            if t_payload_list.argt_str == "" or t_payload_list.argt_str == None:
 
                 res_line_obj_list = {}
                 for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
@@ -1842,7 +1839,7 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         elif sorttype == 3:
 
-            if t_payload_list.argt_str == " " or t_payload_list.argt_str == None:
+            if t_payload_list.argt_str == "" or t_payload_list.argt_str == None:
 
                 res_line_obj_list = {}
                 for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
@@ -1877,7 +1874,7 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         elif sorttype == 4:
 
-            if t_payload_list.argt_str == " " or t_payload_list.argt_str == None:
+            if t_payload_list.argt_str == "" or t_payload_list.argt_str == None:
 
                 res_line_obj_list = {}
                 for res_line, gbuff, waehrung, reservation, zimkateg in db_session.query(Res_line, Gbuff, Waehrung, Reservation, Zimkateg).join(Gbuff,(Gbuff.gastnr == Res_line.gastnr)).join(Waehrung,(Waehrung.waehrungsnr == Res_line.betriebsnr)).join(Reservation,(Reservation.resnr == Res_line.resnr) & (length(trim(Reservation.groupname)) >= igrpname)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).filter(
@@ -2086,11 +2083,11 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
             if reservation.bemerk != "":
 
                 if reservation.bemerk == None:
-                    arl_list.comments = " "
+                    arl_list.comments = ""
                 else:
                     arl_list.comments = reservation.bemerk + chr_unicode(10)
             else:
-                arl_list.comments = " "
+                arl_list.comments = ""
 
             if res_line.bemerk != "":
 
@@ -2104,7 +2101,8 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 comment_str = entry(loop_i - 1, res_line.zimmer_wunsch, ";")
 
                 if substring(comment_str, 0, 8) == ("$OTACOM$") :
-                    arl_list.comments = arl_list.comments + chr_unicode(10) + "---OTA COMMENT---" + chr_unicode(10) + entry(2, comment_str, "$OTACOM$")
+                    tmp_str = comment_str.split("$OTACOM$")
+                    arl_list.comments = arl_list.comments + chr_unicode(10) + "---OTA COMMENT---" + chr_unicode(10) + tmp_str[1]
                 else:
                     arl_list.comments = arl_list.comments + " "
 
@@ -2197,9 +2195,10 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
                     else:
                         arl_list.ankunft_fgcol = 115
 
-                if res_line.active_flag == 0 and res_line.zinr != "" and res_line.ankunft == ci_date:
+                if res_line.active_flag == 0 and res_line.zinr.strip() != "" and res_line.ankunft == ci_date:
 
-                    zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                    # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                    zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == res_line.zinr.strip()).first()
 
                     if zimmer.zistatus == 1:
                         arl_list.zinr_fgcol = 0
@@ -2209,7 +2208,9 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
                         arl_list.zinr_fgcol = 0
                         arl_list.zinr_bgcol = 10
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 162)],"char1": [(eq, zimmer.zinr)],"number1": [(eq, 0)]})
+                        # queasy = get_cache (Queasy, {"key": [(eq, 162)],"char1": [(eq, zimmer.zinr)],"number1": [(eq, 0)]})
+                        queasy = db_session.query(Queasy).filter(
+                                 (Queasy.key == 162) & (Queasy.char1 == zimmer.zinr.strip()) & (Queasy.number1 == 0)).with_for_update(nowait=True).first()
 
                         if queasy:
                             arl_list.zinr_fgcol = 15
@@ -2276,7 +2277,7 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
                 if queasy:
 
-                    if arl_list.comments != " ":
+                    if arl_list.comments != "":
                         arl_list.comments = arl_list.comments + chr_unicode(10) + queasy.char3
 
 
@@ -2386,29 +2387,29 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         guest = get_cache (Guest, {"gastnr": [(eq, res_line_gastnrmember)]})
 
-        if guest:
-            cg_ci_date, cg_t_tittle, cg_ip_port, cg_guest_phone, cg_guest_name, cg_guest_email = get_output(prepare_gcf_history_1bl(guest.gastnr))
-            lreturn = hServerHO:CONNECT (hoappparam, None, None, None)
+        # if guest:
+        #     cg_ci_date, cg_t_tittle, cg_ip_port, cg_guest_phone, cg_guest_name, cg_guest_email = get_output(prepare_gcf_history_1bl(guest.gastnr))
+        #     lreturn = hServerHO:CONNECT (hoappparam, None, None, None)
 
-            if not lreturn:
-
-
-                return generate_inner_output()
-            local_storage.combo_flag = True
-            ghistory_data, summ_list_data = get_output(gcf_history_4blho(guest.gastnr, cg_guest_phone, cg_guest_name, cg_guest_email, None, None))
-            local_storage.combo_flag = False
-
-            cg_counter = 0
-
-            for ghistory in query(ghistory_data):
-                cg_counter = cg_counter + 1
-
-            if cg_counter >= stay and stay > 0:
-                arl_list_reslin_name_fgcol = 15
-                arl_list_reslin_name_bgcol = 3
+        #     if not lreturn:
 
 
-            lreturn = hServerHO:DISCONNECT()
+        #         return generate_inner_output()
+        #     local_storage.combo_flag = True
+        #     ghistory_data, summ_list_data = get_output(gcf_history_4blho(guest.gastnr, cg_guest_phone, cg_guest_name, cg_guest_email, None, None))
+        #     local_storage.combo_flag = False
+
+        #     cg_counter = 0
+
+        #     for ghistory in query(ghistory_data):
+        #         cg_counter = cg_counter + 1
+
+        #     if cg_counter >= stay and stay > 0:
+        #         arl_list_reslin_name_fgcol = 15
+        #         arl_list_reslin_name_bgcol = 3
+
+
+        #     lreturn = hServerHO:DISCONNECT()
 
 
         return generate_inner_output()
@@ -2441,31 +2442,54 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
         periode_rsv2 = queasy.date3
 
         if get_month(periode_rsv1) + 1 > 12:
-            periode = date_mdy(1, get_day(periode_rsv1) , get_year(periode_rsv1) + timedelta(days=1) - 1)
+            # periode = date_mdy(1, get_day(periode_rsv1) , get_year(periode_rsv1) + timedelta(days=1) - 1)
+            periode = datetime(
+                    year=periode_rsv1.year + 1,
+                    month=1,
+                    day=periode_rsv1.day
+                ) - timedelta(days=1)
 
         elif get_month(periode_rsv1) + 1 == 2:
 
             if get_day(periode_rsv1) >= 29:
 
                 if get_year(periode_rsv1) % 4 != 0:
-                    periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1) ])
+                    # periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1) ])
+                    periode = datetime(year=periode_rsv1.year, 
+                                       month=periode_rsv1.month + 1, 
+                                       day=month_str1[1 - 1])  # month_str1 index starts from 0
 
                 elif get_year(periode_rsv1) % 4 == 0:
-                    periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1) ])
+                    # periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1) ])
+                    periode = datetime(year=periode_rsv1.year, 
+                                       month=periode_rsv1.month + 1, 
+                                       day=month_str2[1 - 1])  # month_str2 index starts
 
 
             else:
-                periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
-
-
+                # periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
+                periode = datetime(
+                        year=periode_rsv1.year,
+                        month=periode_rsv1.month + 1,
+                        day=periode_rsv1.day
+                    ) - timedelta(days=1)
         else:
-
             if get_day(periode_rsv1) >= 31:
-                periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
+                # periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
+                periode = datetime(
+                        year=periode_rsv1.year,
+                        month=periode_rsv1.month + 1,
+                        day=month_str1[periode_rsv1.month - 1]
+                    ) - timedelta(days=1)
 
 
             else:
-                periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
+                # periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
+                periode = datetime(
+                        year=periode_rsv1.year,
+                        month=periode_rsv1.month + 1,
+                        day=periode_rsv1.day
+                    ) - timedelta(days=1)
 
 
         for loopi in date_range(periode_rsv1,periode_rsv2 - 1) :
@@ -2474,31 +2498,58 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
                 periode_rsv1 = loopi
 
                 if get_month(periode_rsv1) + 1 > 12:
-                    periode = date_mdy(1, get_day(periode_rsv1) , get_year(periode_rsv1) + timedelta(days=1) - 1)
+                    # periode = date_mdy(1, get_day(periode_rsv1) , get_year(periode_rsv1) + timedelta(days=1) - 1)
+                    periode = datetime(
+                            year=periode_rsv1.year + 1,
+                            month=1,
+                            day=periode_rsv1.day
+                        ) - timedelta(days=1)
 
                 elif get_month(periode_rsv1) + 1 == 2:
 
                     if get_day(periode_rsv1) >= 29:
 
                         if get_year(periode_rsv1) % 4 != 0:
-                            periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1) ])
+                            # periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1) ])
+                            periode = datetime(year=periode_rsv1.year, 
+                                               month=periode_rsv1.month + 1, 
+                                               day=month_str1[1 - 1])  # month_str1 index starts
 
                         elif get_year(periode_rsv1) % 4 == 0:
-                            periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1) ])
+                            # periode = date_mdy(get_month(periode_rsv1) + 1, month_str2[get_month(periode_rsv1) + 1 - timedelta(days=1), get_year(periode_rsv1) ])
+                            periode = datetime(year=periode_rsv1.year, 
+                                               month=periode_rsv1.month + 1, 
+                                               day=month_str2[1 - 1])  # month_str2 index starts
 
 
                     else:
-                        periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
+                        # periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
+                        periode = datetime(
+                                year=periode_rsv1.year,
+                                month=periode_rsv1.month + 1,
+                                day=periode_rsv1.day
+                            ) - timedelta(days=1)
 
 
                 else:
 
                     if get_day(periode_rsv1) >= 31:
-                        periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
+                        # periode = date_mdy(get_month(periode_rsv1) + 1, month_str1[get_month(periode_rsv1) + 1 - 1], get_year(periode_rsv1)) - 1
+                        periode = datetime(
+                                year=periode_rsv1.year,
+                                month=periode_rsv1.month + 1,
+                                day=month_str1[periode_rsv1.month - 1]
+                            ) - timedelta(days=1
+                        )
 
 
                     else:
-                        periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
+                        # periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
+                        periode = datetime(
+                            year=periode_rsv1.year,
+                            month=periode_rsv1.month + 1,
+                            day=periode_rsv1.day
+                        )
 
             if loopi <= periode:
 
@@ -2524,7 +2575,7 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
     setup_list_data.append(setup_list)
 
     setup_list.nr = 1
-    setup_list.char = " "
+    setup_list.char = ""
 
     for paramtext in db_session.query(Paramtext).filter(
              (Paramtext.txtnr >= 9201) & (Paramtext.txtnr <= 9299)).order_by(Paramtext._recid).all():
@@ -2534,9 +2585,7 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
         setup_list.nr = paramtext.txtnr - 9199
         setup_list.char = substring(paramtext.notes, 0, 1)
     blacklist_int = get_output(htpint(709))
-
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1053)]})
-
     if htparam:
         art_security = htparam.finteger
 
@@ -2544,7 +2593,6 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
     if htparam:
         stay = htparam.finteger
-
     paramtext = get_cache (Paramtext, {"txtnr": [(eq, 200)]})
 
     if paramtext:
@@ -2563,11 +2611,8 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
                 if vhost != None and vhost != "" and vservice != None and vservice != "":
                     centralized_flag = True
-
-
     else:
         centralized_flag = False
-
 
     fixing_blank_resname()
 
@@ -2606,8 +2651,8 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
 
     if not do_it:
-
         return generate_output()
+    
     vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9 = get_output(get_vipnrbl())
     disp_arlist1()
 
