@@ -1,3 +1,8 @@
+#using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 30/10/2025
+# Flag -> update
+#------------------------------------------
 #using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
@@ -71,35 +76,49 @@ def ratecode_adm_create_list_1bl(prcode:string, market_nr:int):
                                     k = 1
 
                                     if arrangement:
-                                        while k <= 99 and not found1 and prtable:
+                                        # batas loop sesuai panjang product array agar tidak IndexError
+                                        product_len = len(prtable.product) if prtable and prtable.product else 0
+                                        while k <= product_len and not found1 and prtable:
+                                            val = prtable.product[k - 1] if k - 1 < product_len else 0
 
-                                            if prtable.product[k - 1] > 10000:
-                                                pr_str = to_string(prtable.product[k - 1])
+                                            if val > 100000:
+                                                # 6 digit atau lebih (format 2 + 4)
+                                                pr_str = to_string(val)
                                                 zikatnr = to_int(substring(pr_str, 0, 2))
                                                 argtnr = to_int(substring(pr_str, 2))
-
                                                 if zikatnr >= 91:
-                                                    zikatnr = zikatnr - 90
+                                                    zikatnr -= 90
 
-                                            elif prtable.product[k - 1] > 100000:
-                                                pr_str = to_string(prtable.product[k - 1])
+                                            elif val > 10000:
+                                                # 5 digit (format 2 + 3)
+                                                pr_str = to_string(val)
                                                 zikatnr = to_int(substring(pr_str, 0, 2))
                                                 argtnr = to_int(substring(pr_str, 2))
-
                                                 if zikatnr >= 91:
-                                                    zikatnr = zikatnr - 90
+                                                    zikatnr -= 90
 
-                                            elif prtable.product[k - 1] > 0 and prtable0.argtnr[j - 1] <= 99:
-                                                zikatnr = round((prtable.product[k - 1] / 100 - 0.5) , 0)
-                                                argtnr = prtable.product[k - 1] - zikatnr * 100
+                                            elif val > 0:
+                                                # pola "2 digit zikatnr" + "2/3 digit argtnr"
+                                                if prtable0.argtnr[j - 1] <= 99:
+                                                    zikatnr = int(round((val / 100 - 0.5), 0))
+                                                    argtnr = int(val - zikatnr * 100)
+                                                else:
+                                                    zikatnr = int(round((val / 1000 - 0.5), 0))
+                                                    argtnr = int(val - zikatnr * 1000)
+                                            else:
+                                                # nilai kosong, lewati
+                                                k += 1
+                                                continue
 
-                                            elif prtable.product[k - 1] > 0 and prtable0.argtnr[j - 1] >= 100:
-                                                zikatnr = round((prtable.product[k - 1] / 1000 - 0.5) , 0)
-                                                argtnr = prtable.product[k - 1] - zikatnr * 1000
-
-                                            if zikatnr == prtable0.zikatnr[i - 1] and argtnr == prtable0.argtnr[j - 1]:
+                                            # jika match, flag ditemukan
+                                            if (
+                                                zikatnr == prtable0.zikatnr[i - 1]
+                                                and argtnr == prtable0.argtnr[j - 1]
+                                            ):
                                                 found1 = True
-                                            k = k + 1
+
+                                            k += 1
+                                            
                                     pr_list = Pr_list()
                                     pr_list_data.append(pr_list)
 
@@ -109,6 +128,7 @@ def ratecode_adm_create_list_1bl(prcode:string, market_nr:int):
                                     pr_list.argtnr = arrangement.argtnr
                                     pr_list.prcode = prcode
                                     pr_list.i_typ = zimkateg.typ
+                                    # print("prcode:", prcode, "rmcat:", pr_list.rmcat, "argt:", pr_list.argt, "zikatnr:", pr_list.zikatnr, "argtnr:", pr_list.argtnr, "i_typ:", pr_list.i_typ, "found1:", found1)
                                     pr_list.flag = to_int(found1)
 
     create_list()

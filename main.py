@@ -197,6 +197,7 @@ update_field_mapping = {
     "selected":"SELECTED",
 
     "flag":"Flag",
+    "flag":"flag",
     "integerflag":"integerFlag",
     "doneflag":"doneFlag",
     "grpflag":"grpFlag",

@@ -29,6 +29,28 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
 
         return {"s-list": s_list_data}
 
+    def gettimestampwithms():
+
+        nonlocal time_stamp_str, vbilldate, zimmer, res_line, queasy, outorder
+        nonlocal v_mode, location, froom, troom
+
+
+        nonlocal s_list, active_roomlist, s1_list, s2_list, s1_list, s2_list
+
+        vdatetime:string = ""
+        dtz1:datetime = None
+        dtz2:datetime = None
+        dtz1_str:string = ""
+        epoch_millisecond:int = 0
+        human_date:datetime = None
+        dtz1 = get_current_datetime()
+        dtz2 = 1970_01_01T00:00:00.000
+        epoch_millisecond = get_interval(dtz1, dtz2, "milliseconds")
+        human_date = add_interval(dtz2, epoch_millisecond, "milliseconds")
+        time_stamp_str = to_string(human_date)
+        return time_stamp_str
+
+
     def auto_assignment():
 
         nonlocal time_stamp_str, vbilldate, zimmer, res_line, queasy, outorder
@@ -65,7 +87,7 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
             while None != zimmer and not found:
                 do_it = True
 
-                if zimmer.etage > 0 and (zimmer.etage != zimmer.etage):
+                if etage > 0 and (etage != zimmer.etage):
                     do_it = False
 
                 if do_it:

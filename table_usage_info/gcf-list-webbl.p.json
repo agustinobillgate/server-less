@@ -1,0 +1,61 @@
+{
+    "Guest": {
+        "read": [],
+        "write": []
+    },
+    "Akt_kont": {
+        "read": [
+            "name",
+            "vorname",
+            "anrede",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Mc_guest": {
+        "read": [],
+        "write": []
+    },
+    "Segment": {
+        "read": [
+            "bezeich",
+            "segmentcode",
+            "betriebsnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guestseg": {
+        "read": [
+            "segmentcode",
+            "reihenfolge",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Cl_member": {
+        "read": [
+            "gastnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest_pr": {
+        "read": [
+            "code",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Ratecode": {
+        "read": [],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "finteger",
+            "_recid"
+        ],
+        "write": []
+    }
+}

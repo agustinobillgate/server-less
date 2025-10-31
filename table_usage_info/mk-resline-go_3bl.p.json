@@ -1,0 +1,228 @@
+{
+    "Res_line": {
+        "read": [],
+        "write": []
+    },
+    "Bill": {
+        "read": [],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "char1",
+            "logi2",
+            "_recid",
+            "key",
+            "number1",
+            "date3",
+            "number3",
+            "logi1",
+            "deci1",
+            "date2",
+            "char2",
+            "date1",
+            "number2",
+            "logi3",
+            "deci2"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "fdate",
+            "finteger",
+            "fchar",
+            "flogical",
+            "bezeichnung",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Nation": {
+        "read": [
+            "nationnr",
+            "kurzbez",
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Arrangement": {
+        "read": [
+            "argtnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "segmentcode",
+            "bemerk",
+            "resnr",
+            "resart",
+            "verstat",
+            "useridanlage",
+            "briefnr",
+            "groupname",
+            "grpflag",
+            "limitdate",
+            "depositgef",
+            "vesrdepot",
+            "kontakt_nr",
+            "point_resnr",
+            "insurance",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bediener": {
+        "read": [
+            "nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Outorder": {
+        "read": [
+            "gespstart",
+            "gespende",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimmer": {
+        "read": [
+            "setup",
+            "zikatnr",
+            "zistatus",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Mealcoup": {
+        "read": [
+            "zinr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reslin_queasy": {
+        "read": [],
+        "write": []
+    },
+    "Resplan": {
+        "read": [
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "zikatnr",
+            "kurzbez",
+            "_recid",
+            "typ"
+        ],
+        "write": []
+    },
+    "Messages": {
+        "read": [],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [
+            "ankauf",
+            "einheit",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest_pr": {
+        "read": [
+            "code",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest": {
+        "read": [
+            "land",
+            "nation1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_history": {
+        "read": [
+            "nr",
+            "resnr",
+            "reslinnr",
+            "datum",
+            "zeit",
+            "aenderung",
+            "action",
+            "betriebsnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Master": {
+        "read": [
+            "resnr",
+            "rechnr",
+            "active",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Brief": {
+        "read": [
+            "briefnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Segment": {
+        "read": [
+            "segmentcode",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Sourccod": {
+        "read": [
+            "bezeich",
+            "source_code",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Counters": {
+        "read": [
+            "counter",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Mc_guest": {
+        "read": [],
+        "write": []
+    },
+    "Interface": {
+        "read": [
+            "key",
+            "resnr",
+            "intdate",
+            "int_time",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guestseg": {
+        "read": [
+            "segmentcode",
+            "_recid"
+        ],
+        "write": []
+    }
+}
