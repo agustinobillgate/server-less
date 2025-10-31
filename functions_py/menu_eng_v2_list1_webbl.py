@@ -464,6 +464,8 @@ def menu_eng_v2_list1_webbl(subgr_list_data:[Subgr_list], payload_list_data:[Pay
 
                                 if h_list.anzahl != 0 and h_list.anzahl != None:
                                     tmp_anzahl = h_list.anzahl
+                                else:
+                                    tmp_anzahl = 0
 
                                 if vat_included and tmp_anzahl != 0:
                                     # h_list.epreis = ( to_decimal(h_list.t_sales) / to_decimal(h_list.anzahl)) * to_decimal(exchg_rate) / to_decimal(fact)
