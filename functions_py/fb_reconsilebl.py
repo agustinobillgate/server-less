@@ -48,7 +48,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz
+        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, bill_date, cost, price, exrate, price_type, incl_service, incl_mwst, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz
         nonlocal pvilanguage, case_type, from_date, to_date, from_grp, mi_opt, date1, date2
 
 
@@ -89,7 +89,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
 
     def create_list():
 
-        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz, bill_date, price_type
+        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, bill_date, cost, price, exrate, price_type, incl_service, incl_mwst, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz
         nonlocal pvilanguage, case_type, from_date, to_date, from_grp, mi_opt, date1, date2
 
 
@@ -408,7 +408,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
                                 else:
                                     cost = l_artikel.ek_aktuell
 
-                                if arikel.umsatzart == 6:
+                                if artikel.umsatzart == 6:
                                     b_cost = h_compli.anzahl * cost
                                 elif artikel.umsatzart == 3 or artikel.umsatzart == 5:
                                     f_cost = h_compli.anzahl * cost
@@ -1460,7 +1460,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
 
     def create_food():
 
-        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz, bill_date, price_type
+        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, bill_date, cost, price, exrate, price_type, incl_service, incl_mwst, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz
         nonlocal pvilanguage, case_type, from_date, to_date, from_grp, mi_opt, date1, date2
 
 
@@ -2308,7 +2308,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
 
     def create_beverage():
 
-        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz, bill_date, price_type
+        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, bill_date, cost, price, exrate, price_type, incl_service, incl_mwst, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz
         nonlocal pvilanguage, case_type, from_date, to_date, from_grp, mi_opt, date1, date2
 
 
@@ -3162,7 +3162,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
 
     def fb_sales(f_eknr:int, b_eknr:int):
 
-        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz
+        nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, bill_date, cost, price, exrate, price_type, incl_service, incl_mwst, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz
         nonlocal pvilanguage, case_type, from_date, to_date, from_grp, mi_opt, date1, date2
 
 
@@ -3240,15 +3240,19 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
         price_type = htparam.finteger
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
+
     waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
+
     if waehrung:
         exrate_val = to_decimal(waehrung.ankauf / waehrung.einheit)
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 135)]})
+
     if htparam:
         incl_service = htparam.flogical
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 134)]})
+
     if htparam:
         incl_mwst = htparam.flogical
 
