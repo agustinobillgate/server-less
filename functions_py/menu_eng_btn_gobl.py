@@ -10,13 +10,14 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
-from models import H_artikel, Hoteldpt, Artikel, H_cost, H_umsatz, H_journal, Wgrpdep
+from functions.fb_cost_count_recipe_costbl import fb_cost_count_recipe_costbl
+from models import Htparam, Waehrung, H_artikel, Hoteldpt, Artikel, L_artikel, H_rezept, H_umsatz, H_cost, Wgrpdep
 
 subgr_list_data, Subgr_list = create_model("Subgr_list", {"selected":bool, "subnr":int, "bezeich":string}, {"selected": True})
 
 def menu_eng_btn_gobl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:int, to_dept:int, dstore:int, ldry_dept:int, all_sub:bool, from_date:date, to_date:date, fact1:int, exchg_rate:Decimal, vat_included:bool, mi_subgrp:bool, detailed:bool, curr_sort:int, short_flag:bool):
 
-    prepare_cache ([H_artikel, Hoteldpt, Artikel, H_cost, H_journal, Wgrpdep])
+    prepare_cache ([Htparam, Waehrung, H_artikel, Hoteldpt, Artikel, L_artikel, H_rezept, H_cost, Wgrpdep])
 
     output_list_data = []
     t_anz:int = 0
@@ -33,7 +34,13 @@ def menu_eng_btn_gobl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:int,
     st_proz2:Decimal = 0
     s_anzahl:int = 0
     s_proz1:Decimal = 0
-    h_artikel = hoteldpt = artikel = h_cost = h_umsatz = h_journal = wgrpdep = None
+    price_type:int = 0
+    double_currency:bool = False
+    incl_service:bool = False
+    incl_mwst:bool = False
+    exrate:Decimal = 1
+    bill_date:date = None
+    htparam = waehrung = h_artikel = hoteldpt = artikel = l_artikel = h_rezept = h_umsatz = h_cost = wgrpdep = None
 
     subgr_list = output_list = h_list = None
 
@@ -43,7 +50,7 @@ def menu_eng_btn_gobl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:int,
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal output_list_data, t_anz, t_sales, t_cost, t_margin, tt_anz, tt_sales, tt_cost, tt_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, h_artikel, hoteldpt, artikel, h_cost, h_umsatz, h_journal, wgrpdep
+        nonlocal output_list_data, t_anz, t_sales, t_cost, t_margin, tt_anz, tt_sales, tt_cost, tt_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, double_currency, incl_service, incl_mwst, exrate, bill_date, htparam, waehrung, h_artikel, hoteldpt, artikel, l_artikel, h_rezept, h_umsatz, h_cost, wgrpdep
         nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag
 
 
@@ -54,7 +61,7 @@ def menu_eng_btn_gobl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:int,
 
     def create_h_umsatz1():
 
-        nonlocal output_list_data, t_anz, t_sales, t_cost, t_margin, tt_anz, tt_sales, tt_cost, tt_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, h_artikel, hoteldpt, artikel, h_cost, h_umsatz, h_journal, wgrpdep
+        nonlocal output_list_data, t_anz, t_sales, t_cost, t_margin, tt_anz, tt_sales, tt_cost, tt_margin, st_sales, st_cost, st_margin, st_proz2, s_anzahl, s_proz1, price_type, double_currency, incl_service, incl_mwst, exrate, bill_date, htparam, waehrung, h_artikel, hoteldpt, artikel, l_artikel, h_rezept, h_umsatz, h_cost, wgrpdep
         nonlocal sorttype, from_dept, to_dept, dstore, ldry_dept, all_sub, from_date, to_date, fact1, exchg_rate, vat_included, mi_subgrp, detailed, curr_sort, short_flag
 
 
@@ -72,8 +79,11 @@ def menu_eng_btn_gobl(subgr_list_data:[Subgr_list], sorttype:int, from_dept:int,
         serv_vat:bool = False
         fact:Decimal = to_decimal("0.0")
         do_it:bool = False
+        tmp_anzahl:int = 0
         cost:Decimal = to_decimal("0.0")
         anz:int = 0
+        cost_todate:Decimal = to_decimal("0.0")
+        price:Decimal = to_decimal("0.0")
         h_art = None
         H_art =  create_buffer("H_art",H_artikel)
         output_list_data.clear()
