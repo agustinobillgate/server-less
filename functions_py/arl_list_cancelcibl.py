@@ -191,6 +191,7 @@ def arl_list_cancelcibl(recid_resline:int, user_init:string, t_ankunft:date):
         zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
 
         if zimmer:
+            pass
             zimmer.zistatus = 2
             pass
 
