@@ -71,7 +71,7 @@ def fo_inv_openbill_list_web_1bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
 
     abreise, resname, res_exrate, zimmer_bezeich, kreditlimit, master_str, master_rechnr, bill_anzahl, queasy_char1, disp_warning, flag_report, guest_taxcode, repeat_charge, t_res_line_data, t_bill_data = get_output(fo_invoice_open_bill_cld_2bl(bil_flag, bil_recid, room, vipflag))
-
+    print("QChar1:", queasy_char1)
     t_bill = query(t_bill_data, first=True)
 
     t_res_line = query(t_res_line_data, first=True)

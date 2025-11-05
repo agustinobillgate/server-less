@@ -257,7 +257,7 @@ def print_hbill_webbl(pvilanguage:int, user_init:string, print_all:bool, printnr
 
                 if matches(paylist.str,'*' + gs + '*'):
 
-                    if (gs.lower()  == ("Compl").lower()  or gs.lower()  == ("Compliment").lower()  or gs.lower()  == ("A&G").lower()  or gs.lower()  == ("Eng").lower()  or gs.lower()  == ("FB").lower()  or gs.lower()  == ("FO").lower()  or gs.lower()  == ("HK").lower()  or gs.lower()  == ("HRD").lower()  or gs.lower()  == ("Owner").lower()  or gs.lower()  == ("Sales").lower()) and (matches(paylist.str,("*Compliment*")) or matches(paylist.str,r"*Compl*") or matches(paylist.str,r"*Entertaint*") or matches(paylist.str,r"*Officer Check*")):
+                    if (gs  == ("Compl")  or gs  == ("Compliment")  or gs  == ("A&G")  or gs  == ("Eng")  or gs  == ("FB")  or gs  == ("FO")  or gs  == ("HK")  or gs  == ("HRD")  or gs  == ("Owner")  or gs  == ("Sales")) and (matches(paylist.str,("*Compliment*")) or matches(paylist.str,r"*Compl*") or matches(paylist.str,r"*Entertaint*") or matches(paylist.str,r"*Officer Check*")):
                         t_print_line.descrip = trim(substring(translateExtended (entry(0, paylist.str, "|") , lvcarea, "") , length(gs) - 1))
                     else:
                         t_print_line.descrip = translateExtended (trim(entry(0, paylist.str, "|")) , lvcarea, "")

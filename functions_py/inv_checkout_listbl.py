@@ -219,10 +219,15 @@ def inv_checkout_listbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int,
             msg_int = 5
             msg_str = translateExtended ("Number of created KeyCard(s) =", lvcarea, "") + " " + to_string(res_line.betrieb_gast) + chr_unicode(10)
 
-        zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+        # zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+        zimmer = db_session.query(Zimmer).filter(
+                 (Zimmer.zinr == (zinr))).first()
 
         res_line1 = db_session.query(Res_line1).filter(
-                 (Res_line1._recid != res_line._recid) & (Res_line1.zinr == (zinr))) & ((Res_line1.resstatus == 6) | (Res_line1.resstatus == 13)) & (Res_line1.l_zuordnung[inc_value(2)] == 0).first()
+                    (Res_line1._recid != res_line._recid) & 
+                    (Res_line1.zinr == (res_line.zinr)) & 
+                    ((Res_line1.resstatus == 6) | (Res_line1.resstatus == 13)) & 
+                    (Res_line1.l_zuordnung[inc_value(2)] == 0)).first()
 
         if not res_line1:
 
@@ -388,9 +393,10 @@ def inv_checkout_listbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int,
                     salestat.gesamtumsatz =  to_decimal(salestat.gesamtumsatz) + to_decimal(bill1.gesamtumsatz)
 
                     if res_line.resstatus != 12:
-                        salestat.room_nights = salestat.room_nights + (co_date - ankunft)
+                        tmp_days:int = (co_date - ankunft).days
+                        salestat.room_nights = salestat.room_nights + tmp_days
 
-                        if (co_date - ankunft) == 0:
+                        if tmp_days == 0:
                             salestat.room_nights = salestat.room_nights + 1
                     pass
 
@@ -462,7 +468,10 @@ def inv_checkout_listbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int,
             res_recid1 = 0
 
             for zimplan in db_session.query(Zimplan).filter(
-                         (Zimplan.datum >= co_date) & (Zimplan.datum < abreise) & (Zimplan.zinr == (zinr))) & (Zimplan.res_recid == res_recid).order_by(Zimplan._recid).all():
+                         (Zimplan.datum >= co_date) & 
+                         (Zimplan.datum < abreise) & 
+                         (Zimplan.zinr == (zinr)) & 
+                         (Zimplan.res_recid == res_recid)).order_by(Zimplan._recid).all():
 
                 if res_recid1 != 0:
 

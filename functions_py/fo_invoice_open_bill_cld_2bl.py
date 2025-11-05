@@ -6,6 +6,7 @@
 
 from functions.additional_functions import *
 from decimal import Decimal
+from sqlalchemy import func
 from datetime import date
 from models import Bill, Res_line, Guest, Htparam, Queasy, Reslin_queasy, Reservation, Zimmer, Waehrung, Master, Counters, Guestseg
 
@@ -66,7 +67,7 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
         nonlocal t_bill, t_res_line, resbuff, guestmember, mbill, bill1
         nonlocal t_bill_data, t_res_line_data
-
+        print("QChar1:", queasy_char1)
         return {"abreise": abreise, "resname": resname, "res_exrate": res_exrate, "zimmer_bezeich": zimmer_bezeich, "kreditlimit": kreditlimit, "master_str": master_str, "master_rechnr": master_rechnr, "bill_anzahl": bill_anzahl, "queasy_char1": queasy_char1, "disp_warning": disp_warning, "flag_report": flag_report, "guest_taxcode": guest_taxcode, "repeat_charge": repeat_charge, "t-res-line": t_res_line_data, "t-bill": t_bill_data}
 
     def check_vip(gastnr:int):
@@ -92,9 +93,13 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
 
-    bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+    # bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+    bill = db_session.query(Bill).filter(
+             (Bill._recid == bil_recid)).first()
 
-    res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
+    # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
+    res_line = db_session.query(Res_line).filter(
+             (Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.reslinnr)).first()
 
     if res_line:
         t_res_line = T_res_line()
@@ -102,7 +107,9 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
         buffer_copy(res_line, t_res_line)
 
-        guestmember = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+        # guestmember = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+        guestmember = db_session.query(Guest).filter(
+                 (Guest.gastnr == res_line.gastnrmember)).first()
 
         if guestmember:
             t_res_line.guest_name = guestmember.anrede1 + " " + guestmember.name + ", " + guestmember.vorname1
@@ -111,14 +118,18 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
     buffer_copy(bill, t_bill)
 
-    resbuff = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+    # resbuff = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
+    resbuff = db_session.query(Res_line).filter(
+             (Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.parent_nr)).first()
 
     if resbuff:
         abreise = resbuff.abreise
     else:
         abreise = bill.datum
 
-    queasy = get_cache (Queasy, {"key": [(eq, 301)],"number1": [(eq, res_line.resnr)],"logi1": [(eq, True)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 301)],"number1": [(eq, res_line.resnr)],"logi1": [(eq, True)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 301) & (Queasy.number1 == res_line.resnr) & (Queasy.logi1 == True)).first()
 
     if queasy:
         repeat_charge = queasy.logi1
@@ -131,10 +142,14 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
         if reslin_queasy:
             flag_report = True
 
-    reservation = get_cache (Reservation, {"resnr": [(eq, bill.resnr)]})
+    # reservation = get_cache (Reservation, {"resnr": [(eq, bill.resnr)]})
+    reservation = db_session.query(Reservation).filter(
+             (Reservation.resnr == bill.resnr)).first()
     resname = ""
 
-    guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+    # guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+    guest = db_session.query(Guest).filter(
+             (Guest.gastnr == bill.gastnr)).first()
     g_address = guest.adresse1
     g_wonhort = guest.wohnort
     g_plz = guest.plz
@@ -166,7 +181,9 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
         else:
             kreditlimit =  to_decimal(htparam.finteger)
 
-    zimmer = get_cache (Zimmer, {"zinr": [(eq, bill.zinr)]})
+    # zimmer = get_cache (Zimmer, {"zinr": [(eq, bill.zinr)]})
+    zimmer = db_session.query(Zimmer).filter(
+             (Zimmer.zinr == bill.zinr)).first()
     zimmer_bezeich = zimmer.bezeich
     res_exrate =  to_decimal("1")
 
@@ -176,7 +193,9 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
             res_exrate =  to_decimal(res_line.reserve_dec)
         else:
 
-            waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
+            # waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
+            waehrung = db_session.query(Waehrung).filter(
+                     (Waehrung.waehrungsnr == res_line.betriebsnr)).first()
 
             if waehrung:
                 res_exrate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
@@ -236,7 +255,9 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
     if master:
 
-        mbill = get_cache (Bill, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, 0)],"zinr": [(eq, "")]})
+        # mbill = get_cache (Bill, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, 0)],"zinr": [(eq, "")]})
+        mbill = db_session.query(Bill).filter(
+            (Bill.resnr == bill.resnr) & (Bill.reslinnr == 0) & (func.trim(Bill.zinr) == "")).first()
 
         if not mbill:
 
@@ -271,6 +292,8 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
                  (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
         if queasy and queasy.logi1:
+            disp_warning = True
             queasy_char1 = queasy.char1
+            print("QChar1a:", queasy_char1)
 
     return generate_output()
