@@ -168,7 +168,7 @@ def pos_dashboard_opened_tischbl(dept:int):
 
                         if res_line.code != "":
 
-                            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
                             if queasy and queasy.logi1 :
                                 t_list.allow_ctr = "Not Allowed"
@@ -227,7 +227,7 @@ def pos_dashboard_opened_tischbl(dept:int):
 
                     if res_line.code != "":
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
                         if queasy and queasy.logi1 :
                             t_list.allow_ctr = "Not Allowed"

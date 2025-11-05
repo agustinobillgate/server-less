@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 05/11/2025
+# to_int(res_line.code))]}) -> to_int(res_line.code.strip()))}).first() 
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -86,7 +90,9 @@ def fo_invoice_btn_billadrbl(gastpay:int, bil_recid:int, user_init:string):
 
         if resbuff and resbuff.code != "":
 
-            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 9) & (Queasy.number1 == to_int(resbuff.code.strip()))).first()
 
             if queasy:
                 rescomment = rescomment + queasy.char1 + chr_unicode(10)
@@ -97,8 +103,8 @@ def fo_invoice_btn_billadrbl(gastpay:int, bil_recid:int, user_init:string):
         if reservation and reservation.bemerk != "":
             rescomment = rescomment + reservation.bemerk + chr_unicode(10)
 
-        if guestmember and guestmember.bemerk != "":
-            rescomment = rescomment + guestmember.bemerk + chr_unicode(10)
+        if guestmember and guestmember.bemerkung.strip() != "":
+            rescomment = rescomment + guestmember.bemerkung + chr_unicode(10)
 
         if res_line:
 

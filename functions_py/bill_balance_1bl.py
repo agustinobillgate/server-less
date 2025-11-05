@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 05/11/2025
+# to_int(res_line.code))]}) -> to_int(res_line.code.strip()))}).first() 
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -135,7 +139,9 @@ def bill_balance_1bl(pvilanguage:int, co_today:bool, room:string, zero_flag:bool
                             billbalance_list.resstatus = res_line.resstatus
                             billbalance_list.remarks = guest.bemerkung + res_line.bemerk + bill.vesrdepot
 
-                            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                            # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+                            queasy = db_session.query(Queasy).filter(
+                                     (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
                             if queasy:
                                 billbalance_list.bill_inst = queasy.char1
@@ -212,7 +218,9 @@ def bill_balance_1bl(pvilanguage:int, co_today:bool, room:string, zero_flag:bool
                         if hoteldpt:
                             billbalance_list.departnem = hoteldpt.depart
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                        # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+                        queasy = db_session.query(Queasy).filter(
+                                 (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
                         if queasy:
                             billbalance_list.bill_inst = queasy.char1
@@ -284,7 +292,9 @@ def bill_balance_1bl(pvilanguage:int, co_today:bool, room:string, zero_flag:bool
                         billbalance_list.resstatus = res_line.resstatus
                         billbalance_list.remarks = res_line.bemerk + bill.vesrdepot
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                        # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+                        queasy = db_session.query(Queasy).filter(
+                                 (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
                         if queasy:
                             billbalance_list.bill_inst = queasy.char1
@@ -313,7 +323,9 @@ def bill_balance_1bl(pvilanguage:int, co_today:bool, room:string, zero_flag:bool
                     else:
                         bill_obj_list[bill._recid] = True
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                    # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+                    queasy = db_session.query(Queasy).filter(
+                             (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
                     if queasy and queasy.logi1:
                         do_it = False
@@ -362,7 +374,9 @@ def bill_balance_1bl(pvilanguage:int, co_today:bool, room:string, zero_flag:bool
                             if hoteldpt:
                                 billbalance_list.departnem = hoteldpt.depart
 
-                            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                            # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+                            queasy = db_session.query(Queasy).filter(
+                                     (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
                             if queasy:
                                 billbalance_list.bill_inst = queasy.char1
@@ -381,7 +395,9 @@ def bill_balance_1bl(pvilanguage:int, co_today:bool, room:string, zero_flag:bool
 
                     res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                    # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+                    queasy = db_session.query(Queasy).filter(
+                             (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
                     if queasy and queasy.logi1:
 

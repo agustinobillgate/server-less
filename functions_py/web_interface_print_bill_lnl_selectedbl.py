@@ -1520,7 +1520,7 @@ def web_interface_print_bill_lnl_selectedbl(t_spbill_list_data:[T_spbill_list], 
 
             if res_line.code != "":
 
-                queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
                 if queasy:
                     bl_instruct = trim(queasy.char1)

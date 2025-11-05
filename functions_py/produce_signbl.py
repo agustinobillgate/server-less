@@ -115,7 +115,7 @@ def produce_signbl(pvilanguage:int, resno:int, reslino:int, gastno:int):
                     print_rc_list.purpose_stay = queasy.char3
                 break
 
-        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
         if queasy and queasy.char1 != "":
             print_rc_list.bill_instruct = queasy.char1

@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 05/11/2025
+# bediener.perm diganti bediener.permissions
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -218,7 +222,7 @@ def inv_checkout_listbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int,
         zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
 
         res_line1 = db_session.query(Res_line1).filter(
-                 (Res_line1._recid != res_line._recid) & (Res_line1.zinr == (zinr).lower()) & ((Res_line1.resstatus == 6) | (Res_line1.resstatus == 13)) & (Res_line1.l_zuordnung[inc_value(2)] == 0)).first()
+                 (Res_line1._recid != res_line._recid) & (Res_line1.zinr == (zinr))) & ((Res_line1.resstatus == 6) | (Res_line1.resstatus == 13)) & (Res_line1.l_zuordnung[inc_value(2)] == 0).first()
 
         if not res_line1:
 
@@ -239,7 +243,7 @@ def inv_checkout_listbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int,
             pass
 
         for bill1 in db_session.query(Bill1).filter(
-                 (Bill1.resnr == resnr) & (Bill1.parent_nr == reslinnr) & (Bill1.flag == 0) & (Bill1.zinr == (zinr).lower())).order_by(Bill1._recid).all():
+                 (Bill1.resnr == resnr) & (Bill1.parent_nr == reslinnr) & (Bill1.flag == 0) & (Bill1.zinr == (zinr))).order_by(Bill1._recid).all():
             tot_umsatz =  to_decimal(tot_umsatz) + to_decimal(bill1.gesamtumsatz)
 
         if (co_date - res_line.ankunft) == 0 and tot_umsatz == 0:
@@ -285,7 +289,7 @@ def inv_checkout_listbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int,
             bill1.datum = co_date
 
         for bill1 in db_session.query(Bill1).filter(
-                     (Bill1.resnr == resnr) & (Bill1.parent_nr == reslinnr) & (Bill1.zinr == (zinr).lower())).order_by(Bill1._recid).all():
+                     (Bill1.resnr == resnr) & (Bill1.parent_nr == reslinnr) & (Bill1.zinr == (zinr))).order_by(Bill1._recid).all():
 
             if real_guest and resstatus != 12:
                 get_output(create_historybl(resnr, reslinnr, zinr, "checkout", user_init, ""))
@@ -458,7 +462,7 @@ def inv_checkout_listbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int,
             res_recid1 = 0
 
             for zimplan in db_session.query(Zimplan).filter(
-                         (Zimplan.datum >= co_date) & (Zimplan.datum < abreise) & (Zimplan.zinr == (zinr).lower()) & (Zimplan.res_recid == res_recid)).order_by(Zimplan._recid).all():
+                         (Zimplan.datum >= co_date) & (Zimplan.datum < abreise) & (Zimplan.zinr == (zinr))) & (Zimplan.res_recid == res_recid).order_by(Zimplan._recid).all():
 
                 if res_recid1 != 0:
 
@@ -535,7 +539,7 @@ def inv_checkout_listbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int,
                     pass
 
             for queasy in db_session.query(Queasy).filter(
-                         (Queasy.key == 24) & (Queasy.char1 == (zinr).lower())).order_by(Queasy._recid).all():
+                         (Queasy.key == 24) & (Queasy.char1 == (zinr))).order_by(Queasy._recid).all():
                 db_session.delete(queasy)
         checked_out = True
         msg_int = 6
@@ -624,8 +628,8 @@ def inv_checkout_listbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int,
             for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
                 iftask = entry(i - 1, res_line.zimmer_wunsch, ";")
 
-                if substring(iftask, 0, 10) == ("$origcode$").lower() :
-                    origcode = substring(iftask, 10)
+                if substring(iftask, 0, 10) == ("$origCode$") :
+                    origcode = substring(iftask, 10).strip()
                     return
 
             queasy = get_cache (Queasy, {"key": [(eq, 152)]})
@@ -686,7 +690,7 @@ def inv_checkout_listbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int,
     unbalanced_bill = htparam.flogical
 
     res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
-    zinr = res_line.zinr
+    zinr = res_line.zinr.strip()
     pax = res_line.erwachs
     main_guest = (res_line.resstatus == 6)
 
@@ -735,7 +739,7 @@ def inv_checkout_listbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int,
 
             if early_co:
 
-                if substring(bediener.perm, 69, 1) >= ("2").lower() :
+                if substring(bediener.permissions, 69, 1) >= ("2") :
                     msg_int = 2
                     msg_str = translateExtended ("Early Check-out", lvcarea, "") + " " + res_line.name + chr_unicode(10) + translateExtended ("ROOM", lvcarea, "") + " " + res_line.zinr + " ?" + chr_unicode(10)
                 else:

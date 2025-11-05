@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 05/11/2025
+# 
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -65,7 +69,7 @@ def fo_invoice_disp_bill_line_cldbl(bil_recid:int, double_currency:bool):
                     art_type = artikel.artart
 
 
-                    serv, vat = get_output(calc_servvat(artikel.departement, artikel.artnr, bill_line.bill_datum, artikel.service_code, artikel.mwst_code))
+                    serv, vat = get_output(calc_servvat(artikel.departement, artikel.artnr, bill_line.bill_datum, artikel.service_code.strip(), artikel.mwst_code.strip()))
                 t_bill_line = T_bill_line()
                 t_bill_line_data.append(t_bill_line)
 

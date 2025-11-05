@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 05/11/2025
+# to_int(res_line.code))]}) -> to_int(res_line.code.strip()))}).first() 
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -120,7 +124,9 @@ def credit_limit_1bl(incl_master:bool, by_room:bool):
 
                     if res_line.code != "" and res_line.code.lower()  != ("0").lower() :
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                        # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+                        queasy = db_session.query(Queasy).filter(
+                                 (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
                         if queasy:
                             cl_list.pay_type = queasy.char1
@@ -181,7 +187,9 @@ def credit_limit_1bl(incl_master:bool, by_room:bool):
 
                     if res_line.code != "" and res_line.code.lower()  != ("0").lower() :
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                        # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+                        queasy = db_session.query(Queasy).filter(
+                                 (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
                         if queasy:
                             cl_list.pay_type = queasy.char1
@@ -241,7 +249,9 @@ def credit_limit_1bl(incl_master:bool, by_room:bool):
 
                     if res_line.code != "" and res_line.code.lower()  != ("0").lower() :
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                        # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+                        queasy = db_session.query(Queasy).filter(
+                                 (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
                         if queasy:
                             cl_list.pay_type = queasy.char1

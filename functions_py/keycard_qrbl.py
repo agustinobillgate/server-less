@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 05/11/2025
+# to_int(res_line.code))]}) -> to_int(res_line.code.strip()))}).first() 
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -127,7 +131,8 @@ def keycard_qrbl(room:string, res_nr:int, reslin_nr:int, checkoutdate:date):
 
         if res_line.code != "" and res_line.code.lower()  != ("0").lower() :
 
-            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
             if queasy:
                 type_ofpay = queasy.char1.upper()

@@ -89,7 +89,7 @@ def ts_tbplan_btn_roombl(pvilanguage:int, resrecid:int):
 
         if res_line.code != "":
 
-            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
             if queasy and queasy.logi1:
                 msg_str = msg_str + chr_unicode(2) + "&W" + translateExtended ("CASH BASIS Billing Instruction: ", lvcarea, "") + queasy.char1

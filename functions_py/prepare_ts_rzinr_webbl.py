@@ -95,7 +95,7 @@ def prepare_ts_rzinr_webbl(pvilanguage:int, dept:int, zinr:string, h_resnr:int, 
 
         if res_line and res_line.code != "":
 
-            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
             if queasy and queasy.logi1 and dept != dept_mbar and dept != dept_ldry:
                 msg_str = msg_str + chr_unicode(2) + translateExtended ("CASH BASIS Billing Instruction :", lvcarea, "") + queasy.char1 + chr_unicode(10) + translateExtended ("Room Transfer not possible", lvcarea, "")
@@ -161,7 +161,7 @@ def prepare_ts_rzinr_webbl(pvilanguage:int, dept:int, zinr:string, h_resnr:int, 
 
             if res_line.code != "":
 
-                queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
                 if queasy and queasy.logi1:
                     q1_list.name_bg_col = 12
@@ -255,7 +255,7 @@ def prepare_ts_rzinr_webbl(pvilanguage:int, dept:int, zinr:string, h_resnr:int, 
 
                 if res_line.code != "":
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                    queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
                     if queasy and queasy.logi1:
                         q1_list.name_bg_col = 12

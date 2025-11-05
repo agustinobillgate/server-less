@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 05/11/2025
+# 
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -52,6 +56,7 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
 
     db_session = local_storage.db_session
+    room = room.strip()
 
     def generate_output():
         nonlocal abreise, resname, res_exrate, zimmer_bezeich, kreditlimit, master_str, master_rechnr, bill_anzahl, queasy_char1, disp_warning, flag_report, guest_taxcode, repeat_charge, t_res_line_data, t_bill_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, ci_date, g_address, g_wonhort, g_plz, g_land, bill, res_line, guest, htparam, queasy, reslin_queasy, reservation, zimmer, waehrung, master, counters, guestseg
@@ -121,7 +126,7 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
     if res_line and bil_flag == 0 and res_line.abreise == ci_date:
 
         reslin_queasy = db_session.query(Reslin_queasy).filter(
-                 (Reslin_queasy.key == ("flag").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.betriebsnr == 0) & ((Reslin_queasy.logi1) | (Reslin_queasy.logi2) | (Reslin_queasy.logi3))).first()
+                 (Reslin_queasy.key == ("flag")) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & (Reslin_queasy.betriebsnr == 0) & ((Reslin_queasy.logi1) | (Reslin_queasy.logi2) | (Reslin_queasy.logi3))).first()
 
         if reslin_queasy:
             flag_report = True
@@ -259,9 +264,11 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
             bill_anzahl = bill_anzahl + 1
 
 
-    if res_line and res_line.code != "" and bill.flag == 0:
+    if res_line and res_line.code.strip() != "" and bill.flag == 0:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
         if queasy and queasy.logi1:
             queasy_char1 = queasy.char1

@@ -47,7 +47,7 @@ def create_historybl(resnr:int, reslinnr:int, old_zinr:string, res_mode:string, 
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
 
-    if res_mode.lower()  == ("checkout").lower() :
+    if res_mode  == ("checkout") :
         history = History()
         db_session.add(history)
 
@@ -233,7 +233,7 @@ def create_historybl(resnr:int, reslinnr:int, old_zinr:string, res_mode:string, 
         if history1:
             pass
 
-    elif res_mode.lower()  == ("roomchg").lower() :
+    elif res_mode  == ("roomchg") :
         history = History()
         db_session.add(history)
 
@@ -273,7 +273,7 @@ def create_historybl(resnr:int, reslinnr:int, old_zinr:string, res_mode:string, 
         pass
         pass
 
-    elif res_mode.lower()  == ("HK-preference").lower() :
+    elif res_mode  == ("HK-preference") :
         history = History()
         db_session.add(history)
 
