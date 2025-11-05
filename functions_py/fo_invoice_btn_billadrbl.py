@@ -103,8 +103,8 @@ def fo_invoice_btn_billadrbl(gastpay:int, bil_recid:int, user_init:string):
         if reservation and reservation.bemerk != "":
             rescomment = rescomment + reservation.bemerk + chr_unicode(10)
 
-        if guestmember and guestmember.bemerk != "":
-            rescomment = rescomment + guestmember.bemerk + chr_unicode(10)
+        if guestmember and guestmember.bemerkung.strip() != "":
+            rescomment = rescomment + guestmember.bemerkung + chr_unicode(10)
 
         if res_line:
 
