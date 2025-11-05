@@ -103,7 +103,7 @@ def ts_tbplan_return_roombl(pvilanguage:int, mc_pos1:int, mc_pos2:int, room:stri
 
             if res_line.code != "":
 
-                queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
                 if queasy and queasy.logi1:
                     msg_str = msg_str + chr_unicode(2) + "&W" + translateExtended ("CASH BASIS Billing Instruction: ", lvcarea, "") + queasy.char1
@@ -143,7 +143,7 @@ def ts_tbplan_return_roombl(pvilanguage:int, mc_pos1:int, mc_pos2:int, room:stri
 
                 if res_line.code != "":
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                    queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
                     if queasy and queasy.logi1:
                         msg_str = msg_str + chr_unicode(2) + "&W" + translateExtended ("CASH BASIS Billing Instruction: ", lvcarea, "") + queasy.char1

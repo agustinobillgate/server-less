@@ -266,7 +266,9 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
     if res_line and res_line.code.strip() != "" and bill.flag == 0:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
         if queasy and queasy.logi1:
             queasy_char1 = queasy.char1

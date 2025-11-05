@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 05/11/2025
+# to_int(res_line.code))]}) -> to_int(res_line.code.strip()))}).first() 
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -121,7 +125,9 @@ def get_data_print_confirmletter_webbl(resnumber:int, user_init:string):
                 print_list.roomrate =  to_decimal(res_line.zipreis)
                 print_list.total_rate = ( to_decimal(res_line.zipreis) * to_decimal(print_list.room_night)) + to_decimal(print_list.bedsetup_rate)
 
-            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
             if queasy:
                 print_list.billinstuct = queasy.char1

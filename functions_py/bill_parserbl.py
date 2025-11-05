@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 05/11/2025
+# to_int(res_line.code))]}) -> to_int(res_line.code.strip()))}).first() 
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -2530,7 +2534,9 @@ def bill_parserbl(pvilanguage:int, case_type:int, briefnr:int, reslinnr:int, res
 
             if res_line and res_line.code != "":
 
-                queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+                queasy = db_session.query(Queasy).filter(
+                    (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
                 if queasy:
                     put_string(queasy.char1)

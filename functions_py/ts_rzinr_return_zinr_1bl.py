@@ -99,7 +99,7 @@ def ts_rzinr_return_zinr_1bl(pvilanguage:int, case_type:int, room:string, dept:i
 
                     if res_line.code != "":
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
                         if queasy and queasy.logi1:
                             q1_list.name_bg_col = 12
@@ -154,7 +154,7 @@ def ts_rzinr_return_zinr_1bl(pvilanguage:int, case_type:int, room:string, dept:i
 
                 if res_line.code != "":
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                    queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
                     if queasy and queasy.logi1:
                         q1_list.name_bg_col = 12

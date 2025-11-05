@@ -227,7 +227,9 @@ def bfast_kcard_parsingroomdatabl(inproomnumber:string, inpmealtime:string):
                 tmpstr = nation.bezeich
             guestname = guestname + chr_unicode(10) + guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + " [" + entry(0, tmpstr, ";") + "]"
 
-    queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 9) & (Queasy.number1 == to_int(res_line.code.strip()))).first()
 
     if queasy:
         bill_instruct = queasy.char1
