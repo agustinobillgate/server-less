@@ -94,7 +94,9 @@ def read_bill1_webbl(case_type:int, billno:int, resno:int, reslinno:int, actflag
             cr_bill()
     elif case_type == 3:
 
-        bill = get_cache (Bill, {"resnr": [(eq, resno)],"parent_nr": [(eq, reslinno)],"billnr": [(eq, billno)],"flag": [(eq, actflag)],"zinr": [(eq, roomno)]})
+        # bill = get_cache (Bill, {"resnr": [(eq, resno)],"parent_nr": [(eq, reslinno)],"billnr": [(eq, billno)],"flag": [(eq, actflag)],"zinr": [(eq, roomno)]})
+        bill = db_session.query(Bill).filter(
+                 (Bill.resnr == resno) & (Bill.parent_nr == reslinno) & (Bill.billnr == billno) & (Bill.flag == actflag) & (Bill.zinr == roomno)).first()
 
         if bill:
             cr_bill()

@@ -45,6 +45,8 @@ def fo_inv_openbill_list_web_1bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
     db_session = local_storage.db_session
 
+    room = room.strip()
+
     def generate_output():
         nonlocal abreise, resname, res_exrate, zimmer_bezeich, kreditlimit, master_str, master_rechnr, bill_anzahl, queasy_char1, disp_warning, flag_report, rescomment, printed, rechnr, rmrate, balance, balance_foreign, tot_balance, guest_taxcode, repeat_charge, t_res_line_data, t_bill_data, spbill_list_data, t_bill_line_data, bill, res_line, bill_line
         nonlocal bil_flag, bil_recid, room, vipflag, fill_co, double_currency, foreign_rate

@@ -97,7 +97,7 @@ def prepare_ts_rzinrbl(pvilanguage:int, dept:int, zinr:string, h_resnr:int, h_re
 
         res_line = get_cache (Res_line, {"resnr": [(eq, h_resnr)],"reslinnr": [(eq, h_reslinnr)]})
 
-        if res_line and res_line.code != "":
+        if res_line and res_line.code.strip() != "":
 
             queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
 
@@ -162,7 +162,7 @@ def prepare_ts_rzinrbl(pvilanguage:int, dept:int, zinr:string, h_resnr:int, h_re
 
         if (dept != dept_mbar and dept != dept_ldry):
 
-            if res_line.code != "":
+            if res_line.code.strip() != "":
 
                 queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
 
@@ -244,7 +244,7 @@ def prepare_ts_rzinrbl(pvilanguage:int, dept:int, zinr:string, h_resnr:int, h_re
 
             if (dept != dept_mbar and dept != dept_ldry):
 
-                if res_line.code != "":
+                if res_line.code.strip() != "":
 
                     queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
 
