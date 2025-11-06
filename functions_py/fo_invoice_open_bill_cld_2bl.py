@@ -94,12 +94,13 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
     ci_date = htparam.fdate
 
     # bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
-    bill = db_session.query(Bill).filter(
-             (Bill._recid == bil_recid)).first()
+    bill = db_session.query(Bill).filter(          (Bill._recid == bil_recid)).first()
 
     # res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
-    res_line = db_session.query(Res_line).filter(
-             (Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.reslinnr)).first()
+    res_line = None
+    if bill:
+        res_line = db_session.query(Res_line).filter(
+                (Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.reslinnr)).first()
 
     if res_line:
         t_res_line = T_res_line()
@@ -113,6 +114,7 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
         if guestmember:
             t_res_line.guest_name = guestmember.anrede1 + " " + guestmember.name + ", " + guestmember.vorname1
+
     t_bill = T_bill()
     t_bill_data.append(t_bill)
 
@@ -128,8 +130,9 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
         abreise = bill.datum
 
     # queasy = get_cache (Queasy, {"key": [(eq, 301)],"number1": [(eq, res_line.resnr)],"logi1": [(eq, True)]})
-    queasy = db_session.query(Queasy).filter(
-             (Queasy.key == 301) & (Queasy.number1 == res_line.resnr) & (Queasy.logi1 == True)).first()
+    if res_line.resnr is not:
+        queasy = db_session.query(Queasy).filter(
+                (Queasy.key == 301) & (Queasy.number1 == res_line.resnr) & (Queasy.logi1 == True)).first()
 
     if queasy:
         repeat_charge = queasy.logi1

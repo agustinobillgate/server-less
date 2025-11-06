@@ -80,7 +80,10 @@ def ts_tbplan_check_table_webbl(pvilanguage:int, resnr:int, reslinnr:int, tischn
                 klimit =  to_decimal(htparam.finteger)
         ksaldo =  to_decimal("0")
 
-        bill = get_cache (Bill, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"flag": [(eq, 0)],"zinr": [(eq, res_line.zinr)]})
+        # bill = get_cache (Bill, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"flag": [(eq, 0)],"zinr": [(eq, res_line.zinr)]})
+        bill = db_session.query(Bill).filter(
+                 (Bill.resnr == res_line.resnr) & (Bill.reslinnr == res_line.reslinnr) &
+                 (Bill.flag == 0) & (Bill.zinr == res_line.zinr.strip())).first()
 
         if bill:
             recid_bill = bill._recid
@@ -89,7 +92,7 @@ def ts_tbplan_check_table_webbl(pvilanguage:int, resnr:int, reslinnr:int, tischn
         for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
             str = entry(i - 1, res_line.zimmer_wunsch, ";")
 
-            if substring(str, 0, 5) == ("ChAge").lower() :
+            if substring(str, 0, 5) == ("ChAge") :
                 child_age = substring(str, 5)
 
         if child_age != "":
