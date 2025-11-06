@@ -47,7 +47,7 @@ from functions.mn_del_nitehistbl import mn_del_nitehistbl
 from functions.mn_del_old_baresbl import mn_del_old_baresbl
 from functions.mn_update_logfile_recordsbl import mn_update_logfile_recordsbl
 from functions.mn_del_oldbl import mn_del_oldbl
-# from functions.mn_club_softwarebl import mn_club_softwarebl
+from functions.mn_club_softwarebl import mn_club_softwarebl
 
 def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_arrguest:bool):
 
@@ -80,6 +80,11 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
 
     db_session = local_storage.db_session
 
+    # def clear_log(key: int):    
+    #     sql = f"DELETE FROM queasy WHERE key = {key}"
+    #     db_session.execute(text(sql))
+    #     db_session.commit()
+    
     def log_process(key: int, message:string):
         queasy = Queasy()
         db_session.add(queasy)
@@ -87,6 +92,7 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         queasy.char1 = "Log NA"
         queasy.char2 = message
 
+    # clear_log(270001)
     log_process(270001,"Starting na_start_web2bl")
     
 
@@ -154,20 +160,23 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
             programm = programm.replace(".p", ".py")
             
             abschlussart = int(t_nightaudit.abschlussart)
-
+            print("Processed program name:", programm)
             if "bl.py" in programm:
                 log_process(270001, f"Run bl.p: {programm}")
-                # run_program(programm)
+                print("Running program 1:", programm)
+                run_program(programm)
             else:
                 if abschlussart == 1:
-                    log_process(270001, f"Run: {programm}")
-                    # run_program(programm)
+                    log_process(270001, f"Run2: {programm}")
+                    print("Running program 2:", programm)
+                    run_program(programm)
                 else:
                     a = programm.rfind(".p")
                     new_programm = (programm[:a] + "bl.py") if a != -1 else (programm + "bl.py")
                     # new_programm = new_programm.replace("bl.p", "bl.py")
-                    log_process(270001, f"Run .p: {new_programm}")
-                    # run_program(new_programm)
+                    log_process(270001, f"Run3 .p: {new_programm}")
+                    print("Running program 3:", new_programm)
+                    run_program(new_programm)
 
             if store_flag:
                 success_flag = get_output(delete_nitehistbl(1, billdate, t_nightaudit.reihenfolge))
@@ -305,8 +314,8 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         cqueasy("Deleting old Work Order Records", "DONE")
         cqueasy("Deleting old Quotation Attachment Records", "PROCESS")
         i = get_output(mn_del_oldbl(4))
-        # cqueasy("Deleting old Quotation Attachment Records", "DONE")
-        # get_output(mn_club_softwarebl())
+        cqueasy("Deleting old Quotation Attachment Records", "DONE")
+        get_output(mn_club_softwarebl())
 
 
     def del_allotment():
@@ -401,7 +410,9 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         get_output(mn_chg_sysdatesbl())
         mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date1, na_time1, na_name1 = get_output(na_startbl(2, user_init, htparam_recid))
 
+    print("->NA Programs")
     na_prog()
+    print("<-NA Programs")
     mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date, na_time, na_name = get_output(na_startbl(3, user_init, htparam_recid))
     success_flag = True
 

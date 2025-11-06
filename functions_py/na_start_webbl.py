@@ -59,7 +59,7 @@ def na_start_webbl(case_type:int, user_init:string, language_code:int, htparam_r
 
     clear_log(270001)
     if case_type == 1:
-        log_process(270001, f"Starting na_startbl, night audit process for user {user_init} with htparam_recid {htparam_recid}")
+        log_process(270001, f"Starting na_startbl.")
         mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date1, na_time1, na_name1 = get_output(na_startbl(1, user_init, htparam_recid))
 
         if mnstart_flag:

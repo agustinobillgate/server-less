@@ -114,6 +114,7 @@ log_id = 0
 
 skip_list = {   "Common/checkPermission2",
                 "Common/getHTParam0", 
+                "Common/readHtparam",
                 "Common/checkTime",
                 "Common/checkPermission", 
                 "Common/loadDateTimeServer1",
