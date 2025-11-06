@@ -167,12 +167,12 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
             elif lvcleft == "TableDesc":
                 lvcval = entry(1, lvctmp, "=")
 
-                if lvcval.lower()  == ("YES").lower() :
+                if lvcval  == ("YES") :
                     prtabledesc = True
             elif lvcleft == "Pr2Line":
                 lvcval = entry(1, lvctmp, "=")
 
-                if lvcval.lower()  == ("YES").lower() :
+                if lvcval  == ("YES") :
                     prtwoline = True
             elif lvcleft == "print-all":
                 lvitmp = to_int(entry(1, lvctmp, "="))
@@ -1700,7 +1700,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
         nbez1:int = 0
 
         h_bill_line = db_session.query(H_bill_line).filter(
-                 (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == h_bill.departement) & (H_bill_line.artnr == f_discart) & (substring(H_bill_line.bezeich, length(H_bill_line.bezeich) - 1) == ("*").lower())).first()
+                 (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == h_bill.departement) & (H_bill_line.artnr == f_discart) & (substring(H_bill_line.bezeich, length(H_bill_line.bezeich) - 1) == ("*"))).first()
 
         if h_bill_line:
 
@@ -2167,7 +2167,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
 
     if htparam:
 
-        if not htparam.flogical and entry(0, htparam.fchar, ";") == ("GST(MA)").lower() :
+        if not htparam.flogical and entry(0, htparam.fchar, ";") == ("GST(MA)") :
             gst_logic = True
 
     if printnr > 0:
@@ -2269,7 +2269,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
 
             if not use_h_queasy:
 
-                queasy = get_cache (Queasy, {"key": [(eq, 4)],"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, 0)],"deci2": [(eq, billnr)]})
+                queasy = get_cache (Queasy, {"key": [(eq, 4)],"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, 0)],"deci2": [(eq, h_bill.billnr)]})
 
                 if queasy and not print_all:
                     printed_line = queasy.number3
@@ -2285,12 +2285,12 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
                     queasy.key = 4
                     queasy.number1 = (h_bill.departement + h_bill.rechnr * 100)
                     queasy.number2 = 0
-                    queasy.deci2 =  to_decimal(billnr)
+                    queasy.deci2 =  to_decimal(h_bill.billnr)
 
 
             else:
 
-                h_queasy = get_cache (H_queasy, {"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, 0)],"billno": [(eq, billnr)]})
+                h_queasy = get_cache (H_queasy, {"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, 0)],"billno": [(eq, h_bill.billnr)]})
 
                 if h_queasy and not print_all:
                     printed_line = h_queasy.number3
@@ -2305,7 +2305,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
 
                     h_queasy.number1 = (h_bill.departement + h_bill.rechnr * 100)
                     h_queasy.number2 = 0
-                    h_queasy.billno = billnr
+                    h_queasy.billno = h_bill.billnr
 
             kellner = get_cache (Kellner, {"departement": [(eq, h_bill.departement)],"kellner_nr": [(eq, h_bill.kellner_nr)]})
 
@@ -2342,7 +2342,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
 
                 if not use_h_queasy:
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 4)],"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, to_int(h_bill_line._recid))],"deci2": [(eq, billnr)]})
+                    queasy = get_cache (Queasy, {"key": [(eq, 4)],"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, to_int(h_bill_line._recid))],"deci2": [(eq, h_bill.billnr)]})
 
                     if not queasy:
                         new_item = True
@@ -2354,12 +2354,12 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
                             queasy.key = 4
                             queasy.number1 = (h_bill.departement + h_bill.rechnr * 100)
                             queasy.number2 = to_int(h_bill_line._recid)
-                            queasy.deci2 =  to_decimal(billnr)
+                            queasy.deci2 =  to_decimal(h_bill.billnr)
 
 
                 else:
 
-                    h_queasy = get_cache (H_queasy, {"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, to_int(h_bill_line._recid))],"billno": [(eq, billnr)]})
+                    h_queasy = get_cache (H_queasy, {"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, to_int(h_bill_line._recid))],"billno": [(eq, h_bill.billnr)]})
 
                     if not h_queasy:
                         new_item = True
@@ -2370,7 +2370,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
 
                             h_queasy.number1 = (h_bill.departement + h_bill.rechnr * 100)
                             h_queasy.number2 = to_int(h_bill_line._recid)
-                            h_queasy.billno = billnr
+                            h_queasy.billno = h_bill.billnr
 
                 if new_item or print_all:
                     printed = False
@@ -2405,7 +2405,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
 
                     art_list.printed = printed
                     art_list.artnr = h_bill_line.artnr
-                    art_list.dept = h_bill_line.departemen
+                    art_list.dept = h_bill_line.departement
                     art_list.bezeich = h_bill_line.bezeich
                     art_list.price =  to_decimal(h_bill_line.epreis)
                     art_list.datum = h_bill_line.bill_datum
@@ -2544,7 +2544,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
             for abuff in query(abuff_data, filters=(lambda abuff:(abuff.zwkum == disc_zwkum) and matches(abuff.bezeich,r"*-*"))):
                 disc_bezeich = replace_str(abuff.bezeich, "-", "")
 
-                art_list = query(art_list_data, filters=(lambda art_list: art_list.artnr == abuff.artnr and art_list.bezeich.lower()  == (disc_bezeich).lower()  and art_list.amount == - abuff.amount), first=True)
+                art_list = query(art_list_data, filters=(lambda art_list: art_list.artnr == abuff.artnr and art_list.bezeich  == (disc_bezeich)  and art_list.amount == - abuff.amount), first=True)
 
                 if art_list:
                     art_list_data.remove(art_list)
@@ -2554,7 +2554,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
             for abuff in query(abuff_data, filters=(lambda abuff: abuff.disc_flag)):
                 disc_bezeich = abuff.bezeich
 
-                art_list = query(art_list_data, filters=(lambda art_list: art_list.artnr == abuff.artnr and art_list.bezeich.lower()  == (disc_bezeich).lower()  and art_list.amount == - abuff.amount), first=True)
+                art_list = query(art_list_data, filters=(lambda art_list: art_list.artnr == abuff.artnr and art_list.bezeich  == (disc_bezeich)  and art_list.amount == - abuff.amount), first=True)
 
                 if art_list:
                     art_list_data.remove(art_list)
@@ -2590,6 +2590,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
 
             if prdisc_flag and tot_ndisc_line >= 1 and tot_disc_line >= 1:
 
+                # art_list = query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and not art_list.disc_flag and not art_list.printed), first=True)
                 art_list = query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and not art_list.disc_flag and not art_list.printed), first=True)
                 n = 0
                 curr_j = printed_line
@@ -2601,7 +2602,8 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
                     while None != art_list and (curr_j <= lpage) :
                         print_billine()
 
-                        art_list = query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and not art_list.disc_flag and not art_list.printed), next=True)
+                        # art_list = query(art_list_data, filters=(lambda art_list: art_list.artart == 0 and not art_list.disc_flag and not art_list.printed), next=True)
+                        art_list = next(iter(art_list_data), None)
 
                         if not art_list:
                             i = npage
@@ -2676,7 +2678,9 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
 
 
                         curr_j = 0
-                        printed_line = 0
+                        printed_line = 
+                        
+
             tot_amount =  to_decimal("0")
 
             for h_bill_line in db_session.query(H_bill_line).filter(
@@ -2687,7 +2691,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
 
                 if not use_h_queasy:
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 4)],"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, 0)],"deci2": [(eq, billnr)]})
+                    queasy = get_cache (Queasy, {"key": [(eq, 4)],"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, 0)],"deci2": [(eq, h_bill.billnr)]})
                     queasy.number3 = printed_line
                     queasy.deci1 =  to_decimal(tot_amount)
 
@@ -2695,7 +2699,7 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
                     pass
                 else:
 
-                    h_queasy = get_cache (H_queasy, {"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, 0)],"billno": [(eq, billnr)]})
+                    h_queasy = get_cache (H_queasy, {"number1": [(eq, (h_bill.departement + h_bill.rechnr * 100))],"number2": [(eq, 0)],"billno": [(eq, h_bill.billnr)]})
 
                     if h_queasy:
                         h_queasy.number3 = printed_line

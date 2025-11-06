@@ -173,8 +173,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
             reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, cdate)],"date2": [(ge, cdate)]})
 
             if reslin_queasy and res_line.zipreis != reslin_queasy.deci1:
-                log_process(270001, f"Different rate found! Night Audit process not possible.")
-                msg_str = msg_str + chr_unicode(2) + translateExtended ("Different rate found! Night Audit process not possible.", lvcarea, "")
+                msg_str = msg_str + chr_unicode(2) + translateExtended ("Different rate found! Night Audit process not possible. (" + str(res_line.resnr) +"/" + str(res_line.reslinnr) + ")" , lvcarea, "")
                 stop_it = True
 
                 return

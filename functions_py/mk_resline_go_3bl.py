@@ -74,6 +74,14 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
 
     db_session = local_storage.db_session
+    eta = eta.strip()
+    etd = etd.strip()
+    flight1 = flight1.strip()
+    flight2 = flight2.strip()
+    groupname = groupname.strip()
+    memo_zinr = memo_zinr.strip()
+    prev_zinr = prev_zinr.strip()
+    wechsel_str = wechsel_str.strip()
 
     def generate_output():
         nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
@@ -130,7 +138,10 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         add_list_data.append(add_list)
 
 
-        pqueasy = get_cache (Queasy, {"key": [(eq, 329)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)],"logi3": [(eq, False)]})
+        # pqueasy = get_cache (Queasy, {"key": [(eq, 329)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)],"logi3": [(eq, False)]})
+        pqueasy = db_session.query(Queasy).filter(
+            (Queasy.key == 329) & (Queasy.number1 == res_line.resnr) & (Queasy.number2 == res_line.reslinnr) & (Queasy.logi3 == False)
+        ).first()
 
         if not pqueasy:
 
@@ -368,7 +379,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
 
             else:
-                periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
+                periode = date_mdy(get_month(periode_rsv1) + 1, get_day(periode_rsv1) , get_year(periode_rsv1) - 1)
 
 
             for loopi in date_range(periode_rsv1,periode_rsv2 - 1) :
@@ -381,7 +392,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
 
                     else:
-                        periode = date_mdy(get_month(periode_rsv1) + timedelta(days=1, get_day(periode_rsv1) , get_year(periode_rsv1)) - 1)
+                        periode = date_mdy(get_month(periode_rsv1) + 1, get_day(periode_rsv1) , get_year(periode_rsv1) - 1)
 
                 if loopi <= periode:
 

@@ -349,7 +349,8 @@ def na_check1bl(pvilanguage:int, def_natcode:string):
                  (Reslin_queasy.key == ("arrangement")) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy.date1).yield_per(100):
 
             if passfirst == False:
-
+                if reslin_queasy.date1 is None:
+                    continue
                 if tmpdate >= reslin_queasy.date1:
                     msg_str = msg_str + chr_unicode(2) + translateExtended ("overlapping fixed rate", lvcarea, "") + chr_unicode(10) + translateExtended ("please check fixed rate in reservation: ", lvcarea, "") + to_string(reslin_queasy.resnr)
                     w_flag = True

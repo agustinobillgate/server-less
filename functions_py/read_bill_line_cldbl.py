@@ -69,7 +69,9 @@ def read_bill_line_cldbl(case_type:int, pvilanguage:int, rechno:int, artno:int, 
             netto =  to_decimal("0")
             fact =  to_decimal("0")
 
-            artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+            # artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+            artikel = db_session.query(Artikel).filter(
+                     (Artikel.artnr == bill_line.artnr) & (Artikel.departement == bill_line.departement)).first()
 
             if artikel:
                 art_type = artikel.artart
@@ -99,7 +101,9 @@ def read_bill_line_cldbl(case_type:int, pvilanguage:int, rechno:int, artno:int, 
             t_bill_line.bl_recid = bill_line._recid
     elif case_type == 5:
 
-        bill_line = get_cache (Bill_line, {"_recid": [(eq, anzahl)],"rechnr": [(eq, rechno)]})
+        # bill_line = get_cache (Bill_line, {"_recid": [(eq, anzahl)],"rechnr": [(eq, rechno)]})
+        bill_line = db_session.query(Bill_line).filter(
+                 (Bill_line._recid == anzahl) & (Bill_line.rechnr == rechno)).first()
 
         if bill_line:
             t_bill_line = T_bill_line()
@@ -112,20 +116,25 @@ def read_bill_line_cldbl(case_type:int, pvilanguage:int, rechno:int, artno:int, 
 
         return generate_output()
 
-    bill = get_cache (Bill, {"rechnr": [(eq, rechno)]})
+    # bill = get_cache (Bill, {"rechnr": [(eq, rechno)]})
+    bill = db_session.query(Bill).filter(
+             (Bill.rechnr == rechno)).first()
 
     for t_bill_line in query(t_bill_line_data):
 
-        artikel = get_cache (Artikel, {"artnr": [(eq, t_bill_line.artnr)],"departement": [(eq, t_bill_line.departement)]})
+        artikel = db_session.query(Artikel).filter(
+                 (Artikel.artnr == t_bill_line.artnr) & (Artikel.departement == t_bill_line.departement)).first()
 
         if artikel:
             t_bill_line.artart = artikel.artart
 
-        bill_line = get_cache (Bill_line, {"_recid": [(eq, t_bill_line.bl_recid)]})
+        bill_line = db_session.query(Bill_line).filter(
+                 (Bill_line._recid == t_bill_line.bl_recid)).first()
 
         if bill_line.massnr != 0 and bill_line.billin_nr != 0 and (bill_line.massnr != bill.resnr or bill_line.billin_nr != bill.reslinnr):
 
-            bibuff = get_cache (Bill, {"resnr": [(eq, bill_line.massnr)],"reslinnr": [(eq, bill_line.billin_nr)]})
+            bibuff = db_session.query(Bill).filter(
+                 (Bill.resnr == bill_line.massnr) & (Bill.reslinnr == bill_line.billin_nr)).first()
 
             if bibuff:
 

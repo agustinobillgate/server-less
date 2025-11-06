@@ -1,0 +1,242 @@
+{
+    "H_bill": {
+        "read": [],
+        "write": []
+    },
+    "H_bill_line": {
+        "read": [
+            "_recid",
+            "departement",
+            "artnr",
+            "betrag",
+            "rechnr",
+            "bezeich",
+            "anzahl",
+            "nettobetrag",
+            "fremdwbetrag",
+            "tischnr",
+            "epreis",
+            "zeit",
+            "bill_datum",
+            "sysdate",
+            "steuercode"
+        ],
+        "write": []
+    },
+    "Kellner": {
+        "read": [
+            "departement",
+            "kumsatz_nr",
+            "kcredit_nr",
+            "kzahl_nr",
+            "kellnername",
+            "updatedatum",
+            "saldo",
+            "kellner_nr",
+            "sprachcode",
+            "masterkey",
+            "nullbon",
+            "ignore_pers",
+            "kel_unique",
+            "storno_begruendung",
+            "betriebsnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_mjourn": {
+        "read": [
+            "departement",
+            "rechnr",
+            "tischnr",
+            "nr",
+            "artnr",
+            "h_artnr",
+            "anzahl",
+            "zeit",
+            "request",
+            "kellner_nr",
+            "bill_datum",
+            "sysdate",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_artikel": {
+        "read": [
+            "artnrfront",
+            "departement",
+            "mwst_code",
+            "betriebsnr",
+            "artnr",
+            "artart",
+            "gang",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Hoteldpt": {
+        "read": [
+            "defult",
+            "depart",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Artikel": {
+        "read": [
+            "artgrp",
+            "service_code",
+            "mwst_code",
+            "artart",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "flogical",
+            "finteger",
+            "fdate",
+            "fchar",
+            "fdecimal",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "number2",
+            "deci1",
+            "char1",
+            "betriebsnr",
+            "logi1",
+            "number3",
+            "date1",
+            "key",
+            "number1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest": {
+        "read": [
+            "gastnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Counters": {
+        "read": [
+            "counter",
+            "counter_no",
+            "counter_bez",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_umsatz": {
+        "read": [
+            "betrag",
+            "anzahl",
+            "artnr",
+            "datum",
+            "departement",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_journal": {
+        "read": [
+            "departement",
+            "artnr",
+            "rechnr",
+            "bill_datum",
+            "sysdate",
+            "zeit",
+            "anzahl",
+            "fremdwaehrng",
+            "betrag",
+            "bezeich",
+            "tischnr",
+            "epreis",
+            "stornogrund",
+            "aendertext",
+            "kellner_nr",
+            "wabkurz",
+            "segmentcode",
+            "schankbuch",
+            "artart",
+            "artnrfront",
+            "gang",
+            "bon_nr",
+            "zinr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Umsatz": {
+        "read": [
+            "betrag",
+            "anzahl",
+            "artnr",
+            "datum",
+            "departement",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Interface": {
+        "read": [
+            "key",
+            "action",
+            "nebenstelle",
+            "parameters",
+            "intfield",
+            "decfield",
+            "int_time",
+            "intdate",
+            "resnr",
+            "reslinnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Arrangement": {
+        "read": [
+            "argtnr",
+            "artnr_logis",
+            "intervall",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Argt_line": {
+        "read": [
+            "betrag",
+            "vt_percnt",
+            "argt_artnr",
+            "departement",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Billjournal": {
+        "read": [
+            "rechnr",
+            "artnr",
+            "anzahl",
+            "fremdwaehrng",
+            "betrag",
+            "bezeich",
+            "departement",
+            "epreis",
+            "zeit",
+            "stornogrund",
+            "userinit",
+            "bill_datum",
+            "_recid"
+        ],
+        "write": []
+    }
+}
