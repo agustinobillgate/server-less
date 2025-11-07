@@ -1,12 +1,16 @@
 #using conversion tools version: 1.0.0.117
-"""_yusufwijasena_22-10-2025
+"""_yusufwijasena_22/10/2025
+    updated_07/11/2025
 
-    TicketID: 698860
+    Ticket ID: 698860
         _remark_:   - changed import from functions to functions_py
                     - character_conversionbl not found
                     - fix var declation
                     - changed string to str
                     - fix ("string").lower() to "string"
+                    
+    Ticket ID: 5C46F2
+        _remark_:   - update from ITA: BFC578
 """
 from functions.additional_functions import *
 from decimal import Decimal
@@ -150,11 +154,11 @@ def ascottrpt_reservationbl(datum:date, propid:str, data_list_data:Data_list):
     cancel_loop:int = 0
     billflag:bool = False
     do_it:bool = False
-    resv_date:date
-    rsv_date:date
-    to_date:date
-    datum1:date
-    afterdatum1:date
+    resv_date:date = None
+    rsv_date:date = None
+    to_date:date = None
+    datum1:date = None
+    afterdatum1:date = None
     flodging = to_decimal("0.0")
     lodging = to_decimal("0.0")
     breakfast = to_decimal("0.0")
@@ -193,8 +197,8 @@ def ascottrpt_reservationbl(datum:date, propid:str, data_list_data:Data_list):
     fact2 = to_decimal("0.0")
     vat1 = to_decimal("0.0")
     service1 = to_decimal("0.0")
-    bill_date:date 
-    todate:date 
+    bill_date:date = None
+    todate:date = None
     curr_time:int = 0
     counter:int = 0
     guest = reslin_queasy = queasy = h_artikel = htparam = res_line = zimkateg = reservation = sourccod = segment = genstat = zimmer = nation = arrangement = artikel = mc_guest = waehrung = bediener = bill = bill_line = h_bill = h_bill_line = None
@@ -565,7 +569,7 @@ def ascottrpt_reservationbl(datum:date, propid:str, data_list_data:Data_list):
                 data_list.canceldate = "-"
 
                 if res_line.cancelled != None:
-                    data_list.canceldate = to_string(get_year(res_line.cancelled) , "9999") + "-" + to_string(get_month(res_line.cancelled) , "99") + "-" + to_string(get_day(res_line.cancelled) , "99") + " 00:00:00"
+                    data_list.canceldate = to_string(get_year(res_line.cancelled) , "9999") + "-" + to_string(get_month(res_line.cancelled) , "99") + "-" + to_string(get_day(res_line.cancelled) , "99") # update ITA: BFC578
                 data_list.modify_date = "NULL"
 
                 if res_line.changed != None:
@@ -1126,8 +1130,8 @@ def ascottrpt_reservationbl(datum:date, propid:str, data_list_data:Data_list):
 
                 rsv_date = reservation.resdat
 
-                if rsv_date != None:
-                    data_list.bookdate = to_string(get_year(rsv_date) , "9999") + to_string(get_month(rsv_date) , "99") + to_string(get_day(rsv_date) , "99") + " " + "00:00:00"
+                if rsv_date is not None:
+                    data_list.bookdate = to_string(get_year(rsv_date) , "9999") + to_string(get_month(rsv_date) , "99") + to_string(get_day(rsv_date) , "99") # update ITA: BFC578
                 else:
                     data_list.bookdate = "-"
                 data_list.actualdate = to_string(get_year(datum1) , "9999") + "-" + to_string(get_month(datum1) , "99") + "-" + to_string(get_day(datum1) , "99") + " " + to_string(get_current_time_in_seconds(), "HH:MM:SS")
@@ -1140,7 +1144,8 @@ def ascottrpt_reservationbl(datum:date, propid:str, data_list_data:Data_list):
                 dinner =  to_decimal("0")
                 others =  to_decimal("0")
 
-                arrangement = get_cache (Arrangement, {"arrangement": [(eq, genstat.argt)]})
+                arrangement = get_cache (
+                    Arrangement, {"arrangement": [(eq, genstat.argt)]})
 
                 artikel = get_cache (Artikel, {
                     "artnr": [(eq, arrangement.argt_artikelnr)],
