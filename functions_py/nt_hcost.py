@@ -274,11 +274,15 @@ def nt_hcost():
 
         debug_test["h_artikel"] = t_hjournal.departement
 
-        h_artikel = get_cache (H_artikel, {"departement": [(eq, t_hjournal.departement)],"artnr": [(eq, t_hjournal.artnr)],"artart": [(eq, 0)]})
-
+        # h_artikel = get_cache (H_artikel, {"departement": [(eq, t_hjournal.departement)],"artnr": [(eq, t_hjournal.artnr)],"artart": [(eq, 0)]})
+        h_artikel = db_session.query(H_artikel).filter(
+                 (H_artikel.departement == t_hjournal.departement) & (H_artikel.artnr == t_hjournal.artnr) & (H_artikel.artart == 0)).first()
+        
         if h_artikel.artnrlager != 0 or h_artikel.artnrrezept != 0 or h_artikel.prozent != 0:
 
-            h_cost = get_cache (H_cost, {"artnr": [(eq, h_artikel.artnr)],"departement": [(eq, h_artikel.departement)],"datum": [(eq, bill_date)],"flag": [(eq, 1)]})
+            # h_cost = get_cache (H_cost, {"artnr": [(eq, h_artikel.artnr)],"departement": [(eq, h_artikel.departement)],"datum": [(eq, bill_date)],"flag": [(eq, 1)]})
+            h_cost = db_session.query(H_cost).filter(
+                     (H_cost.artnr == h_artikel.artnr) & (H_cost.departement == h_artikel.departement) & (H_cost.datum == bill_date) & (H_cost.flag == 1)).first()
 
             if not h_cost:
                 h_cost = H_cost()

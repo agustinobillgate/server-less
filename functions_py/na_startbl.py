@@ -40,8 +40,9 @@ def na_startbl(case_type:int, user_init:string, htparam_recid:int):
         queasy = Queasy()
         db_session.add(queasy)
         queasy.key = key
-        queasy.char1 = "Log NA"
+        queasy.char1 = "na_startbl"
         queasy.char2 = message
+        db_session.commit()
 
     def generate_output():
         nonlocal mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date, na_time, na_name, ci_date, bediener, htparam, nightaudit

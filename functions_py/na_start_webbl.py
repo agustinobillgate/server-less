@@ -43,8 +43,9 @@ def na_start_webbl(case_type:int, user_init:string, language_code:int, htparam_r
         queasy = Queasy()
         db_session.add(queasy)
         queasy.key = key
-        queasy.char1 = "Log NA"
+        queasy.char1 = "na_start_webbl"
         queasy.char2 = message
+        db_session.commit()
 
     def generate_output():
         nonlocal mn_stopped, stop_it, msg_str, mess_str, crm_license, banquet_license, printer_nr, store_flag, arrival_guest, mnstart_flag, na_date1, na_time1, na_name1
