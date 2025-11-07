@@ -12,14 +12,16 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 # from functions.calc_servtaxesbl import calc_servtaxesbl
+# from functions.del_reslinebl import del_reslinebl
 from functions_py.calc_servtaxesbl import calc_servtaxesbl
+from functions_py.del_reslinebl import del_reslinebl
 from models import Artikel, Htparam, Queasy, Res_line, Arrangement, Reslin_queasy, Counters, Reservation, Guest, Bediener, Bill, Bill_line, Debitor, Billjournal, Umsatz, Gl_jouhdr, Gl_journal
 
-
-def leasing_cancel_rsvbl(qrecid: int, user_init: str):
+def leasing_cancel_proformabl(qrecid: int, pinvoice_no: str, user_init: str):
 
     prepare_cache([Artikel, Htparam, Queasy, Res_line, Arrangement, Reslin_queasy, Counters,Reservation, Guest, Bediener, Bill, Bill_line, Billjournal, Umsatz, Gl_jouhdr, Gl_journal])
 
+    success_flag = False
     log_artnr: int = 0
     ar_ledger: int = 0
     divered_rental: int = 0
@@ -38,52 +40,53 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
     vat2 = to_decimal("0.0")
     fact = to_decimal("0.0")
     loopi: int = 0
-    serv_acctno = ""
-    vat_acctno = ""
-    vat_fibu = ""
-    vat2_fibu = ""
-    serv_fibu = ""
-    div_fibu = ""
+    serv_acctno: str = ""
+    vat_acctno: str = ""
+    vat_fibu: str = ""
+    vat2_fibu: str = ""
+    serv_fibu: str = ""
+    div_fibu: str = ""
     del_mainres: bool = False
-    msg_str = ""
+    msg_str: str = ""
     month_str1: List[int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     month_str2: List[int] = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     artikel = htparam = queasy = res_line = arrangement = reslin_queasy = counters = reservation = guest = bediener = bill = bill_line = debitor = billjournal = umsatz = gl_jouhdr = gl_journal = None
     periode_list = bartikel = None
 
     periode_list_data, Periode_list = create_model(
-    "Periode_list",
-{
-    "counter": int,
-    "periode1": date,
-    "periode2": date,
-    "diff_day": int,
-    "amt_periode": Decimal,
-    "tamount": Decimal
-})
+        "Periode_list",
+        {
+            "counter": int,
+            "periode1": date,
+            "periode2": date,
+            "diff_day": int,
+            "amt_periode": Decimal,
+            "tamount": Decimal
+        })
 
     Bartikel = create_buffer("Bartikel", Artikel)
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
-        nonlocal qrecid, user_init
+        nonlocal success_flag, log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
+        nonlocal qrecid, pinvoice_no, user_init
         nonlocal bartikel
         nonlocal periode_list, bartikel
         nonlocal periode_list_data
 
-        return {}
+        return {
+            "success_flag": success_flag
+        }
 
     def create_bill():
-        nonlocal log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
-        nonlocal qrecid, user_init
+        nonlocal success_flag, log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
+        nonlocal qrecid, pinvoice_no, user_init
         nonlocal bartikel
         nonlocal periode_list, bartikel
         nonlocal periode_list_data
 
         billnr: int = 0
-
         counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
 
         if not counters:
@@ -108,7 +111,6 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
             bediener = get_cache(Bediener, {"userinit": [(eq, user_init)]})
             bill = Bill()
-            db_session.add(bill)
 
             bill.flag = 1
             bill.billnr = 1
@@ -124,11 +126,13 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
             bill.datum = bill_date
             bill.rechnr = billnr
 
+            db_session.add(bill)
+
             create_bill_line(billnr)
 
     def create_bill_line(billno: int):
-        nonlocal log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
-        nonlocal qrecid, user_init
+        nonlocal success_flag, log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
+        nonlocal qrecid, pinvoice_no, user_init
         nonlocal bartikel
         nonlocal periode_list, bartikel
         nonlocal periode_list_data
@@ -138,6 +142,7 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         if bartikel:
             bill_line = Bill_line()
+            db_session.add(bill_line)
 
             bill_line.rechnr = billno
             bill_line.artnr = divered_rental
@@ -152,8 +157,6 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
             #     "[" + "Cancel service Apartment #" + \
             #     to_string(queasy.number1) + "]"
             bill_line.bezeich = f"{bill_line.bezeich}[Cancel service Apartment #{queasy.number1}]"
-
-            db_session.add(bill_line)
 
         bartikel = get_cache(
             Artikel, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)]})
@@ -173,13 +176,13 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
             # bill_line.bezeich = bill_line.bezeich + \
             #     "[" + "Cancel service Apartment #" + \
             #     to_string(queasy.number1) + "]"
-            bill_line.bezeich = f"{bill_line.bezeich}[Cancel service Apartment #{queasy.number1}]"
+            bill_line.bezeich = f"{bill_line.bezeich}[Cancel service Apartment #{queasy.number1}]" 
 
             db_session.add(bill_line)
 
     def create_ar():
-        nonlocal log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
-        nonlocal qrecid, user_init
+        nonlocal success_flag, log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
+        nonlocal qrecid, pinvoice_no, user_init
         nonlocal bartikel
         nonlocal periode_list, bartikel
         nonlocal periode_list_data
@@ -188,23 +191,24 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
         Bdebt = create_buffer("Bdebt", Debitor)
 
         debitor = get_cache(
-            Debitor, {"vesrcod": [(eq, queasy.char2)], "zahlkonto": [(eq, 0)]})
+            Debitor, {"vesrcod": [(eq, pinvoice_no)], "zahlkonto": [(eq, 0)]})
 
         if debitor:
             bediener = get_cache(Bediener, {"userinit": [(eq, user_init)]})
             bdebt = Debitor()
-            db_session.add(bdebt)
 
             bdebt.artnr = ar_ledger
-            bdebt.rechnr = to_int(queasy.char2)
+            bdebt.rechnr = to_int(pinvoice_no)
             bdebt.rgdatum = bill_date
             bdebt.saldo = - to_decimal(tot_amount)
             bdebt.vesrdep = - to_decimal(tot_amount)
             bdebt.bediener_nr = bediener.nr
             bdebt.vesrdat = get_current_date()
             bdebt.transzeit = get_current_time_in_seconds()
-            # bdebt.vesrcod = queasy.char2 + "|Cancel service Apartment"
-            bdebt.vesrcod = f"{queasy.char2}|Cancel service Apartment"
+            # bdebt.vesrcod = pinvoice_no + "|Cancel Leasing"
+            bdebt.vesrcod = f"{pinvoice_no}|Cancel Leasing"
+
+            db_session.add(bdebt)
 
             res_line = get_cache(
                 Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
@@ -264,8 +268,9 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
         billjournal.anzahl = 1
         billjournal.fremdwaehrng = - to_decimal(tot_amount)
         billjournal.betrag = - to_decimal(tot_amount)
-        billjournal.bezeich = artikel.bezeich + \
-            "[" + "Cancel service Apartment#" + to_string(queasy.number1) + "]"
+        # billjournal.bezeich = artikel.bezeich + \
+        #     "[" + "Cancel service Apartment#" + to_string(queasy.number1) + "]"
+        billjournal.bezeich = f"{artikel.bezeich}[Cancel service Apartment #{queasy.number1}]"
         billjournal.epreis = to_decimal("0")
         billjournal.zeit = get_current_time_in_seconds()
         billjournal.billjou_ref = artikel.artnr
@@ -289,34 +294,40 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
         umsatz.betrag = to_decimal(umsatz.betrag) + (- to_decimal(tot_amount))
 
     def create_journal():
-        nonlocal log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
-        nonlocal qrecid, user_init
+        nonlocal success_flag, log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
+        nonlocal qrecid, pinvoice_no, user_init
         nonlocal bartikel
         nonlocal periode_list, bartikel
         nonlocal periode_list_data
 
-        gname: string = ""
+        gname = ""
 
-        counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
+        counters = get_cache(
+            Counters, {"counter_no": [(eq, 25)]})
 
         if not counters:
             counters = Counters()
-            db_session.add(counters)
 
             counters.counter_no = 25
             counters.counter_bez = "G/L Transaction Journal"
+            
+            db_session.add(counters)
+            
         counters.counter = counters.counter + 1
+        pass
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
 
         if res_line:
-            guest = get_cache(Guest, {"gastnr": [(eq, res_line.gastnr)]})
+            guest = get_cache(
+                Guest, {"gastnr": [(eq, res_line.gastnr)]})
 
             if guest:
                 gname = guest.name
 
         gl_jouhdr = Gl_jouhdr()
+        db_session.add(gl_jouhdr)
 
         gl_jouhdr.jnr = counters.counter
         # gl_jouhdr.refno = "CANCEL-" + \
@@ -326,17 +337,16 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
         gl_jouhdr.batch = True
         gl_jouhdr.jtype = 1
 
-        db_session.add(gl_jouhdr)
-
-        guest = get_cache(Guest, {"gastnr": [(eq, queasy.number2)]})
+        guest = get_cache(
+            Guest, {"gastnr": [(eq, queasy.number2)]})
 
         if guest:
             # gl_jouhdr.bezeich = "CANCEL-service RESIDENT-" + \
-            #     to_string(queasy.number1) + "-" + to_string(bill_date)
-            gl_jouhdr.bezeich = f"CANCEL-service RESIDENT-{queasy.number1}-{bill_date}"
+            #     to_string(queasy.number1) + "-" + \
+            #     to_string(bill_date) + "-" + to_string(pinvoice_no)
+            gl_jouhdr.bezeich = f"CANCEL-service RESIDENT-{queasy.number1}-{bill_date}-{pinvoice_no}" 
 
         gl_journal = Gl_journal()
-        db_session.add(gl_journal)
 
         gl_journal.jnr = gl_jouhdr.jnr
         gl_journal.userinit = user_init
@@ -383,12 +393,13 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
                     vat2_fibu = entry(0, htparam.fchar, chr_unicode(2))
         for loopi in range(1, 3 + 1):
             gl_journal = Gl_journal()
-            db_session.add(gl_journal)
 
             gl_journal.jnr = gl_jouhdr.jnr
             gl_journal.userinit = user_init
             gl_journal.zeit = get_current_time_in_seconds()
             gl_journal.bemerk = gl_jouhdr.bezeich
+
+            db_session.add(gl_journal)
 
             if loopi == 1:
                 gl_journal.debit = to_decimal(tot_nettamount)
@@ -408,8 +419,8 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
                 gl_jouhdr.debit + gl_journal.debit)
 
     def calc_periode():
-        nonlocal log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
-        nonlocal qrecid, user_init
+        nonlocal success_flag, log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
+        nonlocal qrecid, pinvoice_no, user_init
         nonlocal bartikel
         nonlocal periode_list, bartikel
         nonlocal periode_list_data
@@ -419,7 +430,7 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
         counter: int = 0
         periode: date = None
         loopi: date = None
-        curr_amount: Decimal = to_decimal("0.0")
+        curr_amount = to_decimal("0.0")
         loopdate: date = None
         periode_rsv1 = queasy.date2
         periode_rsv2 = queasy.date3
@@ -491,10 +502,9 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
                 if reslin_queasy:
                     curr_amount = to_decimal(
-                        curr_amount) + to_decimal(reslin_queasy.deci1)
+                        curr_amount + reslin_queasy.deci1)
 
-            periode_list.diff_day = (
-                periode_list.periode2 - periode_list.periode1) + 1
+            periode_list.diff_day = (periode_list.periode2 - periode_list.periode1) + 1
             periode_list.amt_periode = to_decimal(
                 curr_amount / periode_list.diff_day)
             periode_list.tamount = to_decimal(
@@ -534,10 +544,10 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
     if artikel:
         serv_acctno = artikel.fibukonto
 
-    htparam = get_cache(
-        Htparam, {"paramnr": [(eq, 132)]})
+    htparam = get_cache(Htparam, {"paramnr": [(eq, 132)]})
 
     artikel = get_cache(
+        # Artikel, {"artnr": [(eq, finteger)], "departement": [(eq, 0)]})
         Artikel, {"artnr": [(eq, htparam.finteger)], "departement": [(eq, 0)]})
 
     if artikel:
@@ -561,7 +571,7 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
                 log_artnr = arrangement.artnr_logis
 
             for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                    (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == queasy.number1) & (Reslin_queasy.reslinnr == queasy.number2)).order_by(Reslin_queasy.date1).all():
+                    (Reslin_queasy.key == "arrangement") & (Reslin_queasy.resnr == queasy.number1) & (Reslin_queasy.reslinnr == queasy.number2)).order_by(Reslin_queasy.date1).all():
 
                 periode_list = query(periode_list_data, filters=(lambda periode_list: periode_list.reslin_queasy.date1 >= periode_list.periode1 and reslin_queasy.date1 <= periode_list.periode2), first=True)
 
@@ -593,6 +603,12 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
             create_bill()
             create_ar()
+            del_mainres, msg_str = get_output(del_reslinebl(
+                1, "cancel", res_line.resnr, res_line.reslinnr, user_init, ""))
             queasy.logi1 = True
+            success_flag = True
+
+    else:
+        success_flag = False
 
     return generate_output()
