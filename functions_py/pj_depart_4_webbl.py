@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 #------------------------------------------
 # Rd, 4/9/2025
 # format tanggal yyyy-mm-dd -> dd/mm/yy
@@ -196,13 +196,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     if guest.karteityp != 0:
                         cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-                    if gmember.telefon != "" and gmember.mobil_telefon != "":
+                    if gmember.telefon != "" and gmember.telefon != None and gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon + ";" + gmember.mobil_telefon
 
-                    elif gmember.telefon != "" and gmember.mobil_telefon == "":
+                    elif gmember.telefon != "" and gmember.telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon
 
-                    elif gmember.telefon == "" and gmember.mobil_telefon != "":
+                    elif gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
                     # if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
@@ -345,7 +345,6 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.argt = res_line.arrangement
                     cl_list.flight = substring(res_line.flight_nr, 11, 6)
                     cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                    print("F:", res_line.flight_nr)
                     cl_list.email_adr = gmember.email_adr
                     cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                     cl_list.zipreis =  to_decimal(res_line.zipreis)
@@ -385,13 +384,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     if guest.karteityp != 0:
                         cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-                    if gmember.telefon != "" and gmember.mobil_telefon != "":
+                    if gmember.telefon != "" and gmember.telefon != None and gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon + ";" + gmember.mobil_telefon
 
-                    elif gmember.telefon != "" and gmember.mobil_telefon == "":
+                    elif gmember.telefon != "" and gmember.telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon
 
-                    elif gmember.telefon == "" and gmember.mobil_telefon != "":
+                    elif gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
                     # if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
@@ -453,10 +452,7 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
 
                 if not disp_accompany:
 
-                    cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.rmno == res_line.zinr and 
-                                                           cl_list.resnr == res_line.resnr and 
-                                                           date_mdy(cl_list.arrive) == res_line.ankunft and 
-                                                           cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
+                    cl_list = query(cl_list_data, filters=(lambda cl_list: cl_list.rmno == res_line.zinr and cl_list.resnr == res_line.resnr and date_mdy(cl_list.arrive) == res_line.ankunft and cl_list.zipreis == 0 and (cl_list.a + cl_list.c) < 1 and cl_list.co < 1), first=True)
 
                     if cl_list:
                         cl_list_data.remove(cl_list)
@@ -537,8 +533,6 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.argt = res_line.arrangement
                     cl_list.flight = substring(res_line.flight_nr, 11, 6)
                     cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                    print("F:", res_line.flight_nr)
-
                     cl_list.email_adr = gmember.email_adr
                     cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                     cl_list.zipreis =  to_decimal(res_line.zipreis)
@@ -578,13 +572,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     if guest.karteityp != 0:
                         cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-                    if gmember.telefon != "" and gmember.mobil_telefon != "":
+                    if gmember.telefon != "" and gmember.telefon != None and gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon + ";" + gmember.mobil_telefon
 
-                    elif gmember.telefon != "" and gmember.mobil_telefon == "":
+                    elif gmember.telefon != "" and gmember.telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon
 
-                    elif gmember.telefon == "" and gmember.mobil_telefon != "":
+                    elif gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
                     # if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
@@ -770,13 +764,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     if guest.karteityp != 0:
                         cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-                    if gmember.telefon != "" and gmember.mobil_telefon != "":
+                    if gmember.telefon != "" and gmember.telefon != None and gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon + ";" + gmember.mobil_telefon
 
-                    elif gmember.telefon != "" and gmember.mobil_telefon == "":
+                    elif gmember.telefon != "" and gmember.telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon
 
-                    elif gmember.telefon == "" and gmember.mobil_telefon != "":
+                    elif gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
                     # if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
@@ -960,13 +954,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     if guest.karteityp != 0:
                         cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-                    if gmember.telefon != "" and gmember.mobil_telefon != "":
+                    if gmember.telefon != "" and gmember.telefon != None and gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon + ";" + gmember.mobil_telefon
 
-                    elif gmember.telefon != "" and gmember.mobil_telefon == "":
+                    elif gmember.telefon != "" and gmember.telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon
 
-                    elif gmember.telefon == "" and gmember.mobil_telefon != "":
+                    elif gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
                     # if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
@@ -1230,13 +1224,13 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     if guest.karteityp != 0:
                         cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-                    if gmember.telefon != "" and gmember.mobil_telefon != "":
+                    if gmember.telefon != "" and gmember.telefon != None and gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon + ";" + gmember.mobil_telefon
 
-                    elif gmember.telefon != "" and gmember.mobil_telefon == "":
+                    elif gmember.telefon != "" and gmember.telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon
 
-                    elif gmember.telefon == "" and gmember.mobil_telefon != "":
+                    elif gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
                     # if (cl_list.etd.lower()  == ("0000").lower()  or cl_list.etd.lower()  == "") and res_line.abreisezeit != 0:
@@ -1370,7 +1364,6 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.argt = res_line.arrangement
                     cl_list.flight = substring(res_line.flight_nr, 11, 6)
                     cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                    print("F:", res_line.flight_nr)
                     cl_list.email_adr = gmember.email_adr
                     cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                     cl_list.zipreis =  to_decimal(res_line.zipreis)
@@ -1552,7 +1545,6 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.argt = res_line.arrangement
                     cl_list.flight = substring(res_line.flight_nr, 11, 6)
                     cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                    print("F:", res_line.flight_nr)
                     cl_list.email_adr = gmember.email_adr
                     cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                     cl_list.zipreis =  to_decimal(res_line.zipreis)
@@ -1914,7 +1906,6 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.argt = res_line.arrangement
                     cl_list.flight = substring(res_line.flight_nr, 11, 6)
                     cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                    print("F:", res_line.flight_nr)
                     cl_list.email_adr = gmember.email_adr
                     cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                     cl_list.zipreis =  to_decimal(res_line.zipreis)
@@ -2175,7 +2166,6 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.argt = res_line.arrangement
                     cl_list.flight = substring(res_line.flight_nr, 11, 6)
                     cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                    print("F:", res_line.flight_nr)
                     cl_list.email_adr = gmember.email_adr
                     cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                     cl_list.zipreis =  to_decimal(res_line.zipreis)
@@ -2363,7 +2353,6 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.argt = res_line.arrangement
                     cl_list.flight = substring(res_line.flight_nr, 11, 6)
                     cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                    print("F:", res_line.flight_nr)
                     cl_list.email_adr = gmember.email_adr
                     cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                     cl_list.zipreis =  to_decimal(res_line.zipreis)
@@ -2551,7 +2540,6 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                     cl_list.argt = res_line.arrangement
                     cl_list.flight = substring(res_line.flight_nr, 11, 6)
                     cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                    print("F:", res_line.flight_nr)
                     cl_list.email_adr = gmember.email_adr
                     cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                     cl_list.zipreis =  to_decimal(res_line.zipreis)
@@ -3168,7 +3156,6 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                 cl_list.argt = res_line.arrangement
                 cl_list.flight = substring(res_line.flight_nr, 11, 6)
                 cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                print("F:", res_line.flight_nr)
                 cl_list.email_adr = gmember.email_adr
                 cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                 cl_list.zipreis =  to_decimal(res_line.zipreis)
@@ -3328,7 +3315,6 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                 cl_list.argt = res_line.arrangement
                 cl_list.flight = substring(res_line.flight_nr, 11, 6)
                 cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                print("F:", res_line.flight_nr)
                 cl_list.email_adr = gmember.email_adr
                 cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                 cl_list.zipreis =  to_decimal(res_line.zipreis)
@@ -3488,7 +3474,6 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                 cl_list.argt = res_line.arrangement
                 cl_list.flight = substring(res_line.flight_nr, 11, 6)
                 cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                print("F:", res_line.flight_nr)
                 cl_list.email_adr = gmember.email_adr
                 cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                 cl_list.zipreis =  to_decimal(res_line.zipreis)
@@ -3648,7 +3633,6 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                 cl_list.argt = res_line.arrangement
                 cl_list.flight = substring(res_line.flight_nr, 11, 6)
                 cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                print("F:", res_line.flight_nr)
                 cl_list.email_adr = gmember.email_adr
                 cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                 cl_list.zipreis =  to_decimal(res_line.zipreis)
@@ -3808,7 +3792,6 @@ def pj_depart_4_webbl(pvilanguage:int, case_type:int, disptype:int, curr_date:da
                 cl_list.argt = res_line.arrangement
                 cl_list.flight = substring(res_line.flight_nr, 11, 6)
                 cl_list.etd = substring(res_line.flight_nr, 17, 5)
-                print("F:", res_line.flight_nr)
                 cl_list.email_adr = gmember.email_adr
                 cl_list.address = gmember.adresse1 + ", " + gmember.adresse2 + ", " + gmember.adresse3
                 cl_list.zipreis =  to_decimal(res_line.zipreis)
