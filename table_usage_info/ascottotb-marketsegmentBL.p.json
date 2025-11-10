@@ -1,0 +1,97 @@
+{
+    "Segment": {
+        "read": [],
+        "write": []
+    },
+    "Segmentstat": {
+        "read": [],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "ankunft",
+            "abreise",
+            "_recid",
+            "zimmeranz",
+            "erwachs",
+            "resnr",
+            "reslinnr",
+            "arrangement",
+            "resstatus",
+            "zimmerfix",
+            "gratis",
+            "kind1",
+            "kind2",
+            "l_zuordnung",
+            "active_flag"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "finteger",
+            "fdate",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimmer": {
+        "read": [],
+        "write": []
+    },
+    "Genstat": {
+        "read": [
+            "segmentcode",
+            "datum",
+            "logis",
+            "res_deci",
+            "erwachs",
+            "gratis",
+            "kind1",
+            "kind2",
+            "kind3",
+            "res_date",
+            "res_char",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zinrstat": {
+        "read": [
+            "datum",
+            "zimmeranz",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "segmentcode",
+            "groupname",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reslin_queasy": {
+        "read": [
+            "number3",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Arrangement": {
+        "read": [
+            "argt_artikelnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bill_line": {
+        "read": [],
+        "write": []
+    }
+}
