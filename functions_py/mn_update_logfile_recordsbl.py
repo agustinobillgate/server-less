@@ -22,7 +22,7 @@ def mn_update_logfile_recordsbl():
 
     def generate_output():
         nonlocal anz_tage, hist_tage, ci_date, htparam, res_history, reslin_queasy, queasy
-        print(f"Logfile records updated: anz_tage={anz_tage}, hist_tage={hist_tage}, ci_date={ci_date}")
+        # print(f"Logfile records updated: anz_tage={anz_tage}, hist_tage={hist_tage}, ci_date={ci_date}")
         return {}
 
     def update_logfile_records():
