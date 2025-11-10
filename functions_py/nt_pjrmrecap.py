@@ -1,10 +1,13 @@
 #using conversion tools version: 1.0.0.117
 
-# ============================
+# ====================================
 # Rulita, 22-10-2025 
 # Issue : 
 # - Fixing table arrangement
-# ============================
+
+# Rulita, 10-11-2025
+# find first arrangement add .strip()
+# ====================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -687,8 +690,10 @@ def nt_pjrmrecap():
             argt_list = query(argt_list_data, filters=(lambda argt_list: argt_list.bezeich != ""), first=True)
 
             if argt_list:
-
-                arrangement = get_cache (Arrangement, {"arrangement": [(eq, argt_list.bezeich)]})
+                # Rulita, 10-11-2025
+                # find first arrangement add .strip()
+                # arrangement = get_cache (Arrangement, {"arrangement": [(eq, argt_list.bezeich)]})
+                arrangement = db_session.query(Arrangement).filter((Arrangement.arrangement == argt_list.bezeich.strip())).first()
                 line = to_string(arrangement.argt_bez, "x(24) ") + to_string(argt_list.anz_rm, ">>9 ") + "Rm" + " " + to_string(argt_list.adult, ">>>>9 ") + "Pax" + " " + to_string(nat_list.bezeich, "x(16) ") + to_string(nat_list.adult, ">>> ") + to_string(nat_list.proz, ">>9.99") + "% " + to_string(nat_list.child, ">>>")
                 argt_list_data.remove(argt_list)
             else:

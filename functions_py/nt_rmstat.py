@@ -3,6 +3,9 @@
 # ===========================================================
 # Rulita, 28-10-2025
 # - Fixing calculate days res_line.abreise - res_line.ankunft
+
+# Rulita, 10-11-2025
+# find first arrangement add .strip()
 # ===========================================================
 
 from functions.additional_functions import *
@@ -517,7 +520,11 @@ def nt_rmstat():
 
         reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-        arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+        # Rulita, 10-11-2025
+        # find first arrangement add .strip()
+        # arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+        arrangement = db_session.query(Arrangement).filter((Arrangement.arrangement == res_line.arrangement.strip())).first()
+
         dayuse = False
         do_it = False
 
@@ -693,7 +700,10 @@ def nt_rmstat():
 
         if do_it:
 
-            arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+            # Rulita, 10-11-2025
+            # find first arrangement add .strip()
+            # arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+            arrangement = db_session.query(Arrangement).filter((Arrangement.arrangement == res_line.arrangement.strip())).first()
 
             zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
 
@@ -729,7 +739,8 @@ def nt_rmstat():
                         frate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
                 rate =  to_decimal(res_line.zipreis)
 
-                artikel = get_cache (Artikel, {"artnr": [(eq, arrangement.artnr_logis)],"departement": [(eq, 0)]})
+                # artikel = get_cache (Artikel, {"artnr": [(eq, arrangement.artnr_logis)],"departement": [(eq, 0)]})
+                artikel = db_session.query(Artikel).filter((Artikel.artnr == arrangement.artnr_logis) & (Artikel.departement == 0)).first()
                 service, vat, vat2, fact = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, bill_date))
                 lodg_betrag =  to_decimal(rate) * to_decimal(frate)
 
@@ -1018,7 +1029,7 @@ def nt_rmstat():
                 if ((res_line.resstatus == 6) or (dayuse and not res_line.zimmerfix)):
 
                     if res_line.abreise > res_line.ankunft:
-                        nationstat.dlogkind1 = nationstat.dlogkind1 + res_line.abreise - res_line.ankunft
+                        nationstat.dlogkind1 = nationstat.dlogkind1 + (res_line.abreise - res_line.ankunft).days
                     else:
                         nationstat.dlogkind1 = nationstat.dlogkind1 + 1
                     nationstat.dlogkind2 = nationstat.dlogkind2 + 1

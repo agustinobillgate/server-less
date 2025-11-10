@@ -1,11 +1,15 @@
 #using conversion tools version: 1.0.0.117
 
-# =========================================
+# ==================================================
 # Rulita, 23-10-2025 
 # Issue : 
 # - New compile program
 # - Fixing issue condition if with modulo
-# =========================================
+
+# Rulita, 10-11-2025 
+# Fixing miss table name datum -> segmentstat.datum
+# Fixing miss table name datum -> nationstat.datum
+# ==================================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -480,12 +484,16 @@ def nt_fina():
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 3), first=True)
                     info_list.lodging =  to_decimal(info_list.lodging) + to_decimal(segmentstat.logis)
 
-                if datum >= lfdate and datum <= ltdate:
+                # Rulita, 10-11-2025
+                # fix missing table segmentstat.datum
+                if segmentstat.datum >= lfdate and segmentstat.datum <= ltdate:
 
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 4), first=True)
                     info_list.lodging =  to_decimal(info_list.lodging) + to_decimal(segmentstat.logis)
 
-                if datum >= ljan1 and datum <= ltdate:
+                # Rulita, 10-11-2025
+                # fix missing table segmentstat.datum
+                if segmentstat.datum >= ljan1 and segmentstat.datum <= ltdate:
 
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 5), first=True)
                     info_list.lodging =  to_decimal(info_list.lodging) + to_decimal(segmentstat.logis)
@@ -511,12 +519,16 @@ def nt_fina():
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 3), first=True)
                     info_list.com = info_list.com + nationstat.loggratis
 
-                if datum >= lfdate and datum <= ltdate:
+                # Rulita, 10-11-2025
+                # fix missing table nationstat.datum
+                if nationstat.datum >= lfdate and nationstat.datum <= ltdate:
 
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 4), first=True)
                     info_list.com = info_list.com + nationstat.loggratis
 
-                if datum >= ljan1 and datum <= ltdate:
+                # Rulita, 10-11-2025
+                # fix missing table nationstat.datum
+                if nationstat.datum >= ljan1 and nationstat.datum <= ltdate:
 
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 5), first=True)
                     info_list.com = info_list.com + nationstat.loggratis
