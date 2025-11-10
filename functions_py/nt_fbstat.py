@@ -6,6 +6,9 @@
 
 # Rulita, 27-10-2025
 # - Fixing where s_list.h_journal.zeit
+
+# Rulita, 07-11-2025
+# - Fixing table rmTrans -> rmtrans
 # ========================================
 
 from functions.additional_functions import *
@@ -297,7 +300,7 @@ def nt_fbstat():
     for t_list in query(t_list_data):
         for i in range(1,4 + 1) :
 
-            if t_list.rmTrans != 0:
+            if t_list.rmtrans != 0:
 
                 if t_list.f_pax[i - 1] != 0:
                     t_list.gpax[i - 1] = t_list.f_pax[i - 1]
@@ -319,7 +322,7 @@ def nt_fbstat():
                 elif t_list.o_pax[i - 1] != 0:
                     t_list.wpax[i - 1] = t_list.o_pax[i - 1]
 
-    for t_list in query(t_list_data, filters=(lambda t_list: t_list.pay != 0 or t_list.rmTrans != 0)):
+    for t_list in query(t_list_data, filters=(lambda t_list: t_list.pay != 0 or t_list.rmtrans != 0)):
 
         h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, 0)],"departement": [(eq, t_list.dept)],"betriebsnr": [(eq, t_list.dept)],"datum": [(eq, bill_date)]})
 
@@ -350,7 +353,7 @@ def nt_fbstat():
             fbuff.datum = bill_date
             fbuff.departement = t_list.dept + 100
 
-        if t_list.rmTrans != 0:
+        if t_list.rmtrans != 0:
             for i in range(1,4 + 1) :
                 fbstat.food_grev[i - 1] = fbstat.food_grev[i - 1] + t_list.food[i - 1]
                 fbstat.bev_grev[i - 1] = fbstat.bev_grev[i - 1] + t_list.bev[i - 1]
