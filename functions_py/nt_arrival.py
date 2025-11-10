@@ -1,9 +1,14 @@
 #using conversion tools version: 1.0.0.117
 
-# ============================
+# ========================================================
 # Rulita, 22-10-2025 
 # Issue : New compile program
-# ============================
+
+# Rulita, 10-11-2025 
+# Issue :
+# - Fixing foreach first menjadi foreach find first di py
+# - Fixing to_string var table guest 
+# ========================================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -143,8 +148,15 @@ def nt_arrival():
         res_line = Res_line()
         zimkateg = Zimkateg()
         guest = Guest()
-        for res_line.name, res_line.abreise, res_line.zinr, res_line.erwachs, res_line.kind1, res_line.gratis, res_line.arrangement, res_line.resstatus, res_line._recid, zimkateg.kurzbez, zimkateg._recid, guest.name, guest.vorname1, guest.anrede1, guest.anredefirma, guest._recid in db_session.query(Res_line.name, Res_line.abreise, Res_line.zinr, Res_line.erwachs, Res_line.kind1, Res_line.gratis, Res_line.arrangement, Res_line.resstatus, Res_line._recid, Zimkateg.kurzbez, Zimkateg._recid, Guest.name, Guest.vorname1, Guest.anrede1, Guest.anredefirma, Guest._recid).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Guest,(Guest.gastnr == Res_line.gastnr)).filter(
+        for res_line in db_session.query(Res_line).filter(
                  ((Res_line.resstatus == 6) | (Res_line.resstatus == 13)) & (Res_line.ankunft == curr_date)).order_by(Res_line.name, Res_line.zinr).all():
+
+            # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
+            zimkateg = db_session.query(Zimkateg).filter((Zimkateg.zikatnr == res_line.zikatnr)).first()
+
+            # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
+            guest = db_session.query(Guest).filter((Guest.gastnr == res_line.gastnr)).first()
+
             if res_line_obj_list.get(res_line._recid):
                 continue
             else:
@@ -162,7 +174,7 @@ def nt_arrival():
             cl_list.c = res_line.kind1
             cl_list.co = res_line.gratis
             cl_list.argt = res_line.arrangement
-            cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
+            cl_list.company = to_string(guest.name) + ", " + to_string(guest.vorname1) + " " + to_string(guest.anrede1) + to_string(guest.anredefirma)
 
             if res_line.resstatus == 6:
                 tot_rm = tot_rm + 1
@@ -171,8 +183,15 @@ def nt_arrival():
             tot_co = tot_co + res_line.gratis
 
         res_line_obj_list = {}
-        for res_line, bill, zimkateg, guest in db_session.query(Res_line, Bill, Zimkateg, Guest).join(Bill,(Bill.resnr == Res_line.resnr) & (Bill.reslinnr == Res_line.reslinnr) & (Bill.argtumsatz > 0)).join(Zimkateg,(Zimkateg.zikatnr == Res_line.zikatnr)).join(Guest,(Guest.gastnr == Res_line.gastnr)).filter(
+        for res_line in db_session.query(Res_line).filter(
                  (Res_line.active_flag == 2) & (Res_line.resstatus == 8) & (Res_line.ankunft == curr_date) & (Res_line.abreise == curr_date)).order_by(Res_line.name, Res_line.zinr).all():
+            
+            bill = db_session.query(Bill).filter((Bill.resnr == res_line.resnr) & (Bill.reslinnr == res_line.reslinnr) & (Bill.argtumsatz > 0)).first()
+
+            zimkateg = db_session.query(Zimkateg).filter((Zimkateg.zikatnr == res_line.zikatnr)).first()
+
+            guest = db_session.query(Guest).filter((Guest.gastnr == res_line.gastnr)).first()
+            
             if res_line_obj_list.get(res_line._recid):
                 continue
             else:
@@ -190,7 +209,7 @@ def nt_arrival():
             cl_list.c = res_line.kind1
             cl_list.co = res_line.gratis
             cl_list.argt = res_line.arrangement
-            cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
+            cl_list.company = to_string(guest.name) + ", " + to_string(guest.vorname1) + " " + to_string(guest.anrede1) + to_string(guest.anredefirma)
 
             if not res_line.zimmerfix:
                 tot_rm = tot_rm + 1

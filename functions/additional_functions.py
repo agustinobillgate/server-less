@@ -1705,7 +1705,7 @@ def get_db_url(hotelCode):
         # return "postgresql://vhpadmin:VHPLogin2023@/vhp-dev.cjxtrsmbui3n.ap-southeast-1.rds.amazonaws.com:5432/vhp_rental"
     
     group = session.execute(sa.text("select name from public.hotelgroup where '" + hotelCode + "' = any(hotelcodes)")).fetchone()
-    print("group:", DB_HOST, DB_NAME, group)
+    # print("group:", DB_HOST, DB_NAME, group)
     if group:
         groupname = group[0]
     else:
@@ -1718,7 +1718,7 @@ def get_db_url(hotelCode):
         return ""        
     session.close()
     
-    print(f"Masuk EC2:{db_name}")
+    # print(f"Masuk EC2:{db_name}")
     # return "postgresql://" + username + ":" + decrypt(enc_pass) + "@" + ip + ":" + str(port) + "/" + db_name
 
     return "postgresql://" + username + ":" + enc_pass + "@" + ip + ":" + str(port) + "/" + db_name

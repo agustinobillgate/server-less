@@ -15,8 +15,6 @@ from datetime import date
 
 from models import Paramtext, Queasy
 
-
-print("starting na_start_web2bl")
 from functions.prepare_mn_startbl import prepare_mn_startbl
 from functions.mn_chg_sysdatesbl import mn_chg_sysdatesbl
 from functions.na_startbl import na_startbl
@@ -47,7 +45,16 @@ from functions.mn_del_nitehistbl import mn_del_nitehistbl
 from functions.mn_del_old_baresbl import mn_del_old_baresbl
 from functions.mn_update_logfile_recordsbl import mn_update_logfile_recordsbl
 from functions.mn_del_oldbl import mn_del_oldbl
-# from functions.mn_club_softwarebl import mn_club_softwarebl
+from functions.mn_club_softwarebl import mn_club_softwarebl
+print("starting na_start_web2bl,1")
+
+def na_run_program(function_name:string, input_data=()):
+    function_name = function_name.replace(".py","")
+    module_name = "functions." + function_name
+    module = importlib.import_module(module_name)
+
+    obj = getattr(module, function_name)
+    return  obj(*input_data)
 
 def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_arrguest:bool):
 
@@ -80,18 +87,25 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
 
     db_session = local_storage.db_session
 
+    # def clear_log(key: int):    
+    #     sql = f"DELETE FROM queasy WHERE key = {key}"
+    #     db_session.execute(text(sql))
+    #     db_session.commit()
+    
     def log_process(key: int, message:string):
         queasy = Queasy()
         db_session.add(queasy)
         queasy.key = key
-        queasy.char1 = "Log NA"
+        queasy.char1 = "na_start_web2bl"
         queasy.char2 = message
+        db_session.commit()
 
-    log_process(270001,"Starting na_start_web2bl")
+    # clear_log(270001)
+    # # log_process(270001,"Starting na_start_web2bl")
     
 
     # def run_program(program_name:string):
-    #     log_process(270001, f"Running program: {program_name}")
+    #     # log_process(270001, f"Running program: {program_name}")
     #     # Placeholder for actual program execution logic
 
     def generate_output():
@@ -148,26 +162,24 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
             #         a = R_INDEX (t_nightaudit.programm, ".p")
             #         run_program(substring(t_nightaudit.programm.lower() , 0, a - 1) + "bl")
 
-            programm = t_nightaudit.programm.lower()
-            programm = programm.lower().replace("-", "_")
-            programm = programm.replace(".r", ".p")
-            programm = programm.replace(".p", ".py")
+            programm = t_nightaudit.programm
+            programm = programm.replace(".p",".py").replace(".r",".py").replace("-","_").lower()
             
             abschlussart = int(t_nightaudit.abschlussart)
-
-            if "bl.py" in programm:
-                log_process(270001, f"Run bl.p: {programm}")
-                # run_program(programm)
-            else:
+            # print("LogfilProcessed program name:", programm)
+            try:
                 if abschlussart == 1:
-                    log_process(270001, f"Run: {programm}")
-                    # run_program(programm)
+                    log_process(270001, f"Run2: {programm}")
+                    # print("Running program 2:", programm)
+                    na_run_program(programm)
                 else:
-                    a = programm.rfind(".p")
-                    new_programm = (programm[:a] + "bl.py") if a != -1 else (programm + "bl.py")
-                    # new_programm = new_programm.replace("bl.p", "bl.py")
-                    log_process(270001, f"Run .p: {new_programm}")
-                    # run_program(new_programm)
+                    programm = programm.replace(".py","bl.py")
+                    log_process(270001, f"Run3 .p: {programm}")
+                    # print("Running program 3:", programm)
+                    na_run_program(programm)
+            except Exception as e:
+                log_process(270001, f"Error running program {programm}: {str(e)}")
+                print(f"Error running program {programm}: {str(e)}")
 
             if store_flag:
                 success_flag = get_output(delete_nitehistbl(1, billdate, t_nightaudit.reihenfolge))
@@ -188,125 +200,202 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         i:int = 0
         j:int = 0
         k:int = 0
+        log_process(270001, "- midnite_prog, mn_noshowbl")
         cqueasy("No Show List", "PROCESS")
         i, msg_str = get_output(mn_noshowbl(language_code))
         cqueasy("No Show List", "DONE")
+
+        log_process(270001, "- midnite_prog, mn_extend_departurebl")
         cqueasy("Extending Departure Date", "PROCESS")
         i = get_output(mn_extend_departurebl())
         cqueasy("Extending Departure Date", "DONE")
 
         if crm_license:
+            log_process
             cqueasy("CRM questionnair - C/O Guests", "PROCESS")
             get_output(mn_crm_checkoutbl())
             cqueasy("CRM questionnair - C/O Guests", "DONE")
+
+        log_process(270001, "- midnite_prog, mn_early_checkoutbl")
         cqueasy("Early Checkout", "PROCESS")
         i = get_output(mn_early_checkoutbl())
         cqueasy("Early Checkout", "DONE")
+
+        log_process
         cqueasy("Updating Room Status", "PROCESS")
         i, msg_str = get_output(mn_update_zistatusbl(language_code))
         cqueasy("Updating Room Status", "DONE")
+
+        log_process
         cqueasy("Correcting bill date", "PROCESS")
         get_output(mn_fix_bill_datumbl())
         cqueasy("Correcting bill date", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old records")
         cqueasy("Deleting old bills", "PROCESS")
         i = get_output(mn_del_old_billsbl())
         cqueasy("Deleting old bills", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old bill journals")
         cqueasy("Deleting old bill journals", "PROCESS")
         i = get_output(mn_del_old_billjournalbl())
         cqueasy("Deleting old bill journals", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old reservations")
         cqueasy("Deleting old reservations", "PROCESS")
         i, j, k = get_output(mn_del_old_resbl())
         cqueasy("Deleting old reservations", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old roomplans")
         cqueasy("Deleting old roomplans", "PROCESS")
         i = get_output(mn_del_old_roomplanbl())
         cqueasy("Deleting old roomplans", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old paid debts")
         cqueasy("Deleting old paid debts", "PROCESS")
         i = get_output(mn_del_old_debtbl())
         cqueasy("Deleting old paid debts", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old paid a/P")
         cqueasy("Deleting old paid a/P", "PROCESS")
         i = get_output(mn_del_old_apbl())
         cqueasy("Deleting old paid a/P", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old restaurant bills")
         cqueasy("Deleting old restaurant bills", "PROCESS")
         i = get_output(mn_del_old_rbillbl())
         cqueasy("Deleting old restaurant bills", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old restaurant journals")
         cqueasy("Deleting old rest.journals", "PROCESS")
         i, j = get_output(mn_del_old_rjournalbl())
         cqueasy("Deleting old rest.journals", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old bon journals")
         cqueasy("Deleting old rest.journals", "PROCESS")
         get_output(mn_del_old_bonsbl())
         cqueasy("Deleting old rest.journals", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old outlet turnovers")
         cqueasy("Deleting old outlet turnovers", "PROCESS")
         i = get_output(mn_del_old_outlet_umsatzbl())
         cqueasy("Deleting old outlet turnovers", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old calls")
         cqueasy("Deleting old calls", "PROCESS")
         i = get_output(mn_del_old_callsbl())
         cqueasy("Deleting old calls", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old purchase orders")
         cqueasy("Deleting old purchase orders", "PROCESS")
         i = get_output(mn_del_old_pobl())
         cqueasy("Deleting old purchase orders", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old stock moving journals")
         cqueasy("Deleted old stock moving journals", "PROCESS")
         i, j = get_output(mn_del_old_l_opbl())
         cqueasy("Deleted old stock moving journals", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old statistics")
         cqueasy("Deleting old room number statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(1))
         cqueasy("Deleting old room number statistics", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old statistics")
         cqueasy("Deleting old room catagory statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(2))
         cqueasy("Deleting old room catagory statistics", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old statistics")
         cqueasy("Deleting old room catagory statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(3))
         cqueasy("Deleting old source statistics", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old statistics")
         cqueasy("Deleting old segment statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(4))
         cqueasy("Deleting old segment statistics", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old statistics")
         cqueasy("Deleting old market segment statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(41))
         cqueasy("Deleting old market segment statistics", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old statistics")
         cqueasy("Deleting old nation statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(5))
         cqueasy("Deleting old nation statistics", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old statistics")    
         cqueasy("Deleting old turnover statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(6))
         cqueasy("Deleting old turnover statistics", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old statistics")
         cqueasy("Deleting old restaurant turnover statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(7))
         cqueasy("Deleting old restaurant turnover statistics", "DONE")
+
+
+        log_process(270001, "- midnite_prog, deleting old statistics")
         cqueasy("Deleting old F&B Costs", "PROCESS")
         i, j = get_output(mn_del_old_statbl(8))
         cqueasy("Deleting old F&B Costs", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old statistics")
         cqueasy("Deleting old Exchange Rates", "PROCESS")
         i, j = get_output(mn_del_old_statbl(9))
         cqueasy("Deleting old Exchange Rates", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting expired allotments")
         cqueasy("Deleting expired allotments", "PROCESS")
         del_allotment()
         cqueasy("Deleting expired allotments", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old statistics")
         cqueasy("Deleting old DML-Articles", "PROCESS")
         i, j = get_output(mn_del_old_statbl(999))
         cqueasy("Deleting old DML-Articles", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old interface records")
         cqueasy("Deleting old Interface Records", "PROCESS")
         get_output(mn_del_interfacebl(1))
         cqueasy("Deleting old Interface Records", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old nite store records")
         cqueasy("Deleting old nithist Records", "PROCESS")
         get_output(mn_del_nitehistbl())
         cqueasy("Deleting old nithist Records", "DONE")
 
         if banquet_license:
+            log_process(270001, "- midnite_prog, deleting old banquet reservations")
             cqueasy("Deleted old Banquet Reservations", "PROCESS")
             i = get_output(mn_del_old_baresbl())
             cqueasy("Deleted old Banquet Reservations", "DONE")
+
+        log_process(270001, "- midnite_prog, updating logfile records")
         cqueasy("Updating logfile records", "PROCESS")
         get_output(mn_update_logfile_recordsbl())
         cqueasy("Updating logfile records", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old F&B compliments")
         cqueasy("Deleting old F&B Compliments", "PROCESS")
         i = get_output(mn_del_oldbl(1))
         cqueasy("Deleting old F&B Compliments", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old work order records")
         cqueasy("Deleting old Work Order Records", "PROCESS")
         i = get_output(mn_del_oldbl(2))
         cqueasy("Deleting old Work Order Records", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old Housekeeping records")
         cqueasy("Deleting old Quotation Attachment Records", "PROCESS")
         i = get_output(mn_del_oldbl(4))
-        # cqueasy("Deleting old Quotation Attachment Records", "DONE")
-        # get_output(mn_club_softwarebl())
+        cqueasy("Deleting old Quotation Attachment Records", "DONE")
+
+        log_process(270001, "- midnite_prog, deleting old mn_club_softwarebl records")
+        get_output(mn_club_softwarebl())
+        log_process(270001, "- midnite_prog, club software updates done")
 
 
     def del_allotment():
@@ -350,14 +439,15 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
 
         nonlocal printer_nr, success_flag, mn_stopped, stop_it, arrival_guest, msg_str, mess_str, crm_license, banquet_license, na_date1, na_time1, na_name1, mnstart_flag, store_flag, billdate, na_date, na_time, na_name, lic_nr, paramtext, queasy
         nonlocal language_code, htparam_recid, user_init, ans_arrguest
-
-
         nonlocal na_list, t_nightaudit
         nonlocal na_list_data, t_nightaudit_data
-
-        queasy = get_cache (Queasy, {"key": [(eq, 232)],"char2": [(eq, bezeich)],"date1": [(eq, get_current_date())]})
+        # print(f"cqueasy called with bezeich: {bezeich}, str_process: {str_process}")
+        # queasy = get_cache (Queasy, {"key": [(eq, 232)],"char2": [(eq, bezeich)],"date1": [(eq, get_current_date())]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 232) & (Queasy.char2 == bezeich) & (Queasy.date1 == date.today())).first()
 
         if not queasy:
+            # print(f"Creating new queasy record for bezeich: {bezeich}")
             queasy = Queasy()
             db_session.add(queasy)
 
@@ -370,16 +460,18 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
 
 
         else:
+            # print(f"Updating existing queasy record for bezeich: {bezeich}")
             pass
             queasy.char3 = str_process
 
-
             pass
             pass
 
 
 
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
+    # paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
+    paramtext = db_session.query(Paramtext).filter(
+             (Paramtext.txtnr == 243)).first()
     log_process(270001,"Retrieving license number from Paramtext record 243")
     if paramtext:
         lic_nr = decode_string(paramtext.ptexte)
@@ -392,16 +484,29 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         log_process(270001, "Retrieving arrival guest information")
         mn_stopped, stop_it, arrival_guest, msg_str, mess_str, crm_license, banquet_license, na_list_data = get_output(prepare_mn_startbl(2, language_code))
 
+    print("Starting na_start_web2bl,2", mn_stopped)
+    log_process(270001, "Starting na_start_web2bl,2")
     if mn_stopped:
+        print("MN stopped, exiting NA start")
+        log_process(270001, "Stop -> Retrieving arrival guest information")
         pass
     else:
+        print("MN continuing NA start")
         log_process(270001, "Starting midnight programs")
         midnite_prog()
         log_process(270001, "Changing system dates")
         get_output(mn_chg_sysdatesbl())
         mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date1, na_time1, na_name1 = get_output(na_startbl(2, user_init, htparam_recid))
 
+    print("->NA Programs")
+    # for t_nightaudit in t_nightaudit_data:
+    #     # log_process(270001, f"List Nightaudit Program: {t_nightaudit.bezeichnung}")
+    #     print("Nightaudit Program:", t_nightaudit.bezeichnung)
+
+    log_process(270001, "Starting NA programs")
     na_prog()
+    print("<-NA Programs")
+    log_process(270001, "Completed NA programs")
     mnstart_flag, store_flag, printer_nr, t_nightaudit_data, na_date, na_time, na_name = get_output(na_startbl(3, user_init, htparam_recid))
     success_flag = True
 

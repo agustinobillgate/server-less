@@ -1234,7 +1234,7 @@ def sall_onhand_btn_go1_webbl(all_flag:bool, show_price:bool, zero_flag:bool, fr
         # Rd, 14/8/2025
         # soh_list.act_qty =  to_decimal(to_decimal(output_list.act_qty) )
         # soh_list.act_val =  to_decimal(to_decimal(output_list.act_val) )
-        print("act_qty:", output_list.act_qty, ":", output_list.act_val)
+        # print("act_qty:", output_list.act_qty, ":", output_list.act_val)
         soh_list.act_qty =  to_decimal(output_list.act_qty) 
         soh_list.act_val =  to_decimal(output_list.act_val) 
         soh_list.cont1 = output_list.cont1

@@ -1,9 +1,13 @@
 #using conversion tools version: 1.0.0.117
 
-# ====================
+# =======================================
 # Rulita, 29-10-2025
 # - Recompile program
-# ====================
+
+# Rulita, 10-11-2025
+# Fixing to_string table guest
+# Fixing data_list.rmNo -> data_list.rmno
+# =======================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -175,7 +179,7 @@ def nt_revinatesurvey():
         data_list.city = gmember.wohnort
         data_list.propid = propid
         data_list.concode = to_string(res_line.resnr) + to_string(res_line.reslinnr, "999")
-        data_list.rsv_name = guest.name + " " + guest.anredefirma
+        data_list.rsv_name = to_string(guest.name) + " " + to_string(guest.anredefirma)
         data_list.ci_id = res_line.cancelled_id
         data_list.co_id = res_line.changed_id
         data_list.rmrate =  to_decimal(res_line.zipreis)
@@ -229,7 +233,7 @@ def nt_revinatesurvey():
 
     for data_list in query(data_list_data, sort_by=[("ci_date",False)]):
         i_counter = i_counter + 1
-        outstr = to_string(data_list.guest_title) + "|" + to_string(data_list.first_name) + "|" + to_string(data_list.last_name) + "|" + to_string(data_list.city) + "|" + to_string(data_list.email) + "|" + to_string(data_list.nation) + "|" + to_string(data_list.ci_date) + "|" + to_string(data_list.co_date) + "|" + to_string(data_list.rmNo) + "|" + to_string(data_list.propid) + "|" + to_string(data_list.concode) + "|" + to_string(data_list.mobile) + "|" + to_string(data_list.rmrate) + "|" + to_string(data_list.rsv_name) + "|" + to_string(data_list.rcode) + "|" + to_string(data_list.country) + "|" + to_string(data_list.ci_id) + "|" + to_string(data_list.co_id) + "|" + to_string(data_list.rsvstatus) + "|" + to_string(data_list.rmtype)
+        outstr = to_string(data_list.guest_title) + "|" + to_string(data_list.first_name) + "|" + to_string(data_list.last_name) + "|" + to_string(data_list.city) + "|" + to_string(data_list.email) + "|" + to_string(data_list.nation) + "|" + to_string(data_list.ci_date) + "|" + to_string(data_list.co_date) + "|" + to_string(data_list.rmno) + "|" + to_string(data_list.propid) + "|" + to_string(data_list.concode) + "|" + to_string(data_list.mobile) + "|" + to_string(data_list.rmrate) + "|" + to_string(data_list.rsv_name) + "|" + to_string(data_list.rcode) + "|" + to_string(data_list.country) + "|" + to_string(data_list.ci_id) + "|" + to_string(data_list.co_id) + "|" + to_string(data_list.rsvstatus) + "|" + to_string(data_list.rmtype)
         add_line(outstr, i_counter)
         create_reviewpro_data(outstr)
 
