@@ -9,18 +9,18 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-# from functions.fo_invoice_open_bill_cld_2bl import fo_invoice_open_bill_cld_2bl
+# from functions.fo_invoice_open_bill_cld_1bl import fo_invoice_open_bill_cld_1bl
 # from functions.fo_invoice_fill_rescommentbl import fo_invoice_fill_rescommentbl
 # from functions.fo_invoice_disp_totbalancebl import fo_invoice_disp_totbalancebl
 # from functions.fo_invoice_disp_bill_line_cldbl import fo_invoice_disp_bill_line_cldbl
-from functions_py.fo_invoice_open_bill_cld_2bl import fo_invoice_open_bill_cld_2bl
+from functions_py.fo_invoice_open_bill_cld_1bl import fo_invoice_open_bill_cld_1bl
 from functions_py.fo_invoice_fill_rescommentbl import fo_invoice_fill_rescommentbl
 from functions_py.fo_invoice_disp_totbalancebl import fo_invoice_disp_totbalancebl
 from functions_py.fo_invoice_disp_bill_line_cldbl import fo_invoice_disp_bill_line_cldbl
 from models import Bill, Res_line, Bill_line
 
 
-def fo_inv_openbill_list_web_1bl(bil_flag: int, bil_recid: int, room: str, vipflag: bool, fill_co: bool, double_currency: bool, foreign_rate: bool):
+def fo_inv_openbill_list_webbl(bil_flag: int, bil_recid: int, room: str, vipflag: bool, fill_co: bool, double_currency: bool, foreign_rate: bool):
     abreise = None
     resname = ""
     res_exrate = to_decimal("0.0")
@@ -40,7 +40,6 @@ def fo_inv_openbill_list_web_1bl(bil_flag: int, bil_recid: int, room: str, vipfl
     balance_foreign = to_decimal("0.0")
     tot_balance = to_decimal("0.0")
     guest_taxcode = ""
-    repeat_charge = False
     t_res_line_data = []
     t_bill_data = []
     spbill_list_data = []
@@ -83,7 +82,7 @@ def fo_inv_openbill_list_web_1bl(bil_flag: int, bil_recid: int, room: str, vipfl
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal abreise, resname, res_exrate, zimmer_bezeich, kreditlimit, master_str, master_rechnr, bill_anzahl, queasy_char1, disp_warning, flag_report, rescomment, printed, rechnr, rmrate, balance, balance_foreign, tot_balance, guest_taxcode, repeat_charge, t_res_line_data, t_bill_data, spbill_list_data, t_bill_line_data, bill, res_line, bill_line
+        nonlocal abreise, resname, res_exrate, zimmer_bezeich, kreditlimit, master_str, master_rechnr, bill_anzahl, queasy_char1, disp_warning, flag_report, rescomment, printed, rechnr, rmrate, balance, balance_foreign, tot_balance, guest_taxcode, t_res_line_data, t_bill_data, spbill_list_data, t_bill_line_data, bill, res_line, bill_line
         nonlocal bil_flag, bil_recid, room, vipflag, fill_co, double_currency, foreign_rate
         nonlocal t_bill, t_res_line, spbill_list, t_bill_line
         nonlocal t_bill_data, t_res_line_data, spbill_list_data, t_bill_line_data
@@ -108,7 +107,6 @@ def fo_inv_openbill_list_web_1bl(bil_flag: int, bil_recid: int, room: str, vipfl
             "balance_foreign": balance_foreign,
             "tot_balance": tot_balance,
             "guest_taxcode": guest_taxcode,
-            "repeat_charge": repeat_charge,
             "t-res-line": t_res_line_data,
             "t-bill": t_bill_data,
             "spbill-list": spbill_list_data,
@@ -116,7 +114,7 @@ def fo_inv_openbill_list_web_1bl(bil_flag: int, bil_recid: int, room: str, vipfl
         }
 
     def disp_bill_line():
-        nonlocal abreise, resname, res_exrate, zimmer_bezeich, kreditlimit, master_str, master_rechnr, bill_anzahl, queasy_char1, disp_warning, flag_report, rescomment, printed, rechnr, rmrate, balance, balance_foreign, tot_balance, guest_taxcode, repeat_charge, t_res_line_data, t_bill_data, spbill_list_data, t_bill_line_data, bill, res_line, bill_line
+        nonlocal abreise, resname, res_exrate, zimmer_bezeich, kreditlimit, master_str, master_rechnr, bill_anzahl, queasy_char1, disp_warning, flag_report, rescomment, printed, rechnr, rmrate, balance, balance_foreign, tot_balance, guest_taxcode, t_res_line_data, t_bill_data, spbill_list_data, t_bill_line_data, bill, res_line, bill_line
         nonlocal bil_flag, bil_recid, room, vipflag, fill_co, double_currency, foreign_rate
         nonlocal t_bill, t_res_line, spbill_list, t_bill_line
         nonlocal t_bill_data, t_res_line_data, spbill_list_data, t_bill_line_data
@@ -124,45 +122,42 @@ def fo_inv_openbill_list_web_1bl(bil_flag: int, bil_recid: int, room: str, vipfl
         t_bill_line_data, spbill_list_data = get_output(
             fo_invoice_disp_bill_line_cldbl(bil_recid, double_currency))
 
-    abreise, resname, res_exrate, zimmer_bezeich, kreditlimit, master_str, master_rechnr, bill_anzahl, queasy_char1, disp_warning, flag_report, guest_taxcode, repeat_charge, t_res_line_data, t_bill_data = get_output(
-        fo_invoice_open_bill_cld_2bl(bil_flag, bil_recid, room, vipflag))
+    abreise, resname, res_exrate, zimmer_bezeich, kreditlimit, master_str, master_rechnr, bill_anzahl, queasy_char1, disp_warning, flag_report, guest_taxcode, t_res_line_data, t_bill_data = get_output(
+        fo_invoice_open_bill_cld_1bl(bil_flag, bil_recid, room, vipflag))
+    rescomment = get_output(fo_invoice_fill_rescommentbl(bil_recid, fill_co))
 
     t_bill = query(t_bill_data, first=True)
 
-    t_res_line = query(t_res_line_data, first=True)
-    rescomment = get_output(fo_invoice_fill_rescommentbl(bil_recid, fill_co))
+    if t_bill:
+        t_res_line = query(t_res_line_data, first=True)
 
-    if t_bill.rgdruck == 0:
-        printed = ""
-    else:
-        printed = "*"
-    rechnr = t_bill.rechnr
-    rmrate = to_decimal("0")
-
-    if t_res_line:
-        rmrate = to_decimal(t_res_line.zipreis)
-    balance = to_decimal(t_bill.saldo)
-
-    if double_currency or foreign_rate:
-        balance_foreign = to_decimal(t_bill.mwst[98])
-
-    if bil_flag == 0:
-        tot_balance = to_decimal("0")
-
-        if t_bill.parent_nr == 0:
-            tot_balance = to_decimal(t_bill.saldo)
+        if t_bill.rgdruck == 0:
+            printed = ""
         else:
-            tot_balance = get_output(fo_invoice_disp_totbalancebl(bil_recid))
-    spbill_list_data.clear()
-    disp_bill_line()
+            printed = "*"
+        rechnr = t_bill.rechnr
+        rmrate = to_decimal("0")
 
-# start - ITA: Program terkait feature service apartment
-    for t_bill_line in query(t_bill_line_data, filters=(lambda t_bill_line: t_bill_line.bjournal)):
-        balance = to_decimal(balance) + to_decimal(t_bill_line.betrag)
-        tot_balance = to_decimal(tot_balance) + to_decimal(t_bill_line.betrag)
-# end - ITA: Program terkait feature service apartment
+        if t_res_line:
+            rmrate = to_decimal(t_res_line.zipreis)
+        balance = to_decimal(t_bill.saldo)
 
-    balance = to_decimal(round(balance, 0))
-    tot_balance = to_decimal(round(tot_balance, 0))
+        if double_currency or foreign_rate:
+            balance_foreign = to_decimal(t_bill.mwst[98])
 
+        if bil_flag == 0:
+            tot_balance = to_decimal("0")
+
+            if t_bill.parent_nr == 0:
+                tot_balance = to_decimal(t_bill.saldo)
+            else:
+                tot_balance = get_output(
+                    fo_invoice_disp_totbalancebl(bil_recid))
+        spbill_list_data.clear()
+        disp_bill_line()
+        
+        # start - ITA: Program terkait feature service apartment
+        balance = to_decimal(round(balance, 0))
+        tot_balance = to_decimal(round(tot_balance, 0))
+        # end - ITA: Program terkait feature service apartment
     return generate_output()
