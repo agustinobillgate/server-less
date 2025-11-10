@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 #-----------------------------------------
 # Rd, 17-July-25
 # re download gitlab, 
@@ -52,6 +52,10 @@ def prepare_chg_po_1bl(pvilanguage:int, docu_nr:string, lief_nr:int):
     t_parameters_data = []
     q245_data = []
     lvcarea:string = "chg-po"
+    unit_price:Decimal = to_decimal("0.0")
+    unit_vatvalue:Decimal = to_decimal("0.0")
+    unit_disc1value:Decimal = to_decimal("0.0")
+    unit_disc2value:Decimal = to_decimal("0.0")
     l_artikel = l_order = l_orderhdr = waehrung = htparam = l_lieferant = queasy = parameters = None
 
     disc_list = l_art = s_order = t_l_art = t_l_orderhdr = t_l_order = t_waehrung = t_parameters = q245 = None
@@ -71,7 +75,7 @@ def prepare_chg_po_1bl(pvilanguage:int, docu_nr:string, lief_nr:int):
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal local_nr, potype, enforce_rflag, release_flag, prev_flag, pr, crterm, lieferdatum, bestellart, comments, supplier, curr_liefnr, deptnr, ordername, deptname, billdate, t_amount, msg_str, p_1093, p_464, p_220, p_266, p_app, t_l_art_data, s_order_data, disc_list_data, t_l_orderhdr_data, t_waehrung_data, t_l_order_data, t_parameters_data, q245_data, lvcarea, l_artikel, l_order, l_orderhdr, waehrung, htparam, l_lieferant, queasy, parameters
+        nonlocal local_nr, potype, enforce_rflag, release_flag, prev_flag, pr, crterm, lieferdatum, bestellart, comments, supplier, curr_liefnr, deptnr, ordername, deptname, billdate, t_amount, msg_str, p_1093, p_464, p_220, p_266, p_app, t_l_art_data, s_order_data, disc_list_data, t_l_orderhdr_data, t_waehrung_data, t_l_order_data, t_parameters_data, q245_data, lvcarea, unit_price, unit_vatvalue, unit_disc1value, unit_disc2value, l_artikel, l_order, l_orderhdr, waehrung, htparam, l_lieferant, queasy, parameters
         nonlocal pvilanguage, docu_nr, lief_nr
         nonlocal l_art
 
@@ -83,7 +87,7 @@ def prepare_chg_po_1bl(pvilanguage:int, docu_nr:string, lief_nr:int):
 
     def cal_tamount():
 
-        nonlocal local_nr, potype, enforce_rflag, release_flag, prev_flag, pr, crterm, lieferdatum, bestellart, comments, supplier, curr_liefnr, deptnr, ordername, deptname, billdate, t_amount, msg_str, p_1093, p_464, p_220, p_266, p_app, t_l_art_data, s_order_data, disc_list_data, t_l_orderhdr_data, t_waehrung_data, t_l_order_data, t_parameters_data, q245_data, lvcarea, l_artikel, l_order, l_orderhdr, waehrung, htparam, l_lieferant, queasy, parameters
+        nonlocal local_nr, potype, enforce_rflag, release_flag, prev_flag, pr, crterm, lieferdatum, bestellart, comments, supplier, curr_liefnr, deptnr, ordername, deptname, billdate, t_amount, msg_str, p_1093, p_464, p_220, p_266, p_app, t_l_art_data, s_order_data, disc_list_data, t_l_orderhdr_data, t_waehrung_data, t_l_order_data, t_parameters_data, q245_data, lvcarea, unit_price, unit_vatvalue, unit_disc1value, unit_disc2value, l_artikel, l_order, l_orderhdr, waehrung, htparam, l_lieferant, queasy, parameters
         nonlocal pvilanguage, docu_nr, lief_nr
         nonlocal l_art
 
@@ -154,10 +158,11 @@ def prepare_chg_po_1bl(pvilanguage:int, docu_nr:string, lief_nr:int):
 
             disc_list.disc_val = to_decimal(substring(s_order.quality, 18, 18))
             disc_list.disc2_val = to_decimal(substring(s_order.quality, 36, 18))
-            disc_list.vat_val = to_decimal(substring(s_order.quality, 54))
+            disc_list.vat_val = to_decimal(substring(s_order.quality, 54, 18))
 
 
-            disc_list.brutto = ( to_decimal(s_order.warenwert) + to_decimal(disc_list.disc_val) + to_decimal(disc_list.disc2_val)) - to_decimal(disc_list.vat_val)
+            disc_list.price0 = to_decimal(substring(s_order.quality, 72, 18))
+            disc_list.brutto = to_decimal(substring(s_order.quality, 90, 18))
             
             # Rd, 4/9/2025
             # disc_list.price0 =  to_decimal(disc_list.brutto) / to_decimal(s_order.anzahl)
@@ -165,6 +170,20 @@ def prepare_chg_po_1bl(pvilanguage:int, docu_nr:string, lief_nr:int):
 
             if disc_list.price0 == None:
                 disc_list.price0 =  to_decimal("0")
+
+            if disc_list.price0 == 0 and disc_list.brutto == 0 and s_order.warenwert != 0 and s_order.anzahl != 0:
+                unit_price =  safe_divide(to_decimal(s_order.warenwert), to_decimal(s_order.anzahl))
+                unit_vatvalue =  safe_divide(to_decimal(disc_list.vat_val), to_decimal(s_order.anzahl))
+                unit_disc1value =  to_decimal(disc_list.disc_val)
+                unit_disc2value =  to_decimal(disc_list.disc2_val)
+                disc_list.price0 =  to_decimal(unit_price) - to_decimal(unit_vatvalue)
+                disc_list.price0 =  to_decimal(disc_list.price0) + to_decimal(disc_list.disc_val) + to_decimal(disc_list.disc2_val)
+
+                if disc_list.price0 == None:
+                    disc_list.price0 =  to_decimal("0")
+
+
+                disc_list.brutto =  to_decimal(disc_list.price0) * to_decimal(s_order.anzahl)
 
 
     p_266 = get_output(htpint(266))
@@ -186,9 +205,15 @@ def prepare_chg_po_1bl(pvilanguage:int, docu_nr:string, lief_nr:int):
 
     l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, lief_nr)]})
     # Rd, 17-July-25
-    if l_lieferant is None:
-        return generate_output()
-
+    # if l_lieferant is None:
+    #     return generate_output()
+    if l_lieferant:
+        tmp_l_lieferant_firma = l_lieferant.firma
+        tmp_l_lieferant_wohnort = l_lieferant.wohnort
+    else:
+        tmp_l_lieferant_firma = None
+        tmp_l_lieferant_wohnort = None
+        
     l_orderhdr = get_cache (L_orderhdr, {"docu_nr": [(eq, docu_nr)]})
 
     if l_orderhdr:
@@ -213,15 +238,22 @@ def prepare_chg_po_1bl(pvilanguage:int, docu_nr:string, lief_nr:int):
 
         l_order = get_cache (L_order, {"docu_nr": [(eq, docu_nr)],"lief_nr": [(eq, lief_nr)],"pos": [(eq, 0)]})
         # Rd, 17-July-25
-        if l_order is None:
-            return generate_output()
+        # if l_order is None:
+        #     return generate_output()
+        if l_order:
+            tmp_pr = l_order.lief_fax[0]
+        else:
+            tmp_pr = None
         
-        pr = l_order.lief_fax[0]
+        pr = tmp_pr
         crterm = l_orderhdr.angebot_lief[1]
         lieferdatum = l_orderhdr.lieferdatum
         bestellart = l_orderhdr.bestellart
         comments = l_orderhdr.lief_fax[2]
-        supplier = l_lieferant.firma + " - " + l_lieferant.wohnort
+        if tmp_l_lieferant_firma == None or tmp_l_lieferant_wohnort == None:
+            supplier = None
+        else:
+            supplier = l_lieferant.firma + " - " + l_lieferant.wohnort
         curr_liefnr = lief_nr
         deptnr = l_orderhdr.angebot_lief[0]
         ordername = l_orderhdr.lief_fax[1]
