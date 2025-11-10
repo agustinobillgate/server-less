@@ -1,4 +1,3 @@
-.gitignore
 .venv
 lenv
 __pycache__

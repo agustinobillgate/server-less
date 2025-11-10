@@ -1,11 +1,14 @@
 #using conversion tools version: 1.0.0.117
 """_yusufwijasena_22/10/2025
+    updated_07/11/2025
 
     TicketID: 698860
         _remark_:   - changed import from functions to functions_py 
                     - character_conversionbl not found
                     - fix var declaration
                     - chagned string to str
+    TicketID: 5C46F2
+        _remark_:   - update from ITA: BFC578
 """
 from functions.additional_functions import *
 from decimal import Decimal
@@ -148,11 +151,11 @@ def ascottrpt_reservation2bl(datum:date, propid:str, data_list_data:Data_list):
     cancel_loop:int = 0
     billflag:bool = False
     do_it:bool = False
-    resv_date:date 
-    rsv_date:date 
-    to_date:date 
-    datum1:date 
-    afterdatum1:date 
+    resv_date:date = None
+    rsv_date:date = None
+    to_date:date = None
+    datum1:date = None
+    afterdatum1:date = None
     flodging = to_decimal("0.0")
     lodging = to_decimal("0.0")
     breakfast = to_decimal("0.0")
@@ -191,8 +194,8 @@ def ascottrpt_reservation2bl(datum:date, propid:str, data_list_data:Data_list):
     fact2:Decimal = to_decimal("0.0")
     vat1 = to_decimal("0.0")
     service1 = to_decimal("0.0")
-    bill_date:date 
-    todate:date 
+    bill_date:date = None
+    todate:date = None
     curr_time = 0
     counter:int = 0
     startdate:date 
@@ -240,7 +243,7 @@ def ascottrpt_reservation2bl(datum:date, propid:str, data_list_data:Data_list):
         inewyear:int = 0
         inewmonth:int = 0
         imaxday:int = 0
-        dnewdate:date
+        dnewdate:date = None
         iyear = get_year(pdate)
         imonth = get_month(pdate)
         iday = get_day(pdate)
@@ -317,14 +320,14 @@ def ascottrpt_reservation2bl(datum:date, propid:str, data_list_data:Data_list):
         nonlocal gmember, gcomp, rqueasy, qsy19, qsy2, buffart, datalist, qsy231, qsy289, t_datalist
         nonlocal data_list, gmember, gcomp, rqueasy, qsy19, qsy2, buffart, datalist, qsy231, qsy289, t_datalist
 
-        curr_3month:date 
+        curr_3month:date = None
         bsegment = None
         Bsegment =  create_buffer("Bsegment",Segment)
 
-        if session_date_format() == ("dmy") :
+        if session_date_format() == "dmy" :
             resv_date = date_mdy(substring(res_line.reserve_char, 6, 2) + "/" + substring(res_line.reserve_char, 3, 2) + "/" + substring(res_line.reserve_char, 0, 2))
 
-        elif session_date_format() == ("mdy") :
+        elif session_date_format() == "mdy" :
             resv_date = date_mdy(substring(res_line.reserve_char, 3, 2) + "/" + substring(res_line.reserve_char, 6, 2) + "/" + substring(res_line.reserve_char, 0, 2))
         else:
             resv_date = date_mdy(substring(res_line.reserve_char, 0, 8))
@@ -559,15 +562,15 @@ def ascottrpt_reservation2bl(datum:date, propid:str, data_list_data:Data_list):
                     data_list.bookstatus = "CANCEL"
                 data_list.canceldate = "-"
 
-                if res_line.cancelled != None:
-                    data_list.canceldate = to_string(get_year(res_line.cancelled) , "9999") + "-" + to_string(get_month(res_line.cancelled) , "99") + "-" + to_string(get_day(res_line.cancelled) , "99") + " 00:00:00"
+                if res_line.cancelled is not None:
+                    data_list.canceldate = to_string(get_year(res_line.cancelled) , "9999") + "-" + to_string(get_month(res_line.cancelled) , "99") + "-" + to_string(get_day(res_line.cancelled) , "99") # update ITA: BFC578
                 data_list.modify_date = "NULL"
 
-                if res_line.changed != None:
+                if res_line.changed is not None:
                     data_list.modify_date = to_string(get_year(res_line.changed) , "9999") + "-" + to_string(get_month(res_line.changed) , "99") + "-" + to_string(get_day(res_line.changed) , "99")
                 rsv_date = reservation.resdat
 
-                if rsv_date != None:
+                if rsv_date is not None:
                     data_list.bookdate = to_string(get_year(rsv_date) , "9999") + to_string(get_month(rsv_date) , "99") + to_string(get_day(rsv_date) , "99")
                 else:
                     data_list.bookdate = "-"
