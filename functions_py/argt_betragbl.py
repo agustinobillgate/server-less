@@ -1,17 +1,21 @@
 #using conversion tools version: 1.0.0.117
 
-# =======================================
-# Rulita, 24-10-2025
+# # ====================================================================
+# Warning!!!!
+# Program argt_betrag versi python menggunakan program "argt-betrag.p"
+# Bukan yg ada bl.p nya!!!!
+
+# Rulita, 07-11-2025
 # Issue :
 # - New Compile program
-# =======================================
+# # ====================================================================
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Waehrung, Htparam, Res_line, Argt_line, Reservation, Arrangement, Reslin_queasy, Guest_pr, Queasy
 
-def argt_betrag(res_recid:int, argt_recid:int):
+def argt_betragbl(res_recid:int, argt_recid:int):
 
     prepare_cache ([Waehrung, Htparam, Res_line, Argt_line, Reservation, Arrangement, Reslin_queasy, Guest_pr, Queasy])
 
@@ -288,9 +292,13 @@ def argt_betrag(res_recid:int, argt_recid:int):
 
             elif argt_line.vt_percnt == 2:
                 betrag =  to_decimal(reslin_queasy.deci3) * to_decimal(qty)
-        get_exrate1()
 
-        return generate_output()
+        if betrag == 0:
+            add_it = False
+        else:
+            get_exrate1()
+
+            return generate_output()
 
     guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, res_line.gastnr)]})
 
@@ -320,9 +328,13 @@ def argt_betrag(res_recid:int, argt_recid:int):
 
                 elif argt_line.vt_percnt == 2:
                     betrag =  to_decimal(reslin_queasy.deci3) * to_decimal(qty)
-            get_exrate2()
 
-            return generate_output()
+            if betrag == 0:
+                add_it = False
+            else:
+                get_exrate2()
+
+                return generate_output()
 
     if argt_line.betrag > 0:
         betrag =  to_decimal(argt_line.betrag) * to_decimal(qty)

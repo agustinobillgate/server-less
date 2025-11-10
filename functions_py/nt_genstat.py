@@ -1,9 +1,14 @@
 #using conversion tools version: 1.0.0.117
 
-# ============================
+# ========================================================================
 # Rulita, 22-10-2025 
 # Issue : New compile program
-# ============================
+
+# Rulita, 10-11-2025 | 
+# Issue :
+# - Fixing calculate date (genstat.res_date[1] - genstat.res_date[0]).days
+# - find first arrangement add .strip()
+# ========================================================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -395,8 +400,9 @@ def nt_genstat():
                 nationstat.ankkind2 = nationstat.ankkind2 + genstat.kind2
                 nationstat.ankgratis = nationstat.ankgratis + genstat.gratis
 
+            # Rulita, Fixing calculate date genstat.res_date[1] - genstat.res_date[0]
             if genstat.res_date[1] > genstat.res_date[0]:
-                nationstat.dlogkind1 = nationstat.dlogkind1 + genstat.res_date[1] - genstat.res_date[0]
+                nationstat.dlogkind1 = nationstat.dlogkind1 + (genstat.res_date[1] - genstat.res_date[0]).days
             else:
                 nationstat.dlogkind1 = nationstat.dlogkind1 + 1
             nationstat.dlogkind2 = nationstat.dlogkind2 + 1
@@ -859,7 +865,10 @@ def nt_genstat():
 
         reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
 
-        arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+        # Rulita, 10-11-2025
+        # find first arrangement add .strip()
+        # arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+        arrangement = db_session.query(Arrangement).filter((Arrangement.arrangement == res_line.arrangement.strip())).first()
 
         zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
 
