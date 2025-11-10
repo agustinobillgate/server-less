@@ -1,13 +1,13 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP, ROUND_HALF_DOWN
 from datetime import date
-from models import L_artikel, L_pprice, L_lieferant, L_order, L_op
+from models import L_artikel, L_pprice, L_lieferant, L_order, L_op, L_ophis
 
 def pchase_book_btn_go_webbl(sorttype:int, from_date:date, to_date:date, mtd_date:date, mi_ch:string, mi_all:bool, s_artnr:int):
 
-    prepare_cache ([L_artikel, L_pprice, L_lieferant, L_order, L_op])
+    prepare_cache ([L_artikel, L_pprice, L_lieferant, L_order, L_op, L_ophis])
 
     pchase_list_data = []
     tmpart:int = 0
@@ -20,7 +20,7 @@ def pchase_book_btn_go_webbl(sorttype:int, from_date:date, to_date:date, mtd_dat
     tot_qty:Decimal = Decimal("0.0000000")
     t_price:Decimal = Decimal("0.0000000")
     tot_price:Decimal = Decimal("0.0000000")
-    l_artikel = l_pprice = l_lieferant = l_order = l_op = None
+    l_artikel = l_pprice = l_lieferant = l_order = l_op = l_ophis = None
 
     pchase_list = l_art = l_ppr = l_lief = None
 
@@ -30,10 +30,11 @@ def pchase_book_btn_go_webbl(sorttype:int, from_date:date, to_date:date, mtd_dat
     L_ppr = create_buffer("L_ppr",L_pprice)
     L_lief = create_buffer("L_lief",L_lieferant)
 
+
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal pchase_list_data, tmpart, f_date, t_date, datum, lief_nr, artnr, t_qty, tot_qty, t_price, tot_price, l_artikel, l_pprice, l_lieferant, l_order, l_op
+        nonlocal pchase_list_data, tmpart, f_date, t_date, datum, lief_nr, artnr, t_qty, tot_qty, t_price, tot_price, l_artikel, l_pprice, l_lieferant, l_order, l_op, l_ophis
         nonlocal sorttype, from_date, to_date, mtd_date, mi_ch, mi_all, s_artnr
         nonlocal l_art, l_ppr, l_lief
 
@@ -52,13 +53,17 @@ def pchase_book_btn_go_webbl(sorttype:int, from_date:date, to_date:date, mtd_dat
     if mi_ch.lower()  == ("FTD").lower() :
         f_date = from_date
         t_date = to_date
+
+
     else:
         f_date = date_mdy(1, 1, get_year(mtd_date))
         t_date = mtd_date
 
     set_cache(L_pprice, (L_pprice.bestelldatum >= f_date) & (L_pprice.bestelldatum <= t_date) & (L_pprice.anzahl != 0) & (L_pprice.warenwert != 0),[], True,[],["docu_nr"])
 
+
     set_cache(L_order, (L_order.docu_nr.in_(get_cache_value_list(L_pprice, "docu_nr"))),[["docu_nr", "lief_nr", "artnr"]], True,[],[])
+
 
     set_cache(L_op, (L_op.datum >= f_date) & (L_op.datum <= t_date),[["lscheinnr", "lief_nr", "artnr", "datum"], ["docu_nr", "lief_nr", "artnr", "datum"]], True,[],[])
 
@@ -124,16 +129,37 @@ def pchase_book_btn_go_webbl(sorttype:int, from_date:date, to_date:date, mtd_dat
                 l_op = get_cache (L_op, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if not l_op:
+
                     l_op = get_cache (L_op, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if l_op:
+
                     if l_op.docu_nr == l_op.lscheinnr:
                         pchase_list.docu_nr = "Direct Purchase "
                     else:
                         pchase_list.docu_nr = l_op.docu_nr
                         pchase_list.deliv_note = l_op.lscheinnr
+
+
                 else:
-                    pchase_list.docu_nr = l_pprice.docu_nr
+
+                    l_ophis = get_cache (L_ophis, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if not l_ophis:
+
+                        l_ophis = get_cache (L_ophis, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if l_ophis:
+
+                        if l_ophis.docu_nr == l_ophis.lscheinnr:
+                            pchase_list.docu_nr = "Direct Purchase "
+                        else:
+                            pchase_list.docu_nr = l_ophis.docu_nr
+                            pchase_list.deliv_note = l_ophis.lscheinnr
+
+
+                    else:
+                        pchase_list.docu_nr = l_pprice.docu_nr
 
         elif sorttype == 2:
 
@@ -189,16 +215,37 @@ def pchase_book_btn_go_webbl(sorttype:int, from_date:date, to_date:date, mtd_dat
                 l_op = get_cache (L_op, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if not l_op:
+
                     l_op = get_cache (L_op, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if l_op:
+
                     if l_op.docu_nr == l_op.lscheinnr:
                         pchase_list.docu_nr = "Direct Purchase "
                     else:
                         pchase_list.docu_nr = l_op.docu_nr
                         pchase_list.deliv_note = l_op.lscheinnr
+
+
                 else:
-                    pchase_list.docu_nr = l_pprice.docu_nr
+
+                    l_ophis = get_cache (L_ophis, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if not l_ophis:
+
+                        l_ophis = get_cache (L_ophis, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if l_ophis:
+
+                        if l_ophis.docu_nr == l_ophis.lscheinnr:
+                            pchase_list.docu_nr = "Direct Purchase "
+                        else:
+                            pchase_list.docu_nr = l_ophis.docu_nr
+                            pchase_list.deliv_note = l_ophis.lscheinnr
+
+
+                    else:
+                        pchase_list.docu_nr = l_pprice.docu_nr
 
         elif sorttype == 3:
 
@@ -255,17 +302,37 @@ def pchase_book_btn_go_webbl(sorttype:int, from_date:date, to_date:date, mtd_dat
                 l_op = get_cache (L_op, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if not l_op:
+
                     l_op = get_cache (L_op, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if l_op:
+
                     if l_op.docu_nr == l_op.lscheinnr:
                         pchase_list.docu_nr = "Direct Purchase "
                     else:
                         pchase_list.docu_nr = l_op.docu_nr
                         pchase_list.deliv_note = l_op.lscheinnr
-                else:
-                    pchase_list.docu_nr = l_pprice.docu_nr
 
+
+                else:
+
+                    l_ophis = get_cache (L_ophis, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if not l_ophis:
+
+                        l_ophis = get_cache (L_ophis, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if l_ophis:
+
+                        if l_ophis.docu_nr == l_ophis.lscheinnr:
+                            pchase_list.docu_nr = "Direct Purchase "
+                        else:
+                            pchase_list.docu_nr = l_ophis.docu_nr
+                            pchase_list.deliv_note = l_ophis.lscheinnr
+
+
+                    else:
+                        pchase_list.docu_nr = l_pprice.docu_nr
         else:
 
             l_pprice_obj_list = {}
@@ -321,6 +388,7 @@ def pchase_book_btn_go_webbl(sorttype:int, from_date:date, to_date:date, mtd_dat
                 l_op = get_cache (L_op, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if not l_op:
+
                     l_op = get_cache (L_op, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if l_op:
@@ -330,9 +398,27 @@ def pchase_book_btn_go_webbl(sorttype:int, from_date:date, to_date:date, mtd_dat
                     else:
                         pchase_list.docu_nr = l_op.docu_nr
                         pchase_list.deliv_note = l_op.lscheinnr
-                else:
-                    pchase_list.docu_nr = l_pprice.docu_nr
 
+
+                else:
+
+                    l_ophis = get_cache (L_ophis, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if not l_ophis:
+
+                        l_ophis = get_cache (L_ophis, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, s_artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if l_ophis:
+
+                        if l_ophis.docu_nr == l_ophis.lscheinnr:
+                            pchase_list.docu_nr = "Direct Purchase "
+                        else:
+                            pchase_list.docu_nr = l_ophis.docu_nr
+                            pchase_list.deliv_note = l_ophis.lscheinnr
+
+
+                    else:
+                        pchase_list.docu_nr = l_pprice.docu_nr
         pchase_list = Pchase_list()
         pchase_list_data.append(pchase_list)
 
@@ -404,16 +490,37 @@ def pchase_book_btn_go_webbl(sorttype:int, from_date:date, to_date:date, mtd_dat
                 l_op = get_cache (L_op, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if not l_op:
+
                     l_op = get_cache (L_op, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if l_op:
+
                     if l_op.docu_nr == l_op.lscheinnr:
                         pchase_list.docu_nr = "Direct Purchase "
                     else:
                         pchase_list.docu_nr = l_op.docu_nr
                         pchase_list.deliv_note = l_op.lscheinnr
+
+
                 else:
-                    pchase_list.docu_nr = l_pprice.docu_nr
+
+                    l_ophis = get_cache (L_ophis, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if not l_ophis:
+
+                        l_ophis = get_cache (L_ophis, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if l_ophis:
+
+                        if l_ophis.docu_nr == l_ophis.lscheinnr:
+                            pchase_list.docu_nr = "Direct Purchase "
+                        else:
+                            pchase_list.docu_nr = l_ophis.docu_nr
+                            pchase_list.deliv_note = l_ophis.lscheinnr
+
+
+                    else:
+                        pchase_list.docu_nr = l_pprice.docu_nr
 
         elif sorttype == 2:
 
@@ -469,16 +576,37 @@ def pchase_book_btn_go_webbl(sorttype:int, from_date:date, to_date:date, mtd_dat
                 l_op = get_cache (L_op, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if not l_op:
+
                     l_op = get_cache (L_op, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if l_op:
+
                     if l_op.docu_nr == l_op.lscheinnr:
                         pchase_list.docu_nr = "Direct Purchase "
                     else:
                         pchase_list.docu_nr = l_op.docu_nr
                         pchase_list.deliv_note = l_op.lscheinnr
+
+
                 else:
-                    pchase_list.docu_nr = l_pprice.docu_nr
+
+                    l_ophis = get_cache (L_ophis, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if not l_ophis:
+
+                        l_ophis = get_cache (L_ophis, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if l_ophis:
+
+                        if l_ophis.docu_nr == l_ophis.lscheinnr:
+                            pchase_list.docu_nr = "Direct Purchase "
+                        else:
+                            pchase_list.docu_nr = l_ophis.docu_nr
+                            pchase_list.deliv_note = l_ophis.lscheinnr
+
+
+                    else:
+                        pchase_list.docu_nr = l_pprice.docu_nr
 
         elif sorttype == 3:
 
@@ -547,8 +675,24 @@ def pchase_book_btn_go_webbl(sorttype:int, from_date:date, to_date:date, mtd_dat
 
 
                 else:
-                    pchase_list.docu_nr = l_pprice.docu_nr
-        
+
+                    l_ophis = get_cache (L_ophis, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if not l_ophis:
+
+                        l_ophis = get_cache (L_ophis, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if l_ophis:
+
+                        if l_ophis.docu_nr == l_ophis.lscheinnr:
+                            pchase_list.docu_nr = "Direct Purchase "
+                        else:
+                            pchase_list.docu_nr = l_ophis.docu_nr
+                            pchase_list.deliv_note = l_ophis.lscheinnr
+
+
+                    else:
+                        pchase_list.docu_nr = l_pprice.docu_nr
         else:
 
             l_pprice_obj_list = {}
@@ -603,17 +747,37 @@ def pchase_book_btn_go_webbl(sorttype:int, from_date:date, to_date:date, mtd_dat
                 l_op = get_cache (L_op, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if not l_op:
+
                     l_op = get_cache (L_op, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
 
                 if l_op:
+
                     if l_op.docu_nr == l_op.lscheinnr:
                         pchase_list.docu_nr = "Direct Purchase "
                     else:
                         pchase_list.docu_nr = l_op.docu_nr
                         pchase_list.deliv_note = l_op.lscheinnr
+
+
                 else:
-                    pchase_list.docu_nr = l_pprice.docu_nr
-        
+
+                    l_ophis = get_cache (L_ophis, {"lscheinnr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if not l_ophis:
+
+                        l_ophis = get_cache (L_ophis, {"docu_nr": [(eq, l_pprice.docu_nr)],"lief_nr": [(eq, l_pprice.lief_nr)],"artnr": [(eq, l_pprice.artnr)],"datum": [(eq, l_pprice.bestelldatum)]})
+
+                    if l_ophis:
+
+                        if l_ophis.docu_nr == l_ophis.lscheinnr:
+                            pchase_list.docu_nr = "Direct Purchase "
+                        else:
+                            pchase_list.docu_nr = l_ophis.docu_nr
+                            pchase_list.deliv_note = l_ophis.lscheinnr
+
+
+                    else:
+                        pchase_list.docu_nr = l_pprice.docu_nr
         pchase_list = Pchase_list()
         pchase_list_data.append(pchase_list)
 
