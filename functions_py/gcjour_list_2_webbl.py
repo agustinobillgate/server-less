@@ -293,7 +293,7 @@ def gcjour_list_2_webbl(case_type:int, from_refno:string, sorttype:int, journalt
         else:
             # gl_jouhdr_list.jtype = gl_jouhdr.jtype[gl_jouhdr.jtype - 1]
             jtype_index = gl_jouhdr.jtype - 1  # convert 1-based to 0-based
-            print("Jtype:", jtype_index, gl_jouhdr.jtype)
+            # print("Jtype:", jtype_index, gl_jouhdr.jtype)
             if 0 <= jtype_index < len(jtype):
                 gl_jouhdr_list.jtype = jtype[jtype_index]
             else:

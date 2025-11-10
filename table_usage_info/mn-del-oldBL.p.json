@@ -1,0 +1,34 @@
+{
+    "Htparam": {
+        "read": [
+            "finteger",
+            "fdate",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_compli": {
+        "read": [],
+        "write": []
+    },
+    "Queasy": {
+        "read": [],
+        "write": []
+    },
+    "Kontline": {
+        "read": [],
+        "write": []
+    },
+    "Res_line": {
+        "read": [],
+        "write": []
+    },
+    "L_quote": {
+        "read": [],
+        "write": []
+    },
+    "Guestbook": {
+        "read": [],
+        "write": []
+    }
+}
