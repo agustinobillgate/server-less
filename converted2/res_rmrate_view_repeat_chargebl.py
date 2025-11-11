@@ -69,6 +69,7 @@ def res_rmrate_view_repeat_chargebl(pvilanguage:int, user_init:string, reslin_li
 
         return {"rate_found": rate_found, "ci_date": ci_date, "output-list": output_list_data, "p-list": p_list_data, "curr-add-last": curr_add_last_data, "t-waehrung": t_waehrung_data, "q2-reslin-queasy": q2_reslin_queasy_data, "ratecode-list": ratecode_list_data, "rate_flag": rate_flag, "split_price": split_price}
 
+    # ITA leasing Feature
     def calc_periode():
 
         nonlocal rate_found, ci_date, output_list_data, p_list_data, curr_add_last_data, t_waehrung_data, q2_reslin_queasy_data, ratecode_list_data, rate_flag, split_price, price_decimal, exchg_rate, ct, curr_wabnr, datum, bill_date, co_date, ebdisc_flag, kbdisc_flag, early_flag, kback_flag, curr_zikatnr, rm_rate, lvcarea, found, curr_time, res_line, waehrung, htparam, bediener, arrangement, guest, guest_pr, queasy, reslin_queasy, ratecode
