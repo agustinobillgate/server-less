@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 11/11/2025
+# 
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -133,27 +137,35 @@ def check_pguestbl(pvilanguage:int):
 
             if c_list.nat != "":
 
-                nation = get_cache (Nation, {"kurzbez": [(eq, c_list.nat)]})
+                # nation = get_cache (Nation, {"kurzbez": [(eq, c_list.nat)]})
+                nation = db_session.query(Nation).filter(
+                         (Nation.kurzbez == c_list.nat.strip())).first()
                 c_list.nation_ok = None != nation
 
             if c_list.land != "":
 
-                nation = get_cache (Nation, {"kurzbez": [(eq, c_list.land)]})
+                # nation = get_cache (Nation, {"kurzbez": [(eq, c_list.land)]})
+                nation = db_session.query(Nation).filter(
+                         (Nation.kurzbez == c_list.land.strip())).first()
                 c_list.land_ok = None != nation
 
             if c_list.segm != 0:
 
-                segment = get_cache (Segment, {"segmentcode": [(eq, c_list.segm)]})
+                # segment = get_cache (Segment, {"segmentcode": [(eq, c_list.segm)]})
+                segment = db_session.query(Segment).filter(
+                         (Segment.segmentcode == c_list.segm)).first()
 
                 if segment:
                     c_list.segm_descr = segment.bezeich
 
             if c_list.resart != 0:
 
-                sourccod = get_cache (Sourccod, {"source_code": [(eq, c_list.resart)]})
+                # sourccod = get_cache (Sourccod, {"source_code": [(eq, c_list.resart)]})
+                sourccod = db_session.query(Sourccod).filter(
+                         (Sourccod.source_code == c_list.resart)).first()
 
-                if Sourccod:
-                    c_list.resart_descr = Sourccod.bezeich
+                if sourccod:
+                    c_list.resart_descr = sourccod.bezeich
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 276)]})
 

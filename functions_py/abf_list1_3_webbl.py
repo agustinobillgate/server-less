@@ -40,6 +40,7 @@ def abf_list1_3_webbl(fdate: date, bfast_artnr: int, bfast_dept: int, show_bfast
     res_line = genstat = arrangement = artikel = argt_line = reslin_queasy = fixleist = guest = reservation = segment = ratecode = mc_guest = mc_types = mealcoup = waehrung = bill = master = None
 
     abf_list = zikat_list = t_argt_ratelist = None
+    abf_list = zikat_list = t_argt_ratelist = None
 
     abf_list_data, Abf_list = create_model(
         "Abf_list",
@@ -108,6 +109,7 @@ def abf_list1_3_webbl(fdate: date, bfast_artnr: int, bfast_dept: int, show_bfast
     db_session = local_storage.db_session
 
     def generate_output():
+        nonlocal abf_list_data, diffcidate, p_87, num_of_day, exchg_rate, dont_post, res_line, genstat, arrangement, artikel, argt_line, reslin_queasy, fixleist, guest, reservation, segment, ratecode, mc_guest, mc_types, mealcoup, waehrung, bill, master
         nonlocal abf_list_data, diffcidate, p_87, num_of_day, exchg_rate, dont_post, res_line, genstat, arrangement, artikel, argt_line, reslin_queasy, fixleist, guest, reservation, segment, ratecode, mc_guest, mc_types, mealcoup, waehrung, bill, master
         nonlocal fdate, bfast_artnr, bfast_dept, show_bfast_rate
         nonlocal abf_list, zikat_list, t_argt_ratelist
@@ -189,8 +191,10 @@ def abf_list1_3_webbl(fdate: date, bfast_artnr: int, bfast_dept: int, show_bfast
 
                         if argt_line.vt_percnt == 0:
                             t_argt_ratelist.based_on_adult = True
+                            t_argt_ratelist.based_on_adult = True
 
                             if argt_line.betriebsnr == 0:
+                                t_argt_ratelist.adult_qty = genstat.erwachs
                                 t_argt_ratelist.adult_qty = genstat.erwachs
                             else:
                                 t_argt_ratelist.adult_qty = argt_line.betriebsnr
@@ -335,6 +339,9 @@ def abf_list1_3_webbl(fdate: date, bfast_artnr: int, bfast_dept: int, show_bfast
                         dont_post = check_fixleist_posted1(
                             fixleist.artnr, fixleist.departement, fixleist.sequenz, fixleist.dekade, fixleist.lfakt)
 
+                        if not dont_post:
+                            t_argt_ratelist.do_it = True
+                            t_argt_ratelist.fixliest_qty = t_argt_ratelist.fixliest_qty + fixleist.number
                         if not dont_post:
                             t_argt_ratelist.do_it = True
                             t_argt_ratelist.fixliest_qty = t_argt_ratelist.fixliest_qty + fixleist.number

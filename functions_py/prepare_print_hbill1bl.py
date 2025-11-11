@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ================================
+# Rulita, 11-11-2025 | D814C7
+# New Compile Program
+# ================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill, Queasy, Htparam, H_artikel
