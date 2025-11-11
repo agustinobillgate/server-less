@@ -1,0 +1,1 @@
+SELECT userid, hotel_schema, endpoint, error_message, time_start FROM logs_endpoint where error_message!='' order by id desc limit 50

@@ -149,7 +149,7 @@ def log_activity(endpoint:string, userid:string, hotel_schema:string) -> int:
     finally:
         return recid
 
-def log_activity_end(log_id: int) -> int:
+def log_activity_end(log_id: int, error_message: str) -> int:
     global dblog_session
 
     if log_id <= 0:
@@ -157,10 +157,11 @@ def log_activity_end(log_id: int) -> int:
 
     try:
         sql = """
-            UPDATE public.logs_endpoint SET time_end = NOW() WHERE id = :log_id
+            UPDATE public.logs_endpoint SET time_end = NOW(), error_message = :error_message WHERE id = :log_id
             """
         log_results = dblog_session.execute(text(sql), {
-                    "log_id": log_id
+                    "log_id": log_id,
+                    "error_message": error_message
                 })
         dblog_session.commit()
         
@@ -1924,7 +1925,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
     # ServerInfo["aws_request_id"] = aws_request_id    
     # ServerInfo["AWSFunction"] =  lambda_function_name
     # ServerInfo["AWSCloudWatch"] = log_stream_name
-    log_activity_end(log_id)
+    log_activity_end(log_id, error_message)
     return {
         "response": output_data,
         "serverinfo": ServerInfo
