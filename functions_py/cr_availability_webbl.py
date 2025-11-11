@@ -127,6 +127,7 @@ def cr_availability_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, printe
         argt_zuordnung:string = ""
         Buff_ratelist = Rate_list
         buff_ratelist_data = rate_list_data
+
         fdate = curr_date
         tdate = curr_date + timedelta(days=num_day)
 
@@ -146,7 +147,7 @@ def cr_availability_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, printe
 
 
             indgastnr, created_list_data, rate_list_data = get_output(available_rates_cldbl(fdate, tdate, room_avail_list.zikatnr, curr_i, adult_child_str, indgastnr, created_list_data))
-            print("Available Rates Processed for Room Category:", room_avail_list.zikatnr, fdate, tdate, rate_list_data)
+
             for rate_list in query(rate_list_data, sort_by=[("i_counter",False)]):
 
                 # arrangement = get_cache (Arrangement, {"argtnr": [(eq, rate_list.argtno)]})
@@ -159,7 +160,7 @@ def cr_availability_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, printe
                     argt_intervall = arrangement.intervall
                     argt_zuordnung = arrangement.zuordnung
 
-                if (qci_zimmer and qci_zimmer.zikatnr == room_avail_list.zikatnr):
+                if not qci_zimmer or (qci_zimmer and qci_zimmer.zikatnr == room_avail_list.zikatnr):
                     room_list = Room_list()
                     room_list_data.append(room_list)
 
@@ -305,6 +306,7 @@ def cr_availability_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, printe
         art_rem:int = 0
         tot_used:int = 0
         argtnr:int = 0
+
         bargt = None
         Bargt =  create_buffer("Bargt",Arrangement)
         tdate = fdate + timedelta(days=num_day)
@@ -381,10 +383,9 @@ def cr_availability_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, printe
                                             edate = tmp_resline.abreise
 
                                     if fixleist.sequenz == 1:
-                                        if bdate is not None and edate is not None:
-                                            while bdate < edate :
-                                                create_tmpextra(art_nr, "Fix-cost line", to_string(fixleist.sequenz), bdate, tmp_resline.zinr, fixleist.number)
-                                                bdate = bdate + timedelta(days=1)
+                                        while bdate < edate :
+                                            create_tmpextra(art_nr, "Fix-cost line", to_string(fixleist.sequenz), bdate, tmp_resline.zinr, fixleist.number)
+                                            bdate = bdate + timedelta(days=1)
 
                                     elif fixleist.sequenz == 2:
                                         create_tmpextra(art_nr, "Fix-cost line", to_string(fixleist.sequenz), tmp_resline.ankunft, tmp_resline.zinr, fixleist.number)
@@ -584,26 +585,8 @@ def cr_availability_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, printe
         for i in range(1,num_day + 1) :
             res_allot[i - 1] = 0
 
-        # for res_line in db_session.query(Res_line).filter(
-        #          (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & 
-        #          (Res_line.active_flag <= 1) & (Res_line.kontignr > 0) & 
-        #          not_ (Res_line.ankunft > tdate) &
-        #          not_ (Res_line.abreise <= fdate) &
-        #          (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
-        for res_line in (
-                db_session.query(Res_line)
-                .filter(
-                    (Res_line.resstatus <= 6) &
-                    (Res_line.resstatus != 4) &
-                    (Res_line.active_flag <= 1) &
-                    (Res_line.kontignr > 0) &
-                    # (Res_line.ankunft <= tdate) &
-                    # (Res_line.abreise > fdate) &
-                    (Res_line.l_zuordnung[2] == 0)
-                )
-                .order_by(Res_line._recid)
-                .all()
-            ):
+        for res_line in db_session.query(Res_line).filter(
+                 (Res_line.resstatus <= 6) & (Res_line.resstatus != 4) & (Res_line.active_flag <= 1) & (Res_line.kontignr > 0) & not_(Res_line.ankunft > tdate) & not_(Res_line.abreise <= fdate) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line._recid).all():
 
             if res_line.ankunft is None or res_line.abreise is None:
                 continue
@@ -1303,7 +1286,7 @@ def cr_availability_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, printe
 
         for room_avail_list in query(room_avail_list_data, filters=(lambda room_avail_list: room_avail_list.bezeich != "")):
             for i in range(1,num_day + 1) :
-                coom[i - 1] = to_string(room[i - 1], "->>>,>>>,>>9")
+                room_avail_list.coom[i - 1] = to_string(room_avail_list.room[i - 1], "->>>,>>>,>>9")
         datum = curr_date
         sum_list = Sum_list()
         sum_list_data.append(sum_list)
@@ -1434,12 +1417,16 @@ def cr_availability_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, printe
         else:
             create_rate_list()
     elif op_type == 1:
-        design_lnl()
+        # design_lnl()
+        pass
     elif op_type == 2:
-        print_lnl()
+        # print_lnl()
+        pass
     elif op_type == 3:
-        print_txt()
+        # print_txt()
+        pass
     elif op_type == 4:
-        clear_it()
+        # clear_it()
+        pass
 
     return generate_output()
