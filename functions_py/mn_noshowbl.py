@@ -1,5 +1,11 @@
 #using conversion tools version: 1.0.0.117
 
+# ========================================
+# Rulita, 11-11-2025 
+# - Fixing tabel name depoArt to depoart
+# - Fixing error nonetype gbuff
+# ========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -177,7 +183,9 @@ def mn_noshowbl(pvilanguage:int):
 
         depoart = get_cache (Artikel, {"artnr": [(eq, htparam.finteger)],"departement": [(eq, 0)]})
 
-        if not depoArt:
+        # Rulita, 11-11-2025 
+        # Fixing tabel name depoArt to depoart
+        if not depoart:
 
             return
 
@@ -207,7 +215,12 @@ def mn_noshowbl(pvilanguage:int):
         bill.rechnr = counters.counter
         bill.datum = bill_date
         bill.billtyp = 0
-        bill.name = gbuff.name + ", " + gbuff.vorname1 + gbuff.anredefirma
+        
+        # Rulita 11-11-2025
+        # Fixing error nonetype gbuff
+        if gbuff:
+            bill.name = to_string(gbuff.name) + ", " + to_string(gbuff.vorname1) + to_string(gbuff.anredefirma)
+
         bill.bilname = bill.name
         bill.resnr = 0
         bill.reslinnr = 1
@@ -222,9 +235,11 @@ def mn_noshowbl(pvilanguage:int):
         bill_line = Bill_line()
         db_session.add(bill_line)
 
+        # Rulita, 11-11-2025 
+        # Fixing tabel name depoArt to depoart
         bill_line.rechnr = bill.rechnr
-        bill_line.artnr = depoArt.artnr
-        bill_line.bezeich = depoArt.bezeich
+        bill_line.artnr = depoart.artnr
+        bill_line.bezeich = depoart.bezeich
         bill_line.anzahl = 1
         bill_line.betrag =  to_decimal(deposit)
         bill_line.fremdwbetrag =  to_decimal(deposit_foreign)
@@ -242,12 +257,14 @@ def mn_noshowbl(pvilanguage:int):
         billjournal = Billjournal()
         db_session.add(billjournal)
 
+        # Rulita, 11-11-2025 
+        # Fixing tabel name depoArt to depoart
         billjournal.rechnr = bill.rechnr
-        billjournal.artnr = depoArt.artnr
+        billjournal.artnr = depoart.artnr
         billjournal.anzahl = 1
         billjournal.fremdwaehrng =  to_decimal(deposit_foreign)
         billjournal.betrag =  to_decimal(deposit)
-        billjournal.bezeich = depoArt.bezeich + " " +\
+        billjournal.bezeich = depoart.bezeich + " " +\
                 to_string(reservation.resnr)
         billjournal.zinr = res_line.zinr
         billjournal.epreis =  to_decimal("0")
@@ -260,13 +277,17 @@ def mn_noshowbl(pvilanguage:int):
             billjournal.bezeich = billjournal.bezeich + " [" + art1.bezeich + "]"
         pass
 
+        # Rulita, 11-11-2025 
+        # Fixing tabel name depoArt to depoart
         umsatz = get_cache (Umsatz, {"artnr": [(eq, depoart.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
 
         if not umsatz:
             umsatz = Umsatz()
             db_session.add(umsatz)
 
-            umsatz.artnr = depoArt.artnr
+            # Rulita, 11-11-2025 
+            # Fixing tabel name depoArt to depoart
+            umsatz.artnr = depoart.artnr
             umsatz.datum = bill_date
         umsatz.anzahl = umsatz.anzahl + 1
         umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(deposit)
