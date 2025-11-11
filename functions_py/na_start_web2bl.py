@@ -170,12 +170,12 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
             try:
                 if abschlussart == 1:
                     log_process(270001, f"Run2: {programm}")
-                    # print("Running program 2:", programm)
+                    print("Running program 2:", programm)
                     na_run_program(programm)
                 else:
                     programm = programm.replace(".py","bl.py")
                     log_process(270001, f"Run3 .p: {programm}")
-                    # print("Running program 3:", programm)
+                    print("Running program 3:", programm)
                     na_run_program(programm)
             except Exception as e:
                 log_process(270001, f"Error running program {programm}: {str(e)}")

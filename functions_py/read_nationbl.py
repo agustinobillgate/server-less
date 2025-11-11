@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 11/11/2025
+# 
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -14,6 +18,9 @@ def read_nationbl(natno:int, natbez:string, natname:string):
 
     db_session = local_storage.db_session
 
+    natbez = natbez.strip()
+    natname = natname.strip()
+
     def generate_output():
         nonlocal t_nation_data, nation
         nonlocal natno, natbez, natname
@@ -26,20 +33,26 @@ def read_nationbl(natno:int, natbez:string, natname:string):
 
     if natno > 0:
 
-        nation = get_cache (Nation, {"nationnr": [(eq, natno)]})
+        # nation = get_cache (Nation, {"nationnr": [(eq, natno)]})
+        nation = db_session.query(Nation).filter(
+                 (Nation.nationnr == natno)).first()
 
     elif natbez != "":
 
-        nation = get_cache (Nation, {"kurzbez": [(eq, natbez)]})
+        # nation = get_cache (Nation, {"kurzbez": [(eq, natbez)]})
+        nation = db_session.query(Nation).filter(
+                 (Nation.kurzbez == natbez)).first()
 
-    elif natbez != "" and natname.lower()  == ("1").lower() :
+    elif natbez != "" and natname  == ("1") :
 
         nation = db_session.query(Nation).filter(
                  (Nation.kurzbez == natbez) & (Nation.natcode > 0)).first()
 
     elif natbez == "" and natname != "":
 
-        nation = get_cache (Nation, {"bezeich": [(eq, natname)]})
+        # nation = get_cache (Nation, {"bezeich": [(eq, natname)]})
+        nation = db_session.query(Nation).filter(
+                 (Nation.bezeich == natname)).first()   
 
     if nation:
         t_nation = T_nation()
