@@ -1,0 +1,30 @@
+{
+    "Queasy": {
+        "read": [
+            "char1",
+            "char2",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "kurzbez",
+            "bezeichnung",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Sourccod": {
+        "read": [],
+        "write": []
+    },
+    "Segment": {
+        "read": [
+            "bezeich",
+            "bemerkung",
+            "_recid"
+        ],
+        "write": []
+    }
+}

@@ -1,5 +1,12 @@
 #using conversion tools version: 1.0.0.117
 
+# =======================================================
+# Rulita 07-11-2025, 
+# Issue :
+# - Added conndition if h_artikel is null continue loop 
+# - Chg query H_artikel from get_cache to dbsession first 
+# =======================================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -42,7 +49,7 @@ def nt_hcost():
         nonlocal t_hjournal, s_rezlin
         nonlocal t_hjournal_data, s_rezlin_data
 
-        return {"debug_test":debug_test}
+        return {}
 
     def cal_cost(p_artnr:int, menge:Decimal, cost:Decimal):
 
@@ -255,7 +262,13 @@ def nt_hcost():
     for h_journal in db_session.query(H_journal).filter(
              (H_journal.bill_datum == bill_date) & (H_journal.zeit >= 0) & (H_journal.sysdate >= bill_date)).order_by(H_journal.departement, H_journal.artnr).all():
 
-        h_artikel = get_cache (H_artikel, {"departement": [(eq, h_journal.departement)],"artnr": [(eq, h_journal.artnr)],"artart": [(eq, 0)]})
+        # h_artikel = get_cache (H_artikel, {"departement": [(eq, h_journal.departement)],"artnr": [(eq, h_journal.artnr)],"artart": [(eq, 0)]})
+        h_artikel = db_session.query(H_artikel).filter(
+                    (H_artikel.departement == h_journal.departement) &
+                    (H_artikel.artnr == h_journal.artnr) &
+                    (H_artikel.artart == 0)
+                ).first()
+        
         create_it = True
 
         t_hjournal = query(t_hjournal_data, filters=(lambda t_hjournal: t_hjournal.artnr == h_journal.artnr and t_hjournal.departement == h_journal.departement and t_hjournal.betrag == - h_journal.betrag and t_hjournal.bill_datum == h_journal.bill_datum), first=True)
@@ -272,52 +285,62 @@ def nt_hcost():
 
     for t_hjournal in query(t_hjournal_data, filters=(lambda t_hjournal: t_hjournal.bill_datum == bill_date and t_hjournal.zeit >= 0 and t_hjournal.sysdate >= bill_date), sort_by=[("departement",False),("artnr",False)]):
 
-        debug_test["h_artikel"] = t_hjournal.departement
 
-        h_artikel = get_cache (H_artikel, {"departement": [(eq, t_hjournal.departement)],"artnr": [(eq, t_hjournal.artnr)],"artart": [(eq, 0)]})
+        # h_artikel = get_cache (H_artikel, {"departement": [(eq, t_hjournal.departement)],"artnr": [(eq, t_hjournal.artnr)],"artart": [(eq, 0)]})
 
-        if h_artikel.artnrlager != 0 or h_artikel.artnrrezept != 0 or h_artikel.prozent != 0:
+        h_artikel = db_session.query(H_artikel).filter(
+                    (H_artikel.departement == t_hjournal.departement) &
+                    (H_artikel.artnr == t_hjournal.artnr) &
+                    (H_artikel.artart == 0)
+                ).first()
 
-            h_cost = get_cache (H_cost, {"artnr": [(eq, h_artikel.artnr)],"departement": [(eq, h_artikel.departement)],"datum": [(eq, bill_date)],"flag": [(eq, 1)]})
+        # Rulita 07-11-2025, added conndition if h_artikel is null 
+        if h_artikel:
+            if h_artikel.artnrlager != 0 or h_artikel.artnrrezept != 0 or h_artikel.prozent != 0:
 
-            if not h_cost:
-                h_cost = H_cost()
-                db_session.add(h_cost)
+                h_cost = get_cache (H_cost, {"artnr": [(eq, h_artikel.artnr)],"departement": [(eq, h_artikel.departement)],"datum": [(eq, bill_date)],"flag": [(eq, 1)]})
 
-                h_cost.datum = bill_date
-                h_cost.departement = h_artikel.departement
-                h_cost.artnr = h_artikel.artnr
-                h_cost.flag = 1
+                if not h_cost:
+                    h_cost = H_cost()
+                    db_session.add(h_cost)
 
-                if h_artikel.artnrlager != 0:
+                    h_cost.datum = bill_date
+                    h_cost.departement = h_artikel.departement
+                    h_cost.artnr = h_artikel.artnr
+                    h_cost.flag = 1
 
-                    l_artikel = get_cache (L_artikel, {"artnr": [(eq, h_artikel.artnrlager)]})
+                    if h_artikel.artnrlager != 0:
 
-                    if l_artikel:
+                        l_artikel = get_cache (L_artikel, {"artnr": [(eq, h_artikel.artnrlager)]})
 
-                        if price_type == 0 or l_artikel.ek_aktuell == 0:
-                            h_cost.betrag =  to_decimal(l_artikel.vk_preis)
-                        else:
-                            h_cost.betrag =  to_decimal(l_artikel.ek_aktuell)
+                        if l_artikel:
 
-                elif h_artikel.artnrrezept != 0:
+                            if price_type == 0 or l_artikel.ek_aktuell == 0:
+                                h_cost.betrag =  to_decimal(l_artikel.vk_preis)
+                            else:
+                                h_cost.betrag =  to_decimal(l_artikel.ek_aktuell)
 
-                    h_rezept = get_cache (H_rezept, {"artnrrezept": [(eq, h_artikel.artnrrezept)]})
+                    elif h_artikel.artnrrezept != 0:
 
-                    if h_rezept:
-                        cost =  to_decimal("0")
-                        cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
-                        h_cost.betrag =  to_decimal(cost)
-                else:
-                    price =  to_decimal(h_artikel.epreis1)
+                        h_rezept = get_cache (H_rezept, {"artnrrezept": [(eq, h_artikel.artnrrezept)]})
 
-                    if price != 0:
-                        price = calculate_price(price)
+                        if h_rezept:
+                            cost =  to_decimal("0")
+                            cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
+                            h_cost.betrag =  to_decimal(cost)
+                    else:
+                        price =  to_decimal(h_artikel.epreis1)
 
-                    if price == None:
-                        price =  to_decimal("0")
-                    h_cost.betrag =  to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(price) * to_decimal(exchg_rate)
-            h_cost.anzahl = h_cost.anzahl + t_hjournal.anzahl
+                        if price != 0:
+                            price = calculate_price(price)
+
+                        if price == None:
+                            price =  to_decimal("0")
+                        h_cost.betrag =  to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(price) * to_decimal(exchg_rate)
+                h_cost.anzahl = h_cost.anzahl + t_hjournal.anzahl
+        else:
+            continue
+        
     create_hart_cost1()
 
     return generate_output()

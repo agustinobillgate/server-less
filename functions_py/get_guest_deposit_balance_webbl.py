@@ -46,13 +46,17 @@ def get_guest_deposit_balance_webbl(guest_number:int):
     if htparam:
         gdeposit_list.guest_deposit_num = htparam.finteger
 
-        artikel = get_cache (Artikel, {"artnr": [(eq, htparam.finteger)],"departement": [(eq, 0)]})
+        # artikel = get_cache (Artikel, {"artnr": [(eq, htparam.finteger)],"departement": [(eq, 0)]})
+        artikel = db_session.query(Artikel).filter(
+                 (Artikel.artnr == htparam.finteger) & (Artikel.departement == 0)).first()
 
         if artikel and artikel.artart == 5:
             depoart_guest = artikel.artnr
             depobez_guest = artikel.bezeich
 
-    guest = get_cache (Guest, {"gastnr": [(eq, guest_number)]})
+    # guest = get_cache (Guest, {"gastnr": [(eq, guest_number)]})
+    guest = db_session.query(Guest).filter(
+             (Guest.gastnr == guest_number)).first()
 
     if guest:
 
@@ -64,7 +68,7 @@ def get_guest_deposit_balance_webbl(guest_number:int):
         else:
             gdeposit_list.guest_type = "Travel Agent"
 
-    if gdeposit_list.guest_deposit_num != 0 and gdeposit_list.guest_type.lower()  != ("Individual").lower() :
+    if gdeposit_list.guest_deposit_num != 0 and gdeposit_list.guest_type  != ("Individual") :
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 120)]})
 
@@ -83,13 +87,13 @@ def get_guest_deposit_balance_webbl(guest_number:int):
 
         # Rd, 13/8/2025
         # billjournal = db_session.query(Billjournal).filter(
-        #          (Billjournal.billjou_ref == guest_number) & (Billjournal.artnr != 0) & (Billjournal.artnr != depoart_guest) & (Billjournal.artnr != depoart_rsv) & (Billjournal.artnr != depoart_bqt) & (Billjournal.artnr != depoart_pos) & (num_entries(Billjournal.bezeich, "[") > 1) & (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit").lower())).first()
+        #          (Billjournal.billjou_ref == guest_number) & (Billjournal.artnr != 0) & (Billjournal.artnr != depoart_guest) & (Billjournal.artnr != depoart_rsv) & (Billjournal.artnr != depoart_bqt) & (Billjournal.artnr != depoart_pos) & (num_entries(Billjournal.bezeich, "[") > 1) & (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit"))).first()
         billjournal = db_session.query(Billjournal).filter(
                  (Billjournal.billjou_ref == guest_number) & 
                  (Billjournal.artnr != 0) & (Billjournal.artnr != depoart_guest) & 
                  (Billjournal.artnr != depoart_rsv) & (Billjournal.artnr != depoart_bqt) & 
                  (Billjournal.artnr != depoart_pos) & 
-                 (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit").lower())).first()
+                 (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit"))).first()
 
         if billjournal:
             if (num_entries(billjournal.bezeich, "[") > 1):
@@ -100,13 +104,13 @@ def get_guest_deposit_balance_webbl(guest_number:int):
                 #         (Billjournal.artnr != depoart_rsv) & (Billjournal.artnr != depoart_bqt) & 
                 #         (Billjournal.artnr != depoart_pos) & 
                 #         (num_entries(Billjournal.bezeich, "[") > 1) & 
-                #         (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit").lower())).first()
+                #         (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit"))).first()
                 billjournal = db_session.query(Billjournal).filter(
                         (Billjournal.billjou_ref == guest_number) & 
                         (Billjournal.artnr != 0) & (Billjournal.artnr != depoart_guest) & 
                         (Billjournal.artnr != depoart_rsv) & (Billjournal.artnr != depoart_bqt) & 
                         (Billjournal.artnr != depoart_pos) & 
-                        (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit").lower())).first()
+                        (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit"))).first()
 
                 while None != billjournal:
                     if (num_entries(Billjournal.bezeich, "[") > 1):
@@ -118,13 +122,13 @@ def get_guest_deposit_balance_webbl(guest_number:int):
                         #         (Billjournal.artnr != depoart_guest) & (Billjournal.artnr != depoart_rsv) & 
                         #         (Billjournal.artnr != depoart_bqt) & (Billjournal.artnr != depoart_pos) & 
                         #         (num_entries(Billjournal.bezeich, "[") > 1) & 
-                        #         (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit").lower()) & 
+                        #         (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit")) & 
                         #         (Billjournal._recid > curr_recid)).first()
                         billjournal = db_session.query(Billjournal).filter(
                                 (Billjournal.billjou_ref == guest_number) & (Billjournal.artnr != 0) & 
                                 (Billjournal.artnr != depoart_guest) & (Billjournal.artnr != depoart_rsv) & 
                                 (Billjournal.artnr != depoart_bqt) & (Billjournal.artnr != depoart_pos) & 
-                                (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit").lower()) & 
+                                (substring(entry(1, Billjournal.bezeich, "[") , 0, 13) == ("Guest Deposit")) & 
                                 (Billjournal._recid > curr_recid)).first()
 
                 for bill, bill_line in db_session.query(Bill, Bill_line)\

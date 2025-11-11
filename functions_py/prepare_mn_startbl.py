@@ -40,8 +40,9 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
         queasy = Queasy()
         db_session.add(queasy)
         queasy.key = key
-        queasy.char1 = "Log NA"
+        queasy.char1 = "prepare_mn_startbl"
         queasy.char2 = message
+        db_session.commit()
 
 
     def generate_output():
@@ -51,7 +52,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
 
         nonlocal na_list
         nonlocal na_list_data
-
+        log_process(270001, "Generating output for MN Start")
         return {"mn_stopped": mn_stopped, "stop_it": stop_it, "arrival_guest": arrival_guest, "msg_str": msg_str, "mess_str": mess_str, "crm_license": crm_license, "banquet_license": banquet_license, "na-list": na_list_data}
 
     def get_rackrate(erwachs:int, kind1:int, kind2:int):
@@ -117,7 +118,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
                  (Res_line.active_flag == 0) & ((Res_line.resstatus <= 2) | (Res_line.resstatus == 5) | (Res_line.resstatus == 11)) & (Res_line.ankunft == ci_date)).first()
 
         if res_line:
-            log_process
+            
             msg_str = msg_str + chr_unicode(2) + "&Q" + translateExtended ("Today's arrival guest(s) record found.", lvcarea, "") + chr_unicode(10) + translateExtended ("Are you sure you want to proceed the Midnight Program?", lvcarea, "")
             arrival_guest = True
             stop_it = True
@@ -173,8 +174,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
             reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, cdate)],"date2": [(ge, cdate)]})
 
             if reslin_queasy and res_line.zipreis != reslin_queasy.deci1:
-                log_process(270001, f"Different rate found! Night Audit process not possible.")
-                msg_str = msg_str + chr_unicode(2) + translateExtended ("Different rate found! Night Audit process not possible.", lvcarea, "")
+                msg_str = msg_str + chr_unicode(2) + translateExtended ("Different rate found! Night Audit process not possible. (" + str(res_line.resnr) +"/" + str(res_line.reslinnr) + ")" , lvcarea, "")
                 stop_it = True
 
                 return
@@ -189,10 +189,13 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
         nonlocal na_list
         nonlocal na_list_data
 
-
+        log_process(270001, "-midnite_prog: reorg_prog called")
         reorg_prog()
+        log_process(270001, "-midnite_prog: rm_charge called")
         check_cancelled_res_line()
+        log_process(270001, "-midnite_prog: check_delete_res_line called")
         check_delete_res_line()
+        log_process(270001, "-midnite_prog: check_cekout_res_line called")  
         check_cekout_res_line()
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 105)]})
@@ -1126,8 +1129,10 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
 
         na_list = query(na_list_data, filters=(lambda na_list: na_list.reihenfolge == 3), first=True)
 
-        zimmer = db_session.query(Zimmer).first()
-        while None != zimmer:
+        # zimmer = db_session.query(Zimmer).first()
+        zimmers = db_session.query(Zimmer).order_by(Zimmer._recid).all()
+        for zimmer in zimmers:
+        # while None != zimmer:
 
             if zimmer.personal :
                 pass
@@ -1136,7 +1141,9 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
 
             if zimmer.zistatus == 0 or zimmer.zistatus == 1 or zimmer.zistatus == 2:
 
-                res_line = get_cache (Res_line, {"zinr": [(eq, zimmer.zinr)],"active_flag": [(eq, 1)],"resstatus": [(eq, 6)]})
+                # res_line = get_cache (Res_line, {"zinr": [(eq, zimmer.zinr)],"active_flag": [(eq, 1)],"resstatus": [(eq, 6)]})
+                res_line = db_session.query(Res_line).filter(
+                         (Res_line.zinr == zimmer.zinr) & (Res_line.active_flag == 1) & (Res_line.resstatus == 6)).first()
 
                 if res_line:
                     i = i + 1
@@ -1152,7 +1159,9 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
 
             elif zimmer.zistatus == 3:
 
-                res_line = get_cache (Res_line, {"zinr": [(eq, zimmer.zinr)],"active_flag": [(eq, 1)],"resstatus": [(eq, 6)]})
+                # res_line = get_cache (Res_line, {"zinr": [(eq, zimmer.zinr)],"active_flag": [(eq, 1)],"resstatus": [(eq, 6)]})
+                res_line = db_session.query(Res_line).filter(
+                         (Res_line.zinr == zimmer.zinr) & (Res_line.active_flag == 1) & (Res_line.resstatus == 6)).first()
 
                 if res_line and res_line.abreise > ci_date:
                     i = i + 1
@@ -1172,7 +1181,9 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
 
             elif zimmer.zistatus == 4 or zimmer.zistatus == 5:
 
-                res_line = get_cache (Res_line, {"zinr": [(eq, zimmer.zinr)],"active_flag": [(eq, 1)],"resstatus": [(eq, 6)]})
+                # res_line = get_cache (Res_line, {"zinr": [(eq, zimmer.zinr)],"active_flag": [(eq, 1)],"resstatus": [(eq, 6)]})
+                res_line = db_session.query(Res_line).filter(
+                         (Res_line.zinr == zimmer.zinr) & (Res_line.active_flag == 1) & (Res_line.resstatus == 6)).first()
 
                 if res_line and res_line.abreise == ci_date:
                     i = i + 1
@@ -1192,7 +1203,9 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
 
             if zimmer.zistatus == 6:
 
-                res_line = get_cache (Res_line, {"zinr": [(eq, zimmer.zinr)],"active_flag": [(eq, 1)],"resstatus": [(eq, 6)]})
+                # res_line = get_cache (Res_line, {"zinr": [(eq, zimmer.zinr)],"active_flag": [(eq, 1)],"resstatus": [(eq, 6)]})
+                res_line = db_session.query(Res_line).filter(
+                         (Res_line.zinr == zimmer.zinr) & (Res_line.active_flag == 1) & (Res_line.resstatus == 6)).first()
 
                 if res_line:
                     i = i + 1
@@ -1206,13 +1219,16 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
                     zimmer.bediener_nr_stat = 0
                     pass
 
-                    outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)]})
+                    # outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)]})
+                    outorder = db_session.query(Outorder).filter(
+                             (Outorder.zinr == zimmer.zinr)).first()
 
                     if outorder:
                         db_session.delete(outorder)
 
             curr_recid = zimmer._recid
-            zimmer = db_session.query(Zimmer).filter(Zimmer._recid > curr_recid).first()
+            # zimmer = db_session.query(Zimmer).filter(Zimmer._recid > curr_recid).first()
+
 
         for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg._recid).all():
             i = 0
@@ -1251,6 +1267,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
 
         if stop_it:
             mn_stopped = True
+            print
 
             return generate_output()
         
@@ -1292,9 +1309,10 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
         
         log_process(270001, "Checking Today's Arrival Guests")
         check_today_arrival_guest()
+        stop_it = False
 
         if stop_it:
-
+            print("Checking Today's Arrival Guests stopped the Midnight Program.")
             return generate_output()
         else:
             case_type = 2
@@ -1302,6 +1320,7 @@ def prepare_mn_startbl(case_type:int, pvilanguage:int):
     if case_type == 2:
         log_process(270001, "Starting Midnight Program Updates")
         midnite_prog()
+        log_process(270001, "Midnight Programs done.")
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1459)]})
 

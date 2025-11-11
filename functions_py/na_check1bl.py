@@ -2,6 +2,8 @@
 #------------------------------------------
 # Rd, 20/10/2025
 # nama var: argt_betrag, sama dengan fungsi di functions_py/argt_betrag.py
+# Rd 05/11/2025, nation -> getcache diganti query langsung karena ada masalah strip()
+# Rd 05/11/2025, arrangement -> getcache diganti query langsung karena ada masalah strip()
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -95,12 +97,12 @@ def na_check1bl(pvilanguage:int, def_natcode:string):
     #              (Nightaudit.selektion)).order_by((1 - Nightaudit.hogarest), Nightaudit.reihenfolge).all():
     #         progname = nightaudit.programm
     #         progname = ass_progname(nightaudit.abschlussart, progname)
-    #         not_found = SEARCH (progname.lower()) == None
+    #         not_found = SEARCH (progname) == None
 
     #         if not_found:
     #             progname = replace_str(progname, ".p", ".r")
     #             progname = replace_str(progname, ".w", ".r")
-    #             not_found = (SEARCH (progname.lower()) == None)
+    #             not_found = (SEARCH (progname) == None)
 
     #         if not_found:
 
@@ -138,7 +140,7 @@ def na_check1bl(pvilanguage:int, def_natcode:string):
     #             pass
     #         else:
     #             a = R_INDEX (progname, ".p")
-    #             progname = substring(progname.lower() , 0, a - 1) + "bl.p"
+    #             progname = substring(progname , 0, a - 1) + "bl.p"
 
     #     return generate_inner_output()
 
@@ -205,7 +207,9 @@ def na_check1bl(pvilanguage:int, def_natcode:string):
 
             return generate_output()
 
-        nation = get_cache (Nation, {"kurzbez": [(eq, guest.nation1)]})
+        # nation = get_cache (Nation, {"kurzbez": [(eq, guest.nation1.strip())]})
+        nation = db_session.query(Nation).filter(
+                 (Nation.kurzbez == guest.nation1.strip())).first()
 
         if not nation:
             msg_str = msg_str + chr_unicode(2) + translateExtended ("Nationality of inhouse guest not defined: rmno", lvcarea, "") + " " + res_line.zinr + chr_unicode(10) + translateExtended ("Night-Audit not possible.", lvcarea, "")
@@ -252,35 +256,41 @@ def na_check1bl(pvilanguage:int, def_natcode:string):
             break
         else:
 
-            nation = get_cache (Nation, {"kurzbez": [(eq, guest.nation1)]})
+            # nation = get_cache (Nation, {"kurzbez": [(eq, guest.nation1)]})
+            nation = db_session.query(Nation).filter(
+                     (Nation.kurzbez == guest.nation1.strip())).first()
 
             if not nation:
                 msg_str = msg_str + chr_unicode(2) + translateExtended ("Nation code not correctly defined for following reservation :", lvcarea, "") + chr_unicode(10) + res_line.zinr + " " + res_line.name
                 w_flag = True
                 break
 
-            nation = get_cache (Nation, {"kurzbez": [(eq, guest.land)]})
+            # nation = get_cache (Nation, {"kurzbez": [(eq, guest.land)]})
+            nation = db_session.query(Nation).filter(
+                     (Nation.kurzbez == guest.land.strip())).first()
 
             if not nation:
                 msg_str = msg_str + chr_unicode(2) + translateExtended ("Country code not correctly defined for following reservation :", lvcarea, "") + chr_unicode(10) + res_line.zinr + " " + res_line.name
                 w_flag = True
                 break
 
-            if localregion_exist and (guest.land.lower()  == (def_natcode).lower()):
+            if localregion_exist and (guest.land  == (def_natcode)):
 
-                nation = get_cache (Nation, {"kurzbez": [(eq, guest.nation2)],"natcode": [(gt, 0)]})
+                # nation = get_cache (Nation, {"kurzbez": [(eq, guest.nation2)],"natcode": [(gt, 0)]})
+                nation = db_session.query(Nation).filter(
+                         (Nation.kurzbez == guest.nation2.strip()) & (Nation.natcode > 0)).first()
 
                 if not nation:
                     msg_str = msg_str + chr_unicode(2) + translateExtended ("Local Region code not correctly defined for following reservation :", lvcarea, "") + chr_unicode(10) + res_line.zinr + " " + res_line.name
                     w_flag = True
                     break
 
-            if guest.land.lower()  == ("UNK").lower() :
+            if guest.land  == ("UNK") :
                 msg_str = msg_str + chr_unicode(2) + translateExtended ("Country code UNK found for following reservation :", lvcarea, "") + chr_unicode(10) + res_line.zinr + " " + res_line.name + chr_unicode(10) + "Please change another code"
                 w_flag = True
                 break
 
-            elif guest.nation1.lower()  == ("UNK").lower() :
+            elif guest.nation1  == ("UNK") :
                 msg_str = msg_str + chr_unicode(2) + translateExtended ("Nation code UNK found for following reservation :", lvcarea, "") + chr_unicode(10) + res_line.zinr + " " + res_line.name + chr_unicode(10) + "Please change another code"
                 w_flag = True
                 break
@@ -298,7 +308,9 @@ def na_check1bl(pvilanguage:int, def_natcode:string):
             lodg_betrag =  to_decimal("0")
             lodg_betrag =  to_decimal(res_line.zipreis) * to_decimal(frate)
 
-            arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+            # arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
+            arrangement = db_session.query(Arrangement).filter(
+                     (Arrangement.arrangement == res_line.arrangement.strip())).first()
 
             argt_line_obj_list = {}
             argt_line = Argt_line()
@@ -334,10 +346,11 @@ def na_check1bl(pvilanguage:int, def_natcode:string):
         passfirst = True
 
         for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                 (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy.date1).yield_per(100):
+                 (Reslin_queasy.key == ("arrangement")) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy.date1).yield_per(100):
 
             if passfirst == False:
-
+                if reslin_queasy.date1 is None:
+                    continue
                 if tmpdate >= reslin_queasy.date1:
                     msg_str = msg_str + chr_unicode(2) + translateExtended ("overlapping fixed rate", lvcarea, "") + chr_unicode(10) + translateExtended ("please check fixed rate in reservation: ", lvcarea, "") + to_string(reslin_queasy.resnr)
                     w_flag = True

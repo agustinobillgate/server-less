@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 #-----------------------------------------
 # Rd, 25/7/2025
 # po_nr -> op_list.po_nr
@@ -136,6 +136,8 @@ def print_pchase_lnl_webbl(pvilanguage:int, lnldelimeter:string, docunr:string, 
         disc2:Decimal = to_decimal("0.0")
         disc_value:Decimal = to_decimal("0.0")
         disc2_value:Decimal = to_decimal("0.0")
+        price0:Decimal = to_decimal("0.0")
+        brutto:Decimal = to_decimal("0.0")
         tot_qty:Decimal = to_decimal("0.0")
         vat:Decimal = to_decimal("0.0")
         vat_val:Decimal = to_decimal("0.0")
@@ -171,15 +173,31 @@ def print_pchase_lnl_webbl(pvilanguage:int, lnldelimeter:string, docunr:string, 
                     curr_bez = l_art.bezeich
                     disc =  to_decimal("0")
                     disc2 =  to_decimal("0")
+                    disc_value =  to_decimal("0")
+                    disc2_value =  to_decimal("0")
+                    vat_val =  to_decimal("0")
+                    price0 =  to_decimal("0")
+                    brutto =  to_decimal("0")
 
                     if l_order.quality != "":
-                        disc = to_int(substring(l_order.quality, 0, 2)) + to_int(substring(l_order.quality, 3, 2)) * 0.01
-                        disc_value = to_decimal(substring(l_order.quality, 18, 18))
 
-                        if length(l_order.quality) > 12:
-                            disc2 = to_int(substring(l_order.quality, 12, 2)) + to_int(substring(l_order.quality, 15, 2)) * 0.01
-                            disc2_value = to_decimal(substring(l_order.quality, 36, 18))
-                            vat_val = to_decimal(substring(l_order.quality, 54))
+                        if num_entries(l_order.quality, " ") == 6:
+                            disc = to_int(substring(entry(0, l_order.quality, " ") , 0, 2)) + to_int(substring(entry(0, l_order.quality, " ") , 3, 2)) * 0.01
+                            disc_value =  to_decimal(to_decimal(entry(3 , l_order.quality , " ")) )
+                            disc2 = to_int(substring(entry(2, l_order.quality, " ") , 151)) + to_int(substring(entry(2, l_order.quality, " ") , 3, 2)) * 0.01
+                            disc2_value =  to_decimal(to_decimal(entry(4 , l_order.quality , " ")) )
+                            vat_val =  to_decimal(to_decimal(entry(5 , l_order.quality , " ")) )
+
+                        elif num_entries(l_order.quality, " ") >= 6:
+                            disc = to_int(substring(l_order.quality, 0, 2)) + to_int(substring(l_order.quality, 3, 2)) * 0.01
+                            disc_value = to_decimal(substring(l_order.quality, 18, 18))
+
+                            if length(l_order.quality) > 12:
+                                disc2 = to_int(substring(l_order.quality, 12, 2)) + to_int(substring(l_order.quality, 15, 2)) * 0.01
+                                disc2_value = to_decimal(substring(l_order.quality, 36, 18))
+                                vat_val = to_decimal(substring(l_order.quality, 54, 18))
+                                price0 = to_decimal(substring(l_order.quality, 72, 18))
+                                brutto = to_decimal(substring(l_order.quality, 90, 18))
 
                     if l_art.jahrgang == 0 or length(l_order.stornogrund) <= 12:
 
@@ -234,12 +252,28 @@ def print_pchase_lnl_webbl(pvilanguage:int, lnldelimeter:string, docunr:string, 
                     op_list.warenwert_add_vat =  to_decimal(op_list.warenwert_add_vat) + to_decimal((l_order.warenwert) * to_decimal(op_list.add_vat))
 
                     if op_list.warenwert == op_list.warenwert_add_vat:
-                        op_list.brutto = ( to_decimal(op_list.warenwert) + to_decimal(op_list.disc_value) + to_decimal(op_list.disc2_value)) - to_decimal(op_list.vat_value)
-                        op_list.epreis0 = to_decimal(round((op_list.brutto / op_list.anzahl) , 2))
+
+                        if brutto == 0:
+                            op_list.brutto = ( to_decimal(op_list.warenwert) + to_decimal(op_list.disc_value) + to_decimal(op_list.disc2_value)) - to_decimal(op_list.vat_value)
+                        else:
+                            op_list.brutto =  to_decimal(brutto)
+
+                        if price0 == 0:
+                            op_list.epreis0 = to_decimal(round((op_list.brutto / op_list.anzahl) , 2))
+                        else:
+                            op_list.epreis0 =  to_decimal(price0)
                         op_list.warenwert0 =  to_decimal(op_list.warenwert0) + to_decimal(l_order.warenwert) / to_decimal((1) - to_decimal(disc)) / to_decimal((1) - to_decimal(disc2)) / to_decimal((1) + to_decimal(vat))
                     else:
-                        op_list.brutto = ( to_decimal(op_list.warenwert_add_vat) + to_decimal(op_list.disc_value) + to_decimal(op_list.disc2_value)) - to_decimal(op_list.vat_value) - (to_decimal(op_list.warenwert_add_vat) - to_decimal(op_list.warenwert))
-                        op_list.epreis0 = to_decimal(round((op_list.brutto / op_list.anzahl) , 2))
+
+                        if brutto == 0:
+                            op_list.brutto = ( to_decimal(op_list.warenwert_add_vat) + to_decimal(op_list.disc_value) + to_decimal(op_list.disc2_value)) - to_decimal(op_list.vat_value) - (to_decimal(op_list.warenwert_add_vat) - to_decimal(op_list.warenwert))
+                        else:
+                            op_list.brutto =  to_decimal(brutto)
+
+                        if price0 == 0:
+                            op_list.epreis0 = to_decimal(round((op_list.brutto / op_list.anzahl) , 2))
+                        else:
+                            op_list.epreis0 =  to_decimal(price0)
                         op_list.warenwert0 =  to_decimal(op_list.warenwert0) + to_decimal(l_order.warenwert) / to_decimal((1) - to_decimal(disc)) / to_decimal((1) - to_decimal(disc2)) / to_decimal((1) + to_decimal(vat))
                     tot_qty =  to_decimal(tot_qty) + to_decimal(l_order.anzahl)
 
@@ -254,15 +288,31 @@ def print_pchase_lnl_webbl(pvilanguage:int, lnldelimeter:string, docunr:string, 
                 curr_bez = l_art.bezeich
                 disc =  to_decimal("0")
                 disc2 =  to_decimal("0")
+                disc_value =  to_decimal("0")
+                disc2_value =  to_decimal("0")
+                vat_val =  to_decimal("0")
+                price0 =  to_decimal("0")
+                brutto =  to_decimal("0")
 
                 if l_order.quality != "":
-                    disc = to_int(substring(l_order.quality, 0, 2)) + to_int(substring(l_order.quality, 3, 2)) * 0.01
-                    disc_value = to_decimal(substring(l_order.quality, 18, 18))
 
-                    if length(l_order.quality) > 12:
-                        disc2 = to_int(substring(l_order.quality, 12, 2)) + to_int(substring(l_order.quality, 15, 2)) * 0.01
-                        disc2_value = to_decimal(substring(l_order.quality, 36, 18))
-                        vat_val = to_decimal(substring(l_order.quality, 54))
+                    if num_entries(l_order.quality, " ") == 6:
+                        disc = to_int(substring(entry(0, l_order.quality, " ") , 0, 2)) + to_int(substring(entry(0, l_order.quality, " ") , 3, 2)) * 0.01
+                        disc_value =  to_decimal(to_decimal(entry(3 , l_order.quality , " ")) )
+                        disc2 = to_int(substring(entry(2, l_order.quality, " ") , 151)) + to_int(substring(entry(2, l_order.quality, " ") , 3, 2)) * 0.01
+                        disc2_value =  to_decimal(to_decimal(entry(4 , l_order.quality , " ")) )
+                        vat_val =  to_decimal(to_decimal(entry(5 , l_order.quality , " ")) )
+
+                    elif num_entries(l_order.quality, " ") >= 6:
+                        disc = to_int(substring(l_order.quality, 0, 2)) + to_int(substring(l_order.quality, 3, 2)) * 0.01
+                        disc_value = to_decimal(substring(l_order.quality, 18, 18))
+
+                        if length(l_order.quality) > 12:
+                            disc2 = to_int(substring(l_order.quality, 12, 2)) + to_int(substring(l_order.quality, 15, 2)) * 0.01
+                            disc2_value = to_decimal(substring(l_order.quality, 36, 18))
+                            vat_val = to_decimal(substring(l_order.quality, 54, 18))
+                            price0 = to_decimal(substring(l_order.quality, 72, 18))
+                            brutto = to_decimal(substring(l_order.quality, 90, 18))
 
                 if l_art.jahrgang == 0 or length(l_order.stornogrund) <= 12:
 
@@ -317,12 +367,28 @@ def print_pchase_lnl_webbl(pvilanguage:int, lnldelimeter:string, docunr:string, 
                 op_list.warenwert_add_vat =  to_decimal(op_list.warenwert_add_vat) + to_decimal((l_order.warenwert) * to_decimal(op_list.add_vat))
 
                 if op_list.warenwert == op_list.warenwert_add_vat:
-                    op_list.brutto = ( to_decimal(op_list.warenwert) + to_decimal(op_list.disc_value) + to_decimal(op_list.disc2_value)) - to_decimal(op_list.vat_value)
-                    op_list.epreis0 = to_decimal(round((op_list.brutto / op_list.anzahl) , 2))
+
+                    if brutto == 0:
+                        op_list.brutto = ( to_decimal(op_list.warenwert) + to_decimal(op_list.disc_value) + to_decimal(op_list.disc2_value)) - to_decimal(op_list.vat_value)
+                    else:
+                        op_list.brutto =  to_decimal(brutto)
+
+                    if price0 == 0:
+                        op_list.epreis0 = to_decimal(round((op_list.brutto / op_list.anzahl) , 2))
+                    else:
+                        op_list.epreis0 =  to_decimal(price0)
                     op_list.warenwert0 =  to_decimal(op_list.warenwert0) + to_decimal(l_order.warenwert) / to_decimal((1) - to_decimal(disc)) / to_decimal((1) - to_decimal(disc2)) / to_decimal((1) + to_decimal(vat))
                 else:
-                    op_list.brutto = ( to_decimal(op_list.warenwert_add_vat) + to_decimal(op_list.disc_value) + to_decimal(op_list.disc2_value)) - to_decimal(op_list.vat_value) - (to_decimal(op_list.warenwert_add_vat) - to_decimal(op_list.warenwert))
-                    op_list.epreis0 = to_decimal(round((op_list.brutto / op_list.anzahl) , 2))
+
+                    if brutto == 0:
+                        op_list.brutto = ( to_decimal(op_list.warenwert_add_vat) + to_decimal(op_list.disc_value) + to_decimal(op_list.disc2_value)) - to_decimal(op_list.vat_value) - (to_decimal(op_list.warenwert_add_vat) - to_decimal(op_list.warenwert))
+                    else:
+                        op_list.brutto =  to_decimal(brutto)
+
+                    if price0 == 0:
+                        op_list.epreis0 = to_decimal(round((op_list.brutto / op_list.anzahl) , 2))
+                    else:
+                        op_list.epreis0 =  to_decimal(price0)
                     op_list.warenwert0 =  to_decimal(op_list.warenwert0) + to_decimal(l_order.warenwert) / to_decimal((1) - to_decimal(disc)) / to_decimal((1) - to_decimal(disc2)) / to_decimal((1) + to_decimal(vat))
                 tot_qty =  to_decimal(tot_qty) + to_decimal(l_order.anzahl)
 
@@ -337,15 +403,31 @@ def print_pchase_lnl_webbl(pvilanguage:int, lnldelimeter:string, docunr:string, 
                 curr_bez = l_art.bezeich
                 disc =  to_decimal("0")
                 disc2 =  to_decimal("0")
+                disc_value =  to_decimal("0")
+                disc2_value =  to_decimal("0")
+                vat_val =  to_decimal("0")
+                price0 =  to_decimal("0")
+                brutto =  to_decimal("0")
 
                 if l_order.quality != "":
-                    disc = to_int(substring(l_order.quality, 0, 2)) + to_int(substring(l_order.quality, 3, 2)) * 0.01
-                    disc_value = to_decimal(substring(l_order.quality, 18, 18))
 
-                    if length(l_order.quality) > 12:
-                        disc2 = to_int(substring(l_order.quality, 12, 2)) + to_int(substring(l_order.quality, 15, 2)) * 0.01
-                        disc2_value = to_decimal(substring(l_order.quality, 36, 18))
-                        vat_val = to_decimal(substring(l_order.quality, 54))
+                    if num_entries(l_order.quality, " ") == 6:
+                        disc = to_int(substring(entry(0, l_order.quality, " ") , 0, 2)) + to_int(substring(entry(0, l_order.quality, " ") , 3, 2)) * 0.01
+                        disc_value =  to_decimal(to_decimal(entry(3 , l_order.quality , " ")) )
+                        disc2 = to_int(substring(entry(2, l_order.quality, " ") , 151)) + to_int(substring(entry(2, l_order.quality, " ") , 3, 2)) * 0.01
+                        disc2_value =  to_decimal(to_decimal(entry(4 , l_order.quality , " ")) )
+                        vat_val =  to_decimal(to_decimal(entry(5 , l_order.quality , " ")) )
+
+                    elif num_entries(l_order.quality, " ") >= 6:
+                        disc = to_int(substring(l_order.quality, 0, 2)) + to_int(substring(l_order.quality, 3, 2)) * 0.01
+                        disc_value = to_decimal(substring(l_order.quality, 18, 18))
+
+                        if length(l_order.quality) > 12:
+                            disc2 = to_int(substring(l_order.quality, 12, 2)) + to_int(substring(l_order.quality, 15, 2)) * 0.01
+                            disc2_value = to_decimal(substring(l_order.quality, 36, 18))
+                            vat_val = to_decimal(substring(l_order.quality, 54, 18))
+                            price0 = to_decimal(substring(l_order.quality, 72, 18))
+                            brutto = to_decimal(substring(l_order.quality, 90, 18))
 
                 if l_art.jahrgang == 0 or length(l_order.stornogrund) <= 12:
 
@@ -400,12 +482,28 @@ def print_pchase_lnl_webbl(pvilanguage:int, lnldelimeter:string, docunr:string, 
                 op_list.warenwert_add_vat =  to_decimal(op_list.warenwert_add_vat) + to_decimal((l_order.warenwert) * to_decimal(op_list.add_vat))
 
                 if op_list.warenwert == op_list.warenwert_add_vat:
-                    op_list.brutto = ( to_decimal(op_list.warenwert) + to_decimal(op_list.disc_value) + to_decimal(op_list.disc2_value)) - to_decimal(op_list.vat_value)
-                    op_list.epreis0 = to_decimal(round((op_list.brutto / op_list.anzahl) , 2))
+
+                    if brutto == 0:
+                        op_list.brutto = ( to_decimal(op_list.warenwert) + to_decimal(op_list.disc_value) + to_decimal(op_list.disc2_value)) - to_decimal(op_list.vat_value)
+                    else:
+                        op_list.brutto =  to_decimal(brutto)
+
+                    if price0 == 0:
+                        op_list.epreis0 = to_decimal(round((op_list.brutto / op_list.anzahl) , 2))
+                    else:
+                        op_list.epreis0 =  to_decimal(price0)
                     op_list.warenwert0 =  to_decimal(op_list.warenwert0) + to_decimal(l_order.warenwert) / to_decimal((1) - to_decimal(disc)) / to_decimal((1) - to_decimal(disc2)) / to_decimal((1) + to_decimal(vat))
                 else:
-                    op_list.brutto = ( to_decimal(op_list.warenwert_add_vat) + to_decimal(op_list.disc_value) + to_decimal(op_list.disc2_value)) - to_decimal(op_list.vat_value) - (to_decimal(op_list.warenwert_add_vat) - to_decimal(op_list.warenwert))
-                    op_list.epreis0 = to_decimal(round((op_list.brutto / op_list.anzahl) , 2))
+
+                    if brutto == 0:
+                        op_list.brutto = ( to_decimal(op_list.warenwert_add_vat) + to_decimal(op_list.disc_value) + to_decimal(op_list.disc2_value)) - to_decimal(op_list.vat_value) - (to_decimal(op_list.warenwert_add_vat) - to_decimal(op_list.warenwert))
+                    else:
+                        op_list.brutto =  to_decimal(brutto)
+
+                    if price0 == 0:
+                        op_list.epreis0 = to_decimal(round((op_list.brutto / op_list.anzahl) , 2))
+                    else:
+                        op_list.epreis0 =  to_decimal(price0)
                     op_list.warenwert0 =  to_decimal(op_list.warenwert0) + to_decimal(l_order.warenwert) / to_decimal((1) - to_decimal(disc)) / to_decimal((1) - to_decimal(disc2)) / to_decimal((1) + to_decimal(vat))
                 tot_qty =  to_decimal(tot_qty) + to_decimal(l_order.anzahl)
 
@@ -625,38 +723,15 @@ def print_pchase_lnl_webbl(pvilanguage:int, lnldelimeter:string, docunr:string, 
             balance =  to_decimal(balance) + to_decimal(op_list.warenwert)
         else:
             balance =  to_decimal(balance) + to_decimal(op_list.warenwert_add_vat)
+        bl_amount = to_string(op_list.warenwert, "->,>>>,>>>,>>>,>>9.99")
+        bl_balance = to_string(balance, "->,>>>,>>>,>>>,>>9.99")
+        bl_amount_add_vat = to_string(op_list.warenwert_add_vat, "->>>,>>>,>>>,>>9.99")
 
-        if not long_digit:
-
-            if price_decimal == 0 and not foreign_currency:
-                bl_amount = to_string(op_list.warenwert, "->>>,>>>,>>>,>>9")
-                bl_balance = to_string(balance, "->>>,>>>,>>>,>>9")
-                bl_amount_add_vat = to_string(op_list.warenwert_add_vat, "->>>,>>>,>>>,>>9")
-
-                if op_list.epreis >= 10000000:
-                    bl_price = to_string(op_list.epreis, " >>>,>>>,>>>,>>9")
-                else:
-                    bl_price = to_string(op_list.epreis, ">>>,>>>,>>>,>>9")
-
-            elif price_decimal == 2 or foreign_currency:
-                bl_amount = to_string(op_list.warenwert, "->,>>>,>>>,>>>,>>9.99")
-                bl_balance = to_string(balance, "->,>>>,>>>,>>>,>>9.99")
-                bl_amount_add_vat = to_string(op_list.warenwert_add_vat, "->>>,>>>,>>>,>>9.99")
-
-                if op_list.epreis >= 10000000:
-                    bl_price = to_string(op_list.epreis, " >>,>>>,>>>,>>>,>>9.99")
-                else:
-                    bl_price = to_string(op_list.epreis, ">>>,>>>,>>>,>>9.99")
-            bl_vat = to_string(op_list.vat_value, "->,>>>,>>>,>>9.99")
-
-
+        if op_list.epreis >= 10000000:
+            bl_price = to_string(op_list.epreis, " >>,>>>,>>>,>>>,>>9.99")
         else:
-            bl_price = to_string(op_list.epreis, ">,>>>,>>>,>>>,>>9")
-            bl_amount = to_string(op_list.warenwert, "->>,>>>,>>>,>>>,>>9")
-            bl_amount_add_vat = to_string(op_list.warenwert_add_vat, "->>,>>>,>>>,>>>,>>9")
-            bl_balance = to_string(balance, "->>,>>>,>>>,>>>,>>9")
-            bl_vat = to_string(op_list.vat_value, "->,>>>,>>>,>>9")
-            po_nr = op_list.po_nr
+            bl_price = to_string(op_list.epreis, ">>>,>>>,>>>,>>9.99")
+        bl_vat = to_string(op_list.vat_value, "->,>>>,>>>,>>9.99")
 
 
         str3_list = Str3_list()
@@ -669,9 +744,9 @@ def print_pchase_lnl_webbl(pvilanguage:int, lnldelimeter:string, docunr:string, 
                             bl_price + lnldelimeter + bl_amount + lnldelimeter + c_exrate + lnldelimeter + bl_balance + lnldelimeter + \
                             op_list.remark + lnldelimeter + op_list.konto + lnldelimeter + to_string(op_list.disc, "->>9.99") + lnldelimeter + \
                             to_string(op_list.disc2, "->>9.99") + lnldelimeter + to_string(op_list.vat, "->>9.99") + lnldelimeter + \
-                            to_string(op_list.disc_value, "->>>,>>>,>>>,>>9") + lnldelimeter + to_string(op_list.disc2_value, "->>>,>>>,>>>,>>9") + \
-                            lnldelimeter + to_string(op_list.epreis0, ">>,>>>,>>>,>>>,>>9") + lnldelimeter + bl_vat + lnldelimeter + \
-                            to_string(op_list.artnr, ">>>>>>>9") + lnldelimeter + to_string(op_list.brutto, ">>>,>>>,>>>,>>9") + lnldelimeter + \
+                            to_string(op_list.disc_value, "->>>,>>>,>>>,>>9.99") + lnldelimeter + to_string(op_list.disc2_value, "->>>,>>>,>>>,>>9.99") + \
+                            lnldelimeter + to_string(op_list.epreis0, ">>,>>>,>>>,>>>,>>9.99") + lnldelimeter + bl_vat + lnldelimeter + \
+                            to_string(op_list.artnr, ">>>>>>>9") + lnldelimeter + to_string(op_list.brutto, ">>>,>>>,>>>,>>9.99") + lnldelimeter + \
                             op_list.po_nr + lnldelimeter + po_source + lnldelimeter + to_string(vat1, "->,>>>,>>>,>>>,>>9.99") + lnldelimeter + \
                             to_string(vat2, "->,>>>,>>>,>>>,>>9.99") + lnldelimeter + to_string(((op_list.add_vat - 1) * 100) , "->>9.99") + lnldelimeter + bl_amount_add_vat
         str3 = Str3()

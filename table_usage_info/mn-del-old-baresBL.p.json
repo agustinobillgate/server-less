@@ -1,0 +1,22 @@
+{
+    "Htparam": {
+        "read": [
+            "finteger",
+            "fdate",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bk_func": {
+        "read": [],
+        "write": []
+    },
+    "Bk_reser": {
+        "read": [],
+        "write": []
+    },
+    "Bk_veran": {
+        "read": [],
+        "write": []
+    }
+}

@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+#------------------------------------------
+# Rd, 05/11/2025
+# to_int(res_line.code))]}) -> to_int(res_line.code.strip()))}).first() 
+#------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Guest, Res_line, Reservation, Bill, Queasy, Zimkateg, Sourccod, Mc_guest, Mc_types, Htparam, Segment
@@ -87,7 +92,7 @@ def get_print_rc_lnlbl(resno:int, reslino:int):
                     print_rc_list.purpose_stay = queasy.char3
                 break
 
-        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
         if queasy and queasy.char1 != "":
             print_rc_list.bill_instruct = queasy.char1
@@ -194,7 +199,6 @@ def get_print_rc_lnlbl(resno:int, reslino:int):
 
             if (rsvguest and rsvguest.karteityp > 1) and (rsvguest.gastnr != wi_gastnr and rsvguest.gastnr != ind_gastnr):
                 print_rc_list.room_price = "0.00"
-                print_rc_list.depositgef = "0.00"
 
             elif res_line.gastnrmember == res_line.gastnrpay or rsvguest.gastnr == wi_gastnr or rsvguest.gastnr == ind_gastnr:
                 print_rc_list.room_price = trim(to_string(res_line.zipreis, ">>>,>>>,>>9.99"))

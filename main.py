@@ -114,6 +114,7 @@ log_id = 0
 
 skip_list = {   "Common/checkPermission2",
                 "Common/getHTParam0", 
+                "Common/readHtparam",
                 "Common/checkTime",
                 "Common/checkPermission", 
                 "Common/loadDateTimeServer1",
@@ -1657,7 +1658,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
     if not hotel_schema:
         hotel_schema = input_data.get("hotel_schema")
 
-    print("hotel_schema:", hotel_schema, ui_request_id)
+    # print("hotel_schema:", hotel_schema, ui_request_id)
 
     #------------------------ Main Function ------------------------------
     try:
@@ -1682,13 +1683,13 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
             if num_entries(path,"/") == 5:
                 service_name += entry(4,path,"/")
 
-            print("Module/Service:", vhp_module, service_name)
+            print("Schema/Module/Service:", hotel_schema, vhp_module, service_name)
             endpoint = vhp_module + "/" + service_name
             log_id = log_activity(endpoint, inputUsername, hotel_schema)
 
             set_db_and_schema(hotel_schema)
             db_session = local_storage.db_session
-            print("db_session:", db_session)
+            # print("db_session:", db_session)
 
             try:
                 with open('modules/' + vhp_module + '/_mapping.txt', mode ='r') as file:   
@@ -1732,7 +1733,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
             else:
                 # version = "localhost, " + get_function_version(module_name, function_name, "/usr1/serverless/src/functions/")     
                 version = "localhost"
-            print(f"Main.py {function_name} running on: {version}")
+            # print(f"Main.py {function_name} running on: {version}")
             ok_flag = "true"
             local_storage.debugging = f"{local_storage.debugging},Skip OK:{ok_flag}, {function_name} Ver:{version}"
             
@@ -1762,7 +1763,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                         db_session.add(newRequest)
                         db_session.commit()
                         newRequest_recid = newRequest._recid
-                        print("Start BigResponse:", newRequest.userinit, newRequest_recid)
+                        # print("Start BigResponse:", newRequest.userinit, newRequest_recid)
                     else:
                         if existing_request.orig_infostr == "running":
                             existing_request.zeit = existing_request.zeit + 1
@@ -1801,13 +1802,13 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                         local_storage.debugging = local_storage.debugging + ',Run'
                         db_session.commit()
                     if importlib.util.find_spec(module_name):
-                        print("Import Module:", module_name)
+                        # print("Import Module:", module_name)
                         module = importlib.import_module(module_name)
                         # Rd, just to re-test, develop mode only
                         module = importlib.reload(module)   
                         if hasattr(module, function_name):
                             try:
-                                print("Calling getAttr:", function_name)   
+                                # print("Calling getAttr:", function_name)   
                                 obj = getattr(module, function_name)
                                 update_input_format(obj,input_data)
                                 # print("Start Call:", function_name)  
@@ -1856,7 +1857,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
             else:
                 
                 data_string = ''.join(str(value) for value in output_data.values())
-                print("OutputData:", len(data_string))
+                # print("OutputData:", len(data_string))
                 # print(data_string)
 
         # ------------------------------------------------------------------------------

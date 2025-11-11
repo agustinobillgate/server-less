@@ -1,11 +1,15 @@
 #using conversion tools version: 1.0.0.117
 
-# ============================
+# ==================================
 # Rulita, 22-10-2025 
 # Issue : 
 # - New compile program
 # - Fix space in string 
-# ============================
+
+# Rulita, 10-11-2025 
+# Issue :
+# - Fixing to_string var table guest 
+# ==================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -170,7 +174,7 @@ def nt_departure():
             cl_list.c = res_line.kind1
             cl_list.co = res_line.gratis
             cl_list.argt = res_line.arrangement
-            cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
+            cl_list.company = to_string(guest.name) + ", " + to_string(guest.vorname1) + " " + to_string(guest.anrede1) + to_string(guest.anredefirma)
 
             if not res_line.zimmerfix:
                 tot_rm = tot_rm + 1

@@ -9,6 +9,10 @@
 # Rulita, 30-10-2025 
 # Fixing miss table name datum -> segmentstat.datum
 # Fixing miss table name datum -> nationstat.datum
+
+# Rahman, 06-11-2025
+#   - fixing space on long string
+#   - fixing ("string").lower() to only lowercase string
 # =================================================
 
 from functions.additional_functions import *
@@ -17,24 +21,23 @@ from datetime import date
 from models import Htparam, Paramtext, Nightaudit, Nitestor, Zimmer, Artikel, Umsatz, Hoteldpt, Uebertrag, Segment, Segmentstat, Nation, Nationstat, Zinrstat, Zimkateg, Zkstat
 
 def nt_finabl():
-
     prepare_cache ([Htparam, Paramtext, Nightaudit, Artikel, Umsatz, Hoteldpt, Uebertrag, Segment, Segmentstat, Nation, Nationstat, Zinrstat, Zimkateg, Zkstat])
 
     pvilanguage:int = 0
-    lvcarea:string = "nt-fina"
+    lvcarea:str = "nt-fina"
     long_digit:bool = False
     n:int = 0
     price_decimal:int = 0
-    progname:string = "nt-fina.p"
+    progname:str = "nt-fina.p"
     night_type:int = 0
     reihenfolge:int = 0
     line_nr:int = 0
-    line:string = ""
+    line:str = ""
     p_width:int = 119
     p_length:int = 56
-    htl_name:string = ""
-    htl_adr:string = ""
-    htl_tel:string = ""
+    htl_name:str = ""
+    htl_adr:str = ""
+    htl_tel:str = ""
     from_date:date = None
     to_date:date = None
     loop_i:int = 0
@@ -42,26 +45,51 @@ def nt_finabl():
 
     output_list = cl_list = info_list = cl_list1 = None
 
-    output_list_data, Output_list = create_model("Output_list", {"str":string})
-    cl_list_data, Cl_list = create_model("Cl_list", {"flag":int, "proz":int, "bezeich":string, "dgros":Decimal, "mgros":Decimal, "ygros":Decimal, "lmgros":Decimal, "lygros":Decimal})
-    info_list_data, Info_list = create_model("Info_list", {"flag":int, "room":int, "avrm":int, "ocrm":int, "rcom":int, "vacant":int, "ooo":int, "pers":int, "com":int, "arrival":int, "dayuse":int, "lodging":Decimal})
+    output_list_data, Output_list = create_model(
+        "Output_list",
+        {
+            "str": str
+        })
+    cl_list_data, Cl_list = create_model(
+        "Cl_list",
+        {
+            "flag": int,
+            "proz": int,
+            "bezeich": str,
+            "dgros": Decimal,
+            "mgros": Decimal,
+            "ygros": Decimal,
+            "lmgros": Decimal,
+            "lygros": Decimal
+        })
+    info_list_data, Info_list = create_model(
+        "Info_list",
+        {
+            "flag": int,
+            "room": int,
+            "avrm": int,
+            "ocrm": int,
+            "rcom": int,
+            "vacant": int,
+            "ooo": int,
+            "pers": int,
+            "com": int,
+            "arrival": int,
+            "dayuse": int,
+            "lodging": Decimal
+        })
 
     db_session = local_storage.db_session
 
     def generate_output():
         nonlocal pvilanguage, lvcarea, long_digit, n, price_decimal, progname, night_type, reihenfolge, line_nr, line, p_width, p_length, htl_name, htl_adr, htl_tel, from_date, to_date, loop_i, htparam, paramtext, nightaudit, nitestor, zimmer, artikel, umsatz, hoteldpt, uebertrag, segment, segmentstat, nation, nationstat, zinrstat, zimkateg, zkstat
-
-
         nonlocal output_list, cl_list, info_list, cl_list1
         nonlocal output_list_data, cl_list_data, info_list_data
 
         return {}
 
     def umsatz_list():
-
         nonlocal pvilanguage, lvcarea, long_digit, n, price_decimal, progname, night_type, reihenfolge, line_nr, line, p_width, p_length, htl_name, htl_adr, htl_tel, from_date, to_date, loop_i, htparam, paramtext, nightaudit, nitestor, zimmer, artikel, umsatz, hoteldpt, uebertrag, segment, segmentstat, nation, nationstat, zinrstat, zimkateg, zkstat
-
-
         nonlocal output_list, cl_list, info_list, cl_list1
         nonlocal output_list_data, cl_list_data, info_list_data
 
@@ -83,7 +111,7 @@ def nt_finabl():
         line = translateExtended ("Tel", lvcarea, "") + " " + to_string(htl_tel, "x(36)")
         for i in range(1,42 + 1) :
             line = line + " "
-        line = line + translateExtended ("Page :", lvcarea, "") + " " + "##page"
+        line = line + translateExtended("Page      :", lvcarea, "") + " " + "##page"  # Rahman - fix spacing on long string
         add_line(line)
         add_line(" ")
         line = translateExtended ("Finance Recapitulation Report", lvcarea, "")
@@ -93,9 +121,11 @@ def nt_finabl():
         for i in range(1,p_width + 1) :
             line = line + "_"
         add_line(line)
-        line = " " + translateExtended ("Current year Current year Current year Previous year Previous year", lvcarea, "")
+        line = "                             " + translateExtended(
+            "Current year Current year Current year Previous year Previous year", lvcarea, "")  # Rahman - fix spacing on long string
         add_line(line)
-        line = " " + translateExtended ("Effective-day Effective-month Effective-year Effective-month Effective-year", lvcarea, "")
+        line = "                            " + translateExtended(
+            "Effective-day Effective-month Effective-year Effective-month Effective-year", lvcarea, "")  # Rahman - fix spacing on long string
         add_line(line)
         line = ""
         for i in range(1,p_width + 1) :
@@ -116,11 +146,10 @@ def nt_finabl():
                 add_line(line)
 
             elif cl_list.flag >= 2:
-
                 if cl_list.bezeich == "":
                     add_line(" ")
 
-                elif cl_list.bezeich.lower()  == ("*").lower() :
+                elif cl_list.bezeich.lower() == "*":
                     cl_list.bezeich = ""
                     fill_line()
                 else:
@@ -129,35 +158,46 @@ def nt_finabl():
 
 
     def fill_line():
-
         nonlocal pvilanguage, lvcarea, long_digit, n, price_decimal, progname, night_type, reihenfolge, line_nr, line, p_width, p_length, htl_name, htl_adr, htl_tel, from_date, to_date, loop_i, htparam, paramtext, nightaudit, nitestor, zimmer, artikel, umsatz, hoteldpt, uebertrag, segment, segmentstat, nation, nationstat, zinrstat, zimkateg, zkstat
-
-
         nonlocal output_list, cl_list, info_list, cl_list1
         nonlocal output_list_data, cl_list_data, info_list_data
 
+# Rahman - start fixing space on long string
         if (price_decimal == 2 and cl_list.proz == 0) or cl_list.proz == 1:
-            line = to_string(cl_list.bezeich, "x(24)") + " " + to_string(cl_list.dgros, " ->>>,>>>,>>9.99") + " " + to_string(cl_list.mgros, " ->>>,>>>,>>9.99") + " " + to_string(cl_list.ygros, " ->>>>,>>>,>>9.99") + " " + to_string(cl_list.lmgros, " ->>>,>>>,>>9.99") + " " + to_string(cl_list.lygros, " ->>>>,>>>,>>9.99")
+            line = to_string(cl_list.bezeich, "x(24)") + " " + \
+                to_string(cl_list.dgros, " ->>>,>>>,>>9.99") + " " + \
+                to_string(cl_list.mgros, " ->>>,>>>,>>9.99") + " " + \
+                to_string(cl_list.ygros, "   ->>>>,>>>,>>9.99") + " " + \
+                to_string(cl_list.lmgros, "   ->>>,>>>,>>9.99") + " " + \
+                to_string(cl_list.lygros, "   ->>>>,>>>,>>9.99")
 
         elif cl_list.proz == 2:
-            line = to_string(cl_list.bezeich, "x(24)") + " " + to_string(cl_list.dgros, " ->>>,>>>,>>9 ") + " " + to_string(cl_list.mgros, " ->>>,>>>,>>9 ") + " " + to_string(cl_list.ygros, " ->>>>,>>>,>>9 ") + " " + to_string(cl_list.lmgros, " ->>>,>>>,>>9 ") + " " + to_string(cl_list.lygros, " ->>>>,>>>,>>9 ")
+            line = to_string(cl_list.bezeich, "x(24)") + " " + \
+                to_string(cl_list.dgros, " ->>>,>>>,>>9   ") + " " + \
+                to_string(cl_list.mgros, "   ->>>,>>>,>>9   ") + " " + \
+                to_string(cl_list.ygros, "   ->>>>,>>>,>>9   ") + " " + \
+                to_string(cl_list.lmgros, "   ->>>,>>>,>>9   ") + " " + \
+                to_string(cl_list.lygros, "   ->>>>,>>>,>>9   ")
         else:
-            line = to_string(cl_list.bezeich, "x(24)") + " " + to_string(cl_list.dgros, "->>>,>>>,>>>,>>9") + " " + to_string(cl_list.mgros, "->,>>>,>>>,>>>,>>9") + " " + to_string(cl_list.ygros, "->>,>>>,>>>,>>>,>>9") + " " + to_string(cl_list.lmgros, "->,>>>,>>>,>>>,>>9") + " " + to_string(cl_list.lygros, "->>,>>>,>>>,>>>,>>9")
+            line = to_string(cl_list.bezeich, "x(24)") + " " + \
+                to_string(cl_list.dgros, "->>>,>>>,>>>,>>9") + " " + \
+                to_string(cl_list.mgros, "->,>>>,>>>,>>>,>>9") + " " + \
+                to_string(cl_list.ygros, "->>,>>>,>>>,>>>,>>9") + " " + \
+                to_string(cl_list.lmgros, "->,>>>,>>>,>>>,>>9") + " " + \
+                to_string(cl_list.lygros, "->>,>>>,>>>,>>>,>>9")
         add_line(line)
+# end fixing space on long string
 
-
-    def add_line(s:string):
-
+    def add_line(s:str):
         nonlocal pvilanguage, lvcarea, long_digit, n, price_decimal, progname, night_type, reihenfolge, line_nr, line, p_width, p_length, htl_name, htl_adr, htl_tel, from_date, to_date, loop_i, htparam, paramtext, nightaudit, nitestor, zimmer, artikel, umsatz, hoteldpt, uebertrag, segment, segmentstat, nation, nationstat, zinrstat, zimkateg, zkstat
-
-
         nonlocal output_list, cl_list, info_list, cl_list1
         nonlocal output_list_data, cl_list_data, info_list_data
 
         if s == "":
             s = " "
 
-        nitestor = get_cache (Nitestor, {"night_type": [(eq, night_type)],"reihenfolge": [(eq, reihenfolge)],"line_nr": [(eq, line_nr)]})
+        nitestor = get_cache (
+            Nitestor, {"night_type": [(eq, night_type)],"reihenfolge": [(eq, reihenfolge)],"line_nr": [(eq, line_nr)]})
 
         if not nitestor:
             nitestor = Nitestor()
@@ -168,14 +208,10 @@ def nt_finabl():
             nitestor.line_nr = line_nr
         nitestor.line = s
         line_nr = line_nr + 1
-        pass
 
 
     def create_fina():
-
         nonlocal pvilanguage, lvcarea, long_digit, n, price_decimal, progname, night_type, reihenfolge, line_nr, line, p_width, p_length, htl_name, htl_adr, htl_tel, from_date, to_date, loop_i, htparam, paramtext, nightaudit, nitestor, zimmer, artikel, umsatz, hoteldpt, uebertrag, segment, segmentstat, nation, nationstat, zinrstat, zimkateg, zkstat
-
-
         nonlocal output_list, cl_list, info_list, cl_list1
         nonlocal output_list_data, cl_list_data, info_list_data
 
@@ -247,7 +283,6 @@ def nt_finabl():
                 umsatz_obj_list[umsatz._recid] = True
 
             if curr_dept != artikel.departement:
-
                 if curr_dept != -1:
                     cl_list.dgros =  to_decimal(dgros)
                     cl_list.mgros =  to_decimal(mgros)
@@ -348,7 +383,6 @@ def nt_finabl():
 
             for umsatz in db_session.query(Umsatz).filter(
                      (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement) & (((Umsatz.datum >= ljan1) & (Umsatz.datum <= lfdate)) | ((Umsatz.datum >= jan1) & (Umsatz.datum <= to_date)))).order_by(Umsatz.datum).all():
-
                 if umsatz.datum == to_date:
                     dgros =  to_decimal(dgros) + to_decimal(umsatz.betrag)
 
@@ -398,7 +432,8 @@ def nt_finabl():
 
         cl_list.flag = 5
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 120)]})
+        htparam = get_cache (
+            Htparam, {"paramnr": [(eq, 120)]})
         art1 = htparam.finteger
 
         for artikel in db_session.query(Artikel).filter(
@@ -472,97 +507,78 @@ def nt_finabl():
         cl_list.flag = 7
 
         for segment in db_session.query(Segment).order_by(Segment._recid).all():
-
             for segmentstat in db_session.query(Segmentstat).filter(
                      (Segmentstat.segmentcode == segment.segmentcode) & (((Segmentstat.datum >= ljan1) & (Segmentstat.datum <= lfdate)) | ((Segmentstat.datum >= jan1) & (Segmentstat.datum <= to_date)))).order_by(Segmentstat._recid).all():
 
                 if segmentstat.datum == to_date:
-
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 1), first=True)
                     info_list.lodging =  to_decimal(info_list.lodging) + to_decimal(segmentstat.logis)
 
                 if segmentstat.datum >= from_date:
-
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 2), first=True)
                     info_list.lodging =  to_decimal(info_list.lodging) + to_decimal(segmentstat.logis)
 
                 if segmentstat.datum >= jan1:
-
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 3), first=True)
                     info_list.lodging =  to_decimal(info_list.lodging) + to_decimal(segmentstat.logis)
 
                 # Rulita
                 # Fixing miss table name datum -> segmentstat.datum
                 if segmentstat.datum >= lfdate and segmentstat.datum <= ltdate:
-
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 4), first=True)
                     info_list.lodging =  to_decimal(info_list.lodging) + to_decimal(segmentstat.logis)
 
                 # Rulita
                 # Fixing miss table name datum -> segmentstat.datum
                 if segmentstat.datum >= ljan1 and segmentstat.datum <= ltdate:
-
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 5), first=True)
                     info_list.lodging =  to_decimal(info_list.lodging) + to_decimal(segmentstat.logis)
 
         for nation in db_session.query(Nation).filter(
                  (Nation.natcode == 0)).order_by(Nation._recid).all():
-
             for nationstat in db_session.query(Nationstat).filter(
                      (Nationstat.nationnr == nation.nationnr) & (Nationstat.argtart == 2) & (((Nationstat.datum >= ljan1) & (Nationstat.datum <= lfdate)) | ((Nationstat.datum >= jan1) & (Nationstat.datum <= to_date)))).order_by(Nationstat._recid).all():
-
                 if nationstat.datum == to_date:
-
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 1), first=True)
                     info_list.com = info_list.com + nationstat.loggratis
 
                 if nationstat.datum >= from_date:
-
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 2), first=True)
                     info_list.com = info_list.com + nationstat.loggratis
 
                 if nationstat.datum >= jan1:
-
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 3), first=True)
                     info_list.com = info_list.com + nationstat.loggratis
 
                 # Rulita
                 # Fixing miss table name datum -> nationstat.datum
                 if nationstat.datum >= lfdate and nationstat.datum <= ltdate:
-
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 4), first=True)
                     info_list.com = info_list.com + nationstat.loggratis
 
                 if nationstat.datum >= ljan1 and nationstat.datum <= ltdate:
-
                     info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 5), first=True)
                     info_list.com = info_list.com + nationstat.loggratis
 
         for zinrstat in db_session.query(Zinrstat).filter(
-                 (Zinrstat.zinr == ("vacant").lower()) & (((Zinrstat.datum >= ljan1) & (Zinrstat.datum <= lfdate)) | ((Zinrstat.datum >= jan1) & (Zinrstat.datum <= to_date)))).order_by(Zinrstat.datum).all():
-
+                 (Zinrstat.zinr == "vacant") & (((Zinrstat.datum >= ljan1) & (Zinrstat.datum <= lfdate)) | ((Zinrstat.datum >= jan1) & (Zinrstat.datum <= to_date)))).order_by(Zinrstat.datum).all():  # Rahman -  fix ("string").lower()
             if zinrstat.datum == to_date:
-
                 info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 1), first=True)
                 info_list.vacant = info_list.vacant + zinrstat.zimmeranz
 
             if zinrstat.datum >= from_date:
-
                 info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 2), first=True)
                 info_list.vacant = info_list.vacant + zinrstat.zimmeranz
 
             if zinrstat.datum >= jan1:
-
                 info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 3), first=True)
                 info_list.vacant = info_list.vacant + zinrstat.zimmeranz
 
             if zinrstat.datum >= lfdate and zinrstat.datum <= ltdate:
-
                 info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 4), first=True)
                 info_list.vacant = info_list.vacant + zinrstat.zimmeranz
 
             if zinrstat.datum >= ljan1 and zinrstat.datum <= ltdate:
-
                 info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 5), first=True)
                 info_list.vacant = info_list.vacant + zinrstat.zimmeranz
 
@@ -570,34 +586,28 @@ def nt_finabl():
                  (Zinrstat.zinr == ("ooo").lower()) & (((Zinrstat.datum >= ljan1) & (Zinrstat.datum <= lfdate)) | ((Zinrstat.datum >= jan1) & (Zinrstat.datum <= to_date)))).order_by(Zinrstat.datum).all():
 
             if zinrstat.datum == to_date:
-
                 info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 1), first=True)
                 info_list.ooo = info_list.ooo + zinrstat.zimmeranz
 
             if zinrstat.datum >= from_date:
-
                 info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 2), first=True)
                 info_list.ooo = info_list.ooo + zinrstat.zimmeranz
 
             if zinrstat.datum >= jan1:
-
                 info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 3), first=True)
                 info_list.ooo = info_list.ooo + zinrstat.zimmeranz
 
             if zinrstat.datum >= lfdate and zinrstat.datum <= ltdate:
-
                 info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 4), first=True)
                 info_list.ooo = info_list.ooo + zinrstat.zimmeranz
 
             if zinrstat.datum >= ljan1 and zinrstat.datum <= ltdate:
-
                 info_list = query(info_list_data, filters=(lambda info_list: info_list.flag == 5), first=True)
                 info_list.ooo = info_list.ooo + zinrstat.zimmeranz
         loop_i = 0
 
         for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg._recid).all():
             loop_i = loop_i + 1
-
 
             anzroom = 0
 
@@ -623,7 +633,6 @@ def nt_finabl():
 
             for zkstat in db_session.query(Zkstat).filter(
                      (Zkstat.zikatnr == zimkateg.zikatnr) & (((Zkstat.datum >= ljan1) & (Zkstat.datum <= lfdate)) | ((Zkstat.datum >= jan1) & (Zkstat.datum <= to_date)))).order_by(Zkstat.datum).all():
-
                 zinrstat = get_cache (Zinrstat, {"zinr": [(eq, "tot-rm")],"datum": [(eq, zkstat.datum)]})
 
                 if zkstat.datum == to_date:
@@ -640,7 +649,6 @@ def nt_finabl():
                     info_list.rcom = info_list.rcom + zkstat.betriebsnr
 
                     if loop_i == 1:
-
                         if zinrstat:
                             info_list.room = info_list.room + zinrstat.zimmeranz
                         else:
@@ -660,7 +668,6 @@ def nt_finabl():
                     info_list.rcom = info_list.rcom + zkstat.betriebsnr
 
                     if loop_i == 1:
-
                         if zinrstat:
                             info_list.room = info_list.room + zinrstat.zimmeranz
                         else:
@@ -680,7 +687,6 @@ def nt_finabl():
                     info_list.rcom = info_list.rcom + zkstat.betriebsnr
 
                     if loop_i == 1:
-
                         if zinrstat:
                             info_list.room = info_list.room + zinrstat.zimmeranz
                         else:
@@ -700,7 +706,6 @@ def nt_finabl():
                     info_list.rcom = info_list.rcom + zkstat.betriebsnr
 
                     if loop_i == 1:
-
                         if zinrstat:
                             info_list.room = info_list.room + zinrstat.zimmeranz
                         else:
@@ -720,7 +725,6 @@ def nt_finabl():
                     info_list.rcom = info_list.rcom + zkstat.betriebsnr
 
                     if loop_i == 1:
-
                         if zinrstat:
                             info_list.room = info_list.room + zinrstat.zimmeranz
                         else:
@@ -1130,30 +1134,35 @@ def nt_finabl():
         if (info_list.ocrm - info_list.rcom) != 0:
             cl_list.lygros =  to_decimal(info_list.lodging) / to_decimal((info_list.ocrm) - to_decimal(info_list.rcom))
 
-
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 246)]})
+    htparam = get_cache (
+        Htparam, {"paramnr": [(eq, 246)]})
     long_digit = htparam.flogical
 
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 200)]})
+    paramtext = get_cache (
+        Paramtext, {"txtnr": [(eq, 200)]})
     htl_name = paramtext.ptexte
 
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 201)]})
+    paramtext = get_cache (
+        Paramtext, {"txtnr": [(eq, 201)]})
     htl_adr = paramtext.ptexte
 
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 204)]})
+    paramtext = get_cache (
+        Paramtext, {"txtnr": [(eq, 204)]})
     htl_tel = paramtext.ptexte
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
+    htparam = get_cache (
+        Htparam, {"paramnr": [(eq, 110)]})
     to_date = htparam.fdate
     from_date = date_mdy(get_month(to_date) , 1, get_year(to_date))
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 491)]})
+    htparam = get_cache (
+        Htparam, {"paramnr": [(eq, 491)]})
     price_decimal = htparam.finteger
 
-    nightaudit = get_cache (Nightaudit, {"programm": [(eq, progname)]})
+    nightaudit = get_cache (
+        Nightaudit, {"programm": [(eq, progname)]})
 
     if nightaudit:
-
         if nightaudit.hogarest == 0:
             night_type = 0
         else:

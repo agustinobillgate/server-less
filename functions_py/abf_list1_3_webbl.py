@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 #------------------------------------------
 # Rd, 22/8/2025
 # add zimmeranz = res_line, defaulnya ambil = 1, 
@@ -14,39 +14,41 @@ zikat_list_data, Zikat_list = create_model("Zikat_list", {"selected":bool, "zika
 
 def abf_list1_3_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, show_bfast_rate:bool, zikat_list_data:[Zikat_list]):
 
-    prepare_cache ([Res_line, Arrangement, Artikel, Argt_line, Fixleist, Guest, Reservation, Segment, Ratecode, Mc_guest, Mc_types, Mealcoup, Waehrung])
+    prepare_cache ([Res_line, Arrangement, Artikel, Argt_line, Reslin_queasy, Fixleist, Guest, Reservation, Segment, Ratecode, Mc_guest, Mc_types, Mealcoup, Waehrung])
 
     abf_list_data = []
     diffcidate:int = 0
     p_87:date = None
     num_of_day:int = 0
     exchg_rate:Decimal = 1
+    dont_post:bool = False
     res_line = genstat = arrangement = artikel = argt_line = reslin_queasy = fixleist = guest = reservation = segment = ratecode = mc_guest = mc_types = mealcoup = waehrung = bill = master = None
 
-    abf_list = zikat_list = None
+    abf_list = zikat_list = t_argt_ratelist = None
 
-    abf_list_data, Abf_list = create_model("Abf_list", {"zinr":string, "name":string, "segmentcode":int, "ankunft":date, "anztage":int, "abreise":date, "kurzbez":string, "arrangement":string, "zimmeranz":int, "erwachs":int, "kind1":int, "gratis":int, "resnr":int, "bemerk":string, "gastnr":int, "resstatus":int, "resname":string, "address":string, "city":string, "comments":string, "datum":date, "nation1":string, "bezeich":string, "zipreis":Decimal, "code":string, "id":string, "bezeichnung":string, "mobil_telefon":string, "bfast_consume":int, "mcard_number":string, "mcard_type":string, "bfast_revenue":Decimal})
+    abf_list_data, Abf_list = create_model("Abf_list", {"zinr":string, "name":string, "segmentcode":int, "ankunft":date, "anztage":int, "abreise":date, "kurzbez":string, "arrangement":string, "zimmeranz":int, "erwachs":int, "kind1":int, "kind2":int, "gratis":int, "resnr":int, "bemerk":string, "gastnr":int, "resstatus":int, "resname":string, "address":string, "city":string, "comments":string, "datum":date, "nation1":string, "bezeich":string, "zipreis":Decimal, "code":string, "id":string, "bezeichnung":string, "mobil_telefon":string, "bfast_consume":int, "mcard_number":string, "mcard_type":string, "bfast_revenue":Decimal, "c_bfast_revenue":Decimal, "i_bfast_revenue":Decimal})
+    t_argt_ratelist_data, T_argt_ratelist = create_model("T_argt_ratelist", {"bfast_artnr":int, "bfast_dept":int, "argtnr":int, "based_on_adult":bool, "based_on_child":bool, "based_on_infant":bool, "adult_qty":int, "child_qty":int, "infant_qty":int, "fixliest_qty":int, "rate_adult":Decimal, "rate_child":Decimal, "rate_infant":Decimal, "do_it":bool, "room_only":bool}, {"room_only": True})
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal abf_list_data, diffcidate, p_87, num_of_day, exchg_rate, res_line, genstat, arrangement, artikel, argt_line, reslin_queasy, fixleist, guest, reservation, segment, ratecode, mc_guest, mc_types, mealcoup, waehrung, bill, master
+        nonlocal abf_list_data, diffcidate, p_87, num_of_day, exchg_rate, dont_post, res_line, genstat, arrangement, artikel, argt_line, reslin_queasy, fixleist, guest, reservation, segment, ratecode, mc_guest, mc_types, mealcoup, waehrung, bill, master
         nonlocal fdate, bfast_artnr, bfast_dept, show_bfast_rate
 
 
-        nonlocal abf_list, zikat_list
-        nonlocal abf_list_data
+        nonlocal abf_list, zikat_list, t_argt_ratelist
+        nonlocal abf_list_data, t_argt_ratelist_data
 
         return {"abf-list": abf_list_data}
 
     def disp_arlist1():
 
-        nonlocal abf_list_data, diffcidate, p_87, num_of_day, exchg_rate, res_line, genstat, arrangement, artikel, argt_line, reslin_queasy, fixleist, guest, reservation, segment, ratecode, mc_guest, mc_types, mealcoup, waehrung, bill, master
+        nonlocal abf_list_data, diffcidate, p_87, num_of_day, exchg_rate, dont_post, res_line, genstat, arrangement, artikel, argt_line, reslin_queasy, fixleist, guest, reservation, segment, ratecode, mc_guest, mc_types, mealcoup, waehrung, bill, master
         nonlocal fdate, bfast_artnr, bfast_dept, show_bfast_rate
 
 
-        nonlocal abf_list, zikat_list
-        nonlocal abf_list_data
+        nonlocal abf_list, zikat_list, t_argt_ratelist
+        nonlocal abf_list_data, t_argt_ratelist_data
 
         do_it:bool = False
         roflag:bool = False
@@ -57,7 +59,6 @@ def abf_list1_3_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, show_bfast_ra
         str:string = ""
         contcode:string = ""
         rline = None
-        dont_post:bool = False
         Rline =  create_buffer("Rline",Res_line)
         abf_list_data.clear()
 
@@ -79,6 +80,9 @@ def abf_list1_3_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, show_bfast_ra
             qty = 0
             epreis =  to_decimal("0")
 
+
+            t_argt_ratelist_data.clear()
+
             if (genstat.erwachs + genstat.kind1 + genstat.gratis + genstat.kind3) == 0:
                 pass
             else:
@@ -90,7 +94,7 @@ def abf_list1_3_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, show_bfast_ra
                     argt_line_obj_list = {}
                     argt_line = Argt_line()
                     artikel = Artikel()
-                    for argt_line.betrag, argt_line.betriebsnr, argt_line.vt_percnt, argt_line._recid, artikel.betriebsnr, artikel._recid in db_session.query(Argt_line.betrag, Argt_line.betriebsnr, Argt_line.vt_percnt, Argt_line._recid, Artikel.betriebsnr, Artikel._recid).join(Artikel,(Artikel.artnr == Argt_line.argt_artnr) & (Artikel.departement == bfast_dept) & (Artikel.zwkum == bfast_artnr)).filter(
+                    for argt_line.argt_artnr, argt_line.argtnr, argt_line.betriebsnr, argt_line.betrag, argt_line.vt_percnt, argt_line._recid, artikel.betriebsnr, artikel._recid in db_session.query(Argt_line.argt_artnr, Argt_line.argtnr, Argt_line.betriebsnr, Argt_line.betrag, Argt_line.vt_percnt, Argt_line._recid, Artikel.betriebsnr, Artikel._recid).join(Artikel,(Artikel.artnr == Argt_line.argt_artnr) & (Artikel.departement == bfast_dept) & (Artikel.zwkum == bfast_artnr)).filter(
                              (Argt_line.argtnr == arrangement.argtnr)).order_by(Argt_line.betrag.desc()).all():
                         if argt_line_obj_list.get(argt_line._recid):
                             continue
@@ -98,58 +102,125 @@ def abf_list1_3_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, show_bfast_ra
                             argt_line_obj_list[argt_line._recid] = True
 
 
-                        do_it = True
-                        roflag = False
-                        epreis =  to_decimal(argt_line.betrag)
+                        t_argt_ratelist = T_argt_ratelist()
+                        t_argt_ratelist_data.append(t_argt_ratelist)
+
+                        t_argt_ratelist.do_it = True
+                        t_argt_ratelist.room_only = False
+                        t_argt_ratelist.bfast_artnr = argt_line.argt_artnr
+                        t_argt_ratelist.bfast_dept = bfast_dept
+                        t_argt_ratelist.argtnr = argt_line.argtnr
 
                         if argt_line.vt_percnt == 0:
+                            t_argt_ratelist.based_on_adult = True
 
                             if argt_line.betriebsnr == 0:
-                                qty_argt = genstat.erwachs
+                                t_argt_ratelist.adult_qty = genstat.erwachs
                             else:
-                                qty_argt = argt_line.betriebsnr
+                                t_argt_ratelist.adult_qty = argt_line.betriebsnr
+                            t_argt_ratelist.rate_adult =  to_decimal(argt_line.betrag)
 
                         elif argt_line.vt_percnt == 1:
-                            qty_argt = genstat.kind1
+                            t_argt_ratelist.rate_child =  to_decimal(argt_line.betrag)
+                            t_argt_ratelist.based_on_child = True
+                            t_argt_ratelist.child_qty = genstat.kind1
 
                         elif argt_line.vt_percnt == 2:
-                            qty_argt = genstat.kind2
-                        break
+                            t_argt_ratelist.rate_infant =  to_decimal(argt_line.betrag)
+                            t_argt_ratelist.based_on_infant = True
+                            t_argt_ratelist.infant_qty = genstat.kind2
+                else:
+                    t_argt_ratelist = T_argt_ratelist()
+                    t_argt_ratelist_data.append(t_argt_ratelist)
 
-            if do_it and epreis == 0:
-                contcode = ""
-                pass
-                for i in range(1,num_entries(genstat.res_char[1], ";") - 1 + 1) :
-                    str = entry(i - 1, genstat.res_char[1], ";")
+            contcode = ""
+            pass
+            for i in range(1,num_entries(genstat.res_char[1], ";") - 1 + 1) :
+                str = entry(i - 1, genstat.res_char[1], ";")
 
-                    if substring(str, 0, 6) == ("$CODE$").lower() :
-                        contcode = substring(str, 6)
-                        break
+                if substring(str, 0, 6) == ("$CODE$").lower() :
+                    contcode = substring(str, 6)
+                    break
 
-                if contcode != "":
+            for t_argt_ratelist in query(t_argt_ratelist_data):
 
-                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, genstat.res_int[1])],"number2": [(eq, arrangement.argtnr)],"number3": [(eq, bfast_artnr)],"resnr": [(eq, bfast_dept)],"reslinnr": [(eq, genstat.zikatnr)],"date1": [(le, fdate)],"date2": [(ge, fdate)],"deci1": [(gt, 0)]})
+                if t_argt_ratelist.do_it:
 
-                    if not reslin_queasy:
+                    if t_argt_ratelist.based_on_adult:
 
-                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"number1": [(eq, bfast_dept)],"number2": [(eq, arrangement.argtnr)],"number3": [(eq, bfast_artnr)],"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])],"date1": [(le, fdate)],"date2": [(ge, fdate)],"deci1": [(gt, 0)]})
-                do_it = None != reslin_queasy
-                roflag = not do_it
+                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, bfast_dept)],"number2": [(eq, arrangement.argtnr)],"number3": [(eq, bfast_artnr)],"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])],"date1": [(le, fdate)],"date2": [(ge, fdate)],"deci1": [(gt, 0)]})
 
-                if do_it:
-                    epreis =  to_decimal(reslin_queasy.deci1)
+                        if reslin_queasy:
+                            t_argt_ratelist.rate_adult =  to_decimal("0")
 
-            if not do_it:
+                            for reslin_queasy in db_session.query(Reslin_queasy).filter(
+                                     (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == bfast_dept) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == genstat.resnr) & (Reslin_queasy.reslinnr == genstat.res_int[0]) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci1 > 0)).order_by(Reslin_queasy._recid).all():
+                                t_argt_ratelist.rate_adult =  to_decimal(t_argt_ratelist.rate_adult) + to_decimal(reslin_queasy.deci1)
+                        else:
 
-                for fixleist in db_session.query(Fixleist).filter(
-                         (Fixleist.resnr == genstat.resnr) & (Fixleist.reslinnr == genstat.res_int[0]) & (Fixleist.artnr == bfast_artnr) & (Fixleist.departement == bfast_dept)).order_by(Fixleist._recid).all():
-                    dont_post = check_fixleist_posted1(fixleist.artnr, fixleist.departement, fixleist.sequenz, fixleist.dekade, fixleist.lfakt)
+                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, genstat.res_int[1])],"number2": [(eq, arrangement.argtnr)],"number3": [(eq, bfast_artnr)],"resnr": [(eq, bfast_dept)],"reslinnr": [(eq, genstat.zikatnr)],"date1": [(le, fdate)],"date2": [(ge, fdate)],"deci1": [(gt, 0)]})
 
-                    if not dont_post:
-                        do_it = True
-                        qty = qty + fixleist.number
+                            if reslin_queasy:
+                                t_argt_ratelist.rate_adult =  to_decimal("0")
 
-            if do_it:
+                                for reslin_queasy in db_session.query(Reslin_queasy).filter(
+                                         (Reslin_queasy.key == ("argt-line").lower()) & (Reslin_queasy.char1 == (contcode).lower()) & (Reslin_queasy.number1 == genstat.res_int[1]) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.reslinnr == genstat.zikatnr) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci1 > 0)).order_by(Reslin_queasy._recid).all():
+                                    t_argt_ratelist.rate_adult =  to_decimal(t_argt_ratelist.rate_adult) + to_decimal(reslin_queasy.deci1)
+
+                    elif t_argt_ratelist.based_on_child:
+
+                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, bfast_dept)],"number2": [(eq, arrangement.argtnr)],"number3": [(eq, bfast_artnr)],"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])],"date1": [(le, fdate)],"date2": [(ge, fdate)],"deci2": [(gt, 0)]})
+
+                        if reslin_queasy:
+                            t_argt_ratelist.rate_child =  to_decimal("0")
+
+                            for reslin_queasy in db_session.query(Reslin_queasy).filter(
+                                     (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == bfast_dept) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == genstat.resnr) & (Reslin_queasy.reslinnr == genstat.res_int[0]) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci2 > 0)).order_by(Reslin_queasy._recid).all():
+                                t_argt_ratelist.rate_child =  to_decimal(t_argt_ratelist.rate_child) + to_decimal(reslin_queasy.deci2)
+                        else:
+
+                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, genstat.res_int[1])],"number2": [(eq, arrangement.argtnr)],"number3": [(eq, bfast_artnr)],"resnr": [(eq, bfast_dept)],"reslinnr": [(eq, genstat.zikatnr)],"date1": [(le, fdate)],"date2": [(ge, fdate)],"deci2": [(gt, 0)]})
+
+                            if reslin_queasy:
+                                t_argt_ratelist.rate_child =  to_decimal("0")
+
+                                for reslin_queasy in db_session.query(Reslin_queasy).filter(
+                                         (Reslin_queasy.key == ("argt-line").lower()) & (Reslin_queasy.char1 == (contcode).lower()) & (Reslin_queasy.number1 == genstat.res_int[1]) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.reslinnr == genstat.zikatnr) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci2 > 0)).order_by(Reslin_queasy._recid).all():
+                                    t_argt_ratelist.rate_child =  to_decimal(t_argt_ratelist.rate_child) + to_decimal(reslin_queasy.deci2)
+
+                    elif t_argt_ratelist.based_on_infant:
+
+                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"number1": [(eq, bfast_dept)],"number2": [(eq, arrangement.argtnr)],"number3": [(eq, bfast_artnr)],"resnr": [(eq, genstat.resnr)],"reslinnr": [(eq, genstat.res_int[0])],"date1": [(le, fdate)],"date2": [(ge, fdate)],"deci3": [(gt, 0)]})
+
+                        if reslin_queasy:
+                            t_argt_ratelist.rate_infant =  to_decimal("0")
+
+                            for reslin_queasy in db_session.query(Reslin_queasy).filter(
+                                     (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.number1 == bfast_dept) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == genstat.resnr) & (Reslin_queasy.reslinnr == genstat.res_int[0]) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci3 > 0)).order_by(Reslin_queasy._recid).all():
+                                t_argt_ratelist.rate_infant =  to_decimal(t_argt_ratelist.rate_infant) + to_decimal(reslin_queasy.deci3)
+                        else:
+
+                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, genstat.res_int[1])],"number2": [(eq, arrangement.argtnr)],"number3": [(eq, bfast_artnr)],"resnr": [(eq, bfast_dept)],"reslinnr": [(eq, genstat.zikatnr)],"date1": [(le, fdate)],"date2": [(ge, fdate)],"deci3": [(gt, 0)]})
+
+                            if reslin_queasy:
+                                t_argt_ratelist.rate_infant =  to_decimal("0")
+
+                                for reslin_queasy in db_session.query(Reslin_queasy).filter(
+                                         (Reslin_queasy.key == ("argt-line").lower()) & (Reslin_queasy.char1 == (contcode).lower()) & (Reslin_queasy.number1 == genstat.res_int[1]) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.number3 == bfast_artnr) & (Reslin_queasy.resnr == bfast_dept) & (Reslin_queasy.reslinnr == genstat.zikatnr) & (Reslin_queasy.date1 <= fdate) & (Reslin_queasy.date2 >= fdate) & (Reslin_queasy.deci3 > 0)).order_by(Reslin_queasy._recid).all():
+                                    t_argt_ratelist.rate_infant =  to_decimal(t_argt_ratelist.rate_infant) + to_decimal(reslin_queasy.deci3)
+                else:
+
+                    for fixleist in db_session.query(Fixleist).filter(
+                             (Fixleist.resnr == genstat.resnr) & (Fixleist.reslinnr == genstat.res_int[0]) & (Fixleist.artnr == t_argt_ratelist.bfast_artnr) & (Fixleist.departement == t_argt_ratelist.bfast_dept)).order_by(Fixleist._recid).all():
+                        dont_post = check_fixleist_posted1(fixleist.artnr, fixleist.departement, fixleist.sequenz, fixleist.dekade, fixleist.lfakt)
+
+                        if not dont_post:
+                            t_argt_ratelist.do_it = True
+                            t_argt_ratelist.fixliest_qty = t_argt_ratelist.fixliest_qty + fixleist.number
+
+            t_argt_ratelist = query(t_argt_ratelist_data, filters=(lambda t_argt_ratelist: t_argt_ratelist.do_it), first=True)
+
+            if t_argt_ratelist:
 
                 guest = get_cache (Guest, {"gastnr": [(eq, genstat.gastnrmember)]})
 
@@ -162,7 +233,7 @@ def abf_list1_3_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, show_bfast_ra
                 abf_list_data.append(abf_list)
 
 
-                if not roflag:
+                if not t_argt_ratelist.room_only:
                     buffer_copy(genstat, abf_list)
                 else:
                     buffer_copy(genstat, abf_list,except_fields=["erwachs","kind1","gratis","datum"])
@@ -172,16 +243,18 @@ def abf_list1_3_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, show_bfast_ra
                 abf_list.datum = genstat.datum
                 abf_list.segmentcode = reservation.segmentcode
                 abf_list.kurzbez = zikat_list.kurzbez
-                abf_list.erwachs = abf_list.erwachs + qty
+                abf_list.erwachs = abf_list.erwachs + t_argt_ratelist.fixliest_qty
                 abf_list.gastnr = genstat.gastnr
                 abf_list.resname = reservation.name
                 abf_list.comments = reservation.bemerk
-                abf_list.bezeich = segment.bezeich
                 abf_list.zipreis =  to_decimal(genstat.zipreis)
                 abf_list.ankunft = genstat.res_date[0]
                 abf_list.abreise = genstat.res_date[1]
                 abf_list.arrangement = genstat.argt
                 abf_list.id = reservation.useridanlage
+
+                if segment:
+                    abf_list.bezeich = segment.bezeich
 
                 if abf_list.comments != "":
                     abf_list.comments = abf_list.comments + chr_unicode(10)
@@ -198,7 +271,7 @@ def abf_list1_3_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, show_bfast_ra
                 if abf_list.comments != "":
                     abf_list.comments = abf_list.comments + chr_unicode(10)
 
-                if not roflag:
+                if not t_argt_ratelist.room_only:
                     abf_list.kind1 = abf_list.kind1 + genstat.kind3
 
                 if ratecode:
@@ -235,30 +308,50 @@ def abf_list1_3_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, show_bfast_ra
 
                 if show_bfast_rate:
 
-                    artikel = db_session.query(Artikel).filter(
-                             (Artikel.artnr == bfast_artnr) & (Artikel.departement == bfast_dept) & (Artikel.betriebsnr != 0) & (Artikel.pricetab)).first()
+                    for t_argt_ratelist in query(t_argt_ratelist_data, filters=(lambda t_argt_ratelist: t_argt_ratelist.do_it)):
 
-                    if artikel:
+                        artikel = db_session.query(Artikel).filter(
+                                 (Artikel.artnr == t_argt_ratelist.bfast_artnr) & (Artikel.departement == t_argt_ratelist.bfast_dept) & (Artikel.betriebsnr != 0) & (Artikel.pricetab)).first()
 
-                        waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, artikel.betriebsnr)]})
+                        if artikel:
 
-                        if waehrung:
-                            exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
-                            abf_list.bfast_revenue =  to_decimal(epreis) * to_decimal(qty_argt) * to_decimal(exchg_rate)
-                    else:
-                        abf_list.bfast_revenue =  to_decimal(epreis) * to_decimal(qty_argt)
+                            waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, artikel.betriebsnr)]})
+
+                            if waehrung:
+                                exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+
+                                if t_argt_ratelist.based_on_adult:
+                                    abf_list.bfast_revenue =  to_decimal(abf_list.bfast_revenue) + to_decimal(t_argt_ratelist.rate_adult) * to_decimal(t_argt_ratelist.adult_qty) * to_decimal(exchg_rate)
+
+                                elif t_argt_ratelist.based_on_child:
+                                    abf_list.c_bfast_revenue =  to_decimal(abf_list.c_bfast_revenue) + to_decimal(t_argt_ratelist.rate_child) * to_decimal(t_argt_ratelist.child_qty) * to_decimal(exchg_rate)
+
+                                elif t_argt_ratelist.based_on_infant:
+                                    abf_list.i_bfast_revenue =  to_decimal(abf_list.i_bfast_revenue) + to_decimal(t_argt_ratelist.rate_infant) * to_decimal(t_argt_ratelist.infant_qty) * to_decimal(exchg_rate)
+                        else:
+
+                            if t_argt_ratelist.based_on_adult:
+                                abf_list.bfast_revenue =  to_decimal(abf_list.bfast_revenue) + to_decimal(t_argt_ratelist.rate_adult) * to_decimal(t_argt_ratelist.adult_qty)
+
+                            elif t_argt_ratelist.based_on_child:
+                                abf_list.c_bfast_revenue =  to_decimal(abf_list.c_bfast_revenue) + to_decimal(t_argt_ratelist.rate_child) * to_decimal(t_argt_ratelist.child_qty)
+
+                            elif t_argt_ratelist.based_on_infant:
+                                abf_list.i_bfast_revenue =  to_decimal(abf_list.i_bfast_revenue) + to_decimal(t_argt_ratelist.rate_infant) * to_decimal(t_argt_ratelist.infant_qty)
                 else:
                     abf_list.bfast_revenue =  to_decimal("0")
+                    abf_list.c_bfast_revenue =  to_decimal("0")
+                    abf_list.i_bfast_revenue =  to_decimal("0")
 
 
     def check_fixleist_posted1(artnr:int, dept:int, fakt_modus:int, intervall:int, lfakt:date):
 
-        nonlocal abf_list_data, diffcidate, p_87, num_of_day, exchg_rate, res_line, genstat, arrangement, artikel, argt_line, reslin_queasy, fixleist, guest, reservation, segment, ratecode, mc_guest, mc_types, mealcoup, waehrung, bill, master
+        nonlocal abf_list_data, diffcidate, p_87, num_of_day, exchg_rate, dont_post, res_line, genstat, arrangement, artikel, argt_line, reslin_queasy, fixleist, guest, reservation, segment, ratecode, mc_guest, mc_types, mealcoup, waehrung, bill, master
         nonlocal fdate, bfast_artnr, bfast_dept, show_bfast_rate
 
 
-        nonlocal abf_list, zikat_list
-        nonlocal abf_list_data
+        nonlocal abf_list, zikat_list, t_argt_ratelist
+        nonlocal abf_list_data, t_argt_ratelist_data
 
         dont_post = False
         master_flag:bool = False
@@ -328,7 +421,6 @@ def abf_list1_3_webbl(fdate:date, bfast_artnr:int, bfast_dept:int, show_bfast_ra
                     dont_post = True
 
         return generate_inner_output()
-
 
     disp_arlist1()
 

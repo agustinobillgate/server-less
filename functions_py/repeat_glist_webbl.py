@@ -6,10 +6,9 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from functions.repeat_glist_1bl import repeat_glist_1bl
+from functions.repeat_glist_1_cldbl import repeat_glist_1_cldbl
 
 input_list_data, Input_list = create_model("Input_list", {"pvilanguage":int, "from_date":date, "to_date":date, "ci_date":date, "create_inhouse":bool, "sorttype":int, "modetype":int, "min_stay":int})
-
 
 def repeat_glist_webbl(input_list_data:[Input_list]):
     g_list_data = []
@@ -26,8 +25,8 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
 
     input_list = g_list = repeat_list = cur_date = output_rlist = output_glist = None
 
-    g_list_data, G_list = create_model("G_list", {"resnr":int, "gastnr":int, "name":string, "ankunft":date, "abreise":date, "zinr":string, "reslinnr":int, "zipreis":Decimal, "currency":string, "argt":string, "erwachs":int, "kind1":int, "gratis":int, "arrflag":bool, "resname":string, "lodging":Decimal})
-    repeat_list_data, Repeat_list = create_model("Repeat_list", {"flag":int, "gastnr":int, "name":string, "nation":string, "birthdate":date, "email":string, "telefon":string, "vip":string, "city":string, "stay":int, "rmnite":int, "ankunft":date, "arrflag":bool, "zinr":string, "remark":string, "resname":string, "lodging":Decimal, "pax":int, "mobil_telefon":string})
+    g_list_data, G_list = create_model("G_list", {"resnr":int, "gastnr":int, "name":string, "ankunft":date, "abreise":date, "zinr":string, "reslinnr":int, "zipreis":Decimal, "currency":string, "argt":string, "erwachs":int, "kind1":int, "gratis":int, "arrflag":bool, "resname":string, "lodging":Decimal, "source_bez":string})
+    repeat_list_data, Repeat_list = create_model("Repeat_list", {"flag":int, "gastnr":int, "name":string, "nation":string, "birthdate":date, "email":string, "telefon":string, "vip":string, "city":string, "stay":int, "rmnite":int, "ankunft":date, "arrflag":bool, "zinr":string, "remark":string, "resname":string, "lodging":Decimal, "pax":int, "mobil_telefon":string, "source_bez":string})
     cur_date_data, Cur_date = create_model("Cur_date", {"curr_date":date})
     output_rlist_data, Output_rlist = create_model_like(Repeat_list)
     output_glist_data, Output_glist = create_model_like(G_list)
@@ -87,6 +86,7 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
                     repeat_list.lodging =  to_decimal(output_rlist.lodging)
                     repeat_list.pax = output_rlist.pax
                     repeat_list.mobil_telefon = output_rlist.mobil_telefon
+                    repeat_list.source_bez = output_rlist.source_bez
                     tot_lodging =  to_decimal(tot_lodging) + to_decimal(output_rlist.lodging)
                     tot_stay = tot_stay + output_rlist.stay
                     tot_rmnight = tot_rmnight + output_rlist.rmnite
@@ -133,6 +133,7 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
                         repeat_list.lodging =  to_decimal(output_rlist.lodging)
                         repeat_list.pax = output_rlist.pax
                         repeat_list.mobil_telefon = output_rlist.mobil_telefon
+                        repeat_list.source_bez = output_rlist.source_bez
                         tot_lodging =  to_decimal(tot_lodging) + to_decimal(output_rlist.lodging)
                         tot_pax = tot_pax + output_rlist.pax
 
@@ -174,6 +175,7 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
                         repeat_list.lodging =  to_decimal(output_rlist.lodging)
                         repeat_list.pax = output_rlist.pax
                         repeat_list.mobil_telefon = output_rlist.mobil_telefon
+                        repeat_list.source_bez = output_rlist.source_bez
                         tot_lodging =  to_decimal(tot_lodging) + to_decimal(output_rlist.lodging)
                         tot_pax = tot_pax + output_rlist.pax
 
@@ -216,6 +218,7 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
             g_list.arrflag = output_glist.arrflag
             g_list.resname = output_glist.resname
             g_list.lodging =  to_decimal(output_glist.lodging)
+            g_list.source_bez = output_glist.source_bez
 
     input_list = query(input_list_data, first=True)
 
@@ -233,7 +236,7 @@ def repeat_glist_webbl(input_list_data:[Input_list]):
         min_stay = input_list.min_stay
 
 
-    output_glist_data, output_rlist_data, cur_date_data = get_output(repeat_glist_1bl(pvilanguage, from_date, to_date, ci_date, create_inhouse))
+    output_glist_data, output_rlist_data, cur_date_data = get_output(repeat_glist_1_cldbl(pvilanguage, from_date, to_date, ci_date, create_inhouse))
 
     if modetype == 1:
         disp_repeatlist()
