@@ -3,6 +3,10 @@
 # Rulita, 22/08/2025
 # Modify
 # ticket: 1DA62E
+
+# Rulita, 11-11-2025 | D814C7
+# - Fix dept -> h_mjourn.departement
+# - Fixing missing table h_bill.billnr
 #------------------------------------------------
 
 from functions.additional_functions import *
@@ -803,8 +807,10 @@ def print_hbilllnl_cldbl(pvilanguage:int, session_parameter:string, user_init:st
         for h_mjourn in db_session.query(H_mjourn).filter(
                  (H_mjourn.departement == art_list.dept) & (H_mjourn.h_artnr == art_list.artnr) & (H_mjourn.rechnr == h_bill.rechnr) & (H_mjourn.bill_datum == art_list.datum) & (H_mjourn.sysdate == art_list.sysdate) & (H_mjourn.zeit == art_list.zeit)).order_by(H_mjourn._recid).all():
 
+            # Rulita, 11-11-2025
+            # Fix dept -> h_mjourn.departement
             h_art = db_session.query(H_art).filter(
-                     (H_art.artnr == h_mjourn.artnr) & (H_art.departement == dept)).first()
+                     (H_art.artnr == h_mjourn.artnr) & (H_art.departement == h_mjourn.departement)).first()
 
             if h_art:
 
