@@ -142,7 +142,7 @@ def available_rates_cldbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int
                 ratecode = Ratecode()
                 zbuff = Zimkateg()
                 for ratecode.code, ratecode.zikatnr, ratecode.argtnr, ratecode.erwachs, ratecode.kind1, ratecode.marknr, ratecode.char1, ratecode._recid, zbuff.typ, zbuff.zikatnr, zbuff.kurzbez, zbuff._recid in db_session.query(Ratecode.code, Ratecode.zikatnr, Ratecode.argtnr, Ratecode.erwachs, Ratecode.kind1, Ratecode.marknr, Ratecode.char1, Ratecode._recid, Zbuff.typ, Zbuff.zikatnr, Zbuff.kurzbez, Zbuff._recid).join(Zbuff,(Zbuff.zikatnr == Ratecode.zikatnr) & (Zbuff.typ == zimkateg.typ)).filter(
-                         (Ratecode.code == (statcode)) & (Ratecode.zikatnr == rate_list.room_type) & (Ratecode.argtnr == rate_list.argtno) & (Ratecode.startperiode <= curr_date) & (Ratecode.endperiode >= curr_date) & (Ratecode.num1[inc_value(0)] > 0)).order_by(Ratecode._recid).all():
+                         (func.lower(Ratecode.code) == (statcode).lower()) & (Ratecode.zikatnr == rate_list.room_type) & (Ratecode.argtnr == rate_list.argtno) & (Ratecode.startperiode <= curr_date) & (Ratecode.endperiode >= curr_date) & (Ratecode.num1[inc_value(0)] > 0)).order_by(Ratecode._recid).all():
                     if ratecode_obj_list.get(ratecode._recid):
                         continue
                     else:
@@ -184,10 +184,10 @@ def available_rates_cldbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int
                 for curr_i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
                     str = entry(curr_i - 1, res_line.zimmer_wunsch, ";")
 
-                    if substring(str, 0, 10) == ("$origcode$") :
+                    if substring(str, 0, 10).lower() == ("$origcode$") :
                         rline_origcode = substring(str, 10)
 
-                        if rline_origcode  == (origcode) :
+                        if rline_origcode.lower()  == (origcode).lower() :
                             occ_room = occ_room + res_line.zimmeranz
                         break
 
@@ -250,11 +250,11 @@ def available_rates_cldbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int
         curr_time = get_current_time_in_seconds()
 
         # if bqueasy.number3 > (ankunft - timedelta(days=ci_date)):
-        if bqueasy.number3 > 0 and bqueasy.number3 >= date_range(ankunft,ci_date).days:
+        if bqueasy.number3 > date_range(ankunft, ci_date).days:
             pass
 
         # elif bqueasy.deci3 > 0 and bqueasy.deci3 < (ankunft - timedelta(days=ci_date)):
-        elif bqueasy.deci3 > 0 and bqueasy.deci3 < date_range(ankunft,ci_date).days:
+        elif bqueasy.deci3 > 0 and bqueasy.deci3 < date_range(ankunft, ci_date).days:
             pass
 
         elif not bqueasy.logi2:
@@ -370,12 +370,12 @@ def available_rates_cldbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int
 
             htparam = get_cache (Htparam, {"paramnr": [(eq, 439)]})
 
-            dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.rmtype  == ("*")), first=True)
+            dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.rmtype.lower()  == ("*")), first=True)
             global_occ = None != dynarate_list and htparam.finteger == 1
 
             if global_occ:
 
-                for dynarate_list in query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.rmtype  != ("*"))):
+                for dynarate_list in query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.rmtype.lower()  != ("*"))):
                     dynarate_list_data.remove(dynarate_list)
 
             else:
