@@ -1,0 +1,29 @@
+{
+    "Queasy": {
+        "read": [
+            "char1",
+            "key",
+            "number1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bediener": {
+        "read": [
+            "nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_history": {
+        "read": [
+            "nr",
+            "datum",
+            "zeit",
+            "aenderung",
+            "action",
+            "_recid"
+        ],
+        "write": []
+    }
+}
