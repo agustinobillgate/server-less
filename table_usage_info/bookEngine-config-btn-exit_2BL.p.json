@@ -2,27 +2,26 @@
     "Queasy": {
         "read": [
             "char1",
-            "char2",
+            "key",
+            "number1",
             "_recid"
         ],
         "write": []
     },
-    "Zimkateg": {
+    "Bediener": {
         "read": [
-            "kurzbez",
-            "bezeichnung",
+            "nr",
             "_recid"
         ],
         "write": []
     },
-    "Sourccod": {
-        "read": [],
-        "write": []
-    },
-    "Segment": {
+    "Res_history": {
         "read": [
-            "bezeich",
-            "bemerkung",
+            "nr",
+            "datum",
+            "zeit",
+            "aenderung",
+            "action",
             "_recid"
         ],
         "write": []

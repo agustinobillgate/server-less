@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 12/11/2025
+# CM
+#---------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -562,6 +565,8 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
                              (Ratecode.code == s_list.static_code) & (Ratecode.startperiode <= tdate) & (Ratecode.endperiode >= fdate) & (Ratecode.erwachs > 0)).order_by(Ratecode._recid).all():
 
                     t_zimkateg = query(t_zimkateg_data, filters=(lambda t_zimkateg: t_zimkateg.zikatnr == ratecode.zikatnr), first=True)
+                    if t_zimkateg is None:
+                        continue
 
                     temp_list = query(temp_list_data, filters=(lambda temp_list: temp_list.zikatnr == t_zimkateg.typ), first=True)
 

@@ -1,4 +1,8 @@
 #using conversion tools version: 1.0.0.119
+#------------------------------------------
+# Rd, 12/11/2025
+# CM, update dari Yunarco
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -6,6 +10,9 @@ from functions.update_repeatflag_bl import update_repeatflag_bl
 from models import Queasy, Bediener, Res_history
 
 def bookengine_config_btn_exit_2bl(bookengid:int, autostart:bool, period:int, delay:int, hotelcode:string, username:string, password:string, liveflag:bool, defcurr:string, pushrateflag:bool, pullbookflag:bool, pushavailflag:bool, workpath:string, progavail:string, user_init:string, pushratebypax:bool, uppercasename:bool, delayrate:int, delaypull:int, delayavail:int, pushall:bool, re_calculate:bool, restriction:bool, allotment:bool, pax:int, bedsetup:bool, pushbookflag:bool, delaypushbook:int, vcwsagent:string, vcwsagent2:string, vcwsagent3:string, vcwsagent4:string, vcwsagent5:string, vcwebhost:string, vcwebport:string, email:string, dyna_code:string):
+
+    prepare_cache ([Queasy, Bediener, Res_history])
+
     i:int = 0
     str:string = ""
     oldstr:string = ""
@@ -49,8 +56,7 @@ def bookengine_config_btn_exit_2bl(bookengid:int, autostart:bool, period:int, de
 
     ct = "$autostart$" + to_string(autostart) + ";" + "$period$" + to_string(period) + ";" + "$delay$" + to_string(delay) + ";" + "$liveflag$" + to_string(liveflag) + ";" + "$defcurr$" + to_string(defcurr) + ";" + "$workpath$" + to_string(workpath) + ";" + "$progname$" + to_string(progavail1) + ";" + "$htlcode$" + to_string(hotelcode) + ";" + "$username$" + to_string(username) + ";" + "$password$" + to_string(password) + ";" + "$pushrate$" + to_string(pushrateflag) + ";" + "$pullbook$" + to_string(pullbookflag) + ";" + "$pushavail$" + to_string(pushavailflag)
 
-    queasy = db_session.query(Queasy).filter(
-             (Queasy.key == 160) & (Queasy.number1 == bookengid)).first()
+    queasy = get_cache (Queasy, {"key": [(eq, 160)],"number1": [(eq, bookengid)]})
 
     if queasy:
 
@@ -66,8 +72,7 @@ def bookengine_config_btn_exit_2bl(bookengid:int, autostart:bool, period:int, de
 
             if oldstr.lower()  != (str).lower() :
 
-                bediener = db_session.query(Bediener).filter(
-                         (Bediener.userinit == (user_init).lower())).first()
+                bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
                 if bediener:
                     res_history = Res_history()
@@ -90,8 +95,7 @@ def bookengine_config_btn_exit_2bl(bookengid:int, autostart:bool, period:int, de
         queasy.number1 = bookengid
         queasy.char1 = ct
 
-        bediener = db_session.query(Bediener).filter(
-                 (Bediener.userinit == (user_init).lower())).first()
+        bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
         if bediener:
             res_history = Res_history()
