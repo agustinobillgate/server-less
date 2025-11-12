@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 6/10/2025
-#
+# strip issues with res_dynarate.rmcat and arrangement.argt, memo_zinr
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -17,7 +17,7 @@ prev_resline_data, Prev_resline = create_model_like(Res_line)
 
 def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, curr_segm:string, curr_source:string, currency:string, zikat_screen:string, memo_zinr:string, guestname:string, origcontcode:string, contcode:string, marknr:int, rm_bcol:int, inactive_flag:bool, reslin_list_data:[Reslin_list], prev_resline_data:[Prev_resline], zikatstr:string):
 
-    prepare_cache ([Res_line, Arrangement, Guest, Htparam, Zimkateg, Segment, Waehrung, Bill, Bill_line, Zimmer, Outorder, Guest_pr, Reslin_queasy, Kontline, Queasy])
+    prepare_cache ([Res_line, Arrangement, Guest, Htparam, Zimkateg, Segment, Waehrung, Bill, Bill_line, Zimmer, Outorder, Reslin_queasy, Kontline, Queasy])
 
     error_number = 0
     still_error = True
@@ -44,8 +44,7 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
 
     db_session = local_storage.db_session
 
-    memo_zinr = memo_zinr.strip() 
-
+    memo_zinr = memo_zinr.strip()
 
     def generate_output():
         nonlocal error_number, still_error, msg_str, pswd_str, flag1, ci_date1, lvcarea, ci_date, min_stay, max_stay, min_adv, max_adv, msg_str1, zinr_ecode, res_line, arrangement, bediener, guest, htparam, zimkateg, segment, waehrung, bill, bill_line, zimmer, outorder, guest_pr, ratecode, reslin_queasy, kontline, zimplan, queasy
@@ -90,6 +89,7 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
         overdate:date = None
         billdate:date = None
         tmp_date:date = None
+        tmp_int:int = 0
         rline = None
         gmember = None
         Rline =  create_buffer("Rline",Res_line)
@@ -337,9 +337,10 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
 
             return
 
+        
         if memo_zinr != "":
-
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, memo_zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, memo_zinr.strip())]})
+            zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == memo_zinr).first()
 
             if not zimmer:
                 msg_str = translateExtended ("Wrong Memo RmNo / no such room number.", lvcarea, "")
@@ -397,7 +398,7 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
 
         if guest_pr and reslin_list.reserve_int == 0:
 
-            ratecode = get_cache (Ratecode, {"code": [(eq, guest_pr.code)],"startperiode": [(le, reslin_list.ankunft)],"endperiode": [(ge, reslin_list.ankunft)]})
+            ratecode = get_cache (Ratecode, {"code": [(eq, origcontcode)],"startperiode": [(le, reslin_list.ankunft)],"endperiode": [(ge, reslin_list.ankunft)]})
 
             if ratecode:
                 msg_str = translateExtended ("Market Segment not yet defined.", lvcarea, "")
@@ -448,19 +449,33 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
 
         if reslin_list.ankunft < reslin_list.abreise:
 
-            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)]})
+            reslin_queasy = db_session.query(Reslin_queasy).filter(
+                     (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr) & ((Reslin_queasy.date1 < reslin_list.ankunft) | (Reslin_queasy.date2 > reslin_list.abreise))).first()
 
-            if reslin_queasy:
-                for datum in date_range(reslin_list.ankunft,tmp_date) :
+            if not reslin_queasy:
 
-                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, datum)],"date2": [(ge, datum)]})
+                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)]})
 
-                    if not reslin_queasy:
-                        msg_str = msg_str + chr_unicode(2) +\
-                                translateExtended ("Fixed-Rate Period incorrect, re-check it.", lvcarea, "")
-                        error_number = 28
+                if reslin_queasy:
+                    for datum in date_range(reslin_list.ankunft,tmp_date) :
 
-                        return
+                        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"date1": [(le, datum)],"date2": [(ge, datum)]})
+
+                        if not reslin_queasy:
+                            msg_str = msg_str + chr_unicode(2) +\
+                                    translateExtended ("Fixed-Rate Period incorrect, re-check it.", lvcarea, "") +\
+                                    chr_unicode(10) +\
+                                    "Room rate date: " + to_string(datum) + " is not defined"
+                            error_number = 28
+
+                            return
+            else:
+                msg_str = msg_str + chr_unicode(2) +\
+                        translateExtended ("Fixed-Rate Period incorrect, re-check it.", lvcarea, "") + chr_unicode(10) +\
+                        "Arr: " + to_string(reslin_queasy.date1) + " - " + to_string(reslin_queasy.date2) + " outside stay period"
+                error_number = 28
+
+                return
 
         if reslin_list.ankunft == reslin_list.abreise:
 
@@ -557,12 +572,20 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
                 msg_str = msg_str + chr_unicode(2) + msg_str1
 
             if error_code != 0:
-                msg_str = msg_str + chr_unicode(2) +\
-                        translateExtended ("Room Assignment not possible.", lvcarea, "") + chr_unicode(10) +\
-                        translateExtended (zinr_ecode[- error_code - 1], lvcarea, "")
-                error_number = 39
 
-                return
+                if error_code == -8:
+                    msg_str = ""
+                    msg_str = msg_str1
+                    error_number = 39
+
+                    return
+                else:
+                    msg_str = msg_str + chr_unicode(2) +\
+                            translateExtended ("Room Assignment not possible.", lvcarea, "") + chr_unicode(10) +\
+                            translateExtended (zinr_ecode[- error_code - 1], lvcarea, "")
+                    error_number = 39
+
+                    return
             else:
 
                 if (res_mode.lower()  == ("modify").lower()  or res_mode.lower()  == ("split").lower()):

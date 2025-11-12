@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.118
+#using conversion tools version: 1.0.0.119
 #------------------------------------------
 # Rd, 2/9/2025
 # gitlab: #1040, grpFlag
@@ -14,13 +14,15 @@ from datetime import date
 from functions.htpint import htpint
 from functions.get_vipnrbl import get_vipnrbl
 from sqlalchemy import func
-from models import Guest, Paramtext, Htparam, Res_line, Waehrung, Reservation, Zimkateg, Guestseg, Master, Messages, Kontline, Gentable, Mc_guest, Reslin_queasy, Zimmer, Queasy, Fixleist
+from functions.prepare_gcf_history_1bl import prepare_gcf_history_1bl
+from functions.gcf_history_4bl import gcf_history_4bl
+from models import Guest, History, Paramtext, Htparam, Res_line, Waehrung, Reservation, Zimkateg, Bresline, Guestseg, Segment, Master, Messages, Kontline, Gentable, Mc_guest, Reslin_queasy, Zimmer, Queasy, Fixleist
 
 t_payload_list_data, T_payload_list = create_model("T_payload_list", {"argt_str":string})
 
 def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:bool, last_sort:int, lresnr:int, long_stay:int, ci_date:date, grpflag:bool, room:string, lname:string, sorttype:int, fdate1:date, fdate2:date, fdate:date, excl_rmshare:bool, voucher_no:string, nation_str:string):
 
-    prepare_cache ([Guest, Paramtext, Htparam, Res_line, Waehrung, Reservation, Zimkateg, Kontline, Reslin_queasy, Zimmer, Queasy])
+    prepare_cache ([Guest, Paramtext, Htparam, Waehrung, Reservation, Zimkateg, Bresline, Segment, Kontline, Reslin_queasy, Zimmer, Queasy])
 
     rmlen = 0
     arl_list_data = []
@@ -53,13 +55,23 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
     rescomment:string = ""
     rsvbemerk:string = ""
     blacklist_int:int = 0
-    guest = paramtext = htparam = res_line = waehrung = reservation = zimkateg = guestseg = master = messages = kontline = gentable = mc_guest = reslin_queasy = zimmer = queasy = fixleist = None
+    arl_list_reslin_name_fgcol:int = 0
+    arl_list_reslin_name_bgcol:int = 0
+    htl_name:string = ""
+    vhost:string = ""
+    vservice:string = ""
+    hoappparam:string = ""
+    lreturn:bool = False
+    centralized_flag:bool = False
+    guest = history = paramtext = htparam = res_line = waehrung = reservation = zimkateg = bresline = guestseg = segment = master = messages = kontline = gentable = mc_guest = reslin_queasy = zimmer = queasy = fixleist = None
 
-    setup_list = gbuff = gbuffmember = arl_list = b_arl_list = t_payload_list = gmember = None
+    setup_list = gbuff = gbuffmember = arl_list = b_arl_list = t_payload_list = ghistory = summ_list = gmember = None
 
     setup_list_data, Setup_list = create_model("Setup_list", {"nr":int, "char":string})
-    arl_list_data, Arl_list = create_model("Arl_list", {"resnr":int, "reslinnr":int, "resline_wabkurz":string, "voucher_nr":string, "grpflag":bool, "verstat":int, "l_zuordnung2":int, "kontignr":int, "firmen_nr":int, "steuernr":string, "rsv_name":string, "zinr":string, "setup_list_char":string, "resline_name":string, "waehrung_wabkurz":string, "segmentcode":int, "ankunft":date, "abreise":date, "zimmeranz":int, "kurzbez":string, "arrangement":string, "zipreis":Decimal, "anztage":int, "erwachs":int, "kind1":int, "kind2":int, "gratis":int, "l_zuordnung4":int, "resstatus":int, "l_zuordnung3":int, "flight_nr":string, "ankzeit":int, "abreisezeit":int, "betrieb_gast":int, "resdat":date, "useridanlage":string, "reserve_dec":Decimal, "cancelled_id":string, "changed_id":string, "groupname":string, "active_flag":int, "gastnr":int, "gastnrmember":int, "karteityp":int, "reserve_int":int, "zikatnr":int, "betrieb_gastmem":int, "pseudofix":bool, "reserve_char":string, "bemerk":string, "depositbez":Decimal, "depositbez2":Decimal, "bestat_dat":date, "briefnr":int, "rsv_gastnr":int, "rsv_resnr":int, "rsv_bemerk":string, "rsv_grpflag":bool, "recid_resline":int, "address":string, "city":string, "comments":string, "resnr_fgcol":int, "mc_str_fgcol":int, "mc_str_bgcol":int, "mc_flag":bool, "rsv_name_fgcol":int, "rsv_name_bgcol":int, "zinr_fgcol":int, "reslin_name_fgcol":int, "ankunft_fgcol":int, "anztage_fgcol":int, "abreise_fgcol":int, "segmentcode_fgcol":int, "reslin_name_bgcol":int, "segmentcode_bgcol":int, "zinr_bgcol":int, "webci":string, "webci_flag":string, "voucher_flag":string, "kontignr_flag":string, "birthday_flag":bool, "sharer_no":int, "guest_blacklist":bool, "fixcost_flag":bool, "gastmobileno":string, "special_request":string}, {"resnr_fgcol": -1, "mc_str_fgcol": -1, "mc_str_bgcol": -1, "rsv_name_fgcol": -1, "rsv_name_bgcol": -1, "zinr_fgcol": -1, "reslin_name_fgcol": -1, "ankunft_fgcol": -1, "anztage_fgcol": -1, "abreise_fgcol": -1, "segmentcode_fgcol": -1, "reslin_name_bgcol": -1, "segmentcode_bgcol": -1, "zinr_bgcol": -1})
-    b_arl_list_data, B_arl_list = create_model("B_arl_list", {"resnr":int, "reslinnr":int, "resline_wabkurz":string, "voucher_nr":string, "grpflag":bool, "verstat":int, "l_zuordnung2":int, "kontignr":int, "firmen_nr":int, "steuernr":string, "rsv_name":string, "zinr":string, "setup_list_char":string, "resline_name":string, "waehrung_wabkurz":string, "segmentcode":int, "ankunft":date, "abreise":date, "zimmeranz":int, "kurzbez":string, "arrangement":string, "zipreis":Decimal, "anztage":int, "erwachs":int, "kind1":int, "kind2":int, "gratis":int, "l_zuordnung4":int, "resstatus":int, "l_zuordnung3":int, "flight_nr":string, "ankzeit":int, "abreisezeit":int, "betrieb_gast":int, "resdat":date, "useridanlage":string, "reserve_dec":Decimal, "cancelled_id":string, "changed_id":string, "groupname":string, "active_flag":int, "gastnr":int, "gastnrmember":int, "karteityp":int, "reserve_int":int, "zikatnr":int, "betrieb_gastmem":int, "pseudofix":bool, "reserve_char":string, "bemerk":string, "depositbez":Decimal, "depositbez2":Decimal, "bestat_dat":date, "briefnr":int, "rsv_gastnr":int, "rsv_resnr":int, "rsv_bemerk":string, "rsv_grpflag":bool, "recid_resline":int, "address":string, "city":string, "comments":string, "resnr_fgcol":int, "mc_str_fgcol":int, "mc_str_bgcol":int, "mc_flag":bool, "rsv_name_fgcol":int, "rsv_name_bgcol":int, "zinr_fgcol":int, "reslin_name_fgcol":int, "ankunft_fgcol":int, "anztage_fgcol":int, "abreise_fgcol":int, "segmentcode_fgcol":int, "reslin_name_bgcol":int, "segmentcode_bgcol":int, "zinr_bgcol":int, "webci":string, "webci_flag":string, "voucher_flag":string, "kontignr_flag":string, "birthday_flag":bool, "sharer_no":int, "guest_blacklist":bool, "fixcost_flag":bool, "gastmobileno":string, "special_request":string}, {"resnr_fgcol": -1, "mc_str_fgcol": -1, "mc_str_bgcol": -1, "rsv_name_fgcol": -1, "rsv_name_bgcol": -1, "zinr_fgcol": -1, "reslin_name_fgcol": -1, "ankunft_fgcol": -1, "anztage_fgcol": -1, "abreise_fgcol": -1, "segmentcode_fgcol": -1, "reslin_name_bgcol": -1, "segmentcode_bgcol": -1, "zinr_bgcol": -1})
+    arl_list_data, Arl_list = create_model("Arl_list", {"resnr":int, "reslinnr":int, "resline_wabkurz":string, "voucher_nr":string, "grpflag":bool, "verstat":int, "l_zuordnung2":int, "kontignr":int, "firmen_nr":int, "steuernr":string, "rsv_name":string, "zinr":string, "setup_list_char":string, "resline_name":string, "waehrung_wabkurz":string, "segmentcode":int, "ankunft":date, "abreise":date, "zimmeranz":int, "kurzbez":string, "arrangement":string, "zipreis":Decimal, "anztage":int, "erwachs":int, "kind1":int, "kind2":int, "gratis":int, "l_zuordnung4":int, "resstatus":int, "l_zuordnung3":int, "flight_nr":string, "ankzeit":int, "abreisezeit":int, "betrieb_gast":int, "resdat":date, "useridanlage":string, "reserve_dec":Decimal, "cancelled_id":string, "changed_id":string, "groupname":string, "active_flag":int, "gastnr":int, "gastnrmember":int, "karteityp":int, "reserve_int":int, "zikatnr":int, "betrieb_gastmem":int, "pseudofix":bool, "reserve_char":string, "bemerk":string, "depositbez":Decimal, "depositbez2":Decimal, "bestat_dat":date, "briefnr":int, "rsv_gastnr":int, "rsv_resnr":int, "rsv_bemerk":string, "rsv_grpflag":bool, "recid_resline":int, "address":string, "city":string, "comments":string, "resnr_fgcol":int, "mc_str_fgcol":int, "mc_str_bgcol":int, "mc_flag":bool, "rsv_name_fgcol":int, "rsv_name_bgcol":int, "zinr_fgcol":int, "reslin_name_fgcol":int, "ankunft_fgcol":int, "anztage_fgcol":int, "abreise_fgcol":int, "segmentcode_fgcol":int, "reslin_name_bgcol":int, "segmentcode_bgcol":int, "zinr_bgcol":int, "webci":string, "webci_flag":string, "voucher_flag":string, "kontignr_flag":string, "birthday_flag":bool, "sharer_no":int, "guest_blacklist":bool, "fixcost_flag":bool, "gastmobileno":string, "special_request":string, "segmentcode_str":string, "ratecode":string}, {"resnr_fgcol": -1, "mc_str_fgcol": -1, "mc_str_bgcol": -1, "rsv_name_fgcol": -1, "rsv_name_bgcol": -1, "zinr_fgcol": -1, "reslin_name_fgcol": -1, "ankunft_fgcol": -1, "anztage_fgcol": -1, "abreise_fgcol": -1, "segmentcode_fgcol": -1, "reslin_name_bgcol": -1, "segmentcode_bgcol": -1, "zinr_bgcol": -1})
+    b_arl_list_data, B_arl_list = create_model("B_arl_list", {"resnr":int, "reslinnr":int, "resline_wabkurz":string, "voucher_nr":string, "grpflag":bool, "verstat":int, "l_zuordnung2":int, "kontignr":int, "firmen_nr":int, "steuernr":string, "rsv_name":string, "zinr":string, "setup_list_char":string, "resline_name":string, "waehrung_wabkurz":string, "segmentcode":int, "ankunft":date, "abreise":date, "zimmeranz":int, "kurzbez":string, "arrangement":string, "zipreis":Decimal, "anztage":int, "erwachs":int, "kind1":int, "kind2":int, "gratis":int, "l_zuordnung4":int, "resstatus":int, "l_zuordnung3":int, "flight_nr":string, "ankzeit":int, "abreisezeit":int, "betrieb_gast":int, "resdat":date, "useridanlage":string, "reserve_dec":Decimal, "cancelled_id":string, "changed_id":string, "groupname":string, "active_flag":int, "gastnr":int, "gastnrmember":int, "karteityp":int, "reserve_int":int, "zikatnr":int, "betrieb_gastmem":int, "pseudofix":bool, "reserve_char":string, "bemerk":string, "depositbez":Decimal, "depositbez2":Decimal, "bestat_dat":date, "briefnr":int, "rsv_gastnr":int, "rsv_resnr":int, "rsv_bemerk":string, "rsv_grpflag":bool, "recid_resline":int, "address":string, "city":string, "comments":string, "resnr_fgcol":int, "mc_str_fgcol":int, "mc_str_bgcol":int, "mc_flag":bool, "rsv_name_fgcol":int, "rsv_name_bgcol":int, "zinr_fgcol":int, "reslin_name_fgcol":int, "ankunft_fgcol":int, "anztage_fgcol":int, "abreise_fgcol":int, "segmentcode_fgcol":int, "reslin_name_bgcol":int, "segmentcode_bgcol":int, "zinr_bgcol":int, "webci":string, "webci_flag":string, "voucher_flag":string, "kontignr_flag":string, "birthday_flag":bool, "sharer_no":int, "guest_blacklist":bool, "fixcost_flag":bool, "gastmobileno":string, "special_request":string, "segmentcode_str":string, "ratecode":string}, {"resnr_fgcol": -1, "mc_str_fgcol": -1, "mc_str_bgcol": -1, "rsv_name_fgcol": -1, "rsv_name_bgcol": -1, "zinr_fgcol": -1, "reslin_name_fgcol": -1, "ankunft_fgcol": -1, "anztage_fgcol": -1, "abreise_fgcol": -1, "segmentcode_fgcol": -1, "reslin_name_bgcol": -1, "segmentcode_bgcol": -1, "zinr_bgcol": -1})
+    ghistory_data, Ghistory = create_model_like(History, {"hname":string, "gname":string, "address":string, "s_recid":int, "vcrnr":string, "mblnr":string, "email":string})
+    summ_list_data, Summ_list = create_model_like(History)
 
     Gbuff = create_buffer("Gbuff",Guest)
     Gbuffmember = create_buffer("Gbuffmember",Guest)
@@ -69,25 +81,25 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
+        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, segment, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
         nonlocal show_rate, last_sort, lresnr, long_stay, ci_date, grpflag, room, lname, sorttype, fdate1, fdate2, fdate, excl_rmshare, voucher_no, nation_str
         nonlocal gbuff, gbuffmember, gmember
 
 
-        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, gmember
-        nonlocal setup_list_data, arl_list_data, b_arl_list_data
+        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, ghistory, summ_list, gmember
+        nonlocal setup_list_data, arl_list_data, b_arl_list_data, ghistory_data, summ_list_data
 
         return {"fdate1": fdate1, "fdate2": fdate2, "rmlen": rmlen, "arl-list": arl_list_data}
 
     def get_toname(lname:string):
 
-        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
+        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, segment, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
         nonlocal show_rate, last_sort, lresnr, long_stay, ci_date, grpflag, room, sorttype, fdate1, fdate2, fdate, excl_rmshare, voucher_no, nation_str
         nonlocal gbuff, gbuffmember, gmember
 
 
-        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, gmember
-        nonlocal setup_list_data, arl_list_data, b_arl_list_data
+        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, ghistory, summ_list, gmember
+        nonlocal setup_list_data, arl_list_data, b_arl_list_data, ghistory_data, summ_list_data
 
 
         return chr_unicode(asc(substring(lname, 0, 1)) + 1)
@@ -95,13 +107,13 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
     def fixing_blank_resname():
 
-        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
+        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, segment, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
         nonlocal show_rate, last_sort, lresnr, long_stay, ci_date, grpflag, room, lname, sorttype, fdate1, fdate2, fdate, excl_rmshare, voucher_no, nation_str
         nonlocal gbuff, gbuffmember, gmember
 
 
-        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, gmember
-        nonlocal setup_list_data, arl_list_data, b_arl_list_data
+        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, ghistory, summ_list, gmember
+        nonlocal setup_list_data, arl_list_data, b_arl_list_data, ghistory_data, summ_list_data
 
         rline = None
         Rline =  create_buffer("Rline",Res_line)
@@ -111,7 +123,8 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
             guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
 
-            rline = get_cache (Res_line, {"_recid": [(eq, res_line._recid)]})
+            rline = db_session.query(Rline).filter(
+                         (Rline._recid == res_line._recid)).first()
 
             if rline:
                 rline.resname = guest.name
@@ -127,13 +140,13 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
     def disp_arlist1():
 
-        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
+        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, segment, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
         nonlocal show_rate, last_sort, lresnr, long_stay, ci_date, grpflag, room, lname, sorttype, fdate1, fdate2, fdate, excl_rmshare, voucher_no, nation_str
         nonlocal gbuff, gbuffmember, gmember
 
 
-        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, gmember
-        nonlocal setup_list_data, arl_list_data, b_arl_list_data
+        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, ghistory, summ_list, gmember
+        nonlocal setup_list_data, arl_list_data, b_arl_list_data, ghistory_data, summ_list_data
 
         to_name:string = ""
         igrpname:int = 0
@@ -490,13 +503,13 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
     def disp_arrivea():
 
-        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
+        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, segment, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
         nonlocal show_rate, last_sort, lresnr, long_stay, ci_date, grpflag, room, lname, sorttype, fdate1, fdate2, fdate, excl_rmshare, voucher_no, nation_str
         nonlocal gbuff, gbuffmember, gmember
 
 
-        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, gmember
-        nonlocal setup_list_data, arl_list_data, b_arl_list_data
+        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, ghistory, summ_list, gmember
+        nonlocal setup_list_data, arl_list_data, b_arl_list_data, ghistory_data, summ_list_data
 
         to_name:string = ""
         igrpname:int = 0
@@ -697,13 +710,13 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
     def sqry2():
 
-        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
+        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, segment, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
         nonlocal show_rate, last_sort, lresnr, long_stay, ci_date, grpflag, room, lname, sorttype, fdate1, fdate2, fdate, excl_rmshare, voucher_no, nation_str
         nonlocal gbuff, gbuffmember, gmember
 
 
-        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, gmember
-        nonlocal setup_list_data, arl_list_data, b_arl_list_data
+        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, ghistory, summ_list, gmember
+        nonlocal setup_list_data, arl_list_data, b_arl_list_data, ghistory_data, summ_list_data
 
         to_name:string = ""
         igrpname:int = 0
@@ -922,13 +935,13 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
     def sqry3():
 
-        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
+        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, segment, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
         nonlocal show_rate, last_sort, lresnr, long_stay, ci_date, grpflag, room, lname, sorttype, fdate1, fdate2, fdate, excl_rmshare, voucher_no, nation_str
         nonlocal gbuff, gbuffmember, gmember
 
 
-        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, gmember
-        nonlocal setup_list_data, arl_list_data, b_arl_list_data
+        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, ghistory, summ_list, gmember
+        nonlocal setup_list_data, arl_list_data, b_arl_list_data, ghistory_data, summ_list_data
 
         igrpname:int = 0
         igrpname = to_int(grpflag)
@@ -1045,13 +1058,13 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
     def sqry4():
 
-        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
+        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, segment, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
         nonlocal show_rate, last_sort, lresnr, long_stay, ci_date, grpflag, room, lname, sorttype, fdate1, fdate2, fdate, excl_rmshare, voucher_no, nation_str
         nonlocal gbuff, gbuffmember, gmember
 
 
-        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, gmember
-        nonlocal setup_list_data, arl_list_data, b_arl_list_data
+        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, ghistory, summ_list, gmember
+        nonlocal setup_list_data, arl_list_data, b_arl_list_data, ghistory_data, summ_list_data
 
         to_name:string = ""
         igrpname:int = 0
@@ -1251,13 +1264,13 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
     def sqry5():
 
-        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
+        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, segment, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
         nonlocal show_rate, last_sort, lresnr, long_stay, ci_date, grpflag, room, lname, sorttype, fdate1, fdate2, fdate, excl_rmshare, voucher_no, nation_str
         nonlocal gbuff, gbuffmember, gmember
 
 
-        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, gmember
-        nonlocal setup_list_data, arl_list_data, b_arl_list_data
+        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, ghistory, summ_list, gmember
+        nonlocal setup_list_data, arl_list_data, b_arl_list_data, ghistory_data, summ_list_data
 
         igrpname:int = 0
         igrpname = to_int(grpflag)
@@ -1448,13 +1461,13 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
     def sqry6():
 
-        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
+        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, segment, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
         nonlocal show_rate, last_sort, lresnr, long_stay, ci_date, grpflag, room, lname, sorttype, fdate1, fdate2, fdate, excl_rmshare, voucher_no, nation_str
         nonlocal gbuff, gbuffmember, gmember
 
 
-        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, gmember
-        nonlocal setup_list_data, arl_list_data, b_arl_list_data
+        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, ghistory, summ_list, gmember
+        nonlocal setup_list_data, arl_list_data, b_arl_list_data, ghistory_data, summ_list_data
 
         igrpname:int = 0
         i:int = 0
@@ -1568,13 +1581,13 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
     def sqry7():
 
-        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
+        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, segment, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
         nonlocal show_rate, last_sort, lresnr, long_stay, ci_date, grpflag, room, lname, sorttype, fdate1, fdate2, fdate, excl_rmshare, voucher_no, nation_str
         nonlocal gbuff, gbuffmember, gmember
 
 
-        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, gmember
-        nonlocal setup_list_data, arl_list_data, b_arl_list_data
+        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, ghistory, summ_list, gmember
+        nonlocal setup_list_data, arl_list_data, b_arl_list_data, ghistory_data, summ_list_data
 
         igrpname:int = 0
         i:int = 0
@@ -1732,13 +1745,13 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
     def sqry8():
 
-        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, guest, paramtext, htparam, res_line, waehrung, reservation, zimkateg, guestseg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
+        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, segment, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
         nonlocal show_rate, last_sort, lresnr, long_stay, ci_date, grpflag, room, lname, sorttype, fdate1, fdate2, fdate, excl_rmshare, voucher_no, nation_str
         nonlocal gbuff, gbuffmember, gmember
 
 
-        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, gmember
-        nonlocal setup_list_data, arl_list_data, b_arl_list_data
+        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, ghistory, summ_list, gmember
+        nonlocal setup_list_data, arl_list_data, b_arl_list_data, ghistory_data, summ_list_data
 
         igrpname:int = 0
 
@@ -1908,10 +1921,17 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
         str2:string = ""
         web_com:string = ""
         bday:date = None
+        codestr:string = ""
         bresline = None
         Bresline =  create_buffer("Bresline",Res_line)
 
         gmember = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+
+        if matches(res_line.zimmer_wunsch,r"*$CODE$*"):
+            codestr = entry(0, substring(res_line.zimmer_wunsch, get_index(res_line.zimmer_wunsch, "$CODE$") + 6 - 1) , ";")
+        else:
+            codestr = ""
+            
         arl_list = Arl_list()
         arl_list_data.append(arl_list)
 
@@ -1973,6 +1993,7 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
         arl_list.rsv_grpflag = reservation.grpflag
         arl_list.recid_resline = res_line._recid
         arl_list.gastmobileno = gmember.mobil_telefon
+        arl_list.ratecode = codestr
 
         if res_line.resstatus != 11 and res_line.resstatus != 13:
 
@@ -1996,6 +2017,11 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         if guestseg:
             arl_list.guest_blacklist = True
+
+        segment = get_cache (Segment, {"segmentcode": [(eq, reservation.segmentcode)]})
+
+        if segment:
+            arl_list.segmentcode_str = segment.bezeich
 
         master = get_cache (Master, {"resnr": [(eq, res_line.resnr)]})
 
@@ -2171,6 +2197,11 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
         if res_line:
 
+            if centralized_flag :
+                arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol = centralized_guest(res_line.gastnrmember)
+                arl_list.reslin_name_fgcol = arl_list_reslin_name_fgcol
+                arl_list.reslin_name_bgcol = arl_list_reslin_name_bgcol
+
             guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
 
             if guest:
@@ -2244,6 +2275,61 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             arl_list.special_request = reslin_queasy.char3
 
 
+    def centralized_guest(res_line_gastnrmember:int):
+
+        nonlocal rmlen, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, vipnr10, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, tmpdate, tmpint, stay, resbemerk, rescomment, rsvbemerk, blacklist_int, arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol, htl_name, vhost, vservice, hoappparam, lreturn, centralized_flag, guest, history, paramtext, htparam, res_line, waehrung, reservation, zimkateg, bresline, guestseg, segment, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer, queasy, fixleist
+        nonlocal show_rate, last_sort, lresnr, long_stay, ci_date, grpflag, room, lname, sorttype, fdate1, fdate2, fdate, excl_rmshare, voucher_no, nation_str
+        nonlocal gbuff, gbuffmember, gmember
+
+
+        nonlocal setup_list, gbuff, gbuffmember, arl_list, b_arl_list, t_payload_list, ghistory, summ_list, gmember
+        nonlocal setup_list_data, arl_list_data, b_arl_list_data, ghistory_data, summ_list_data
+
+        arl_list_reslin_name_fgcol = 0
+        arl_list_reslin_name_bgcol = 0
+        cg_ci_date:date = None
+        cg_t_tittle:string = ""
+        cg_ip_port:string = ""
+        cg_guest_phone:string = ""
+        cg_guest_name:string = ""
+        cg_guest_email:string = ""
+        cg_counter:int = 0
+
+        def generate_inner_output():
+            return (arl_list_reslin_name_fgcol, arl_list_reslin_name_bgcol)
+
+
+        guest = get_cache (Guest, {"gastnr": [(eq, res_line_gastnrmember)]})
+
+        if guest:
+            cg_ci_date, cg_t_tittle, cg_ip_port, cg_guest_phone, cg_guest_name, cg_guest_email = get_output(prepare_gcf_history_1bl(guest.gastnr))
+            # lreturn = hServerHO:CONNECT (hoappparam, None, None, None)
+            
+            lreturn = False # set to always False for now
+
+            if not lreturn:
+                return generate_inner_output()
+            
+            local_storage.combo_flag = True
+            ghistory_data, summ_list_data = get_output(gcf_history_4bl(guest.gastnr, cg_guest_phone, cg_guest_name, cg_guest_email, None, None))
+            local_storage.combo_flag = False
+
+            cg_counter = 0
+
+            for ghistory in query(ghistory_data):
+                cg_counter = cg_counter + 1
+
+            if cg_counter >= stay and stay > 0:
+                arl_list_reslin_name_fgcol = 15
+                arl_list_reslin_name_bgcol = 3
+
+
+            lreturn = False
+
+
+        return generate_inner_output()
+
+
     setup_list = Setup_list()
     setup_list_data.append(setup_list)
 
@@ -2263,6 +2349,33 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
     if htparam:
         stay = htparam.finteger
+
+    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 200)]})
+
+    if paramtext:
+        htl_name = paramtext.ptexte
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 1343)]})
+
+    if htparam:
+
+        if htparam.fchar != "" and htparam.fchar != None:
+
+            if num_entries(htparam.fchar, ":") > 1:
+                # vhost = entry(0, htparam.fchar, ":")
+                # vservice = entry(1, htparam.fchar, ":")
+                # hoappparam = " -H " + vhost + " -S " + vservice + " -DirectConnect -sessionModel Session-free"
+
+                # if vhost != None and vhost != "" and vservice != None and vservice != "":
+                #     centralized_flag = True
+                
+                centralized_flag = False # for now, set to always false
+
+
+    else:
+        centralized_flag = False
+
+
     fixing_blank_resname()
 
     if num_entries(room, chr_unicode(2)) > 1:

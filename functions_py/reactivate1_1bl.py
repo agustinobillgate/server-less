@@ -7,11 +7,11 @@ from decimal import Decimal
 from datetime import date
 from functions.htpdate import htpdate
 from functions.intevent_1 import intevent_1
-from models import Reservation, Res_line, Reslin_queasy, Zinrstat, Master, Bediener, Guest, History, Res_history, Resplan, Zimkateg, Queasy
+from models import Reservation, Res_line, Reslin_queasy, Zinrstat, Master, Bediener, Res_history, Guest, History, Resplan, Zimkateg, Queasy
 
 def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, deposit_flag:bool):
 
-    prepare_cache ([Reservation, Res_line, Reslin_queasy, Zinrstat, Master, Bediener, History, Res_history, Resplan, Zimkateg, Queasy])
+    prepare_cache ([Reservation, Res_line, Reslin_queasy, Zinrstat, Master, Bediener, Res_history, History, Resplan, Zimkateg, Queasy])
 
     new_resno = 0
     ci_date:date = None
@@ -21,7 +21,7 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
     curr_resnr:int = 0
     curr_reslinnr:int = 0
     curr_ankunft:date = None
-    reservation = res_line = reslin_queasy = zinrstat = master = bediener = guest = history = res_history = resplan = zimkateg = queasy = None
+    reservation = res_line = reslin_queasy = zinrstat = master = bediener = res_history = guest = history = resplan = zimkateg = queasy = None
 
     t_reservation = t_resline = bresline = buf_rline = None
 
@@ -34,7 +34,7 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal new_resno, ci_date, ci, co, priscilla_active, curr_resnr, curr_reslinnr, curr_ankunft, reservation, res_line, reslin_queasy, zinrstat, master, bediener, guest, history, res_history, resplan, zimkateg, queasy
+        nonlocal new_resno, ci_date, ci, co, priscilla_active, curr_resnr, curr_reslinnr, curr_ankunft, reservation, res_line, reslin_queasy, zinrstat, master, bediener, res_history, guest, history, resplan, zimkateg, queasy
         nonlocal resno, reslinno, user_init, all_flag, deposit_flag
         nonlocal t_reservation, t_resline, bresline, buf_rline
 
@@ -45,7 +45,7 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
     def update_resline():
 
-        nonlocal new_resno, ci_date, ci, co, priscilla_active, curr_resnr, curr_reslinnr, curr_ankunft, reservation, res_line, reslin_queasy, zinrstat, master, bediener, guest, history, res_history, resplan, zimkateg, queasy
+        nonlocal new_resno, ci_date, ci, co, priscilla_active, curr_resnr, curr_reslinnr, curr_ankunft, reservation, res_line, reslin_queasy, zinrstat, master, bediener, res_history, guest, history, resplan, zimkateg, queasy
         nonlocal resno, reslinno, user_init, all_flag, deposit_flag
         nonlocal t_reservation, t_resline, bresline, buf_rline
 
@@ -145,6 +145,8 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
             pass
         add_resplan(res_line._recid)
 
+        bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+
         if all_flag:
 
             for rbuff in db_session.query(Rbuff).filter(
@@ -206,7 +208,20 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
 
                     pass
+                
                 add_resplan(rbuff._recid)
+                res_history = Res_history()
+                db_session.add(res_history)
+
+                res_history.nr = bediener.nr
+                res_history.datum = get_current_date()
+                res_history.zeit = get_current_time_in_seconds()
+                res_history.resnr = res_line.resnr
+                res_history.reslinnr = res_line.reslinnr
+                res_history.action = "RE-RES"
+
+
+                res_history.aenderung = "Cancel Reservation with resno: " + to_string(rbuff.resnr) + "/" + to_string(rbuff.reslinnr, "999") + " and " + "Reactive All Reservation by UserID: " + user_init
 
 
         if reservation.activeflag == 1:
@@ -222,8 +237,6 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
             mbuff.active = True
             pass
             pass
-
-        bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
         guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
         history = History()
@@ -263,14 +276,14 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
         res_history.action = "RE-RES"
 
 
-        res_history.aenderung = "Cancel Reservation and Reactive by" + " " + user_init
+        res_history.aenderung = "Cancel Reservation with resno: " + to_string(res_line.resnr) + "/" + to_string(res_line.reslinnr, "999") + " and " + "Reactive by UserID: " + user_init
         pass
         pass
 
 
     def add_resplan(rint:int):
 
-        nonlocal new_resno, ci_date, ci, co, priscilla_active, curr_resnr, curr_reslinnr, curr_ankunft, reservation, res_line, reslin_queasy, zinrstat, master, bediener, guest, history, res_history, resplan, zimkateg, queasy
+        nonlocal new_resno, ci_date, ci, co, priscilla_active, curr_resnr, curr_reslinnr, curr_ankunft, reservation, res_line, reslin_queasy, zinrstat, master, bediener, res_history, guest, history, resplan, zimkateg, queasy
         nonlocal resno, reslinno, user_init, all_flag, deposit_flag
         nonlocal t_reservation, t_resline, bresline, buf_rline
 
@@ -312,7 +325,7 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
     def update_queasy():
 
-        nonlocal new_resno, ci_date, ci, co, priscilla_active, curr_resnr, curr_reslinnr, curr_ankunft, reservation, res_line, reslin_queasy, zinrstat, master, bediener, guest, history, res_history, resplan, zimkateg, queasy
+        nonlocal new_resno, ci_date, ci, co, priscilla_active, curr_resnr, curr_reslinnr, curr_ankunft, reservation, res_line, reslin_queasy, zinrstat, master, bediener, res_history, guest, history, resplan, zimkateg, queasy
         nonlocal resno, reslinno, user_init, all_flag, deposit_flag
         nonlocal t_reservation, t_resline, bresline, buf_rline
 
@@ -389,7 +402,7 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
     def update_resline_copy():
 
-        nonlocal new_resno, ci_date, ci, co, priscilla_active, curr_resnr, curr_reslinnr, curr_ankunft, reservation, res_line, reslin_queasy, zinrstat, master, bediener, guest, history, res_history, resplan, zimkateg, queasy
+        nonlocal new_resno, ci_date, ci, co, priscilla_active, curr_resnr, curr_reslinnr, curr_ankunft, reservation, res_line, reslin_queasy, zinrstat, master, bediener, res_history, guest, history, resplan, zimkateg, queasy
         nonlocal resno, reslinno, user_init, all_flag, deposit_flag
         nonlocal t_reservation, t_resline, bresline, buf_rline
 
@@ -532,6 +545,18 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
 
                 add_resplan(t_resline._recid)
+                res_history = Res_history()
+                db_session.add(res_history)
+
+                res_history.nr = bediener.nr
+                res_history.datum = get_current_date()
+                res_history.zeit = get_current_time_in_seconds()
+                res_history.resnr = bresline.resnr
+                res_history.reslinnr = bresline.reslinnr
+                res_history.action = "RE-RES"
+
+
+                res_history.aenderung = "Cancel Reservation with resno: " + to_string(rbuff.resnr) + "/" + to_string(rbuff.reslinnr, "999") + " and " + "Reactive All Reservation by UserID: " + user_init + " with New resno:" + to_string(new_resno)
 
 
         master = get_cache (Master, {"gastnr": [(eq, bresline.gastnr)],"resnr": [(eq, resno)]})
@@ -585,12 +610,12 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
         res_history.action = "RE-RES"
 
 
-        res_history.aenderung = "Cancel Reservation and Reactive by" + " " + user_init
+        res_history.aenderung = "Cancel Reservation with resno: " + to_string(bresline.resnr) + "/" + to_string(bresline.reslinnr, "999") + " and " + "Reactive by UserID: " + user_init + " with New resno:" + to_string(new_resno)
 
 
     def update_queasy_copy():
 
-        nonlocal new_resno, ci_date, ci, co, priscilla_active, curr_resnr, curr_reslinnr, curr_ankunft, reservation, res_line, reslin_queasy, zinrstat, master, bediener, guest, history, res_history, resplan, zimkateg, queasy
+        nonlocal new_resno, ci_date, ci, co, priscilla_active, curr_resnr, curr_reslinnr, curr_ankunft, reservation, res_line, reslin_queasy, zinrstat, master, bediener, res_history, guest, history, resplan, zimkateg, queasy
         nonlocal resno, reslinno, user_init, all_flag, deposit_flag
         nonlocal t_reservation, t_resline, bresline, buf_rline
 

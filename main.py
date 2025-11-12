@@ -2,7 +2,7 @@ docker_version = "1.0.0.24.691"
 
 #Version 1.0.0.26
 
-print("Start:", docker_version)
+print("Re Start:", docker_version)
 
 # ---------------------------------------------------------------------------------
 # Main.py FASTAPI
@@ -71,7 +71,9 @@ from starlette import status
 from typing import Dict, Any
 
 import typing
+from dotenv import load_dotenv
 from _demo_config import * 
+from sqlalchemy.engine import URL
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -91,6 +93,88 @@ response_headers = {
     "Access-Control-Max-Age": "600",  # Preflight request cache time
 }
 
+#------------ Log Table -------------------------------------
+load_dotenv()
+db_session = None
+dblogin_session = None
+url = URL.create(
+    "postgresql",
+    username=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    host=os.getenv("DB_HOST"),
+    port=os.getenv("DB_PORT"),
+    database=os.getenv("DB_NAME")
+)
+log_engine = create_engine(url)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=log_engine)
+dblog_session = SessionLocal()
+local_storage.dblog_session = dblog_session
+
+log_id = 0
+
+skip_list = {   "Common/checkPermission2",
+                "Common/getHTParam0", 
+                "Common/readHtparam",
+                "Common/checkTime",
+                "Common/checkPermission", 
+                "Common/loadDateTimeServer1",
+                "Common/checkStrongPassword"}
+
+# ----------------- log activity -----------------------------#
+def log_activity(endpoint:string, userid:string, hotel_schema:string) -> int:
+    global dblog_session
+
+    if endpoint in skip_list:
+        return 0
+    
+    recid = 0
+    try:
+        sql = """
+            INSERT INTO public.logs_endpoint (endpoint, userid, hotel_schema) 
+            VALUES (:endpoint, :userid, :hotel_schema) RETURNING id
+            """
+        # print("Logging activity:", sql)
+        log_results = dblog_session.execute(text(sql), {
+                    "endpoint": endpoint,
+                    "userid": userid,
+                    "hotel_schema": hotel_schema
+                })
+        dblog_session.commit()
+        dblog_session.close()
+        recid = log_results.scalar()
+        # print("Logged activity with recid:", recid)
+    except Exception as e:
+        print("Error logging activity:", e)
+        recid = 0
+    finally:
+        return recid
+
+def log_activity_end(log_id: int, error_message: str) -> int:
+    global dblog_session
+
+    if log_id <= 0:
+        return 0
+
+    try:
+        sql = """
+            UPDATE public.logs_endpoint SET time_end = NOW(), error_message = :error_message WHERE id = :log_id
+            """
+        log_results = dblog_session.execute(text(sql), {
+                    "log_id": log_id,
+                    "error_message": error_message
+                })
+        dblog_session.commit()
+        
+    except Exception as e:
+        print("Error ending activity log:", e)
+    finally:
+        dblog_session.close()
+        dblog_session.close()
+        log_engine.dispose()
+
+    return log_id
+
+#------------------ end of log session ------------------#
 
 #updated 1.0.0.14
 update_table_name_list = {}
@@ -115,6 +199,7 @@ update_field_mapping = {
     "selected":"SELECTED",
 
     "flag":"Flag",
+    "flag":"flag",
     "integerflag":"integerFlag",
     "doneflag":"doneFlag",
     "grpflag":"grpFlag",
@@ -1508,6 +1593,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
         local_storage.app = app
     output_data_size = 0
     newRequest_recid = 0
+    log_id = 0
     ServerInfo = {}
     hotel_schema = inputUsername = function_name = request_id = "" 
     
@@ -1573,7 +1659,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
     if not hotel_schema:
         hotel_schema = input_data.get("hotel_schema")
 
-    print("hotel_schema:", hotel_schema, ui_request_id)
+    # print("hotel_schema:", hotel_schema, ui_request_id)
 
     #------------------------ Main Function ------------------------------
     try:
@@ -1598,11 +1684,13 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
             if num_entries(path,"/") == 5:
                 service_name += entry(4,path,"/")
 
-            print("Module/Service:", vhp_module, service_name)
+            print("Schema/Module/Service:", hotel_schema, vhp_module, service_name)
+            endpoint = vhp_module + "/" + service_name
+            log_id = log_activity(endpoint, inputUsername, hotel_schema)
 
             set_db_and_schema(hotel_schema)
             db_session = local_storage.db_session
-            print("db_session:", db_session)
+            # print("db_session:", db_session)
 
             try:
                 with open('modules/' + vhp_module + '/_mapping.txt', mode ='r') as file:   
@@ -1646,7 +1734,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
             else:
                 # version = "localhost, " + get_function_version(module_name, function_name, "/usr1/serverless/src/functions/")     
                 version = "localhost"
-            print(f"Main.py {function_name} running on: {version}")
+            # print(f"Main.py {function_name} running on: {version}")
             ok_flag = "true"
             local_storage.debugging = f"{local_storage.debugging},Skip OK:{ok_flag}, {function_name} Ver:{version}"
             
@@ -1676,7 +1764,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                         db_session.add(newRequest)
                         db_session.commit()
                         newRequest_recid = newRequest._recid
-                        print("Start BigResponse:", newRequest.userinit, newRequest_recid)
+                        # print("Start BigResponse:", newRequest.userinit, newRequest_recid)
                     else:
                         if existing_request.orig_infostr == "running":
                             existing_request.zeit = existing_request.zeit + 1
@@ -1715,13 +1803,13 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
                         local_storage.debugging = local_storage.debugging + ',Run'
                         db_session.commit()
                     if importlib.util.find_spec(module_name):
-                        print("Masuk Module:", module_name)
+                        # print("Import Module:", module_name)
                         module = importlib.import_module(module_name)
                         # Rd, just to re-test, develop mode only
                         module = importlib.reload(module)   
                         if hasattr(module, function_name):
                             try:
-                                print("Calling getAttr:", function_name)   
+                                # print("Calling getAttr:", function_name)   
                                 obj = getattr(module, function_name)
                                 update_input_format(obj,input_data)
                                 # print("Start Call:", function_name)  
@@ -1770,7 +1858,7 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
             else:
                 
                 data_string = ''.join(str(value) for value in output_data.values())
-                print("OutputData:", len(data_string))
+                # print("OutputData:", len(data_string))
                 # print(data_string)
 
         # ------------------------------------------------------------------------------
@@ -1833,15 +1921,15 @@ def handle_dynamic_data(url:str, headers: Dict[str, Any], input_data: Dict[str, 
     ServerInfo["ui_request_id"] = ui_request_id
     ServerInfo["newRequest_recid"] = newRequest_recid
     ServerInfo["orig_infostr"] = orig_infostr
-    ServerInfo["aws_request_id"] = aws_request_id
-    
-    ServerInfo["AWSFunction"] =  lambda_function_name
-    ServerInfo["AWSCloudWatch"] = log_stream_name
+    ServerInfo["log_id"] = log_id
+    # ServerInfo["aws_request_id"] = aws_request_id    
+    # ServerInfo["AWSFunction"] =  lambda_function_name
+    # ServerInfo["AWSCloudWatch"] = log_stream_name
+    log_activity_end(log_id, error_message)
     return {
         "response": output_data,
         "serverinfo": ServerInfo
     }
-
 
     aws_request_id = request.headers.get("X-Amzn-RequestId", "Not Available")
     print("AWS Request ID:", aws_request_id)

@@ -1,8 +1,14 @@
 #using conversion tools version: 1.0.0.118
-#------------------------------------------
+
+#--------------------------------------------------------------------
 # Rd, 18/8/2025
 # ada casetype baru: 35
-#------------------------------------------
+
+# Rulita, 10-11-2025 | BD8ACB
+# - add conndition for leasing Apartement "or (Artikel.artart == 14)"
+# - add casetype 36 for feature leasing apartement
+#--------------------------------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Artikel
@@ -290,9 +296,22 @@ def read_artikel1bl(case_type:int, artno:int, dept:int, aname:string, artart:int
         if artikel:
             cr_artikel()
     elif case_type == 35:
-
+        # Rulita, 10-11-2025
+        # add conndition for leasing Apartement "or (Artikel.artart == 14)"
         for artikel in db_session.query(Artikel).filter(
-                 (Artikel.departement == dept) & ((Artikel.artart == 2) | (Artikel.artart == 7))).order_by(Artikel._recid).all():
+                 (Artikel.departement == dept) & ((Artikel.artart == 2) | (Artikel.artart == 7) | (Artikel.artart == 14))).order_by(Artikel._recid).all():
             cr_artikel()
+
+    # Rulita, 10-11-2025
+    # add casetype 36 for feature leasing apartement
+    elif case_type == 36:
+        if artart == 8:
+            for artikel in db_session.query(Artikel).filter(
+                    (Artikel.departement == dept) & ((Artikel.artart == 8) | (Artikel.artart ==13))).order_by(Artikel._recid).all():
+                cr_artikel()
+        else:
+            for artikel in db_session.query(Artikel).filter(
+                    (Artikel.departement == dept) & (Artikel.artart == artart)).order_by(Artikel._recid).all():
+                cr_artikel()
 
     return generate_output()

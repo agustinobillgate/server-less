@@ -1,9 +1,37 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 #-----------------------------------------
 # Rd 28/7/2025
 # gitlab: 763
 # payload:
 #-----------------------------------------
+"""
+Testing:
+https://python.staging.e1-vhp.com:10443/dev/vhpFOC/foInvoiceCalcUnitPrice
+{
+    "request": {
+        "autosaldo": true,
+        "pricetab": false,
+        "doubleCurrency": false,
+        "artnr": 1,
+        "balance": 0,
+        "balanceForeign": 0,
+        "billart": 1,
+        "vatArtList": [
+            0,
+            0,
+            0,
+            0
+        ],
+        "lvAnzVat": 1,
+        "currDepartment": 0,
+        "bilRecid": 140195,
+        "inputUserkey": "95EE44CBF839764A7690C157AC66C9C902905E01",
+        "inputUsername": "it",
+        "hotel_schema": "qcserverless3"
+    }
+}
+
+"""
 
 from functions.additional_functions import *
 from decimal import Decimal

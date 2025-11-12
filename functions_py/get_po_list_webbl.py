@@ -11,11 +11,11 @@ from decimal import Decimal
 from datetime import date
 from functions.po_list_btn_go_1cldbl import po_list_btn_go_1cldbl
 from functions.po_list_btn_go2_1cldbl import po_list_btn_go2_1cldbl
-from models import L_order, Gl_acct, L_artikel
+from models import L_order, Gl_acct, L_artikel, L_kredit
 
 def get_po_list_webbl(usrname:string, po_number:string, last_doc_nr:string, app_sort:string, dml_only:bool, t_liefno:int, deptnr:int, all_supp:bool, stattype:int, sorttype:int, from_date:date, to_date:date, billdate:date, pr_only:bool, excl_dml_pr:bool):
 
-    prepare_cache ([Gl_acct, L_artikel])
+    prepare_cache ([Gl_acct, L_artikel, L_kredit])
 
     p_267 = 0
     first_docu_nr = ""
@@ -24,11 +24,11 @@ def get_po_list_webbl(usrname:string, po_number:string, last_doc_nr:string, app_
     q2_list_data = []
     param267:bool = False
     loeschflag:int = 0
-    l_order = gl_acct = l_artikel = None
+    l_order = gl_acct = l_artikel = l_kredit = None
 
     q2_list = t_list = None
 
-    q2_list_data, Q2_list = create_model("Q2_list", {"bestelldatum":date, "bezeich":string, "firma":string, "docu_nr":string, "l_orderhdr_lieferdatum":date, "wabkurz":string, "bestellart":string, "gedruckt":date, "l_orderhdr_besteller":string, "l_order_gedruckt":date, "zeit":int, "lief_fax_2":string, "l_order_lieferdatum":date, "lief_fax_3":string, "lieferdatum_eff":date, "lief_fax_1":string, "lief_nr":int, "username":string, "del_reason":string, "tot_amount":Decimal, "art_number":int, "art_desc":string, "content":Decimal, "order_qty":Decimal, "unit_price":Decimal, "gross_amount":Decimal, "deliv_unit":string, "nett_price":Decimal, "nett_amount":Decimal, "arrival_date":string, "s_unit":int, "d_unit":Decimal, "art_unit":string, "last_user":string, "account_number":string, "account_name":string, "remark":string, "flag_line":bool})
+    q2_list_data, Q2_list = create_model("Q2_list", {"bestelldatum":date, "bezeich":string, "firma":string, "docu_nr":string, "l_orderhdr_lieferdatum":date, "wabkurz":string, "bestellart":string, "gedruckt":date, "l_orderhdr_besteller":string, "l_order_gedruckt":date, "zeit":int, "lief_fax_2":string, "l_order_lieferdatum":date, "lief_fax_3":string, "lieferdatum_eff":date, "lief_fax_1":string, "lief_nr":int, "username":string, "del_reason":string, "tot_amount":Decimal, "art_number":int, "art_desc":string, "content":Decimal, "order_qty":Decimal, "unit_price":Decimal, "gross_amount":Decimal, "deliv_unit":string, "nett_price":Decimal, "nett_amount":Decimal, "arrival_date":string, "s_unit":int, "d_unit":Decimal, "art_unit":string, "last_user":string, "account_number":string, "account_name":string, "remark":string, "flag_line":bool, "ap_number":string, "ap_status":string})
     t_list_data, T_list = create_model("T_list", {"bestelldatum":date, "bezeich":string, "firma":string, "docu_nr":string, "l_orderhdr_lieferdatum":date, "wabkurz":string, "bestellart":string, "gedruckt":date, "l_orderhdr_besteller":string, "l_order_gedruckt":date, "zeit":int, "lief_fax_2":string, "l_order_lieferdatum":date, "lief_fax_3":string, "lieferdatum_eff":date, "lief_fax_1":string, "lief_nr":int, "username":string, "del_reason":string, "tot_amount":Decimal})
 
     db_session = local_storage.db_session
@@ -39,7 +39,7 @@ def get_po_list_webbl(usrname:string, po_number:string, last_doc_nr:string, app_
     last_doc_nr = last_doc_nr.strip()
 
     def generate_output():
-        nonlocal p_267, first_docu_nr, curr_docu_nr, last_docu_nr, q2_list_data, param267, loeschflag, l_order, gl_acct, l_artikel
+        nonlocal p_267, first_docu_nr, curr_docu_nr, last_docu_nr, q2_list_data, param267, loeschflag, l_order, gl_acct, l_artikel, l_kredit
         nonlocal usrname, po_number, last_doc_nr, app_sort, dml_only, t_liefno, deptnr, all_supp, stattype, sorttype, from_date, to_date, billdate, pr_only, excl_dml_pr
 
 
@@ -135,5 +135,42 @@ def get_po_list_webbl(usrname:string, po_number:string, last_doc_nr:string, app_
             curr_recid = l_order._recid
             l_order = db_session.query(L_order).filter(
                      (L_order.docu_nr == t_list.docu_nr) & (L_order.loeschflag == loeschflag) & (L_order.pos > 0) & (L_order._recid > curr_recid)).first()
+                     
+        q2_list = Q2_list()
+        q2_list_data.append(q2_list)
+
+        q2_list.flag_line = True
+        q2_list.docu_nr = t_list.docu_nr
+
+        q2_list = Q2_list()
+        q2_list_data.append(q2_list)
+
+        q2_list.ap_number = "AP Payment Status"
+        q2_list.flag_line = True
+        q2_list.docu_nr = t_list.docu_nr
+
+        for l_kredit in db_session.query(L_kredit).filter((L_kredit.name == t_list.docu_nr)).order_by(L_kredit.lscheinnr, L_kredit.opart.desc()).all():
+
+            q2_list = Q2_list()
+            q2_list_data.append(q2_list)
+
+            q2_list.flag_line = True
+            q2_list.ap_number = l_kredit.lscheinnr
+            q2_list.docu_nr = t_list.docu_nr
+
+            if l_kredit.opart == 0:
+                q2_list.ap_status = "Not Paid"
+
+            elif l_kredit.opart == 1:
+                q2_list.ap_status = "Partially Paid"
+
+            elif l_kredit.opart == 2:
+                q2_list.ap_status = "Fully Paid"
+
+        q2_list = Q2_list()
+        q2_list_data.append(q2_list)
+
+        q2_list.flag_line = True
+        q2_list.docu_nr = t_list.docu_nr
 
     return generate_output()

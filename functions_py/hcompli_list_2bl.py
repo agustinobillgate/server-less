@@ -6,18 +6,24 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from models import H_artikel, Htparam, Hoteldpt, H_compli, H_bill, H_journal, Artikel, H_cost, Queasy, Exrate, H_bill_line
+from functions.fb_cost_count_recipe_costbl import fb_cost_count_recipe_costbl
+from models import Htparam, Waehrung, H_artikel, Hoteldpt, H_compli, H_bill, H_journal, Artikel, H_cost, L_artikel, H_rezept, Queasy, Exrate
 
 def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int, to_dept:int, from_date:date, to_date:date, double_currency:bool, exchg_rate:Decimal, billdate:date, mi_detail1:bool, sm_disp1:bool, foreign_nr:int, artnr:int):
 
-    prepare_cache ([H_artikel, Htparam, Hoteldpt, H_compli, H_bill, Artikel, H_cost, Queasy, Exrate, H_bill_line])
+    prepare_cache ([Htparam, Waehrung, H_artikel, Hoteldpt, H_compli, H_bill, H_journal, Artikel, H_cost, L_artikel, H_rezept, Queasy, Exrate])
 
     c_list_data = []
     it_exist:bool = False
     curr_name:string = ""
     guestname:string = ""
+    price_type:int = 0
+    price:Decimal = to_decimal("0.0")
+    exrate:Decimal = 1
+    incl_service:bool = False
+    incl_mwst:bool = False
     lvcarea:string = "hcompli-list"
-    h_artikel = htparam = hoteldpt = h_compli = h_bill = h_journal = artikel = h_cost = queasy = exrate = h_bill_line = None
+    htparam = waehrung = h_artikel = hoteldpt = h_compli = h_bill = h_journal = artikel = h_cost = l_artikel = h_rezept = queasy = exrate = None
 
     c_list = c1_list = c2_list = s_list = s_list = s_list = s_list = None
 
@@ -30,7 +36,7 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal c_list_data, it_exist, curr_name, guestname, lvcarea, h_artikel, htparam, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, queasy, exrate, h_bill_line
+        nonlocal c_list_data, it_exist, curr_name, guestname, price_type, price, exrate, incl_service, incl_mwst, lvcarea, htparam, waehrung, h_artikel, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, l_artikel, h_rezept, queasy, exrate
         nonlocal pvilanguage, gname, sorttype, from_dept, to_dept, from_date, to_date, double_currency, exchg_rate, billdate, mi_detail1, sm_disp1, foreign_nr, artnr
         nonlocal c2_list
 
@@ -42,7 +48,7 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
 
     def journal_list():
 
-        nonlocal c_list_data, guestname, lvcarea, h_artikel, htparam, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, queasy, exrate, h_bill_line
+        nonlocal c_list_data, guestname, price_type, price, exrate, incl_service, incl_mwst, lvcarea, htparam, waehrung, h_artikel, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, l_artikel, h_rezept, queasy, exrate
         nonlocal pvilanguage, gname, sorttype, from_dept, to_dept, from_date, to_date, double_currency, exchg_rate, billdate, mi_detail1, sm_disp1, foreign_nr, c2_list
 
 
@@ -134,7 +140,7 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
             h_compli_obj_list = {}
             h_compli = H_compli()
             h_art = H_artikel()
-            for h_compli.artnr, h_compli.datum, h_compli.departement, h_compli.rechnr, h_compli.p_artnr, h_compli.anzahl, h_compli.epreis, h_compli._recid, h_art.artnrfront, h_art.prozent, h_art.artnr, h_art.bezeich, h_art.epreis1, h_art.artart, h_art._recid in db_session.query(H_compli.artnr, H_compli.datum, H_compli.departement, H_compli.rechnr, H_compli.p_artnr, H_compli.anzahl, H_compli.epreis, H_compli._recid, H_art.artnrfront, H_art.prozent, H_art.artnr, H_art.bezeich, H_art.epreis1, H_art.artart, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter(
+            for h_compli.artnr, h_compli.datum, h_compli.departement, h_compli.rechnr, h_compli.p_artnr, h_compli.anzahl, h_compli.epreis, h_compli._recid, h_art.artnrfront, h_art.artnrlager, h_art.artnrrezept, h_art.prozent, h_art.artnr, h_art.bezeich, h_art._recid in db_session.query(H_compli.artnr, H_compli.datum, H_compli.departement, H_compli.rechnr, H_compli.p_artnr, H_compli.anzahl, H_compli.epreis, H_compli._recid, H_art.artnrfront, H_art.artnrlager, H_art.artnrrezept, H_art.prozent, H_art.artnr, H_art.bezeich, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter(
                      (H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
                 if h_compli_obj_list.get(h_compli._recid):
                     continue
@@ -189,7 +195,6 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
 
                 if h_cost and h_cost.betrag != 0:
                     cost =  to_decimal(h_compli.anzahl) * to_decimal(h_cost.betrag)
-                    cost = cost_correction(cost)
                     cost = to_decimal(round(cost , 2))
                     tt_cost =  to_decimal(tt_cost) + to_decimal(cost)
 
@@ -207,26 +212,49 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
                     c1_list.b_cost =  to_decimal(c1_list.b_cost) + to_decimal(b_cost)
                     c1_list.o_cost =  to_decimal(c1_list.o_cost) + to_decimal(o_cost)
                     c1_list.t_cost =  to_decimal(c1_list.t_cost) + to_decimal(cost)
+                else:
 
-                elif (not h_cost and h_compli.datum < billdate) or (h_cost and h_cost.betrag == 0):
-                    cost =  to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(rate)
-                    cost = to_decimal(round(cost , 2))
-                    tt_cost =  to_decimal(tt_cost) + to_decimal(cost)
+                    if (not h_cost and h_compli.datum < billdate) or (h_cost and h_cost.betrag == 0):
 
-                    if artikel.umsatzart == 3 or artikel.umsatzart == 5:
-                        f_cost =  to_decimal(cost)
-                        ttf_cost =  to_decimal(ttf_cost) + to_decimal(cost)
+                        if h_artikel.artnrlager != 0:
 
-                    elif artikel.umsatzart == 6:
-                        b_cost =  to_decimal(cost)
-                        ttb_cost =  to_decimal(ttb_cost) + to_decimal(cost)
-                    else:
-                        o_cost =  to_decimal(cost)
-                        tto_cost =  to_decimal(tto_cost) + to_decimal(cost)
-                    c1_list.f_cost =  to_decimal(c1_list.f_cost) + to_decimal(f_cost)
-                    c1_list.b_cost =  to_decimal(c1_list.b_cost) + to_decimal(b_cost)
-                    c1_list.o_cost =  to_decimal(c1_list.o_cost) + to_decimal(o_cost)
-                    c1_list.t_cost =  to_decimal(c1_list.t_cost) + to_decimal(cost)
+                            l_artikel = get_cache (L_artikel, {"artnr": [(eq, h_artikel.artnrlager)]})
+
+                            if l_artikel:
+
+                                if price_type == 0 or l_artikel.ek_aktuell == 0:
+                                    cost =  to_decimal(l_artikel.vk_preis)
+                                else:
+                                    cost =  to_decimal(l_artikel.ek_aktuell)
+                                cost =  to_decimal(h_compli.anzahl) * to_decimal(cost)
+
+                        elif h_artikel.artnrrezept != 0:
+
+                            h_rezept = get_cache (H_rezept, {"artnrrezept": [(eq, h_artikel.artnrrezept)]})
+
+                            if h_rezept:
+                                cost =  to_decimal("0")
+                                cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
+                                cost =  to_decimal(h_compli.anzahl) * to_decimal(cost)
+                        else:
+                            cost =  to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(rate)
+                        cost = to_decimal(round(cost , 2))
+                        tt_cost =  to_decimal(tt_cost) + to_decimal(cost)
+
+                        if artikel.umsatzart == 3 or artikel.umsatzart == 5:
+                            f_cost =  to_decimal(cost)
+                            ttf_cost =  to_decimal(ttf_cost) + to_decimal(cost)
+
+                        elif artikel.umsatzart == 6:
+                            b_cost =  to_decimal(cost)
+                            ttb_cost =  to_decimal(ttb_cost) + to_decimal(cost)
+                        else:
+                            o_cost =  to_decimal(cost)
+                            tto_cost =  to_decimal(tto_cost) + to_decimal(cost)
+                        c1_list.f_cost =  to_decimal(c1_list.f_cost) + to_decimal(f_cost)
+                        c1_list.b_cost =  to_decimal(c1_list.b_cost) + to_decimal(b_cost)
+                        c1_list.o_cost =  to_decimal(c1_list.o_cost) + to_decimal(o_cost)
+                        c1_list.t_cost =  to_decimal(c1_list.t_cost) + to_decimal(cost)
                 c1_list.betrag =  to_decimal(c1_list.betrag) + to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(rate)
                 tt_betrag =  to_decimal(tt_betrag) + to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(rate)
 
@@ -458,7 +486,7 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
 
     def journal_list1():
 
-        nonlocal c_list_data, it_exist, curr_name, guestname, lvcarea, h_artikel, htparam, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, queasy, exrate, h_bill_line
+        nonlocal c_list_data, it_exist, curr_name, guestname, price_type, price, exrate, incl_service, incl_mwst, lvcarea, htparam, waehrung, h_artikel, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, l_artikel, h_rezept, queasy, exrate
         nonlocal pvilanguage, gname, sorttype, from_dept, to_dept, from_date, to_date, double_currency, exchg_rate, billdate, mi_detail1, sm_disp1, foreign_nr, c2_list
 
 
@@ -574,7 +602,6 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
 
                 if h_cost and h_cost.betrag != 0:
                     cost =  to_decimal(h_compli.anzahl) * to_decimal(h_cost.betrag)
-                    cost = cost_correction(cost)
                     cost = to_decimal(round(cost , 2))
                     tt_cost =  to_decimal(tt_cost) + to_decimal(cost)
 
@@ -592,26 +619,49 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
                     c1_list.b_cost =  to_decimal(c1_list.b_cost) + to_decimal(b_cost)
                     c1_list.o_cost =  to_decimal(c1_list.o_cost) + to_decimal(o_cost)
                     c1_list.t_cost =  to_decimal(c1_list.t_cost) + to_decimal(cost)
+                else:
 
-                elif not h_cost or (h_cost and h_cost.betrag == 0):
-                    cost =  to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(rate)
-                    cost = to_decimal(round(cost , 2))
-                    tt_cost =  to_decimal(tt_cost) + to_decimal(cost)
+                    if (not h_cost and h_compli.datum < billdate) or (h_cost and h_cost.betrag == 0):
 
-                    if artikel.umsatzart == 3 or artikel.umsatzart == 5:
-                        f_cost =  to_decimal(cost)
-                        ttf_cost =  to_decimal(ttf_cost) + to_decimal(cost)
+                        if h_artikel.artnrlager != 0:
 
-                    elif artikel.umsatzart == 6:
-                        b_cost =  to_decimal(cost)
-                        ttb_cost =  to_decimal(ttb_cost) + to_decimal(cost)
-                    else:
-                        o_cost =  to_decimal(cost)
-                        tto_cost =  to_decimal(tto_cost) + to_decimal(cost)
-                    c1_list.f_cost =  to_decimal(c1_list.f_cost) + to_decimal(f_cost)
-                    c1_list.b_cost =  to_decimal(c1_list.b_cost) + to_decimal(b_cost)
-                    c1_list.o_cost =  to_decimal(c1_list.o_cost) + to_decimal(o_cost)
-                    c1_list.t_cost =  to_decimal(c1_list.t_cost) + to_decimal(cost)
+                            l_artikel = get_cache (L_artikel, {"artnr": [(eq, h_artikel.artnrlager)]})
+
+                            if l_artikel:
+
+                                if price_type == 0 or l_artikel.ek_aktuell == 0:
+                                    cost =  to_decimal(l_artikel.vk_preis)
+                                else:
+                                    cost =  to_decimal(l_artikel.ek_aktuell)
+                                cost =  to_decimal(h_compli.anzahl) * to_decimal(cost)
+
+                        elif h_artikel.artnrrezept != 0:
+
+                            h_rezept = get_cache (H_rezept, {"artnrrezept": [(eq, h_artikel.artnrrezept)]})
+
+                            if h_rezept:
+                                cost =  to_decimal("0")
+                                cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
+                                cost =  to_decimal(h_compli.anzahl) * to_decimal(cost)
+                        else:
+                            cost =  to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(rate)
+                        cost = to_decimal(round(cost , 2))
+                        tt_cost =  to_decimal(tt_cost) + to_decimal(cost)
+
+                        if artikel.umsatzart == 3 or artikel.umsatzart == 5:
+                            f_cost =  to_decimal(cost)
+                            ttf_cost =  to_decimal(ttf_cost) + to_decimal(cost)
+
+                        elif artikel.umsatzart == 6:
+                            b_cost =  to_decimal(cost)
+                            ttb_cost =  to_decimal(ttb_cost) + to_decimal(cost)
+                        else:
+                            o_cost =  to_decimal(cost)
+                            tto_cost =  to_decimal(tto_cost) + to_decimal(cost)
+                        c1_list.f_cost =  to_decimal(c1_list.f_cost) + to_decimal(f_cost)
+                        c1_list.b_cost =  to_decimal(c1_list.b_cost) + to_decimal(b_cost)
+                        c1_list.o_cost =  to_decimal(c1_list.o_cost) + to_decimal(o_cost)
+                        c1_list.t_cost =  to_decimal(c1_list.t_cost) + to_decimal(cost)
                 c1_list.betrag =  to_decimal(c1_list.betrag) + to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(rate)
                 tt_betrag =  to_decimal(tt_betrag) + to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(rate)
 
@@ -880,7 +930,7 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
 
     def journal_list2():
 
-        nonlocal c_list_data, guestname, lvcarea, h_artikel, htparam, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, queasy, exrate, h_bill_line
+        nonlocal c_list_data, guestname, price_type, price, exrate, incl_service, incl_mwst, lvcarea, htparam, waehrung, h_artikel, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, l_artikel, h_rezept, queasy, exrate
         nonlocal pvilanguage, gname, sorttype, from_dept, to_dept, from_date, to_date, double_currency, exchg_rate, billdate, mi_detail1, sm_disp1, foreign_nr, c2_list
 
 
@@ -950,7 +1000,7 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
             h_compli_obj_list = {}
             h_compli = H_compli()
             h_art = H_artikel()
-            for h_compli.artnr, h_compli.datum, h_compli.departement, h_compli.rechnr, h_compli.p_artnr, h_compli.anzahl, h_compli.epreis, h_compli._recid, h_art.artnrfront, h_art.prozent, h_art.artnr, h_art.bezeich, h_art.epreis1, h_art.artart, h_art._recid in db_session.query(H_compli.artnr, H_compli.datum, H_compli.departement, H_compli.rechnr, H_compli.p_artnr, H_compli.anzahl, H_compli.epreis, H_compli._recid, H_art.artnrfront, H_art.prozent, H_art.artnr, H_art.bezeich, H_art.epreis1, H_art.artart, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter(
+            for h_compli.artnr, h_compli.datum, h_compli.departement, h_compli.rechnr, h_compli.p_artnr, h_compli.anzahl, h_compli.epreis, h_compli._recid, h_art.artnrfront, h_art.artnrlager, h_art.artnrrezept, h_art.prozent, h_art.artnr, h_art.bezeich, h_art._recid in db_session.query(H_compli.artnr, H_compli.datum, H_compli.departement, H_compli.rechnr, H_compli.p_artnr, H_compli.anzahl, H_compli.epreis, H_compli._recid, H_art.artnrfront, H_art.artnrlager, H_art.artnrrezept, H_art.prozent, H_art.artnr, H_art.bezeich, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter(
                      (H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
                 if h_compli_obj_list.get(h_compli._recid):
                     continue
@@ -1002,7 +1052,6 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
 
                 if h_cost and h_cost.betrag != 0:
                     cost =  to_decimal(h_compli.anzahl) * to_decimal(h_cost.betrag)
-                    cost = cost_correction(cost)
                     cost = to_decimal(round(cost , 2))
                     tt_cost =  to_decimal(tt_cost) + to_decimal(cost)
 
@@ -1020,26 +1069,49 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
                     c1_list.b_cost =  to_decimal(c1_list.b_cost) + to_decimal(b_cost)
                     c1_list.o_cost =  to_decimal(c1_list.o_cost) + to_decimal(o_cost)
                     c1_list.t_cost =  to_decimal(c1_list.t_cost) + to_decimal(cost)
+                else:
 
-                elif (not h_cost and h_compli.datum < billdate) or (h_cost and h_cost.betrag == 0):
-                    cost =  to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(rate)
-                    cost = to_decimal(round(cost , 2))
-                    tt_cost =  to_decimal(tt_cost) + to_decimal(cost)
+                    if (not h_cost and h_compli.datum < billdate) or (h_cost and h_cost.betrag == 0):
 
-                    if artikel.umsatzart == 3 or artikel.umsatzart == 5:
-                        f_cost =  to_decimal(cost)
-                        ttf_cost =  to_decimal(ttf_cost) + to_decimal(cost)
+                        if h_artikel.artnrlager != 0:
 
-                    elif artikel.umsatzart == 6:
-                        b_cost =  to_decimal(cost)
-                        ttb_cost =  to_decimal(ttb_cost) + to_decimal(cost)
-                    else:
-                        o_cost =  to_decimal(cost)
-                        tto_cost =  to_decimal(tto_cost) + to_decimal(cost)
-                    c1_list.f_cost =  to_decimal(c1_list.f_cost) + to_decimal(f_cost)
-                    c1_list.b_cost =  to_decimal(c1_list.b_cost) + to_decimal(b_cost)
-                    c1_list.o_cost =  to_decimal(c1_list.o_cost) + to_decimal(o_cost)
-                    c1_list.t_cost =  to_decimal(c1_list.t_cost) + to_decimal(cost)
+                            l_artikel = get_cache (L_artikel, {"artnr": [(eq, h_artikel.artnrlager)]})
+
+                            if l_artikel:
+
+                                if price_type == 0 or l_artikel.ek_aktuell == 0:
+                                    cost =  to_decimal(l_artikel.vk_preis)
+                                else:
+                                    cost =  to_decimal(l_artikel.ek_aktuell)
+                                cost =  to_decimal(h_compli.anzahl) * to_decimal(cost)
+
+                        elif h_artikel.artnrrezept != 0:
+
+                            h_rezept = get_cache (H_rezept, {"artnrrezept": [(eq, h_artikel.artnrrezept)]})
+
+                            if h_rezept:
+                                cost =  to_decimal("0")
+                                cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
+                                cost =  to_decimal(h_compli.anzahl) * to_decimal(cost)
+                        else:
+                            cost =  to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(rate)
+                        cost = to_decimal(round(cost , 2))
+                        tt_cost =  to_decimal(tt_cost) + to_decimal(cost)
+
+                        if artikel.umsatzart == 3 or artikel.umsatzart == 5:
+                            f_cost =  to_decimal(cost)
+                            ttf_cost =  to_decimal(ttf_cost) + to_decimal(cost)
+
+                        elif artikel.umsatzart == 6:
+                            b_cost =  to_decimal(cost)
+                            ttb_cost =  to_decimal(ttb_cost) + to_decimal(cost)
+                        else:
+                            o_cost =  to_decimal(cost)
+                            tto_cost =  to_decimal(tto_cost) + to_decimal(cost)
+                        c1_list.f_cost =  to_decimal(c1_list.f_cost) + to_decimal(f_cost)
+                        c1_list.b_cost =  to_decimal(c1_list.b_cost) + to_decimal(b_cost)
+                        c1_list.o_cost =  to_decimal(c1_list.o_cost) + to_decimal(o_cost)
+                        c1_list.t_cost =  to_decimal(c1_list.t_cost) + to_decimal(cost)
                 c1_list.betrag =  to_decimal(c1_list.betrag) + to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(rate)
                 tt_betrag =  to_decimal(tt_betrag) + to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(rate)
 
@@ -1231,7 +1303,7 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
 
     def journal_gname():
 
-        nonlocal c_list_data, it_exist, guestname, lvcarea, h_artikel, htparam, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, queasy, exrate, h_bill_line
+        nonlocal c_list_data, it_exist, guestname, price_type, price, exrate, incl_service, incl_mwst, lvcarea, htparam, waehrung, h_artikel, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, l_artikel, h_rezept, queasy, exrate
         nonlocal pvilanguage, gname, sorttype, from_dept, to_dept, from_date, to_date, double_currency, exchg_rate, billdate, mi_detail1, sm_disp1, foreign_nr, c2_list
 
 
@@ -1298,7 +1370,7 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
             h_compli_obj_list = {}
             h_compli = H_compli()
             h_art = H_artikel()
-            for h_compli.artnr, h_compli.datum, h_compli.departement, h_compli.rechnr, h_compli.p_artnr, h_compli.anzahl, h_compli.epreis, h_compli._recid, h_art.artnrfront, h_art.prozent, h_art.artnr, h_art.bezeich, h_art.epreis1, h_art.artart, h_art._recid in db_session.query(H_compli.artnr, H_compli.datum, H_compli.departement, H_compli.rechnr, H_compli.p_artnr, H_compli.anzahl, H_compli.epreis, H_compli._recid, H_art.artnrfront, H_art.prozent, H_art.artnr, H_art.bezeich, H_art.epreis1, H_art.artart, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter(
+            for h_compli.artnr, h_compli.datum, h_compli.departement, h_compli.rechnr, h_compli.p_artnr, h_compli.anzahl, h_compli.epreis, h_compli._recid, h_art.artnrfront, h_art.artnrlager, h_art.artnrrezept, h_art.prozent, h_art.artnr, h_art.bezeich, h_art._recid in db_session.query(H_compli.artnr, H_compli.datum, H_compli.departement, H_compli.rechnr, H_compli.p_artnr, H_compli.anzahl, H_compli.epreis, H_compli._recid, H_art.artnrfront, H_art.artnrlager, H_art.artnrrezept, H_art.prozent, H_art.artnr, H_art.bezeich, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter(
                      (H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.departement, H_compli.rechnr).all():
                 if h_compli_obj_list.get(h_compli._recid):
                     continue
@@ -1363,7 +1435,6 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
 
                     if h_cost and h_cost.betrag != 0:
                         cost =  to_decimal(h_compli.anzahl) * to_decimal(h_cost.betrag)
-                        cost = cost_correction(cost)
                         cost = to_decimal(round(cost , 2))
                         tt_cost =  to_decimal(tt_cost) + to_decimal(cost)
 
@@ -1381,26 +1452,49 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
                         c1_list.b_cost =  to_decimal(c1_list.b_cost) + to_decimal(b_cost)
                         c1_list.o_cost =  to_decimal(c1_list.o_cost) + to_decimal(o_cost)
                         c1_list.t_cost =  to_decimal(c1_list.t_cost) + to_decimal(cost)
+                    else:
 
-                    if (not h_cost and h_compli.datum < billdate) or (h_cost and h_cost.betrag == 0):
-                        cost =  to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(rate)
-                        cost = to_decimal(round(cost , 2))
-                        tt_cost =  to_decimal(tt_cost) + to_decimal(cost)
+                        if (not h_cost and h_compli.datum < billdate) or (h_cost and h_cost.betrag == 0):
 
-                        if artikel.umsatzart == 3 or artikel.umsatzart == 5:
-                            f_cost =  to_decimal(cost)
-                            ttf_cost =  to_decimal(ttf_cost) + to_decimal(cost)
+                            if h_artikel.artnrlager != 0:
 
-                        elif artikel.umsatzart == 6:
-                            b_cost =  to_decimal(cost)
-                            ttb_cost =  to_decimal(ttb_cost) + to_decimal(cost)
-                        else:
-                            o_cost =  to_decimal(cost)
-                            tto_cost =  to_decimal(tto_cost) + to_decimal(cost)
-                        c1_list.f_cost =  to_decimal(c1_list.f_cost) + to_decimal(f_cost)
-                        c1_list.b_cost =  to_decimal(c1_list.b_cost) + to_decimal(b_cost)
-                        c1_list.o_cost =  to_decimal(c1_list.o_cost) + to_decimal(o_cost)
-                        c1_list.t_cost =  to_decimal(c1_list.t_cost) + to_decimal(cost)
+                                l_artikel = get_cache (L_artikel, {"artnr": [(eq, h_artikel.artnrlager)]})
+
+                                if l_artikel:
+
+                                    if price_type == 0 or l_artikel.ek_aktuell == 0:
+                                        cost =  to_decimal(l_artikel.vk_preis)
+                                    else:
+                                        cost =  to_decimal(l_artikel.ek_aktuell)
+                                    cost =  to_decimal(h_compli.anzahl) * to_decimal(cost)
+
+                            elif h_artikel.artnrrezept != 0:
+
+                                h_rezept = get_cache (H_rezept, {"artnrrezept": [(eq, h_artikel.artnrrezept)]})
+
+                                if h_rezept:
+                                    cost =  to_decimal("0")
+                                    cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
+                                    cost =  to_decimal(h_compli.anzahl) * to_decimal(cost)
+                            else:
+                                cost =  to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(h_artikel.prozent) / to_decimal("100") * to_decimal(rate)
+                            cost = to_decimal(round(cost , 2))
+                            tt_cost =  to_decimal(tt_cost) + to_decimal(cost)
+
+                            if artikel.umsatzart == 3 or artikel.umsatzart == 5:
+                                f_cost =  to_decimal(cost)
+                                ttf_cost =  to_decimal(ttf_cost) + to_decimal(cost)
+
+                            elif artikel.umsatzart == 6:
+                                b_cost =  to_decimal(cost)
+                                ttb_cost =  to_decimal(ttb_cost) + to_decimal(cost)
+                            else:
+                                o_cost =  to_decimal(cost)
+                                tto_cost =  to_decimal(tto_cost) + to_decimal(cost)
+                            c1_list.f_cost =  to_decimal(c1_list.f_cost) + to_decimal(f_cost)
+                            c1_list.b_cost =  to_decimal(c1_list.b_cost) + to_decimal(b_cost)
+                            c1_list.o_cost =  to_decimal(c1_list.o_cost) + to_decimal(o_cost)
+                            c1_list.t_cost =  to_decimal(c1_list.t_cost) + to_decimal(cost)
                     c1_list.betrag =  to_decimal(c1_list.betrag) + to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(rate)
                     tt_betrag =  to_decimal(tt_betrag) + to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * to_decimal(rate)
 
@@ -1519,7 +1613,7 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
 
     def find_exrate(curr_date:date):
 
-        nonlocal c_list_data, it_exist, curr_name, guestname, lvcarea, h_artikel, htparam, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, queasy, exrate, h_bill_line
+        nonlocal c_list_data, it_exist, curr_name, guestname, price_type, price, exrate, incl_service, incl_mwst, lvcarea, htparam, waehrung, h_artikel, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, l_artikel, h_rezept, queasy, exrate
         nonlocal pvilanguage, gname, sorttype, from_dept, to_dept, from_date, to_date, double_currency, exchg_rate, billdate, mi_detail1, sm_disp1, foreign_nr, artnr
         nonlocal c2_list
 
@@ -1534,74 +1628,36 @@ def hcompli_list_2bl(pvilanguage:int, gname:string, sorttype:int, from_dept:int,
 
             exrate = get_cache (Exrate, {"datum": [(eq, curr_date)]})
 
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 1024)]})
 
-    def cost_correction(cost:Decimal):
+    if htparam:
+        price_type = htparam.finteger
 
-        nonlocal c_list_data, it_exist, curr_name, guestname, lvcarea, h_artikel, htparam, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, queasy, exrate, h_bill_line
-        nonlocal pvilanguage, gname, sorttype, from_dept, to_dept, from_date, to_date, double_currency, exchg_rate, billdate, mi_detail1, sm_disp1, foreign_nr, artnr
-        nonlocal c2_list
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
 
+    waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
 
-        nonlocal c_list, c1_list, c2_list, s_list, s_list, s_list, s_list
-        nonlocal c_list_data, c1_list_data
+    if waehrung:
+        exrate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
 
-        def generate_inner_output():
-            return (cost)
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 135)]})
 
+    if htparam:
+        incl_service = htparam.flogical
 
-        h_bill_line = get_cache (H_bill_line, {"rechnr": [(eq, h_compli.rechnr)],"bill_datum": [(eq, h_compli.datum)],"departement": [(eq, h_compli.departement)],"artnr": [(eq, h_compli.artnr)],"epreis": [(eq, h_compli.epreis)]})
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 134)]})
 
-        if h_bill_line and substring(h_bill_line.bezeich, length(h_bill_line.bezeich) - 1, 1) == ("*").lower()  and h_bill_line.epreis != 0:
+    if htparam:
+        incl_mwst = htparam.flogical
 
-            h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_bill_line.artnr)],"departement": [(eq, h_bill_line.departement)]})
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 240)]})
 
-            if h_artikel and h_artikel.artart == 0 and h_artikel.epreis1 > h_bill_line.epreis:
-                cost =  to_decimal(cost) * to_decimal(h_bill_line.epreis) / to_decimal(h_artikel.epreis1)
+    if htparam:
+        double_currency = htparam.flogical
 
-        return generate_inner_output()
-
-
-    def coba():
-
-        nonlocal c_list_data, it_exist, curr_name, guestname, lvcarea, h_artikel, htparam, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, queasy, exrate, h_bill_line
-        nonlocal pvilanguage, gname, sorttype, from_dept, to_dept, from_date, to_date, double_currency, exchg_rate, billdate, mi_detail1, sm_disp1, foreign_nr, artnr
-        nonlocal c2_list
-
-
-        nonlocal c_list, c1_list, c2_list, s_list, s_list, s_list, s_list
-        nonlocal c_list_data, c1_list_data
-
-        h_artikel = get_cache (H_artikel, {"artnr": [(eq, artnr)],"departement": [(eq, c_list.dept)]})
-
-        if h_artikel:
-            c_list.p_artnr = artnr
-            c_list.bezeich = h_artikel.bezeich
-
-            for h_compli in db_session.query(H_compli).filter(
-                     (H_compli.datum == c_list.datum) & (c_list.dept == H_compli.departement) & (c_list.rechnr == H_compli.rechnr) & (H_compli.betriebsnr == 0)).order_by(H_compli._recid).all():
-                h_compli.p_artnr = artnr
-        curr_name = c_list.name
-        guestname = c_list.name
-
-        if (guestname).lower()  != "" and (guestname).lower()  != None and curr_name.lower()  != (guestname).lower() :
-
-            h_bill = get_cache (H_bill, {"rechnr": [(eq, c_list.rechnr)],"departement": [(eq, c_list.dept)]})
-
-            if h_bill:
-                pass
-                h_bill.bilname = guestname
-                pass
-
-                h_journal = get_cache (H_journal, {"bill_datum": [(eq, c_list.datum)],"departement": [(eq, c_list.dept)],"segmentcode": [(eq, c_list.p_artnr)],"rechnr": [(eq, c_list.rechnr)],"zeit": [(ge, 0)]})
-                while None != h_journal:
-                    pass
-                    h_journal.aendertext = guestname
-                    pass
-
-                    curr_recid = h_journal._recid
-                    h_journal = db_session.query(H_journal).filter(
-                             (H_journal.bill_datum == c_list.datum) & (H_journal.departement == c_list.dept) & (H_journal.segmentcode == c_list.p_artnr) & (H_journal.rechnr == c_list.rechnr) & (H_journal.zeit >= 0) & (H_journal._recid > curr_recid)).first()
-
+    if double_currency and waehrung:
+        exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+        
     # Rd 25/8/2025
     gname = gname.strip()
     

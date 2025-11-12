@@ -1,10 +1,5 @@
 #using conversion tools version: 1.0.0.117
 
-#------------------------------------------------------------------
-# add field accomp, Rd 16-July-25
-#------------------------------------------------------------------
-
-
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -33,7 +28,7 @@ def prepare_ts_rzinrbl(pvilanguage:int, dept:int, zinr:string, h_resnr:int, h_re
 
     q1_list = guest2 = bbuff = None
 
-    q1_list_data, Q1_list = create_model("Q1_list", {"resnr":int, "zinr":string, "code":string, "resstatus":int, "erwachs":int, "kind1":int, "gratis":int, "bemerk":string, "billnr":int, "g_name":string, "vorname1":string, "anrede1":string, "anredefirma":string, "bill_name":string, "ankunft":date, "abreise":date, "nation1":string, "parent_nr":int, "reslinnr":int, "resname":string, "name_bg_col":int, "name_fg_col":int, "bill_bg_col":int, "bill_fg_col":int,  "accomp": string}, {"name_bg_col": 15, "bill_bg_col": 15})
+    q1_list_data, Q1_list = create_model("Q1_list", {"resnr":int, "zinr":string, "code":string, "resstatus":int, "erwachs":int, "kind1":int, "gratis":int, "bemerk":string, "billnr":int, "g_name":string, "vorname1":string, "anrede1":string, "anredefirma":string, "bill_name":string, "ankunft":date, "abreise":date, "nation1":string, "parent_nr":int, "reslinnr":int, "resname":string, "name_bg_col":int, "name_fg_col":int, "bill_bg_col":int, "bill_fg_col":int}, {"name_bg_col": 15, "bill_bg_col": 15})
 
     Guest2 = create_buffer("Guest2",Guest)
     Bbuff = create_buffer("Bbuff",Bill)
@@ -99,7 +94,7 @@ def prepare_ts_rzinrbl(pvilanguage:int, dept:int, zinr:string, h_resnr:int, h_re
 
         if res_line and res_line.code != "":
 
-            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+            queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
             if queasy and queasy.logi1 and dept != dept_mbar and dept != dept_ldry:
                 msg_str = msg_str + chr_unicode(2) + translateExtended ("CASH BASIS Billing Instruction :", lvcarea, "") + queasy.char1 + chr_unicode(10) + translateExtended ("Room Transfer not possible", lvcarea, "")
@@ -164,7 +159,7 @@ def prepare_ts_rzinrbl(pvilanguage:int, dept:int, zinr:string, h_resnr:int, h_re
 
             if res_line.code != "":
 
-                queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
                 if queasy and queasy.logi1:
                     q1_list.name_bg_col = 12
@@ -246,7 +241,7 @@ def prepare_ts_rzinrbl(pvilanguage:int, dept:int, zinr:string, h_resnr:int, h_re
 
                 if res_line.code != "":
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                    queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
                     if queasy and queasy.logi1:
                         q1_list.name_bg_col = 12

@@ -32,8 +32,10 @@ def fo_invoice_disp_totbalancebl(bil_recid:int):
 
     bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
 
+    # for bill1 in db_session.query(Bill1).filter(
+    #          (Bill1.resnr == bill.resnr) & (Bill1.parent_nr == bill.parent_nr) & (Bill1.flag == 0) & (Bill1.zinr == bill.zinr)).order_by(Bill1._recid).all():
     for bill1 in db_session.query(Bill1).filter(
-             (Bill1.resnr == bill.resnr) & (Bill1.parent_nr == bill.parent_nr) & (Bill1.flag == 0) & (Bill1.zinr == bill.zinr)).order_by(Bill1._recid).all():
+            (Bill1.resnr == bill.resnr) & (Bill1.parent_nr == bill.parent_nr) & (Bill1.flag == 0) & (Bill1.zinr == bill.zinr.strip())).order_by(Bill1._recid).all():
         tot_balance =  to_decimal(tot_balance) + to_decimal(bill1.saldo)
 
     return generate_output()

@@ -7,6 +7,8 @@ from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
 
+import time
+
 def rmcat_segment_create_output_webbl():
     doneflag = False
     rmcat_segm_list_data = []
@@ -34,12 +36,34 @@ def rmcat_segment_create_output_webbl():
 
         return {"doneflag": doneflag, "rmcat-segm-list": rmcat_segm_list_data}
 
-    for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 280) & (Queasy.char1 == ("Guest Segment By Room Type").lower())).order_by(Queasy.number1).yield_per(100):
+    count = retry = tmp_count = 0
+    while True:
+        count = db_session.query(Queasy).filter(
+            (Queasy.key == 280) &
+            (Queasy.char1 == ("Guest Segment By Room Type").lower())
+        ).count()
+
+        if count >= 1000:
+            break
+
+        if tmp_count == 0 and retry > 60:
+            break
+
+        if tmp_count > 0 and tmp_count == count:
+            break
+
+        tmp_count = count
+        retry += 1
+
+        time.sleep(0.3)
+
+    for queasy in db_session.query(Queasy).filter((Queasy.key == 280) & (Queasy.char1 == ("Guest Segment By Room Type").lower())).order_by(Queasy.number1).all():
+        
         counter = counter + 1
 
         if counter > 1000:
             break
+
         rmcat_segm_list = Rmcat_segm_list()
         rmcat_segm_list_data.append(rmcat_segm_list)
 

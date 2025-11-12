@@ -196,7 +196,7 @@ def arl_list_cancelcibl(recid_resline:int, user_init:string, t_ankunft:date):
             pass
 
         for zimplan in db_session.query(Zimplan).filter(
-                 (Zimplan.zinr == res_line.zinr) & (Zimplan.gastnrmember == res_line.gastnrmember) & (Zimplan.datum >= res_line.ankunft) & (Zimplan.datum <= (res_line.abreise - 1))).order_by(Zimplan._recid).all():
+                 (Zimplan.zinr == res_line.zinr) & (Zimplan.gastnrmember == res_line.gastnrmember) & (Zimplan.datum >= res_line.ankunft) & (Zimplan.datum <= (res_line.abreise - timedelta(days=1)))).order_by(Zimplan._recid).all():
             db_session.delete(zimplan)
             pass
 

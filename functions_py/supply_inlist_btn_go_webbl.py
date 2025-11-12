@@ -3,6 +3,11 @@
 # Rd, 25/7/2025
 # gitlab: 667
 #-----------------------------------------
+"""_yusufwijasena_20/10/2025
+
+    TicketID: 01EBC4
+        _issue_:    - update from RAGUNG: A92782
+"""
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -48,7 +53,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
 
     str_list = taxcode_list = buff_l_kredit = None
 
-    str_list_data, Str_list = create_model("Str_list", {"h_recid":int, "l_recid":int, "lief_nr":int, "billdate":date, "artnr":int, "lager_nr":int, "docu_nr":string, "lscheinnr":string, "invoice_nr":string, "qty":Decimal, "epreis":Decimal, "warenwert":Decimal, "date":date, "st":int, "supplier":string, "article":int, "description":string, "d_unit":string, "price":Decimal, "inc_qty":Decimal, "amount":Decimal, "docu_no":string, "deliv_note":string, "id":string, "fibu":string, "gstid":string, "tax_code":string, "tax_amount":Decimal, "tot_amt":Decimal, "desc1":string, "fibu_bez":string, "pos":int, "addvat_value":Decimal, "amountexcl":Decimal, "serial_number":string, "invoice_date":date, "remark_artikel":string, "ap_voucher":int, "disc_amount":Decimal, "addvat_amount":Decimal, "disc_amount2":Decimal, "vat_amount":Decimal, "direct_flag":bool}, {"lscheinnr": ""})
+    str_list_data, Str_list = create_model("Str_list", {"h_recid":int, "l_recid":int, "lief_nr":int, "billdate":date, "artnr":int, "lager_nr":int, "docu_nr":string, "lscheinnr":string, "invoice_nr":string, "qty":Decimal, "epreis":Decimal, "warenwert":Decimal, "date":date, "st":int, "supplier":string, "article":int, "description":string, "d_unit":string, "m_unit":string, "price":Decimal, "inc_qty":Decimal, "amount":Decimal, "docu_no":string, "deliv_note":string, "id":string, "fibu":string, "gstid":string, "tax_code":string, "tax_amount":Decimal, "tot_amt":Decimal, "desc1":string, "fibu_bez":string, "pos":int, "addvat_value":Decimal, "amountexcl":Decimal, "serial_number":string, "invoice_date":date, "remark_artikel":string, "ap_voucher":int, "disc_amount":Decimal, "addvat_amount":Decimal, "disc_amount2":Decimal, "vat_amount":Decimal, "direct_flag":bool}, {"lscheinnr": ""})
 
     Buff_l_kredit = create_buffer("Buff_l_kredit",L_kredit)
 
@@ -95,7 +100,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             l_op = L_op()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
+            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.docu_nr, l_op.lager_nr, l_op.einzelpreis, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.docu_nr, L_op.lager_nr, L_op.einzelpreis, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
                      (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.anzahl != 0)).order_by(L_lieferant.firma, L_op.datum, L_artikel.bezeich).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -104,14 +109,13 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
 
 
                 t_anz, t_amt, t_amountexcl, t_tax, t_inv, lief_nr = assign_create_list11(t_anz, t_amt, t_amountexcl, t_tax, t_inv, lief_nr)
-
         else:
 
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
+            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.docu_nr, l_op.lager_nr, l_op.einzelpreis, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.docu_nr, L_op.lager_nr, L_op.einzelpreis, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
                      (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.lager_nr == store) & (L_op.anzahl != 0)).order_by(L_lieferant.firma, L_op.datum, L_artikel.bezeich).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -120,7 +124,6 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
 
 
                 t_anz, t_amt, t_amountexcl, t_tax, t_inv, lief_nr = assign_create_list11(t_anz, t_amt, t_amountexcl, t_tax, t_inv, lief_nr)
-
         t_anz, t_amt, t_amountexcl, t_tax, t_inv = create_hislist(t_anz, t_amt, t_amountexcl, t_tax, t_inv)
         str_list = Str_list()
         str_list_data.append(str_list)
@@ -218,7 +221,9 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         tot_anz =  to_decimal(tot_anz) + to_decimal(l_op.anzahl)
 
         if show_price:
-            unit_price =  to_decimal(l_op.einzelpreis)
+            # unit_price =  to_decimal(l_op.einzelpreis)
+            unit_price = ( to_decimal(l_op.warenwert) / to_decimal(l_op.anzahl))
+            unit_price = to_decimal(round(unit_price , 2)) # RAGUNG: A92782
 
         str_list = query(str_list_data, filters=(lambda str_list: str_list.docu_nr == l_op.docu_nr and str_list.artnr == l_op.artnr and str_list.lager_nr == l_op.lager_nr and str_list.lscheinnr == l_op.lscheinnr and str_list.epreis == l_op.einzelpreis), first=True)
 
@@ -256,13 +261,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
+                    (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
                 # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
-
 
         else:
             str_list = Str_list()
@@ -323,12 +327,11 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
+                    (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(queasy.deci3)
-                # str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
 
 
             str_list.fibu, str_list.fibu_bez = convert_fibu(l_op.stornogrund)
@@ -337,6 +340,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.article = l_artikel.artnr
             str_list.description = l_artikel.bezeich
             str_list.d_unit = l_artikel.traubensorte
+            str_list.m_unit = l_artikel.masseinheit
             str_list.inc_qty =  to_decimal(l_op.anzahl)
             str_list.amount =  to_decimal(str_list.warenwert)
             str_list.supplier = l_lieferant.firma
@@ -405,7 +409,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             l_op = L_op()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
+            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.docu_nr, l_op.lager_nr, l_op.einzelpreis, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.docu_nr, L_op.lager_nr, L_op.einzelpreis, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
                      (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr, L_artikel.bezeich).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -414,14 +418,13 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
 
 
                 t_anz, t_amt, t_tax, t_inv, lscheinnr, t_amountexcl = assign_create_list11a(t_anz, t_amt, t_tax, t_inv, lscheinnr, t_amountexcl)
-
         else:
 
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
+            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.docu_nr, l_op.lager_nr, l_op.einzelpreis, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.docu_nr, L_op.lager_nr, L_op.einzelpreis, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
                      (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr > 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.anzahl != 0) & (L_op.lager_nr == store)).order_by(L_op.datum, L_op.lscheinnr, L_artikel.bezeich).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -430,7 +433,6 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
 
 
                 t_anz, t_amt, t_tax, t_inv, lscheinnr, t_amountexcl = assign_create_list11a(t_anz, t_amt, t_tax, t_inv, lscheinnr, t_amountexcl)
-
         t_anz, t_amt, t_tax, t_inv, t_amountexcl = create_hislist(t_anz, t_amt, t_tax, t_inv, t_amountexcl)
         str_list = Str_list()
         str_list_data.append(str_list)
@@ -528,7 +530,9 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         tot_anz =  to_decimal(tot_anz) + to_decimal(l_op.anzahl)
 
         if show_price:
-            unit_price =  to_decimal(l_op.einzelpreis)
+            # unit_price =  to_decimal(l_op.einzelpreis)
+            unit_price = ( to_decimal(l_op.warenwert) / to_decimal(l_op.anzahl))
+            unit_price = to_decimal(round(unit_price , 2)) # RAGUNG: A92782
 
         str_list = query(str_list_data, filters=(lambda str_list: str_list.docu_nr == l_op.docu_nr and str_list.artnr == l_op.artnr and str_list.lager_nr == l_op.lager_nr and str_list.lscheinnr == l_op.lscheinnr and str_list.epreis == l_op.einzelpreis and str_list.billdate == l_op.datum), first=True)
 
@@ -567,13 +571,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
+                    (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
                 # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
-
 
         else:
             str_list = Str_list()
@@ -634,13 +637,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
+                    (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(queasy.deci3)
                 # str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
-
 
             str_list.fibu, str_list.fibu_bez = convert_fibu(l_op.stornogrund)
             str_list.date = l_op.datum
@@ -648,6 +650,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.article = l_artikel.artnr
             str_list.description = l_artikel.bezeich
             str_list.d_unit = l_artikel.traubensorte
+            str_list.m_unit = l_artikel.masseinheit # RAGUNG: A92782
             str_list.inc_qty =  to_decimal(l_op.anzahl)
             str_list.amount =  to_decimal(str_list.warenwert)
             str_list.supplier = l_lieferant.firma
@@ -719,7 +722,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             l_artikel = L_artikel()
             l_untergrup = L_untergrup()
             l_lieferant = L_lieferant()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
+            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.docu_nr, l_op.lager_nr, l_op.einzelpreis, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.lief_artnr, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.docu_nr, L_op.lager_nr, L_op.einzelpreis, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.lief_artnr, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
                      (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr > 0) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0) & (L_op.op_art == 1)).order_by(L_untergrup.bezeich, L_artikel.bezeich, L_op.datum).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -728,7 +731,6 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
 
 
                 t_anz, t_amt, t_tax, t_inv, lscheinnr, t_amountexcl = assign_create_list11b(t_anz, t_amt, t_tax, t_inv, lscheinnr, t_amountexcl)
-
         else:
 
             l_op_obj_list = {}
@@ -736,7 +738,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             l_artikel = L_artikel()
             l_untergrup = L_untergrup()
             l_lieferant = L_lieferant()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
+            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.docu_nr, l_op.lager_nr, l_op.einzelpreis, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.lief_artnr, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.docu_nr, L_op.lager_nr, L_op.einzelpreis, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.lief_artnr, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
                      (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr > 0) & (L_op.anzahl != 0) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.lager_nr == store)).order_by(L_untergrup.bezeich, L_op.datum, L_artikel.bezeich).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -745,7 +747,6 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
 
 
                 t_anz, t_amt, t_tax, t_inv, lscheinnr, t_amountexcl = assign_create_list11b(t_anz, t_amt, t_tax, t_inv, lscheinnr, t_amountexcl)
-
         t_anz, t_amt, t_tax, t_inv, t_amountexcl = create_hislist(t_anz, t_amt, t_tax, t_inv, t_amountexcl)
         str_list = Str_list()
         str_list_data.append(str_list)
@@ -845,7 +846,9 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         tot_anz =  to_decimal(tot_anz) + to_decimal(l_op.anzahl)
 
         if show_price:
-            unit_price =  to_decimal(l_op.einzelpreis)
+            # unit_price =  to_decimal(l_op.einzelpreis)
+            unit_price = ( to_decimal(l_op.warenwert) / to_decimal(l_op.anzahl))
+            unit_price = to_decimal(round(unit_price , 2)) # RAGUNG: A92782
 
         str_list = query(str_list_data, filters=(lambda str_list: str_list.docu_nr == l_op.docu_nr and str_list.lscheinnr == l_op.lscheinnr and str_list.lager_nr == l_op.lager_nr and str_list.artnr == l_op.artnr and str_list.epreis == l_op.einzelpreis), first=True)
 
@@ -883,13 +886,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
+                    (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
                 # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
-
 
         else:
             str_list = Str_list()
@@ -950,13 +952,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
+                    (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(queasy.deci3)
                 # str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
-
 
             str_list.fibu, str_list.fibu_bez = convert_fibu(l_op.stornogrund)
             str_list.date = l_op.datum
@@ -964,6 +965,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.article = l_artikel.artnr
             str_list.description = l_artikel.bezeich
             str_list.d_unit = l_artikel.traubensorte
+            str_list.m_unit = l_artikel.masseinheit # RAGUNG: A92782
             str_list.inc_qty =  to_decimal(l_op.anzahl)
             str_list.amount =  to_decimal(str_list.warenwert)
             str_list.supplier = l_lieferant.firma
@@ -1078,6 +1080,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.article = l_artikel.artnr
             str_list.description = l_artikel.bezeich
             str_list.d_unit = l_artikel.traubensorte
+            str_list.m_unit = l_artikel.masseinheit # RAGUNG: A92782
             str_list.inc_qty =  to_decimal(l_ophis.anzahl)
             str_list.amount =  to_decimal(str_list.warenwert)
             str_list.amountexcl =  to_decimal(l_ophis.warenwert)
@@ -1114,7 +1117,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
+                    (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
@@ -1165,7 +1168,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).filter(
+            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.docu_nr, l_op.lager_nr, l_op.einzelpreis, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.lief_artnr, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.docu_nr, L_op.lager_nr, L_op.einzelpreis, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.lief_artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).filter(
                      (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr == l_lieferant.lief_nr) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0) & (L_op.op_art == 1)).order_by(L_op.datum, L_artikel.bezeich).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -1180,7 +1183,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).filter(
+            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.docu_nr, l_op.lager_nr, l_op.einzelpreis, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.lief_artnr, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.docu_nr, L_op.lager_nr, L_op.einzelpreis, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.lief_artnr, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).filter(
                      (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr == l_lieferant.lief_nr) & (L_op.loeschflag <= 1) & (L_op.lager_nr == store) & (L_op.anzahl != 0) & (L_op.op_art == 1)).order_by(L_op.datum, L_artikel.bezeich).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -1278,7 +1281,8 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             tot_amountexcl =  to_decimal(tot_amountexcl) + to_decimal(l_op.warenwert)
 
         if show_price:
-            unit_price =  to_decimal(l_op.einzelpreis)
+            unit_price = ( to_decimal(l_op.warenwert) / to_decimal(l_op.anzahl))
+            unit_price = to_decimal(round(unit_price , 2))
 
         str_list = query(str_list_data, filters=(lambda str_list: str_list.docu_nr == l_op.docu_nr and str_list.artnr == l_op.artnr and str_list.lager_nr == l_op.lager_nr and str_list.lscheinnr == l_op.lscheinnr and str_list.epreis == l_op.einzelpreis), first=True)
 
@@ -1314,13 +1318,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
+                    (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
                 # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
-
 
         else:
             str_list = Str_list()
@@ -1381,13 +1384,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
+                    (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(queasy.deci3)
                 # str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
-
 
             str_list.fibu, str_list.fibu_bez = convert_fibu(l_op.stornogrund)
             str_list.date = l_op.datum
@@ -1395,6 +1397,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.article = l_artikel.artnr
             str_list.description = l_artikel.bezeich
             str_list.d_unit = l_artikel.traubensorte
+            str_list.m_unit = l_artikel.masseinheit # RAGUNG: A92782
             str_list.inc_qty =  to_decimal(l_op.anzahl)
             str_list.amount =  to_decimal(str_list.warenwert)
             str_list.supplier = l_lieferant.firma
@@ -1458,7 +1461,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             l_op = L_op()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
+            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.docu_nr, l_op.lager_nr, l_op.einzelpreis, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.docu_nr, L_op.lager_nr, L_op.einzelpreis, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
                      (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr == l_lieferant.lief_nr) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr, L_artikel.bezeich).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -1474,7 +1477,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             l_op = L_op()
             l_artikel = L_artikel()
             l_lieferant = L_lieferant()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
+            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.docu_nr, l_op.lager_nr, l_op.einzelpreis, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.lief_artnr, l_artikel._recid, l_lieferant.lief_nr, l_lieferant.firma, l_lieferant.plz, l_lieferant._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.docu_nr, L_op.lager_nr, L_op.einzelpreis, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.lief_artnr, L_artikel._recid, L_lieferant.lief_nr, L_lieferant.firma, L_lieferant.plz, L_lieferant._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_lieferant,(L_lieferant.lief_nr == L_op.lief_nr)).filter(
                      (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr == l_lieferant.lief_nr) & (L_op.loeschflag <= 1) & (L_op.op_art == 1) & (L_op.lager_nr == store) & (L_op.anzahl != 0)).order_by(L_op.datum, L_op.lscheinnr, L_artikel.bezeich).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -1581,7 +1584,9 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         tot_anz =  to_decimal(tot_anz) + to_decimal(l_op.anzahl)
 
         if show_price:
-            unit_price =  to_decimal(l_op.einzelpreis)
+            # unit_price =  to_decimal(l_op.einzelpreis)
+            unit_price = ( to_decimal(l_op.warenwert) / to_decimal(l_op.anzahl))
+            unit_price = to_decimal(round(unit_price , 2)) # RAGUNG: A92782
 
         str_list = query(str_list_data, filters=(lambda str_list: str_list.docu_nr == l_op.docu_nr and str_list.artnr == l_op.artnr and str_list.lager_nr == l_op.lager_nr and str_list.lscheinnr == l_op.lscheinnr and str_list.epreis == l_op.einzelpreis), first=True)
 
@@ -1619,13 +1624,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
+                    (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
                 # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
-
 
         else:
             str_list = Str_list()
@@ -1686,12 +1690,11 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
+                    (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(queasy.deci3)
-                # str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
 
 
             str_list.fibu, str_list.fibu_bez = convert_fibu(l_op.stornogrund)
@@ -1700,6 +1703,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.article = l_artikel.artnr
             str_list.description = l_artikel.bezeich
             str_list.d_unit = l_artikel.traubensorte
+            str_list.m_unit = l_artikel.masseinheit # RAGUNG: A92782
             str_list.inc_qty =  to_decimal(l_op.anzahl)
             str_list.amount =  to_decimal(str_list.warenwert)
             str_list.supplier = l_lieferant.firma
@@ -1770,7 +1774,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             l_op = L_op()
             l_artikel = L_artikel()
             l_untergrup = L_untergrup()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
+            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.docu_nr, l_op.lager_nr, l_op.einzelpreis, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.lief_artnr, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.docu_nr, L_op.lager_nr, L_op.einzelpreis, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.lief_artnr, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
                      (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr == l_lieferant.lief_nr) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0) & (L_op.op_art == 1)).order_by(L_untergrup.bezeich, L_artikel.bezeich, L_op.datum).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -1786,7 +1790,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             l_op = L_op()
             l_artikel = L_artikel()
             l_untergrup = L_untergrup()
-            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.einzelpreis, l_op.docu_nr, l_op.lager_nr, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.lief_artnr, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.einzelpreis, L_op.docu_nr, L_op.lager_nr, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.lief_artnr, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
+            for l_op.lscheinnr, l_op.datum, l_op.anzahl, l_op.artnr, l_op.warenwert, l_op.docu_nr, l_op.lager_nr, l_op.einzelpreis, l_op._recid, l_op.lief_nr, l_op.pos, l_op.stornogrund, l_op.fuellflag, l_artikel.artnr, l_artikel.bezeich, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.lief_artnr, l_artikel._recid, l_untergrup.bezeich, l_untergrup._recid in db_session.query(L_op.lscheinnr, L_op.datum, L_op.anzahl, L_op.artnr, L_op.warenwert, L_op.docu_nr, L_op.lager_nr, L_op.einzelpreis, L_op._recid, L_op.lief_nr, L_op.pos, L_op.stornogrund, L_op.fuellflag, L_artikel.artnr, L_artikel.bezeich, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.lief_artnr, L_artikel._recid, L_untergrup.bezeich, L_untergrup._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr) & (L_artikel.endkum >= from_grp) & (L_artikel.endkum <= to_grp)).join(L_untergrup,(L_untergrup.zwkum == L_artikel.zwkum)).filter(
                      (L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.lief_nr == l_lieferant.lief_nr) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0) & (L_op.op_art == 1) & (L_op.lager_nr == store)).order_by(L_untergrup.bezeich, L_op.datum, L_artikel.bezeich).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -1895,7 +1899,9 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
         tot_anz =  to_decimal(tot_anz) + to_decimal(l_op.anzahl)
 
         if show_price:
-            unit_price =  to_decimal(l_op.einzelpreis)
+            # unit_price =  to_decimal(l_op.einzelpreis)
+            unit_price = ( to_decimal(l_op.warenwert) / to_decimal(l_op.anzahl))
+            unit_price = to_decimal(round(unit_price , 2)) # RAGUNG: A92782
 
         str_list = query(str_list_data, filters=(lambda str_list: str_list.docu_nr == l_op.docu_nr and str_list.lscheinnr == l_op.lscheinnr and str_list.lager_nr == l_op.lager_nr and str_list.artnr == l_op.artnr and str_list.epreis == l_op.einzelpreis), first=True)
 
@@ -1933,13 +1939,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 tot_amt =  to_decimal(tot_amt) + to_decimal((l_op.warenwert) + to_decimal(amt) )
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
+                    (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(str_list.disc_amount) + to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(str_list.vat_amount)
                 # str_list.addvat_amount =  to_decimal(str_list.addvat_amount) + to_decimal(to_decimal(queasy.char3) )
-
 
         else:
             str_list = Str_list()
@@ -2000,13 +2005,12 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
                 str_list.remark_artikel = ""
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
+                    (Queasy.key == 336) & (Queasy.char1 == l_op.lscheinnr) & (Queasy.number2 == l_op.artnr) & (cast(Queasy.char2, Numeric) == l_op.einzelpreis) & (Queasy.number1 == cast(l_op._recid, Numeric))).first()
 
             if queasy:
                 str_list.disc_amount =  to_decimal(queasy.deci1) + to_decimal(queasy.deci2)
                 str_list.vat_amount =  to_decimal(queasy.deci3)
                 # str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
-
 
             str_list.fibu, str_list.fibu_bez = convert_fibu(l_op.stornogrund)
             str_list.date = l_op.datum
@@ -2014,6 +2018,7 @@ def supply_inlist_btn_go_webbl(pvilanguage:int, last_artnr:int, lieferant_recid:
             str_list.article = l_artikel.artnr
             str_list.description = l_artikel.bezeich
             str_list.d_unit = l_artikel.traubensorte
+            str_list.m_unit = l_artikel.masseinheit # RAGUNG: A92782
             str_list.inc_qty =  to_decimal(l_op.anzahl)
             str_list.amount =  to_decimal(str_list.warenwert)
             str_list.supplier = l_lieferant.firma

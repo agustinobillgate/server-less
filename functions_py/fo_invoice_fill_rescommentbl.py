@@ -71,7 +71,7 @@ def fo_invoice_fill_rescommentbl(bil_recid:int, fill_co:bool):
 
     if resbuff and resbuff.code != "":
 
-        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
         if queasy:
             rescomment = rescomment + queasy.char1 + chr_unicode(10)

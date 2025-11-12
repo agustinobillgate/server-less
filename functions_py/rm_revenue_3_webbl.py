@@ -82,7 +82,6 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
     db_session = local_storage.db_session
 
     rm_no = rm_no.strip()
-    log_debug = []
 
     def generate_output():
         nonlocal output_list_data, i, anz, manz, yanz, com_anz, com_manz, com_yanz, hu_anz, hu_manz, hu_yanz, pax, mpax, ypax, com_pax, com_mpax, com_ypax, hu_pax, hu_mpax, hu_ypax, mnet, ynet, net, t_anz, t_manz, t_yanz, t_pax, t_mpax, t_ypax, t_net, t_mnet, t_ynet, t_com_anz, t_com_pax, t_com_manz, t_com_mpax, t_com_yanz, t_com_ypax, t_hu_anz, t_hu_pax, t_hu_manz, t_hu_mpax, t_hu_yanz, t_hu_ypax, from_bez, to_bez, price_decimal, from_date, curr_zeit, ci_date, do_it, compli_flag, hu_flag, htparam, zimmer, reservation, arrangement, res_line, waehrung, segment, argt_line, artikel, zinrstat, genstat, zimkateg
@@ -92,7 +91,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
         nonlocal output_list, cl_list, payload_list
         nonlocal output_list_data, cl_list_data
 
-        return {"log": log_debug, "output-list": output_list_data}
+        return {"output-list": output_list_data}
 
     def create_resline():
 
@@ -593,7 +592,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                                      (Genstat.resstatus == 6) & (Genstat.res_logic[inc_value(1)])).first()
 
                             if genstat:
-
+                                
                                 segment = db_session.query(Segment).filter(
                                          (Segment.segmentcode == genstat.segmentcode) & 
                                          ((Segment.betriebsnr == 1) | (Segment.betriebsnr == 2))).first()
@@ -632,11 +631,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                 zimmer_obj_list = {}
                 zimmer = Zimmer()
                 zimkateg = Zimkateg()
-                for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid \
-                    in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, \
-                                        Zimkateg.kurzbez, Zimkateg._recid\
-                                        )\
-                    .join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer.zinr).all():
+                for zimmer.kbezeich, zimmer.zikatnr, zimmer.zinr, zimmer._recid, zimkateg.kurzbez, zimkateg._recid in db_session.query(Zimmer.kbezeich, Zimmer.zikatnr, Zimmer.zinr, Zimmer._recid, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Zimmer.zikatnr)).order_by(Zimmer.zinr).all():
                     if zimmer_obj_list.get(zimmer._recid):
                         continue
                     else:
@@ -647,28 +642,13 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
 
                     cl_list.zinr = zimmer.zinr
                     cl_list.rmcat = zimkateg.kurzbez
-                    # log_debug.append(f"from_date: {from_date}, to_date: {to_date}, zinr: {zimmer.zinr}")
-
-                    zinrstat_records = {
-                        (zs.datum, zs.zimmeranz): zs
-                        for zs in db_session.query(Zinrstat)
-                            .filter(
-                                (Zinrstat.zinr == zimmer.zinr) &
-                                (Zinrstat.datum >= from_date) &
-                                (Zinrstat.datum <= to_date) &
-                                (Zinrstat.zimmeranz > 0)
-                            ).all()
-                    }
                     for datum in date_range(from_date,to_date) :
                         pass
-                        print(f"datum: {datum}, zinr: {zimmer.zinr}")
                         # zinrstat = get_cache (Zinrstat, {"zinr": [(eq, zimmer.zinr)],"datum": [(eq, datum)],"zimmeranz": [(gt, 0)]})
                         zinrstat = db_session.query(Zinrstat).filter(
                                  (Zinrstat.zinr == zimmer.zinr) &
                                  (Zinrstat.datum == datum) &
                                  (Zinrstat.zimmeranz > 0)).first()
-                        # zinrstat = zinrstat_records.get((datum, 1))
-                        # log_debug.append(f"datum: {datum}, zinr: {zimmer.zinr}, zinrstat: {zinrstat}")
 
                         if zinrstat:
                             do_it = True
@@ -1072,6 +1052,7 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
                                     anz = anz + 1
                                     pax = pax + genstat.erwachs + genstat.gratis +\
                                             genstat.kind1 + genstat.kind2 + genstat.kind3
+
 
                                     net =  to_decimal(net) + to_decimal(genstat.logis)
 
@@ -3115,29 +3096,23 @@ def rm_revenue_3_webbl(m_ftd:bool, m_ytd:bool, f_date:date, t_date:date, to_date
     if (not excl_compl and not payload_list.show_breakdown_comphu) or excl_compl and not payload_list.show_breakdown_comphu:
 
         if m_ftd and f_date >= ci_date and t_date >= ci_date:
-            log_debug.append("create_resline")
             create_resline()
         else:
 
             if lod__rev :
-                log_debug.append("create_genstat")
-                # create_genstat()
+                create_genstat()
             else:
-                log_debug.append("create_zinrstat")
                 create_zinrstat()
 
     elif not excl_compl and payload_list.show_breakdown_comphu:
 
         if m_ftd and f_date >= ci_date and t_date >= ci_date:
-            log_debug.append("create_resline2")
             create_resline2()
         else:
 
             if lod__rev :
-                log_debug.append("create_genstat2")
                 create_genstat2()
             else:
-                log_debug.append("create_zinrstat2")
                 create_zinrstat2()
 
     return generate_output()

@@ -8,7 +8,7 @@ from models import Bediener, Messages, Paramtext
 def zugriff_test_webbl(user_init:string, array_nr:int, expected_nr:int):
 
     prepare_cache ([Paramtext])
-    print("User Check...")
+    # print("User Check...")
     zugriff = True
     epoch_signature = 0
     mess_str = ""
@@ -129,7 +129,7 @@ def zugriff_test_webbl(user_init:string, array_nr:int, expected_nr:int):
 
             buffer_copy(bediener, tp_bediener)
             username = bediener.username
-            print("UserName:", username)
+            # print("UserName:", username)
         else:
             zugriff = False
             mess_str = "User not found."

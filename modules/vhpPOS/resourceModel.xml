@@ -984,6 +984,21 @@
   <prgs:resource consumes="application/json" name="_closeinvUpdateBillCustom" path="/closeinvUpdateBillCustom" produces="application/json">
     <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-closeinv-update-bill-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-closeinv-update-bill-webbl" produces="application/json" verb="POST"/>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_disc1BtnExitCustom" path="/disc1BtnExitCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-disc1-btn-exit-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-disc1-btn-exit-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillPrepareCustom" path="/splitbillPrepareCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-ts-splitbill-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-ts-splitbill-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_splitbillSplitBillCustom" path="/splitbillSplitBillCustom" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-ts-splitbill-split-bill-webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-ts-splitbill-split-bill-webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_restJournalList3" path="/restJournalList3" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-rest-journal-btn-go3webbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-rest-journal-btn-go3webbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_selectPOSUser" path="/selectPOSUser" produces="application/json">
+    <prgs:operation consumes="application/json" idls="VHPWebBased/.services/web-prepare-select-posusrbl.pidl::com.progress.openedge.pdt.bpmbindings" name="web-prepare-select-posusrbl" produces="application/json" verb="POST"/>
+  </prgs:resource>
 
 
 </prgs:model>

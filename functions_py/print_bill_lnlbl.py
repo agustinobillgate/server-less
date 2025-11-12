@@ -1,11 +1,5 @@
 #using conversion tools version: 1.0.0.117
 
-# -------------------------------------------
-# Rulita, 10-09-2025 
-# TiketID : 7B4EA4
-# Issue recompile program 
-# -------------------------------------------
-
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -313,11 +307,7 @@ def print_bill_lnlbl(t_spbill_list_data:[T_spbill_list], pvilanguage:int, curr_s
                             if artikel.artnr != 1001:
 
                                 if artikel.mwst_code != 0:
-
-                                    htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.mwst_code)]})
-
-                                    if htparam:
-                                        ma_gst_tot_taxable =  to_decimal(ma_gst_tot_taxable) + to_decimal((bill_line.betrag) / to_decimal((1) + to_decimal((htparam.fdecimal) / to_decimal(100))) )
+                                    ma_gst_amount =  to_decimal(ma_gst_amount) + to_decimal((bill_line.betrag) / to_decimal(1.06))
 
                                 if artikel.mwst_code == 0:
                                     ma_gst_tot_non_taxable =  to_decimal(ma_gst_tot_non_taxable) + to_decimal(bill_line.betrag)
@@ -326,12 +316,6 @@ def print_bill_lnlbl(t_spbill_list_data:[T_spbill_list], pvilanguage:int, curr_s
                         serv1, vat1, vat3, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, bill_line.bill_datum))
                         netto =  to_decimal(bill_line.betrag) / to_decimal(fact1)
                         tot_service_code =  to_decimal(tot_service_code) + to_decimal((netto) * to_decimal(serv1) )
-
-                    if artnr_1001 == 0 and ma_gst_amount == 0 and artikel.mwst_code != 0:
-                        serv1, vat1, vat3, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, bill_line.bill_datum))
-                        netto =  to_decimal(bill_line.betrag) / to_decimal(fact1)
-                        mgst =  to_decimal(mgst) + to_decimal((netto) * to_decimal((vat1) + to_decimal(vat3)) )
-
 
         else:
 
@@ -343,7 +327,7 @@ def print_bill_lnlbl(t_spbill_list_data:[T_spbill_list], pvilanguage:int, curr_s
                 else:
                     bill_line_obj_list[bill_line._recid] = True
 
-
+                t_spbill_list = query(t_spbill_list_data, (lambda t_spbill_list: (bill_line._recid == t_spbill_list.bl_recid)), first=True)
                 bl0_balance =  to_decimal(bl0_balance) + to_decimal(bill_line.betrag)
                 bl0_balance1 =  to_decimal(bl0_balance1) + to_decimal(bill_line.fremdwbetrag)
                 bl_balance =  to_decimal(bl_balance) + to_decimal(bill_line.betrag)
@@ -378,25 +362,21 @@ def print_bill_lnlbl(t_spbill_list_data:[T_spbill_list], pvilanguage:int, curr_s
                                 if artikel.mwst_code == 0:
                                     ma_gst_tot_non_taxable =  to_decimal(ma_gst_tot_non_taxable) + to_decimal(bill_line.betrag)
 
+
         if ma_gst_amount != 0:
             ma_gst_amount = ( to_decimal(ma_gst_amount) * to_decimal("6") / to_decimal(100)) + to_decimal(mgst)
 
 
             ma_gst_tot_taxable = ( to_decimal(ma_gst_tot_sales_artikel) - to_decimal(ma_gst_amount) - to_decimal(ma_gst_tot_non_taxable))
             ma_gst_gtot_tax =  to_decimal(ma_gst_amount) + to_decimal(ma_gst_tot_taxable) + to_decimal(ma_gst_tot_non_taxable)
+        else:
 
-        elif artnr_1001 != 0:
-            ma_gst_amount =  to_decimal(artnr_1001)
-            ma_gst_tot_taxable = ( to_decimal(ma_gst_tot_sales_artikel) - to_decimal(artnr_1001) - to_decimal(ma_gst_tot_non_taxable) )
+            if artnr_1001 != 0:
+                ma_gst_amount =  to_decimal(artnr_1001)
+                ma_gst_tot_taxable = ( to_decimal(ma_gst_tot_sales_artikel) - to_decimal(artnr_1001) - to_decimal(ma_gst_tot_non_taxable) )
 
 
             ma_gst_gtot_tax =  to_decimal(artnr_1001) + to_decimal(ma_gst_tot_taxable) + to_decimal(ma_gst_tot_non_taxable)
-        else:
-            ma_gst_amount =  to_decimal(ma_gst_amount) + to_decimal(mgst)
-
-
-            ma_gst_tot_taxable = ( to_decimal(ma_gst_tot_sales_artikel) - to_decimal(ma_gst_amount) - to_decimal(ma_gst_tot_non_taxable))
-            ma_gst_gtot_tax =  to_decimal(ma_gst_amount) + to_decimal(ma_gst_tot_taxable) + to_decimal(ma_gst_tot_non_taxable)
 
         if briefnr == briefnr2 or briefnr == briefnr21:
 
@@ -618,6 +598,17 @@ def print_bill_lnlbl(t_spbill_list_data:[T_spbill_list], pvilanguage:int, curr_s
                         curr_guest = " "
 
 
+                    fact_ns =  to_decimal("1")
+
+                    artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
+
+                    if artikel.mwst_code != 0 or artikel.service_code != 0 or artikel.prov_code != 0:
+                        service_ns, vat_ns, vat2_ns, fact_ns = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, bill_line.bill_datum))
+                    vat_ns =  to_decimal(vat_ns) + to_decimal(vat2_ns)
+
+
+                    amount_bef_tax_ns =  to_decimal(bill_line.betrag)
+                    amount_bef_tax_ns =  to_decimal(amount_bef_tax_ns) / to_decimal(fact_ns)
                     bl_balance =  to_decimal(bl_balance) + to_decimal(bill_line.betrag)
                     str3 = to_string(bill_line.bill_datum) + lnldelimeter + bl_descript + lnldelimeter + to_string(bill_line.anzahl, "->>>") + lnldelimeter + to_string(bill_line.betrag, "->>>,>>>,>>>,>>>,>>9.99") + lnldelimeter + to_string(bl_balance, "->>>,>>>,>>>,>>>,>>9.99") + lnldelimeter + in_word + lnldelimeter + bl_guest + lnldelimeter + bl_descript0 + lnldelimeter + bl_voucher + lnldelimeter + bill_line.zinr + lnldelimeter + to_string(ma_gst_amount, "->>>,>>>,>>>,>>>,>>9.99") + lnldelimeter + curr_guest + lnldelimeter + to_string(" ") + lnldelimeter + to_string(" ") + lnldelimeter + to_string(bill_line.epreis, "->>>,>>>,>>>,>>>,>>9.99") + lnldelimeter + to_string(amount_bef_tax_ns, "->>>,>>>,>>>,>>>,>>9.99")
 
@@ -928,15 +919,13 @@ def print_bill_lnlbl(t_spbill_list_data:[T_spbill_list], pvilanguage:int, curr_s
 
                         artikel = get_cache (Artikel, {"artnr": [(eq, bill_line.artnr)],"departement": [(eq, bill_line.departement)]})
 
-                        if artikel:
-
-                            if artikel.mwst_code != 0 or artikel.service_code != 0 or artikel.prov_code != 0:
-                                service_ns, vat_ns, vat2_ns, fact_ns = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, bill_line.bill_datum))
-                                vat_ns =  to_decimal(vat_ns) + to_decimal(vat2_ns)
+                        if artikel.mwst_code != 0 or artikel.service_code != 0 or artikel.prov_code != 0:
+                            service_ns, vat_ns, vat2_ns, fact_ns = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, bill_line.bill_datum))
+                        vat_ns =  to_decimal(vat_ns) + to_decimal(vat2_ns)
 
 
-                                amount_bef_tax_ns =  to_decimal(bill_line.betrag)
-                                amount_bef_tax_ns =  to_decimal(amount_bef_tax_ns) / to_decimal(fact_ns)
+                        amount_bef_tax_ns =  to_decimal(bill_line.betrag)
+                        amount_bef_tax_ns =  to_decimal(amount_bef_tax_ns) / to_decimal(fact_ns)
                         t_str3 = T_str3()
                         t_str3_data.append(t_str3)
 
@@ -945,7 +934,7 @@ def print_bill_lnlbl(t_spbill_list_data:[T_spbill_list], pvilanguage:int, curr_s
                     if do_it:
 
                         for bline_vatlist in query(bline_vatlist_data, filters=(lambda bline_vatlist: bline_vatlist.vatnr != 0), sort_by=[("seqnr",False),("vatnr",False)]):
-                            str3 = to_string(" ") + lnldelimeter + " " + lnldelimeter + to_string(" ") + lnldelimeter + " " + lnldelimeter + to_string(" ") + lnldelimeter + " " + lnldelimeter + " " + lnldelimeter + " " + lnldelimeter + " " + lnldelimeter + to_string(" ") + lnldelimeter + to_string(" ") + lnldelimeter + to_string(" ") + lnldelimeter + to_string(bline_vatlist.bezeich, "x(25)") + lnldelimeter + to_string(bline_vatlist.betrag, "->>>,>>>,>>9.99") + lnldelimeter + to_string(" ") + lnldelimeter + to_string(" ")
+                            str3 = to_string(" ") + lnldelimeter + " " + lnldelimeter + to_string(" ") + lnldelimeter + " " + lnldelimeter + to_string(" ") + lnldelimeter + " " + lnldelimeter + " " + lnldelimeter + " " + lnldelimeter + " " + lnldelimeter + to_string(" ") + lnldelimeter + to_string(" ") + lnldelimeter + to_string(" ") + lnldelimeter + to_string(bline_vatlist.bezeich, "x(25)") + lnldelimeter + to_string(bline_vatlist.betrag, "->>>,>>>,>>9.99")
                             t_str3 = T_str3()
                             t_str3_data.append(t_str3)
 
@@ -1086,13 +1075,13 @@ def print_bill_lnlbl(t_spbill_list_data:[T_spbill_list], pvilanguage:int, curr_s
                         t_str3 = T_str3()
                         t_str3_data.append(t_str3)
 
-                        t_str3.str3 = to_string(bill_line.bill_datum) + lnldelimeter + bl_descript + lnldelimeter + to_string(bill_line.anzahl, "->>>") + lnldelimeter + to_string(bill_line.betrag, "->>>,>>>,>>>,>>>,>>9.99") + lnldelimeter + to_string(bl_balance, "->>>,>>>,>>>,>>>,>>9.99") + lnldelimeter + in_word + lnldelimeter + bl_guest + lnldelimeter + bl_descript0 + lnldelimeter + bl_voucher + lnldelimeter + bill_line.zinr + lnldelimeter + to_string(ma_gst_amount, "->>>,>>>,>>>,>>>,>>9.99") + lnldelimeter + curr_guest + lnldelimeter + to_string(" ") + lnldelimeter + to_string(" ") + lnldelimeter + to_string(bill_line.epreis, "->>>,>>>,>>>,>>>,>>9.99") + lnldelimeter + to_string(0, "->>>,>>>,>>>,>>>,>>9.99")
+                        t_str3.str3 = to_string(bill_line.bill_datum) + lnldelimeter + bl_descript + lnldelimeter + to_string(bill_line.anzahl, "->>>") + lnldelimeter + to_string(bill_line.betrag, "->>>,>>>,>>>,>>>,>>9.99") + lnldelimeter + to_string(bl_balance, "->>>,>>>,>>>,>>>,>>9.99") + lnldelimeter + in_word + lnldelimeter + bl_guest + lnldelimeter + bl_descript0 + lnldelimeter + bl_voucher + lnldelimeter + bill_line.zinr + lnldelimeter + to_string(ma_gst_amount, "->>>,>>>,>>>,>>>,>>9.99") + lnldelimeter + curr_guest + lnldelimeter + to_string(" ") + lnldelimeter + to_string(" ") + lnldelimeter + to_string(bill_line.epreis, "->>>,>>>,>>>,>>>,>>9.99")
 
 
                 if do_it:
 
                     for bline_vatlist in query(bline_vatlist_data, filters=(lambda bline_vatlist: bline_vatlist.vatnr != 0), sort_by=[("seqnr",False),("vatnr",False)]):
-                        str3 = to_string(" ") + lnldelimeter + " " + lnldelimeter + to_string(" ") + lnldelimeter + " " + lnldelimeter + to_string(" ") + lnldelimeter + " " + lnldelimeter + " " + lnldelimeter + " " + lnldelimeter + " " + lnldelimeter + to_string(" ") + lnldelimeter + to_string(" ") + lnldelimeter + to_string(" ") + lnldelimeter + to_string(bline_vatlist.bezeich, "x(25)") + lnldelimeter + to_string(bline_vatlist.betrag, "->>>,>>>,>>9.99") + lnldelimeter + to_string(" ") + lnldelimeter + to_string(" ")
+                        str3 = to_string(" ") + lnldelimeter + " " + lnldelimeter + to_string(" ") + lnldelimeter + " " + lnldelimeter + to_string(" ") + lnldelimeter + " " + lnldelimeter + " " + lnldelimeter + " " + lnldelimeter + " " + lnldelimeter + to_string(" ") + lnldelimeter + to_string(" ") + lnldelimeter + to_string(" ") + lnldelimeter + to_string(bline_vatlist.bezeich, "x(25)") + lnldelimeter + to_string(bline_vatlist.betrag, "->>>,>>>,>>9.99")
                         t_str3 = T_str3()
                         t_str3_data.append(t_str3)
 
@@ -1382,7 +1371,7 @@ def print_bill_lnlbl(t_spbill_list_data:[T_spbill_list], pvilanguage:int, curr_s
 
             if res_line.code != "":
 
-                queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+                queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
                 if queasy:
                     bl_instruct = trim(queasy.char1)

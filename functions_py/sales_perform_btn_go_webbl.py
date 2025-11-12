@@ -46,6 +46,11 @@ def sales_perform_btn_go_webbl(from_date:string, to_date:string, usr_init:string
 
     slist_data, Slist = create_model("Slist", {"bezeich":string, "yr":int, "mnth":int, "userinit":string, "lodg":Decimal, "lbudget":Decimal, "lproz":Decimal, "fbrev":Decimal, "fbbudget":Decimal, "fbproz":Decimal, "otrev":Decimal, "otbudget":Decimal, "otproz":Decimal, "rmnight":int, "rbudget":int, "rmproz":Decimal, "ytd_lodg":Decimal, "ytd_lbudget":Decimal, "ytd_lproz":Decimal, "ytd_fbrev":Decimal, "ytd_fbbudget":Decimal, "ytd_fbproz":Decimal, "ytd_rmnight":int, "ytd_rbudget":int, "ytd_rmproz":Decimal, "ytd_otrev":Decimal, "ytd_otbudget":Decimal, "ytd_otproz":Decimal, "is_data":bool})
 
+    set_cache(Salesbud, None, [["bediener_nr", "monat", "jahr"]], True, [], ["bediener_nr", "monat", "jahr"])
+    set_cache(Salestat, None, [["bediener_nr", "monat", "jahr"]], True, [], ["bediener_nr", "monat", "jahr"])
+    set_cache(Htparam, None, [["paramnr"]], True, [], ["paramnr"])
+    set_cache(Bediener, None, [["userinit"]], True, [], ["userinit"])
+
     db_session = local_storage.db_session
 
     def generate_output():

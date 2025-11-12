@@ -132,9 +132,10 @@ def arl_list_initial_itbl(inp_resname:string, user_init:string):
     # 333333333333333333333333333333333333333333333333333333333333333333333333333333333332233333330000003
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
     if bediener:
-        print("Bediener:", bediener.permissions)
+        # print("Bediener:", bediener.permissions)
+        pass
     else:
-        print("User not Found..", user_init)
+        # print("User not Found..", user_init)
         return generate_output()
 
     if substring(bediener.permissions, 34, 1) != ("0").lower() :

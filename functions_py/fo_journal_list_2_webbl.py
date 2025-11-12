@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -25,12 +25,12 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
 
     db_session = local_storage.db_session
 
-    print(exclude_artrans)
-
     def generate_output():
         nonlocal fo_journal_list_data, done_flag, gtot, queasy, artikel, htparam
         nonlocal from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, onlyjournal, excljournal, mi_post, mi_showrelease, mi_break, id_flag
         nonlocal bqueasy
+
+
         nonlocal output_list, fo_journal_list, bqueasy
         nonlocal output_list_data, fo_journal_list_data
 
@@ -43,6 +43,7 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
     queasy.char1 = "FO Transaction"
     queasy.number1 = 1
     queasy.char2 = id_flag
+
 
     pass
     gtot, output_list_data = get_output(fo_journal_cld_3bl(from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, onlyjournal, excljournal, mi_post, mi_showrelease, mi_break, id_flag))
@@ -57,12 +58,8 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
 
         pass
         pass
+    
     fo_journal_list_data.clear()
-
-# """
-#             Visa[Deposit #96252]                                                                                1234                                    Sembodo, Yaksa           Sembodo, Yaksa                                                                                                                                      09/24/2409/25/24ECO-ONLINE 0        96252ONLINE TRAVEL AGENTTIKET.COM,                 0.00               0.00               0.00",
-
-# """
 
     for output_list in query(output_list_data):
         fo_journal_list = Fo_journal_list()
@@ -75,18 +72,18 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
         fo_journal_list.mbflag = output_list.mb
         fo_journal_list.shift = output_list.shift
         fo_journal_list.billno = to_int(substring(output_list.str, 14, 9))
-        fo_journal_list.artno = to_int(substring(output_list.str, 23, 4))
+        fo_journal_list.artno = to_int(substring(output_list.str, 23, 9))
         fo_journal_list.bezeich = output_list.descr
         fo_journal_list.voucher = output_list.voucher
-        fo_journal_list.depart = substring(output_list.str, 77, 12)
-        fo_journal_list.outlet = substring(output_list.str, 89, 6)
-        fo_journal_list.qty = to_int(substring(output_list.str, 95, 5))
-        fo_journal_list.amount = to_decimal(substring(output_list.str, 100, 22))
+        fo_journal_list.depart = substring(output_list.str, 82, 12)
+        fo_journal_list.outlet = substring(output_list.str, 94, 6)
+        fo_journal_list.qty = to_int(substring(output_list.str, 100, 5))
+        fo_journal_list.amount = to_decimal(substring(output_list.str, 105, 22))
         fo_journal_list.guestname = output_list.guestname
         fo_journal_list.billrcvr = output_list.gname
-        fo_journal_list.zeit = substring(output_list.str, 122, 8)
-        fo_journal_list.id = substring(output_list.str, 130, 4)
-        fo_journal_list.sysdate = date_mdy(substring(output_list.str, 134, 8))
+        fo_journal_list.zeit = substring(output_list.str, 127, 8)
+        fo_journal_list.id = substring(output_list.str, 135, 4)
+        fo_journal_list.sysdate = date_mdy(substring(output_list.str, 139, 8))
         fo_journal_list.remark = output_list.remark
         fo_journal_list.checkin = output_list.checkin
         fo_journal_list.checkout = output_list.checkout

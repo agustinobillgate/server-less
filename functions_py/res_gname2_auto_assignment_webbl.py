@@ -1,29 +1,57 @@
-#using conversion tools version: 1.0.0.117
+
 #-----------------------------------------
 # Rd, 18/7/25
 # getpstart -> Outorder.gepstart
+# 29/10/2025 -> compile ulang, FDL: 70542C
+# Added custom get_timestamp_with_ms function
 #-----------------------------------------
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
-from datetime import date
-from models import Zimmer, Res_line, Outorder
+from datetime import date, datetime, timezone
+from models import Zimmer, Res_line, Queasy, Outorder
 
-s_list_data, S_list = create_model("S_list", {"res_recid":int, "resstatus":int, "active_flag":int, "flag":int, "karteityp":int, "zimmeranz":int, "erwachs":int, "kind1":int, "kind2":int, "old_zinr":string, "name":string, "nat":string, "land":string, "zinr":string, "eta":string, "etd":string, "flight1":string, "flight2":string, "rmcat":string, "ankunft":date, "abreise":date, "zipreis":Decimal, "bemerk":string})
+s_list_data, S_list = create_model("S_list", {"res_recid":int, "resstatus":int, "active_flag":int, "flag":int, "karteityp":int, "zimmeranz":int, "erwachs":int, "kind1":int, "kind2":int, "old_zinr":string, "name":string, "nat":string, "land":string, "zinr":string, "eta":string, "etd":string, "flight1":string, "flight2":string, "rmcat":string, "ankunft":date, "abreise":date, "zipreis":Decimal, "bemerk":string, "user_init":string})
 active_roomlist_data, Active_roomlist = create_model_like(Zimmer, {"room_selected":bool})
+
+def get_timestamp_with_ms() -> str:
+    """
+    Returns current timestamp as a string with millisecond precision,
+    equivalent to the Progress ABL getTimestampWithMs function.
+    """
+    # current UTC time
+    now = datetime.now(timezone.utc)
+
+    # Epoch (1970-01-01 UTC)
+    epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
+
+    # milliseconds since epoch
+    epoch_milliseconds = int((now - epoch).total_seconds() * 1000)
+
+    # reconstruct human-readable datetime from milliseconds
+    human_date = datetime.fromtimestamp(epoch_milliseconds / 1000, tz=timezone.utc)
+
+    # format string same as ABL STRING(DATETIME) output: "YYYY-MM-DDTHH:MM:SS.mmm"
+    timestamp_str = human_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]  # trim to milliseconds
+
+    return timestamp_str
+
 
 def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:[Active_roomlist], v_mode:int, location:string, froom:string, troom:string):
 
     prepare_cache ([Res_line])
 
-    zimmer = res_line = outorder = None
+    time_stamp_str:string = ""
+    vbilldate:date = None
+    zimmer = res_line = queasy = outorder = None
 
     s_list = active_roomlist = s1_list = s2_list = s1_list = s2_list = None
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal zimmer, res_line, outorder
+        nonlocal time_stamp_str, vbilldate, zimmer, res_line, queasy, outorder
         nonlocal v_mode, location, froom, troom
 
 
@@ -33,7 +61,7 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
 
     def auto_assignment():
 
-        nonlocal zimmer, res_line, outorder
+        nonlocal time_stamp_str, vbilldate, zimmer, res_line, queasy, outorder
         nonlocal v_mode, location, froom, troom
 
 
@@ -41,6 +69,7 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
 
         rline = None
         resline = None
+        queasy_359 = None
         last_zinr:string = ""
         do_it:bool = False
         found:bool = False
@@ -50,14 +79,11 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
         s2_list_data = s_list_data
         Rline =  create_buffer("Rline",Res_line)
         Resline =  create_buffer("Resline",Res_line)
+        Queasy_359 =  create_buffer("Queasy_359",Queasy)
 
         for s1_list in query(s1_list_data, filters=(lambda s1_list: s1_list.zinr == "" and s1_list.resstatus != 11 and s1_list.zimmeranz == 1)):
 
             rline = get_cache (Res_line, {"_recid": [(eq, s1_list.res_recid)]})
-            # Rd, 18/7/25
-            if rline is None:
-                continue
-
             found = False
 
             if location != "":
@@ -69,13 +95,11 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
             while None != zimmer and not found:
                 do_it = True
 
-                # if etage > 0 and (etage != zimmer.etage):
-                if s1_list.eta > 0 and (s1_list.eta != zimmer.etage):
+                if zimmer.etage > 0 and (zimmer.etage != zimmer.etage):
                     do_it = False
 
                 if do_it:
-                    # Rd 18/7/25
-                    # gepstart -> outorder.gepstart
+
                     outorder = db_session.query(Outorder).filter(
                              (Outorder.zinr == zimmer.zinr) & (Outorder.betriebsnr != rline.resnr) & (((rline.ankunft >= Outorder.gespstart) & (rline.ankunft <= Outorder.gespende)) | ((rline.abreise > Outorder.gespstart) & (rline.abreise <= Outorder.gespende)) | ((Outorder.gespstart >= rline.ankunft) & (Outorder.gespstart < rline.abreise)) | ((Outorder.gespende >= rline.ankunft) & (Outorder.gespende <= rline.abreise)))).first()
 
@@ -94,6 +118,34 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
                     s1_list.zinr = zimmer.zinr
                     last_zinr = zimmer.zinr
                     found = True
+
+                    if s1_list.resstatus <= 5:
+
+                        queasy_359 = db_session.query(Queasy_359).filter(
+                                 (Queasy_359.key == 359) & (Queasy_359.number1 == rline.resnr) & (Queasy_359.number2 == rline.reslinnr) & (Queasy_359.number3 == 1)).first()
+
+                        if queasy_359:
+                            db_session.delete(queasy_359)
+                            pass
+
+                        queasy = get_cache (Queasy, {"key": [(eq, 359)],"char1": [(eq, s1_list.zinr)],"number1": [(eq, rline.resnr)],"number2": [(eq, rline.reslinnr)],"number3": [(eq, 1)]})
+
+                        if not queasy:
+                            queasy = Queasy()
+                            db_session.add(queasy)
+
+                            queasy.key = 359
+                            queasy.char1 = s1_list.zinr
+                            queasy.char2 = s1_list.user_init
+                            queasy.char3 = get_timestamp_with_ms()
+                            queasy.number1 = rline.resnr
+                            queasy.number2 = rline.reslinnr
+                            queasy.number3 = 1
+                            queasy.date1 = rline.ankunft
+                            queasy.date2 = rline.abreise
+                            queasy.logi1 = True
+
+
                 else:
 
                     if location != "":
@@ -111,10 +163,6 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
         for s1_list in query(s1_list_data, filters=(lambda s1_list: s1_list.zinr == "" and s1_list.active_flag == 0 and s1_list.resstatus != 11)):
 
             rline = get_cache (Res_line, {"_recid": [(eq, s1_list.res_recid)]})
-
-            # Rd, 18/7/225
-            if rline is None:
-                continue
             found = False
 
             if location != "":
@@ -126,15 +174,13 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
             while None != zimmer and not found:
                 do_it = True
 
-                # Rd, 18/7/225
-                # if etage > 0 and (etage != zimmer.etage):
-                if s1_list.eta > 0 and (s1_list.eta != zimmer.etage):
+                if zimmer.etage > 0 and (zimmer.etage != zimmer.etage):
                     do_it = False
 
                 if do_it:
 
                     outorder = db_session.query(Outorder).filter(
-                             (Outorder.zinr == zimmer.zinr) & (Outorder.betriebsnr != rline.resnr) & (((rline.ankunft >= gespstart) & (rline.ankunft <= Outorder.gespende)) | ((rline.abreise > gespstart) & (rline.abreise <= Outorder.gespende)) | ((Outorder.gespstart >= rline.ankunft) & (Outorder.gespstart < rline.abreise)) | ((Outorder.gespende >= rline.ankunft) & (Outorder.gespende <= rline.abreise)))).first()
+                             (Outorder.zinr == zimmer.zinr) & (Outorder.betriebsnr != rline.resnr) & (((rline.ankunft >= Outorder.gespstart) & (rline.ankunft <= Outorder.gespende)) | ((rline.abreise > Outorder.gespstart) & (rline.abreise <= Outorder.gespende)) | ((Outorder.gespstart >= rline.ankunft) & (Outorder.gespstart < rline.abreise)) | ((Outorder.gespende >= rline.ankunft) & (Outorder.gespende <= rline.abreise)))).first()
 
                     if outorder:
                         do_it = False
@@ -158,6 +204,34 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
                     s1_list.zinr = zimmer.zinr
                     last_zinr = zimmer.zinr
                     found = True
+
+                    if s1_list.resstatus <= 5:
+
+                        queasy_359 = db_session.query(Queasy_359).filter(
+                                 (Queasy_359.key == 359) & (Queasy_359.number1 == rline.resnr) & (Queasy_359.number2 == rline.reslinnr) & (Queasy_359.number3 == 1)).first()
+
+                        if queasy_359:
+                            db_session.delete(queasy_359)
+                            pass
+
+                        queasy = get_cache (Queasy, {"key": [(eq, 359)],"char1": [(eq, s1_list.zinr)],"number1": [(eq, rline.resnr)],"number2": [(eq, rline.reslinnr)],"number3": [(eq, 1)]})
+
+                        if not queasy:
+                            queasy = Queasy()
+                            db_session.add(queasy)
+
+                            queasy.key = 359
+                            queasy.char1 = s1_list.zinr
+                            queasy.char2 = s1_list.user_init
+                            queasy.char3 = get_timestamp_with_ms()
+                            queasy.number1 = rline.resnr
+                            queasy.number2 = rline.reslinnr
+                            queasy.number3 = 1
+                            queasy.date1 = rline.ankunft
+                            queasy.date2 = rline.abreise
+                            queasy.logi1 = True
+
+
                 else:
 
                     if location != "":
@@ -174,7 +248,7 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
 
     def auto_assignmen_with_selectedroom():
 
-        nonlocal zimmer, res_line, outorder
+        nonlocal time_stamp_str, vbilldate, zimmer, res_line, queasy, outorder
         nonlocal v_mode, location, froom, troom
 
 
@@ -182,6 +256,7 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
 
         rline = None
         resline = None
+        queasy_359 = None
         last_zinr:string = ""
         do_it:bool = False
         found:bool = False
@@ -191,13 +266,11 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
         s2_list_data = s_list_data
         Rline =  create_buffer("Rline",Res_line)
         Resline =  create_buffer("Resline",Res_line)
+        Queasy_359 =  create_buffer("Queasy_359",Queasy)
 
         for s1_list in query(s1_list_data, filters=(lambda s1_list: s1_list.zinr == "" and s1_list.resstatus != 11 and s1_list.zimmeranz == 1)):
 
             rline = get_cache (Res_line, {"_recid": [(eq, s1_list.res_recid)]})
-            # Rd, 18/7/225
-            if rline is None:
-                continue
             found = False
 
             active_roomlist = query(active_roomlist_data, filters=(lambda active_roomlist: active_roomlist.zikatnr == rline.zikatnr and active_roomlist.room_selected and active_roomlist.setup == rline.setup and active_roomlist.zinr.lower()  > (last_zinr).lower()), first=True)
@@ -224,6 +297,34 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
                     s1_list.zinr = active_roomlist.zinr
                     last_zinr = active_roomlist.zinr
                     found = True
+
+                    if s1_list.resstatus <= 5:
+
+                        queasy_359 = db_session.query(Queasy_359).filter(
+                                 (Queasy_359.key == 359) & (Queasy_359.number1 == rline.resnr) & (Queasy_359.number2 == rline.reslinnr) & (Queasy_359.number3 == 1)).first()
+
+                        if queasy_359:
+                            db_session.delete(queasy_359)
+                            pass
+
+                        queasy = get_cache (Queasy, {"key": [(eq, 359)],"char1": [(eq, s1_list.zinr)],"number1": [(eq, rline.resnr)],"number2": [(eq, rline.reslinnr)],"number3": [(eq, 1)]})
+
+                        if not queasy:
+                            queasy = Queasy()
+                            db_session.add(queasy)
+
+                            queasy.key = 359
+                            queasy.char1 = s1_list.zinr
+                            queasy.char2 = s1_list.user_init
+                            queasy.char3 = get_timestamp_with_ms()
+                            queasy.number1 = rline.resnr
+                            queasy.number2 = rline.reslinnr
+                            queasy.number3 = 1
+                            queasy.date1 = rline.ankunft
+                            queasy.date2 = rline.abreise
+                            queasy.logi1 = True
+
+
                 else:
 
                     active_roomlist = query(active_roomlist_data, filters=(lambda active_roomlist: active_roomlist.zikatnr == rline.zikatnr and active_roomlist.room_selected and active_roomlist.setup == rline.setup and active_roomlist.zinr.lower()  > (last_zinr).lower()), next=True)
@@ -265,6 +366,34 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
                     s1_list.zinr = active_roomlist.zinr
                     last_zinr = active_roomlist.zinr
                     found = True
+
+                    if s1_list.resstatus <= 5:
+
+                        queasy_359 = db_session.query(Queasy_359).filter(
+                                 (Queasy_359.key == 359) & (Queasy_359.number1 == rline.resnr) & (Queasy_359.number2 == rline.reslinnr) & (Queasy_359.number3 == 1)).first()
+
+                        if queasy_359:
+                            db_session.delete(queasy_359)
+                            pass
+
+                        queasy = get_cache (Queasy, {"key": [(eq, 359)],"char1": [(eq, s1_list.zinr)],"number1": [(eq, rline.resnr)],"number2": [(eq, rline.reslinnr)],"number3": [(eq, 1)]})
+
+                        if not queasy:
+                            queasy = Queasy()
+                            db_session.add(queasy)
+
+                            queasy.key = 359
+                            queasy.char1 = s1_list.zinr
+                            queasy.char2 = s1_list.user_init
+                            queasy.char3 = get_timestamp_with_ms()
+                            queasy.number1 = rline.resnr
+                            queasy.number2 = rline.reslinnr
+                            queasy.number3 = 1
+                            queasy.date1 = rline.ankunft
+                            queasy.date2 = rline.abreise
+                            queasy.logi1 = True
+
+
                 else:
 
                     active_roomlist = query(active_roomlist_data, filters=(lambda active_roomlist: active_roomlist.zikatnr == rline.zikatnr and active_roomlist.room_selected and active_roomlist.setup != rline.setup and active_roomlist.zinr.lower()  > (last_zinr).lower()), next=True)

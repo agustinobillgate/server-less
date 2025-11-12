@@ -1,8 +1,10 @@
 #using conversion tools version: 1.0.0.117
-#------------------------------------------
+#-----------------------------------------------------
 # Rd, 10/9/2025
 #
-#------------------------------------------
+# Rulita, 12-11-2025
+# Fixing kontcode.strip -> if kontcode is None Then ""
+#-----------------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -30,7 +32,19 @@ def read_res_linebl(case_type:int, resno:int, reslinno:int, resstat:int, actflag
     db_session = local_storage.db_session
 
     # Rd 10/9/2025
-    kontcode = kontcode.strip()
+    # try:
+    #     kontcode = kontcode.strip()
+    # except Exception as e:
+    #     kontcode = ""
+    #     print(f"Error occurred while processing kontcode.strip(): {e}")
+
+    # Rulita, 12-11-2025
+    # Fixing kontcode.strip -> if kontcode is None Then ""
+    if kontcode is None:
+        kontcode = ""
+    else:
+        kontcode = kontcode.strip()
+    
     def generate_output():
         nonlocal t_res_line_data, delichr4, rmnopattern, c_room, res_line, kontline, guest, zimmer, reservation
         nonlocal case_type, resno, reslinno, resstat, actflag, rmno, arrive, depart, gastno, kontigno, kontcode

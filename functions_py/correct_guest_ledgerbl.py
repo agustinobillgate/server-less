@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.118
+#using conversion tools version: 1.0.0.117
 #-------------------------------------------
 # Rd 28/7/2025
 # Rd 14/8/2025
@@ -20,7 +20,7 @@ from models import Htparam, Uebertrag, Bill_line, Bill, Res_line, Guest, Artikel
 
 def correct_guest_ledgerbl(fdate:date, tdate:date):
 
-    prepare_cache ([Htparam, Uebertrag, Bill_line, Bill, Res_line, Guest, Artikel])
+    prepare_cache ([Htparam, Uebertrag, Bill_line, Res_line, Guest, Artikel])
 
     success_flag = False
     billdate:date = None
@@ -79,45 +79,10 @@ def correct_guest_ledgerbl(fdate:date, tdate:date):
         nonlocal output_list_data, m_list_data, sum_list_data, s_list_data, ns_list_data, bill_alert_data, bill_list_data
 
         bline = None
-        rbilldate:date = None
-        first_date:date = None
-        last_date:date = None
         Bline =  create_buffer("Bline",Bill_line)
         bill_list_data.clear()
-        rbilldate = billdate - timedelta(days=30)
 
-        for bill in db_session.query(Bill).filter(
-                 (Bill.rechnr > 0) & ((Bill.flag == 0) | ((Bill.datum >= rbilldate) & (Bill.flag == 1)))).order_by(Bill.rechnr).all():
-            last_date = None
-            first_date = None
-
-            if bill.flag == 0:
-                last_date = heute
-
-            if bill.flag == 1:
-
-                bill_alert = query(bill_alert_data, filters=(lambda bill_alert: bill_alert.rechnr == bill.rechnr), first=True)
-
-                if bill_alert:
-                    last_date = heute
-
-            for bill_line in db_session.query(Bill_line).filter(
-                     (Bill_line.rechnr == bill.rechnr)).order_by(Bill_line.bill_datum).all():
-                first_date = bill_line.bill_datum
-                break
-
-            if first_date == None:
-                continue
-
-            # Rd 14/8/2025
-            elif last_date == None:
-                continue
-            
-            elif first_date > billdate:
-                continue
-
-            elif last_date < billdate:
-                continue
+        for bill in db_session.query(Bill).filter((Bill.rechnr > 0)).order_by(Bill._recid).all():
             bill_list = Bill_list()
             bill_list_data.append(bill_list)
 
@@ -147,6 +112,9 @@ def correct_guest_ledgerbl(fdate:date, tdate:date):
             else:
                 bill_list.billtype = "N"
 
+            if bill.flag == 0:
+                bill_list.last_date = heute
+
             if bill_list.gname == "":
 
                 guest = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
@@ -154,6 +122,35 @@ def correct_guest_ledgerbl(fdate:date, tdate:date):
                 if guest:
                     bill_list.gname = guest.name
 
+            if bill.flag == 1:
+
+                bill_alert = query(bill_alert_data, filters=(lambda bill_alert: bill_alert.rechnr == bill.rechnr), first=True)
+
+                if bill_alert:
+                    bill_list.last_date = heute
+
+            bill_line = get_cache (Bill_line, {"rechnr": [(eq, bill_list.rechnr)]})
+
+            if bill_line:
+                bill_list.first_date = bill_line.bill_datum
+                bill_list.betrag =  to_decimal(bill_line.betrag)
+
+                if bill.flag == 1 and bill_list.last_date == None:
+
+                    bill_line = db_session.query(Bill_line).filter(
+                             (Bill_line.rechnr == bill_list.rechnr)).order_by(Bill_line._recid.desc()).first()
+
+                    if bill_line:
+                        bill_list.last_date = bill_line.bill_datum
+
+            if bill_list.first_date == None:
+                bill_list_data.remove(bill_list)
+
+            elif bill_list.first_date > billdate:
+                bill_list_data.remove(bill_list)
+
+            elif bill_list.last_date < billdate:
+                bill_list_data.remove(bill_list)
 
     def create_umsatz():
 
@@ -429,20 +426,23 @@ def correct_guest_ledgerbl(fdate:date, tdate:date):
         create_bill_list()
         create_umsatz()
 
-        if outstanding != 0:
+        if (t_prevbal != 0 or t_debit != 0 or t_credit != 0):
 
             if billdate < curr_date:
 
                 uebertrag = get_cache (Uebertrag, {"datum": [(eq, billdate)]})
 
                 if uebertrag:
-                    pass
-                    uebertrag.betrag =  to_decimal(outstanding)
+
+                    if uebertrag.betrag != outstanding:
+                        pass
+                        uebertrag.betrag =  to_decimal(outstanding)
 
 
-                    pass
-                    pass
-                else:
+                        pass
+                        pass
+
+                elif outstanding != 0:
                     uebertrag = Uebertrag()
                     db_session.add(uebertrag)
 
@@ -450,6 +450,8 @@ def correct_guest_ledgerbl(fdate:date, tdate:date):
                     uebertrag.betrag =  to_decimal(outstanding)
 
 
+                    pass
+                    pass
         success_flag = True
 
     return generate_output()

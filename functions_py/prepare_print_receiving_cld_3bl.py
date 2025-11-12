@@ -30,7 +30,7 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
 
     str_list = None
 
-    str_list_data, Str_list = create_model("Str_list", {"artnr":string, "qty":Decimal, "warenwert":string, "munit":string, "fibu":string, "fibu_ze":string, "addvat_value":Decimal, "bezeich":string, "lscheinnr":string, "unit_price":Decimal, "disc_amount":Decimal, "addvat_amount":Decimal, "disc_amount2":Decimal, "vat_amount":Decimal})
+    str_list_data, Str_list = create_model("Str_list", {"artnr":string, "qty":Decimal, "warenwert":string, "munit":string, "dunit":string, "fibu":string, "fibu_ze":string, "addvat_value":Decimal, "bezeich":string, "lscheinnr":string, "unit_price":Decimal, "disc_amount":Decimal, "addvat_amount":Decimal, "disc_amount2":Decimal, "vat_amount":Decimal})
 
     db_session = local_storage.db_session
 
@@ -70,7 +70,7 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.lager_nr, l_op.anzahl, l_op.warenwert, l_op.einzelpreis, l_op.artnr, l_op._recid, l_op.stornogrund, l_op.docu_nr, l_artikel.masseinheit, l_artikel.bezeich, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.lager_nr, L_op.anzahl, L_op.warenwert, L_op.einzelpreis, L_op.artnr, L_op._recid, L_op.stornogrund, L_op.docu_nr, L_artikel.masseinheit, L_artikel.bezeich, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
+            for l_op.lscheinnr, l_op.lager_nr, l_op.anzahl, l_op.warenwert, l_op.einzelpreis, l_op.artnr, l_op._recid, l_op.stornogrund, l_op.docu_nr, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.bezeich, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.lager_nr, L_op.anzahl, L_op.warenwert, L_op.einzelpreis, L_op.artnr, L_op._recid, L_op.stornogrund, L_op.docu_nr, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.bezeich, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
                      (L_op.datum == to_date) & (L_op.lief_nr == lief_nr) & (L_op.op_art == 1) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0) & (L_op.lscheinnr == (docu_nr).lower())).order_by(L_op.pos, L_op.zeit, L_artikel.bezeich).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -89,10 +89,14 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                 tot_anz =  to_decimal(tot_anz) + to_decimal(l_op.anzahl)
 
                 if show_price:
-                    tot_amount =  to_decimal(tot_amount) + to_decimal(l_op.warenwert)
 
-                if show_price:
-                    unit_price =  to_decimal(l_op.einzelpreis)
+                    if l_artikel.masseinheit != l_artikel.traubensorte:
+                        unit_price = ( to_decimal(l_op.warenwert) / to_decimal(l_op.anzahl))
+                        unit_price = to_decimal(round(unit_price , 2))
+                        tot_amount =  to_decimal(tot_amount) + to_decimal((l_op.warenwert))
+                    else:
+                        unit_price =  to_decimal(l_op.einzelpreis)
+                        tot_amount =  to_decimal(tot_amount) + to_decimal(l_op.warenwert)
 
                 if l_op.stornogrund != "":
                     create_it = True
@@ -105,6 +109,10 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                     str_list.qty =  to_decimal(str_list.qty) + to_decimal(l_op.anzahl)
 
                     if show_price:
+
+                        if l_artikel.masseinheit != l_artikel.traubensorte:
+                            str_list.warenwert = to_string(to_decimal(tot_amount) , "->>>,>>>,>>>,>>9.99")
+                    else:
                         str_list.warenwert = to_string(to_decimal(str_list.warenwert) + l_op.warenwert, "->>>,>>>,>>>,>>9.99")
 
                     queasy = db_session.query(Queasy).filter(
@@ -123,6 +131,7 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                     str_list.artnr = to_string(l_op.artnr, ">>>>>>>>")
                     str_list.qty =  to_decimal(l_op.anzahl)
                     str_list.munit = l_artikel.masseinheit
+                    str_list.dunit = l_artikel.traubensorte
 
                     queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_op.lscheinnr)],"number1": [(eq, l_op.artnr)]})
 
@@ -148,7 +157,11 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                         str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
 
                     if show_price:
-                        str_list.warenwert = to_string(l_op.warenwert, "->>>,>>>,>>>,>>9.99")
+
+                        if l_artikel.masseinheit != l_artikel.traubensorte:
+                            str_list.warenwert = to_string(to_decimal(tot_amount) , "->>>,>>>,>>>,>>9.99")
+                        else:
+                            str_list.warenwert = to_string(to_decimal(str_list.warenwert) + l_op.warenwert, "->>>,>>>,>>>,>>9.99")
                     str_list.bezeich = l_artikel.bezeich
                     str_list.lscheinnr = l_op.lscheinnr
                     str_list.unit_price =  to_decimal(unit_price)
@@ -160,7 +173,7 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
             l_ophis_obj_list = {}
             l_ophis = L_ophis()
             l_artikel = L_artikel()
-            for l_ophis.lscheinnr, l_ophis.lager_nr, l_ophis.anzahl, l_ophis.warenwert, l_ophis.einzelpreis, l_ophis.artnr, l_ophis.fibukonto, l_ophis.docu_nr, l_ophis._recid, l_artikel.masseinheit, l_artikel.bezeich, l_artikel._recid in db_session.query(L_ophis.lscheinnr, L_ophis.lager_nr, L_ophis.anzahl, L_ophis.warenwert, L_ophis.einzelpreis, L_ophis.artnr, L_ophis.fibukonto, L_ophis.docu_nr, L_ophis._recid, L_artikel.masseinheit, L_artikel.bezeich, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).filter(
+            for l_ophis.lscheinnr, l_ophis.lager_nr, l_ophis.anzahl, l_ophis.warenwert, l_ophis.einzelpreis, l_ophis.artnr, l_ophis.fibukonto, l_ophis.docu_nr, l_ophis._recid, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.bezeich, l_artikel._recid in db_session.query(L_ophis.lscheinnr, L_ophis.lager_nr, L_ophis.anzahl, L_ophis.warenwert, L_ophis.einzelpreis, L_ophis.artnr, L_ophis.fibukonto, L_ophis.docu_nr, L_ophis._recid, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.bezeich, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).filter(
                      (L_ophis.datum == to_date) & (L_ophis.lief_nr == lief_nr) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lscheinnr == (docu_nr).lower()) & (not_(matches(L_ophis.fibukonto,"*CANCELLED*")))).order_by(L_artikel.bezeich).all():
                 if l_ophis_obj_list.get(l_ophis._recid):
                     continue
@@ -179,10 +192,14 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                 tot_anz =  to_decimal(tot_anz) + to_decimal(l_ophis.anzahl)
 
                 if show_price:
-                    tot_amount =  to_decimal(tot_amount) + to_decimal(l_ophis.warenwert)
 
-                if show_price:
-                    unit_price =  to_decimal(l_ophis.einzelpreis)
+                    if l_artikel.masseinheit != l_artikel.traubensorte:
+                        unit_price = ( to_decimal(l_ophis.warenwert) / to_decimal(l_ophis.anzahl))
+                        unit_price = to_decimal(round(unit_price , 2))
+                        tot_amount =  to_decimal(tot_amount) + to_decimal((l_ophis.warenwert))
+                    else:
+                        unit_price =  to_decimal(l_ophis.einzelpreis)
+                        tot_amount =  to_decimal(tot_amount) + to_decimal(l_ophis.warenwert)
 
                 str_list = query(str_list_data, filters=(lambda str_list: str_list.to_int(str_list.artnr) == l_ophis.artnr), first=True)
                 create_it = not None != str_list
@@ -192,7 +209,11 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                     str_list.qty =  to_decimal(str_list.qty) + to_decimal(l_ophis.anzahl)
 
                     if show_price:
-                        str_list.warenwert = str_list.warenwert + to_string(l_ophis.warenwert, "->>>,>>>,>>>,>>9.99")
+
+                        if l_artikel.masseinheit != l_artikel.traubensorte:
+                            str_list.warenwert = to_string(to_decimal(tot_amount) , "->>>,>>>,>>>,>>9.99")
+                    else:
+                        str_list.warenwert = to_string(to_decimal(str_list.warenwert) + l_ophis.warenwert, "->>>,>>>,>>>,>>9.99")
 
                     queasy = db_session.query(Queasy).filter(
                              (Queasy.key == 336) & (Queasy.char1 == l_ophis.lscheinnr) & (Queasy.number2 == l_ophis.artnr) & (to_decimal(Queasy.char2) == l_ophis.einzelpreis)).first()
@@ -210,6 +231,7 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                     str_list.artnr = to_string(l_ophis.artnr, ">>>>>>>>")
                     str_list.qty =  to_decimal(l_ophis.anzahl)
                     str_list.munit = l_artikel.masseinheit
+                    str_list.dunit = l_artikel.traubensorte
 
                     queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_ophis.lscheinnr)],"number1": [(eq, l_ophis.artnr)]})
 
@@ -217,7 +239,11 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                         str_list.addvat_value =  to_decimal(queasy.deci1)
 
                     if show_price:
-                        str_list.warenwert = to_string(l_ophis.warenwert, "->>>,>>>,>>>,>>9.99")
+
+                        if l_artikel.masseinheit != l_artikel.traubensorte:
+                            str_list.warenwert = to_string(to_decimal(tot_amount) , "->>>,>>>,>>>,>>9.99")
+                        else:
+                            str_list.warenwert = to_string(to_decimal(str_list.warenwert) + l_ophis.warenwert, "->>>,>>>,>>>,>>9.99")
                     str_list.bezeich = l_artikel.bezeich
                     str_list.lscheinnr = l_ophis.lscheinnr
                     str_list.unit_price =  to_decimal(unit_price)
@@ -271,7 +297,7 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
             l_op_obj_list = {}
             l_op = L_op()
             l_artikel = L_artikel()
-            for l_op.lscheinnr, l_op.lager_nr, l_op.anzahl, l_op.warenwert, l_op.einzelpreis, l_op.artnr, l_op._recid, l_op.stornogrund, l_op.docu_nr, l_artikel.masseinheit, l_artikel.bezeich, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.lager_nr, L_op.anzahl, L_op.warenwert, L_op.einzelpreis, L_op.artnr, L_op._recid, L_op.stornogrund, L_op.docu_nr, L_artikel.masseinheit, L_artikel.bezeich, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
+            for l_op.lscheinnr, l_op.lager_nr, l_op.anzahl, l_op.warenwert, l_op.einzelpreis, l_op.artnr, l_op._recid, l_op.stornogrund, l_op.docu_nr, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.bezeich, l_artikel._recid in db_session.query(L_op.lscheinnr, L_op.lager_nr, L_op.anzahl, L_op.warenwert, L_op.einzelpreis, L_op.artnr, L_op._recid, L_op.stornogrund, L_op.docu_nr, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.bezeich, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_op.artnr)).filter(
                      (L_op.datum == to_date) & (L_op.lief_nr == lief_nr) & (L_op.op_art == 1) & (L_op.loeschflag <= 1) & (L_op.anzahl != 0) & (L_op.lager_nr == store) & (L_op.lscheinnr == (docu_nr).lower())).order_by(L_op.pos, L_op.zeit, L_artikel.bezeich).all():
                 if l_op_obj_list.get(l_op._recid):
                     continue
@@ -290,10 +316,14 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                 tot_anz =  to_decimal(tot_anz) + to_decimal(l_op.anzahl)
 
                 if show_price:
-                    tot_amount =  to_decimal(tot_amount) + to_decimal(l_op.warenwert)
 
-                if show_price:
-                    unit_price =  to_decimal(l_op.einzelpreis)
+                    if l_artikel.masseinheit != l_artikel.traubensorte:
+                        unit_price =  to_decimal(l_op.warenwert) / to_decimal(l_op.anzahl)
+                        unit_price = to_decimal(round(unit_price , 2))
+                        tot_amount =  to_decimal(tot_amount) + to_decimal(l_op.warenwert)
+                    else:
+                        unit_price =  to_decimal(l_op.einzelpreis)
+                        tot_amount =  to_decimal(tot_amount) + to_decimal(l_op.warenwert)
 
                 if l_op.stornogrund != "":
                     create_it = True
@@ -306,6 +336,10 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                     str_list.qty =  to_decimal(str_list.qty) + to_decimal(l_op.anzahl)
 
                     if show_price:
+
+                        if l_artikel.masseinheit != l_artikel.traubensorte:
+                            str_list.warenwert = to_string(to_decimal(tot_amount) , "->>>,>>>,>>>,>>9.99")
+                    else:
                         str_list.warenwert = to_string(to_decimal(str_list.warenwert) + l_op.warenwert, "->>>,>>>,>>>,>>9.99")
 
                     queasy = db_session.query(Queasy).filter(
@@ -324,6 +358,7 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                     str_list.artnr = to_string(l_op.artnr, ">>>>>>>>")
                     str_list.qty =  to_decimal(l_op.anzahl)
                     str_list.munit = l_artikel.masseinheit
+                    str_list.dunit = l_artikel.traubensorte
 
                     queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_op.lscheinnr)],"number1": [(eq, l_op.artnr)]})
 
@@ -339,7 +374,11 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                         str_list.addvat_amount =  to_decimal(to_decimal(queasy.char3) )
 
                     if show_price:
-                        str_list.warenwert = to_string(l_op.warenwert, "->>>,>>>,>>>,>>9.99")
+
+                        if l_artikel.masseinheit != l_artikel.traubensorte:
+                            str_list.warenwert = to_string(to_decimal(tot_amount) , "->>>,>>>,>>>,>>9.99")
+                        else:
+                            str_list.warenwert = to_string(to_decimal(str_list.warenwert) + l_op.warenwert, "->>>,>>>,>>>,>>9.99")
                     str_list.bezeich = l_artikel.bezeich
                     str_list.lscheinnr = l_op.lscheinnr
                     str_list.unit_price =  to_decimal(unit_price)
@@ -351,7 +390,7 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
             l_ophis_obj_list = {}
             l_ophis = L_ophis()
             l_artikel = L_artikel()
-            for l_ophis.lscheinnr, l_ophis.lager_nr, l_ophis.anzahl, l_ophis.warenwert, l_ophis.einzelpreis, l_ophis.artnr, l_ophis.fibukonto, l_ophis.docu_nr, l_ophis._recid, l_artikel.masseinheit, l_artikel.bezeich, l_artikel._recid in db_session.query(L_ophis.lscheinnr, L_ophis.lager_nr, L_ophis.anzahl, L_ophis.warenwert, L_ophis.einzelpreis, L_ophis.artnr, L_ophis.fibukonto, L_ophis.docu_nr, L_ophis._recid, L_artikel.masseinheit, L_artikel.bezeich, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).filter(
+            for l_ophis.lscheinnr, l_ophis.lager_nr, l_ophis.anzahl, l_ophis.warenwert, l_ophis.einzelpreis, l_ophis.artnr, l_ophis.fibukonto, l_ophis.docu_nr, l_ophis._recid, l_artikel.traubensorte, l_artikel.masseinheit, l_artikel.bezeich, l_artikel._recid in db_session.query(L_ophis.lscheinnr, L_ophis.lager_nr, L_ophis.anzahl, L_ophis.warenwert, L_ophis.einzelpreis, L_ophis.artnr, L_ophis.fibukonto, L_ophis.docu_nr, L_ophis._recid, L_artikel.traubensorte, L_artikel.masseinheit, L_artikel.bezeich, L_artikel._recid).join(L_artikel,(L_artikel.artnr == L_ophis.artnr)).filter(
                      (L_ophis.datum == to_date) & (L_ophis.lief_nr == lief_nr) & (L_ophis.op_art == 1) & (L_ophis.anzahl != 0) & (L_ophis.lscheinnr == (docu_nr).lower()) & (not_(matches(L_ophis.fibukonto,"*CANCELLED*")))).order_by(L_artikel.bezeich).all():
                 if l_ophis_obj_list.get(l_ophis._recid):
                     continue
@@ -370,10 +409,14 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                 tot_anz =  to_decimal(tot_anz) + to_decimal(l_ophis.anzahl)
 
                 if show_price:
-                    tot_amount =  to_decimal(tot_amount) + to_decimal(l_ophis.warenwert)
 
-                if show_price:
-                    unit_price =  to_decimal(l_ophis.einzelpreis)
+                    if l_artikel.masseinheit != l_artikel.traubensorte:
+                        unit_price = ( to_decimal(l_ophis.warenwert) / to_decimal(l_ophis.anzahl))
+                        unit_price = to_decimal(round(unit_price , 2))
+                        tot_amount =  to_decimal(tot_amount) + to_decimal(l_ophis.warenwert)
+                    else:
+                        unit_price =  to_decimal(l_ophis.einzelpreis)
+                        tot_amount =  to_decimal(tot_amount) + to_decimal(l_ophis.warenwert)
 
                 str_list = query(str_list_data, filters=(lambda str_list: str_list.to_int(str_list.artnr) == l_ophis.artnr), first=True)
                 create_it = not None != str_list
@@ -382,7 +425,11 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                     str_list.qty =  to_decimal(str_list.qty) + to_decimal(l_ophis.anzahl)
 
                     if show_price:
-                        str_list.warenwert = str_list.warenwert + to_string(l_ophis.warenwert, "->>>,>>>,>>>,>>9.99")
+
+                        if l_artikel.masseinheit != l_artikel.traubensorte:
+                            str_list.warenwert = to_string(to_decimal(tot_amount) , "->>>,>>>,>>>,>>9.99")
+                    else:
+                        str_list.warenwert = to_string(to_decimal(str_list.warenwert) + l_ophis.warenwert, "->>>,>>>,>>>,>>9.99")
 
                     queasy = db_session.query(Queasy).filter(
                              (Queasy.key == 336) & (Queasy.char1 == l_ophis.lscheinnr) & (Queasy.number2 == l_ophis.artnr) & (to_decimal(Queasy.char2) == l_ophis.einzelpreis)).first()
@@ -397,17 +444,22 @@ def prepare_print_receiving_cld_3bl(pvilanguage:int, docu_nr:string, user_init:s
                     str_list = Str_list()
                     str_list_data.append(str_list)
 
-                    str_list.artnr = to_string(l_op.artnr, ">>>>>>>>")
+                    str_list.artnr = to_string(l_ophis.artnr, ">>>>>>>>")
                     str_list.qty =  to_decimal(l_ophis.anzahl)
                     str_list.munit = l_artikel.masseinheit
+                    str_list.dunit = l_artikel.traubensorte
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_op.lscheinnr)],"number1": [(eq, l_op.artnr)]})
+                    queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_ophis.lscheinnr)],"number1": [(eq, l_op.artnr)]})
 
                     if queasy:
                         str_list.addvat_value =  to_decimal(queasy.deci1)
 
                     if show_price:
-                        str_list.warenwert = to_string(l_ophis.warenwert, "->>>,>>>,>>>,>>9.99")
+
+                        if l_artikel.masseinheit != l_artikel.traubensorte:
+                            str_list.warenwert = to_string(to_decimal(tot_amount) , "->>>,>>>,>>>,>>9.99")
+                        else:
+                            str_list.warenwert = to_string(to_decimal(str_list.warenwert) + l_ophis.warenwert, "->>>,>>>,>>>,>>9.99")
                     str_list.bezeich = l_artikel.bezeich
                     str_list.lscheinnr = l_ophis.lscheinnr
                     str_list.unit_price =  to_decimal(unit_price)

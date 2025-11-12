@@ -260,7 +260,7 @@ def fo_invoice_open_billbl(bil_flag:int, bil_recid:int, room:string, vipflag:boo
 
     if res_line and res_line.code != "" and bill.flag == 0:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
+        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
 
         if queasy and queasy.logi1:
             queasy_char1 = queasy.char1
