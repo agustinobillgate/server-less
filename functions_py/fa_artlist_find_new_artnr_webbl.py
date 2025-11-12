@@ -2,6 +2,9 @@
 #---------------------------------------------
 # Rd, 17-July-25
 # replace TRUE -> True
+
+# Rulita, 12-11-2025 | 2A3C8E
+# - Update release program  
 #---------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -15,6 +18,8 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
     l_end:int = 0
     l_zw:int = 0
     ct:int = 0
+    counter:int = 0
+    counter2:int = 0
     mathis = htparam = fa_artikel = None
 
     buff_mathis = b_mathis = None
@@ -26,7 +31,7 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal new_artnr, l_end, l_zw, ct, mathis, htparam, fa_artikel
+        nonlocal new_artnr, l_end, l_zw, ct, counter, counter2, mathis, htparam, fa_artikel
         nonlocal endkum, zwkum
         nonlocal buff_mathis, b_mathis
 
@@ -52,6 +57,10 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
                     if length(trim(mathis.asset)) == 9:
                         new_artnr = to_string(endkum, "99") + to_string(zwkum, "999") + to_string(to_int(substring(mathis.asset, 5)) + 1 , "9999")
                         while True:
+                            counter2 = counter2 + 1
+
+                            if counter2 > 100:
+                                break
 
                             buff_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
@@ -60,6 +69,10 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
                             else:
                                 new_artnr = to_string(endkum, "999") + to_string(zwkum, "999") + to_string(to_int(substring(new_artnr, 5)) , "999999")
                                 while True:
+                                    counter = counter + 1
+
+                                    if counter > 100:
+                                        break
 
                                     b_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
@@ -76,6 +89,10 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
                         if length(trim(new_artnr)) != length(trim(mathis.asset)) or matches(new_artnr,r"*?*"):
                             new_artnr = to_string(endkum, "999") + to_string(zwkum, "999") + to_string(to_int(substring(mathis.asset, 6)) + 1 , "999999")
                         while True:
+                            counter2 = counter2 + 1
+
+                            if counter2 > 100:
+                                break
 
                             buff_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
@@ -88,6 +105,10 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
                             else:
                                 new_artnr = to_string(endkum, "999") + to_string(zwkum, "999") + to_string(to_int(substring(new_artnr, 6)) , "999999")
                                 while True:
+                                    counter = counter + 1
+
+                                    if counter > 100:
+                                        break
 
                                     b_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
@@ -111,6 +132,10 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
                     if length(trim(mathis.asset)) == 9:
                         new_artnr = to_string(endkum, "99") + to_string(zwkum, "999") + to_string(to_int(substring(mathis.asset, 5)) + 1 , "9999")
                         while True:
+                            counter = counter + 1
+
+                            if counter > 100:
+                                break
 
                             buff_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
@@ -124,6 +149,10 @@ def fa_artlist_find_new_artnr_webbl(endkum:int, zwkum:int):
                     else:
                         new_artnr = to_string(endkum, "999") + to_string(zwkum, "999") + to_string(to_int(substring(mathis.asset, 6)) + 1 , "9999")
                         while True:
+                            counter = counter + 1
+
+                            if counter > 100:
+                                break
 
                             buff_mathis = get_cache (Mathis, {"asset": [(eq, trim(new_artnr))]})
 
