@@ -2,6 +2,9 @@
 #------------------------------------------
 # Rd, 28/10/2025
 # strip issues with res_dynarate.rmcat and arrangement.argt, memo_zinr
+
+# Rulita, 12-11-2025
+# Fixing str table guest 
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -1238,9 +1241,12 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
     if res_mode.lower()  != ("split").lower() :
         guest = get_cache (Guest, {"gastnr": [(eq, f_resline.guestnr)]})
         if guest:
-            f_resline.billname = guest.name + ", " + guest.vorname1 +\
-                    guest.anredefirma +\
-                    " " + guest.anrede1
+
+            # Rulita, 12-11-2025
+            # Fixing to_string table guest 
+            f_resline.billname = str(guest.name) + ", " + str(guest.vorname1) +\
+                    str(guest.anredefirma) +\
+                    " " + str(guest.anrede1)
             f_resline.billadress = guest.adresse1
             f_resline.billcity = guest.wohnort + " " + guest.plz
 
