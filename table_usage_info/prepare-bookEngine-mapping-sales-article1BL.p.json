@@ -1,0 +1,23 @@
+{
+    "Artikel": {
+        "read": [
+            "artnr",
+            "bezeich",
+            "departement",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "char2",
+            "key",
+            "number1",
+            "number2",
+            "number3",
+            "char1",
+            "_recid"
+        ],
+        "write": []
+    }
+}

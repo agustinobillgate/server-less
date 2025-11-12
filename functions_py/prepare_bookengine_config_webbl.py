@@ -140,43 +140,43 @@ def prepare_bookengine_config_webbl(bookengid:int):
         for i in range(1,num_entries(queasy.char1, ";")  + 1) :
             str = entry(i - 1, queasy.char1, ";")
 
-            if substring(str, 0, 11) == ("$autostart$").lower() :
+            if substring(str, 0, 11) == ("$autostart$") :
                 t_list.autostart = logical(substring(str, 11))
 
-            elif substring(str, 0, 8) == ("$period$").lower() :
+            elif substring(str, 0, 8) == ("$period$") :
                 t_list.period = to_int(substring(str, 8))
 
-            elif substring(str, 0, 7) == ("$delay$").lower() :
+            elif substring(str, 0, 7) == ("$delay$") :
                 t_list.delay = to_int(substring(str, 7))
 
-            elif substring(str, 0, 10) == ("$liveflag$").lower() :
+            elif substring(str, 0, 10) == ("$liveflag$") :
                 t_list.liveflag = logical(substring(str, 10))
 
-            elif substring(str, 0, 9) == ("$defcurr$").lower() :
+            elif substring(str, 0, 9) == ("$defcurr$") :
                 t_list.defcurr = substring(str, 9)
 
-            elif substring(str, 0, 10) == ("$workpath$").lower() :
+            elif substring(str, 0, 10) == ("$workpath$") :
                 t_list.workpath = substring(str, 10)
 
-            elif substring(str, 0, 10) == ("$progname$").lower() :
+            elif substring(str, 0, 10) == ("$progname$") :
                 temp_str = substring(str, 10)
 
-            elif substring(str, 0, 9) == ("$htlcode$").lower() :
+            elif substring(str, 0, 9) == ("$htlcode$") :
                 t_list.hotelcode = substring(str, 9)
 
-            elif substring(str, 0, 10) == ("$username$").lower() :
+            elif substring(str, 0, 10) == ("$username$") :
                 t_list.username = substring(str, 10)
 
-            elif substring(str, 0, 10) == ("$password$").lower() :
+            elif substring(str, 0, 10) == ("$password$") :
                 t_list.password = substring(str, 10)
 
-            elif substring(str, 0, 10) == ("$pushrate$").lower() :
+            elif substring(str, 0, 10) == ("$pushrate$") :
                 t_list.pushrateflag = logical(substring(str, 10))
 
-            elif substring(str, 0, 10) == ("$pullbook$").lower() :
+            elif substring(str, 0, 10) == ("$pullbook$") :
                 t_list.pullbookflag = logical(substring(str, 10))
 
-            elif substring(str, 0, 11) == ("$pushavail$").lower() :
+            elif substring(str, 0, 11) == ("$pushavail$") :
                 t_list.pushavailflag = logical(substring(str, 11))
 
     for waehrung in db_session.query(Waehrung).filter(

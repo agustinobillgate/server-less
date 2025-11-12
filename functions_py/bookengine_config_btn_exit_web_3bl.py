@@ -7,7 +7,7 @@
 
 from functions.additional_functions import *
 from decimal import Decimal
-from models import Queasy, Bediener, Res_history
+from models import Queasy, Bediener, Res_history, Guest_pr
 
 def bookengine_config_btn_exit_web_3bl(bookengid:int, autostart:bool, period:int, delay:int, hotelcode:string, username:string, password:string, liveflag:bool, defcurr:string, pushrateflag:bool, pullbookflag:bool, pushavailflag:bool, workpath:string, progavail:string, user_init:string, pushratebypax:bool, uppercasename:bool, delayrate:int, delaypull:int, delayavail:int, pushall:bool, re_calculate:bool, restriction:bool, allotment:bool, pax:int, bedsetup:bool, pushbookflag:bool, delaypushbook:int, vcwsagent:string, vcwsagent2:string, vcwsagent3:string, vcwsagent4:string, vcwsagent5:string, vcwebhost:string, vcwebport:string, email:string, dyna_code:string, incl_tentative:bool):
 
@@ -25,7 +25,8 @@ def bookengine_config_btn_exit_web_3bl(bookengid:int, autostart:bool, period:int
     t_list = nameqsy = bqueasy = None
 
     t_list_data, T_list = create_model("T_list", {"autostart":bool, "period":int, "delay":int, "hotelcode":string, "username":string, "password":string, "liveflag":bool, "defcurr":string, "pushrateflag":bool, "pullbookflag":bool, "pushavailflag":bool, "workpath":string, "progavail":string, "prog_avail_update":string, "dyna_code":string, "pushratebypax":bool, "uppercasename":bool, "delayrate":int, "delaypull":int, "delayavail":int, "pushall":bool, "re_calculate":bool, "restriction":bool, "allotment":bool, "pax":int, "bedsetup":bool, "pushbookflag":bool, "delaypushbook":int, "vcwsagent":string, "vcwsagent2":string, "vcwsagent3":string, "vcwsagent4":string, "vcwebhost":string, "vcwebport":string, "email":string, "vcwsagent5":string, "incl_tentative":bool})
-
+    t_push_list_data, T_push_list = create_model("T_push_list", {"rcodevhp":string, "rcodebe":string, "rmtypevhp":string, "rmtypebe":string, "argtvhp":string, "flag":int})
+    
     Nameqsy = create_buffer("Nameqsy",Queasy)
     Bqueasy = create_buffer("Bqueasy",Queasy)
 
@@ -403,4 +404,43 @@ def bookengine_config_btn_exit_web_3bl(bookengid:int, autostart:bool, period:int
             res_history.aenderung = chr_unicode(40) + be_name + chr_unicode(41) + " New Config Has Been Created"
             pass
 
+    #-----------------------------------------------
+    # Rd, 12/11/2025: insert to TPushList
+    # tambahan CM, queasy:161
+    # temp-table di add queasy 161
+    gastnrbe:int = 0
+    queasy = get_cache (Queasy, {"key": [(eq, 159)],"number1": [(eq, bookengid)]})
+
+    if queasy:
+        gastnrbe = queasy.number2
+    
+        queasy_obj_list = {}
+    for queasy, guest_pr in db_session.query(Queasy, Guest_pr) \
+            .join(Guest_pr,(Guest_pr.gastnr == gastnrbe) & 
+                  (Guest_pr.code == entry(0, Queasy.char1, ";")))\
+            .filter(
+                    (Queasy.key == 161) & 
+                    (Queasy.number1 == bookengid)
+                    ).order_by(Queasy._recid).all():
+        
+        if queasy_obj_list.get(queasy._recid):
+            continue
+        else:
+            queasy_obj_list[queasy._recid] = True
+
+        if entry(1, queasy.char1, ";") =="":
+            continue
+        if entry(3, queasy.char1, ";") =="":
+            continue
+        
+        t_push_list = T_push_list()
+        t_push_list_data.append(t_push_list)
+
+        t_push_list.rcodevhp = entry(0, queasy.char1, ";")
+        t_push_list.rcodebe = entry(1, queasy.char1, ";")
+        t_push_list.rmtypevhp = entry(2, queasy.char1, ";")
+        t_push_list.rmtypebe = entry(3, queasy.char1, ";")
+        t_push_list.argtvhp = entry(4, queasy.char1, ";")
+
+    db_session.commit()
     return generate_output()

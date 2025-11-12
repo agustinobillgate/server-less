@@ -5,6 +5,9 @@
 
 # Rulita, 12-11-2025
 # Fixing str table guest 
+
+# yusufwijasena, 12/11/2025
+# fixing output as string to f_resline.billname
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -1244,9 +1247,12 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
 
             # Rulita, 12-11-2025
             # Fixing to_string table guest 
-            f_resline.billname = str(guest.name) + ", " + str(guest.vorname1) +\
-                    str(guest.anredefirma) +\
-                    " " + str(guest.anrede1)
+            # f_resline.billname = str(guest.name) + ", " + str(guest.vorname1) +\
+            #         str(guest.anredefirma) +\
+            #         " " + str(guest.anrede1)
+            # yusufwijasena, 12/11/2025
+            # use f"string" to display f_resline.billname
+            f_resline.billname = f"{guest.name}, {guest.vorname1}{guest.anredefirma} {guest.anrede1}"
             f_resline.billadress = guest.adresse1
             f_resline.billcity = guest.wohnort + " " + guest.plz
 

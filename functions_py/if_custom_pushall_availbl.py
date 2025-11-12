@@ -1,9 +1,9 @@
 #using conversion tools version: 1.0.0.117
 
 #-----------------------------------------
-# Rd, 17-July-25, ()"*").lower() -> "*"
+# Rd, 17-July-25, ()"*") -> "*"
+# 12/11/2025 -> .lower() dihapus
 #-----------------------------------------
-
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -155,7 +155,7 @@ def if_custom_pushall_availbl(currcode:string, from_date:date, to_date:date, bec
                                 for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
                                     iftask = entry(i - 1, res_line.zimmer_wunsch, ";")
 
-                                    if substring(iftask, 0, 10) == ("$OrigCode$").lower() :
+                                    if substring(iftask, 0, 10) == ("$OrigCode$") :
                                         rline_origcode = substring(iftask, 10)
                                         break
 
@@ -185,7 +185,7 @@ def if_custom_pushall_availbl(currcode:string, from_date:date, to_date:date, bec
                                 for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
                                     iftask = entry(i - 1, res_line.zimmer_wunsch, ";")
 
-                                    if substring(iftask, 0, 10) == ("$OrigCode$").lower() :
+                                    if substring(iftask, 0, 10) == ("$OrigCode$") :
                                         rline_origcode = substring(iftask, 10)
                                         break
 
@@ -230,7 +230,7 @@ def if_custom_pushall_availbl(currcode:string, from_date:date, to_date:date, bec
         iftask:string = ""
         zikatnr:int = 0
 
-        temp_list = query(temp_list_data, filters=(lambda temp_list: temp_list.rmtype.lower()  == (currcode).lower()), first=True)
+        temp_list = query(temp_list_data, filters=(lambda temp_list: temp_list.rmtype  == (currcode)), first=True)
 
         if temp_list:
             zikatnr = temp_list.zikatnr
@@ -314,7 +314,7 @@ def if_custom_pushall_availbl(currcode:string, from_date:date, to_date:date, bec
                             for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
                                 iftask = entry(i - 1, res_line.zimmer_wunsch, ";")
 
-                                if substring(iftask, 0, 10) == ("$OrigCode$").lower() :
+                                if substring(iftask, 0, 10) == ("$OrigCode$") :
                                     rline_origcode = substring(iftask, 10)
                                     break
 
@@ -344,7 +344,7 @@ def if_custom_pushall_availbl(currcode:string, from_date:date, to_date:date, bec
                             for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
                                 iftask = entry(i - 1, res_line.zimmer_wunsch, ";")
 
-                                if substring(iftask, 0, 10) == ("$OrigCode$").lower() :
+                                if substring(iftask, 0, 10) == ("$OrigCode$") :
                                     rline_origcode = substring(iftask, 10)
                                     break
 
@@ -623,21 +623,28 @@ def if_custom_pushall_availbl(currcode:string, from_date:date, to_date:date, bec
     if temp_list:
         all_room = False
 
-    queasy = get_cache (Queasy, {"key": [(eq, 159)],"number1": [(eq, becode)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 159)],"number1": [(eq, becode)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 159) & (Queasy.number1 == becode)).first()
 
     if queasy:
 
-        guest = get_cache (Guest, {"gastnr": [(eq, queasy.number2)]})
+        # guest = get_cache (Guest, {"gastnr": [(eq, queasy.number2)]})
+        guest = db_session.query(Guest).filter(
+                 (Guest.gastnr == queasy.number2)).first()
+        if guest:
+            # guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, guest.gastnr)]})
+            guest_pr = db_session.query(Guest_pr).filter(
+                     (Guest_pr.gastnr == guest.gastnr)).first()
 
-        guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, guest.gastnr)]})
+            if guest_pr:
+                cm_gastno = guest.gastnr
+            else:
+                return generate_output()
 
-        if guest_pr:
-            cm_gastno = guest.gastnr
-        else:
-
-            return generate_output()
-
-    queasy = get_cache (Queasy, {"key": [(eq, 152)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 152)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 152)).first()
 
     if queasy:
         cat_flag = True
@@ -685,8 +692,8 @@ def if_custom_pushall_availbl(currcode:string, from_date:date, to_date:date, bec
             r_list.rcode = guest_pr.code
     count_rmcateg()
 
-    # if currcode.lower()  == ("*").lower() :
-    if currcode.lower()  == "*" :
+    # if currcode  == ("*") :
+    if currcode  == "*" :
         custom_pushall_avail()
     else:
         rmtype_pushall_avail()
