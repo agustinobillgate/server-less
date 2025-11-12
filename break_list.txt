@@ -1,4 +1,0 @@
-if-vhp-bookeng-push-availbl.p
-if-vhp-bookeng-push-availxbl.p
-if-vhp-bookeng-push-ratebl.p
-if-vhp-bookeng-push-ratexbl.p
