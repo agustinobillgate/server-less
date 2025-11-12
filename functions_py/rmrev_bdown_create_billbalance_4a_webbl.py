@@ -150,8 +150,8 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
         it_exist:bool = False
         ebdisc_flag:bool = False
         kbdisc_flag:bool = False
-        bill_date:date = None
-        argtnr:string = ""
+        bill_date:date = date(1,1,1)
+        argtnr:int = None
         rate_found:bool = False
         restricted_disc:bool = False
         kback_flag:bool = False
@@ -404,6 +404,9 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
 
                                 if substring(s, 0, 5) == ("ChAge") :
                                     cl_list.age2 = substring(s, 5)
+
+                        if cl_list.age2.strip() == "":
+                            cl_list.age2 = "0"
 
                         if matches(res_line.zimmer_wunsch,r"*$CODE$*"):
                             s = substring(res_line.zimmer_wunsch, (get_index(res_line.zimmer_wunsch, "$CODE$") + 6) - 1)
@@ -1077,6 +1080,9 @@ def rmrev_bdown_create_billbalance_4a_webbl(exc_taxserv:bool, pvilanguage:int, n
 
                                 if substring(s, 0, 5) == ("ChAge") :
                                     cl_list.age2 = substring(s, 5)
+
+                        if cl_list.age2.strip() == "":
+                            cl_list.age2 = "0"
 
                         if matches(res_line.zimmer_wunsch,r"*$CODE$*"):
                             s = substring(res_line.zimmer_wunsch, (get_index(res_line.zimmer_wunsch, "$CODE$") + 6) - 1)
