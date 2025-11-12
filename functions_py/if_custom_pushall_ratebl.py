@@ -12,6 +12,7 @@ from models import Queasy, Kontline, Ratecode, Zimkateg, Waehrung, Arrangement, 
 temp_list_data, Temp_list = create_model("Temp_list", {"rcode":string, "rmtype":string, "zikatnr":int})
 
 def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string, fdate:date, tdate:date, adult:int, child:int, becode:int, temp_list_data:[Temp_list]):
+    
 
     prepare_cache ([Queasy, Kontline, Htparam, Guest, Guest_pr, Artikel, Res_line, Zimmer, Reservation])
 
@@ -85,6 +86,8 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
 
 
     db_session = local_storage.db_session
+    curr_code = currcode.strip()
+    inp_str = inp_str.strip()
 
     def generate_output():
         nonlocal done, curr_scode, rline_origcode, iftask, def_rate, mestoken, mesvalue, end_date, start_date, date_110, curr_date, ci_date, ankunft, cat_flag, pushpax, do_it, incl_tentative, tax_included, global_occ, zikatnr, cm_gastno, i, w_day, wd_array, maxroom, tokcounter, counter, occ_room, serv, vat, rmrate, scode, tmp_date, loopi, n, m, loopj, k, j, queasy, kontline, ratecode, zimkateg, waehrung, arrangement, htparam, guest, guest_pr, artikel, res_line, zimmer, reservation, segment
@@ -355,7 +358,7 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
             if t_zimkateg:
                 temp_list.zikatnr = t_zimkateg.zikatnr
 
-    if currcode.lower()  == ("*").lower() :
+    if currcode  == ("*") :
 
         queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(ge, fdate),(le, tdate)],"betriebsnr": [(eq, becode)]})
         while None != queasy:
@@ -369,7 +372,7 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
                      (Queasy.key == 171) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate) & (Queasy.betriebsnr == becode) & (Queasy._recid > curr_recid)).first()
     else:
 
-        temp_list = query(temp_list_data, filters=(lambda temp_list: temp_list.rmtype.lower()  == (currcode).lower()), first=True)
+        temp_list = query(temp_list_data, filters=(lambda temp_list: temp_list.rmtype  == (currcode)), first=True)
 
         if temp_list:
             zikatnr = temp_list.zikatnr
@@ -516,12 +519,12 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 439)]})
 
-    dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.rmtype.lower()  == ("*").lower()), first=True)
+    dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.rmtype  == ("*")), first=True)
     global_occ = None != dynarate_list and htparam.finteger == 1
 
     if global_occ:
 
-        for dynarate_list in query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.rmtype.lower()  != ("*").lower())):
+        for dynarate_list in query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.rmtype  != ("*"))):
             dynarate_list_data.remove(dynarate_list)
 
     else:
@@ -732,7 +735,7 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
 
                     if pushpax:
 
-                        for bratecode in query(bratecode_data, filters=(lambda bratecode: bratecode.code.lower()  == (curr_scode).lower()  and bratecode.zikatnr == t_zimkateg.zikatnr and bratecode.startperiode <= t_qsy171.date1 and bratecode.endperiode >= t_qsy171.date1 and bratecode.erwachs > 0), sort_by=[("erwachs",True)]):
+                        for bratecode in query(bratecode_data, filters=(lambda bratecode: bratecode.code  == (curr_scode)  and bratecode.zikatnr == t_zimkateg.zikatnr and bratecode.startperiode <= t_qsy171.date1 and bratecode.endperiode >= t_qsy171.date1 and bratecode.erwachs > 0), sort_by=[("erwachs",True)]):
                             m = bratecode.erwachs
                             j = bratecode.kind1
 
@@ -740,11 +743,11 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
                             break
                     for loopi in range(n,m + 1) :
 
-                        bratecode = query(bratecode_data, filters=(lambda bratecode: bratecode.code.lower()  == (curr_scode).lower()  and bratecode.zikatnr == t_zimkateg.zikatnr and bratecode.erwachs == loopi and bratecode.kind1 == child and bratecode.startperiode <= t_qsy171.date1 and bratecode.endperiode >= t_qsy171.date1 and bratecode.wday == w_day), first=True)
+                        bratecode = query(bratecode_data, filters=(lambda bratecode: bratecode.code  == (curr_scode)  and bratecode.zikatnr == t_zimkateg.zikatnr and bratecode.erwachs == loopi and bratecode.kind1 == child and bratecode.startperiode <= t_qsy171.date1 and bratecode.endperiode >= t_qsy171.date1 and bratecode.wday == w_day), first=True)
 
                         if not bratecode:
 
-                            bratecode = query(bratecode_data, filters=(lambda bratecode: bratecode.code.lower()  == (curr_scode).lower()  and bratecode.zikatnr == t_zimkateg.zikatnr and bratecode.erwachs == loopi and bratecode.kind1 == child and bratecode.startperiode <= t_qsy171.date1 and bratecode.endperiode >= t_qsy171.date1 and bratecode.wday == 0), first=True)
+                            bratecode = query(bratecode_data, filters=(lambda bratecode: bratecode.code  == (curr_scode)  and bratecode.zikatnr == t_zimkateg.zikatnr and bratecode.erwachs == loopi and bratecode.kind1 == child and bratecode.startperiode <= t_qsy171.date1 and bratecode.endperiode >= t_qsy171.date1 and bratecode.wday == 0), first=True)
 
                         if bratecode:
 
