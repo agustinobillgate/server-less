@@ -2,7 +2,7 @@
 
 #------------------------------------------
 # Rd, 12/11/2025
-# 
+# tambah strip payload,
 #------------------------------------------
 
 from functions.additional_functions import *
