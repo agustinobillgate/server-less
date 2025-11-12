@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 #-----------------------------------------
 # Rd, 30/7/2025
 # gitlab: 
@@ -211,7 +211,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
             l_oh = L_bestand()
             l_artikel = L_artikel()
 
-            for l_bestand.anz_anf_best, l_bestand.anz_eingang, l_bestand.anz_ausgang, l_bestand.val_anf_best, l_bestand._recid, l_oh.anz_anf_best, l_oh.anz_eingang, l_oh.anz_ausgang, l_oh.val_anf_best, l_oh.wert_ausgang, l_oh.wert_eingang, l_oh._recid, l_artikel.artnr, l_artikel.endkum, l_artikel._recid in db_session.query(L_bestand.anz_anf_best, L_bestand.anz_eingang, L_bestand.anz_ausgang, L_bestand.val_anf_best, L_bestand._recid, L_oh.anz_anf_best, L_oh.anz_eingang, L_oh.anz_ausgang, L_oh.val_anf_best, L_oh.wert_ausgang, L_oh.wert_eingang, L_oh._recid, L_artikel.artnr, L_artikel.endkum, L_artikel._recid).join(L_oh,(L_oh.artnr == L_bestand.artnr) & (L_oh.lager_nr == 0)).join(L_artikel,(L_artikel.artnr == L_bestand.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).filter((L_bestand.lager_nr == l_lager.lager_nr)).order_by(L_bestand._recid).all():
+            for l_bestand.anz_anf_best, l_bestand.anz_eingang, l_bestand.anz_ausgang, l_bestand.val_anf_best, l_bestand._recid, l_oh.anz_anf_best, l_oh.anz_eingang, l_oh.anz_ausgang, l_oh.val_anf_best, l_oh.wert_ausgang, l_oh.wert_eingang, l_oh._recid, l_artikel.artnr, l_artikel.ek_aktuell, l_artikel.vk_preis, l_artikel.endkum, l_artikel._recid in db_session.query(L_bestand.anz_anf_best, L_bestand.anz_eingang, L_bestand.anz_ausgang, L_bestand.val_anf_best, L_bestand._recid, L_oh.anz_anf_best, L_oh.anz_eingang, L_oh.anz_ausgang, L_oh.val_anf_best, L_oh.wert_ausgang, L_oh.wert_eingang, L_oh._recid, L_artikel.artnr, L_artikel.ek_aktuell, L_artikel.vk_preis, L_artikel.endkum, L_artikel._recid).join(L_oh,(L_oh.artnr == L_bestand.artnr) & (L_oh.lager_nr == 0)).join(L_artikel,(L_artikel.artnr == L_bestand.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).filter((L_bestand.lager_nr == l_lager.lager_nr)).order_by(L_bestand._recid).all():
 
                 # if l_bestand_obj_list.get(l_bestand._recid):
                 #     continue
@@ -279,7 +279,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
                         s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_op.warenwert)
 
                 l_op_obj_list = {}
-                for l_op, l_ophdr, gl_acct in db_session.query(L_op, L_ophdr, Gl_acct).join(L_ophdr,(L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).filter((L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
+                for l_op, l_ophdr, gl_acct in db_session.query(L_op, L_ophdr, Gl_acct).join(L_ophdr,(L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_op.stornogrund)).filter((L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
 
                     # if l_op_obj_list.get(l_op._recid):
                     #     continue
@@ -350,7 +350,8 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
             h_compli = H_compli()
             h_art = H_artikel()
 
-            for h_compli.datum, h_compli.departement, h_compli.artnr, h_compli.anzahl, h_compli.epreis, h_compli.rechnr, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.prozent, h_art.epreis1, h_art.artart, h_art._recid in db_session.query(H_compli.datum, H_compli.departement, H_compli.artnr, H_compli.anzahl, H_compli.epreis, H_compli.rechnr, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.prozent, H_art.epreis1, H_art.artart, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr)).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0) & (H_art.artart == 11)).order_by(H_compli.rechnr).all():
+            for h_compli.datum, h_compli.departement, h_compli.artnr, h_compli.anzahl, h_compli.epreis, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.artnrlager, h_art.artnrrezept, h_art.prozent, h_art._recid in db_session.query(H_compli.datum, H_compli.departement, H_compli.artnr, H_compli.anzahl, H_compli.epreis, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.artnrlager, H_art.artnrrezept, H_art.prozent, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr)).filter(
+                     (H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0) & (H_art.artart == 11)).order_by(H_compli.rechnr).all():
 
                 # if h_compli_obj_list.get(h_compli._recid):
                 #     continue
@@ -418,7 +419,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
                             if h_rezept:
                                 cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
 
-                                if arikel.umsatzart == 6:
+                                if artikel.umsatzart == 6:
                                     b_cost = h_compli.anzahl * cost
                                 elif artikel.umsatzart == 3 or artikel.umsatzart == 5:
                                     f_cost = h_compli.anzahl * cost 
@@ -961,7 +962,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
                 # fbreconsile_list.col1 = to_string(translateExtended ("Net Food Sales", lvcarea, "") , "x(24)")
                 # fbreconsile_list.col2 = to_string("", "x(16)") + to_string(tf_sales, " ->>>,>>>,>>>,>>9")
                 # fbreconsile_list.col3 = to_string(translateExtended (" Cost:Sales", lvcarea, "") , "x(15)")
-                breconsile_list.col1 = format_fixed_length(translateExtended ("Net Food Sales", lvcarea, "") , 24)
+                fbreconsile_list.col1 = format_fixed_length(translateExtended ("Net Food Sales", lvcarea, "") , 24)
                 fbreconsile_list.col2 = to_string("", "x(16)") + to_string(tf_sales, " ->>>,>>>,>>>,>>9")
                 fbreconsile_list.col3 = format_fixed_length(translateExtended (" Cost:Sales", lvcarea, "") , 15)
                 fbreconsile_list.col4 = f"{to_string(f_ratio, "->,>>>,>>9.99")} %"
@@ -1571,7 +1572,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
             l_oh = L_bestand()
             l_artikel = L_artikel()
 
-            for l_bestand.anz_anf_best, l_bestand.anz_eingang, l_bestand.anz_ausgang, l_bestand.val_anf_best, l_bestand._recid, l_oh.anz_anf_best, l_oh.anz_eingang, l_oh.anz_ausgang, l_oh.val_anf_best, l_oh.wert_eingang, l_oh.wert_ausgang, l_oh._recid, l_artikel.artnr, l_artikel.endkum, l_artikel._recid in db_session.query(L_bestand.anz_anf_best, L_bestand.anz_eingang, L_bestand.anz_ausgang, L_bestand.val_anf_best, L_bestand._recid, L_oh.anz_anf_best, L_oh.anz_eingang, L_oh.anz_ausgang, L_oh.val_anf_best, L_oh.wert_eingang, L_oh.wert_ausgang, L_oh._recid, L_artikel.artnr, L_artikel.endkum, L_artikel._recid).join(L_oh,(L_oh.artnr == L_bestand.artnr) & (L_oh.lager_nr == 0)).join(L_artikel,(L_artikel.artnr == L_bestand.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).filter((L_bestand.lager_nr == l_lager.lager_nr)).order_by(L_bestand._recid).all():
+            for l_bestand.anz_anf_best, l_bestand.anz_eingang, l_bestand.anz_ausgang, l_bestand.val_anf_best, l_bestand._recid, l_oh.anz_anf_best, l_oh.anz_eingang, l_oh.anz_ausgang, l_oh.val_anf_best, l_oh.wert_eingang, l_oh.wert_ausgang, l_oh._recid, l_artikel.artnr, l_artikel.ek_aktuell, l_artikel.vk_preis, l_artikel.endkum, l_artikel._recid in db_session.query(L_bestand.anz_anf_best, L_bestand.anz_eingang, L_bestand.anz_ausgang, L_bestand.val_anf_best, L_bestand._recid, L_oh.anz_anf_best, L_oh.anz_eingang, L_oh.anz_ausgang, L_oh.val_anf_best, L_oh.wert_eingang, L_oh.wert_ausgang, L_oh._recid, L_artikel.artnr, L_artikel.ek_aktuell, L_artikel.vk_preis, L_artikel.endkum, L_artikel._recid).join(L_oh,(L_oh.artnr == L_bestand.artnr) & (L_oh.lager_nr == 0)).join(L_artikel,(L_artikel.artnr == L_bestand.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).filter((L_bestand.lager_nr == l_lager.lager_nr)).order_by(L_bestand._recid).all():
 
                 # if l_bestand_obj_list.get(l_bestand._recid):
                 #     continue
@@ -1639,7 +1640,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
                         s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_op.warenwert)
 
                 l_op_obj_list = {}
-                for l_op, l_ophdr, gl_acct in db_session.query(L_op, L_ophdr, Gl_acct).join(L_ophdr,(L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).filter((L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
+                for l_op, l_ophdr, gl_acct in db_session.query(L_op, L_ophdr, Gl_acct).join(L_ophdr,(L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_op.stornogrund)).filter((L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
 
                     # if l_op_obj_list.get(l_op._recid):
                     #     continue
@@ -1713,7 +1714,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
             h_compli = H_compli()
             h_art = H_artikel()
 
-            for h_compli.datum, h_compli.departement, h_compli.artnr, h_compli.anzahl, h_compli.epreis, h_compli.rechnr, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.prozent, h_art.epreis1, h_art.artart, h_art._recid in db_session.query(H_compli.datum, H_compli.departement, H_compli.artnr, H_compli.anzahl, H_compli.epreis, H_compli.rechnr, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.prozent, H_art.epreis1, H_art.artart, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
+            for h_compli.datum, h_compli.departement, h_compli.artnr, h_compli.anzahl, h_compli.epreis, h_compli.rechnr, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.artnrlager, h_art.artnrrezept, h_art.prozent, h_art.epreis1, h_art.artart, h_art._recid in db_session.query(H_compli.datum, H_compli.departement, H_compli.artnr, H_compli.anzahl, H_compli.epreis, H_compli.rechnr, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.artnrlager, H_art.artnrrezept, H_art.prozent, H_art.epreis1, H_art.artart, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
 
                 # if h_compli_obj_list.get(h_compli._recid):
                 #     continue
@@ -1758,10 +1759,8 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
 
                     if artikel.umsatzart == 3 or artikel.umsatzart == 5:
                         f_cost =  to_decimal(h_compli.anzahl) * to_decimal(h_cost.betrag)
-
-                    # f_cost = cost_correction(f_cost)
-
                 else:
+
                     if (not h_cost and h_compli.datum < bill_date) or (h_cost and h_cost.betrag == 0):
                         if artikel.umsatzart == 3 or artikel.umsatzart == 5:
                             if h_artikel.artnrlager != 0:
@@ -1776,9 +1775,14 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
                                     f_cost = h_compli.anzahl * cost
 
                             elif h_artikel.artnrrezept != 0:
-                                cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
-                                f_cost = h_compli.anzahl * cost
 
+                                h_rezept = get_cache (H_rezept, {"artnrrezept": [(eq, h_artikel.artnrrezept)]})
+
+                                if h_rezept:
+                                    cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
+
+                                    if artikel.umsatzart == 3 or artikel.umsatzart == 5:
+                                        f_cost = h_compli.anzahl * cost
                             else:
                                 f_cost = to_decimal(h_artikel.prozent) / 100 * h_compli.anzahl * h_compli.epreis * rate
 
@@ -1811,7 +1815,6 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
                             s_list.flag = 4
 
                     s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(f_cost)
-
         tf_sales, tb_sales = fb_sales(f_eknr, b_eknr)
         fbreconsile_list = Fbreconsile_list()
         fbreconsile_list_data.append(fbreconsile_list)
@@ -1829,7 +1832,8 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
         fbreconsile_list = Fbreconsile_list()
         fbreconsile_list_data.append(fbreconsile_list)
 
-        betrag1 =  to_decimal("0")
+        curr_nr = curr_nr + 1
+        fbreconsile_list.nr = curr_nr
         # fbreconsile_list.col1 = to_string(translateExtended ("1. Opening Inventory", lvcarea, "") , "x(24)")
         fbreconsile_list.col1 = format_fixed_length(translateExtended ("1. Opening Inventory", lvcarea, "") , 24)
 
@@ -1877,6 +1881,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
 
         curr_nr = curr_nr + 1
         fbreconsile_list.nr = curr_nr
+
         # fbreconsile_list.col1 = to_string(translateExtended ("2. Incoming Stocks", lvcarea, "") , "x(24)")
         fbreconsile_list.col1 = format_fixed_length(translateExtended ("2. Incoming Stocks", lvcarea, "") , 24)
 
@@ -2306,6 +2311,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
 
         done = True
 
+
     def create_beverage():
 
         nonlocal done, fbreconsile_list_data, curr_nr, curr_reihe, ldry, dstore, long_digit, foreign_nr, exchg_rate, double_currency, type_of_acct, counter, coa_format, f_date, bill_date, cost, price, exrate, price_type, incl_service, incl_mwst, lvcarea, htparam, waehrung, h_artikel, l_bestand, l_besthis, gl_acct, l_lager, l_artikel, l_op, l_ophdr, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, h_rezept, umsatz
@@ -2420,7 +2426,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
             l_oh = L_bestand()
             l_artikel = L_artikel()
 
-            for l_bestand.anz_anf_best, l_bestand.anz_eingang, l_bestand.anz_ausgang, l_bestand.val_anf_best, l_bestand._recid, l_oh.anz_anf_best, l_oh.anz_eingang, l_oh.anz_ausgang, l_oh.val_anf_best, l_oh.wert_eingang, l_oh.wert_ausgang, l_oh._recid, l_artikel.artnr, l_artikel.endkum, l_artikel._recid in db_session.query(L_bestand.anz_anf_best, L_bestand.anz_eingang, L_bestand.anz_ausgang, L_bestand.val_anf_best, L_bestand._recid, L_oh.anz_anf_best, L_oh.anz_eingang, L_oh.anz_ausgang, L_oh.val_anf_best, L_oh.wert_eingang, L_oh.wert_ausgang, L_oh._recid, L_artikel.artnr, L_artikel.endkum, L_artikel._recid).join(L_oh,(L_oh.artnr == L_bestand.artnr) & (L_oh.lager_nr == 0)).join(L_artikel,(L_artikel.artnr == L_bestand.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).filter((L_bestand.lager_nr == l_lager.lager_nr)).order_by(L_bestand._recid).all():
+            for l_bestand.anz_anf_best, l_bestand.anz_eingang, l_bestand.anz_ausgang, l_bestand.val_anf_best, l_bestand._recid, l_oh.anz_anf_best, l_oh.anz_eingang, l_oh.anz_ausgang, l_oh.val_anf_best, l_oh.wert_eingang, l_oh.wert_ausgang, l_oh._recid, l_artikel.artnr, l_artikel.ek_aktuell, l_artikel.vk_preis, l_artikel.endkum, l_artikel._recid in db_session.query(L_bestand.anz_anf_best, L_bestand.anz_eingang, L_bestand.anz_ausgang, L_bestand.val_anf_best, L_bestand._recid, L_oh.anz_anf_best, L_oh.anz_eingang, L_oh.anz_ausgang, L_oh.val_anf_best, L_oh.wert_eingang, L_oh.wert_ausgang, L_oh._recid, L_artikel.artnr, L_artikel.ek_aktuell, L_artikel.vk_preis, L_artikel.endkum, L_artikel._recid).join(L_oh,(L_oh.artnr == L_bestand.artnr) & (L_oh.lager_nr == 0)).join(L_artikel,(L_artikel.artnr == L_bestand.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).filter((L_bestand.lager_nr == l_lager.lager_nr)).order_by(L_bestand._recid).all():
 
                 # if l_bestand_obj_list.get(l_bestand._recid):
                 #     continue
@@ -2489,7 +2495,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
                         s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_op.warenwert)
 
                 l_op_obj_list = {}
-                for l_op, l_ophdr, gl_acct in db_session.query(L_op, L_ophdr, Gl_acct).join(L_ophdr,(L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophdr.fibukonto)).filter((L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
+                for l_op, l_ophdr, gl_acct in db_session.query(L_op, L_ophdr, Gl_acct).join(L_ophdr,(L_ophdr.lscheinnr == L_op.lscheinnr) & (L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_op.stornogrund)).filter((L_op.datum >= from_date) & (L_op.datum <= to_date) & (L_op.artnr == l_artikel.artnr) & (L_op.loeschflag <= 1) & (L_op.op_art == 3) & (L_op.lager_nr == l_lager.lager_nr)).order_by(L_op.lscheinnr).all():
 
                     # if l_op_obj_list.get(l_op._recid):
                     #     continue
@@ -2563,7 +2569,7 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
             h_compli = H_compli()
             h_art = H_artikel()
 
-            for h_compli.datum, h_compli.departement, h_compli.artnr, h_compli.anzahl, h_compli.epreis, h_compli.rechnr, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.prozent, h_art.epreis1, h_art.artart, h_art._recid in db_session.query(H_compli.datum, H_compli.departement, H_compli.artnr, H_compli.anzahl, H_compli.epreis, H_compli.rechnr, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.prozent, H_art.epreis1, H_art.artart, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
+            for h_compli.datum, h_compli.departement, h_compli.artnr, h_compli.anzahl, h_compli.epreis, h_compli.rechnr, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.artnrlager, h_art.artnrrezept, h_art.prozent, h_art.epreis1, h_art.artart, h_art._recid in db_session.query(H_compli.datum, H_compli.departement, H_compli.artnr, H_compli.anzahl, H_compli.epreis, H_compli.rechnr, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.artnrlager, H_art.artnrrezept, H_art.prozent, H_art.epreis1, H_art.artart, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
 
                 # if h_compli_obj_list.get(h_compli._recid):
                 #     continue
@@ -2608,10 +2614,8 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
 
                     if artikel.umsatzart == 6:
                         b_cost =  to_decimal(h_compli.anzahl) * to_decimal(h_cost.betrag)
-
-                    # f_cost = cost_correction(f_cost)
-
                 else:
+
                     if (not h_cost and h_compli.datum < bill_date) or (h_cost and h_cost.betrag == 0):
                         if artikel.umsatzart == 6:
                             if h_artikel.artnrlager != 0:
@@ -2623,14 +2627,16 @@ def fb_reconsilebl(pvilanguage:int, case_type:int, from_date:date, to_date:date,
                                         cost = l_artikel.vk_preis
                                     else:
                                         cost = l_artikel.ek_aktuell
-
                                     b_cost = h_compli.anzahl * cost
 
                             elif h_artikel.artnrrezept != 0:
-                                cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
+                                h_rezept = get_cache (H_rezept, {"artnrrezept": [(eq, h_artikel.artnrrezept)]})
 
-                                b_cost = h_compli.anzahl * cost
+                                if h_rezept:
+                                    cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
 
+                                    if artikel.umsatzart == 6:
+                                        b_cost = h_compli.anzahl * cost
                             else:
                                 b_cost = to_decimal(h_artikel.prozent) / 100 * to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * rate
 

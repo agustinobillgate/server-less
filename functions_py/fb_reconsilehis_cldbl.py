@@ -1,4 +1,4 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 #-----------------------------------------
 # Rd 25/7/2025
 # gitlab: 
@@ -44,7 +44,7 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
+        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, bill_date, cost, price, exrate, price_type, incl_service, incl_mwst, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
         nonlocal pvilanguage, from_grp, food, bev, from_date, to_date, ldry, dstore, double_currency, foreign_nr, exchg_rate, mi_opt_chk, date1, date2
 
 
@@ -85,8 +85,8 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
     def create_list():
 
-        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
-        nonlocal pvilanguage, from_grp, food, bev, from_date, to_date, ldry, dstore, double_currency, foreign_nr, exchg_rate, mi_opt_chk, date1, date2, bill_date, price_type
+        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, bill_date, cost, price, exrate, price_type, incl_service, incl_mwst, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
+        nonlocal pvilanguage, from_grp, food, bev, from_date, to_date, ldry, dstore, double_currency, foreign_nr, exchg_rate, mi_opt_chk, date1, date2
 
 
         nonlocal output_list, s_list
@@ -317,7 +317,7 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
             h_compli = H_compli()
             h_art = H_artikel()
 
-            for h_compli.datum, h_compli.departement, h_compli.artnr, h_compli.anzahl, h_compli.epreis, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.prozent, h_art._recid in db_session.query(H_compli.datum, H_compli.departement, H_compli.artnr, H_compli.anzahl, H_compli.epreis, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.prozent, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
+            for h_compli.datum, h_compli.departement, h_compli.artnr, h_compli.anzahl, h_compli.epreis, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.artnrlager, h_art.artnrrezept, h_art.prozent, h_art._recid in db_session.query(H_compli.datum, H_compli.departement, H_compli.artnr, H_compli.anzahl, H_compli.epreis, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.artnrlager, H_art.artnrrezept, H_art.prozent, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
 
                 # if h_compli_obj_list.get(h_compli._recid):
                 #     continue
@@ -499,12 +499,13 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
                     output_list.s = to_string("", "x(24)")
 
                 if not long_digit:
+
                     # output_list.s = output_list.s + to_string(s_list.l_bezeich, "x(50)") + to_string(s_list.anf_wert, "->>,>>>,>>>,>>9.99")
                     output_list.s = output_list.s + format_fixed_length(s_list.l_bezeich, 50) + to_string(s_list.anf_wert, "->>,>>>,>>>,>>9.99")
                 else:
+
                     # output_list.s = output_list.s + to_string(s_list.l_bezeich, "x(50)") + to_string(s_list.anf_wert, "->,>>>,>>>,>>>,>>9")
                     output_list.s = output_list.s + format_fixed_length(s_list.l_bezeich, 50) + to_string(s_list.anf_wert, "->,>>>,>>>,>>>,>>9")
-
             output_list = Output_list()
             output_list_data.append(output_list)
 
@@ -1312,8 +1313,8 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
     def create_food():
 
-        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
-        nonlocal pvilanguage, from_grp, food, bev, from_date, to_date, ldry, dstore, double_currency, foreign_nr, exchg_rate, mi_opt_chk, date1, date2, bill_date, price_type
+        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, bill_date, cost, price, exrate, price_type, incl_service, incl_mwst, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
+        nonlocal pvilanguage, from_grp, food, bev, from_date, to_date, ldry, dstore, double_currency, foreign_nr, exchg_rate, mi_opt_chk, date1, date2
 
 
         nonlocal output_list, s_list
@@ -1536,7 +1537,7 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
                             s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_ophis.warenwert)
 
         l_ophis_obj_list = {}
-        for l_ophis, l_artikel, l_ophhis, gl_acct in db_session.query(L_ophis, L_artikel, L_ophhis, Gl_acct).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).join(L_ophhis,(L_ophhis.lscheinnr == L_ophis.lscheinnr) & (L_ophhis.op_typ == ("STT").lower())).join(Gl_acct,(Gl_acct.fibukonto == L_ophhis.fibukonto)).filter((L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & ((L_ophis.fibukonto == (bev_food).lower()) | (L_ophis.fibukonto == (food_bev).lower())) & (L_ophis.op_art == 3) & (not_(matches(L_ophis.fibukonto,"*;CANCELLED*")))).order_by(L_ophis.lscheinnr).all():
+        for l_ophis, l_artikel, l_ophhis, gl_acct in db_session.query(L_ophis, L_artikel, L_ophhis, Gl_acct).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).join(L_ophhis,(L_ophhis.lscheinnr == L_ophis.lscheinnr) & (L_ophhis.op_typ == ("STT").lower())).join(Gl_acct,(Gl_acct.fibukonto == L_ophis.fibukonto)).filter((L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & ((L_ophis.fibukonto == (bev_food).lower()) | (L_ophis.fibukonto == (food_bev).lower())) & (L_ophis.op_art == 3) & (not_(matches(L_ophis.fibukonto,"*;CANCELLED*")))).order_by(L_ophis.lscheinnr).all():
 
             # if l_ophis_obj_list.get(l_ophis._recid):
             #     continue
@@ -1568,7 +1569,8 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
             h_compli_obj_list = {}
             h_compli = H_compli()
             h_art = H_artikel()
-            for h_compli.datum, h_compli.departement, h_compli.artnr, h_compli.anzahl, h_compli.epreis, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.prozent, h_art._recid in db_session.query(H_compli.datum, H_compli.departement, H_compli.artnr, H_compli.anzahl, H_compli.epreis, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.prozent, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
+            # TODO
+            for h_compli.datum, h_compli.departement, h_compli.artnr, h_compli.anzahl, h_compli.epreis, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.artnrlager, h_art.artnrrezept, h_art.prozent, h_art._recid in db_session.query(H_compli.datum, H_compli.departement, H_compli.artnr, H_compli.anzahl, H_compli.epreis, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.artnrlager, H_art.artnrrezept, H_art.prozent, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
                 
                 # if h_compli_obj_list.get(h_compli._recid):
                 #     continue
@@ -1631,9 +1633,13 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
                                     f_cost = h_compli.anzahl * cost
                             
                             elif h_artikel.artnrrezept != 0:
-                                cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
 
-                                f_cost = h_compli.anzahl * cost
+                                h_rezept = get_cache (H_rezept, {"artnrrezept": [(eq, h_artikel.artnrrezept)]})
+
+                                if h_rezept:
+                                    cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
+
+                                    f_cost = h_compli.anzahl * cost
 
                             else:
                                 f_cost = to_decimal(h_artikel.prozent) / 100 * to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * rate
@@ -2090,8 +2096,8 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
     def create_beverage():
 
-        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
-        nonlocal pvilanguage, from_grp, food, bev, from_date, to_date, ldry, dstore, double_currency, foreign_nr, exchg_rate, mi_opt_chk, date1, date2, bill_date, price_type
+        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, bill_date, cost, price, exrate, price_type, incl_service, incl_mwst, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
+        nonlocal pvilanguage, from_grp, food, bev, from_date, to_date, ldry, dstore, double_currency, foreign_nr, exchg_rate, mi_opt_chk, date1, date2
 
 
         nonlocal output_list, s_list
@@ -2265,15 +2271,13 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
                         s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_ophis.warenwert)
 
                 l_ophis_obj_list = {}
-                l_ophis = L_ophis()
-                gl_acct = Gl_acct()
-
-                for l_ophis.lscheinnr, l_ophis.warenwert, l_ophis.fibukonto, l_ophis.artnr, l_ophis.anzahl, l_ophis._recid, gl_acct.fibukonto, gl_acct.bezeich, gl_acct.acc_type, gl_acct.main_nr, gl_acct._recid in db_session.query(L_ophis.lscheinnr, L_ophis.warenwert, L_ophis.fibukonto, L_ophis.artnr, L_ophis.anzahl, L_ophis._recid, Gl_acct.fibukonto, Gl_acct.bezeich, Gl_acct.acc_type, Gl_acct.main_nr, Gl_acct._recid).join(Gl_acct,(Gl_acct.fibukonto == L_ophis.fibukonto)).filter((L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.artnr == l_besthis.artnr) & (L_ophis.op_art == 3) & (L_ophis.lager_nr == l_lager.lager_nr) & (not_(matches(L_ophis.fibukonto,"*;CANCELLED*")))).order_by(L_ophis.lscheinnr).all():
-
+                
+                for l_ophis, l_ophhis, gl_acct in db_session.query(L_ophis, L_ophhis, Gl_acct).join(L_ophhis,(L_ophhis.lscheinnr == L_ophis.lscheinnr) & (L_ophhis.op_typ == ("STT").lower()) & (L_ophhis.fibukonto != "")).join(Gl_acct,(Gl_acct.fibukonto == L_ophis.fibukonto)).filter((L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & (L_ophis.artnr == l_besthis.artnr) & (L_ophis.op_art == 3) & (L_ophis.lager_nr == l_lager.lager_nr) & (not_(matches(L_ophis.fibukonto,"*;CANCELLED*")))).order_by(L_ophis.lscheinnr).all():
                     # if l_ophis_obj_list.get(l_ophis._recid):
                     #     continue
                     # else:
                     #     l_ophis_obj_list[l_ophis._recid] = True
+
 
                     type_of_acct = gl_acct.acc_type
                     fibukonto = gl_acct.fibukonto
@@ -2327,19 +2331,26 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
                             s_list.betrag =  to_decimal(s_list.betrag) + to_decimal(l_ophis.warenwert)
 
         l_ophis_obj_list = {}
-        for l_ophis, l_artikel in db_session.query(L_ophis, L_artikel).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).filter((L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & ((L_ophis.fibukonto == (bev_food).lower()) | (L_ophis.fibukonto == (food_bev).lower())) & (L_ophis.op_art == 3) & (not_(matches(L_ophis.fibukonto,"*;CANCELLED*")))).order_by(L_ophis._recid).all():
-
+        for l_ophis, l_artikel, l_ophhis, gl_acct in db_session.query(L_ophis, L_artikel, L_ophhis, Gl_acct).join(L_artikel,(L_artikel.artnr == L_ophis.artnr) & ((L_artikel.endkum == fl_eknr) | (L_artikel.endkum == bl_eknr))).join(L_ophhis,(L_ophhis.lscheinnr == L_ophis.lscheinnr) & (L_ophhis.op_typ == ("STT").lower())).join(Gl_acct,(Gl_acct.fibukonto == L_ophis.fibukonto)).filter((L_ophis.datum >= from_date) & (L_ophis.datum <= to_date) & ((L_ophis.fibukonto == (bev_food).lower()) | (L_ophis.fibukonto == (food_bev).lower())) & (L_ophis.op_art == 3) & (not_(matches(L_ophis.fibukonto,"*;CANCELLED*")))).order_by(L_ophis.lscheinnr).all():
             # if l_ophis_obj_list.get(l_ophis._recid):
             #     continue
             # else:
             #     l_ophis_obj_list[l_ophis._recid] = True
 
-            if l_ophis.fibukonto.lower()  == (food_bev).lower()  and l_ophis.artnr >= 1000001 and l_ophis.artnr <= 1999999:
+            fibukonto = gl_acct.fibukonto
+
+            if l_ophis.fibukonto != "":
+
+                gl_acct1 = get_cache (Gl_acct, {"fibukonto": [(eq, l_ophis.fibukonto)]})
+
+                if gl_acct1:
+                    fibukonto = gl_acct1.fibukonto
+            if fibukonto.lower()  == (food_bev).lower()  and l_ophis.artnr >= 1000001 and l_ophis.artnr <= 1999999:
 
                 s_list = query(s_list_data, filters=(lambda s_list: s_list.lager_nr == 9999 and s_list.reihenfolge == 2), first=True)
                 s_list.anf_wert =  to_decimal(s_list.anf_wert) + to_decimal(l_ophis.warenwert)
 
-            elif l_ophis.fibukonto.lower()  == (bev_food).lower()  and l_ophis.artnr >= 1999999:
+            elif fibukonto.lower()  == (bev_food).lower()  and l_ophis.artnr > 1999999:
 
                 s_list = query(s_list_data, filters=(lambda s_list: s_list.lager_nr == 9999 and s_list.reihenfolge == 1), first=True)
                 s_list.anf_wert =  to_decimal(s_list.anf_wert) + to_decimal(l_ophis.warenwert)
@@ -2351,7 +2362,7 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
             h_compli = H_compli()
             h_art = H_artikel()
 
-            for h_compli.datum, h_compli.departement, h_compli.artnr, h_compli.anzahl, h_compli.epreis, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.prozent, h_art._recid in db_session.query(H_compli.datum, H_compli.departement, H_compli.artnr, H_compli.anzahl, H_compli.epreis, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.prozent, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
+            for h_compli.datum, h_compli.departement, h_compli.artnr, h_compli.anzahl, h_compli.epreis, h_compli._recid, h_art.artnrfront, h_art.departement, h_art.artnrlager, h_art.artnrrezept, h_art.prozent, h_art._recid in db_session.query(H_compli.datum, H_compli.departement, H_compli.artnr, H_compli.anzahl, H_compli.epreis, H_compli._recid, H_art.artnrfront, H_art.departement, H_art.artnrlager, H_art.artnrrezept, H_art.prozent, H_art._recid).join(H_art,(H_art.departement == H_compli.departement) & (H_art.artnr == H_compli.p_artnr) & (H_art.artart == 11)).filter((H_compli.datum >= from_date) & (H_compli.datum <= to_date) & (H_compli.departement == hoteldpt.num) & (H_compli.betriebsnr == 0)).order_by(H_compli.rechnr).all():
 
                 # if h_compli_obj_list.get(h_compli._recid):
                 #     continue
@@ -2416,9 +2427,12 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
                             elif h_artikel.artnrrezept != 0:
 
-                                cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
+                                h_rezept = get_cache (H_rezept, {"artnrrezept": [(eq, h_artikel.artnrrezept)]})
 
-                                b_cost = h_compli.anzahl * cost
+                                if h_rezept:
+                                    cost = get_output(fb_cost_count_recipe_costbl(h_rezept.artnrrezept, price_type, cost))
+
+                                    b_cost = h_compli.anzahl * cost
 
                             else:
                                 b_cost = to_decimal(h_artikel.prozent) / 100 * to_decimal(h_compli.anzahl) * to_decimal(h_compli.epreis) * rate
@@ -2873,7 +2887,7 @@ def fb_reconsilehis_cldbl(pvilanguage:int, from_grp:int, food:int, bev:int, from
 
     def fb_sales(f_eknr:int, b_eknr:int):
 
-        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
+        nonlocal done, output_list_data, lvcarea, type_of_acct, counter, curr_nr, curr_reihe, coa_format, betrag, bill_date, cost, price, exrate, price_type, incl_service, incl_mwst, long_digit, htparam, waehrung, h_artikel, l_besthis, gl_acct, l_lager, l_ophis, l_ophhis, hoteldpt, h_compli, exrate, artikel, gl_main, h_cost, l_artikel, h_rezept, umsatz
         nonlocal pvilanguage, from_grp, food, bev, from_date, to_date, ldry, dstore, double_currency, foreign_nr, exchg_rate, mi_opt_chk, date1, date2
 
 
