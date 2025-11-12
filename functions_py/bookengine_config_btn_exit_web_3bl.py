@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+#------------------------------------------
+# Rd, 12/11/2025
+# tambah strip payload,
+#------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Bediener, Res_history
@@ -26,6 +31,22 @@ def bookengine_config_btn_exit_web_3bl(bookengid:int, autostart:bool, period:int
 
 
     db_session = local_storage.db_session
+
+    # Rd, strip
+    dyna_code = dyna_code.strip()
+    email = email.strip()
+    hotelcode = hotelcode.strip()
+    username = username.strip()
+    password = password.strip()
+    vcwebhost = vcwebhost.strip()
+    vcwebport = vcwebport.strip()
+    vcwsagent = vcwsagent.strip()
+    vcwsagent2 = vcwsagent2.strip()
+    vcwsagent3 = vcwsagent3.strip()
+    vcwsagent4 = vcwsagent4.strip()
+    vcwsagent5 = vcwsagent5.strip()
+    workpath = workpath.strip()
+
 
     def generate_output():
         nonlocal i, str, oldstr, ct, oldct, progavail1, be_name, queasy, bediener, res_history
@@ -139,19 +160,19 @@ def bookengine_config_btn_exit_web_3bl(bookengid:int, autostart:bool, period:int
             if t_list.liveflag != liveflag:
                 logmessage = logmessage + "liveflag=" + to_string(t_list.liveflag) + ">>" + to_string(liveflag) + " "
 
-            if t_list.defcurr.lower()  != (defcurr).lower() :
+            if t_list.defcurr  != (defcurr) :
                 logmessage = logmessage + "defcurr=" + t_list.defcurr + ">>" + defcurr + " "
 
-            if t_list.workpath.lower()  != (workpath).lower() :
+            if t_list.workpath  != (workpath) :
                 logmessage = logmessage + "workpath=" + t_list.workpath + ">>" + workpath + " "
 
-            if t_list.hotelcode.lower()  != (hotelcode).lower() :
+            if t_list.hotelcode  != (hotelcode) :
                 logmessage = logmessage + "htlcode=" + t_list.hotelcode + ">>" + hotelcode + " "
 
-            if t_list.username.lower()  != (username).lower() :
+            if t_list.username  != (username) :
                 logmessage = logmessage + "usrname=" + t_list.username + ">>" + username + " "
 
-            if t_list.password.lower()  != (password).lower() :
+            if t_list.password  != (password) :
                 logmessage = logmessage + "pswd=" + t_list.password + ">>" + password + " "
 
             if t_list.pushrateflag != pushrateflag:
@@ -276,7 +297,7 @@ def bookengine_config_btn_exit_web_3bl(bookengid:int, autostart:bool, period:int
             email + "=" +\
             vcwsagent5 + "=" +\
             to_string(incl_tentative)
-
+    
 
     ct = "$autostart$" + to_string(autostart) + ";" + "$period$" + to_string(period) + ";" + "$delay$" + to_string(delay) + ";" + "$liveflag$" + to_string(liveflag) + ";" + "$defcurr$" + to_string(defcurr) + ";" + "$workpath$" + to_string(workpath) + ";" + "$progname$" + to_string(progavail1) + ";" + "$htlcode$" + to_string(hotelcode) + ";" + "$username$" + to_string(username) + ";" + "$password$" + to_string(password) + ";" + "$pushrate$" + to_string(pushrateflag) + ";" + "$pullbook$" + to_string(pullbookflag) + ";" + "$pushavail$" + to_string(pushavailflag)
 
@@ -295,47 +316,47 @@ def bookengine_config_btn_exit_web_3bl(bookengid:int, autostart:bool, period:int
         for i in range(1,num_entries(queasy.char1, ";")  + 1) :
             str = entry(i - 1, queasy.char1, ";")
 
-            if substring(str, 0, 11) == ("$autostart$").lower() :
+            if substring(str, 0, 11) == ("$autostart$") :
                 t_list.autostart = logical(substring(str, 11))
 
-            elif substring(str, 0, 8) == ("$period$").lower() :
+            elif substring(str, 0, 8) == ("$period$") :
                 t_list.period = to_int(substring(str, 8))
 
-            elif substring(str, 0, 7) == ("$delay$").lower() :
+            elif substring(str, 0, 7) == ("$delay$") :
                 t_list.delay = to_int(substring(str, 7))
 
-            elif substring(str, 0, 10) == ("$liveflag$").lower() :
+            elif substring(str, 0, 10) == ("$liveflag$") :
                 t_list.liveflag = logical(substring(str, 10))
 
-            elif substring(str, 0, 9) == ("$defcurr$").lower() :
+            elif substring(str, 0, 9) == ("$defcurr$") :
                 t_list.defcurr = substring(str, 9)
 
-            elif substring(str, 0, 10) == ("$workpath$").lower() :
+            elif substring(str, 0, 10) == ("$workpath$") :
                 t_list.workpath = substring(str, 10)
 
-            elif substring(str, 0, 10) == ("$progname$").lower() :
+            elif substring(str, 0, 10) == ("$progname$") :
                 t_list.progavail = substring(str, 10)
 
-            elif substring(str, 0, 9) == ("$htlcode$").lower() :
+            elif substring(str, 0, 9) == ("$htlcode$") :
                 t_list.hotelcode = substring(str, 9)
 
-            elif substring(str, 0, 10) == ("$username$").lower() :
+            elif substring(str, 0, 10) == ("$username$") :
                 t_list.username = substring(str, 10)
 
-            elif substring(str, 0, 10) == ("$password$").lower() :
+            elif substring(str, 0, 10) == ("$password$") :
                 t_list.password = substring(str, 10)
 
-            elif substring(str, 0, 10) == ("$pushrate$").lower() :
+            elif substring(str, 0, 10) == ("$pushrate$") :
                 t_list.pushrateflag = logical(substring(str, 10))
 
-            elif substring(str, 0, 10) == ("$pullbook$").lower() :
+            elif substring(str, 0, 10) == ("$pullbook$") :
                 t_list.pullbookflag = logical(substring(str, 10))
 
-            elif substring(str, 0, 11) == ("$pushavail$").lower() :
+            elif substring(str, 0, 11) == ("$pushavail$") :
                 t_list.pushavailflag = logical(substring(str, 11))
         assign_tlist_values()
 
-        if queasy.char1.lower()  != (ct).lower() :
+        if queasy.char1  != (ct) :
             create_logdetails()
 
             bqueasy = get_cache (Queasy, {"key": [(eq, 167)],"number1": [(eq, bookengid)]})
