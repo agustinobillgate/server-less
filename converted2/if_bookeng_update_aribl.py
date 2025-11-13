@@ -1,9 +1,4 @@
-#using conversion tools version: 1.0.0.117
-
-# ==========================================
-# Rulita, 10-10-2025
-# Tiket ID : 8CF423 | Recompile Program
-# ==========================================
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -39,12 +34,12 @@ def if_bookeng_update_aribl(rcode:string, curr_task:string):
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
 
-    if curr_task  == ("avail") :
+    if curr_task.lower()  == ("avail").lower() :
 
         if rcode != "":
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 171) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy.char1 == (rcode))).first()
+                     (Queasy.key == 171) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy.char1 == (rcode).lower())).first()
             while None != queasy:
 
                 qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
@@ -59,7 +54,7 @@ def if_bookeng_update_aribl(rcode:string, curr_task:string):
 
                 curr_recid = queasy._recid
                 queasy = db_session.query(Queasy).filter(
-                         (Queasy.key == 171) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy.char1 == (rcode)) & (Queasy._recid > curr_recid)).first()
+                         (Queasy.key == 171) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy.char1 == (rcode).lower()) & (Queasy._recid > curr_recid)).first()
 
         elif rcode == "":
 
@@ -97,7 +92,7 @@ def if_bookeng_update_aribl(rcode:string, curr_task:string):
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 175) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy._recid > curr_recid)).first()
 
-    elif curr_task  == ("availAll") :
+    elif curr_task.lower()  == ("availAll").lower() :
 
         queasy = db_session.query(Queasy).filter(
                  (Queasy.key == 171) & ((Queasy.logi1) | (Queasy.logi3))).first()
@@ -133,7 +128,7 @@ def if_bookeng_update_aribl(rcode:string, curr_task:string):
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 175) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy._recid > curr_recid)).first()
 
-    elif curr_task  == ("availbyrmtype") :
+    elif curr_task.lower()  == ("availbyrmtype").lower() :
 
         queasy = get_cache (Queasy, {"key": [(eq, 152)]})
 
@@ -187,10 +182,10 @@ def if_bookeng_update_aribl(rcode:string, curr_task:string):
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 175) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy.number1 == zikat_nr) & (Queasy._recid > curr_recid)).first()
 
-    elif curr_task  == ("rate") :
+    elif curr_task.lower()  == ("rate").lower() :
 
         queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 170) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy.char1 == (rcode))).first()
+                 (Queasy.key == 170) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy.char1 == (rcode).lower())).first()
         while None != queasy:
 
             qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
@@ -205,9 +200,9 @@ def if_bookeng_update_aribl(rcode:string, curr_task:string):
 
             curr_recid = queasy._recid
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 170) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy.char1 == (rcode)) & (Queasy._recid > curr_recid)).first()
+                     (Queasy.key == 170) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy.char1 == (rcode).lower()) & (Queasy._recid > curr_recid)).first()
 
-    elif curr_task  == ("rateAll") :
+    elif curr_task.lower()  == ("rateAll").lower() :
 
         queasy = db_session.query(Queasy).filter(
                  (Queasy.key == 170) & ((Queasy.logi1) | (Queasy.logi3))).first()
@@ -225,7 +220,7 @@ def if_bookeng_update_aribl(rcode:string, curr_task:string):
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 170) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy._recid > curr_recid)).first()
 
-    elif curr_task  == ("ratebyrmtype") :
+    elif curr_task.lower()  == ("ratebyrmtype").lower() :
         rcode1 = entry(0, rcode, ";")
         rm_typ = entry(1, rcode, ";")
 
@@ -248,7 +243,7 @@ def if_bookeng_update_aribl(rcode:string, curr_task:string):
                 zikat_nr = zimkateg.zikatnr
 
         queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 170) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy.char1 == (rcode1)) & (Queasy.number1 == zikat_nr)).first()
+                 (Queasy.key == 170) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy.char1 == (rcode1).lower()) & (Queasy.number1 == zikat_nr)).first()
         while None != queasy:
 
             qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
@@ -263,9 +258,9 @@ def if_bookeng_update_aribl(rcode:string, curr_task:string):
 
             curr_recid = queasy._recid
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 170) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy.char1 == (rcode1)) & (Queasy.number1 == zikat_nr) & (Queasy._recid > curr_recid)).first()
+                     (Queasy.key == 170) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy.char1 == (rcode1).lower()) & (Queasy.number1 == zikat_nr) & (Queasy._recid > curr_recid)).first()
 
-    elif curr_task  == ("restriction") :
+    elif curr_task.lower()  == ("restriction").lower() :
 
         queasy = db_session.query(Queasy).filter(
                  (Queasy.key == 175) & ((Queasy.logi1) | (Queasy.logi3))).first()
@@ -283,7 +278,7 @@ def if_bookeng_update_aribl(rcode:string, curr_task:string):
             queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 175) & ((Queasy.logi1) | (Queasy.logi3)) & (Queasy._recid > curr_recid)).first()
 
-    elif curr_task  == ("push-all-restriction") :
+    elif curr_task.lower()  == ("push-all-restriction").lower() :
 
         queasy = get_cache (Queasy, {"key": [(eq, 175)]})
         while None != queasy:

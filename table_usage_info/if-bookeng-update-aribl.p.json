@@ -1,0 +1,21 @@
+{
+    "Queasy": {
+        "read": [
+            "logi1",
+            "logi3",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "zikatnr",
+            "_recid"
+        ],
+        "write": []
+    }
+}
