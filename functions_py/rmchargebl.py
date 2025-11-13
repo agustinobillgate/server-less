@@ -1,6 +1,6 @@
 #using conversion tools version: 1.0.0.117
 
-# =======================================
+# =========================================================
 # Rulita, 21-10-2025
 # Issue :
 # - Comment VIEW_AS EDITOR INNER_CHARS 17
@@ -14,7 +14,10 @@
 # - New compile program argt_betragbl
 # - New compile program create_newbillbl
 # - New compile program ratecode_compli
-# =======================================
+
+# Rulita, 13-11-2025
+# - Fixing to_decimal() takes 1 potision argu 2 were given
+# =========================================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -1738,7 +1741,10 @@ def rmchargebl():
             artikel1 = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
             post_it = False
             argt_betrag0, ex_rate = get_output(argt_betragbl(res_line._recid, argt_line._recid))
-            argt_betrag =  to_decimal(round (argt_betrag0) * to_decimal(ex_rate , price_decimal))
+            
+            # Rulita 13-11-2025
+            # argt_betrag =  to_decimal(round (argt_betrag0) * to_decimal(ex_rate , price_decimal))
+            argt_betrag =  to_decimal(round (argt_betrag0 * ex_rate , price_decimal))
 
             if argt_betrag != 0:
                 rest_betrag =  to_decimal(rest_betrag) - to_decimal(argt_betrag)
@@ -1798,7 +1804,9 @@ def rmchargebl():
         billjournal.rechnr = mbill.rechnr
         billjournal.artnr = artikel1.artnr
         billjournal.anzahl = qty
-        billjournal.fremdwaehrng =  to_decimal(round (rest_betrag) / to_decimal(frate , 2) )
+        # Rulita, 13-11-2025
+        # billjournal.fremdwaehrng =  to_decimal(round (rest_betrag) / to_decimal(frate , 2) )
+        billjournal.fremdwaehrng =  to_decimal(round (rest_betrag / frate , 2) )
         billjournal.betrag =  to_decimal(rest_betrag)
         billjournal.bezeich = artikel1.bezeich
         billjournal.zinr = res_line.zinr
