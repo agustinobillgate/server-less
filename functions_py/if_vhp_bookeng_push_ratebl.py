@@ -1262,7 +1262,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
                          (Bqsy170.key == 170) & (Bqsy170.number2 <= 1) & (Bqsy170.betriebsnr == becode) & (Bqsy170._recid > curr_recid)).first()
 
     if not pushall or not createrate:
-
+        print("Recalculating existing rates...")
         queasy = db_session.query(Queasy).filter(
                  (Queasy.key == 170) & (Queasy.logi2) & (Queasy.betriebsnr == becode)).first()
         while None != queasy:
