@@ -70,7 +70,6 @@ def cr_availability_webbl(pvilanguage:int, vhp_limited:bool, op_type:int, printe
 
     qci_zinr = qci_zinr.strip()
     adult_child_str = adult_child_str.strip()
-
     def generate_output():
         nonlocal room_list_data, sum_list_data, lvcarea, logid, logstr, cdstr, col_label, curr_day, datum, tot_room, i, ci_date, co_date, from_date, to_date, last_option, wlist, dlist, j, dd, mm, yyyy, num_day, htl_name, htl_adr, htl_tel, res_allot, week_list, rpt_title, curr_time, kontline, res_line, zimmer, paramtext, htparam, arrangement, zimkateg, queasy, artikel, fixleist, reslin_queasy, reservation, segment, outorder, resplan
         nonlocal pvilanguage, vhp_limited, op_type, printer_nr, call_from, adult_child_str, statsort, dispsort, curr_date, incl_tentative, mi_inactive, show_rate, indgastnr, qci_zinr

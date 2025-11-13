@@ -1,7 +1,8 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 12/11/2025
-# CM
+# CM:
+# dari menu VHP/Settings/Booking Engine/Periodic Push All Rates & Availabilities
 #---------------------------------------
 
 from functions.additional_functions import *
@@ -103,6 +104,7 @@ def if_post_custom_pushall_avail_webbl(t_list_data:[T_list], t_push_list_data:[T
         error_msg = "Night Audit is running, Please wait until it finish."
 
         return generate_output()
+    
     do_it, cupdavail, cpushrate, inp_str = read_param(t_list_data)
 
     if do_it:
@@ -122,11 +124,16 @@ def if_post_custom_pushall_avail_webbl(t_list_data:[T_list], t_push_list_data:[T
         return generate_output()
 
     if cupdavail:
+        print("Availability Push Started")
         done_avail = get_output(if_custom_pushall_availbl(cur_type, from_date, to_date, bookengid, inp_str, cpushrate, temp_list_data))
+        print("Availability Push Completed:", done_avail)
 
     if cpushrate:
+        print("Rate Push Started")
         counter_rate = 1
         done_rate = get_output(if_custom_pushall_ratebl(cur_type, counter_rate, inp_str, from_date, to_date, max_adult, max_child, bookengid, temp_list_data))
+        print("Rate Push Completed:", done_rate)
+    
     get_output(update_repeatflag_1bl(bookengid))
     v_success = True
 

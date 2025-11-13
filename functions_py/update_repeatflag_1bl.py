@@ -10,9 +10,7 @@ from models import Queasy
 def update_repeatflag_1bl(bookengid:int):
 
     prepare_cache ([Queasy])
-
     queasy = None
-
     db_session = local_storage.db_session
 
     def generate_output():
@@ -25,7 +23,6 @@ def update_repeatflag_1bl(bookengid:int):
     queasy = get_cache (Queasy, {"key": [(eq, 167)],"number1": [(eq, bookengid)]})
 
     if queasy:
-        pass
         queasy.date1 = get_current_date()
         queasy.logi1 = True
         pass

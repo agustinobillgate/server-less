@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 12/11/2025
-# CM
+# CM: 
 #---------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -12,7 +12,6 @@ from models import Queasy, Kontline, Ratecode, Zimkateg, Waehrung, Arrangement, 
 temp_list_data, Temp_list = create_model("Temp_list", {"rcode":string, "rmtype":string, "zikatnr":int})
 
 def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string, fdate:date, tdate:date, adult:int, child:int, becode:int, temp_list_data:[Temp_list]):
-    
 
     prepare_cache ([Queasy, Kontline, Htparam, Guest, Guest_pr, Artikel, Res_line, Zimmer, Reservation])
 
@@ -237,7 +236,6 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
 
         return generate_inner_output()
 
-
     bratecode_data.clear()
     t_zimkateg_data.clear()
     t_waehrung_data.clear()
@@ -411,7 +409,7 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
         if htparam.flogical:
 
             if date_110 < get_current_date():
-
+                print("Date 110 is in the past. Exiting rate push.")
                 return generate_output()
 
     queasy = get_cache (Queasy, {"key": [(eq, 159)],"number1": [(eq, becode)]})
@@ -427,7 +425,7 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
             if guest_pr:
                 cm_gastno = guest.gastnr
             else:
-
+                print("No guest profile found for guest number:", guest.gastnr, ". Exiting rate push.")
                 return generate_output()
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
@@ -839,8 +837,10 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
 
     for t_queasy in query(t_queasy_data):
         bqsy170 = Queasy()
+        print("--> Inserting Queasy record for key 170")
         db_session.add(bqsy170)
 
         buffer_copy(t_queasy, bqsy170)
 
+    print("Rate push completed successfully.")
     return generate_output()

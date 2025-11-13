@@ -3,7 +3,9 @@
 #------------------------------------------
 # Rulita, 18/08/2025
 # Recompile program 
-# ticket: A96F0C
+# ticket: 
+# Rd, 13/11/2025
+# CM Push rate
 #--------------------------------------------
 
 from functions.additional_functions import *

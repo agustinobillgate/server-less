@@ -1,0 +1,46 @@
+{
+    "Queasy": {
+        "read": [
+            "number2",
+            "_recid",
+            "logi2",
+            "logi1"
+        ],
+        "write": []
+    },
+    "Guest": {
+        "read": [
+            "gastnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "resnr",
+            "depositgef",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "abreise",
+            "zikatnr",
+            "zimmer_wunsch",
+            "resnr",
+            "reslinnr",
+            "ankunft",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "typ",
+            "zikatnr",
+            "_recid"
+        ],
+        "write": []
+    }
+}
