@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+#------------------------------------------
+# Rd, 13/11/2025
+# Create queasy: 161
+#------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Bediener, Res_history
@@ -64,8 +69,6 @@ def bookengine_ratecodepush_btn_exit_1bl(t_push_list_data:[T_push_list], bookeng
         bufq.key = 161
         bufq.number1 = bookengid
         bufq.char1 = str
-
-
         pass
 
         for outlist in query(outlist_data, filters=(lambda outlist: outlist.key == 161 and outlist.number1 == bookengid)):

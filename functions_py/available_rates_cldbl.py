@@ -250,11 +250,11 @@ def available_rates_cldbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int
         curr_time = get_current_time_in_seconds()
 
         # if bqueasy.number3 > (ankunft - timedelta(days=ci_date)):
-        if bqueasy.number3 > date_range(ankunft, ci_date).days:
+        if bqueasy.number3 > (ankunft - ci_date).days:
             pass
 
         # elif bqueasy.deci3 > 0 and bqueasy.deci3 < (ankunft - timedelta(days=ci_date)):
-        elif bqueasy.deci3 > 0 and bqueasy.deci3 < date_range(ankunft, ci_date).days:
+        elif bqueasy.deci3 > 0 and bqueasy.deci3 < (ankunft - ci_date).days:
             pass
 
         elif not bqueasy.logi2:
@@ -320,7 +320,7 @@ def available_rates_cldbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int
                         curr_i = 0
 
                         if not rate_list.expired:
-                            for curr_date in date_range(frdate,todate) :
+                            for curr_date in (frdate - todate).days :
                                 curr_i = curr_i + 1
                                 allotment_ok = True
 
@@ -460,7 +460,7 @@ def available_rates_cldbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int
 
             if rate_list and not rate_created:
                 curr_i = 0
-                for curr_date in date_range(frdate,todate) :
+                for curr_date in (frdate - todate).days :
                     curr_i = curr_i + 1
                     w_day = wd_array[get_weekday(curr_date) - 1]
 
@@ -475,7 +475,7 @@ def available_rates_cldbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int
                         dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == 0 and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and (dynarate_list.fr_room <= occ_rooms) and (dynarate_list.to_room >= occ_rooms)), first=True)
 
                     if dynarate_list:
-                        mapcode = dynarate_list.rcode
+                        mapcode = dynarate_list.strip()
 
                         if not global_occ:
 
@@ -508,7 +508,7 @@ def available_rates_cldbl(frdate:date, todate:date, i_zikatnr:int, i_counter:int
                 curr_i = 0
 
                 if not_found_flag:
-                    for curr_date in date_range(frdate,todate) :
+                    for curr_date in (frdate - todate).days :
                         curr_i = curr_i + 1
                         occ_rooms = occ_room_array[curr_i - 1]
 
