@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ============================
+# Rulita, 13-11-2025
+# Fixing syntax progress
+# ============================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.htpchar import htpchar
@@ -157,7 +162,8 @@ def intevent_1(ev_type:int, zinr:string, parms:string, resno:int, reslinno:int):
     if parms.lower()  == ("Loyalty").lower() :
 
         if ev_type == 1:
-            DO
+            # Rulita 13-11-2025
+            # DO
             interface = Interface()
             db_session.add(interface)
 
