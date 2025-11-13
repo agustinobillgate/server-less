@@ -1,0 +1,24 @@
+{
+    "Ratecode": {
+        "read": [],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "fdate",
+            "finteger",
+            "fchar",
+            "feldtyp",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "char1",
+            "char3",
+            "_recid"
+        ],
+        "write": []
+    }
+}
