@@ -1,6 +1,12 @@
 #using conversion tools version: 1.0.0.117
 
+# ============================================================
 # Rulita 150825 | Added buffer_copy reservation.bestat_datum
+
+# Rulita, 13-11-2025
+# from Resline.kontakt_nr == reslinnr
+# to Resline.kontakt_nr == Resline.reslinnr
+# ============================================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -452,8 +458,11 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
         pass
 
+        # Rulita, 13-11-2025
+        # from Resline.kontakt_nr == reslinnr
+        # to Resline.kontakt_nr == Resline.reslinnr
         for resline in db_session.query(Resline).filter(
-                 (Resline.resnr == resno) & (Resline.l_zuordnung[inc_value(2)] == 1) & (Resline.kontakt_nr == reslinnr)).order_by(Resline._recid).all():
+                 (Resline.resnr == resno) & (Resline.l_zuordnung[inc_value(2)] == 1) & (Resline.kontakt_nr == Resline.reslinnr)).order_by(Resline._recid).all():
             curr_ress = resline.resstatus
             t_resline = Res_line()
             db_session.add(t_resline)

@@ -70,7 +70,14 @@ def if_vhp_bookeng_push_availbl(pushrate:bool, inp_str:string, fdate:date, tdate
 
     rmcat_list_data, Rmcat_list = create_model("Rmcat_list", {"zikatnr":int, "anzahl":int, "typ":int, "sleeping":bool}, {"sleeping": True})
     r_list_data, R_list = create_model("R_list", {"rcode":string})
-    push_allot_list_data, Push_allot_list = create_model("Push_allot_list", {"startperiode":date, "endperiode":date, "zikatnr":int, "counter":int, "rcode":string, "bezeich":string, "qty":int, "flag":bool, "str_date1":string, "str_date2":string, "minlos":int, "maxlos":int, "statnr":int, "ota":string, "bsetup":string, "rmtype":string}, {"flag": True})
+    # push_allot_list_data, Push_allot_list = create_model("Push_allot_list", {"startperiode":date, "endperiode":date, "zikatnr":int, "counter":int, "rcode":string, "bezeich":string, "qty":int, "flag":bool, "str_date1":string, "str_date2":string, "minlos":int, "maxlos":int, "statnr":int, "ota":string, "bsetup":string, "rmtype":string}, {"flag": True})
+    
+    #bedsetup dan ota dihapus dari model Push_allot_list
+    push_allot_list_data, Push_allot_list = create_model("Push_allot_list", {"startperiode":date, "endperiode":date, "zikatnr":int, 
+                                                                             "counter":int, "rcode":string, "bezeich":string, "qty":int, 
+                                                                             "flag":bool, "str_date1":string, "str_date2":string, "minlos":int, 
+                                                                             "maxlos":int, "statnr":int, "rmtype":string}, {"flag": True, "str_date1":"YYYY-MM-DD", "str_date2":"YYYY-MM-DD"})
+
     q_list_data, Q_list = create_model("Q_list", {"rcode":string, "scode":string, "dcode":string, "zikatnr":int, "allot_flag":bool})
     change_room_data, Change_room = create_model("Change_room", {"datum":date, "zikatnr":int, "occ":int})
     allotment_data, allotment = create_model("allotment", {"datum":date, "zikatnr":int, "res_allot":int, "allot":int, "ruecktage":int})
@@ -382,7 +389,7 @@ def if_vhp_bookeng_push_availbl(pushrate:bool, inp_str:string, fdate:date, tdate
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 253)]})
 
-    if htparam.flogic:
+    if htparam.flogical:
 
         if date_110 < get_current_date():
 
@@ -398,15 +405,19 @@ def if_vhp_bookeng_push_availbl(pushrate:bool, inp_str:string, fdate:date, tdate
     if queasy:
 
         guest = get_cache (Guest, {"gastnr": [(eq, queasy.number2)]})
-
+        if not guest:
+            return generate_output()
+        
         guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, guest.gastnr)]})
 
         if guest_pr:
             cm_gastno = guest.gastnr
         else:
-
             return generate_output()
+    else:
 
+        return generate_output()
+    
     queasy = get_cache (Queasy, {"key": [(eq, 152)]})
 
     if queasy:
@@ -552,6 +563,7 @@ def if_vhp_bookeng_push_availbl(pushrate:bool, inp_str:string, fdate:date, tdate
         queasy = db_session.query(Queasy).filter(
                      (Queasy.key == 175) & (Queasy.number3 > 0) & (Queasy._recid > curr_recid)).first()
 
+    valid_date = tdate
     if pushall:
 
         for temp_list in query(temp_list_data):
@@ -615,8 +627,14 @@ def if_vhp_bookeng_push_availbl(pushrate:bool, inp_str:string, fdate:date, tdate
         kontline_obj_list = {}
         kontline = Kontline()
         zimkateg = Zimkateg()
-        for kontline.zimmeranz, kontline.ankunft, kontline.abreise, kontline.ruecktage, kontline.betriebsnr, kontline._recid, kontline.kontcode, zimkateg.typ, zimkateg.zikatnr, zimkateg.kurzbez, zimkateg._recid in db_session.query(Kontline.zimmeranz, Kontline.ankunft, Kontline.abreise, Kontline.ruecktage, Kontline.betriebsnr, Kontline._recid, Kontline.kontcode, Zimkateg.typ, Zimkateg.zikatnr, Zimkateg.kurzbez, Zimkateg._recid).join(Zimkateg,(Zimkateg.zikatnr == Kontline.zikatnr)).filter(
+        for kontline.zimmeranz, kontline.ankunft, kontline.abreise, kontline.ruecktage, kontline.betriebsnr, \
+                kontline._recid, kontline.kontcode, zimkateg.typ, zimkateg.zikatnr, zimkateg.kurzbez, zimkateg._recid \
+                in db_session.query(Kontline.zimmeranz, Kontline.ankunft, Kontline.abreise, Kontline.ruecktage, Kontline.betriebsnr, \
+                                    Kontline._recid, Kontline.kontcode, Zimkateg.typ, Zimkateg.zikatnr, Zimkateg.kurzbez, Zimkateg._recid)\
+                .join(Zimkateg,(Zimkateg.zikatnr == Kontline.zikatnr))\
+                .filter(
                      (Kontline.kontstatus == 1) & (Kontline.ankunft <= valid_date) & (Kontline.abreise >= fdate)).order_by(Kontline._recid).all():
+            
             if kontline_obj_list.get(kontline._recid):
                 continue
             else:
@@ -1098,7 +1116,11 @@ def if_vhp_bookeng_push_availbl(pushrate:bool, inp_str:string, fdate:date, tdate
 
         for r_list in query(r_list_data):
 
-            qsy_allot = get_cache (Queasy, {"key": [(eq, 171)],"char1": [(eq, r_list.rcode)],"date1": [(eq, queasy.date1)],"betriebsnr": [(eq, becode)],"number1": [(eq, queasy.number1)],"number3": [(ne, 0)]})
+            qsy_allot = get_cache (Queasy, {"key": [(eq, 171)],"char1": [(eq, r_list.rcode)],
+                                            "date1": [(eq, queasy.date1)],
+                                            "betriebsnr": [(eq, becode)],
+                                            "number1": [(eq, queasy.number1)],
+                                            "number3": [(ne, 0)]})
 
             if not qsy_allot:
 
