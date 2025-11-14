@@ -355,19 +355,22 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
 
             if t_zimkateg:
                 temp_list.zikatnr = t_zimkateg.zikatnr
-
+    print("Current rate code to push:", curr_code)
     if currcode  == ("*") :
 
-        queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(ge, fdate),(le, tdate)],"betriebsnr": [(eq, becode)]})
-        while None != queasy:
+        # queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(ge, fdate),(le, tdate)],"betriebsnr": [(eq, becode)]})
+        queasys = db_session.query(Queasy).filter(
+                 (Queasy.key == 171) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate) & (Queasy.betriebsnr == becode)).order_by(Queasy._recid).all()
+        # while None != queasy:
+        for queasy in queasys:
             t_qsy171 = T_qsy171()
             t_qsy171_data.append(t_qsy171)
-
+            print("Processing rate entry for date:", queasy.date1, "zikatnr:", queasy.number1)
             buffer_copy(queasy, t_qsy171)
 
-            curr_recid = queasy._recid
-            queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 171) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate) & (Queasy.betriebsnr == becode) & (Queasy._recid > curr_recid)).first()
+            # curr_recid = queasy._recid
+            # queasy = db_session.query(Queasy).filter(
+            #          (Queasy.key == 171) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate) & (Queasy.betriebsnr == becode) & (Queasy._recid > curr_recid)).first()
     else:
 
         temp_list = query(temp_list_data, filters=(lambda temp_list: temp_list.rmtype  == (currcode)), first=True)
@@ -375,16 +378,20 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
         if temp_list:
             zikatnr = temp_list.zikatnr
 
-        queasy = get_cache (Queasy, {"key": [(eq, 171)],"number1": [(eq, zikatnr)],"date1": [(ge, fdate),(le, tdate)],"betriebsnr": [(eq, becode)]})
-        while None != queasy:
+        # queasy = get_cache (Queasy, {"key": [(eq, 171)],"number1": [(eq, zikatnr)],"date1": [(ge, fdate),(le, tdate)],"betriebsnr": [(eq, becode)]})
+        # while None != queasy:
+        queasys = db_session.query(Queasy).filter(
+                 (Queasy.key == 171) & (Queasy.number1 == zikatnr) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate) & (Queasy.betriebsnr == becode)).order_by(Queasy._recid).all()
+        for queasy in queasys:
             t_qsy171 = T_qsy171()
             t_qsy171_data.append(t_qsy171)
+            print("Processing rate for room type:", currcode, "on date:", queasy.date1)
 
             buffer_copy(queasy, t_qsy171)
 
-            curr_recid = queasy._recid
-            queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 171) & (Queasy.number1 == zikatnr) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate) & (Queasy.betriebsnr == becode) & (Queasy._recid > curr_recid)).first()
+            # curr_recid = queasy._recid
+            # queasy = db_session.query(Queasy).filter(
+            #          (Queasy.key == 171) & (Queasy.number1 == zikatnr) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate) & (Queasy.betriebsnr == becode) & (Queasy._recid > curr_recid)).first()
     adult = 2
     done = False
 

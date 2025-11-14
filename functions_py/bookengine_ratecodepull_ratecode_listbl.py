@@ -23,7 +23,7 @@ def bookengine_ratecodepull_ratecode_listbl(prcode:string):
     mesvalue:string = ""
     dyna_flag:bool = False
     prev_prcode:string = ""
-    has_contract_rate:bool = False
+    has_contract_rate:bool = True
     cat_flag:bool = False
     roomtype:string = ""
     prtable = queasy = ratecode = prmarket = zimkateg = arrangement = None
@@ -38,6 +38,7 @@ def bookengine_ratecodepull_ratecode_listbl(prcode:string):
 
 
     db_session = local_storage.db_session
+    prcode = prcode.strip()
 
     def generate_output():
         nonlocal ratecode_detail_list_data, i, j, k, zikatnr, argtnr, found1, pr_str, curr_id, iftask, tokcounter, mestoken, mesvalue, dyna_flag, prev_prcode, has_contract_rate, cat_flag, roomtype, prtable, queasy, ratecode, prmarket, zimkateg, arrangement
@@ -58,7 +59,9 @@ def bookengine_ratecodepull_ratecode_listbl(prcode:string):
     if queasy:
         cat_flag = True
 
-    queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, prcode)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, prcode)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 2) & (Queasy.char1 == prcode)).first()
 
     if queasy.logi2:
         dyna_flag = True
@@ -77,7 +80,7 @@ def bookengine_ratecodepull_ratecode_listbl(prcode:string):
     prmarket = Prmarket()
     prtable0 = Prtable()
     for prtable.product, prtable._recid, prtable.zikatnr, prtable.argtnr, prmarket.nr, prmarket._recid, prtable0.product, prtable0._recid, prtable0.zikatnr, prtable0.argtnr in db_session.query(Prtable.product, Prtable._recid, Prtable.zikatnr, Prtable.argtnr, Prmarket.nr, Prmarket._recid, Prtable0.product, Prtable0._recid, Prtable0.zikatnr, Prtable0.argtnr).join(Prmarket,(Prmarket.nr == Prtable.marknr)).join(Prtable0,(Prtable0.marknr == Prtable.marknr) & (Prtable0.prcode == "")).filter(
-             (Prtable.prcode == (prcode).lower())).order_by(Prtable._recid).all():
+             (Prtable.prcode == (prcode))).order_by(Prtable._recid).all():
         if prtable_obj_list.get(prtable._recid):
             continue
         else:
@@ -130,7 +133,7 @@ def bookengine_ratecodepull_ratecode_listbl(prcode:string):
                         else:
                             roomtype = zimkateg.kurzbez
 
-                        ratecode_detail_list = query(ratecode_detail_list_data, filters=(lambda ratecode_detail_list: ratecode_detail_list.rmtype.lower()  == (roomtype).lower()  and ratecode_detail_list.argmt == arrangement.arrangement and ratecode_detail_list.flag == 1), first=True)
+                        ratecode_detail_list = query(ratecode_detail_list_data, filters=(lambda ratecode_detail_list: ratecode_detail_list.rmtype  == (roomtype)  and ratecode_detail_list.argmt == arrangement.arrangement and ratecode_detail_list.flag == 1), first=True)
 
                         if not ratecode_detail_list:
                             has_contract_rate = False
