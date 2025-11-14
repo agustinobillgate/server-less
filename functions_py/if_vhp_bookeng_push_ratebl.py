@@ -4,6 +4,8 @@
 # Rulita, 18/08/2025
 # Recompile program 
 # ticket: A96F0C
+# Rd, 13/11/2025
+# CM Push rate
 #--------------------------------------------
 
 from functions.additional_functions import *
@@ -109,6 +111,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
 
 
     db_session = local_storage.db_session
+    inp_str = inp_str.strip()
 
     def generate_output():
         nonlocal done, push_rate_list_data, curr_rate, curr_recid, curr_scode, curr_bezeich, temp_zikat, starttime, curr_date, ankunft, ci_date, co_date, datum, tokcounter, iftask, mestoken, mesvalue, grpcode, global_occ, splited_occ, q_recid, vhp_limited, do_it, exist, cat_flag, pushall, re_calculaterate, createrate, cm_gastno, counter, counter170, i, occ_room, end_date, max_occ, rm_occ, rm_ooo, room, maxroom, def_rate, w_day, wd_array, tax_included, serv, vat, strl, strll, loopi, loopj, currtype, frmtype, n, m, k, j, ratecode, zimkateg, waehrung, arrangement, queasy, kontline, res_line, htparam, guest, guest_pr, artikel, zimmer, reservation, segment
@@ -476,7 +479,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1364)],"bezeichnung": [(ne, "not used")]})
 
-    if htparam and htparam.fchar != " ":
+    if htparam and htparam.fchar.strip() != "":
         for loopi in range(1,num_entries(htparam.fchar, ";")  + 1) :
             strl = entry(loopi - 1, htparam.fchar, ";")
 
@@ -594,7 +597,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
 
     if htparam:
 
-        if htparam.flogic:
+        if htparam.flogical:
 
             return generate_output()
 
@@ -831,7 +834,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
                         dynarate_list.rcode = mesvalue
 
                 if dynarate_list.to_room > maxroom:
-                    def_rate = dynarate_list.rCode
+                    def_rate = dynarate_list.rcode
                     maxroom = dynarate_list.to_room
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 439)]})
@@ -928,11 +931,19 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
 
         if createrate:
 
-            t_qsy171 = query(t_qsy171_data, filters=(lambda t_qsy171: t_qsy171.char1 == "" and t_qsy171.date1 == tdate), first=True)
+            # t_qsy171 = query(t_qsy171_data, filters=(lambda t_qsy171: t_qsy171.char1 == "" and t_qsy171.date1 == tdate), first=True)
+            t_qsy171_list = [    t_qsy171
+                            for t_qsy171 in t_qsy171_data
+                            if t_qsy171.char1 == "" and t_qsy171.date1 == tdate
+                        ]
         else:
-
-            t_qsy171 = query(t_qsy171_data, filters=(lambda t_qsy171: t_qsy171.char1 == ""), first=True)
-        while None != t_qsy171:
+            # t_qsy171 = query(t_qsy171_data, filters=(lambda t_qsy171: t_qsy171.char1 == ""), first=True)
+            t_qsy171_list = [    t_qsy171
+                            for t_qsy171 in t_qsy171_data
+                            if t_qsy171.char1 == "" 
+                        ]
+        for t_qsy171 in t_qsy171_list:
+        # while None != t_qsy171:
             w_day = wd_array[get_weekday(t_qsy171.date1) - 1]
 
             for r_list in query(r_list_data):
@@ -1047,40 +1058,40 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
 
                     if not global_occ:
 
-                        dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == w_day and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynaCode == r_list.rcode and dynarate_list.rmType == t_zimkateg.kurzbez), first=True)
+                        dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == w_day and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynacode == r_list.rcode and dynarate_list.rmType == t_zimkateg.kurzbez), first=True)
 
                         if not dynarate_list:
 
-                            dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == 0 and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynaCode == r_list.rcode and dynarate_list.rmType == t_zimkateg.kurzbez), first=True)
+                            dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == 0 and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynacode == r_list.rcode and dynarate_list.rmType == t_zimkateg.kurzbez), first=True)
                     else:
 
-                        dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == w_day and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynaCode == r_list.rcode), first=True)
+                        dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == w_day and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynacode == r_list.rcode), first=True)
 
                         if not dynarate_list:
 
-                            dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == 0 and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynaCode == r_list.rcode), first=True)
+                            dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == 0 and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynacode == r_list.rcode), first=True)
 
                     if dynarate_list:
 
                         if not global_occ:
 
-                            t_qsy145 = query(t_qsy145_data, filters=(lambda t_qsy145: t_qsy145.char1 == r_list.rcode and t_qsy145.char2 == dynarate_list.rCode and t_qsy145.number1 == t_zimkateg.zikatnr and t_qsy145.deci1 == dynarate_list.w_day and t_qsy145.deci2 == dynarate_list.counter and t_qsy145.date1 == t_qsy171.date1), first=True)
+                            t_qsy145 = query(t_qsy145_data, filters=(lambda t_qsy145: t_qsy145.char1 == r_list.rcode and t_qsy145.char2 == dynarate_list.rcode and t_qsy145.number1 == t_zimkateg.zikatnr and t_qsy145.deci1 == dynarate_list.w_day and t_qsy145.deci2 == dynarate_list.counter and t_qsy145.date1 == t_qsy171.date1), first=True)
 
                             if not t_qsy145:
 
-                                t_qsy145 = query(t_qsy145_data, filters=(lambda t_qsy145: t_qsy145.char1 == r_list.rcode and t_qsy145.char2 == dynarate_list.rCode and t_qsy145.number1 == t_zimkateg.zikatnr and t_qsy145.deci1 == 0 and t_qsy145.deci2 == dynarate_list.counter and t_qsy145.date1 == t_qsy171.date1), first=True)
+                                t_qsy145 = query(t_qsy145_data, filters=(lambda t_qsy145: t_qsy145.char1 == r_list.rcode and t_qsy145.char2 == dynarate_list.rcode and t_qsy145.number1 == t_zimkateg.zikatnr and t_qsy145.deci1 == 0 and t_qsy145.deci2 == dynarate_list.counter and t_qsy145.date1 == t_qsy171.date1), first=True)
                         else:
 
-                            t_qsy145 = query(t_qsy145_data, filters=(lambda t_qsy145: t_qsy145.char1 == r_list.rcode and t_qsy145.char2 == dynarate_list.rCode and t_qsy145.number1 == 0 and t_qsy145.deci1 == dynarate_list.w_day and t_qsy145.deci2 == dynarate_list.counter and t_qsy145.date1 == t_qsy171.date1), first=True)
+                            t_qsy145 = query(t_qsy145_data, filters=(lambda t_qsy145: t_qsy145.char1 == r_list.rcode and t_qsy145.char2 == dynarate_list.rcode and t_qsy145.number1 == 0 and t_qsy145.deci1 == dynarate_list.w_day and t_qsy145.deci2 == dynarate_list.counter and t_qsy145.date1 == t_qsy171.date1), first=True)
 
                             if not t_qsy145:
 
-                                t_qsy145 = query(t_qsy145_data, filters=(lambda t_qsy145: t_qsy145.char1 == r_list.rcode and t_qsy145.char2 == dynarate_list.rCode and t_qsy145.number1 == 0 and t_qsy145.deci1 == 0 and t_qsy145.deci2 == dynarate_list.counter and t_qsy145.date1 == t_qsy171.date1), first=True)
+                                t_qsy145 = query(t_qsy145_data, filters=(lambda t_qsy145: t_qsy145.char1 == r_list.rcode and t_qsy145.char2 == dynarate_list.rcode and t_qsy145.number1 == 0 and t_qsy145.deci1 == 0 and t_qsy145.deci2 == dynarate_list.counter and t_qsy145.date1 == t_qsy171.date1), first=True)
 
                         if t_qsy145:
                             curr_scode = t_qsy145.char3
                         else:
-                            curr_scode = dynarate_list.rCode
+                            curr_scode = dynarate_list.rcode
 
                         if pushpax:
 
@@ -1151,12 +1162,11 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
                                 else:
                                     rate_list.bezeich = t_zimkateg.kurzbez
 
-            if createrate:
+            # if createrate:
+            #     t_qsy171 = query(t_qsy171_data, filters=(lambda t_qsy171: t_qsy171.char1 == "" and t_qsy171.date1 == tdate), next=True)
+            # else:
 
-                t_qsy171 = query(t_qsy171_data, filters=(lambda t_qsy171: t_qsy171.char1 == "" and t_qsy171.date1 == tdate), next=True)
-            else:
-
-                t_qsy171 = query(t_qsy171_data, filters=(lambda t_qsy171: t_qsy171.char1 == ""), next=True)
+            #     t_qsy171 = query(t_qsy171_data, filters=(lambda t_qsy171: t_qsy171.char1 == ""), next=True)
 
         rate_list = query(rate_list_data, filters=(lambda rate_list: rate_list.startperiode >= fdate and rate_list.endperiode <= tdate), first=True)
         while None != rate_list:
@@ -1353,18 +1363,18 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
 
                 if not global_occ:
 
-                    dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == w_day and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynaCode == queasy.char1 and dynarate_list.rmType == t_zimkateg.kurzbez), first=True)
+                    dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == w_day and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynacode == queasy.char1 and dynarate_list.rmType == t_zimkateg.kurzbez), first=True)
 
                     if not dynarate_list:
 
-                        dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == 0 and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynaCode == queasy.char1 and dynarate_list.rmType == t_zimkateg.kurzbez), first=True)
+                        dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == 0 and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynacode == queasy.char1 and dynarate_list.rmType == t_zimkateg.kurzbez), first=True)
                 else:
 
-                    dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == w_day and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynaCode == queasy.char1), first=True)
+                    dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == w_day and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynacode == queasy.char1), first=True)
 
                     if not dynarate_list:
 
-                        dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == 0 and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynaCode == queasy.char1), first=True)
+                        dynarate_list = query(dynarate_list_data, filters=(lambda dynarate_list: dynarate_list.w_day == 0 and dynarate_list.days1 == 0 and dynarate_list.days2 == 0 and dynarate_list.fr_room <= occ_room and dynarate_list.to_room >= occ_room and dynarate_list.dynacode == queasy.char1), first=True)
 
                 if dynarate_list:
 
@@ -1386,7 +1396,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
                     if qsy:
                         curr_scode = qsy.char3
                     else:
-                        curr_scode = dynarate_list.rCode
+                        curr_scode = dynarate_list.rcode
 
                     bratecode = query(bratecode_data, filters=(lambda bratecode: bratecode.code.lower()  == (curr_scode).lower()  and bratecode.zikatnr == t_zimkateg.zikatnr and bratecode.kind1 == queasy.number3 and bratecode.erwach == queasy.number2 and bratecode.startperiode <= queasy.date1 and bratecode.endperiode >= queasy.date1 and bratecode.wday == w_day), first=True)
 
@@ -1455,13 +1465,11 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
     while None != queasy:
 
         if cat_flag:
-
             t_qsy152 = query(t_qsy152_data, filters=(lambda t_qsy152: t_qsy152.number1 == queasy.number1), first=True)
 
             if t_qsy152:
                 curr_bezeich = t_qsy152.char1
         else:
-
             t_zimkateg = query(t_zimkateg_data, filters=(lambda t_zimkateg: t_zimkateg.zikatnr == queasy.number1), first=True)
 
             if t_zimkateg:

@@ -53,11 +53,9 @@ def bookengine_config_btn_exit_web_3bl(bookengid:int, autostart:bool, period:int
         nonlocal i, str, oldstr, ct, oldct, progavail1, be_name, queasy, bediener, res_history
         nonlocal bookengid, autostart, period, delay, hotelcode, username, password, liveflag, defcurr, pushrateflag, pullbookflag, pushavailflag, workpath, progavail, user_init, pushratebypax, uppercasename, delayrate, delaypull, delayavail, pushall, re_calculate, restriction, allotment, pax, bedsetup, pushbookflag, delaypushbook, vcwsagent, vcwsagent2, vcwsagent3, vcwsagent4, vcwsagent5, vcwebhost, vcwebport, email, dyna_code, incl_tentative
         nonlocal nameqsy, bqueasy
-
-
         nonlocal t_list, nameqsy, bqueasy
         nonlocal t_list_data
-
+        print("Configuration Saved Successfully")
         return {}
 
     def assign_tlist_values():
@@ -130,7 +128,6 @@ def bookengine_config_btn_exit_web_3bl(bookengid:int, autostart:bool, period:int
 
             if num_entries(t_list.progavail, "=") >= 24:
                 t_list.incl_tentative = logical(entry(23, t_list.progavail, "="))
-
 
     def create_logdetails():
 
@@ -274,34 +271,40 @@ def bookengine_config_btn_exit_web_3bl(bookengid:int, autostart:bool, period:int
                 res_history.aenderung = chr_unicode(40) + be_name + chr_unicode(41) + " " + logmessage
                 pass
 
-    progavail1 = progavail + "=" +\
-            dyna_code + "=" +\
-            to_string(pushratebypax) + "=" +\
-            to_string(uppercasename) + "=" +\
-            to_string(delayrate) + "=" +\
-            to_string(delaypull) + "=" +\
-            to_string(delayavail) + "=" +\
-            to_string(pushall) + "=" +\
-            to_string(re_calculate) + "=" +\
-            to_string(restriction) + "=" +\
-            to_string(allotment) + "=" +\
-            to_string(pax) + "=" +\
-            to_string(bedsetup) + "=" +\
-            to_string(pushbookflag) + "=" +\
-            to_string(delaypushbook) + "=" +\
-            vcwsagent + "=" +\
-            vcwsagent2 + "=" +\
-            vcwsagent3 + "=" +\
-            vcwsagent4 + "=" +\
-            vcwebhost + "=" +\
-            vcwebport + "=" +\
-            email + "=" +\
-            vcwsagent5 + "=" +\
-            to_string(incl_tentative)
+    progavail1 =    progavail + "=" +\
+                    dyna_code + "=" +\
+                    to_string(pushratebypax) + "=" +\
+                    to_string(uppercasename) + "=" +\
+                    to_string(delayrate) + "=" +\
+                    to_string(delaypull) + "=" +\
+                    to_string(delayavail) + "=" +\
+                    to_string(pushall) + "=" +\
+                    to_string(re_calculate) + "=" +\
+                    to_string(restriction) + "=" +\
+                    to_string(allotment) + "=" +\
+                    to_string(pax) + "=" +\
+                    to_string(bedsetup) + "=" +\
+                    to_string(pushbookflag) + "=" +\
+                    to_string(delaypushbook) + "=" +\
+                    vcwsagent + "=" +\
+                    vcwsagent2 + "=" +\
+                    vcwsagent3 + "=" +\
+                    vcwsagent4 + "=" +\
+                    vcwebhost + "=" +\
+                    vcwebport + "=" +\
+                    email + "=" +\
+                    vcwsagent5 + "=" +\
+                    to_string(incl_tentative)
     
 
-    ct = "$autostart$" + to_string(autostart) + ";" + "$period$" + to_string(period) + ";" + "$delay$" + to_string(delay) + ";" + "$liveflag$" + to_string(liveflag) + ";" + "$defcurr$" + to_string(defcurr) + ";" + "$workpath$" + to_string(workpath) + ";" + "$progname$" + to_string(progavail1) + ";" + "$htlcode$" + to_string(hotelcode) + ";" + "$username$" + to_string(username) + ";" + "$password$" + to_string(password) + ";" + "$pushrate$" + to_string(pushrateflag) + ";" + "$pullbook$" + to_string(pullbookflag) + ";" + "$pushavail$" + to_string(pushavailflag)
-
+    ct = "$autostart$" + to_string(autostart) + ";" + "$period$" + to_string(period) + ";" + "$delay$" + \
+                        to_string(delay) + ";" + "$liveflag$" + to_string(liveflag) + ";" + "$defcurr$" + \
+                        to_string(defcurr) + ";" + "$workpath$" + to_string(workpath) + ";" + "$progname$" + \
+                        to_string(progavail1) + ";" + "$htlcode$" + to_string(hotelcode) + ";" + "$username$" + \
+                        to_string(username) + ";" + "$password$" + to_string(password) + ";" + "$pushrate$" + \
+                        to_string(pushrateflag) + ";" + "$pullbook$" + to_string(pullbookflag) + ";" + "$pushavail$" + \
+                        to_string(pushavailflag)
+    
     nameqsy = get_cache (Queasy, {"key": [(eq, 159)],"number1": [(eq, bookengid)]})
 
     if nameqsy:
@@ -404,6 +407,11 @@ def bookengine_config_btn_exit_web_3bl(bookengid:int, autostart:bool, period:int
             res_history.aenderung = chr_unicode(40) + be_name + chr_unicode(41) + " New Config Has Been Created"
             pass
 
+    # debug t_list_data
+    # for t in query(t_list_data):
+    #     print(f"--> T_list record: autostart={t.autostart}, period={t.period}, delay={t.delay}, hotelcode={t.hotelcode}, username={t.username}, pushrateflag={t.pushrateflag}, pushavailflag={t.pushavailflag}, progavail={t.progavail}")   
+
+    
     #-----------------------------------------------
     # Rd, 12/11/2025: insert to TPushList
     # tambahan CM, queasy:161
@@ -413,8 +421,8 @@ def bookengine_config_btn_exit_web_3bl(bookengid:int, autostart:bool, period:int
 
     if queasy:
         gastnrbe = queasy.number2
-    
         queasy_obj_list = {}
+
     for queasy, guest_pr in db_session.query(Queasy, Guest_pr) \
             .join(Guest_pr,(Guest_pr.gastnr == gastnrbe) & 
                   (Guest_pr.code == entry(0, Queasy.char1, ";")))\

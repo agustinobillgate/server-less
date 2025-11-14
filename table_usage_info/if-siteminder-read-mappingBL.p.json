@@ -1,0 +1,9 @@
+{
+    "Queasy": {
+        "read": [
+            "char1",
+            "_recid"
+        ],
+        "write": []
+    }
+}

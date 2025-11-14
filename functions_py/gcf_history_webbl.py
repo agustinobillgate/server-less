@@ -1,21 +1,21 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from sqlalchemy import func
-from models import History, Paramtext, Res_line, Guest
+from models import History, Paramtext, Res_line, Guest, Queasy
 
 def gcf_history_webbl(gastnr:int, fdate:date, tdate:date, vkey:int):
 
-    prepare_cache ([History, Paramtext, Res_line, Guest])
+    prepare_cache ([History, Paramtext, Res_line, Guest, Queasy])
 
     ghistory_data = []
     summ_list_data = []
     htl_name:string = ""
     str:string = ""
     i:int = 0
-    history = paramtext = res_line = guest = None
+    history = paramtext = res_line = guest = queasy = None
 
     ghistory = summ_list = hist1 = b_history = None
 
@@ -29,7 +29,7 @@ def gcf_history_webbl(gastnr:int, fdate:date, tdate:date, vkey:int):
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal ghistory_data, summ_list_data, htl_name, str, i, history, paramtext, res_line, guest
+        nonlocal ghistory_data, summ_list_data, htl_name, str, i, history, paramtext, res_line, guest, queasy
         nonlocal gastnr, fdate, tdate, vkey
         nonlocal hist1, b_history
 
@@ -41,7 +41,7 @@ def gcf_history_webbl(gastnr:int, fdate:date, tdate:date, vkey:int):
 
     def create_ghistory():
 
-        nonlocal ghistory_data, summ_list_data, htl_name, str, i, history, paramtext, res_line, guest
+        nonlocal ghistory_data, summ_list_data, htl_name, str, i, history, paramtext, res_line, guest, queasy
         nonlocal gastnr, fdate, tdate, vkey
         nonlocal hist1, b_history
 
@@ -88,7 +88,7 @@ def gcf_history_webbl(gastnr:int, fdate:date, tdate:date, vkey:int):
                         ghistory.bemerk = ghistory.bemerk + "RL: " + chr_unicode(10)
 
                         for b_history in db_session.query(B_history).filter(
-                                 (B_history.resnr == history.resnr) & (B_history.reslinnr != 999)).order_by(B_history.reslinnr).all():
+                                 (B_history.resnr == history.resnr) & (B_history.reslinnr != 999) & (B_history.gastnr != guest.gastnr)).order_by(B_history.reslinnr).all():
 
                             res_line = get_cache (Res_line, {"resnr": [(eq, b_history.resnr)],"reslinnr": [(eq, b_history.reslinnr)]})
 
@@ -96,7 +96,14 @@ def gcf_history_webbl(gastnr:int, fdate:date, tdate:date, vkey:int):
 
                                 if trim(res_line.bemerk) != "":
                                     ghistory.bemerk = ghistory.bemerk + "[" + to_string(b_history.reslinnr) + "] " + res_line.bemerk + chr_unicode(10)
-                ghistory.hname = htl_name
+
+                    queasy = get_cache (Queasy, {"key": [(eq, 203)],"number1": [(eq, guest.gastnr)],"number2": [(eq, history.resnr)]})
+
+                    if queasy:
+                        ghistory.hname = queasy.char1
+                        ghistory.bemerk = queasy.char2
+                    else:
+                        ghistory.hname = htl_name
                 ghistory.s_recid = to_int(history._recid)
 
         elif vkey == 2:
@@ -138,7 +145,7 @@ def gcf_history_webbl(gastnr:int, fdate:date, tdate:date, vkey:int):
                         ghistory.bemerk = ghistory.bemerk + "RL: " + chr_unicode(10)
 
                         for b_history in db_session.query(B_history).filter(
-                                 (B_history.resnr == history.resnr) & (B_history.reslinnr != 999)).order_by(B_history.reslinnr).all():
+                                 (B_history.resnr == history.resnr) & (B_history.reslinnr != 999) & (B_history.gastnr != guest.gastnr)).order_by(B_history.reslinnr).all():
 
                             res_line = get_cache (Res_line, {"resnr": [(eq, b_history.resnr)],"reslinnr": [(eq, b_history.reslinnr)]})
 
@@ -146,7 +153,14 @@ def gcf_history_webbl(gastnr:int, fdate:date, tdate:date, vkey:int):
 
                                 if trim(res_line.bemerk) != "":
                                     ghistory.bemerk = ghistory.bemerk + "[" + to_string(b_history.reslinnr) + "] " + res_line.bemerk + chr_unicode(10)
-                ghistory.hname = htl_name
+
+                    queasy = get_cache (Queasy, {"key": [(eq, 203)],"number1": [(eq, guest.gastnr)],"number2": [(eq, history.resnr)]})
+
+                    if queasy:
+                        ghistory.hname = queasy.char1
+                        ghistory.bemerk = queasy.char2
+                    else:
+                        ghistory.hname = htl_name
                 ghistory.s_recid = to_int(history._recid)
 
         for ghistory in query(ghistory_data):
