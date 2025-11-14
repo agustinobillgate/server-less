@@ -1,0 +1,132 @@
+{
+    "Zimkateg": {
+        "read": [
+            "kurzbez",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Guest": {
+        "read": [
+            "gastnr",
+            "vorname1",
+            "name",
+            "geschlecht",
+            "anrede1",
+            "telefon",
+            "email_adr",
+            "wohnort",
+            "land",
+            "nation1",
+            "ausweis_nr1",
+            "geburtdatum1",
+            "adresse1",
+            "adresse2",
+            "adresse3",
+            "plz",
+            "geburt_ort2",
+            "_recid",
+            "mobil_telefon",
+            "karteityp"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "gastnrmember",
+            "resnr",
+            "zikatnr",
+            "betriebsnr",
+            "zimmer_wunsch",
+            "reslinnr",
+            "zimmeranz",
+            "erwachs",
+            "kind1",
+            "ankunft",
+            "abreise",
+            "bemerk",
+            "flight_nr",
+            "zinr",
+            "ankzeit",
+            "abreisezeit",
+            "_recid",
+            "zipreis",
+            "kontakt_nr",
+            "resstatus",
+            "l_zuordnung"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "fdate",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Paramtext": {
+        "read": [
+            "ptexte",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Interface": {
+        "read": [],
+        "write": []
+    },
+    "Reservation": {
+        "read": [
+            "gastnr",
+            "bemerk",
+            "resdat",
+            "resart",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [
+            "wabkurz",
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Sourccod": {
+        "read": [
+            "bezeich",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Reslin_queasy": {
+        "read": [
+            "deci1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Fixleist": {
+        "read": [
+            "sequenz",
+            "lfakt",
+            "dekade",
+            "artnr",
+            "departement",
+            "betrag",
+            "number",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Artikel": {
+        "read": [
+            "bezeich",
+            "departement",
+            "artnr",
+            "_recid"
+        ],
+        "write": []
+    }
+}
