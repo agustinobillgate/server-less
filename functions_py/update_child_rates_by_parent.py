@@ -8,7 +8,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from functions.link_ratecodebl import link_ratecodebl
+from functions_py.link_ratecodebl import link_ratecodebl
 from models import Ratecode, Htparam, Queasy
 
 
