@@ -548,7 +548,7 @@ def available_rates_cldbl(frdate: date, todate: date, i_zikatnr: int, i_counter:
                             dynarate_list.fr_room <= occ_rooms) and (dynarate_list.to_room >= occ_rooms)), first=True)
 
                     if dynarate_list:
-                        mapcode = dynarate_list.strip()
+                        mapcode = dynarate_list.rcode
 
                         if not global_occ:
                             queasy = get_cache(
