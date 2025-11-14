@@ -3,6 +3,9 @@
 # Rd, 20/8/2025
 # 'Cl_list' object has no attribute 'curr_zinr'
 # date format arrival & strip froom
+
+# Rulita, 14-11-2025
+# Update modify tiket hdesk 98B7D4
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -58,7 +61,6 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
         nonlocal str_list, s_list, cl_list, setup_list, zikat_list
         nonlocal str_list_data, s_list_data, cl_list_data
 
-
         return {"tot_rm": tot_rm, "tot_a": tot_a, "tot_c": tot_c, "tot_co": tot_co, "str-list": str_list_data, "s-list": s_list_data, "cl-list": cl_list_data}
 
     def create_departure0():
@@ -90,7 +92,6 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
         if disptype == 1:
 
             res_line_obj_list = {}
-            
             for res_line, reservation, guest, gmember in db_session.query(Res_line, Reservation, Guest, Gmember).join(Reservation,(Reservation.resnr == Res_line.resnr)).join(Guest,(Guest.gastnr == Reservation.gastnr)).join(Gmember,(Gmember.gastnr == Res_line.gastnrmember)).filter(
                      ((Res_line.resstatus <= 2) | (Res_line.resstatus == 5) | (Res_line.resstatus == 6) | (Res_line.resstatus == 13) | (Res_line.resstatus == 8) | (Res_line.resstatus == 11)) & (Res_line.abreise >= fdate) & (Res_line.abreise <= tdate) & (((Res_line.zinr >= (froom).lower()) & (Res_line.zinr <= (troom).lower())) | ((Res_line.zinr >= (froom).lower() )))).order_by(Reservation.groupname, Res_line.name, Res_line.zinr).all():
                 zikat_list = query(zikat_list_data, (lambda zikat_list: zikat_list.zikatnr == res_line.zikatnr and zikat_list.selected), first=True)
@@ -194,13 +195,13 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     if guest.karteityp != 0:
                         cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-                    if gmember.telefon != "" and gmember.mobil_telefon != "":
+                    if gmember.telefon != "" and gmember.telefon != None and gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon + ";" + gmember.mobil_telefon
 
-                    elif gmember.telefon != "" and gmember.mobil_telefon == "":
+                    elif gmember.telefon != "" and gmember.telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon
 
-                    elif gmember.telefon == "" and gmember.mobil_telefon != "":
+                    elif gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
                     if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
@@ -400,13 +401,13 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     if guest.karteityp != 0:
                         cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-                    if gmember.telefon != "" and gmember.mobil_telefon != "":
+                    if gmember.telefon != "" and gmember.telefon != None and gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon + ";" + gmember.mobil_telefon
 
-                    elif gmember.telefon != "" and gmember.mobil_telefon == "":
+                    elif gmember.telefon != "" and gmember.telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon
 
-                    elif gmember.telefon == "" and gmember.mobil_telefon != "":
+                    elif gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
                     if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
@@ -591,13 +592,13 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     if guest.karteityp != 0:
                         cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-                    if gmember.telefon != "" and gmember.mobil_telefon != "":
+                    if gmember.telefon != "" and gmember.telefon != None and gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon + ";" + gmember.mobil_telefon
 
-                    elif gmember.telefon != "" and gmember.mobil_telefon == "":
+                    elif gmember.telefon != "" and gmember.telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon
 
-                    elif gmember.telefon == "" and gmember.mobil_telefon != "":
+                    elif gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
                     if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
@@ -781,13 +782,13 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     if guest.karteityp != 0:
                         cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-                    if gmember.telefon != "" and gmember.mobil_telefon != "":
+                    if gmember.telefon != "" and gmember.telefon != None and gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon + ";" + gmember.mobil_telefon
 
-                    elif gmember.telefon != "" and gmember.mobil_telefon == "":
+                    elif gmember.telefon != "" and gmember.telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon
 
-                    elif gmember.telefon == "" and gmember.mobil_telefon != "":
+                    elif gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
                     if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
@@ -971,13 +972,13 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
                     if guest.karteityp != 0:
                         cl_list.company = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-                    if gmember.telefon != "" and gmember.mobil_telefon != "":
+                    if gmember.telefon != "" and gmember.telefon != None and gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon + ";" + gmember.mobil_telefon
 
-                    elif gmember.telefon != "" and gmember.mobil_telefon == "":
+                    elif gmember.telefon != "" and gmember.telefon != None:
                         cl_list.company = cl_list.company + ";" + gmember.telefon
 
-                    elif gmember.telefon == "" and gmember.mobil_telefon != "":
+                    elif gmember.mobil_telefon != "" and gmember.mobil_telefon != None:
                         cl_list.company = cl_list.company + "; ;" + gmember.mobil_telefon
 
                     if (cl_list.etd.strip() == "0000" or cl_list.etd  == "") and res_line.abreisezeit != 0:
@@ -1175,4 +1176,3 @@ def pj_depart1_4_webbl(pvilanguage:int, case_type:int, disptype:int, fdate:date,
     create_departure0()
 
     return generate_output()
-

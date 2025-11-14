@@ -1,4 +1,9 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
+
+# ===============================
+# Rulita, 14-11-2025 | 9FA58C
+# - Update Convertion tiket Hdesk 
+# ===============================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -68,6 +73,10 @@ def prepare_ts_tbplan2_webbl(dept:int, location:int, curr_waiter:int):
 
         do_it:bool = False
         i:int = 0
+        bill_time:int = 0
+        bill_datum:date = None
+        qsy_31 = None
+        Qsy_31 =  create_buffer("Qsy_31",Queasy)
         curr_n = 0
         for i in range(1,100 + 1) :
             s[i - 1] = ""
@@ -100,6 +109,42 @@ def prepare_ts_tbplan2_webbl(dept:int, location:int, curr_waiter:int):
                         if split_count >= 1:
                             t_queasy.splitbill_flag = True
                             break
+
+                    for h_bill_line in db_session.query(H_bill_line).filter(
+                             (H_bill_line.rechnr == hbill_buf.rechnr) & (H_bill_line.departement == hbill_buf.departement)).order_by(H_bill_line.bill_datum, H_bill_line.zeit).all():
+                        bill_time = h_bill_line.zeit
+                        bill_datum = h_bill_line.bill_datum
+                        break
+
+                    if queasy.number3 == 0 and queasy.date1 == None:
+
+                        qsy_31 = db_session.query(Qsy_31).filter(
+                                 (Qsy_31._recid == queasy._recid)).first()
+
+                        if qsy_31:
+                            qsy_31.number3 = bill_time
+                            qsy_31.date1 = bill_datum
+
+
+                            pass
+                            pass
+                            assign_color(curr_n)
+                else:
+
+                    if queasy.number3 != 0 and queasy.date1 != None:
+
+                        qsy_31 = db_session.query(Qsy_31).filter(
+                                 (Qsy_31._recid == queasy._recid)).first()
+
+                        if qsy_31:
+                            qsy_31.number3 = 0
+                            qsy_31.date1 = None
+
+
+                            pass
+                            pass
+                            t_queasy.bcol = 10
+                            t_queasy.fcol = 0
 
 
     def assign_color(i:int):
