@@ -1,8 +1,11 @@
-#using conversion tools version: 1.0.0.117
-# ----------------------------------------
+#using conversion tools version: 1.0.0.119
+# ------------------------------------------
 # Rd, 25/7/2025
 # requery for each find, sysdate.desc issue
-# ----------------------------------------
+
+# Rulita, 17-11-2025 | D3684B
+# - Update Compile Program 
+# ------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -222,6 +225,11 @@ def fa_depn_step_twobl(datum:date, user_init:string, curr_anz:int, debits:Decima
             buff_g_list.gl_acct1_fibukonto = None
             buff_g_list.gl_acct1_bezeich = None
 
+        buff_g_list = Buff_g_list()
         buff_g_list_data.append(buff_g_list)
+
+        buffer_copy(g_list, buff_g_list)
+        buff_g_list.gl_acct1_fibukonto = gl_acct1.fibukonto
+        buff_g_list.gl_acct1_bezeich = gl_acct1.bezeich
 
     return generate_output()
