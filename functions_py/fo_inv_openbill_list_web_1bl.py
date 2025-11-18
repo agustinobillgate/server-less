@@ -9,14 +9,10 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-# from functions.fo_invoice_open_bill_cld_2bl import fo_invoice_open_bill_cld_2bl
-# from functions.fo_invoice_fill_rescommentbl import fo_invoice_fill_rescommentbl
-# from functions.fo_invoice_disp_totbalancebl import fo_invoice_disp_totbalancebl
-# from functions.fo_invoice_disp_bill_line_cldbl import fo_invoice_disp_bill_line_cldbl
-from functions_py.fo_invoice_open_bill_cld_2bl import fo_invoice_open_bill_cld_2bl
-from functions_py.fo_invoice_fill_rescommentbl import fo_invoice_fill_rescommentbl
-from functions_py.fo_invoice_disp_totbalancebl import fo_invoice_disp_totbalancebl
-from functions_py.fo_invoice_disp_bill_line_cldbl import fo_invoice_disp_bill_line_cldbl
+from functions.fo_invoice_open_bill_cld_2bl import fo_invoice_open_bill_cld_2bl
+from functions.fo_invoice_fill_rescommentbl import fo_invoice_fill_rescommentbl
+from functions.fo_invoice_disp_totbalancebl import fo_invoice_disp_totbalancebl
+from functions.fo_invoice_disp_bill_line_cldbl import fo_invoice_disp_bill_line_cldbl
 from models import Bill, Res_line, Bill_line
 
 
