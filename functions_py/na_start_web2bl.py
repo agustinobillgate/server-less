@@ -99,6 +99,7 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         queasy.char1 = "na_start_web2bl"
         queasy.char2 = message
         db_session.commit()
+        print(f"Log Process [{key}]: {message}")
 
     # clear_log(270001)
     # # log_process(270001,"Starting na_start_web2bl")
@@ -200,13 +201,17 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
         i:int = 0
         j:int = 0
         k:int = 0
-        log_process(270001, "- midnite_prog, mn_noshowbl")
+
+        na_steps:int = 0
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, mn_noshowbl")
         cqueasy("No Show List", "PROCESS")
         i, msg_str = get_output(mn_noshowbl(language_code))
         log_process(270001, f"- midnite_prog, mn_noshowbl, DONE {i},{msg_str}")
         cqueasy("No Show List", "DONE")
 
-        log_process(270001, "- midnite_prog, mn_extend_departurebl")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, mn_extend_departurebl")
         cqueasy("Extending Departure Date", "PROCESS")
         i = get_output(mn_extend_departurebl())
         log_process(270001, f"- midnite_prog, mn_extend_departurebl, DONE {i}")
@@ -218,222 +223,264 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
             get_output(mn_crm_checkoutbl())
             cqueasy("CRM questionnair - C/O Guests", "DONE")
 
-        log_process(270001, "- midnite_prog, mn_early_checkoutbl")
+        na_steps += 1
         cqueasy("Early Checkout", "PROCESS")
         i = get_output(mn_early_checkoutbl())
         log_process(270001, f"- midnite_prog, mn_early_checkoutbl, DONE {i}")
         cqueasy("Early Checkout", "DONE")
 
-        log_process(270001, "- midnite_prog, mn_update_zistatusbl")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, mn_update_zistatusbl")
         cqueasy("Updating Room Status", "PROCESS")
         i, msg_str = get_output(mn_update_zistatusbl(language_code))
         log_process(270001, f"- midnite_prog, mn_update_zistatusbl, DONE {i},{msg_str}")
         cqueasy("Updating Room Status", "DONE")
 
-        log_process(270001, "- midnite_prog, mn_fix_bill_datumbl")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, mn_fix_bill_datumbl")
         cqueasy("Correcting bill date", "PROCESS")
         get_output(mn_fix_bill_datumbl())
-        log_process(270001, "- midnite_prog, mn_fix_bill_datumbl, DONE")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, mn_fix_bill_datumbl, DONE")
         cqueasy("Correcting bill date", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old records")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old records")
         cqueasy("Deleting old bills", "PROCESS")
         i = get_output(mn_del_old_billsbl())
         log_process(270001, f"- midnite_prog, mn_del_old_billsbl, DONE {i}")
         cqueasy("Deleting old bills", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old bill journals")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old bill journals")
         cqueasy("Deleting old bill journals", "PROCESS")
         i = get_output(mn_del_old_billjournalbl())
         log_process(270001, f"- midnite_prog, mn_del_old_billjournalbl, DONE {i}")
         cqueasy("Deleting old bill journals", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old reservations")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old reservations")
         cqueasy("Deleting old reservations", "PROCESS")
         i, j, k = get_output(mn_del_old_resbl())
         log_process(270001, f"- midnite_prog, mn_del_old_resbl, DONE {i},{j},{k}")
         cqueasy("Deleting old reservations", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old roomplans")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old roomplans")
         cqueasy("Deleting old roomplans", "PROCESS")
         i = get_output(mn_del_old_roomplanbl())
         log_process(270001, f"- midnite_prog, mn_del_old_roomplanbl, DONE {i}")
         cqueasy("Deleting old roomplans", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old paid debts")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old paid debts")
         cqueasy("Deleting old paid debts", "PROCESS")
         i = get_output(mn_del_old_debtbl())
         log_process(270001, f"- midnite_prog, mn_del_old_debtbl, DONE {i}")
         cqueasy("Deleting old paid debts", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old paid a/P")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old paid a/P")
         cqueasy("Deleting old paid a/P", "PROCESS")
         i = get_output(mn_del_old_apbl())
         log_process(270001, f"- midnite_prog, mn_del_old_apbl, DONE {i}")
         cqueasy("Deleting old paid a/P", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old restaurant bills")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old restaurant bills")
         cqueasy("Deleting old restaurant bills", "PROCESS")
         i = get_output(mn_del_old_rbillbl())
         log_process(270001, f"- midnite_prog, mn_del_old_rbillbl, DONE {i}")
         cqueasy("Deleting old restaurant bills", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old restaurant journals")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old restaurant journals")
         cqueasy("Deleting old rest.journals", "PROCESS")
         i, j = get_output(mn_del_old_rjournalbl())
         log_process(270001, f"- midnite_prog, mn_del_old_rjournalbl, DONE {i},{j}")
         cqueasy("Deleting old rest.journals", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old bon journals")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old bon journals")
         cqueasy("Deleting old rest.journals", "PROCESS")
         get_output(mn_del_old_bonsbl())
-        log_process(270001, "- midnite_prog, mn_del_old_bonsbl, DONE")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, mn_del_old_bonsbl, DONE")
         cqueasy("Deleting old rest.journals", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old outlet turnovers")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old outlet turnovers")
         cqueasy("Deleting old outlet turnovers", "PROCESS")
         i = get_output(mn_del_old_outlet_umsatzbl())
-        log_process(270001, "- midnite_prog, mn_del_old_outlet_umsatzbl, DONE")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, mn_del_old_outlet_umsatzbl, DONE {i}")
         cqueasy("Deleting old outlet turnovers", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old calls")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old calls")
         cqueasy("Deleting old calls", "PROCESS")
         i = get_output(mn_del_old_callsbl())
         log_process(270001, f"- midnite_prog, mn_del_old_callsbl, DONE {i}")
         cqueasy("Deleting old calls", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old purchase orders")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old purchase orders")
         cqueasy("Deleting old purchase orders", "PROCESS")
         i = get_output(mn_del_old_pobl())
         log_process(270001, f"- midnite_prog, mn_del_old_pobl, DONE {i}")
         cqueasy("Deleting old purchase orders", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old stock moving journals")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old stock moving journals")
         cqueasy("Deleted old stock moving journals", "PROCESS")
         i, j = get_output(mn_del_old_l_opbl())
         log_process(270001, f"- midnite_prog, mn_del_old_l_opbl, DONE {i},{j}")
         cqueasy("Deleted old stock moving journals", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old statistics")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old statistics")
         cqueasy("Deleting old room number statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(1))
         log_process(270001, f"- midnite_prog, mn_del_old_statbl(1), DONE {i},{j}")
         cqueasy("Deleting old room number statistics", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old statistics")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old statistics")
         cqueasy("Deleting old room catagory statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(2))
         log_process(270001, f"- midnite_prog, mn_del_old_statbl(2), DONE {i},{j}")
         cqueasy("Deleting old room catagory statistics", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old statistics")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old statistics")
         cqueasy("Deleting old room catagory statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(3))
         log_process(270001, f"- midnite_prog, mn_del_old_statbl(3), DONE {i},{j}")
         cqueasy("Deleting old source statistics", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old statistics")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old statistics")
         cqueasy("Deleting old segment statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(4))
         log_process(270001, f"- midnite_prog, mn_del_old_statbl(4), DONE {i},{j}")
         cqueasy("Deleting old segment statistics", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old statistics")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old statistics")
         cqueasy("Deleting old market segment statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(41))
         log_process(270001, f"- midnite_prog, mn_del_old_statbl(41), DONE {i},{j}")
         cqueasy("Deleting old market segment statistics", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old statistics")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old statistics")
         cqueasy("Deleting old nation statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(5))
         log_process(270001, f"- midnite_prog, mn_del_old_statbl(5), DONE {i},{j}")
         cqueasy("Deleting old nation statistics", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old statistics")    
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old statistics")    
         cqueasy("Deleting old turnover statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(6))
         log_process(270001, f"- midnite_prog, mn_del_old_statbl(6), DONE {i},{j}")
         cqueasy("Deleting old turnover statistics", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old statistics")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old statistics")
         cqueasy("Deleting old restaurant turnover statistics", "PROCESS")
         i, j = get_output(mn_del_old_statbl(7))
         log_process(270001, f"- midnite_prog, mn_del_old_statbl(7), DONE {i},{j}")
         cqueasy("Deleting old restaurant turnover statistics", "DONE")
 
 
-        log_process(270001, "- midnite_prog, deleting old statistics")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old statistics")
         cqueasy("Deleting old F&B Costs", "PROCESS")
         i, j = get_output(mn_del_old_statbl(8))
         log_process(270001, f"- midnite_prog, mn_del_old_statbl(8), DONE {i},{j}")
         cqueasy("Deleting old F&B Costs", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old statistics")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old statistics")
         cqueasy("Deleting old Exchange Rates", "PROCESS")
         i, j = get_output(mn_del_old_statbl(9))
         log_process(270001, f"- midnite_prog, mn_del_old_statbl(9), DONE {i},{j}")
         cqueasy("Deleting old Exchange Rates", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting expired allotments")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting expired allotments")
         cqueasy("Deleting expired allotments", "PROCESS")
         del_allotment()
-        log_process(270001, "- midnite_prog, deleting expired allotments, DONE")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting expired allotments, DONE")
         cqueasy("Deleting expired allotments", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old statistics")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old statistics")
         cqueasy("Deleting old DML-Articles", "PROCESS")
         i, j = get_output(mn_del_old_statbl(999))
         log_process(270001, f"- midnite_prog, mn_del_old_statbl(999), DONE {i},{j}")
         cqueasy("Deleting old DML-Articles", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old interface records")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old interface records")
         cqueasy("Deleting old Interface Records", "PROCESS")
         get_output(mn_del_interfacebl(1))
-        log_process(270001, "- midnite_prog, mn_del_interfacebl, DONE")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, mn_del_interfacebl, DONE")
         cqueasy("Deleting old Interface Records", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old nite store records")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old nite store records")
         cqueasy("Deleting old nithist Records", "PROCESS")
         get_output(mn_del_nitehistbl())
-        log_process(270001, "- midnite_prog, mn_del_nitehistbl, DONE")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, mn_del_nitehistbl, DONE")
         cqueasy("Deleting old nithist Records", "DONE")
 
         if banquet_license:
-            log_process(270001, "- midnite_prog, deleting old banquet reservations")
+            na_steps += 1
+            log_process(270001, f"{na_steps}- midnite_prog, deleting old banquet reservations")
             cqueasy("Deleted old Banquet Reservations", "PROCESS")
             i = get_output(mn_del_old_baresbl())
             log_process(270001, f"- midnite_prog, mn_del_old_baresbl, DONE {i}")
             cqueasy("Deleted old Banquet Reservations", "DONE")
 
-        log_process(270001, "- midnite_prog, updating logfile records")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, updating logfile records")
         cqueasy("Updating logfile records", "PROCESS")
         get_output(mn_update_logfile_recordsbl())
-        log_process(270001, "- midnite_prog, mn_update_logfile_recordsbl, DONE")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, mn_update_logfile_recordsbl, DONE")
         cqueasy("Updating logfile records", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old F&B compliments")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old F&B compliments")
         cqueasy("Deleting old F&B Compliments", "PROCESS")
         i = get_output(mn_del_oldbl(1))
         log_process(270001, f"- midnite_prog, deleting old F&B compliments, DONE {i}")
         cqueasy("Deleting old F&B Compliments", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old work order records")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old work order records")
         cqueasy("Deleting old Work Order Records", "PROCESS")
         i = get_output(mn_del_oldbl(2))
         log_process(270001, f"- midnite_prog, deleting old work order records, DONE {i}")
         cqueasy("Deleting old Work Order Records", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old Housekeeping records")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old Housekeeping records")
         cqueasy("Deleting old Quotation Attachment Records", "PROCESS")
         i = get_output(mn_del_oldbl(4))
         log_process(270001, f"- midnite_prog, deleting old Housekeeping records, DONE {i}")
         cqueasy("Deleting old Quotation Attachment Records", "DONE")
 
-        log_process(270001, "- midnite_prog, deleting old mn_club_softwarebl records")
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, deleting old mn_club_softwarebl records")
         get_output(mn_club_softwarebl())
-        log_process(270001, "- midnite_prog, club software updates done")
-
+        na_steps += 1
+        log_process(270001, f"{na_steps}- midnite_prog, club software updates done")    
 
     def del_allotment():
 
