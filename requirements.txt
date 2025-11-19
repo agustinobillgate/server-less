@@ -41,3 +41,4 @@ jinja2
 pyotp
 google-api-python-client==2.185.0
 google-auth==2.41.1
+python-dotenv
