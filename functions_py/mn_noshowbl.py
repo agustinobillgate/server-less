@@ -34,7 +34,7 @@ def mn_noshowbl(pvilanguage:int):
 
         nonlocal reslist
         nonlocal reslist_data
-
+        
         return {"i": i, "msg_str": msg_str}
 
     def noshow():
