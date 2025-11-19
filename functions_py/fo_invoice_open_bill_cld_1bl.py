@@ -162,7 +162,10 @@ def fo_invoice_open_bill_cld_1bl(bil_flag:int, bil_recid:int, room:string, vipfl
                 kreditlimit =  to_decimal(htparam.finteger)
 
         zimmer = get_cache (Zimmer, {"zinr": [(eq, bill.zinr)]})
-        zimmer_bezeich = zimmer.bezeich
+        if zimmer:
+            zimmer_bezeich = zimmer.bezeich
+        else:
+            zimmer_bezeich = ""
         res_exrate =  to_decimal("1")
 
         if res_line:

@@ -55,7 +55,6 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
     Mbill = create_buffer("Mbill",Bill)
     Bill1 = create_buffer("Bill1",Bill)
 
-
     db_session = local_storage.db_session
     room = room.strip()
 
@@ -130,7 +129,7 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
         abreise = bill.datum
 
     # queasy = get_cache (Queasy, {"key": [(eq, 301)],"number1": [(eq, res_line.resnr)],"logi1": [(eq, True)]})
-    if res_line.resnr is not:
+    if res_line.resnr is not None:
         queasy = db_session.query(Queasy).filter(
                 (Queasy.key == 301) & (Queasy.number1 == res_line.resnr) & (Queasy.logi1 == True)).first()
 
