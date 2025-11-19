@@ -1,6 +1,16 @@
 stages:
     - deploy
 
+deploy_to_canary:
+    stage: deploy
+    script:
+        - echo "Starting deploy to canary..."
+        - ./bash/sync_and_restart.sh
+    only:
+        - canary
+    tags:
+        - canary-environment
+
 deploy_to_production:
     stage: deploy
     script:
