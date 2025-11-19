@@ -1,0 +1,1489 @@
+{
+  "OTA_HotelAvailNotifRQ": {
+    "AvailStatusMessages": {
+      "HotelCode": "VHP-HOTEL",
+      "Messages": [
+        {
+          "Start": "2024-10-01",
+          "End": "2024-10-01",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-01",
+          "End": "2024-10-01",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-01",
+          "End": "2024-10-01",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-01",
+          "End": "2024-10-01",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-01",
+          "End": "2024-10-01",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-02",
+          "End": "2024-10-02",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-02",
+          "End": "2024-10-02",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-02",
+          "End": "2024-10-02",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-02",
+          "End": "2024-10-02",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-02",
+          "End": "2024-10-02",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-03",
+          "End": "2024-10-03",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-03",
+          "End": "2024-10-03",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-03",
+          "End": "2024-10-03",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-03",
+          "End": "2024-10-03",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-03",
+          "End": "2024-10-03",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-04",
+          "End": "2024-10-04",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-04",
+          "End": "2024-10-04",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-04",
+          "End": "2024-10-04",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-04",
+          "End": "2024-10-04",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-04",
+          "End": "2024-10-04",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-05",
+          "End": "2024-10-05",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-05",
+          "End": "2024-10-05",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-05",
+          "End": "2024-10-05",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-05",
+          "End": "2024-10-05",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-05",
+          "End": "2024-10-05",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-06",
+          "End": "2024-10-06",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-06",
+          "End": "2024-10-06",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-06",
+          "End": "2024-10-06",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-06",
+          "End": "2024-10-06",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-06",
+          "End": "2024-10-06",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-07",
+          "End": "2024-10-07",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-07",
+          "End": "2024-10-07",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-07",
+          "End": "2024-10-07",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-07",
+          "End": "2024-10-07",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-07",
+          "End": "2024-10-07",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-08",
+          "End": "2024-10-08",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-08",
+          "End": "2024-10-08",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-08",
+          "End": "2024-10-08",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-08",
+          "End": "2024-10-08",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-08",
+          "End": "2024-10-08",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-09",
+          "End": "2024-10-09",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-09",
+          "End": "2024-10-09",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-09",
+          "End": "2024-10-09",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-09",
+          "End": "2024-10-09",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-09",
+          "End": "2024-10-09",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-10",
+          "End": "2024-10-10",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-10",
+          "End": "2024-10-10",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-10",
+          "End": "2024-10-10",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-10",
+          "End": "2024-10-10",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-10",
+          "End": "2024-10-10",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-11",
+          "End": "2024-10-11",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-11",
+          "End": "2024-10-11",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-11",
+          "End": "2024-10-11",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-11",
+          "End": "2024-10-11",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-11",
+          "End": "2024-10-11",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-12",
+          "End": "2024-10-12",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-12",
+          "End": "2024-10-12",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-12",
+          "End": "2024-10-12",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-12",
+          "End": "2024-10-12",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-12",
+          "End": "2024-10-12",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-13",
+          "End": "2024-10-13",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-13",
+          "End": "2024-10-13",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-13",
+          "End": "2024-10-13",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-13",
+          "End": "2024-10-13",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-13",
+          "End": "2024-10-13",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-14",
+          "End": "2024-10-14",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-14",
+          "End": "2024-10-14",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-14",
+          "End": "2024-10-14",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-14",
+          "End": "2024-10-14",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-14",
+          "End": "2024-10-14",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-15",
+          "End": "2024-10-15",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-15",
+          "End": "2024-10-15",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-15",
+          "End": "2024-10-15",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-15",
+          "End": "2024-10-15",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-15",
+          "End": "2024-10-15",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-16",
+          "End": "2024-10-16",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-16",
+          "End": "2024-10-16",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-16",
+          "End": "2024-10-16",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-16",
+          "End": "2024-10-16",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-16",
+          "End": "2024-10-16",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-17",
+          "End": "2024-10-17",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-17",
+          "End": "2024-10-17",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-17",
+          "End": "2024-10-17",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-17",
+          "End": "2024-10-17",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-17",
+          "End": "2024-10-17",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-18",
+          "End": "2024-10-18",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-18",
+          "End": "2024-10-18",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-18",
+          "End": "2024-10-18",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-18",
+          "End": "2024-10-18",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-18",
+          "End": "2024-10-18",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-19",
+          "End": "2024-10-19",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-19",
+          "End": "2024-10-19",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-19",
+          "End": "2024-10-19",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-19",
+          "End": "2024-10-19",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-19",
+          "End": "2024-10-19",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-20",
+          "End": "2024-10-20",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-20",
+          "End": "2024-10-20",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-20",
+          "End": "2024-10-20",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-20",
+          "End": "2024-10-20",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-20",
+          "End": "2024-10-20",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-21",
+          "End": "2024-10-21",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-21",
+          "End": "2024-10-21",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-21",
+          "End": "2024-10-21",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-21",
+          "End": "2024-10-21",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-21",
+          "End": "2024-10-21",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-22",
+          "End": "2024-10-22",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-22",
+          "End": "2024-10-22",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-22",
+          "End": "2024-10-22",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-22",
+          "End": "2024-10-22",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-22",
+          "End": "2024-10-22",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-23",
+          "End": "2024-10-23",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-23",
+          "End": "2024-10-23",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-23",
+          "End": "2024-10-23",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-23",
+          "End": "2024-10-23",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-23",
+          "End": "2024-10-23",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-24",
+          "End": "2024-10-24",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-24",
+          "End": "2024-10-24",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-24",
+          "End": "2024-10-24",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-24",
+          "End": "2024-10-24",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-24",
+          "End": "2024-10-24",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-25",
+          "End": "2024-10-25",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-25",
+          "End": "2024-10-25",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-25",
+          "End": "2024-10-25",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-25",
+          "End": "2024-10-25",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-25",
+          "End": "2024-10-25",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-26",
+          "End": "2024-10-26",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-26",
+          "End": "2024-10-26",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-26",
+          "End": "2024-10-26",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-26",
+          "End": "2024-10-26",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-26",
+          "End": "2024-10-26",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-27",
+          "End": "2024-10-27",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-27",
+          "End": "2024-10-27",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-27",
+          "End": "2024-10-27",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-27",
+          "End": "2024-10-27",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-27",
+          "End": "2024-10-27",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-28",
+          "End": "2024-10-28",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-28",
+          "End": "2024-10-28",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-28",
+          "End": "2024-10-28",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-28",
+          "End": "2024-10-28",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-28",
+          "End": "2024-10-28",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-29",
+          "End": "2024-10-29",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-29",
+          "End": "2024-10-29",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-29",
+          "End": "2024-10-29",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-29",
+          "End": "2024-10-29",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-29",
+          "End": "2024-10-29",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-30",
+          "End": "2024-10-30",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-30",
+          "End": "2024-10-30",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        },
+        {
+          "Start": "2024-10-30",
+          "End": "2024-10-30",
+          "InvTypeCode": "",
+          "RatePlanCode": "",
+          "AvailStatus": {
+            "Status": "Close"
+          },
+          "Restrictions": []
+        }
+      ]
+    }
+  }
+}

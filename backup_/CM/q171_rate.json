@@ -1,0 +1,30 @@
+{
+  "OTA_HotelRateAmountNotifRQ": {
+    "RateAmountMessages": [
+      {
+        "Start": "2025-12-01",
+        "End": "2025-12-05",
+        "RatePlanCode": "RACK",
+        "InvTypeCode": "DLX",
+        "Currency": "IDR",
+        "BaseByGuestAmts": [
+          {
+            "AmountAfterTax": "850000",
+            "NumberOfGuests": "1",
+            "AgeQualifyingCode": "10"
+          },
+          {
+            "AmountAfterTax": "950000",
+            "NumberOfGuests": "2",
+            "AgeQualifyingCode": "10"
+          },
+          {
+            "AmountAfterTax": "250000",
+            "NumberOfGuests": "1",
+            "AgeQualifyingCode": "8"
+          }
+        ]
+      }
+    ]
+  }
+}

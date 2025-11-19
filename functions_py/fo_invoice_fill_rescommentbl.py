@@ -91,7 +91,8 @@ def fo_invoice_fill_rescommentbl(bil_recid:int, fill_co:bool):
         if guestmember.bemerkung != "":
             rescomment = rescomment + guestmember.bemerkung + chr_unicode(10)
 
-    waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
+    if res_line:
+        waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, res_line.betriebsnr)]})
 
     if resbuff:
         rescomment = rescomment + "Arr " + to_string(resbuff.ankunft) + " Dep " + to_string(resbuff.abreise) + " A " + to_string(resbuff.erwachs) + " Ch " + to_string(resbuff.kind1) + " Ch " + to_string(resbuff.kind2) + " Com " + to_string(resbuff.gratis) + chr_unicode(10) + "Argt " + resbuff.arrangement
