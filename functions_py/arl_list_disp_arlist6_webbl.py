@@ -133,7 +133,8 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
             rline = db_session.query(Rline).filter(
                          (Rline._recid == res_line._recid)).first()
 
-            if rline:
+            # if rline:
+            if rline and guest:
                 rline.resname = guest.name
 
 

@@ -126,7 +126,9 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             rline = db_session.query(Rline).filter(
                          (Rline._recid == res_line._recid)).first()
 
-            if rline:
+            # Rd 18/11/2025,
+            # tambah if available guest
+            if rline and guest:
                 rline.resname = guest.name
 
 
