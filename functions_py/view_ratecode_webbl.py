@@ -30,6 +30,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
 
     # Rd 4/9/2025
     market_combo = market_combo.strip()
+    pr_code = pr_code.strip()
 
     def generate_output():
         nonlocal comments, t_viewrates_data, t_viewrates_line_data, ci_date, current_counter, lvcarea, queasy, htparam, prmarket, prtable, arrangement, zimkateg, waehrung, ratecode, reslin_queasy, artikel, argt_line, guest, guest_pr
@@ -77,8 +78,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
             prtable_obj_list = {}
             prtable = Prtable()
             prmarket = Prmarket()
-            for prtable.prcode, prtable.marknr, prtable.product, prtable.zikatnr, prtable.argtnr, prtable._recid, prmarket.nr, prmarket.bezeich, prmarket._recid in db_session.query(Prtable.prcode, Prtable.marknr, Prtable.product, Prtable.zikatnr, Prtable.argtnr, Prtable._recid, Prmarket.nr, Prmarket.bezeich, Prmarket._recid).join(Prmarket,(Prmarket.nr == Prtable.marknr) & (Prmarket.bezeich == (market_combo).lower())).filter(
-                     (Prtable.prcode == (pr_code).lower())).order_by(Prmarket.bezeich).all():
+            for prtable.prcode, prtable.marknr, prtable.product, prtable.zikatnr, prtable.argtnr, prtable._recid, prmarket.nr, prmarket.bezeich, prmarket._recid in db_session.query(Prtable.prcode, Prtable.marknr, Prtable.product, Prtable.zikatnr, Prtable.argtnr, Prtable._recid, Prmarket.nr, Prmarket.bezeich, Prmarket._recid).join(Prmarket,(Prmarket.nr == Prtable.marknr) & (Prmarket.bezeich == (market_combo))).filter(
+                     (Prtable.prcode == (pr_code))).order_by(Prmarket.bezeich).all():
                 if prtable_obj_list.get(prtable._recid):
                     continue
                 else:
@@ -106,14 +107,14 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
 
                     waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, queasy.number1)]})
 
-                    t_viewrates = query(t_viewrates_data, filters=(lambda t_viewrates: t_viewrates.prcode.lower()  == (pr_code).lower()  and t_viewrates.argt == arrangement.arrangement and t_viewrates.rmtype == zimkateg.kurzbez), first=True)
+                    t_viewrates = query(t_viewrates_data, filters=(lambda t_viewrates: t_viewrates.prcode  == (pr_code)  and t_viewrates.argt == arrangement.arrangement and t_viewrates.rmtype == zimkateg.kurzbez), first=True)
 
                     if not t_viewrates:
                         t_viewrates = T_viewrates()
                         t_viewrates_data.append(t_viewrates)
 
 
-                        if queasy:
+                        if queasy and queasy.char1 != "":
                             t_viewrates.prcode = queasy.char1
                             t_viewrates.desc_prcode = queasy.char2
 
@@ -129,7 +130,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                         t_viewrates.rmtype = zimkateg.kurzbez
 
                     for ratecode in db_session.query(Ratecode).filter(
-                             (Ratecode.code == (pr_code).lower()) & (Ratecode.marknr == prtable.marknr) & (Ratecode.zikatnr == select_list.zikatnr) & (Ratecode.argtnr == select_list.argtnr)).order_by(Ratecode.startperiode, Ratecode.wday).all():
+                             (Ratecode.code == (pr_code)) & (Ratecode.marknr == prtable.marknr) & (Ratecode.zikatnr == select_list.zikatnr) & (Ratecode.argtnr == select_list.argtnr)).order_by(Ratecode.startperiode, Ratecode.wday).all():
                         do_it = (ci_date <= ratecode.endperiode)
 
                         if do_it:
@@ -137,7 +138,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                             t_viewrates_line_data.append(t_viewrates_line)
 
 
-                            if queasy:
+                            if queasy and queasy.char1.strip() != "":
                                 t_viewrates_line.prcode = queasy.char1
                                 t_viewrates_line.desc_prcode = queasy.char2
 
@@ -168,8 +169,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                     t_viewrates_line_data.append(t_viewrates_line)
 
 
-                                    if queasy:
-                                        t_viewrates_line.prcode = queasy.char1
+                                    if queasy and queasy.char1.strip() != "":
+                                        t_viewrates_line.prcode = queasy.char1.strip()  
                                     t_viewrates_line.argt = arrangement.arrangement
                                     t_viewrates_line.rmtype = zimkateg.kurzbez
                                     t_viewrates_line.datum = "COMPLIMENT ROOM :"
@@ -205,8 +206,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                         ct = entry(n - 1, ratecode.char1[1], ";")
                                         disc_rate =  to_decimal(to_decimal(entry(0 , ct , ","))) / to_decimal("100")
 
-                                        if queasy:
-                                            t_viewrates_line.prcode = queasy.char1
+                                        if queasy and queasy.char1.strip() != "":
+                                            t_viewrates_line.prcode = queasy.char1.strip()
                                         t_viewrates_line.argt = arrangement.arrangement
                                         t_viewrates_line.rmtype = zimkateg.kurzbez
                                         t_viewrates_line.datum = "KICKBACK DISCOUNT :"
@@ -225,8 +226,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                         f_date = date_mdy(to_int(substring(entry(0, ct, ",") , 4, 2)) , to_int(substring(entry(0, ct, ",") , 6, 2)) , to_int(substring(entry(0, ct, ",") , 0, 4)))
                                         t_date = date_mdy(to_int(substring(entry(1, ct, ",") , 4, 2)) , to_int(substring(entry(1, ct, ",") , 6, 2)) , to_int(substring(entry(1, ct, ",") , 0, 4)))
 
-                                        if queasy:
-                                            t_viewrates_line.prcode = queasy.char1
+                                        if queasy and queasy.char1.strip() != "":
+                                            t_viewrates_line.prcode = queasy.char1.strip()
                                         t_viewrates_line.argt = arrangement.arrangement
                                         t_viewrates_line.rmtype = zimkateg.kurzbez
                                         t_viewrates_line.datum = "STAY/PAY :"
@@ -239,7 +240,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                             zikat1 = ratecode.zikatnr
 
                     for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                             (Reslin_queasy.key == ("argt-line").lower()) & (Reslin_queasy.char1 == (pr_code).lower()) & (Reslin_queasy.number1 == prtable.marknr) & (Reslin_queasy.number2 == select_list.argtnr) & (Reslin_queasy.reslinnr == select_list.zikatnr)).order_by(Reslin_queasy.resnr, Reslin_queasy.number3, Reslin_queasy.date1).all():
+                             (Reslin_queasy.key == ("argt-line")) & (Reslin_queasy.char1 == (pr_code)) & (Reslin_queasy.number1 == prtable.marknr) & (Reslin_queasy.number2 == select_list.argtnr) & (Reslin_queasy.reslinnr == select_list.zikatnr)).order_by(Reslin_queasy.resnr, Reslin_queasy.number3, Reslin_queasy.date1).all():
                         queasy_exist = True
 
                         artikel = get_cache (Artikel, {"artnr": [(eq, reslin_queasy.number3)],"departement": [(eq, reslin_queasy.resnr)]})
@@ -319,7 +320,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
             prtable = Prtable()
             prmarket = Prmarket()
             for prtable.prcode, prtable.marknr, prtable.product, prtable.zikatnr, prtable.argtnr, prtable._recid, prmarket.nr, prmarket.bezeich, prmarket._recid in db_session.query(Prtable.prcode, Prtable.marknr, Prtable.product, Prtable.zikatnr, Prtable.argtnr, Prtable._recid, Prmarket.nr, Prmarket.bezeich, Prmarket._recid).join(Prmarket,(Prmarket.nr == Prtable.marknr)).filter(
-                     (Prtable.prcode == (pr_code).lower())).order_by(Prmarket.bezeich).all():
+                     (Prtable.prcode == (pr_code))).order_by(Prmarket.bezeich).all():
                 if prtable_obj_list.get(prtable._recid):
                     continue
                 else:
@@ -348,7 +349,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
 
                     waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, queasy.number1)]})
 
-                    t_viewrates = query(t_viewrates_data, filters=(lambda t_viewrates: t_viewrates.prcode.lower()  == (pr_code).lower()  and t_viewrates.argt == arrangement.arrangement and t_viewrates.rmtype == zimkateg.kurzbez), first=True)
+                    t_viewrates = query(t_viewrates_data, filters=(lambda t_viewrates: t_viewrates.prcode  == (pr_code)  and t_viewrates.argt == arrangement.arrangement and t_viewrates.rmtype == zimkateg.kurzbez), first=True)
 
                     if not t_viewrates:
                         t_viewrates = T_viewrates()
@@ -371,7 +372,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                         t_viewrates.rmtype = zimkateg.kurzbez
 
                     for ratecode in db_session.query(Ratecode).filter(
-                             (Ratecode.code == (pr_code).lower()) & (Ratecode.marknr == prtable.marknr) & (Ratecode.zikatnr == select_list.zikatnr) & (Ratecode.argtnr == select_list.argtnr)).order_by(Ratecode.startperiode, Ratecode.wday).all():
+                             (Ratecode.code == (pr_code)) & (Ratecode.marknr == prtable.marknr) & (Ratecode.zikatnr == select_list.zikatnr) & (Ratecode.argtnr == select_list.argtnr)).order_by(Ratecode.startperiode, Ratecode.wday).all():
                         do_it = (ci_date <= ratecode.endperiode)
 
                         if do_it:
@@ -379,8 +380,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                             t_viewrates_line_data.append(t_viewrates_line)
 
 
-                            if queasy:
-                                t_viewrates_line.prcode = queasy.char1
+                            if queasy and queasy.char1.strip() != "":
+                                t_viewrates_line.prcode = queasy.char1.strip()
                                 t_viewrates_line.desc_prcode = queasy.char2
 
                             if waehrung:
@@ -410,8 +411,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                     t_viewrates_line_data.append(t_viewrates_line)
 
 
-                                    if queasy:
-                                        t_viewrates_line.prcode = queasy.char1
+                                    if queasy and queasy.char1.strip() != "":
+                                        t_viewrates_line.prcode = queasy.char1.strip()
                                     t_viewrates_line.argt = arrangement.arrangement
                                     t_viewrates_line.rmtype = zimkateg.kurzbez
                                     t_viewrates_line.datum = "COMPLIMENT ROOM :"
@@ -428,8 +429,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                         ct = entry(n - 1, ratecode.char1[0], ";")
                                         disc_rate =  to_decimal(to_decimal(entry(0 , ct , ","))) / to_decimal("100")
 
-                                        if queasy:
-                                            t_viewrates_line.prcode = queasy.char1
+                                        if queasy and queasy.char1.strip() != "":
+                                            t_viewrates_line.prcode = queasy.char1.strip()
                                         t_viewrates_line.argt = arrangement.arrangement
                                         t_viewrates_line.rmtype = zimkateg.kurzbez
                                         t_viewrates_line.datum = "EARLY BOOKING :"
@@ -447,8 +448,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                         ct = entry(n - 1, ratecode.char1[1], ";")
                                         disc_rate =  to_decimal(to_decimal(entry(0 , ct , ","))) / to_decimal("100")
 
-                                        if queasy:
-                                            t_viewrates_line.prcode = queasy.char1
+                                        if queasy and queasy.char1.strip() != "":
+                                            t_viewrates_line.prcode = queasy.char1.strip()
                                         t_viewrates_line.argt = arrangement.arrangement
                                         t_viewrates_line.rmtype = zimkateg.kurzbez
                                         t_viewrates_line.datum = "KICKBACK DISCOUNT :"
@@ -467,8 +468,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                         f_date = date_mdy(to_int(substring(entry(0, ct, ",") , 4, 2)) , to_int(substring(entry(0, ct, ",") , 6, 2)) , to_int(substring(entry(0, ct, ",") , 0, 4)))
                                         t_date = date_mdy(to_int(substring(entry(1, ct, ",") , 4, 2)) , to_int(substring(entry(1, ct, ",") , 6, 2)) , to_int(substring(entry(1, ct, ",") , 0, 4)))
 
-                                        if queasy:
-                                            t_viewrates_line.prcode = queasy.char1
+                                        if queasy and queasy.char1.strip() != "":
+                                            t_viewrates_line.prcode = queasy.char1.strip()
                                         t_viewrates_line.argt = arrangement.arrangement
                                         t_viewrates_line.rmtype = zimkateg.kurzbez
                                         t_viewrates_line.datum = "STAY/PAY :"
@@ -481,7 +482,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                             zikat1 = ratecode.zikatnr
 
                     for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                             (Reslin_queasy.key == ("argt-line").lower()) & (Reslin_queasy.char1 == (pr_code).lower()) & (Reslin_queasy.number1 == prtable.marknr) & (Reslin_queasy.number2 == select_list.argtnr) & (Reslin_queasy.reslinnr == select_list.zikatnr)).order_by(Reslin_queasy.resnr, Reslin_queasy.number3, Reslin_queasy.date1).all():
+                             (Reslin_queasy.key == ("argt-line")) & (Reslin_queasy.char1 == (pr_code)) & (Reslin_queasy.number1 == prtable.marknr) & (Reslin_queasy.number2 == select_list.argtnr) & (Reslin_queasy.reslinnr == select_list.zikatnr)).order_by(Reslin_queasy.resnr, Reslin_queasy.number3, Reslin_queasy.date1).all():
                         queasy_exist = True
 
                         artikel = get_cache (Artikel, {"artnr": [(eq, reslin_queasy.number3)],"departement": [(eq, reslin_queasy.resnr)]})
@@ -599,9 +600,9 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                  (Guest_pr.gastnr == gastnr)).order_by(Guest_pr.code).all():
             pr_code = guest_pr.code
 
-            queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, pr_code)]})
+            queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, pr_code.strip())]})
 
-            waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, queasy.number1)]})
+            
             t_viewrates = T_viewrates()
             t_viewrates_data.append(t_viewrates)
 
@@ -609,6 +610,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
             if queasy:
                 t_viewrates.prcode = queasy.char1
                 t_viewrates.desc_prcode = queasy.char2
+                waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, queasy.number1)]})
 
             if waehrung:
                 t_viewrates.currency = waehrung.bezeich
@@ -618,8 +620,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                 prtable_obj_list = {}
                 prtable = Prtable()
                 prmarket = Prmarket()
-                for prtable.prcode, prtable.marknr, prtable.product, prtable.zikatnr, prtable.argtnr, prtable._recid, prmarket.nr, prmarket.bezeich, prmarket._recid in db_session.query(Prtable.prcode, Prtable.marknr, Prtable.product, Prtable.zikatnr, Prtable.argtnr, Prtable._recid, Prmarket.nr, Prmarket.bezeich, Prmarket._recid).join(Prmarket,(Prmarket.nr == Prtable.marknr) & (Prmarket.bezeich == (market_combo).lower())).filter(
-                         (Prtable.prcode == (pr_code).lower())).order_by(Prmarket.bezeich).all():
+                for prtable.prcode, prtable.marknr, prtable.product, prtable.zikatnr, prtable.argtnr, prtable._recid, prmarket.nr, prmarket.bezeich, prmarket._recid in db_session.query(Prtable.prcode, Prtable.marknr, Prtable.product, Prtable.zikatnr, Prtable.argtnr, Prtable._recid, Prmarket.nr, Prmarket.bezeich, Prmarket._recid).join(Prmarket,(Prmarket.nr == Prtable.marknr) & (Prmarket.bezeich == (market_combo))).filter(
+                         (Prtable.prcode == (pr_code))).order_by(Prmarket.bezeich).all():
                     if prtable_obj_list.get(prtable._recid):
                         continue
                     else:
@@ -644,18 +646,21 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                         queasy_exist = False
 
                         queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, prtable.prcode)]})
+                        if not queasy or queasy.char1 == "":
+                            continue
+
 
                         waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, queasy.number1)]})
 
-                        t_viewrates = query(t_viewrates_data, filters=(lambda t_viewrates: t_viewrates.prcode.lower()  == (pr_code).lower()  and t_viewrates.argt == arrangement.arrangement and t_viewrates.rmtype == zimkateg.kurzbez), first=True)
+                        t_viewrates = query(t_viewrates_data, filters=(lambda t_viewrates: t_viewrates.prcode  == (pr_code)  and t_viewrates.argt == arrangement.arrangement.strip() and t_viewrates.rmtype == zimkateg.kurzbez), first=True)
 
-                        if not t_viewrates:
+                        if not t_viewrates and queasy.char1.strip() != "":
                             t_viewrates = T_viewrates()
                             t_viewrates_data.append(t_viewrates)
 
 
-                            if queasy:
-                                t_viewrates.prcode = queasy.char1
+                            if queasy and queasy.char1.strip() != "":
+                                t_viewrates.prcode = queasy.char1.strip()
                                 t_viewrates.desc_prcode = queasy.char2
 
                             if waehrung:
@@ -670,7 +675,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                             t_viewrates.rmtype = zimkateg.kurzbez
 
                         for ratecode in db_session.query(Ratecode).filter(
-                                 (Ratecode.code == (pr_code).lower()) & (Ratecode.marknr == prtable.marknr) & (Ratecode.zikatnr == select_list.zikatnr) & (Ratecode.argtnr == select_list.argtnr)).order_by(Ratecode.startperiode, Ratecode.wday).all():
+                                 (Ratecode.code == (pr_code)) & (Ratecode.marknr == prtable.marknr) & (Ratecode.zikatnr == select_list.zikatnr) & (Ratecode.argtnr == select_list.argtnr)).order_by(Ratecode.startperiode, Ratecode.wday).all():
                             do_it = (ci_date <= ratecode.endperiode)
 
                             if do_it:
@@ -678,8 +683,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                 t_viewrates_line_data.append(t_viewrates_line)
 
 
-                                if queasy:
-                                    t_viewrates_line.prcode = queasy.char1
+                                if queasy and queasy.char1.strip() != "":
+                                    t_viewrates_line.prcode = queasy.char1.strip()
                                     t_viewrates_line.desc_prcode = queasy.char2
 
                                 if waehrung:
@@ -709,8 +714,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                         t_viewrates_line_data.append(t_viewrates_line)
 
 
-                                        if queasy:
-                                            t_viewrates_line.prcode = queasy.char1
+                                        if queasy and queasy.char1.strip() != "":
+                                            t_viewrates_line.prcode = queasy.char1.strip()
                                         t_viewrates_line.argt = arrangement.arrangement
                                         t_viewrates_line.rmtype = zimkateg.kurzbez
                                         t_viewrates_line.datum = "COMPLIMENT ROOM :"
@@ -746,8 +751,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                             ct = entry(n - 1, ratecode.char1[1], ";")
                                             disc_rate =  to_decimal(to_decimal(entry(0 , ct , ","))) / to_decimal("100")
 
-                                            if queasy:
-                                                t_viewrates_line.prcode = queasy.char1
+                                            if queasy and queasy.char1.strip() != "":
+                                                t_viewrates_line.prcode = queasy.char1.strip()
                                             t_viewrates_line.argt = arrangement.arrangement
                                             t_viewrates_line.rmtype = zimkateg.kurzbez
                                             t_viewrates_line.datum = "KICKBACK DISCOUNT :"
@@ -766,8 +771,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                             f_date = date_mdy(to_int(substring(entry(0, ct, ",") , 4, 2)) , to_int(substring(entry(0, ct, ",") , 6, 2)) , to_int(substring(entry(0, ct, ",") , 0, 4)))
                                             t_date = date_mdy(to_int(substring(entry(1, ct, ",") , 4, 2)) , to_int(substring(entry(1, ct, ",") , 6, 2)) , to_int(substring(entry(1, ct, ",") , 0, 4)))
 
-                                            if queasy:
-                                                t_viewrates_line.prcode = queasy.char1
+                                            if queasy and queasy.char1.strip() != "":
+                                                t_viewrates_line.prcode = queasy.char1.strip()
                                             t_viewrates_line.argt = arrangement.arrangement
                                             t_viewrates_line.rmtype = zimkateg.kurzbez
                                             t_viewrates_line.datum = "STAY/PAY :"
@@ -780,7 +785,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                 zikat1 = ratecode.zikatnr
 
                         for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                 (Reslin_queasy.key == ("argt-line").lower()) & (Reslin_queasy.char1 == (pr_code).lower()) & (Reslin_queasy.number1 == prtable.marknr) & (Reslin_queasy.number2 == select_list.argtnr) & (Reslin_queasy.reslinnr == select_list.zikatnr)).order_by(Reslin_queasy.resnr, Reslin_queasy.number3, Reslin_queasy.date1).all():
+                                 (Reslin_queasy.key == ("argt-line")) & (Reslin_queasy.char1 == (pr_code)) & (Reslin_queasy.number1 == prtable.marknr) & (Reslin_queasy.number2 == select_list.argtnr) & (Reslin_queasy.reslinnr == select_list.zikatnr)).order_by(Reslin_queasy.resnr, Reslin_queasy.number3, Reslin_queasy.date1).all():
                             queasy_exist = True
 
                             artikel = get_cache (Artikel, {"artnr": [(eq, reslin_queasy.number3)],"departement": [(eq, reslin_queasy.resnr)]})
@@ -860,7 +865,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                 prtable = Prtable()
                 prmarket = Prmarket()
                 for prtable.prcode, prtable.marknr, prtable.product, prtable.zikatnr, prtable.argtnr, prtable._recid, prmarket.nr, prmarket.bezeich, prmarket._recid in db_session.query(Prtable.prcode, Prtable.marknr, Prtable.product, Prtable.zikatnr, Prtable.argtnr, Prtable._recid, Prmarket.nr, Prmarket.bezeich, Prmarket._recid).join(Prmarket,(Prmarket.nr == Prtable.marknr)).filter(
-                         (Prtable.prcode == (pr_code).lower())).order_by(Prmarket.bezeich).all():
+                         (Prtable.prcode == (pr_code))).order_by(Prmarket.bezeich).all():
                     if prtable_obj_list.get(prtable._recid):
                         continue
                     else:
@@ -889,15 +894,15 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
 
                         waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, queasy.number1)]})
 
-                        t_viewrates = query(t_viewrates_data, filters=(lambda t_viewrates: t_viewrates.prcode.lower()  == (pr_code).lower()  and t_viewrates.argt == arrangement.arrangement and t_viewrates.rmtype == zimkateg.kurzbez), first=True)
+                        t_viewrates = query(t_viewrates_data, filters=(lambda t_viewrates: t_viewrates.prcode  == (pr_code)  and t_viewrates.argt == arrangement.arrangement and t_viewrates.rmtype == zimkateg.kurzbez), first=True)
 
                         if not t_viewrates:
                             t_viewrates = T_viewrates()
                             t_viewrates_data.append(t_viewrates)
 
 
-                            if queasy:
-                                t_viewrates.prcode = queasy.char1
+                            if queasy and queasy.char1.strip() != "":
+                                t_viewrates.prcode = queasy.char1.strip()
                                 t_viewrates.desc_prcode = queasy.char2
 
                             if waehrung:
@@ -912,7 +917,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                             t_viewrates.rmtype = zimkateg.kurzbez
 
                         for ratecode in db_session.query(Ratecode).filter(
-                                 (Ratecode.code == (pr_code).lower()) & (Ratecode.marknr == prtable.marknr) & (Ratecode.zikatnr == select_list.zikatnr) & (Ratecode.argtnr == select_list.argtnr)).order_by(Ratecode.startperiode, Ratecode.wday).all():
+                                 (Ratecode.code == (pr_code)) & (Ratecode.marknr == prtable.marknr) & (Ratecode.zikatnr == select_list.zikatnr) & (Ratecode.argtnr == select_list.argtnr)).order_by(Ratecode.startperiode, Ratecode.wday).all():
                             do_it = (ci_date <= ratecode.endperiode)
 
                             if do_it:
@@ -920,8 +925,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                 t_viewrates_line_data.append(t_viewrates_line)
 
 
-                                if queasy:
-                                    t_viewrates_line.prcode = queasy.char1
+                                if queasy and queasy.char1.strip() != "":
+                                    t_viewrates_line.prcode = queasy.char1.strip()
                                     t_viewrates_line.desc_prcode = queasy.char2
 
                                 if waehrung:
@@ -951,8 +956,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                         t_viewrates_line_data.append(t_viewrates_line)
 
 
-                                        if queasy:
-                                            t_viewrates_line.prcode = queasy.char1
+                                        if queasy and queasy.char1.strip() != "":
+                                            t_viewrates_line.prcode = queasy.char1.strip()
                                         t_viewrates_line.argt = arrangement.arrangement
                                         t_viewrates_line.rmtype = zimkateg.kurzbez
                                         t_viewrates_line.datum = "COMPLIMENT ROOM :"
@@ -988,8 +993,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                             ct = entry(n - 1, ratecode.char1[1], ";")
                                             disc_rate =  to_decimal(to_decimal(entry(0 , ct , ","))) / to_decimal("100")
 
-                                            if queasy:
-                                                t_viewrates_line.prcode = queasy.char1
+                                            if queasy and queasy.char1.strip() != "":
+                                                t_viewrates_line.prcode = queasy.char1.strip()
                                             t_viewrates_line.argt = arrangement.arrangement
                                             t_viewrates_line.rmtype = zimkateg.kurzbez
                                             t_viewrates_line.datum = "KICKBACK DISCOUNT :"
@@ -1008,8 +1013,8 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                             f_date = date_mdy(to_int(substring(entry(0, ct, ",") , 4, 2)) , to_int(substring(entry(0, ct, ",") , 6, 2)) , to_int(substring(entry(0, ct, ",") , 0, 4)))
                                             t_date = date_mdy(to_int(substring(entry(1, ct, ",") , 4, 2)) , to_int(substring(entry(1, ct, ",") , 6, 2)) , to_int(substring(entry(1, ct, ",") , 0, 4)))
 
-                                            if queasy:
-                                                t_viewrates_line.prcode = queasy.char1
+                                            if queasy and queasy.char1.strip() != "":
+                                                t_viewrates_line.code = queasy.char1.strip()
                                             t_viewrates_line.argt = arrangement.arrangement
                                             t_viewrates_line.rmtype = zimkateg.kurzbez
                                             t_viewrates_line.datum = "STAY/PAY :"
@@ -1022,7 +1027,7 @@ def view_ratecode_webbl(pvilanguage:int, gastnr:int, pr_code:string, market_comb
                                 zikat1 = ratecode.zikatnr
 
                         for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                                 (Reslin_queasy.key == ("argt-line").lower()) & (Reslin_queasy.char1 == (pr_code).lower()) & (Reslin_queasy.number1 == prtable.marknr) & (Reslin_queasy.number2 == select_list.argtnr) & (Reslin_queasy.reslinnr == select_list.zikatnr)).order_by(Reslin_queasy.resnr, Reslin_queasy.number3, Reslin_queasy.date1).all():
+                                 (Reslin_queasy.key == ("argt-line")) & (Reslin_queasy.char1 == (pr_code)) & (Reslin_queasy.number1 == prtable.marknr) & (Reslin_queasy.number2 == select_list.argtnr) & (Reslin_queasy.reslinnr == select_list.zikatnr)).order_by(Reslin_queasy.resnr, Reslin_queasy.number3, Reslin_queasy.date1).all():
                             queasy_exist = True
 
                             artikel = get_cache (Artikel, {"artnr": [(eq, reslin_queasy.number3)],"departement": [(eq, reslin_queasy.resnr)]})

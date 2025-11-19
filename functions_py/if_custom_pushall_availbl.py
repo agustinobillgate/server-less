@@ -698,5 +698,5 @@ def if_custom_pushall_availbl(currcode:string, from_date:date, to_date:date, bec
     else:
         rmtype_pushall_avail()
     done = True
-
+    
     return generate_output()

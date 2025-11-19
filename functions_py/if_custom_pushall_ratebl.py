@@ -739,16 +739,27 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
                         curr_scode = dynarate_list.rcode
 
                     if pushpax:
-
-                        for bratecode in query(bratecode_data, filters=(lambda bratecode: bratecode.code  == (curr_scode)  and bratecode.zikatnr == t_zimkateg.zikatnr and bratecode.startperiode <= t_qsy171.date1 and bratecode.endperiode >= t_qsy171.date1 and bratecode.erwachs > 0), sort_by=[("erwachs",True)]):
+                        for bratecode in \
+                            query(bratecode_data, 
+                                    filters=(lambda bratecode: bratecode.code  == (curr_scode)  
+                                            # and bratecode.zikatnr == t_zimkateg.zikatnr 
+                                            and bratecode.startperiode <= t_qsy171.date1 
+                                            and bratecode.endperiode >= t_qsy171.date1 
+                                            and bratecode.erwachs > 0), sort_by=[("erwachs",True)]):
+                            
+                            if t_zimkateg:
+                                if bratecode.zikatnr != t_zimkateg.zikatnr:
+                                    continue
                             m = bratecode.erwachs
                             j = bratecode.kind1
-
-
                             break
-                    for loopi in range(n,m + 1) :
 
-                        bratecode = query(bratecode_data, filters=(lambda bratecode: bratecode.code  == (curr_scode)  and bratecode.zikatnr == t_zimkateg.zikatnr and bratecode.erwachs == loopi and bratecode.kind1 == child and bratecode.startperiode <= t_qsy171.date1 and bratecode.endperiode >= t_qsy171.date1 and bratecode.wday == w_day), first=True)
+                    for loopi in range(n,m + 1) :
+                        if t_zimkateg:
+                            bratecode = query(bratecode_data, filters=(lambda bratecode: bratecode.code  == (curr_scode)  and bratecode.zikatnr == t_zimkateg.zikatnr and bratecode.erwachs == loopi and bratecode.kind1 == child and bratecode.startperiode <= t_qsy171.date1 and bratecode.endperiode >= t_qsy171.date1 and bratecode.wday == w_day), first=True)
+                        else:
+                            bratecode = query(bratecode_data, filters=(lambda bratecode: bratecode.code  == (curr_scode)  and bratecode.erwachs == loopi and bratecode.kind1 == child and bratecode.startperiode <= t_qsy171.date1 and bratecode.endperiode >= t_qsy171.date1 and bratecode.wday == w_day), first=True)
+
 
                         if not bratecode:
 

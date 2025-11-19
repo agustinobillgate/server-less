@@ -364,7 +364,7 @@ def available_rates_cldbl(frdate: date, todate: date, i_zikatnr: int, i_counter:
                             rate_list.todate = bqueasy.date2
                             rate_list.wabkurz = waehrung.wabkurz
 
-                            if bqueasy.char3 != "":
+                            if bqueasy.char3.strip() != "":
                                 segment = get_cache(
                                     Segment, {"bezeich": [(eq, bqueasy.char3)]})
 
@@ -503,7 +503,7 @@ def available_rates_cldbl(frdate: date, todate: date, i_zikatnr: int, i_counter:
                             rate_list.todate = bqueasy.date2
                             rate_list.wabkurz = waehrung.wabkurz
 
-                            if bqueasy.char3 != "":
+                            if bqueasy.char3.strip() != "":
                                 segment = get_cache(
                                     Segment, {"bezeich": [(eq, bqueasy.char3)]})
 

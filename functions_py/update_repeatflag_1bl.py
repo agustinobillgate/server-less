@@ -19,7 +19,6 @@ def update_repeatflag_1bl(bookengid:int):
 
         return {}
 
-
     queasy = get_cache (Queasy, {"key": [(eq, 167)],"number1": [(eq, bookengid)]})
 
     if queasy:

@@ -1297,11 +1297,13 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
     if res_mode  != ("split") :
 
         guest = get_cache (Guest, {"gastnr": [(eq, f_resline.guestnr)]})
-        f_resline.billname = guest.name + ", " + guest.vorname1 +\
-                guest.anredefirma +\
-                " " + guest.anrede1
+        # f_resline.billname = guest.name + ", " + guest.vorname1 +\
+        #         guest.anredefirma +\
+        #         " " + guest.anrede1
+        f_resline.billname = f"{guest.name}, {guest.vorname1} {guest.anrede1} {guest.anredefirma}"
         f_resline.billadress = guest.adresse1
-        f_resline.billcity = guest.wohnort + " " + guest.plz
+        # f_resline.billcity = guest.wohnort + " " + guest.plz
+        f_resline.billcity = f"{guest.wohnort} {guest.plz}"
 
         nation = get_cache (Nation, {"kurzbez": [(eq, guest.land)]})
 
@@ -1316,7 +1318,8 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
         f_resline.zahlungsart = guest.zahlungsart
 
         guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-        f_resline.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+        # f_resline.guestname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1
+        f_resline.guestname = f"{guest.name}, {guest.vorname1} {guest.anrede1}"
 
         guest = get_cache (Guest, {"gastnr": [(eq, inp_gastnr)]})
 

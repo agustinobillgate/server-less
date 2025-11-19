@@ -1,0 +1,28 @@
+{
+  "OTA_HotelAvailNotifRQ": {
+    "AvailStatusMessages": {
+      "HotelCode": "HTLCODE",
+      "Messages": [
+        {
+          "Start": "2025-12-01",
+          "End": "2025-12-05",
+          "InvTypeCode": "DLX",
+          "RatePlanCode": "RACK",
+          "AvailStatus": {
+            "Status": "Open" 
+          },
+          "Restrictions": [
+            {
+              "Status": "Close",
+              "Restriction": "Arrival"
+            },
+            {
+              "Status": "Close",
+              "Restriction": "Departure"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
