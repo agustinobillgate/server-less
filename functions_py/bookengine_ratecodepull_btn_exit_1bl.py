@@ -67,6 +67,7 @@ def bookengine_ratecodepull_btn_exit_1bl(t_push_list_data:[T_push_list], bookeng
     for t_push_list in query(t_push_list_data):
         # menggunakan key yg dipakai di UI, VHP dan BE huruf besar
         str = t_push_list.rcodeVHP + ";" + t_push_list.rcodeBE + ";" + t_push_list.rmtypeVHP + ";" + t_push_list.rmtypeBE + ";" + t_push_list.argtVHP
+        # str = t_push_list.rcodevhp + ";" + t_push_list.rcodebe + ";" + t_push_list.rmtypevhp + ";" + t_push_list.rmtypebe + ";" + t_push_list.argtvhp
         bufq = Queasy()
         db_session.add(bufq)
 

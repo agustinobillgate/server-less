@@ -1,5 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#--------------------------------------------------------
+# Rd, 20/11/2025
+# di payload ada double key, rcodevhp dan rcodeVHP
+# disaat konversi ada automatis create key yg key up/low case, krn menyamakan dgn versi OE
+# di sisi UI, prepare data ini dipakai untuk default value field yg huruf besar.
+# jadi disini manual edit menggunakan key yg dipakai UI
+#--------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from sqlalchemy import func
@@ -22,7 +28,11 @@ def prepare_bookengine_ratecodepushbl(bookengid:int):
 
     t_push_list = q_list = rmcat_list = dynarate_list = bratecode = None
 
-    t_push_list_data, T_push_list = create_model("T_push_list", {"rcodevhp":string, "rcodebe":string, "rmtypevhp":string, "rmtypebe":string, "argtvhp":string, "flag":int})
+    # Update Key, sesuai dengan UI
+    # t_push_list_data, T_push_list = create_model("T_push_list", {"rcodevhp":string, "rcodebe":string, "rmtypevhp":string, "rmtypebe":string, "argtvhp":string, "flag":int})
+    t_push_list_data, T_push_list = create_model("T_push_list", {"rcodeVHP":string, "rcodeBE":string, "rmtypeVHP":string, "rmtypeBE":string, "argtVHP":string, "flag":int})
+
+
     q_list_data, Q_list = create_model("Q_list", {"rcode":string, "rcodebe":string, "zikatnr":int, "rmtype":string, "rmtypebe":string, "arrangement":string})
     rmcat_list_data, Rmcat_list = create_model("Rmcat_list", {"zikatnr":int, "anzahl":int, "typ":int, "sleeping":bool, "bezeich":string}, {"sleeping": True})
     dynarate_list_data, Dynarate_list = create_model("Dynarate_list", {"scode":string})
@@ -164,10 +174,14 @@ def prepare_bookengine_ratecodepushbl(bookengid:int):
         t_push_list = T_push_list()
         t_push_list_data.append(t_push_list)
 
-        t_push_list.rcodevhp = q_list.rcode
-        t_push_list.rcodebe = q_list.rcodebe
-        t_push_list.rmtypevhp = q_list.rmtype
-        t_push_list.rmtypebe = q_list.rmtypebe
-        t_push_list.argtvhp = q_list.arrangement
+        # t_push_list.rcodevhp = q_list.rcode
+        # t_push_list.rcodebe = q_list.rcodebe
+        # t_push_list.rmtypevhp = q_list.rmtype
+        # t_push_list.rmtypebe = q_list.rmtypebe
+        t_push_list.rcodeVHP = q_list.rcode
+        t_push_list.rcodeBE = q_list.rcodebe
+        t_push_list.rmtypeVHP = q_list.rmtype
+        t_push_list.rmtypeBE = q_list.rmtypebe
+        t_push_list.argtVHP = q_list.arrangement
 
     return generate_output()
