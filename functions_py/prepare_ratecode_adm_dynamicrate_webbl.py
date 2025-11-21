@@ -18,7 +18,7 @@ def prepare_ratecode_adm_dynamicrate_webbl(prcode1:string):
     t_ratecode1 = dynarate_list = None
 
     t_ratecode1_data, T_ratecode1 = create_model_like(Ratecode, {"s_recid":int})
-    dynarate_list_data, Dynarate_list = create_model("Dynarate_list", {"s_recid":int, "counter":int, "w_day":int, "rmtype":string, "fr_room":int, "to_room":int, "days1":int, "days2":int, "rcode":string})
+    dynarate_list_data, Dynarate_list = create_model("Dynarate_list", {"s_recid":int, "counter":int, "w_day":int, "rmType":string, "fr_room":int, "to_room":int, "days1":int, "days2":int, "rCode":string})
 
     db_session = local_storage.db_session
 
@@ -49,7 +49,7 @@ def prepare_ratecode_adm_dynamicrate_webbl(prcode1:string):
             if mestoken == "CN":
                 dynarate_list.counter = to_int(mesvalue)
             elif mestoken == "RT":
-                dynarate_list.rmtype = mesvalue
+                dynarate_list.rmType = mesvalue
             elif mestoken == "WD":
                 dynarate_list.w_day = to_int(mesvalue)
             elif mestoken == "FR":
@@ -61,7 +61,7 @@ def prepare_ratecode_adm_dynamicrate_webbl(prcode1:string):
             elif mestoken == "D2":
                 dynarate_list.days2 = to_int(mesvalue)
             elif mestoken == "RC":
-                dynarate_list.rcode = mesvalue
+                dynarate_list.rCode = mesvalue
 
         if dynarate_list.counter == 0:
             curr_counter = get_output(ratecode_admin_fill_dynarate_counterbl(t_ratecode1.code, dynarate_list.rmType, dynarate_list.rCode, dynarate_list.w_day))
