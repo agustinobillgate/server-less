@@ -570,6 +570,20 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
         curr_recid = queasy._recid
         queasy = db_session.query(Queasy).filter(
                  (Queasy.key == 164) & (Queasy._recid > curr_recid)).first()
+
+    # queasy = get_cache (Queasy, {"key": [(eq, 170)],"date1": [(ge, fdate),(le, tdate)]})
+    # while None != queasy:
+    for queasy in db_session.query(Queasy).filter(
+             (Queasy.key == 170) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate)).order_by(Queasy._recid).all():
+        t_qsy170 = T_qsy170()
+        t_qsy170_data.append(t_qsy170)
+
+        buffer_copy(queasy, t_qsy170)
+        t_qsy170.rec_id = queasy._recid
+
+        curr_recid = queasy._recid
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 170) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate) & (Queasy._recid > curr_recid)).first()
     adult = 2
     done = False
     maxroom = 0
@@ -669,95 +683,64 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
         for qsy159 in db_session.query(Qsy159).filter(
                  (Qsy159.key == 159) & (Qsy159.number2 == 0)).order_by(Qsy159._recid).all():
 
-            qsy170 = get_cache (Queasy, {"key": [(eq, 170)],"betriebsnr": [(eq, qsy159.number1)]})
-            while None != qsy170:
+            for qsy170 in db_session.query(Qsy170).filter(
+                     (Qsy170.key == 170) & (Qsy170.betriebsnr == qsy159.number1)).order_by(Qsy170._recid).all():
 
                 qsy = get_cache (Queasy, {"_recid": [(eq, qsy170._recid)]})
 
                 if qsy:
                     db_session.delete(qsy)
-                    pass
 
-                curr_recid = qsy170._recid
-                qsy170 = db_session.query(Qsy170).filter(
-                         (Qsy170.key == 170) & (Qsy170.betriebsnr == qsy159.number1) & (Qsy170._recid > curr_recid)).first()
-
-        qsy170 = get_cache (Queasy, {"key": [(eq, 170)],"betriebsnr": [(eq, 0)]})
-        while None != qsy170:
+        for qsy170 in db_session.query(Qsy170).filter(
+                 (Qsy170.key == 170) & (Qsy170.betriebsnr == 0)).order_by(Qsy170._recid).all():
 
             qsy = get_cache (Queasy, {"_recid": [(eq, qsy170._recid)]})
 
             if qsy:
                 db_session.delete(qsy)
-                pass
-
-            curr_recid = qsy170._recid
-            qsy170 = db_session.query(Qsy170).filter(
-                     (Qsy170.key == 170) & (Qsy170.betriebsnr == 0) & (Qsy170._recid > curr_recid)).first()
     else:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 170)],"betriebsnr": [(eq, 0)]})
-        while None != queasy:
+        for queasy in db_session.query(Queasy).filter(
+                 (Queasy.key == 170) & (Queasy.betriebsnr == 0)).order_by(Queasy._recid).all():
 
             qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
             if qsy:
+                pass
                 qsy.betriebsnr = becode
 
 
                 pass
                 pass
 
-            curr_recid = queasy._recid
-            queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 170) & (Queasy.betriebsnr == 0) & (Queasy._recid > curr_recid)).first()
-
     if pushall:
 
-        currqsy = get_cache (Queasy, {"key": [(eq, 170)],"betriebsnr": [(eq, becode)]})
-        while None != currqsy:
+        for currqsy in db_session.query(Currqsy).filter(
+                 (Currqsy.key == 170) & (Currqsy.betriebsnr == becode)).order_by(Currqsy._recid).all():
             db_session.delete(currqsy)
-            pass
 
-            curr_recid = currqsy._recid
-            currqsy = db_session.query(Currqsy).filter(
-                     (Currqsy.key == 170) & (Currqsy.betriebsnr == becode) & (Currqsy._recid > curr_recid)).first()
-
-        queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(ge, fdate),(le, tdate)],"betriebsnr": [(eq, becode)]})
-        while None != queasy:
+        for queasy in db_session.query(Queasy).filter(
+                 (Queasy.key == 171) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate) & (Queasy.betriebsnr == becode)).order_by(Queasy._recid).all():
             t_qsy171 = T_qsy171()
             t_qsy171_data.append(t_qsy171)
 
             buffer_copy(queasy, t_qsy171)
 
-            curr_recid = queasy._recid
-            queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 171) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate) & (Queasy.betriebsnr == becode) & (Queasy._recid > curr_recid)).first()
-
-        queasy = get_cache (Queasy, {"key": [(eq, 145)],"date1": [(ge, fdate),(le, tdate)]})
-        while None != queasy:
+        for queasy in db_session.query(Queasy).filter(
+                 (Queasy.key == 145) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate)).order_by(Queasy._recid).all():
             t_qsy145 = T_qsy145()
             t_qsy145_data.append(t_qsy145)
 
             buffer_copy(queasy, t_qsy145)
-
-            curr_recid = queasy._recid
-            queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 145) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate) & (Queasy._recid > curr_recid)).first()
     else:
 
         queasy = get_cache (Queasy, {"key": [(eq, 170)],"date1": [(lt, fdate - 2)],"betriebsnr": [(eq, becode)]})
 
         if queasy:
 
-            currqsy = get_cache (Queasy, {"key": [(eq, 170)],"date1": [(lt, fdate - 2)],"betriebsnr": [(eq, becode)]})
-            while None != currqsy:
+            for currqsy in db_session.query(Currqsy).filter(
+                     (Currqsy.key == 170) & (Currqsy.date1 < fdate - timedelta(days=2)) & (Currqsy.betriebsnr == becode)).order_by(Currqsy._recid).all():
                 db_session.delete(currqsy)
-                pass
-
-                curr_recid = currqsy._recid
-                currqsy = db_session.query(Currqsy).filter(
-                         (Currqsy.key == 170) & (Currqsy.date1 < fdate - timedelta(days=2)) & (Currqsy.betriebsnr == becode) & (Currqsy._recid > curr_recid)).first()
 
         qsy = get_cache (Queasy, {"key": [(eq, 170)],"date1": [(eq, tdate)],"betriebsnr": [(eq, becode)]})
 
@@ -1165,6 +1148,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
                 qsy = get_cache (Queasy, {"_recid": [(eq, t_qsy170._recid)]})
 
                 if qsy:
+                    pass
                     qsy.logi1 = True
                     qsy.deci1 =  to_decimal(rate_list.rmrate)
                     qsy.char2 = rate_list.scode
@@ -1218,48 +1202,34 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
 
         if queasy:
 
-            bqsy170 = get_cache (Queasy, {"key": [(eq, 170)],"number2": [(eq, 0)],"betriebsnr": [(eq, becode)]})
-            while None != bqsy170:
+            for bqsy170 in db_session.query(Bqsy170).filter(
+                     (Bqsy170.key == 170) & (Bqsy170.number2 == 0) & (Bqsy170.betriebsnr == becode)).order_by(Bqsy170._recid).all():
                 db_session.delete(bqsy170)
-                pass
-
-                curr_recid = bqsy170._recid
-                bqsy170 = db_session.query(Bqsy170).filter(
-                         (Bqsy170.key == 170) & (Bqsy170.number2 == 0) & (Bqsy170.betriebsnr == becode) & (Bqsy170._recid > curr_recid)).first()
     else:
 
         queasy = get_cache (Queasy, {"key": [(eq, 170)],"number2": [(le, 1)],"betriebsnr": [(eq, becode)]})
 
         if queasy:
 
-            bqsy170 = get_cache (Queasy, {"key": [(eq, 170)],"number2": [(le, 1)],"betriebsnr": [(eq, becode)]})
-            while None != bqsy170:
+            for bqsy170 in db_session.query(Bqsy170).filter(
+                     (Bqsy170.key == 170) & (Bqsy170.number2 <= 1) & (Bqsy170.betriebsnr == becode)).order_by(Bqsy170._recid).all():
                 db_session.delete(bqsy170)
-                pass
-
-                curr_recid = bqsy170._recid
-                bqsy170 = db_session.query(Bqsy170).filter(
-                         (Bqsy170.key == 170) & (Bqsy170.number2 <= 1) & (Bqsy170.betriebsnr == becode) & (Bqsy170._recid > curr_recid)).first()
 
     if not pushall or not createrate:
 
-        queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 170) & (Queasy.logi2) & (Queasy.betriebsnr == becode)).first()
-        while None != queasy:
+        for queasy in db_session.query(Queasy).filter(
+                 (Queasy.key == 170) & (Queasy.logi2) & (Queasy.betriebsnr == becode)).order_by(Queasy._recid).all():
 
             qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
             if qsy:
+                pass
                 qsy.logi1 = qsy.logi2
                 qsy.logi2 = False
 
 
                 pass
                 pass
-
-            curr_recid = queasy._recid
-            queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 170) & (Queasy.logi2) & (Queasy.betriebsnr == becode) & (Queasy._recid > curr_recid)).first()
 
         queasy = db_session.query(Queasy).filter(
                  (Queasy.key == 170) & (Queasy.logi1) & (Queasy.betriebsnr == becode)).first()
@@ -1290,6 +1260,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
                 qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
                 if qsy:
+                    pass
                     qsy.logi1 = False
                     pass
                     pass
@@ -1307,6 +1278,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
                     qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
                     if qsy:
+                        pass
 
                         if ratecode.erwachs != 0:
 
@@ -1389,6 +1361,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
                         qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
                         if qsy:
+                            pass
 
                             if bratecode.erwachs != 0:
 
@@ -1434,6 +1407,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
                 currqsy = get_cache (Queasy, {"_recid": [(eq, qsy._recid)]})
 
                 if currqsy:
+                    pass
                     currqsy.logi3 = True
 
 
