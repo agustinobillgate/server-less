@@ -5,6 +5,9 @@
         _remark_:   - add import from function_py
                     - fix python indentation 
                     - update ITA: Program terkait feature service apartment
+                    
+    _yusufwijasena_20/11/2025
+        _remark_:   - fix issue when old t_bill_line data has no bjournal value
 """
 from functions.additional_functions import *
 from decimal import Decimal
@@ -73,7 +76,7 @@ def fo_inv_openbill_list_web_1bl(bil_flag: int, bil_recid: int, room: str, vipfl
             "counter": int,
             "addserv": bool,
             "addvat": bool,
-            "bjournal": bool
+            "bjournal": (bool, False) # yusufwijasena: fix old data issue with no bjournal value
             # end - ITA: Program terkait feature service apartment
         })
 
@@ -155,11 +158,11 @@ def fo_inv_openbill_list_web_1bl(bil_flag: int, bil_recid: int, room: str, vipfl
     spbill_list_data.clear()
     disp_bill_line()
 
-# start - ITA: Program terkait feature service apartment
-    for t_bill_line in query(t_bill_line_data, filters=(lambda t_bill_line: t_bill_line.bjournal)):
+    # start - ITA: Program terkait feature service apartment
+    for t_bill_line in query(t_bill_line_data, filters=(lambda t_bill_line: getattr(t_bill_line, "bjournal", False))):
         balance = to_decimal(balance) + to_decimal(t_bill_line.betrag)
         tot_balance = to_decimal(tot_balance) + to_decimal(t_bill_line.betrag)
-# end - ITA: Program terkait feature service apartment
+    # end - ITA: Program terkait feature service apartment
 
     balance = to_decimal(round(balance, 0))
     tot_balance = to_decimal(round(tot_balance, 0))
