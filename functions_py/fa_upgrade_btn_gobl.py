@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gl_jouhdr, Counters, Gl_journal, Fa_artikel, Mathis, Mhis_line, Fa_op
+from functions.next_counter_for_update import next_counter_for_update
 
 g_list_data, G_list = create_model("G_list", {"nr":int, "jnr":int, "fibukonto":string, "debit":Decimal, "credit":Decimal, "bemerk":string, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "duplicate":bool}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 
@@ -17,6 +20,10 @@ def fa_upgrade_btn_gobl(g_list_data:[G_list], p_nr:int, nr:int, amt:Decimal, use
     g_list = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    refno = refno.strip()
+    bezeich = bezeich.strip()
 
     def generate_output():
         nonlocal new_hdr, gl_jouhdr, counters, gl_journal, fa_artikel, mathis, mhis_line, fa_op
@@ -30,7 +37,7 @@ def fa_upgrade_btn_gobl(g_list_data:[G_list], p_nr:int, nr:int, amt:Decimal, use
     def create_header():
 
         nonlocal new_hdr, gl_jouhdr, counters, gl_journal, fa_artikel, mathis, mhis_line, fa_op
-        nonlocal p_nr, nr, amt, user_init, qty, refno, datum, bezeich, debits, credits, remains
+        nonlocal p_nr, nr, amt, user_init, qty, refno, datum, bezeich, debits, credits, remains, last_count
 
 
         nonlocal g_list
@@ -45,14 +52,17 @@ def fa_upgrade_btn_gobl(g_list_data:[G_list], p_nr:int, nr:int, amt:Decimal, use
         if not counters:
             counters = Counters()
             db_session.add(counters)
-
             counters.counter_no = 25
             counters.counter_bez = "G/L Transaction Journal"
+            db_session.commit()
 
-
-        counters.counter = counters.counter + 1
+        last_count, error_lock = get_output(next_counter_for_update(25))
+        # counters.counter = counters.counter + 1
         pass
-        gl_jouhdr.jnr = counters.counter
+        # gl_jouhdr.jnr = counters.counter
+        gl_jouhdr.jnr = last_count
+
+
         gl_jouhdr.refno = refno
         gl_jouhdr.datum = datum
         gl_jouhdr.bezeich = bezeich
@@ -64,7 +74,7 @@ def fa_upgrade_btn_gobl(g_list_data:[G_list], p_nr:int, nr:int, amt:Decimal, use
     def create_journals():
 
         nonlocal new_hdr, gl_jouhdr, counters, gl_journal, fa_artikel, mathis, mhis_line, fa_op
-        nonlocal p_nr, nr, amt, user_init, qty, refno, datum, bezeich, debits, credits, remains
+        nonlocal p_nr, nr, amt, user_init, qty, refno, datum, bezeich, debits, credits, remains, last_count
 
 
         nonlocal g_list
@@ -73,7 +83,8 @@ def fa_upgrade_btn_gobl(g_list_data:[G_list], p_nr:int, nr:int, amt:Decimal, use
             gl_journal = Gl_journal()
             db_session.add(gl_journal)
 
-            gl_journal.jnr = counters.counter
+            # gl_journal.jnr = counters.counter
+            gl_journal.jnr = last_count
             gl_journal.fibukonto = g_list.fibukonto
             gl_journal.debit =  to_decimal(g_list.debit)
             gl_journal.credit =  to_decimal(g_list.credit)

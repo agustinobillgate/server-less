@@ -1,13 +1,17 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------
+# Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
+#---------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Mathis, Fa_artikel, Counters, Mhis_line
+from functions.next_counter_for_update import next_counter_for_update
 
 m_list_data, M_list = create_model_like(Mathis)
 fa_art_data, Fa_art = create_model_like(Fa_artikel)
 
-def fa_artlist_btn_exitbl(flag:int, mathis_nr:int, spec:string, locate:string, picture_file:string, upgrade_part:bool, fibukonto:string, credit_fibu:string, debit_fibu:string, user_init:string, curr_location:string, m_list_data:[M_list], fa_art_data:[Fa_art]):
+def fa_artlist_btn_exitbl(flag:int, mathis_nr:int, spec:string, locate:string, picture_file:string, upgrade_part:bool, fibukonto:string, 
+                          credit_fibu:string, debit_fibu:string, user_init:string, curr_location:string, m_list_data:[M_list], fa_art_data:[Fa_art]):
 
     prepare_cache ([Mathis, Fa_artikel, Counters, Mhis_line])
 
@@ -18,6 +22,17 @@ def fa_artlist_btn_exitbl(flag:int, mathis_nr:int, spec:string, locate:string, p
     m_list = fa_art = None
 
     db_session = local_storage.db_session
+    last_count:int = 0
+    error_lock:string = ""
+    spec = spec.strip()
+    locate = locate.strip()
+    picture_file = picture_file.strip()
+    user_init = user_init.strip()
+    curr_location = curr_location.strip()
+    fibukonto = fibukonto.strip()
+    credit_fibu = credit_fibu.strip()
+    debit_fibu = debit_fibu.strip()
+
 
     def generate_output():
         nonlocal curr_mathisnr, created, mathis, fa_artikel, counters, mhis_line
@@ -41,16 +56,20 @@ def fa_artlist_btn_exitbl(flag:int, mathis_nr:int, spec:string, locate:string, p
         if not counters:
             counters = Counters()
             db_session.add(counters)
-
+            counters.counter_bez = "Material / Fixed Asset"
             counters.counter_no = 17
 
-        if counters.counter == 0:
-            counters.counter_bez = "Material / Fixed Asset"
-        counters.counter = counters.counter + 1
+        # if counters.counter == 0:
+        
+        last_count, error_lock = get_output(next_counter_for_update(17))
+        # counters.counter = counters.counter + 1
         mathis = Mathis()
         db_session.add(mathis)
 
-        mathis.nr = counters.counter
+        # mathis.nr = counters.counter
+        mathis.nr = last_count
+
+
         mathis.datum = m_list.datum
         mathis.name = m_list.name
         mathis.supplier = m_list.supplier
@@ -71,7 +90,9 @@ def fa_artlist_btn_exitbl(flag:int, mathis_nr:int, spec:string, locate:string, p
         fa_artikel = Fa_artikel()
         db_session.add(fa_artikel)
 
-        fa_artikel.nr = counters.counter
+        # fa_artikel.nr = counters.counter
+        fa_artikel.nr = last_count
+        
         fa_artikel.lief_nr = fa_art.lief_nr
         fa_artikel.gnr = fa_art.gnr
         fa_artikel.subgrp = fa_art.subgrp

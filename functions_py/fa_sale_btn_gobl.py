@@ -1,13 +1,16 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gl_acct, Gl_jouhdr, Counters, Gl_journal, Fa_artikel, Mhis_line, Fa_op
-
+from functions.next_counter_for_update import next_counter_for_update
 g_list_data, G_list = create_model("G_list", {"nr":int, "jnr":int, "fibukonto":string, "debit":Decimal, "credit":Decimal, "bemerk":string, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "duplicate":bool, "acct_fibukonto":string, "acct_bezeich":string}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 
-def fa_sale_btn_gobl(g_list_data:[G_list], amt:Decimal, nr:int, datum:date, refno:string, bezeich:string, user_init:string, remains:Decimal, debits:Decimal, credits:Decimal, qty:int, fa_wert:Decimal, depn_wert:Decimal, book_wert:Decimal):
+def fa_sale_btn_gobl(g_list_data:[G_list], amt:Decimal, nr:int, datum:date, refno:string, bezeich:string, 
+                     user_init:string, remains:Decimal, debits:Decimal, credits:Decimal, qty:int, fa_wert:Decimal, depn_wert:Decimal, book_wert:Decimal):
 
     prepare_cache ([Gl_jouhdr, Counters, Gl_journal, Fa_artikel, Mhis_line, Fa_op])
 
@@ -22,8 +25,13 @@ def fa_sale_btn_gobl(g_list_data:[G_list], amt:Decimal, nr:int, datum:date, refn
     Gl_acct1 = create_buffer("Gl_acct1",Gl_acct)
     Gl_jouhdr1 = create_buffer("Gl_jouhdr1",Gl_jouhdr)
 
-
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    refno = refno.strip()
+    bezeich = bezeich.strip()
+    user_init = user_init.strip()
+
 
     def generate_output():
         nonlocal sold_out, new_hdr, journal_nr, gl_acct, gl_jouhdr, counters, gl_journal, fa_artikel, mhis_line, fa_op
@@ -52,17 +60,18 @@ def fa_sale_btn_gobl(g_list_data:[G_list], amt:Decimal, nr:int, datum:date, refn
 
             counters.counter_no = 25
             counters.counter_bez = "G/L Transaction Journal"
-            counters.counter = 1
-            journal_nr = counters.counter
+            # counters.counter = 1
+            # journal_nr = counters.counter
 
-        elif counters:
-            pass
-            counters.counter = counters.counter + 1
-            journal_nr = counters.counter
+        # elif counters:
+            # pass
+            # counters.counter = counters.counter + 1
+            # journal_nr = counters.counter
+
+        last_count, error_lock = get_output(next_counter_for_update(25))
+        journal_nr = last_count
 
 
-            pass
-            pass
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 

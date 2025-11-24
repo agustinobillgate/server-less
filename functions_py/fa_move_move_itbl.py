@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Mathis, Fa_artikel, Htparam, Fa_op, Counters
+from functions.next_counter_for_update import next_counter_for_update
 
 def fa_move_move_itbl(location_str:string, qty:int, user_init:string, artnr:int):
 
@@ -14,6 +17,9 @@ def fa_move_move_itbl(location_str:string, qty:int, user_init:string, artnr:int)
     mathis = fa_artikel = htparam = fa_op = counters = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    location_str = location_str.strip()
 
     def generate_output():
         nonlocal anz1, anz2, mathis, fa_artikel, htparam, fa_op, counters
@@ -141,16 +147,19 @@ def fa_move_move_itbl(location_str:string, qty:int, user_init:string, artnr:int)
                 pass
             else:
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 17)]})
-                counters.counter = counters.counter + 1
-
+                # counters = get_cache (Counters, {"counter_no": [(eq, 17)]})
+                # counters.counter = counters.counter + 1
+                last_count, error_lock = get_output(next_counter_for_update(17))
 
                 pass
                 mabuff = Mathis()
                 db_session.add(mabuff)
 
                 buffer_copy(mathis, mabuff,except_fields=["mathis.nr"])
-                mabuff.nr = counters.counter
+                # mabuff.nr = counters.counter
+                mabuff.nr = last_count
+
+
                 mabuff.location = location_str
 
 
@@ -159,7 +168,9 @@ def fa_move_move_itbl(location_str:string, qty:int, user_init:string, artnr:int)
                 db_session.add(fabuff)
 
                 buffer_copy(fa_artikel, fabuff,except_fields=["fa_artikel.nr"])
-                fabuff.nr = counters.counter
+                # fabuff.nr = counters.counter
+                fabuff.nr = last_count
+                
                 fabuff.anzahl = qty
                 fabuff.anz100 = qty
                 fabuff.warenwert =  to_decimal(fa_artikel.warenwert) * to_decimal(qty) / to_decimal(fa_artikel.anzahl)

@@ -33,6 +33,7 @@ def next_counter_for_update(counter_no: int) -> int:
         # if row missing → create new one starting from 1
         row = Counters(counter_no=counter_no, counter=1, counter_bez=to_string(counter_no))
         db_session.add(row)
+        row.counter = 1
         new_value = 1
 
     except Exception as e:

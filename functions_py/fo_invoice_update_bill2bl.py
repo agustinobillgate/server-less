@@ -1,12 +1,18 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.fo_invoice_rev_bdownbl import fo_invoice_rev_bdownbl
 from models import Bill, Artikel, Htparam, Counters, Res_line, Bill_line, Arrangement, Umsatz, Billjournal, Debitor, Reservation, Guest, Bediener, Argt_line
+from functions.next_counter_for_update import next_counter_for_update
 
-def fo_invoice_update_bill2bl(pvilanguage:int, b_rechnr:int, b_artnr:int, bil_flag:int, amount:Decimal, amount_foreign:Decimal, price_decimal:int, double_currency:bool, foreign_rate:bool, bill_date:date, transdate:date, billart:int, description:string, qty:int, curr_room:string, user_init:string, artnr:int, price:Decimal, cancel_str:string, currzeit:int, voucher_nr:string, exchg_rate:Decimal, bil_recid:int, curr_department:int):
+def fo_invoice_update_bill2bl(pvilanguage:int, b_rechnr:int, b_artnr:int, bil_flag:int, amount:Decimal, amount_foreign:Decimal, 
+                              price_decimal:int, double_currency:bool, foreign_rate:bool, bill_date:date, transdate:date, billart:int, 
+                              description:string, qty:int, curr_room:string, user_init:string, artnr:int, price:Decimal, 
+                              cancel_str:string, currzeit:int, voucher_nr:string, exchg_rate:Decimal, bil_recid:int, curr_department:int):
 
     prepare_cache ([Artikel, Htparam, Counters, Res_line, Bill_line, Arrangement, Umsatz, Billjournal, Debitor, Guest, Bediener, Argt_line])
 
@@ -31,6 +37,14 @@ def fo_invoice_update_bill2bl(pvilanguage:int, b_rechnr:int, b_artnr:int, bil_fl
     t_bill_data, T_bill = create_model_like(Bill)
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    description = description.strip()
+    curr_room = curr_room.strip()
+    user_init = user_init.strip()
+    cancel_str = cancel_str.strip()
+    voucher_nr = voucher_nr.strip()
+
 
     def generate_output():
         nonlocal msg_str, balance, balance_foreign, cancel_flag, void_approve, flag1, flag2, flag3, rechnr, t_bill_data, r_recid, na_running, gastnrmember, lvcarea, bill, artikel, htparam, counters, res_line, bill_line, arrangement, umsatz, billjournal, debitor, reservation, guest, bediener, argt_line
@@ -358,9 +372,12 @@ def fo_invoice_update_bill2bl(pvilanguage:int, b_rechnr:int, b_artnr:int, bil_fl
 
         if bill.rechnr == 0:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-            counters.counter = counters.counter + 1
-            bill.rechnr = counters.counter
+            # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            # counters.counter = counters.counter + 1
+            # bill.rechnr = counters.counter
+            last_count, error_lock = get_output(next_counter_for_update(3))
+            bill.rechnr = last_count
+            
             pass
 
         if rechnr == 0 and bill.rechnr != 0:
