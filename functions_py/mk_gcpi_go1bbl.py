@@ -1,11 +1,15 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gc_pi, Counters, Gl_jouhdr, Gl_journal
+from functions.next_counter_for_update import next_counter_for_update
 
-def mk_gcpi_go1bbl(pvilanguage:int, docu_nr:string, billdate:date, journaltype:int, pi_acctno:string, user_init:string, pbuff_postdate:date, giro_tempacct:string):
+def mk_gcpi_go1bbl(pvilanguage:int, docu_nr:string, billdate:date, journaltype:int, pi_acctno:string, 
+                   user_init:string, pbuff_postdate:date, giro_tempacct:string):
 
     prepare_cache ([Gc_pi, Counters, Gl_jouhdr, Gl_journal])
 
@@ -16,15 +20,19 @@ def mk_gcpi_go1bbl(pvilanguage:int, docu_nr:string, billdate:date, journaltype:i
 
     Gc_pibuff = create_buffer("Gc_pibuff",Gc_pi)
 
+    last_count = 0
+    error_lock:string = ""
 
     db_session = local_storage.db_session
+    docu_nr = docu_nr.strip()
+    user_init = user_init.strip()
+    pi_acctno = pi_acctno.strip()
+    giro_tempacct = giro_tempacct.strip()
 
     def generate_output():
         nonlocal lvcarea, gc_pi, counters, gl_jouhdr, gl_journal
         nonlocal pvilanguage, docu_nr, billdate, journaltype, pi_acctno, user_init, pbuff_postdate, giro_tempacct
         nonlocal gc_pibuff
-
-
         nonlocal gc_pibuff
 
         return {}
@@ -46,12 +54,17 @@ def mk_gcpi_go1bbl(pvilanguage:int, docu_nr:string, billdate:date, journaltype:i
 
         counters.counter_no = 25
         counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
-    counters.counter = counters.counter + 1
+    # counters.counter = counters.counter + 1
+
+    last_count, error_lock = get_output(next_counter_for_update(25))
+
     pass
     gl_jouhdr = Gl_jouhdr()
     db_session.add(gl_jouhdr)
 
-    gl_jouhdr.jnr = counters.counter
+    # gl_jouhdr.jnr = counters.counter
+    gl_jouhdr.jnr = last_count
+
     gl_jouhdr.jtype = journaltype
     gl_jouhdr.batch = True
     gl_jouhdr.refno = gc_pi.docu_nr
@@ -65,7 +78,9 @@ def mk_gcpi_go1bbl(pvilanguage:int, docu_nr:string, billdate:date, journaltype:i
     gl_journal = Gl_journal()
     db_session.add(gl_journal)
 
-    gl_journal.jnr = counters.counter
+    # gl_journal.jnr = counters.counter
+    gl_journal.jnr = last_count
+
     gl_journal.fibukonto = gc_pi.debit_fibu
     gl_journal.debit =  to_decimal(gc_pi.betrag)
     gl_journal.userinit = user_init
@@ -78,7 +93,9 @@ def mk_gcpi_go1bbl(pvilanguage:int, docu_nr:string, billdate:date, journaltype:i
     gl_journal = Gl_journal()
     db_session.add(gl_journal)
 
-    gl_journal.jnr = counters.counter
+    # gl_journal.jnr = counters.counter
+    gl_journal.jnr = last_count
+    
     gl_journal.credit =  to_decimal(gc_pi.betrag)
     gl_journal.userinit = user_init
     gl_journal.zeit = get_current_time_in_seconds()

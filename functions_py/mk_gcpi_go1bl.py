@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gc_pi, Counters, Gc_pitype
+from functions.next_counter_for_update import next_counter_for_update
 
 pbuff_data, Pbuff = create_model_like(Gc_pi)
 
@@ -17,6 +20,12 @@ def mk_gcpi_go1bl(pbuff_data:[Pbuff], billdate:date, rcvname:string, pi_type:str
     pbuff = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    rcvname = rcvname.strip()
+    pi_type = pi_type.strip()
+    bemerk = bemerk.strip()
+    pi_acctno = pi_acctno.strip()
 
     def generate_output():
         nonlocal pi_docuno, gc_pi, counters, gc_pitype
@@ -40,8 +49,8 @@ def mk_gcpi_go1bl(pbuff_data:[Pbuff], billdate:date, rcvname:string, pi_type:str
         Gc_pibuff =  create_buffer("Gc_pibuff",Gc_pi)
         pbuff.pay_datum = billdate
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 42)]})
-
+        # counters = get_cache (Counters, {"counter_no": [(eq, 42)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == 42).with_for_update().first()
         if not counters:
             counters = Counters()
             db_session.add(counters)

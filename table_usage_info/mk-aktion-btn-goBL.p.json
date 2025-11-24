@@ -1,0 +1,18 @@
+{
+    "Akthdr": {
+        "read": [
+            "aktnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Counters": {
+        "read": [
+            "counter",
+            "counter_no",
+            "counter_bez",
+            "_recid"
+        ],
+        "write": []
+    }
+}

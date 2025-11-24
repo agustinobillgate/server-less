@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gc_pi, Counters, Gl_jouhdr, Gl_journal
+from functions.next_counter_for_update import next_counter_for_update
 
 def mk_gcpi_go3bl(pvilanguage:int, docu_nr:string, pbuff_postdate:date, journaltype:int, giro_tempacct:string, user_init:string):
 
@@ -13,6 +16,11 @@ def mk_gcpi_go3bl(pvilanguage:int, docu_nr:string, pbuff_postdate:date, journalt
     gc_pi = counters = gl_jouhdr = gl_journal = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    docu_nr = docu_nr.strip()
+    user_init = user_init.strip()
+    giro_tempacct = giro_tempacct.strip()
 
     def generate_output():
         nonlocal lvcarea, gc_pi, counters, gl_jouhdr, gl_journal
@@ -28,7 +36,8 @@ def mk_gcpi_go3bl(pvilanguage:int, docu_nr:string, pbuff_postdate:date, journalt
         gc_pi = get_cache (Gc_pi, {"docu_nr": [(eq, docu_nr)]})
         gc_pi.postdate = pbuff_postdate
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == 25).with_for_update().first()
 
         if not counters:
             counters = Counters()

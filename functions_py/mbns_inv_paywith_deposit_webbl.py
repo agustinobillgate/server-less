@@ -1,4 +1,7 @@
 #using conversion tools version: 1.0.0.117
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -6,8 +9,12 @@ from datetime import date
 from functions.htplogic import htplogic
 from functions.read_bill2bl import read_bill2bl
 from models import Bill_line, Bill, Res_line, Artikel, Htparam, Waehrung, Counters, Umsatz, Billjournal
+from functions.next_counter_for_update import next_counter_for_update
 
-def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t_bill_rechnr:int, bill_line_departement:int, transdate:date, billart:int, qty:int, price:Decimal, amount:Decimal, amount_foreign:Decimal, description:string, voucher_nr:string, cancel_str:string, user_init:string, rechnr:int, balance:Decimal, balance_foreign:Decimal):
+def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t_bill_rechnr:int, bill_line_departement:int, 
+                                   transdate:date, billart:int, qty:int, price:Decimal, amount:Decimal, amount_foreign:Decimal, 
+                                   description:string, voucher_nr:string, cancel_str:string, user_init:string, rechnr:int, 
+                                   balance:Decimal, balance_foreign:Decimal):
 
     prepare_cache ([Bill, Artikel, Htparam, Waehrung, Counters, Umsatz, Billjournal])
 
@@ -49,8 +56,13 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
     Buf_artikel = create_buffer("Buf_artikel",Artikel)
     Buf_bill_line = create_buffer("Buf_bill_line",Bill_line)
 
-
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    description = description.strip()
+    voucher_nr = voucher_nr.strip()
+    cancel_str = cancel_str.strip()
+    user_init = user_init.strip()
 
     def generate_output():
         nonlocal error_desc, success_flag, t_bill_data, t_bill_line_data, lvcarea, master_str, master_rechnr, master_flag, str1, bline_dept, gname, bil_recid, telbill_flag, babill_flag, depoart, depobez, p_253, gastnrmember, price_decimal, double_currency, foreign_rate, exchg_rate, currzeit, bill_date, curr_room, skip_it, bill_line, bill, res_line, artikel, htparam, waehrung, counters, umsatz, billjournal
@@ -68,7 +80,6 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
         nonlocal error_desc, success_flag, t_bill_data, t_bill_line_data, lvcarea, master_str, master_rechnr, master_flag, str1, bline_dept, gname, bil_recid, telbill_flag, babill_flag, depoart, depobez, p_253, gastnrmember, price_decimal, double_currency, foreign_rate, exchg_rate, currzeit, bill_date, curr_room, skip_it, bill_line, bill, res_line, artikel, htparam, waehrung, counters, umsatz, billjournal
         nonlocal pvilanguage, bil_flag, b_recid, t_bill_rechnr, bill_line_departement, transdate, billart, qty, price, amount, amount_foreign, description, voucher_nr, cancel_str, user_init, rechnr, balance, balance_foreign
         nonlocal resline, buf_artikel, buf_bill_line
-
 
         nonlocal t_bill_line, t_blinebuff, t_bill, resline, buf_artikel, buf_bill_line
         nonlocal t_bill_line_data, t_blinebuff_data, t_bill_data
@@ -111,10 +122,12 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
 
         if bill.rechnr == 0:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-            counters.counter = counters.counter + 1
-            bill.rechnr = counters.counter
-
+            # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            # counters.counter = counters.counter + 1
+            # bill.rechnr = counters.counter
+            last_count, error_lock = get_output(next_counter_for_update(3))
+            bill.rechnr = last_count
+            
             if transdate != None:
                 bill.datum = transdate
             pass

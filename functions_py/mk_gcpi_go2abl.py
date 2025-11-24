@@ -1,13 +1,17 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gc_pi, Counters, Gl_jouhdr, Gl_journal
+from functions.next_counter_for_update import next_counter_for_update
 
 inv_list_data, Inv_list = create_model("Inv_list", {"s_recid":int, "reihenfolge":int, "amount":Decimal, "remark":string, "inv_acctno":string, "inv_bezeich":string, "supplier":string, "invno":string, "created":date, "zeit":int})
 
-def mk_gcpi_go2abl(pvilanguage:int, journaltype:int, pbuff_betrag:Decimal, pbuff_returnamt:Decimal, ret_acctno:string, user_init:string, docu_nr:string, inv_list_data:[Inv_list]):
+def mk_gcpi_go2abl(pvilanguage:int, journaltype:int, pbuff_betrag:Decimal, pbuff_returnamt:Decimal, ret_acctno:string, 
+                   user_init:string, docu_nr:string, inv_list_data:[Inv_list]):
 
     prepare_cache ([Gc_pi, Counters, Gl_jouhdr, Gl_journal])
 
@@ -16,13 +20,14 @@ def mk_gcpi_go2abl(pvilanguage:int, journaltype:int, pbuff_betrag:Decimal, pbuff
 
     inv_list = None
 
-    db_session = local_storage.db_session
-
+    db_session = local_storage.
+    ret_acctno = ret_acctno.strip()
+    user_init = user_init.strip()
+    docu_nr = docu_nr.strip()
+    
     def generate_output():
         nonlocal lvcarea, gc_pi, counters, gl_jouhdr, gl_journal
         nonlocal pvilanguage, journaltype, pbuff_betrag, pbuff_returnamt, ret_acctno, user_init, docu_nr
-
-
         nonlocal inv_list
 
         return {}
@@ -30,7 +35,8 @@ def mk_gcpi_go2abl(pvilanguage:int, journaltype:int, pbuff_betrag:Decimal, pbuff
     gc_pi = get_cache (Gc_pi, {"docu_nr": [(eq, docu_nr)]})
     pass
 
-    counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+    # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+    counters = db_session.query(Counters).filter(Counters.counter_no == 25).with_for_update().first()
 
     if not counters:
         counters = Counters()

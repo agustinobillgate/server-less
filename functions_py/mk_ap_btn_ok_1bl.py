@@ -1,13 +1,19 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gl_acct, L_op, Gl_jouhdr, Htparam, L_kredit, L_lieferant, Ap_journal, Counters, Gl_journal
+from functions.next_counter_for_update import next_counter_for_update
 
 s_list_data, S_list = create_model("S_list", {"fibukonto":string, "debit":Decimal, "credit":Decimal, "flag":bool, "bezeich":string, "remark":string}, {"fibukonto": "000000000000"})
 
-def mk_ap_btn_ok_1bl(s_list_data:[S_list], pvilanguage:int, invoice:string, journ_flag:bool, balance:Decimal, avail_sbuff:bool, docu_nr:string, rgdatum:date, lief_nr:int, disc:Decimal, saldo:Decimal, d_amount:Decimal, ziel:int, nr:int, comments:string, netto:Decimal, userinit:string, ap_other:string, user_init:string, firma:string, s_list_fibukonto:string, s_list_debit:Decimal, tax_code:string, tax_amt:string):
+def mk_ap_btn_ok_1bl(s_list_data:[S_list], pvilanguage:int, invoice:string, journ_flag:bool, balance:Decimal, avail_sbuff:bool, 
+                     docu_nr:string, rgdatum:date, lief_nr:int, disc:Decimal, saldo:Decimal, d_amount:Decimal, ziel:int, nr:int, 
+                     comments:string, netto:Decimal, userinit:string, ap_other:string, user_init:string, firma:string, 
+                     s_list_fibukonto:string, s_list_debit:Decimal, tax_code:string, tax_amt:string):
 
     prepare_cache ([L_op, Gl_jouhdr, Htparam, L_kredit, L_lieferant, Ap_journal, Counters, Gl_journal])
 
@@ -26,12 +32,23 @@ def mk_ap_btn_ok_1bl(s_list_data:[S_list], pvilanguage:int, invoice:string, jour
     sbuff_data = s_list_data
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    invoice = invoice.strip()
+    docu_nr = docu_nr.strip()
+    comments = comments.strip()
+    userinit = userinit.strip()
+    user_init = user_init.strip()
+    ap_other = ap_other.strip()
+    firma = firma.strip()
+    s_list_fibukonto = s_list_fibukonto.strip()
+    tax_code = tax_code.strip()
+    tax_amt = tax_amt.strip()
 
     def generate_output():
         nonlocal msg_str, fl_code, avail_gl, return_flag, lvcarea, gl_close_month, ch, gl_acct, l_op, gl_jouhdr, htparam, l_kredit, l_lieferant, ap_journal, counters, gl_journal
         nonlocal pvilanguage, invoice, journ_flag, balance, avail_sbuff, docu_nr, rgdatum, lief_nr, disc, saldo, d_amount, ziel, nr, comments, netto, userinit, ap_other, user_init, firma, s_list_fibukonto, s_list_debit, tax_code, tax_amt
         nonlocal sbuff
-
 
         nonlocal s_list, sbuff
 
@@ -56,7 +73,6 @@ def mk_ap_btn_ok_1bl(s_list_data:[S_list], pvilanguage:int, invoice:string, jour
         if not avail_gl:
             s_list.flag = True
             return_flag = True
-
 
             break
 
@@ -166,12 +182,16 @@ def mk_ap_btn_ok_1bl(s_list_data:[S_list], pvilanguage:int, invoice:string, jour
 
                 counters.counter_no = 25
                 counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
-            counters.counter = counters.counter + 1
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(25))
+
             pass
             gl_jouhdr = Gl_jouhdr()
             db_session.add(gl_jouhdr)
 
-            gl_jouhdr.jnr = counters.counter
+            # gl_jouhdr.jnr = counters.counter
+            gl_jouhdr.jnr = last_count
+
             gl_jouhdr.refno = docu_nr
             gl_jouhdr.datum = rgdatum
             gl_jouhdr.bezeich = firma
@@ -213,8 +233,6 @@ def mk_ap_btn_ok_1bl(s_list_data:[S_list], pvilanguage:int, invoice:string, jour
                 gl_journal.bemerk = sbuff.remark
                 gl_journal.debit =  to_decimal(sbuff.debit)
                 gl_journal.credit =  to_decimal(sbuff.credit)
-
-
                 gl_jouhdr.credit =  to_decimal(gl_jouhdr.credit) + to_decimal(gl_journal.credit)
                 gl_jouhdr.debit =  to_decimal(gl_jouhdr.debit) + to_decimal(gl_journal.debit)
                 pass

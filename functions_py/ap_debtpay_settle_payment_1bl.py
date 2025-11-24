@@ -49,6 +49,7 @@ def ap_debtpay_settle_payment_1bl(pay_list_data:[Pay_list], age_list_data:[Age_l
         saldo_i:Decimal = to_decimal("0.0")
         bill_date:date = None
         count:int = 0
+        last_count = 0
         error_lock:string = ""
         anzahl:int = 0
         supplier:string = ""
