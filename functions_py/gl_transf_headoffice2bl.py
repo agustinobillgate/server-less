@@ -59,7 +59,7 @@ def gl_transf_headoffice2bl(lic_nr:string, t_gl_jouhdr_data:[T_gl_jouhdr], t_gl_
 
 
             # counters.counter = counters.counter + 1
-            last_count, error_lock = next_counter_for_update(25)
+            last_count, error_lock = get_output(next_counter_for_update(25))
 
 
             pass
@@ -69,7 +69,7 @@ def gl_transf_headoffice2bl(lic_nr:string, t_gl_jouhdr_data:[T_gl_jouhdr], t_gl_
             gl_htljournal.htl_jnr = t_gl_jouhdr.jnr
             # gl_htljournal.jnr = counters.counter
             gl_htljournal.jnr = last_count
-            
+
             gl_htljournal.htl_license = lic_nr
             gl_htljournal.datum = t_gl_jouhdr.datum
 

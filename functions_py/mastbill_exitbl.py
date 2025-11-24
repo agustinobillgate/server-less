@@ -1,16 +1,23 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Master, Reservation, Bill, Counters
+from functions.next_counter_for_update import next_counter_for_update
 
-def mastbill_exitbl(resnr:int, gastnrpay:int, rechnrstart:int, rechnrend:int, curr_segm:int, master_active:bool, umsatz1:bool, umsatz3:bool, umsatz4:bool, bill_receiver:string):
+def mastbill_exitbl(resnr:int, gastnrpay:int, rechnrstart:int, rechnrend:int, curr_segm:int, master_active:bool, 
+                    umsatz1:bool, umsatz3:bool, umsatz4:bool, bill_receiver:string):
 
     prepare_cache ([Master, Reservation, Bill, Counters])
 
     master = reservation = bill = counters = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    bill_receiver = bill_receiver.strip()
 
     def generate_output():
         nonlocal master, reservation, bill, counters
@@ -58,10 +65,12 @@ def mastbill_exitbl(resnr:int, gastnrpay:int, rechnrstart:int, rechnrend:int, cu
         bill.rgdruck = 1
         bill.billtyp = 2
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-        counters.counter = counters.counter + 1
-        bill.rechnr = counters.counter
-        pass
+        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        # counters.counter = counters.counter + 1
+        # bill.rechnr = counters.counter
+        last_count, error_lock = next_counter_for_update(3)
+        bill.rechnr = last_count
+        
         pass
         master.rechnr = bill.rechnr
         pass

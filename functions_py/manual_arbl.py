@@ -1,18 +1,22 @@
 #using conversion tools version: 1.0.0.117
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Counters, Gl_jouhdr, Gl_journal
+from functions.next_counter_for_update import next_counter_for_update
 
-s_list_data, S_list = create_model("S_list", {"fibukonto":string, "debit":Decimal, "credit":Decimal, "remark":string}, {"fibukonto": "000000000000"})
+s_list_data, S_list = create_model("S_list", {"fibukonto":string, "debit":Decimal, "credit":Decimal}, {"fibukonto": "000000000000"})
 
-def manual_ar_webbl(pvilanguage:int, s_list_data:[S_list], rgdatum:date, firma:string, art_fibukonto:string, user_init:string, invoice:int, saldo:Decimal, refno:string):
+def manual_arbl(pvilanguage:int, s_list_data:[S_list], rgdatum:date, firma:string, art_fibukonto:string, 
+                user_init:string, invoice:int, saldo:Decimal, refno:string):
 
     prepare_cache ([Counters, Gl_jouhdr, Gl_journal])
 
     lvcarea:string = "manual-ar"
-    user_remark:string = ""
     counters = gl_jouhdr = gl_journal = None
 
     s_list = sbuff = None
@@ -21,9 +25,16 @@ def manual_ar_webbl(pvilanguage:int, s_list_data:[S_list], rgdatum:date, firma:s
     sbuff_data = s_list_data
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    firma = firma.strip()
+    art_fibukonto = art_fibukonto.strip()
+    refno = refno.strip()
+
+
 
     def generate_output():
-        nonlocal lvcarea, user_remark, counters, gl_jouhdr, gl_journal
+        nonlocal lvcarea, counters, gl_jouhdr, gl_journal
         nonlocal pvilanguage, rgdatum, firma, art_fibukonto, user_init, invoice, saldo, refno
         nonlocal sbuff
 
@@ -40,12 +51,16 @@ def manual_ar_webbl(pvilanguage:int, s_list_data:[S_list], rgdatum:date, firma:s
 
         counters.counter_no = 25
         counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
-    counters.counter = counters.counter + 1
-    pass
+
+    # counters.counter = counters.counter + 1
+    last_count, error_lock = next_counter_for_update(25)
+
     gl_jouhdr = Gl_jouhdr()
     db_session.add(gl_jouhdr)
 
-    gl_jouhdr.jnr = counters.counter
+    # gl_jouhdr.jnr = counters.counter
+    gl_jouhdr.jnr = last_count
+    
     gl_jouhdr.refno = refno
     gl_jouhdr.datum = rgdatum
     gl_jouhdr.bezeich = firma
@@ -70,11 +85,6 @@ def manual_ar_webbl(pvilanguage:int, s_list_data:[S_list], rgdatum:date, firma:s
     gl_jouhdr.debit =  to_decimal(gl_jouhdr.debit) + to_decimal(gl_journal.debit)
 
     for sbuff in query(sbuff_data, filters=(lambda sbuff: to_decimal(sbuff.fibukonto) != 0)):
-
-        if sbuff.remark == None or sbuff.remark == "":
-            user_remark = ""
-        else:
-            user_remark = " - " + sbuff.remark
         gl_journal = Gl_journal()
         db_session.add(gl_journal)
 
@@ -82,7 +92,7 @@ def manual_ar_webbl(pvilanguage:int, s_list_data:[S_list], rgdatum:date, firma:s
         gl_journal.fibukonto = sbuff.fibukonto
         gl_journal.userinit = user_init
         gl_journal.zeit = get_current_time_in_seconds()
-        gl_journal.bemerk = to_string(invoice) + user_remark
+        gl_journal.bemerk = to_string(invoice)
         gl_journal.debit =  to_decimal(sbuff.debit)
         gl_journal.credit =  to_decimal(sbuff.credit)
 

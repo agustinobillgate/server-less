@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Res_line, Htparam, Master, Bill, Reservation, Counters, Gentable, Reslin_queasy, Res_history, Fixleist
+from functions.next_counter_for_update import next_counter_for_update
 
 r_list_data, R_list = create_model_like(Res_line, {"select_flag":bool})
 
@@ -19,6 +22,8 @@ def move_resmemberbl(case_type:int, resno:int, sorttype:int, newresno:int, r_lis
     r_list = rbuff = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal done, r_list_data, ci_date, res_line, htparam, master, bill, reservation, counters, gentable, reslin_queasy, res_history, fixleist
@@ -126,14 +131,16 @@ def move_resmemberbl(case_type:int, resno:int, sorttype:int, newresno:int, r_lis
 
         if master:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-            counters.counter = counters.counter + 1
+            # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(3))
             pass
             msbuff = Master()
             db_session.add(msbuff)
 
             buffer_copy(master, msbuff,except_fields=["resnr","rechnr"])
-            msbuff.rechnr = counters.counter
+            # msbuff.rechnr = counters.counter
+            msbuff.rechnr = last_count
             msbuff.resnr = newresno
 
 
@@ -146,7 +153,8 @@ def move_resmemberbl(case_type:int, resno:int, sorttype:int, newresno:int, r_lis
                 db_session.add(mbill)
 
                 buffer_copy(bill, mbill,except_fields=["resnr","rechnr","saldo"])
-                mbill.rechnr = counters.counter
+                # mbill.rechnr = counters.counter
+                mbill.rechnr = last_count
                 mbill.resnr = newresno
                 mbill.saldo =  to_decimal("0")
 

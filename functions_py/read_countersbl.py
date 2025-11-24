@@ -18,7 +18,7 @@ def read_countersbl(case_type:int, counterno:int):
     db_session = local_storage.db_session
     last_count = 0
     error_lock:string = ""
-    
+
     def generate_output():
         nonlocal t_counters_data, counters
         nonlocal case_type, counterno
@@ -42,7 +42,7 @@ def read_countersbl(case_type:int, counterno:int):
 
         # counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
         # counters.counter = counters.counter + 1
-        last_count, error_lock = next_counter_for_update(counterno, last_count, error_lock)
+        last_count, error_lock = get_output(next_counter_for_update(counterno))
         counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
 
 

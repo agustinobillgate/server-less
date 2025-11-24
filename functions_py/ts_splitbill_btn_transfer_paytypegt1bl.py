@@ -104,7 +104,7 @@ def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr
                 # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
                 # counters.counter = counters.counter + 1
                 # bill.rechnr = counters.counter
-                last_count, error_lock = next_counter_for_update(3, last_count, error_lock)
+                last_count, error_lock = get_output(next_counter_for_update(3))
                 bill.rechnr = last_count
 
                 pass
@@ -633,7 +633,7 @@ def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr
         # counters.counter = counters.counter + 1
         # pass
         # bill.rechnr = counters.counter
-        last_count, error_lock = next_counter_for_update(3, last_count, error_lock)
+        last_count, error_lock = get_output(next_counter_for_update(3))
         bill.rechnr = last_count
         
         pass
