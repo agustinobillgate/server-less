@@ -1,10 +1,18 @@
+#using conversion tools version: 1.0.0.119
+#---------------------------------------------------
+# Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
+#---------------------------------------------------
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from functions.htpdate import htpdate
 from models import Bill, Htparam, Artikel, Counters, Umsatz, Bill_line, Billjournal, Res_line
+from functions.next_counter_for_update import next_counter_for_update
 
-def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezeich:str, h_bill_rechnr:int, transdate:date, double_currency:bool, exchg_rate:decimal, bilrecid:int, foreign_rate:bool, user_init:str, amount:decimal, amount_foreign:decimal):
+def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezeich:string, h_bill_rechnr:int, transdate:date, double_currency:bool, exchg_rate:Decimal, bilrecid:int, foreign_rate:bool, user_init:string, amount:Decimal, amount_foreign:Decimal):
+
+    prepare_cache ([Bill, Htparam, Artikel, Counters, Umsatz, Bill_line, Billjournal, Res_line])
+
     bill_descript = ""
     success_flag = False
     msg_str = ""
@@ -12,19 +20,17 @@ def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezei
     bill_date:date = None
     billart:int = 0
     qty:int = 0
-    descript_str:str = ""
+    descript_str:string = ""
     error_flag:bool = False
-    lvcarea:str = "ts-restinv"
-    dept_char:str = " >>*"
+    lvcarea:string = "ts-restinv"
+    dept_char:string = " >>*"
     bill = htparam = artikel = counters = umsatz = bill_line = billjournal = res_line = None
-
 
     db_session = local_storage.db_session
 
     def generate_output():
         nonlocal bill_descript, success_flag, msg_str, gname, bill_date, billart, qty, descript_str, error_flag, lvcarea, dept_char, bill, htparam, artikel, counters, umsatz, bill_line, billjournal, res_line
         nonlocal pvilanguage, dept_type, dept, dept_bezeich, h_bill_rechnr, transdate, double_currency, exchg_rate, bilrecid, foreign_rate, user_init, amount, amount_foreign
-
 
         return {"bill_descript": bill_descript, "success_flag": success_flag, "msg_str": msg_str, "gname": gname}
 
@@ -36,16 +42,14 @@ def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezei
 
         return generate_output()
 
-    bill = db_session.query(Bill).filter(
-             (Bill._recid == bilrecid)).first()
+    bill = get_cache (Bill, {"_recid": [(eq, bilrecid)]})
 
     if transdate != None:
         bill_date = transdate
     else:
         bill_date = get_output(htpdate(110))
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 253)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 253)]})
 
         if htparam.flogical and bill_date < get_current_date():
             bill_date = bill_date + timedelta(days=1)
@@ -55,38 +59,43 @@ def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezei
     if not double_currency:
         amount_foreign =  to_decimal(amount) / to_decimal(exchg_rate)
 
-    htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 245)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 245)]})
 
-    artikel = db_session.query(Artikel).filter(
-                 (Artikel.artnr == htparam.finteger) & (Artikel.departement == 0)).first()
+    artikel = get_cache (Artikel, {"artnr": [(eq, htparam.finteger)],"departement": [(eq, 0)]})
 
     if not artikel:
         msg_str = translateExtended ("Combo FO Artno not defined. (Param 245 / Grp 7)", lvcarea, "") +\
-                chr(10)
+                chr_unicode(10)
         error_flag = True
 
     elif artikel.artart != 0:
         msg_str = translateExtended ("Combo FO Artno has wrong Article Type. (Param 245)", lvcarea, "") +\
-                chr(10)
+                chr_unicode(10)
         error_flag = True
 
     if error_flag:
 
         return generate_output()
+    pass
 
     if bill.rechnr == 0:
 
-        counters = db_session.query(Counters).filter(
-                     (Counters.counter_no == 3)).first()
-        counters.counter = counters.counter + 1
-        bill.rechnr = counters.counter
+        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        # counters.counter = counters.counter + 1
+        # pass
+        # bill.rechnr = counters.counter
+        last_count, error_lock = get_output(next_counter_for_update(3))
+        bill.rechnr = last_count
+        
 
     if bill.datum < bill_date:
         bill.datum = bill_date
     bill.saldo =  to_decimal(bill.saldo) + to_decimal(amount)
     bill.mwst[98] = bill.mwst[98] + amount_foreign
     bill.rgdruck = 0
+
+
+    pass
 
     if artikel:
         billart = artikel.artnr
@@ -97,8 +106,7 @@ def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezei
     else:
         descript_str = dept_bezeich + dept_char + to_string(h_bill_rechnr)
 
-    umsatz = db_session.query(Umsatz).filter(
-                     (Umsatz.artnr == billart) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).first()
+    umsatz = get_cache (Umsatz, {"artnr": [(eq, billart)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
 
     if not umsatz:
         umsatz = Umsatz()
@@ -113,6 +121,7 @@ def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezei
     umsatz.anzahl = umsatz.anzahl + 1
 
 
+    pass
     bill_line = Bill_line()
     db_session.add(bill_line)
 
@@ -132,6 +141,7 @@ def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezei
     bill_line.bill_datum = bill_date
 
 
+    pass
     billjournal = Billjournal()
     db_session.add(billjournal)
 
@@ -150,8 +160,9 @@ def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezei
     billjournal.bill_datum = bill_date
 
 
-    res_line = db_session.query(Res_line).filter(
-             (Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.parent_nr)).first()
+    pass
+
+    res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
 
     if res_line:
         gname = res_line.name

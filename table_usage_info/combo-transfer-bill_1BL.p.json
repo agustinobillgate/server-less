@@ -1,0 +1,97 @@
+{
+    "Bill": {
+        "read": [
+            "saldo",
+            "mwst",
+            "rechnr",
+            "zinr",
+            "resnr",
+            "reslinnr",
+            "parent_nr",
+            "datum",
+            "rgdruck",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "finteger",
+            "flogical",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Artikel": {
+        "read": [
+            "artnr",
+            "artart",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Counters": {
+        "read": [
+            "counter",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Umsatz": {
+        "read": [
+            "betrag",
+            "anzahl",
+            "artnr",
+            "datum",
+            "departement",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bill_line": {
+        "read": [
+            "rechnr",
+            "zinr",
+            "massnr",
+            "billin_nr",
+            "artnr",
+            "bezeich",
+            "anzahl",
+            "fremdwbetrag",
+            "betrag",
+            "departement",
+            "epreis",
+            "zeit",
+            "userinit",
+            "bill_datum",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Billjournal": {
+        "read": [
+            "rechnr",
+            "zinr",
+            "departement",
+            "artnr",
+            "anzahl",
+            "fremdwaehrng",
+            "betrag",
+            "bezeich",
+            "epreis",
+            "zeit",
+            "stornogrund",
+            "userinit",
+            "bill_datum",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [
+            "name",
+            "_recid"
+        ],
+        "write": []
+    }
+}

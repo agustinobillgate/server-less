@@ -1,17 +1,20 @@
-#using conversion tools version: 1.0.0.117
-
+#using conversion tools version: 1.0.0.119
+#---------------------------------------------------
+# Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
+#---------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bill, Htparam, Artikel, Waehrung, Counters, Bill_line, Umsatz, Billjournal
+from functions.next_counter_for_update import next_counter_for_update
 
-def bookcall3bl(pvilanguage:int, bil_recid:int, calldate:date, calltime:int, destination:string, duration:int, rufnummer:string, amount:Decimal, user_init:string):
+def bookcall3(bil_recid:int, calldate:date, calltime:int, destination:string, duration:int, rufnummer:string, amount:Decimal):
 
     prepare_cache ([Bill, Htparam, Artikel, Waehrung, Counters, Bill_line, Umsatz, Billjournal])
 
     success = False
     rechno = 0
-    lvcarea:string = "bookcall3"
+    variable = None
     epreis:Decimal = to_decimal("0.0")
     artnr:int = 0
     resnr:int = 0
@@ -34,10 +37,13 @@ def bookcall3bl(pvilanguage:int, bil_recid:int, calldate:date, calltime:int, des
 
 
     db_session = local_storage.db_session
+    last_count:int = 0
+    error_lock:string = ""
+
 
     def generate_output():
-        nonlocal success, rechno, lvcarea, epreis, artnr, resnr, billno, master_flag, bill_date, usr_init, bookflag, price_decimal, foreign_rate, double_currency, exchg_rate, amount_foreign, calls_type, bill, htparam, artikel, waehrung, counters, bill_line, umsatz, billjournal
-        nonlocal pvilanguage, bil_recid, calldate, calltime, destination, duration, rufnummer, amount, user_init
+        nonlocal success, rechno, variable, epreis, artnr, resnr, billno, master_flag, bill_date, usr_init, bookflag, price_decimal, foreign_rate, double_currency, exchg_rate, amount_foreign, calls_type, bill, htparam, artikel, waehrung, counters, bill_line, umsatz, billjournal
+        nonlocal bil_recid, calldate, calltime, destination, duration, rufnummer, amount
         nonlocal bill1
 
 
@@ -156,9 +162,12 @@ def bookcall3bl(pvilanguage:int, bil_recid:int, calldate:date, calltime:int, des
 
     if bill.rechnr == 0:
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-        counters.counter = counters.counter + 1
-        bill.rechnr = counters.counter
+        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        # counters.counter = counters.counter + 1
+        # bill.rechnr = counters.counter
+        last_count, error_lock = get_output(next_counter_for_update(3))
+        bill.rechnr = last_count
+        
         pass
     bill_line = Bill_line()
     db_session.add(bill_line)
