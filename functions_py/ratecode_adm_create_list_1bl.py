@@ -2,12 +2,14 @@
 #------------------------------------------
 # Rd, 30/10/2025
 # Flag -> update
+# link: delete_ratecodebl, ratecode_adm_writebl
 #------------------------------------------
 #using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Ratecode, Queasy, Prtable, Zimkateg, Arrangement
+from sqlalchemy.orm.attributes import flag_modified
 
 def ratecode_adm_create_list_1bl(prcode:string, market_nr:int):
 
@@ -22,6 +24,7 @@ def ratecode_adm_create_list_1bl(prcode:string, market_nr:int):
     pr_list_data, Pr_list = create_model("Pr_list", {"cstr":[string,2], "prcode":string, "rmcat":string, "argt":string, "zikatnr":int, "argtnr":int, "i_typ":int, "flag":int})
 
     db_session = local_storage.db_session
+    pr_code = prcode.strip()
 
     def generate_output():
         nonlocal childflag, pr_list_data, ratecode, queasy, prtable, zimkateg, arrangement
@@ -37,8 +40,6 @@ def ratecode_adm_create_list_1bl(prcode:string, market_nr:int):
 
         nonlocal childflag, pr_list_data, ratecode, queasy, prtable, zimkateg, arrangement
         nonlocal prcode, market_nr
-
-
         nonlocal pr_list
         nonlocal pr_list_data
 
@@ -47,30 +48,22 @@ def ratecode_adm_create_list_1bl(prcode:string, market_nr:int):
         k:int = 0
         argtnr:int = 0
         zikatnr:int = 0
-        found1:bool = False
-        found2:bool = False
+        found1:bool = True
+        found2:bool = True
         pr_str:string = ""
         prtable0 = None
         Prtable0 =  create_buffer("Prtable0",Prtable)
 
         if market_nr > 0:
-
             prtable0 = get_cache (Prtable, {"marknr": [(eq, market_nr)],"prcode": [(eq, "")]})
-
             if prtable0:
-
                 prtable = get_cache (Prtable, {"marknr": [(eq, market_nr)],"prcode": [(eq, prcode)]})
                 for i in range(1,99 + 1) :
-
                     if prtable0.zikatnr[i - 1] != 0:
-
                         zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, prtable0.zikatnr[i - 1])]})
-
                         if zimkateg:
                             for j in range(1,99 + 1) :
-
                                 if prtable0.argtnr[j - 1] != 0:
-
                                     arrangement = get_cache (Arrangement, {"argtnr": [(eq, prtable0.argtnr[j - 1])]})
                                     found1 = False
                                     k = 1
@@ -130,6 +123,7 @@ def ratecode_adm_create_list_1bl(prcode:string, market_nr:int):
                                     pr_list.i_typ = zimkateg.typ
                                     # print("prcode:", prcode, "rmcat:", pr_list.rmcat, "argt:", pr_list.argt, "zikatnr:", pr_list.zikatnr, "argtnr:", pr_list.argtnr, "i_typ:", pr_list.i_typ, "found1:", found1)
                                     pr_list.flag = to_int(found1)
+
 
     create_list()
 

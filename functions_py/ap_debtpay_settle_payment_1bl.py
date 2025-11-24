@@ -1,9 +1,15 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 22/11/2025
+# Update last counter dengan next_counter_for_update
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_lieferant, L_kredit, Htparam, Bediener, Counters, Umsatz, Ap_journal, L_order
+from functions.next_counter_for_update import next_counter_for_update
+
 
 pay_list_data, Pay_list = create_model("Pay_list", {"dummy":string, "artnr":int, "bezeich":string, "proz":Decimal, "betrag":Decimal})
 age_list_data, Age_list = create_model("Age_list", {"selected":bool, "ap_recid":int, "counter":int, "docu_nr":string, "rechnr":int, "lief_nr":int, "lscheinnr":string, "supplier":string, "rgdatum":date, "rabatt":Decimal, "rabattbetrag":Decimal, "ziel":date, "netto":Decimal, "user_init":string, "debt":Decimal, "credit":Decimal, "bemerk":string, "tot_debt":Decimal, "rec_id":int, "resname":string, "comments":string, "fibukonto":string, "t_bezeich":string, "debt2":Decimal, "recv_date":date, "description":string})
@@ -43,6 +49,7 @@ def ap_debtpay_settle_payment_1bl(pay_list_data:[Pay_list], age_list_data:[Age_l
         saldo_i:Decimal = to_decimal("0.0")
         bill_date:date = None
         count:int = 0
+        error_lock:string = ""
         anzahl:int = 0
         supplier:string = ""
         pay_amount:Decimal = to_decimal("0.0")
@@ -77,16 +84,21 @@ def ap_debtpay_settle_payment_1bl(pay_list_data:[Pay_list], age_list_data:[Age_l
 
             if count == 0:
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 24)]})
+                # counters = get_cache (Counters, {"counter_no": [(eq, 24)]})
 
-                if not counters:
-                    counters = Counters()
-                    db_session.add(counters)
+                # if not counters:
+                #     counters = Counters()
+                #     db_session.add(counters)
 
-                    counters.counter_no = 24
-                    counters.counter_bez = "Accounts Payable"
-                counters.counter = counters.counter + 1
-                l_kredit1.counter = counters.counter
+                #     counters.counter_no = 24
+                #     counters.counter_bez = "Accounts Payable"
+                # counters.counter = counters.counter + 1
+                # l_kredit1.counter = counters.counter
+
+                #Rd, use next_counter_for_update to get the counter with locking
+                # 22/11/2025
+                last_count, error_lock = get_output(next_counter_for_update(24))
+                l_kredit1.counter = last_count
                 count = l_kredit1.counter
                 pass
 

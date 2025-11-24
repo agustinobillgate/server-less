@@ -5,6 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Prtable, Ratecode, Queasy, Waehrung
+from sqlalchemy.orm.attributes import flag_modified
 
 pr_list_data, Pr_list = create_model("Pr_list", {"cstr":[string,2], "prcode":string, "rmcat":string, "argt":string, "zikatnr":int, "argtnr":int, "i_typ":int, "flag":int})
 prbuff_data, Prbuff = create_model_like(Pr_list)
@@ -26,6 +27,10 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
 
     db_session = local_storage.db_session
     prcode = prcode.strip()
+    log_message = []
+    log_message.append("Starting ratecode_adm_update_listbl with prcode: " + prcode + ", market_no: " + to_string(market_no))
+    for pbuff in prbuff_data:
+        log_message.append("prbuff entry: zikatnr:" + to_string(pbuff.zikatnr) + ", argtnr:" + to_string(pbuff.argtnr) + ", flag:" + to_string(pbuff.flag))
 
     def generate_output():
         nonlocal pr_list_data, msg_str, error_flag, lvcarea, chcode, prtable, ratecode, queasy, waehrung
@@ -34,8 +39,10 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
 
         nonlocal pr_list, prbuff, t_prtable
         nonlocal pr_list_data, t_prtable_data
-
-        return {"msg_str": msg_str, "error_flag": error_flag}
+        flag_modified(prtable, "product")
+        flag_modified(prtable, "zikatnr")
+        flag_modified(prtable, "argtnr")
+        return {"log": log_message, "msg_str": msg_str, "error_flag": error_flag}
 
     def check_deselect():
 
@@ -121,7 +128,7 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
         Prtable0 =  create_buffer("Prtable0",Prtable)
         Qbuff18 =  create_buffer("Qbuff18",Queasy)
         Wbuff =  create_buffer("Wbuff",Waehrung)
-
+        log_message.append("update_select_list called with prcode:" + prcode + ", market_no:" + to_string(market_no))
         prtable0 = get_cache (Prtable, {"marknr": [(eq, market_no)],"prcode": [(eq, "")]})
 
         if not prtable0:
@@ -154,8 +161,9 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
 
 
         i = 0
-
+        log_message.append("start pr_list. " + str(len(pr_list_data)) + " entries to process.")
         for pr_list in query(pr_list_data, filters=(lambda pr_list: pr_list.flag == 1), sort_by=[("argtnr",False)]):
+            log_message.append("Processing selected pr_list with zikatnr:" + to_string(pr_list.zikatnr) + ", argtnr:" + to_string(pr_list.argtnr))
             i = i + 1
             i_fact = 0
 
@@ -223,19 +231,25 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
 
 
                 pass
-                pass
-
+        # msg_str += ",flag_modified:" + str(prtable.product)
+        flag_modified(prtable, "product")
+        flag_modified(prtable, "zikatnr")
+        flag_modified(prtable, "argtnr")
 
     prbuff = query(prbuff_data, first=True)
 
     if select_mode == 0:
+        # msg_str += ", deselecting product"
         check_deselect()
     else:
+        # msg_str += ", selecting product"
         check_select()
 
-    if error_flag:
-
-        return generate_output()
+    # msg_str += ",update"
     update_select_list()
+
+    if error_flag:
+        return generate_output()
+    
 
     return generate_output()
