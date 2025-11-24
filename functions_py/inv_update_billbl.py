@@ -1,12 +1,18 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.argt_betrag import argt_betrag
 from models import Bill_line, Res_line, Htparam, Waehrung, Artikel, Bill, Arrangement, Counters, Umsatz, Billjournal, Argt_line, Master, Mast_art, Debitor, Reservation, Guest, Bediener
+from functions.next_counter_for_update import next_counter_for_update
 
-def inv_update_billbl(pvilanguage:int, bil_flag:int, invoice_type:string, transdate:date, r_recid:int, deptno:int, billart:int, qty:int, price:Decimal, amount:Decimal, amount_foreign:Decimal, description:string, voucher_nr:string, cancel_str:string, user_init:string, billno:int, master_str:string, master_rechnr:string, balance:Decimal, balance_foreign:Decimal):
+def inv_update_billbl(pvilanguage:int, bil_flag:int, invoice_type:string, transdate:date, r_recid:int, 
+                      deptno:int, billart:int, qty:int, price:Decimal, amount:Decimal, amount_foreign:Decimal, 
+                      description:string, voucher_nr:string, cancel_str:string, user_init:string, billno:int, 
+                      master_str:string, master_rechnr:string, balance:Decimal, balance_foreign:Decimal):
 
     prepare_cache ([Res_line, Htparam, Waehrung, Artikel, Bill, Arrangement, Counters, Umsatz, Billjournal, Argt_line, Master, Reservation, Guest, Bediener])
 
@@ -30,9 +36,16 @@ def inv_update_billbl(pvilanguage:int, bil_flag:int, invoice_type:string, transd
     t_bill_line_data, T_bill_line = create_model_like(Bill_line, {"bl_recid":int, "artart":int, "tool_tip":string})
 
     Resline = create_buffer("Resline",Res_line)
-
-
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    invoice_type = invoice_type.strip()
+    description = description.strip()
+    voucher_nr = voucher_nr.strip()
+    cancel_str = cancel_str.strip()
+    user_init = user_init.strip()
+    master_str = master_str.strip()
+    master_rechnr = master_rechnr.strip()
 
     def generate_output():
         nonlocal master_flag, msg_str, success_flag, t_bill_line_data, gastnrmember, price_decimal, double_currency, foreign_rate, exchg_rate, currzeit, bill_date, curr_room, lvcarea, bill_line, res_line, htparam, waehrung, artikel, bill, arrangement, counters, umsatz, billjournal, argt_line, master, mast_art, debitor, reservation, guest, bediener
@@ -50,8 +63,7 @@ def inv_update_billbl(pvilanguage:int, bil_flag:int, invoice_type:string, transd
         nonlocal master_flag, msg_str, success_flag, t_bill_line_data, gastnrmember, price_decimal, double_currency, foreign_rate, exchg_rate, currzeit, bill_date, curr_room, lvcarea, bill_line, res_line, htparam, waehrung, artikel, bill, arrangement, counters, umsatz, billjournal, argt_line, master, mast_art, debitor, reservation, guest, bediener
         nonlocal pvilanguage, bil_flag, invoice_type, transdate, r_recid, deptno, billart, qty, price, amount, amount_foreign, description, voucher_nr, cancel_str, user_init, billno, master_str, master_rechnr, balance, balance_foreign
         nonlocal resline
-
-
+        nonlocal last_count, error_lock
         nonlocal t_bill_line, resline
         nonlocal t_bill_line_data
 
@@ -156,9 +168,12 @@ def inv_update_billbl(pvilanguage:int, bil_flag:int, invoice_type:string, transd
 
             if bill.rechnr == 0:
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                counters.counter = counters.counter + 1
-                bill.rechnr = counters.counter
+                # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                # counters.counter = counters.counter + 1
+                # bill.rechnr = counters.counter
+                last_count, error_lock = next_counter_for_update(3)
+                bill.rechnr = last_count
+
 
                 if transdate != None:
                     bill.datum = transdate
@@ -279,7 +294,7 @@ def inv_update_billbl(pvilanguage:int, bil_flag:int, invoice_type:string, transd
         nonlocal master_flag, msg_str, success_flag, t_bill_line_data, gastnrmember, price_decimal, double_currency, foreign_rate, exchg_rate, bill_date, curr_room, lvcarea, bill_line, res_line, htparam, waehrung, artikel, bill, arrangement, counters, umsatz, billjournal, argt_line, master, mast_art, debitor, reservation, guest, bediener
         nonlocal pvilanguage, bil_flag, invoice_type, transdate, r_recid, deptno, billart, qty, price, amount, amount_foreign, description, voucher_nr, cancel_str, user_init, billno, master_str, master_rechnr, balance, balance_foreign
         nonlocal resline
-
+        nonlocal last_count, error_lock
 
         nonlocal t_bill_line, resline
         nonlocal t_bill_line_data
@@ -738,6 +753,7 @@ def inv_update_billbl(pvilanguage:int, bil_flag:int, invoice_type:string, transd
         nonlocal master_flag, msg_str, success_flag, t_bill_line_data, gastnrmember, price_decimal, double_currency, foreign_rate, exchg_rate, bill_date, curr_room, lvcarea, bill_line, res_line, htparam, waehrung, artikel, bill, arrangement, counters, umsatz, billjournal, argt_line, master, mast_art, debitor, reservation, guest, bediener
         nonlocal pvilanguage, bil_flag, invoice_type, transdate, r_recid, deptno, billart, qty, price, amount, amount_foreign, description, voucher_nr, cancel_str, user_init, billno, master_str, master_rechnr, balance, balance_foreign
         nonlocal resline
+        nonlocal last_count, error_lock
 
 
         nonlocal t_bill_line, resline
@@ -766,7 +782,7 @@ def inv_update_billbl(pvilanguage:int, bil_flag:int, invoice_type:string, transd
         htparam = get_cache (Htparam, {"paramnr": [(eq, 253)]})
         na_running = htparam.flogical
 
-        if na_running and bill_date == fdate:
+        if na_running and bill_date == htparam.fdate:
             bill_date = bill_date + timedelta(days=1)
 
         resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.parent_nr)]})
@@ -837,11 +853,12 @@ def inv_update_billbl(pvilanguage:int, bil_flag:int, invoice_type:string, transd
 
             if mbill.rechnr == 0:
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                counters.counter = counters.counter + 1
-                mbill.rechnr = counters.counter
-                pass
-                pass
+                # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                # counters.counter = counters.counter + 1
+                # mbill.rechnr = counters.counter
+
+                last_count, error_lock = next_counter_for_update(3)
+                mbill.rechnr = last_count
 
                 if master:
                     master.rechnr = mbill.rechnr
@@ -942,7 +959,7 @@ def inv_update_billbl(pvilanguage:int, bil_flag:int, invoice_type:string, transd
             if transfer_case == 1:
                 msg_str = "&M" + translateExtended ("Transfered to Master Bill No.", lvcarea, "") + " " + to_string(mbill.rechnr)
             else:
-                msg_str = "&M" + translateExtended ("Transfered to Bill No.", lvcarea, "") + " " + to_string(mbill.rechnr) + " - " + translateExtENDed ("RmNo", lvcarea, "") + " " + mbill.zinr
+                msg_str = "&M" + translateExtended ("Transfered to Bill No.", lvcarea, "") + " " + to_string(mbill.rechnr) + " - " + translateExtended ("RmNo", lvcarea, "") + " " + mbill.zinr
             pass
 
         return generate_inner_output()
@@ -1067,7 +1084,7 @@ def inv_update_billbl(pvilanguage:int, bil_flag:int, invoice_type:string, transd
                 billjournal.departement = artikel1.departement
                 billjournal.epreis =  to_decimal("0")
                 billjournal.zeit = currzeit
-                billjournal.userinit = userinit
+                billjournal.userinit = user_init
                 billjournal.bill_datum = bill_date
                 pass
 
