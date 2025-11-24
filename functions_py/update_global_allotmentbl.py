@@ -62,7 +62,7 @@ def update_global_allotmentbl(user_init:string, currcode:string, allot_list_data
 
                     # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
                     # counters.counter = counters.counter + 1
-                    last_count, error_lock = next_counter_for_update(10)
+                    last_count, error_lock = get_output(next_counter_for_update(10))
                     pass
                     kline = Kontline()
                     db_session.add(kline)
@@ -78,7 +78,7 @@ def update_global_allotmentbl(user_init:string, currcode:string, allot_list_data
 
                     # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
                     # counters.counter = counters.counter + 1
-                    last_count, error_lock = next_counter_for_update(10)
+                    last_count, error_lock = get_output(next_counter_for_update(10))
                     pass
                     kline = Kontline()
                     db_session.add(kline)

@@ -51,7 +51,7 @@ def manual_ar_webbl(pvilanguage:int, s_list_data:[S_list], rgdatum:date, firma:s
         counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
     
     # counters.counter = counters.counter + 1
-    last_count, error_lock = next_counter_for_update(25)
+    last_count, error_lock = get_output(next_counter_for_update(25))
 
     pass
     gl_jouhdr = Gl_jouhdr()
@@ -59,7 +59,7 @@ def manual_ar_webbl(pvilanguage:int, s_list_data:[S_list], rgdatum:date, firma:s
 
     # gl_jouhdr.jnr = counters.counter
     gl_jouhdr.jnr = last_count
-    
+
     gl_jouhdr.refno = refno
     gl_jouhdr.datum = rgdatum
     gl_jouhdr.bezeich = firma

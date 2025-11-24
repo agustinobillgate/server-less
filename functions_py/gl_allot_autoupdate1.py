@@ -91,7 +91,7 @@ def gl_allot_autoupdate1(gastno:int, zikatno:int, rmcat:string, from_date:date, 
 
                     # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
                     # counters.counter = counters.counter + 1
-                    last_count, error_lock = next_counter_for_update(10)
+                    last_count, error_lock = get_output(next_counter_for_update(10))
                     
                     kbuff = Kontline()
                     db_session.add(kbuff)
@@ -287,7 +287,7 @@ def gl_allot_autoupdate1(gastno:int, zikatno:int, rmcat:string, from_date:date, 
                 # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
                 # counters.counter = counters.counter + 1
                 # pass
-                last_count, error_lock = next_counter_for_update(10)
+                last_count, error_lock = get_output(next_counter_for_update(10))
                 kontline = Kontline()
                 db_session.add(kontline)
 

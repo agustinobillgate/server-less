@@ -41,7 +41,7 @@ def next_counterbl(counterno:int):
 
 
     # counters.counter = counters.counter + 1
-    last_count, error_lock = next_counter_for_update(counterno, last_count, error_lock)
+    last_count, error_lock = get_output(next_counter_for_update(counterno))
     counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
 
 

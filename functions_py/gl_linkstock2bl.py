@@ -59,7 +59,7 @@ def gl_linkstock2bl(pvilanguage:int, link_in:bool, to_date:date, remains:Decimal
         #     counters.counter_no = 25
         #     counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
         # counters.counter = counters.counter + 1
-        last_count, error_lock = next_counter_for_update(25)
+        last_count, error_lock = get_output(next_counter_for_update(25))
 
         pass
         # gl_jouhdr.jnr = counters.counter
@@ -104,7 +104,7 @@ def gl_linkstock2bl(pvilanguage:int, link_in:bool, to_date:date, remains:Decimal
 
             # gl_journal.jnr = counters.counter
             gl_journal.jnr = last_count
-            
+
             gl_journal.fibukonto = g_list.fibukonto
             gl_journal.debit =  to_decimal(g_list.debit)
             gl_journal.credit =  to_decimal(g_list.credit)
