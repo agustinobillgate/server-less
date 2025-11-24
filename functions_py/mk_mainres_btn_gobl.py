@@ -3,14 +3,23 @@
 # Rd, 17/10/2025
 # lower di boolean, err
 #------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#----------------------------------------
+
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.check_timebl import check_timebl
 from models import Bill, Reservation, Bediener, Master, Res_line, Guest, Htparam, Counters, Res_history, Guest_pr, Segment, Reslin_queasy
+from functions.next_counter_for_update import next_counter_for_update
 
-def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:int, curr_segm:int, gastnrherk:int, gastnrcom:int, gastnrpay:int, letterno:int, contact_nr:int, rechnerstart:int, rechnrend:int, res_mode:string, user_init:string, origin:string, groupname:string, comments:string, voucherno:string, bill_receiver:string, depositgef:Decimal, limitdate:date, fixed_rate:bool, init_rate:bool, master_active:bool, umsatz1:bool, umsatz2:bool, umsatz3:bool, umsatz4:bool, init_time:int, init_date:date):
+def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:int, curr_segm:int, gastnrherk:int, 
+                        gastnrcom:int, gastnrpay:int, letterno:int, contact_nr:int, rechnerstart:int, rechnrend:int, 
+                        res_mode:string, user_init:string, origin:string, groupname:string, comments:string, 
+                        voucherno:string, bill_receiver:string, depositgef:Decimal, limitdate:date, fixed_rate:bool, 
+                        init_rate:bool, master_active:bool, umsatz1:bool, umsatz2:bool, umsatz3:bool, umsatz4:bool, 
+                        init_time:int, init_date:date):
 
     prepare_cache ([Reservation, Bediener, Master, Guest, Counters, Res_history, Segment, Reslin_queasy])
 
@@ -29,6 +38,15 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
 
 
     db_session = local_storage.db_session
+    res_mode = res_mode.strip()
+    user_init = user_init.strip()
+    origin = origin.strip()
+    groupname = groupname.strip()
+    comments = comments.strip()
+    voucherno = voucherno.strip()
+    bill_receiver = bill_receiver.strip()
+    last_count = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal flag_ok, msg_str, error_number, segmstr, a, b, lvcarea, bill, reservation, bediener, master, res_line, guest, htparam, counters, res_history, guest_pr, segment, reslin_queasy
@@ -178,12 +196,15 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
                         bill.rechnr = master.rechnr
                     else:
 
-                        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                        counters.counter = counters.counter + 1
-                        bill.rechnr = counters.counter
-                        pass
-                        pass
-                        master.rechnr = bill.rechnr
+                        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                        # counters.counter = counters.counter + 1
+                        # bill.rechnr = counters.counter
+                        # pass
+                        # pass
+                        # master.rechnr = bill.rechnr
+                        last_count, error_lock = get_output(next_counter_for_update(3))
+                        bill.rechnr = last_count
+                        
                         pass
                 bill.gastnr = gastnrpay
                 bill.name = bill_receiver

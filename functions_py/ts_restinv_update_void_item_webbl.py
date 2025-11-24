@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.119
 #------------------------------------------
 # Rd, 05/11/2025
-# 
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #------------------------------------------
 
 
@@ -11,10 +11,21 @@ from datetime import date
 from functions.htplogic import htplogic
 from functions.ts_restinv_rinv_arbl import ts_restinv_rinv_arbl
 from models import H_bill, H_bill_line, Kellner, H_mjourn, H_artikel, Hoteldpt, Artikel, Htparam, Queasy, Guest, Counters, H_umsatz, H_journal, Umsatz, Interface, Arrangement, Argt_line, Billjournal
+from functions.next_counter_for_update import next_counter_for_update
 
 submenu_list_data, Submenu_list = create_model("Submenu_list", {"menurecid":int, "zeit":int, "nr":int, "artnr":int, "bezeich":string, "anzahl":int, "zknr":int, "request":string})
 
-def ts_restinv_update_void_item_webbl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int, deptname:string, transdate:date, h_artart:int, cancel_order:bool, h_artikel_service_code:int, amount:Decimal, amount_foreign:Decimal, price:Decimal, double_currency:bool, qty:int, exchg_rate:Decimal, price_decimal:int, order_taker:int, tischnr:int, curr_dept:int, curr_waiter:int, gname:string, pax:int, kreditlimit:Decimal, add_zeit:int, billart:int, description:string, change_str:string, cc_comment:string, cancel_str:string, req_str:string, voucher_str:string, hoga_card:string, print_to_kitchen:bool, from_acct:bool, h_artnrfront:int, pay_type:int, guestnr:int, transfer_zinr:string, curedept_flag:bool, foreign_rate:bool, curr_room:string, user_init:string, hoga_resnr:int, hoga_reslinnr:int, incl_vat:bool, get_price:int, mc_str:string, submenu_list_data:[Submenu_list]):
+def ts_restinv_update_void_item_webbl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int, deptname:string, 
+                                      transdate:date, h_artart:int, cancel_order:bool, h_artikel_service_code:int, 
+                                      amount:Decimal, amount_foreign:Decimal, price:Decimal, double_currency:bool, 
+                                      qty:int, exchg_rate:Decimal, price_decimal:int, order_taker:int, tischnr:int, 
+                                      curr_dept:int, curr_waiter:int, gname:string, pax:int, kreditlimit:Decimal, 
+                                      add_zeit:int, billart:int, description:string, change_str:string, cc_comment:string, 
+                                      cancel_str:string, req_str:string, voucher_str:string, hoga_card:string, 
+                                      print_to_kitchen:bool, from_acct:bool, h_artnrfront:int, pay_type:int, guestnr:int, 
+                                      transfer_zinr:string, curedept_flag:bool, foreign_rate:bool, curr_room:string, 
+                                      user_init:string, hoga_resnr:int, hoga_reslinnr:int, incl_vat:bool, get_price:int, 
+                                      mc_str:string, submenu_list_data:[Submenu_list]):
 
     prepare_cache ([H_bill_line, Kellner, H_mjourn, H_artikel, Hoteldpt, Artikel, Htparam, Queasy, Guest, Counters, H_umsatz, H_journal, Umsatz, Interface, Arrangement, Argt_line, Billjournal])
 
@@ -96,6 +107,8 @@ def ts_restinv_update_void_item_webbl(pvilanguage:int, rec_id:int, rec_id_h_arti
     req_str = req_str.strip()
     voucher_str = voucher_str.strip()
     transfer_zinr = transfer_zinr.strip()
+    last_count = 0
+    error_lock:string = ""
 
 
     def generate_output():
@@ -722,12 +735,17 @@ def ts_restinv_update_void_item_webbl(pvilanguage:int, rec_id:int, rec_id_h_arti
 
             counters.counter_no = 100 + curr_dept
             counters.counter_bez = "Outlet Invoice: " + hoteldpt.depart
-        counters.counter = counters.counter + 1
+        # counters.counter = counters.counter + 1
 
         if counters.counter > 999999:
-            counters.counter = 1
+            # counters.counter = 1
+            counters.counter = 0
+
+        last_count, error_lock = get_output(next_counter_for_update(100 + curr_dept))
         pass
-        h_bill.rechnr = counters.counter
+        # h_bill.rechnr = counters.counter
+        h_bill.rechnr = last_count
+
         rechnr = h_bill.rechnr
         fl_code2 = 1
         pass

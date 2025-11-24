@@ -113,7 +113,7 @@ def ap_debtpay_settle_paymentbl(pay_list_list:[Pay_list], age_list_list:[Age_lis
                 #     counters.counter_bez = "Accounts Payable"
                 # counters.counter = counters.counter + 1
                 # l_kredit1.counter = counters.counter
-                last_count = next_counter_for_update(24)
+                last_count, error_lock = get_output(next_counter_for_update(24))
                 l_kredit1.counter = last_count
                 count = l_kredit1.counter
                 pass
