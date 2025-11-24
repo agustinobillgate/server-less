@@ -1,36 +1,41 @@
+#using conversion tools version: 1.0.0.119
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from functions.create_newbill import create_newbill
 from models import Bill, Parameters, Res_line, Htparam, Artikel, Waehrung, Counters, Bill_line, Umsatz, Billjournal, Master, Mast_art
 
-def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:int, rufnummer:str, amount:decimal):
+def bookcall(zinr:string, calldate:date, calltime:int, destination:string, duration:int, rufnummer:string, amount:Decimal):
+
+    prepare_cache ([Bill, Parameters, Res_line, Htparam, Artikel, Waehrung, Counters, Bill_line, Umsatz, Billjournal, Master])
+
     success = False
     rechnr = 0
-    versioninfo:str = "@(#) BookCall.p 1.0.2 Sindata 2003/11/17"
+    versioninfo:string = "@(#) BookCall.p 1.0.2 Sindata 2003/11/17"
     bil_recid:int = 0
-    epreis:decimal = to_decimal("0.0")
+    epreis:Decimal = to_decimal("0.0")
     artnr:int = 0
     resnr:int = 0
     billno:int = 0
     master_flag:bool = False
     bill_date:date = None
-    user_init:str = ""
+    user_init:string = ""
     bookflag:int = 0
     foreign_rate:bool = False
     double_currency:bool = False
-    exchg_rate:decimal = 1
-    amount_foreign:decimal = to_decimal("0.0")
+    exchg_rate:Decimal = 1
+    amount_foreign:Decimal = to_decimal("0.0")
     price_decimal:int = 0
     calls_type:int = 0
     bill = parameters = res_line = htparam = artikel = waehrung = counters = bill_line = umsatz = billjournal = master = mast_art = None
 
     bill1 = prefix_list = None
 
-    prefix_list_list, Prefix_list = create_model("Prefix_list", {"prefix":str, "codelan":int})
+    prefix_list_data, Prefix_list = create_model("Prefix_list", {"prefix":string, "codelan":int})
 
     Bill1 = create_buffer("Bill1",Bill)
+
 
     db_session = local_storage.db_session
 
@@ -41,7 +46,7 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
 
 
         nonlocal bill1, prefix_list
-        nonlocal prefix_list_list
+        nonlocal prefix_list_data
 
         return {"success": success, "rechnr": rechnr}
 
@@ -53,10 +58,10 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
 
 
         nonlocal bill1, prefix_list
-        nonlocal prefix_list_list
+        nonlocal prefix_list_data
 
-        master_flag = None
-        bookflag = None
+        master_flag = False
+        bookflag = 0
         mbill = None
         resline = None
 
@@ -66,8 +71,7 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
         Mbill =  create_buffer("Mbill",Bill)
         Resline =  create_buffer("Resline",Res_line)
 
-        master = db_session.query(Master).filter(
-                 (Master.resnr == resnr) & (Master.active) & (Master.flag == 0)).first()
+        master = get_cache (Master, {"resnr": [(eq, resnr)],"active": [(eq, true)],"flag": [(eq, 0)]})
 
         if not master:
 
@@ -75,16 +79,14 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
 
         if master.umsatzart[3] :
             master_flag = True
-        else:
+            else:
 
-            mast_art = db_session.query(Mast_art).filter(
-                     (Mast_art.resnr == master.resnr) & (Mast_art.departement == artikel.departement) & (Mast_art.artnr == artikel.artnr)).first()
-            master_flag = (None != mast_art)
+                mast_art = get_cache (Mast_art, {"resnr": [(eq, master.resnr)],"departement": [(eq, artikel.departement)],"artnr": [(eq, artikel.artnr)]})
+                master_flag = (None != mast_art)
 
         if master_flag:
 
-            mbill = db_session.query(Mbill).filter(
-                     (Mbill.resnr == resnr) & (Mbill.reslinnr == 0)).first()
+            mbill = get_cache (Bill, {"resnr": [(eq, resnr)],"reslinnr": [(eq, 0)]})
 
             if not mbill:
                 master_flag = False
@@ -99,11 +101,13 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
 
             if mbill.rechnr == 0:
 
-                counters = db_session.query(Counters).filter(
-                         (Counters.counter_no == 3)).first()
+                counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
                 counters.counter = counters.counter + 1
                 mbill.rechnr = counters.counter
+                pass
+                pass
                 master.rechnr = mbill.rechnr
+                pass
             rechnr = mbill.rechnr
             bill_line = Bill_line()
             db_session.add(bill_line)
@@ -111,7 +115,7 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
             bill_line.rechnr = mbill.rechnr
             bill_line.artnr = artnr
             bill_line.bezeich = artikel.bezeich + " - " +\
-                    substring(rufnummer, 0, len(rufnummer))
+                    substring(rufnummer, 0, length(rufnummer))
             bill_line.anzahl = 1
             bill_line.betrag =  to_decimal(amount)
             bill_line.fremdwbetrag =  to_decimal(amount_foreign)
@@ -126,8 +130,10 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
                     to_string(calltime, "HH:MM") + ";" + rufnummer + ";" +\
                     destination + ";" + to_string(duration, "HH:MM:SS") + ";"
 
-            umsatz = db_session.query(Umsatz).filter(
-                     (Umsatz.artnr == artnr) & (Umsatz.departement == artikel.departement) & (Umsatz.datum == bill_date)).first()
+
+            pass
+
+            umsatz = get_cache (Umsatz, {"artnr": [(eq, artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
 
             if not umsatz:
                 umsatz = Umsatz()
@@ -142,6 +148,7 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
             umsatz.anzahl = umsatz.anzahl + 1
 
 
+            pass
             billjournal = Billjournal()
             db_session.add(billjournal)
 
@@ -159,6 +166,8 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
             billjournal.bill_datum = bill_date
 
 
+            pass
+            pass
             bookflag = 1
             success = True
 
@@ -166,18 +175,18 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
 
 
     for parameters in db_session.query(Parameters).filter(
-             (func.lower(Parameters.progname) == ("interface").lower()) & (func.lower(Parameters.section) == ("prefix").lower())).order_by(Parameters._recid).all():
+             (Parameters.progname == ("interface").lower()) & (Parameters.section == ("prefix").lower())).order_by(Parameters._recid).all():
 
         if substring(parameters.vstring, 1, 1) != ("0").lower() :
 
-            prefix_list = query(prefix_list_list, filters=(lambda prefix_list: prefix_list.prefix == parameters.vstring), first=True)
+            prefix_list = query(prefix_list_data, filters=(lambda prefix_list: prefix_list.prefix == parameters.vstring), first=True)
 
             if not prefix_list:
                 prefix_list = Prefix_list()
-                prefix_list_list.append(prefix_list)
+                prefix_list_data.append(prefix_list)
 
                 prefix_list.prefix = parameters.vstring
-                prefix_list.codelan = len(parameters.vstring)
+                prefix_list.codelan = length(parameters.vstring)
 
     if zinr == "":
 
@@ -189,30 +198,26 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
     elif substring(rufnummer, 0, 1) == ("0").lower() :
         calls_type = 1
 
-        prefix_list = query(prefix_list_list, filters=(lambda prefix_list: prefix_list.prefix == substring(rufnummer, 0, len(prefix_list.prefix))), first=True)
+        prefix_list = query(prefix_list_data, filters=(lambda prefix_list: prefix_list.prefix == substring(rufnummer, 0, length(prefix_list.prefix))), first=True)
 
         if prefix_list:
             calls_type = 2
 
-    res_line = db_session.query(Res_line).filter(
-             (Res_line.resstatus == 6) & (func.lower(Res_line.zinr) == (zinr).lower())).first()
+    res_line = get_cache (Res_line, {"resstatus": [(eq, 6)],"zinr": [(eq, zinr)]})
 
     if not res_line:
 
-        res_line = db_session.query(Res_line).filter(
-                 (Res_line.resstatus == 13) & (func.lower(Res_line.zinr) == (zinr).lower())).first()
+        res_line = get_cache (Res_line, {"resstatus": [(eq, 13)],"zinr": [(eq, zinr)]})
 
         if not res_line:
 
             return generate_output()
     resnr = res_line.resnr
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 113)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 113)]})
     artnr = htparam.finteger
 
-    artikel = db_session.query(Artikel).filter(
-             (Artikel.artnr == artnr) & (Artikel.departement == 0) & (Artikel.artnr != 0)).first()
+    artikel = get_cache (Artikel, {"artnr": [(eq, artnr),(ne, 0)],"departement": [(eq, 0)]})
 
     if not artikel:
 
@@ -220,45 +225,37 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
 
     if calls_type == 1:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 114)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 114)]})
 
-        artikel = db_session.query(Artikel).filter(
-                 (Artikel.artnr == htparam.finteger) & (Artikel.departement == 0) & (Artikel.artart == 0) & (Artikel.artnr != 0)).first()
+        artikel = get_cache (Artikel, {"artnr": [(eq, htparam.finteger),(ne, 0)],"departement": [(eq, 0)],"artart": [(eq, 0)]})
 
         if artikel:
             artnr = htparam.finteger
 
     elif calls_type == 2:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 115)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 115)]})
 
-        artikel = db_session.query(Artikel).filter(
-                 (Artikel.artnr == htparam.finteger) & (Artikel.departement == 0) & (Artikel.artart == 0) & (Artikel.artnr != 0)).first()
+        artikel = get_cache (Artikel, {"artnr": [(eq, htparam.finteger),(ne, 0)],"departement": [(eq, 0)],"artart": [(eq, 0)]})
 
         if artikel:
             artnr = htparam.finteger
         else:
 
-            htparam = db_session.query(Htparam).filter(
-                     (Htparam.paramnr == 114)).first()
+            htparam = get_cache (Htparam, {"paramnr": [(eq, 114)]})
 
-            artikel = db_session.query(Artikel).filter(
-                     (Artikel.artnr == htparam.finteger) & (Artikel.departement == 0) & (Artikel.artart == 0) & (Artikel.artnr != 0)).first()
+            artikel = get_cache (Artikel, {"artnr": [(eq, htparam.finteger),(ne, 0)],"departement": [(eq, 0)],"artart": [(eq, 0)]})
 
             if artikel:
                 artnr = htparam.finteger
 
-    bill1 = db_session.query(Bill1).filter(
-             (Bill1.zinr == res_line.zinr) & (Bill1.reslinnr == res_line.reslinnr) & (Bill1.resnr == res_line.resnr)).first()
+    bill1 = get_cache (Bill, {"zinr": [(eq, res_line.zinr)],"reslinnr": [(eq, res_line.reslinnr)],"resnr": [(eq, res_line.resnr)]})
 
     if not bill1:
 
         return generate_output()
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 335)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 335)]})
     billno = htparam.finteger
 
     if billno == 0:
@@ -267,54 +264,44 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
     if billno > 2:
         billno = 2
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 110)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
     bill_date = htparam.fdate
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 253)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 253)]})
 
     if htparam.flogical:
         bill_date = bill_date + timedelta(days=1)
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 317)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 317)]})
     user_init = htparam.fchar
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 559)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 559)]})
 
-    if htparam.flogical and len(rufnummer) > 3:
-        rufnummer = substring(rufnummer, 0, len(rufnummer) - 3) + "xxx"
+    if htparam.flogical and length(rufnummer) > 3:
+        rufnummer = substring(rufnummer, 0, length(rufnummer) - 3) + "xxx"
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 491)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 491)]})
     price_decimal = htparam.finteger
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 143)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 143)]})
     foreign_rate = htparam.flogical
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 240)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 240)]})
     double_currency = htparam.flogical
     pass
 
     if artikel.pricetab and artikel.betriebsnr != 0:
 
-        waehrung = db_session.query(Waehrung).filter(
-                 (Waehrung.waehrungsnr == artikel.betriebsnr) & (Waehrung.ankauf != 0)).first()
+        waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, artikel.betriebsnr)],"ankauf": [(ne, 0)]})
 
         if waehrung:
             exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
 
     elif foreign_rate or double_currency:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 144)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 144)]})
 
-        waehrung = db_session.query(Waehrung).filter(
-                 (Waehrung.wabkurz == htparam.fchar)).first()
+        waehrung = get_cache (Waehrung, {"wabkurz": [(eq, htparam.fchar)]})
 
         if waehrung:
             exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
@@ -341,12 +328,10 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
             if not bill:
                 bil_recid = get_output(create_newbill(res_line._recid, bill1.parent_nr, billno))
 
-                bill = db_session.query(Bill).filter(
-                         (Bill._recid == bil_recid)).first()
+                bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
         else:
 
-            bill = db_session.query(Bill).filter(
-                     (Bill._recid == bill1._recid)).first()
+            bill = get_cache (Bill, {"_recid": [(eq, bill1._recid)]})
         bill.sonst_umsatz =  to_decimal(bill.sonst_umsatz) + to_decimal(amount)
         bill.gesamtumsatz =  to_decimal(bill.gesamtumsatz) + to_decimal(amount)
         bill.rgdruck = 0
@@ -356,16 +341,16 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
 
         if bill.rechnr == 0:
 
-            counters = db_session.query(Counters).filter(
-                     (Counters.counter_no == 3)).first()
+            counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
             counters.counter = counters.counter + 1
             bill.rechnr = counters.counter
+            pass
         bill_line = Bill_line()
         db_session.add(bill_line)
 
         bill_line.rechnr = bill.rechnr
         bill_line.artnr = artnr
-        bill_line.bezeich = artikel.bezeich + " - " + substring(rufnummer, 0, len(rufnummer))
+        bill_line.bezeich = artikel.bezeich + " - " + substring(rufnummer, 0, length(rufnummer))
         bill_line.anzahl = 1
         bill_line.betrag =  to_decimal(amount)
         bill_line.fremdwbetrag =  to_decimal(amount_foreign)
@@ -377,9 +362,9 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
         bill_line.arrangement = res_line.arrangement
         bill_line.bill_datum = bill_date
         bill_line.origin_id = "CALLS " + to_string(calldate) + ";" + to_string(calltime, "HH:MM") + ";" + rufnummer + ";" + destination + ";" + to_string(duration, "HH:MM:SS") + ";"
+        pass
 
-        umsatz = db_session.query(Umsatz).filter(
-                 (Umsatz.artnr == artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).first()
+        umsatz = get_cache (Umsatz, {"artnr": [(eq, artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
 
         if not umsatz:
             umsatz = Umsatz()
@@ -390,6 +375,7 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
             umsatz.departement = 0
         umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(amount)
         umsatz.anzahl = umsatz.anzahl + 1
+        pass
         billjournal = Billjournal()
         db_session.add(billjournal)
 
@@ -405,6 +391,8 @@ def bookcall(zinr:str, calldate:date, calltime:int, destination:str, duration:in
         billjournal.zeit = get_current_time_in_seconds()
         billjournal.userinit = user_init
         billjournal.bill_datum = bill_date
+        pass
+        pass
         success = True
         rechnr = bill.rechnr
 

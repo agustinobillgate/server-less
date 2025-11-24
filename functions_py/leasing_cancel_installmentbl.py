@@ -8,10 +8,15 @@
                     - fix ("string").lower()
                     - use f"string"
 """
+#------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Reslin_queasy, Artikel, Queasy, Htparam, Bediener, Res_history, Res_line, Counters, Reservation, Guest, Bill, Bill_line, Debitor, Billjournal, Umsatz
+from functions.next_counter_for_update import next_counter_for_update
 
 
 def leasing_cancel_installmentbl(qrecid: int, user_init: str):
@@ -52,6 +57,9 @@ def leasing_cancel_installmentbl(qrecid: int, user_init: str):
     Pqueasy = create_buffer("Pqueasy", Queasy)
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock: str = ""
+
 
     def generate_output():
         nonlocal error_flag, success_flag, ar_ledger, divered_rental, bill_date, tot_amount, inv_no, tot_periode, v_cicilanke, v_percount, v_start, v_end, installment, month_str1, month_str2, reslin_queasy, artikel, queasy, htparam, bediener, res_history, res_line, counters, reservation, guest, bill, bill_line, debitor, billjournal, umsatz
@@ -137,18 +145,21 @@ def leasing_cancel_installmentbl(qrecid: int, user_init: str):
 
         billnr: int = 0
 
-        counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+        # counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
 
-        if not counters:
-            counters = Counters()
+        # if not counters:
+        #     counters = Counters()
 
-            counters.counter_no = 3
-            counters.counter_bez = "counter for Bill No"
+        #     counters.counter_no = 3
+        #     counters.counter_bez = "counter for Bill No"
 
-            db_session.add(counters)
+        #     db_session.add(counters)
 
-        counters.counter = counters.counter + 1
-        billnr = counters.counter
+        # counters.counter = counters.counter + 1
+        # billnr = counters.counter
+        
+        last_count, error_lock = get_output(next_counter_for_update(3))
+        billnr = last_count
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})

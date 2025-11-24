@@ -6,15 +6,20 @@
 # Rulita, 17-10-2025
 # modify program update tiketID : 6526C2
 #----------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import H_bill, Htparam, Counters, Hoteldpt, H_bill_line, H_mjourn, H_journal, Queasy
+from functions.next_counter_for_update import next_counter_for_update
+
 
 temp_data, Temp = create_model("Temp", {"pos":int, "bezeich":string, "artnr":int})
 rhbline_data, Rhbline = create_model("Rhbline", {"nr":int, "rid":int})
 
-def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:int, bilrecid:int, new_waiter:int, rec_id:int, curr_waiter:int, dept:int, tischnr:int):
+def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:int, bilrecid:int, 
+                              new_waiter:int, rec_id:int, curr_waiter:int, dept:int, tischnr:int):
 
     prepare_cache ([H_bill, Htparam, Counters, Hoteldpt, H_bill_line, H_mjourn, H_journal, Queasy])
 
@@ -23,6 +28,9 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
     temp = rhbline = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+
 
     def generate_output():
         nonlocal h_bill, htparam, counters, hoteldpt, h_bill_line, h_mjourn, h_journal, queasy
@@ -83,19 +91,21 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
                 return
         else:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, (100 + dept))]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, (100 + dept))]})
 
-            if counters:
-                pass
-            else:
+            # if counters:
+            #     pass
+            # else:
 
-                hoteldpt = get_cache (Hoteldpt, {"num": [(eq, dept)]})
-                counters = Counters()
-                db_session.add(counters)
+            #     hoteldpt = get_cache (Hoteldpt, {"num": [(eq, dept)]})
+            #     counters = Counters()
+            #     db_session.add(counters)
 
-                counters.counter_no = 100 + dept
-                counters.counter_bez = "Outlet Invoice: " + hoteldpt.depart
-            counters.counter = counters.counter + 1
+            #     counters.counter_no = 100 + dept
+            #     counters.counter_bez = "Outlet Invoice: " + hoteldpt.depart
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(100 + dept))
+
             pass
             hbill = H_bill()
             db_session.add(hbill)
@@ -103,7 +113,11 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
             hbill.tischnr = tableno
             hbill.departement = dept
             hbill.kellner_nr = curr_waiter
-            hbill.rechnr = counters.counter
+            
+            # hbill.rechnr = counters.counter
+            hbill.rechnr = last_count
+
+
             hbill.belegung = 1
 
 

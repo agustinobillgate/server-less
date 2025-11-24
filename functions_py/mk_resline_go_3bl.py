@@ -3,6 +3,8 @@
 # Rd, 31/10/2025
 # Ticket:13B1AB
 #------------------------------------------
+# Rd, 24/11/2025, update counter dengan next_counter_for_update
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -16,11 +18,26 @@ from functions.create_historybl import create_historybl
 from functions.ratecode_rate import ratecode_rate
 from functions.res_dyna_rmrate import res_dyna_rmrate
 from models import Res_line, Bill, Queasy, Htparam, Nation, Arrangement, Reservation, Bediener, Outorder, Zimmer, Mealcoup, Reslin_queasy, Resplan, Zimkateg, Messages, Waehrung, Guest_pr, Guest, Res_history, Master, Brief, Segment, Sourccod, Counters, Mc_guest, Interface, Guestseg
+from functions.next_counter_for_update import next_counter_for_update   
+
 
 reslin_list_data, Reslin_list = create_model_like(Res_line)
 res_dynarate_data, Res_dynarate = create_model("Res_dynarate", {"date1":date, "date2":date, "rate":Decimal, "rmcat":string, "argt":string, "prcode":string, "rcode":string, "markno":int, "setup":int, "adult":int, "child":int})
 
-def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:int, accompany_tmpnr3:int, accompany_gastnr:int, accompany_gastnr2:int, accompany_gastnr3:int, comchild:int, rm_bcol:int, marknr:int, bill_instruct:int, restype:int, restype0:int, restype1:int, contact_nr:int, cutoff_days:int, segm__purcode:int, deposit:Decimal, limitdate:date, wechsel_str:string, origcontcode:string, groupname:string, guestname:string, main_voucher:string, resline_comment:string, mainres_comment:string, purpose_svalue:string, letter_svalue:string, segm_svalue:string, source_svalue:string, res_mode:string, prev_zinr:string, memo_zinr:string, voucherno:string, contcode:string, child_age:string, flight1:string, flight2:string, eta:string, etd:string, user_init:string, currency_changed:bool, fixed_rate:bool, grpflag:bool, memozinr_readonly:bool, group_enable:bool, init_fixrate:bool, oral_flag:bool, pickup_flag:bool, drop_flag:bool, ebdisc_flag:bool, kbdisc_flag:bool, restricted:bool, sharer:bool, coder_exist:bool, gname_chged:bool, earlyci:bool, gdpr_flag:bool, mark_flag:bool, news_flag:bool, temp_segment:string, repeat_charge:bool, every_month:int, repeat_amount:Decimal, start_date:date, end_date:date, reslin_list_data:[Reslin_list], res_dynarate_data:[Res_dynarate], tot_qty:int):
+def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:int, accompany_tmpnr3:int, 
+                      accompany_gastnr:int, accompany_gastnr2:int, accompany_gastnr3:int, comchild:int, rm_bcol:int, 
+                      marknr:int, bill_instruct:int, restype:int, restype0:int, restype1:int, contact_nr:int, 
+                      cutoff_days:int, segm__purcode:int, deposit:Decimal, limitdate:date, wechsel_str:string, 
+                      origcontcode:string, groupname:string, guestname:string, main_voucher:string, 
+                      resline_comment:string, mainres_comment:string, purpose_svalue:string, letter_svalue:string, 
+                      segm_svalue:string, source_svalue:string, res_mode:string, prev_zinr:string, memo_zinr:string, 
+                      voucherno:string, contcode:string, child_age:string, flight1:string, flight2:string, eta:string, 
+                      etd:string, user_init:string, currency_changed:bool, fixed_rate:bool, grpflag:bool, 
+                      memozinr_readonly:bool, group_enable:bool, init_fixrate:bool, oral_flag:bool, pickup_flag:bool, 
+                      drop_flag:bool, ebdisc_flag:bool, kbdisc_flag:bool, restricted:bool, sharer:bool, coder_exist:bool, 
+                      gname_chged:bool, earlyci:bool, gdpr_flag:bool, mark_flag:bool, news_flag:bool, temp_segment:string, 
+                      repeat_charge:bool, every_month:int, repeat_amount:Decimal, start_date:date, end_date:date, 
+                      reslin_list_data:[Reslin_list], res_dynarate_data:[Res_dynarate], tot_qty:int):
 
     prepare_cache ([Queasy, Htparam, Nation, Arrangement, Reservation, Bediener, Outorder, Zimmer, Mealcoup, Resplan, Zimkateg, Waehrung, Guest_pr, Guest, Res_history, Master, Brief, Segment, Sourccod, Counters, Interface, Guestseg])
 
@@ -82,6 +99,9 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
     memo_zinr = memo_zinr.strip()
     prev_zinr = prev_zinr.strip()
     wechsel_str = wechsel_str.strip()
+    last_count = 0
+    error_lock = ""
+
 
     def generate_output():
         nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
@@ -1226,13 +1246,15 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                         bill.rechnr = master.rechnr
                     else:
 
-                        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                        counters.counter = counters.counter + 1
-                        bill.rechnr = counters.counter
-                        pass
-                        pass
+                        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                        # counters.counter = counters.counter + 1
+                        last_count, error_lock = get_output(next_counter_for_update(3))
+
+                        # bill.rechnr = counters.counter
+                        bill.rechnr = last_count
                         master.rechnr = bill.rechnr
                         pass
+
                 bill.gastnr = reslin_list.gastnr
                 bill.name = rgast.name
                 bill.segmentcode = reservation.segmentcode

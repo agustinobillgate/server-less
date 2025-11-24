@@ -2,3 +2,5 @@ service,function
 sitereminder,if_siteminder_read_parambl
 vhpbookengpushavailbl,if_vhp_bookeng_push_availbl
 vhpbookengpushratebl,if_vhp_bookeng_push_ratebl
+testcounter,test_counter
+

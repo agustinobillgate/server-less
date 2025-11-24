@@ -1,12 +1,14 @@
-#using conversion tools version: 1.0.0.117
+#using conversion tools version: 1.0.0.119
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.create_newbillbl import create_newbillbl
 from models import Bill, Res_line, Htparam, Artikel, Waehrung, Counters, Bill_line, Umsatz, Billjournal
+from functions.next_counter_for_update import next_counter_for_update
 
-def bookcall2bl(pvilanguage:int, zinr:string, calldate:date, calltime:int, destination:string, duration:int, rufnummer:string, amount:Decimal, user_init:string):
+def bookcall2bl(pvilanguage:int, zinr:string, calldate:date, calltime:int, destination:string, duration:int, 
+                rufnummer:string, amount:Decimal, user_init:string):
 
     prepare_cache ([Bill, Res_line, Htparam, Artikel, Waehrung, Counters, Bill_line, Umsatz, Billjournal])
 
@@ -36,6 +38,12 @@ def bookcall2bl(pvilanguage:int, zinr:string, calldate:date, calltime:int, desti
 
 
     db_session = local_storage.db_session
+    zinr = zinr.strip()
+    destination = destination.strip()
+    rufnummer = rufnummer.strip()
+    last_count:int = 0
+    error_lock:string = ""
+
 
     def generate_output():
         nonlocal success, rechnr, lvcarea, bil_recid, epreis, artnr, resnr, billno, master_flag, bill_date, usr_init, bookflag, price_decimal, foreign_rate, double_currency, exchg_rate, amount_foreign, calls_type, bill, res_line, htparam, artikel, waehrung, counters, bill_line, umsatz, billjournal
@@ -185,9 +193,12 @@ def bookcall2bl(pvilanguage:int, zinr:string, calldate:date, calltime:int, desti
 
     if bill.rechnr == 0:
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-        counters.counter = counters.counter + 1
-        bill.rechnr = counters.counter
+        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        # counters.counter = counters.counter + 1
+        # bill.rechnr = counters.counter
+        last_count, error_lock = get_output(next_counter_for_update(3))
+        bill.rechnr = last_count
+        
         pass
     bill_line = Bill_line()
     db_session.add(bill_line)

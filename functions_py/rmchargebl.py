@@ -18,7 +18,9 @@
 # Rulita, 13-11-2025
 # - Fixing to_decimal() takes 1 potision argu 2 were given
 # =========================================================
-
+# ============================
+# Rd, 24/11/2025, update last_count for counter update
+# ============================
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -27,6 +29,7 @@ from sqlalchemy import func
 from functions.create_newbillbl import create_newbillbl
 from functions.ratecode_compli import ratecode_compli
 from models import Bill_line, Bill, Artikel, Htparam, Waehrung, Arrangement, Zimmer, Queasy, Counters, Guest, Umsatz, Billjournal, Argt_line, Res_line, Res_history, Exrate, Reservation, Segment, Reslin_queasy, Zwkum, Fixleist, Master, Interface, Mast_art, Zimkateg, Guest_pr
+from functions.next_counter_for_update import next_counter_for_update
 
 def rmchargebl():
 
@@ -76,6 +79,9 @@ def rmchargebl():
 
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock = ""
+
 
     def generate_output():
         nonlocal user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, divered_rental, description, amount_foreign, price, amount, curr_amount, bill_line, bill, artikel, htparam, waehrung, arrangement, zimmer, queasy, counters, guest, umsatz, billjournal, argt_line, res_line, res_history, exrate, reservation, segment, reslin_queasy, zwkum, fixleist, master, interface, mast_art, zimkateg, guest_pr
@@ -157,10 +163,11 @@ def rmchargebl():
                     s_list.s_rechnr = bill.rechnr
                 else:
 
-                    counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                    counters.counter = counters.counter + 1
-                    s_list.s_rechnr = counters.counter
-                    pass
+                    # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                    # counters.counter = counters.counter + 1
+                    # s_list.s_rechnr = counters.counter
+                    last_count, error_lock = get_output(next_counter_for_update(3))
+                    s_list.s_rechnr = last_count
 
             waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, queasy.number2)]})
             frate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
@@ -596,19 +603,22 @@ def rmchargebl():
 
                 if htparam.flogical and htparam.feldtyp == 4:
 
-                    counters = get_cache (Counters, {"counter_no": [(eq, 29)]})
+                    # counters = get_cache (Counters, {"counter_no": [(eq, 29)]})
 
-                    if not counters:
-                        counters = Counters()
-                        db_session.add(counters)
+                    # if not counters:
+                    #     counters = Counters()
+                    #     db_session.add(counters)
 
-                        counters.counter_no = 29
-                        counters.counter_bez = "Counter for Registration No"
+                    #     counters.counter_no = 29
+                    #     counters.counter_bez = "Counter for Registration No"
 
 
-                    counters.counter = counters.counter + 1
-                    pass
-                    bill.rechnr2 = counters.counter
+                    # counters.counter = counters.counter + 1
+                    last_count, error_lock = get_output(next_counter_for_update(29))
+
+                    # bill.rechnr2 = counters.counter
+                    bill.rechnr2 = last_count
+
                     pass
                 pass
                 do_it = True
@@ -954,9 +964,12 @@ def rmchargebl():
 
             if bill.rechnr == 0:
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                counters.counter = counters.counter + 1
-                bill.rechnr = counters.counter
+                # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                # counters.counter = counters.counter + 1
+                # bill.rechnr = counters.counter
+                last_count, error_lock = get_output(next_counter_for_update(3))
+                bill.rechnr = last_count
+
                 pass
             bill_line = Bill_line()
             db_session.add(bill_line)
@@ -1049,9 +1062,11 @@ def rmchargebl():
 
             if bill.rechnr == 0:
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                counters.counter = counters.counter + 1
-                bill.rechnr = counters.counter
+                # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                # counters.counter = counters.counter + 1
+                # bill.rechnr = counters.counter
+                last_count, error_lock = get_output(next_counter_for_update(3))
+                bill.rechnr = last_count
                 pass
             bill_line = Bill_line()
             db_session.add(bill_line)
@@ -1160,8 +1175,9 @@ def rmchargebl():
 
                         b_receiver = get_cache (Guest, {"gastnr": [(eq, master.gastnr)]})
 
-                        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                        counters.counter = counters.counter + 1
+                        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                        # counters.counter = counters.counter + 1
+                        last_count, error_lock = get_output(next_counter_for_update(3))
                         pass
                         pass
                         mbill = Bill()
@@ -1171,7 +1187,9 @@ def rmchargebl():
                         mbill.reslinnr = 0
                         mbill.rgdruck = 1
                         mbill.billtyp = 2
-                        mbill.rechnr = counters.counter
+                        # mbill.rechnr = counters.counter
+                        mbill.rechnr = last_count
+
                         mbill.gastnr = master.gastnr
                         mbill.name = b_receiver.name
                         master.rechnr = mbill.rechnr
@@ -1193,10 +1211,12 @@ def rmchargebl():
 
                                 b_receiver = get_cache (Guest, {"gastnr": [(eq, master.gastnr)]})
 
-                                counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                                counters.counter = counters.counter + 1
-                                pass
-                                pass
+                                # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                                # counters.counter = counters.counter + 1
+                                # pass
+                                # pass
+                                last_count, error_lock = get_output(next_counter_for_update(3))
+
                                 mbill = Bill()
                                 db_session.add(mbill)
 
@@ -1204,7 +1224,9 @@ def rmchargebl():
                                 mbill.reslinnr = 0
                                 mbill.rgdruck = 1
                                 mbill.billtyp = 2
-                                mbill.rechnr = counters.counter
+                                # mbill.rechnr = counters.counter
+                                mbill.rechnr = last_count
+
                                 mbill.gastnr = master.gastnr
                                 mbill.name = b_receiver.name
                                 master.rechnr = mbill.rechnr
@@ -1225,9 +1247,11 @@ def rmchargebl():
 
                                 b_receiver = get_cache (Guest, {"gastnr": [(eq, master.gastnr)]})
 
-                                counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                                counters.counter = counters.counter + 1
-                                pass
+                                # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                                # counters.counter = counters.counter + 1
+                                # pass
+                                last_count, error_lock = get_output(next_counter_for_update(3))
+
                                 pass
                                 mbill = Bill()
                                 db_session.add(mbill)
@@ -1236,7 +1260,9 @@ def rmchargebl():
                                 mbill.reslinnr = 0
                                 mbill.rgdruck = 1
                                 mbill.billtyp = 2
-                                mbill.rechnr = counters.counter
+                                # mbill.rechnr = counters.counter
+                                mbill.rechnr = last_count
+
                                 mbill.gastnr = master.gastnr
                                 mbill.name = b_receiver.name
                                 master.rechnr = mbill.rechnr
@@ -1254,9 +1280,12 @@ def rmchargebl():
                 mbill.rgdruck = 1
                 mbill.billtyp = 2
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                counters.counter = counters.counter + 1
-                mbill.rechnr = counters.counter
+                # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                # counters.counter = counters.counter + 1
+                # mbill.rechnr = counters.counter
+                last_count, error_lock = get_output(next_counter_for_update(3))
+                mbill.rechnr = last_count
+
                 pass
                 pass
                 master.rechnr = mbill.rechnr
@@ -1330,10 +1359,11 @@ def rmchargebl():
 
             if mbill.rechnr == 0:
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                counters.counter = counters.counter + 1
-                mbill.rechnr = counters.counter
-                pass
+                # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                # counters.counter = counters.counter + 1
+                # mbill.rechnr = counters.counter
+                last_count, error_lock = get_output(next_counter_for_update(3))
+                mbill.rechnr = last_count
                 pass
                 master.rechnr = mbill.rechnr
                 pass

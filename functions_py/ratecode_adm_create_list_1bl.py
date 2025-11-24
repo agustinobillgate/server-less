@@ -39,6 +39,7 @@ def ratecode_adm_create_list_1bl(prcode: string, market_nr: int):
         })
 
     db_session = local_storage.db_session
+    pr_code = prcode.strip()
 
     def generate_output():
         nonlocal childflag, pr_list_data, ratecode, queasy, prtable, zimkateg, arrangement

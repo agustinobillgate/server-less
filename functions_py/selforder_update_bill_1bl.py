@@ -4,16 +4,28 @@
 # Rulita, 31-10-2025
 # - Recompile program
 # ========================
-
+# ============================
+# Rd, 24/11/2025, update last_count for counter update
+# ============================
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.ts_restinv_rinv_arbl import ts_restinv_rinv_arbl
 from models import Kellner, H_bill, H_bill_line, H_mjourn, H_artikel, Htparam, Queasy, Guest, Counters, Hoteldpt, H_umsatz, H_journal, Umsatz, Artikel, Arrangement, Argt_line, Billjournal
+from functions.next_counter_for_update import next_counter_for_update
 
 submenu_list_data, Submenu_list = create_model("Submenu_list", {"menurecid":int, "zeit":int, "nr":int, "artnr":int, "bezeich":string, "anzahl":int, "zknr":int, "request":string})
 
-def selforder_update_bill_1bl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int, deptname:string, transdate:date, h_artart:int, cancel_order:bool, h_artikel_service_code:int, amount:Decimal, amount_foreign:Decimal, price:Decimal, double_currency:bool, qty:int, exchg_rate:Decimal, price_decimal:int, order_taker:int, tischnr:int, curr_dept:int, curr_waiter:int, gname:string, pax:int, kreditlimit:Decimal, add_zeit:int, billart:int, description:string, change_str:string, cc_comment:string, cancel_str:string, req_str:string, voucher_str:string, hoga_card:string, print_to_kitchen:bool, from_acct:bool, h_artnrfront:int, pay_type:int, guestnr:int, transfer_zinr:string, curedept_flag:bool, foreign_rate:bool, curr_room:string, user_init:string, hoga_resnr:int, hoga_reslinnr:int, submenu_list_data:[Submenu_list]):
+def selforder_update_bill_1bl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int, deptname:string, 
+                              transdate:date, h_artart:int, cancel_order:bool, h_artikel_service_code:int, 
+                              amount:Decimal, amount_foreign:Decimal, price:Decimal, double_currency:bool, qty:int, 
+                              exchg_rate:Decimal, price_decimal:int, order_taker:int, tischnr:int, curr_dept:int, 
+                              curr_waiter:int, gname:string, pax:int, kreditlimit:Decimal, add_zeit:int, 
+                              billart:int, description:string, change_str:string, cc_comment:string, 
+                              cancel_str:string, req_str:string, voucher_str:string, hoga_card:string, 
+                              print_to_kitchen:bool, from_acct:bool, h_artnrfront:int, pay_type:int, guestnr:int, 
+                              transfer_zinr:string, curedept_flag:bool, foreign_rate:bool, curr_room:string, 
+                              user_init:string, hoga_resnr:int, hoga_reslinnr:int, submenu_list_data:[Submenu_list]):
 
     prepare_cache ([H_bill_line, H_mjourn, H_artikel, Htparam, Queasy, Guest, Counters, Hoteldpt, H_umsatz, H_journal, Umsatz, Artikel, Arrangement, Argt_line, Billjournal])
 
@@ -70,7 +82,21 @@ def selforder_update_bill_1bl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int,
 
 
     db_session = local_storage.db_session
+    last_count:int = 0
+    error_lock = ""
+    deptname = deptname.strip()
+    gname = gname.strip()
+    description = description.strip()
+    change_str = change_str.strip()
+    cc_comment = cc_comment.strip()
+    cancel_str = cancel_str.strip()
+    req_str = req_str.strip()
+    voucher_str = voucher_str.strip()
+    hoga_card = hoga_card.strip()
+    transfer_zinr = transfer_zinr.strip()
+    curr_room = curr_room.strip()
 
+    
     def generate_output():
         nonlocal bill_date, cancel_flag, fl_code, mwst, mwst_foreign, rechnr, balance, bcol, balance_foreign, fl_code1, fl_code2, fl_code3, p_88, closed, t_h_bill_data, t_kellner1_data, lvcarea, incl_vat, get_price, mc_str, tax, serv, h_service, unit_price, nett_amount_foreign, h_mwst, h_mwst_foreign, h_service_foreign, nett_amount, subtotal, subtotal_foreign, service, service_foreign, recid_h_bill_line, sysdate, zeit, condiment, succed, kellner, h_bill, h_bill_line, h_mjourn, h_artikel, htparam, queasy, guest, counters, hoteldpt, h_umsatz, h_journal, umsatz, artikel, arrangement, argt_line, billjournal
         nonlocal pvilanguage, rec_id, rec_id_h_artikel, deptname, transdate, h_artart, cancel_order, h_artikel_service_code, amount, amount_foreign, price, double_currency, qty, exchg_rate, price_decimal, order_taker, tischnr, curr_dept, curr_waiter, gname, pax, kreditlimit, add_zeit, billart, description, change_str, cc_comment, cancel_str, req_str, voucher_str, hoga_card, print_to_kitchen, from_acct, h_artnrfront, pay_type, guestnr, transfer_zinr, curedept_flag, foreign_rate, curr_room, user_init, hoga_resnr, hoga_reslinnr
@@ -342,7 +368,10 @@ def selforder_update_bill_1bl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int,
                 h_bill.resnr = guest.gastnr
                 h_bill.reslinnr = 0
 
-        counters = get_cache (Counters, {"counter_no": [(eq, (100 + curr_dept))]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, (100 + curr_dept))]})
+        counters = db_session.query(Counters).filter(
+            Counters.counter_no == (100 + curr_dept)
+        ).with_for_update(nowait=False).first()
 
         if counters:
             pass
@@ -351,14 +380,17 @@ def selforder_update_bill_1bl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int,
             hoteldpt = get_cache (Hoteldpt, {"num": [(eq, curr_dept)]})
             counters = Counters()
             db_session.add(counters)
-
+            db_session.flush()
             counters.counter_no = 100 + curr_dept
             counters.counter_bez = "Outlet Invoice: " + hoteldpt.depart
+
+
         counters.counter = counters.counter + 1
 
         if counters.counter > 999999:
             counters.counter = 1
-        pass
+        
+        db_session.commit()
         h_bill.rechnr = counters.counter
         rechnr = h_bill.rechnr
         fl_code2 = 1

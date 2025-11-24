@@ -9,12 +9,17 @@
                     - fix closing on timedelta(days=1)
                     - fix ("string").lower()
 """
+#----------------------------------------
+# Rd, 05/11/2025
+#----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 # from functions.calc_servtaxesbl import calc_servtaxesbl
 from functions_py.calc_servtaxesbl import calc_servtaxesbl
 from models import Artikel, Htparam, Queasy, Res_line, Arrangement, Reslin_queasy, Bill, Counters, Reservation, Guest, Bediener, Bill_line, Debitor, Billjournal, Umsatz, Gl_jouhdr, Gl_journal
+from functions.next_counter_for_update import next_counter_for_update
 
 
 def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_init: str):
@@ -72,6 +77,8 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
     Bartikel = create_buffer("Bartikel", Artikel)
 
     db_session = local_storage.db_session
+    pinvoice_no = pinvoice_no.strip()
+
 
     def generate_output():
         nonlocal success_flag, log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, rechnr, prev_tax, prev_serv, prev_amount_debit, prev_amount_credit, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, bill, counters, reservation, guest, bediener, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
@@ -93,20 +100,23 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
 
         billnr: int = 0
 
-        counters = get_cache(
-            Counters, {"counter_no": [(eq, 3)]})
+        # counters = get_cache(
+        #     Counters, {"counter_no": [(eq, 3)]})
 
-        if not counters:
-            counters = Counters()
+        # if not counters:
+        #     counters = Counters()
 
-            counters.counter_no = 3
-            counters.counter_bez = "counter for Bill No"
+        #     counters.counter_no = 3
+        #     counters.counter_bez = "counter for Bill No"
             
-            db_session.add(counters)
+        #     db_session.add(counters)
             
 
-        counters.counter = counters.counter + 1
-        billnr = counters.counter
+        # counters.counter = counters.counter + 1
+        # billnr = counters.counter
+
+        last_count, error_lock = get_output(next_counter_for_update(3))
+        billnr = last_count
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
@@ -375,17 +385,18 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
 
                 cancel_journal()
 
-        counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
 
-        if not counters:
-            counters = Counters()
+        # if not counters:
+        #     counters = Counters()
 
-            counters.counter_no = 25
-            counters.counter_bez = "G/L Transaction Journal"
+        #     counters.counter_no = 25
+        #     counters.counter_bez = "G/L Transaction Journal"
 
-            db_session.add(counters)
+        #     db_session.add(counters)
 
-        counters.counter = counters.counter + 1
+        # counters.counter = counters.counter + 1
+        last_count, error_lock = get_output(next_counter_for_update(25))
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
@@ -399,7 +410,9 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
-        gl_jouhdr.jnr = counters.counter
+        # gl_jouhdr.jnr = counters.counter
+        gl_jouhdr.jnr = last_count
+
         gl_jouhdr.refno = to_string(
             queasy.number1) + "-" + to_string(bill_date)
         gl_jouhdr.datum = bill_date
@@ -467,18 +480,20 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
 
         gname = ""
 
-        counters = get_cache(
-            Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache(
+        #     Counters, {"counter_no": [(eq, 25)]})
 
-        if not counters:
-            counters = Counters()
+        # if not counters:
+        #     counters = Counters()
 
-            counters.counter_no = 25
-            counters.counter_bez = "G/L Transaction Journal"
+        #     counters.counter_no = 25
+        #     counters.counter_bez = "G/L Transaction Journal"
             
-            db_session.add(counters)
+        #     db_session.add(counters)
             
-        counters.counter = counters.counter + 1
+        # counters.counter = counters.counter + 1
+        last_count, error_lock = get_output(next_counter_for_update(25))
+
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
@@ -492,7 +507,9 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
-        gl_jouhdr.jnr = counters.counter
+        # gl_jouhdr.jnr = counters.counter
+        gl_jouhdr.jnr = last_count
+
         # gl_jouhdr.refno = "CANCEL-" + \
         #     to_string(queasy.number1) + "-" + to_string(bill_date)
         gl_jouhdr.refno = f"CANCEL-{to_string(queasy.number1)}-{to_string(bill_date)}"
@@ -774,17 +791,20 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
                 rechnr = bill.rechnr
 
             else:
-                counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+                # counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
 
-                if not counters:
-                    counters = Counters()
-                    db_session.add(counters)
+                # if not counters:
+                #     counters = Counters()
+                #     db_session.add(counters)
 
-                    counters.counter_no = 3
-                    counters.counter_bez = "counter for Bill No"
+                #     counters.counter_no = 3
+                #     counters.counter_bez = "counter for Bill No"
 
-                counters.counter = counters.counter + 1
-                rechnr = counters.counter
+                # counters.counter = counters.counter + 1
+                # rechnr = counters.counter
+                last_count, error_lock = get_output(next_counter_for_update(3))
+                rechnr = last_count
+                
 
             create_bill()
             create_ar()

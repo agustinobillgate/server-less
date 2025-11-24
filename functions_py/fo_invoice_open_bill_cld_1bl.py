@@ -2,12 +2,14 @@
 #------------------------------------------
 # Rd, 05/11/2025
 # to_int(res_line.code))]}) -> to_int(res_line.code.strip()))}).first() 
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bill, Res_line, Guest, Htparam, Reslin_queasy, Reservation, Zimmer, Waehrung, Master, Counters, Queasy, Guestseg
+from functions.next_counter_for_update import next_counter_for_update
 
 def fo_invoice_open_bill_cld_1bl(bil_flag:int, bil_recid:int, room:string, vipflag:bool):
 
@@ -55,6 +57,8 @@ def fo_invoice_open_bill_cld_1bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal abreise, resname, res_exrate, zimmer_bezeich, kreditlimit, master_str, master_rechnr, bill_anzahl, queasy_char1, disp_warning, flag_report, guest_taxcode, t_res_line_data, t_bill_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, ci_date, g_address, g_wonhort, g_plz, g_land, bill, res_line, guest, htparam, reslin_queasy, reservation, zimmer, waehrung, master, counters, queasy, guestseg
@@ -238,13 +242,15 @@ def fo_invoice_open_bill_cld_1bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
             if not mbill:
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                counters.counter = counters.counter + 1
+                # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                # counters.counter = counters.counter + 1
                 pass
+                last_count, error_lock = get_output(next_counter_for_update(3))
                 mbill = Bill()
                 db_session.add(mbill)
 
-                mbill.rechnr = counters.counter
+                # mbill.rechnr = counters.counter
+                mbill.rechnr = last_count
                 pass
                 pass
                 master.rechnr = mbill.rechnr

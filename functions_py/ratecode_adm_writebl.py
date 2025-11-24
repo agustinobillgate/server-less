@@ -9,6 +9,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.calc_servvat import calc_servvat
+from sqlalchemy.orm.attributes import flag_modified
 from models import Ratecode, Queasy, Htparam, Bediener, Res_history, Zimkateg, Guest_pr, Guest, Prtable, Arrangement, Artikel, Waehrung
 
 tb3_data, Tb3 = create_model_like(Ratecode, {"s_recid":int})
@@ -117,8 +118,8 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
                     # if prtable.product[curr_i - 1] == 0:
                     #     return
-                    if prtable.product[curr_i - 1] == 0:
-                        continue
+                    # if prtable.product[curr_i - 1] == 0:
+                    #     continue
 
                     if prtable.product[curr_i - 1] >= 90001:
 
@@ -147,6 +148,7 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
                          (Prtable.prcode == child_list.child_code) & (Prtable._recid > curr_recid)).first()
 
             child_list = query(child_list_data, next=True)
+            flag_modified(prtable, "product")
 
 
     def create_childrate():
@@ -194,8 +196,9 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
         child_list = query(child_list_data, first=True)
         while None != child_list:
 
-            prtable = get_cache (Prtable, {"prcode": [(eq, prcode)]})
-            while None != prtable:
+            # prtable = get_cache (Prtable, {"prcode": [(eq, prcode)]})
+            # while None != prtable:
+            for prtable in db_session.query(Prtable).filter(Prtable.prcode == prcode).order_by(Prtable._recid).all():
                 prbuff = Prtable()
                 db_session.add(prbuff)
                 db_session.commit()
@@ -213,13 +216,14 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
 
                     product_list_data.remove(product_list)
-
-                curr_recid = prtable._recid
-                prtable = db_session.query(Prtable).filter(
-                         (Prtable.prcode == (prcode)) & (Prtable._recid > curr_recid)).first()
+                    
+                flag_modified(prbuff, "product")
+                # curr_recid = prtable._recid
+                # prtable = db_session.query(Prtable).filter(
+                #          (Prtable.prcode == (prcode)) & (Prtable._recid > curr_recid)).first()
 
             child_list = query(child_list_data, next=True)
-
+            
 
     def check_overlapping():
 
@@ -379,6 +383,8 @@ def ratecode_adm_writebl(mode_str:string, markno:int, prcode:string, argtno:int,
 
         buffer_copy(ratecode, tb3buff)
         tb3buff.s_recid = to_int(ratecode._recid)
+
+        flag_modified(ratecode, "char1")
 
 
     def update_child_rate_dates():

@@ -4,6 +4,8 @@
 # Rulita, 17-10-2025 
 # Tiket ID : 6526C2 | New compile program
 # =======================================
+# Rd, 24/11/2025, update last_count for counter update
+# =======================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -12,10 +14,20 @@ from functions.ts_restinv_update_bill1bl import ts_restinv_update_bill1bl
 from functions.ts_restinv_update_bill_1bl import ts_restinv_update_bill_1bl
 from functions.ts_restinv_btn_transfer_paytypegt1_2bl import ts_restinv_btn_transfer_paytypegt1_2bl
 from models import H_bill, Kellner, Bill, Counters, Res_line
+from functions.next_counter_for_update import next_counter_for_update
 
 t_submenu_list_data, T_submenu_list = create_model("T_submenu_list", {"menurecid":int, "zeit":int, "nr":int, "artnr":int, "bezeich":string, "anzahl":int, "zknr":int, "request":string})
 
-def ts_restinv_transfer_to_guestbill_webbl(pvilanguage:int, rec_id:int, curr_dept:int, bilrecid:int, balance_foreign:Decimal, balance:Decimal, pay_type:int, transdate:date, double_currency:bool, exchg_rate:Decimal, kellner1_kcredit_nr:int, foreign_rate:bool, user_init:string, price_decimal:int, rec_id_h_artikel:int, deptname:string, h_artart:int, cancel_order:bool, h_artikel_service_code:int, order_taker:int, tischnr:int, curr_waiter:int, pax:int, kreditlimit:Decimal, add_zeit:int, print_to_kitchen:bool, from_acct:bool, h_artnrfront:int, guestnr:int, curedept_flag:bool, curr_room:string, hoga_resnr:int, hoga_reslinnr:int, incl_vat:bool, get_price:int, mc_str:string, disc_art1:int, disc_art2:int, disc_art3:int, t_submenu_list_data:[T_submenu_list]):
+def ts_restinv_transfer_to_guestbill_webbl(pvilanguage:int, rec_id:int, curr_dept:int, bilrecid:int, balance_foreign:Decimal, 
+                                           balance:Decimal, pay_type:int, transdate:date, double_currency:bool, 
+                                           exchg_rate:Decimal, kellner1_kcredit_nr:int, foreign_rate:bool, 
+                                           user_init:string, price_decimal:int, rec_id_h_artikel:int, deptname:string, 
+                                           h_artart:int, cancel_order:bool, h_artikel_service_code:int, order_taker:int, 
+                                           tischnr:int, curr_waiter:int, pax:int, kreditlimit:Decimal, add_zeit:int, 
+                                           print_to_kitchen:bool, from_acct:bool, h_artnrfront:int, guestnr:int, 
+                                           curedept_flag:bool, curr_room:string, hoga_resnr:int, hoga_reslinnr:int, 
+                                           incl_vat:bool, get_price:int, mc_str:string, disc_art1:int, disc_art2:int, 
+                                           disc_art3:int, t_submenu_list_data:[T_submenu_list]):
 
     prepare_cache ([H_bill, Bill, Counters, Res_line])
 
@@ -58,6 +70,13 @@ def ts_restinv_transfer_to_guestbill_webbl(pvilanguage:int, rec_id:int, curr_dep
     t_kellner_data, T_kellner = create_model_like(Kellner)
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock = ""
+    deptname = deptname.strip()
+    curr_room = curr_room.strip()
+    user_init = user_init.strip()
+    mc_str = mc_str.strip()
+
 
     def generate_output():
         nonlocal bill_date, cancel_flag, mwst, mwst_foreign, rechnr, bcol, p_88, closed, avail_bill, billno_str, cancel_str, error_message, t_h_bill_data, t_kellner_data, lvcarea, billart_bfo, billart, qty, qty_bfo, price, amount_foreign, amount, gname, description, description_bfo, transfer_zinr, fl_code, fl_code1, fl_code2, fl_code3, flag_code, h_bill, kellner, bill, counters, res_line
@@ -124,11 +143,15 @@ def ts_restinv_transfer_to_guestbill_webbl(pvilanguage:int, rec_id:int, curr_dep
 
     if bill.rechnr == 0:
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-        counters.counter = counters.counter + 1
-        pass
-        pass
-        bill.rechnr = counters.counter
+        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        # counters.counter = counters.counter + 1
+        # pass
+        # pass
+        # bill.rechnr = counters.counter
+
+        last_count, error_lock = get_output(next_counter_for_update(3))
+        bill.rechnr = last_count
+        
         pass
 
     if pay_type == 2:

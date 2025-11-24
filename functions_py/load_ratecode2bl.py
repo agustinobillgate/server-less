@@ -27,6 +27,7 @@ def load_ratecode2bl(case_type:int, markno:int, prcode:string, argtno:int, zikat
 
 
     db_session = local_storage.db_session
+    prcode = prcode.strip()
 
     def generate_output():
         nonlocal error_flag, child_error, error_msg, ratecode, queasy
@@ -77,7 +78,7 @@ def load_ratecode2bl(case_type:int, markno:int, prcode:string, argtno:int, zikat
             # ratecode = db_session.query(Ratecode).filter(
             #          (Ratecode.marknr == markno) & (Ratecode.code == (prcode).lower()) & (Ratecode.argtnr == argtno) & (Ratecode.zikatnr == zikatno) & (Ratecode.erwachs == adult) & (Ratecode.kind1 == child1) & (Ratecode.kind2 == child2) & (Ratecode.wday == w_day) & (not_ (Ratecode.startperiod > enddate)) & (not_ (Ratecode.endperiod < startdate))).first()
             ratecode = db_session.query(Ratecode).filter(
-                     (Ratecode.marknr == markno) & (Ratecode.code == (prcode).lower()) & (Ratecode.argtnr == argtno) & 
+                     (Ratecode.marknr == markno) & (Ratecode.code == (prcode)) & (Ratecode.argtnr == argtno) & 
                      (Ratecode.zikatnr == zikatno) & (Ratecode.erwachs == adult) & (Ratecode.kind1 == child1) & 
                      (Ratecode.kind2 == child2) & (Ratecode.wday == w_day) & (not_ (Ratecode.startperiode > enddate)) & 
                      (not_ (Ratecode.endperiod < startdate))).first()
@@ -88,7 +89,7 @@ def load_ratecode2bl(case_type:int, markno:int, prcode:string, argtno:int, zikat
             # ratecode = db_session.query(Ratecode).filter(
             #          (Ratecode.marknr == markno) & (Ratecode.code == (prcode).lower()) & (Ratecode.argtnr == argtno) & (Ratecode.zikatnr == zikatno) & (Ratecode._recid != s_recid) & (Ratecode.erwachs == adult) & (Ratecode.kind1 == child1) & (Ratecode.kind2 == child2) & (Ratecode.wday == w_day) & (not_ (Ratecode.startperiod > enddate)) & (not_ (Ratecode.endperiod < startdate))).first()
             ratecode = db_session.query(Ratecode).filter(
-                     (Ratecode.marknr == markno) & (Ratecode.code == (prcode).lower()) & (Ratecode.argtnr == argtno) & 
+                     (Ratecode.marknr == markno) & (Ratecode.code == (prcode)) & (Ratecode.argtnr == argtno) & 
                      (Ratecode.zikatnr == zikatno) & (Ratecode._recid != s_recid) & (Ratecode.erwachs == adult) & 
                      (Ratecode.kind1 == child1) & (Ratecode.kind2 == child2) & (Ratecode.wday == w_day) & 
                      (not_ (Ratecode.startperiode > enddate)) & (not_ (Ratecode.endperiode < startdate))).first()

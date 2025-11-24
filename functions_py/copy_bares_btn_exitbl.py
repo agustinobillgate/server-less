@@ -1,11 +1,13 @@
 #using conversion tools version: 1.0.0.117
 #-------------------------------------------
 # Rd 22/7/2025
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bediener, Bk_veran, Bk_reser, Bk_func, Bk_raum, Counters
+from functions.next_counter_for_update import next_counter_for_update
 
 s_list_data, S_list = create_model("S_list", {"datum":date, "ftime":string, "ttime":string, "raum":string, "wday":string, "raum1":string, "resstatus":int})
 
@@ -23,6 +25,8 @@ def copy_bares_btn_exitbl(s_list_data:[S_list], resnr:int, reslinnr:int, res_fla
     s_list = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal von_i, bis_i, tmp_usernr, week_list, rstat_chr, bediener, bk_veran, bk_reser, bk_func, bk_raum, counters
@@ -57,21 +61,22 @@ def copy_bares_btn_exitbl(s_list_data:[S_list], resnr:int, reslinnr:int, res_fla
                 reslin_nr = get_reslinnr()
             else:
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 16)]})
+                # counters = get_cache (Counters, {"counter_no": [(eq, 16)]})
 
-                if not counters:
-                    counters = Counters()
-                    db_session.add(counters)
+                # if not counters:
+                #     counters = Counters()
+                #     db_session.add(counters)
 
-                    counters.counter_no = 16
-                    counters.counter_bez = "Banquet Reservation No."
-
-
-                counters.counter = counters.counter + 1
+                #     counters.counter_no = 16
+                #     counters.counter_bez = "Banquet Reservation No."
 
 
+                # counters.counter = counters.counter + 1
                 pass
-                curr_resnr = counters.counter
+                # curr_resnr = counters.counter
+                last_count, error_lock = get_output(next_counter_for_update(16))
+                curr_resnr = last_count
+
                 bk_main = Bk_veran()
                 db_session.add(bk_main)
 

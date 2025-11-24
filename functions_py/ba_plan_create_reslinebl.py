@@ -1,11 +1,17 @@
 #using conversion tools version: 1.0.0.119
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Guest, Counters, Bk_reser, Bk_raum, Akt_kont, Bk_func, Bk_veran
+from functions.next_counter_for_update import next_counter_for_update
 
-def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bkl_ttime:int, bkl_raum:string, bkl_datum:date, bkl_tdatum:date, bediener_nr:int, ba_dept:int, curr_resstatus:int, user_init:string):
+
+def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bkl_ttime:int, bkl_raum:string, 
+                             bkl_datum:date, bkl_tdatum:date, bediener_nr:int, ba_dept:int, curr_resstatus:int, user_init:string):
 
     prepare_cache ([Htparam, Guest, Counters, Bk_reser, Bk_raum, Akt_kont, Bk_func, Bk_veran])
 
@@ -29,6 +35,9 @@ def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bk
     t_bk_reser1_data, T_bk_reser1 = create_model("T_bk_reser1", {"veran_nr":int, "resstatus":int, "datum":date, "bis_datum":date, "raum":string, "von_zeit":string, "bis_zeit":string, "veran_resnr":int})
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    
 
     def generate_output():
         nonlocal guest_name, reslinnr, main_exist, t_bk_reser1_data, name_contact, telefon_contact, email_contact, ftime, ttime, v_zeit, b_zeit, week_list, ci_date, htparam, guest, counters, bk_reser, bk_raum, akt_kont, bk_func, bk_veran
@@ -80,18 +89,20 @@ def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bk
 
     if curr_resnr == 0:
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 16)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 16)]})
 
-        if counters:
-            pass
-        else:
-            counters = Counters()
-            db_session.add(counters)
+        # if counters:
+        #     pass
+        # else:
+        #     counters = Counters()
+        #     db_session.add(counters)
 
-            counters.counter_no = 16
-            counters.counter_bez = "Banquet Reservation No."
-        counters.counter = counters.counter + 1
-        curr_resnr = counters.counter
+        #     counters.counter_no = 16
+        #     counters.counter_bez = "Banquet Reservation No."
+        # counters.counter = counters.counter + 1
+        # curr_resnr = counters.counter
+        last_count, error_lock = get_output(next_counter_for_update(16))
+        curr_resnr = last_count
         pass
     reslinnr = get_reslinnr(curr_resnr)
     bk_reser = Bk_reser()
