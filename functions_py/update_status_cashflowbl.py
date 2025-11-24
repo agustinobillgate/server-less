@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -36,9 +38,9 @@ def update_status_cashflowbl(case_type:int, t_cflow1_data:[T_cflow1]):
             queasy = get_cache (Queasy, {"key": [(eq, 177)],"deci1": [(eq, t_cflow1.deci1)]})
 
             if queasy:
-
+                # Rd, 24/11/2025, get queasy dengan for update
                 t_queasy = db_session.query(T_queasy).filter(
-                         (T_queasy._recid == queasy._recid)).first()
+                         (T_queasy._recid == queasy._recid)).with_for_update().first()
                 db_session.delete(t_queasy)
                 pass
                 success_flag = True
@@ -68,9 +70,9 @@ def update_status_cashflowbl(case_type:int, t_cflow1_data:[T_cflow1]):
             queasy = get_cache (Queasy, {"key": [(eq, 177)],"deci1": [(eq, t_cflow1.deci1)]})
 
             if queasy:
-
+                # Rd, 24/11/2025, get queasy dengan for update
                 t_queasy = db_session.query(T_queasy).filter(
-                         (T_queasy._recid == queasy._recid)).first()
+                         (T_queasy._recid == queasy._recid)).with_for_update().first()
                 t_queasy.deci1 =  to_decimal(t_cflow1.deci1)
                 t_queasy.char1 = t_cflow1.char1
                 t_queasy.logi1 = t_cflow1.logi1

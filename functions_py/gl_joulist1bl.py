@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -34,13 +36,13 @@ def gl_joulist1bl(out_list_data:[Out_list]):
         gl_journal = get_cache (Gl_journal, {"_recid": [(eq, out_list.s_recid)]})
 
         if gl_journal:
-
-            g_jour = get_cache (Gl_journal, {"_recid": [(eq, gl_journal._recid)]})
+            # Rd, 24/11/2025, update bemerk dengan menambahkan out_list.number1
+            # g_jour = get_cache (Gl_journal, {"_recid": [(eq, gl_journal._recid)]})
+            g_jour = db_session.query(Gl_journal).filter(
+                         (Gl_journal._recid == gl_journal._recid)).with_for_update().first()
 
             if num_entries(g_jour.bemerk, chr_unicode(2)) > 1:
                 g_jour.bemerk = entry(1, g_jour.bemerk, chr_unicode(2), out_list.number1)
-
-
             else:
                 g_jour.bemerk = g_jour.bemerk + chr_unicode(2) + out_list.number1
 

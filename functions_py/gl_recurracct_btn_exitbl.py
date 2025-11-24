@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Gl_acct
@@ -100,8 +102,10 @@ def gl_recurracct_btn_exitbl(pvilanguage:int, case_type:int, titel:string, remar
 
             return generate_output()
         else:
-
-            queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+            # Rd, 24/11/2025, get queasy dengan for update
+            # queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+            queasy = db_session.query(Queasy).filter(
+                        (Queasy._recid == rec_id)).with_for_update().first()
 
             if queasy:
                 fill_queasy()
