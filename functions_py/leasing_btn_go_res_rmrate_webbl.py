@@ -8,12 +8,17 @@
                     - fix ("string").lower()
                     - use f"string"
 """
+#----------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 # from functions.calc_servtaxesbl import calc_servtaxesbl
 from functions_py.calc_servtaxesbl import calc_servtaxesbl
 from models import Reslin_queasy, Waehrung, Res_line, Htparam, Bediener, Arrangement, Guest_pr, Ratecode, Pricecod, Katpreis, Queasy, Artikel, Debitor, Guest, Counters, Gl_jouhdr, Gl_journal, Bresline
+from functions.next_counter_for_update import next_counter_for_update
 
 p_list_data, P_list = create_model(
     "P_list",
@@ -27,7 +32,9 @@ p_list_data, P_list = create_model(
     })
 
 
-def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate: Decimal, fact1: Decimal, inp_wahrnr: int, inp_zikatnr: int, user_init: str, resnr: int, reslinnr: int, recid_reslin: int, contcode: str, repeat_charge: bool, p_list_data: P_list):
+def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate: Decimal, fact1: Decimal, 
+                                    inp_wahrnr: int, inp_zikatnr: int, user_init: str, resnr: int, reslinnr: int, 
+                                    recid_reslin: int, contcode: str, repeat_charge: bool, p_list_data: P_list):
 
     prepare_cache([Waehrung, Res_line, Htparam, Bediener, Arrangement, Bresline, Guest_pr, Katpreis, Queasy, Artikel, Debitor, Guest, Counters, Gl_jouhdr, Gl_journal])
 
@@ -88,6 +95,10 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
     Breslin = create_buffer("Breslin", Reslin_queasy)
     Preslin = create_buffer("Preslin", Res_line)
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock: str = ""
+    curr_select = curr_select.strip()
+    contcode = contcode.strip()
 
     def generate_output():
         nonlocal msg_str, error_found1, error_code, t_reslin_queasy_data, lvcarea, error_found, log_artnr, ar_ledger, divered_rental, tot_amount, tot_nettamount, tot_serv, tot_tax, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, amount_periode, month_str1, month_str2, exrate2, wd_array, bill_date, pinvoice, reslin_queasy, waehrung, res_line, htparam, bediener, arrangement, guest_pr, ratecode, pricecod, katpreis, queasy, artikel, debitor, guest, counters, gl_jouhdr, gl_journal, bresline
@@ -707,15 +718,17 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
         gname = ""
         loopi: int = 0
 
-        counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
 
-        if not counters:
-            counters = Counters()
-            db_session.add(counters)
+        # if not counters:
+        #     counters = Counters()
+        #     db_session.add(counters)
 
-            counters.counter_no = 25
-            counters.counter_bez = "G/L Transaction Journal"
-        counters.counter = counters.counter + 1
+        #     counters.counter_no = 25
+        #     counters.counter_bez = "G/L Transaction Journal"
+        # counters.counter = counters.counter + 1
+
+        last_count, error_lock = get_output(next_counter_for_update(25))
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
@@ -730,7 +743,10 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
-        gl_jouhdr.jnr = counters.counter
+        # gl_jouhdr.jnr = counters.counter
+        gl_jouhdr.jnr = last_count
+
+
         # gl_jouhdr.refno = "CANCEL-" + \
         #     to_string(queasy.number1) + "-" + to_string(bill_date)
         gl_jouhdr.refno = f"CANCEL-{queasy.number1}-{bill_date}"
@@ -928,16 +944,18 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
         gname = ""
         loopi: int = 0
 
-        counters = get_cache(
-            Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache(
+        #     Counters, {"counter_no": [(eq, 25)]})
 
-        if not counters:
-            counters = Counters()
-            db_session.add(counters)
+        # if not counters:
+        #     counters = Counters()
+        #     db_session.add(counters)
 
-            counters.counter_no = 25
-            counters.counter_bez = "G/L Transaction Journal"
-        counters.counter = counters.counter + 1
+        #     counters.counter_no = 25
+        #     counters.counter_bez = "G/L Transaction Journal"
+        # counters.counter = counters.counter + 1
+        last_count, error_lock = get_output(next_counter_for_update(25))
+
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
@@ -951,7 +969,9 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
-        gl_jouhdr.jnr = counters.counter
+        # gl_jouhdr.jnr = counters.counter
+        gl_jouhdr.jnr = last_count
+        
         # gl_jouhdr.refno = to_string(
         #     queasy.number1) + "-" + to_string(bill_date)
         gl_jouhdr.refno = f"{queasy.number1}-{bill_date}"

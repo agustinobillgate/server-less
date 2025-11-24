@@ -8,12 +8,17 @@
                     - fix ("string").lower()
                     - use f"string"
 """
+#----------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 # from functions.calc_servtaxesbl import calc_servtaxesbl
 from functions_py.calc_servtaxesbl import calc_servtaxesbl
 from models import Artikel, Htparam, Queasy, Res_line, Arrangement, Reslin_queasy, Counters, Reservation, Guest, Bediener, Bill, Bill_line, Debitor, Billjournal, Umsatz, Gl_jouhdr, Gl_journal
+from functions.next_counter_for_update import next_counter_for_update
 
 
 def leasing_cancel_rsvbl(qrecid: int, user_init: str):
@@ -65,6 +70,9 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
     Bartikel = create_buffer("Bartikel", Artikel)
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock: str = ""
+
 
     def generate_output():
         nonlocal log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
@@ -84,18 +92,21 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         billnr: int = 0
 
-        counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+        # counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
 
-        if not counters:
-            counters = Counters()
+        # if not counters:
+        #     counters = Counters()
 
-            counters.counter_no = 3
-            counters.counter_bez = "counter for Bill No"
+        #     counters.counter_no = 3
+        #     counters.counter_bez = "counter for Bill No"
 
-            db_session.add(counters)
+        #     db_session.add(counters)
 
-        counters.counter = counters.counter + 1
-        billnr = counters.counter
+        # counters.counter = counters.counter + 1
+        # billnr = counters.counter
+        last_count, error_lock = get_output(next_counter_for_update(3))
+        billnr = last_count
+
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
@@ -297,15 +308,17 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         gname: string = ""
 
-        counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
 
-        if not counters:
-            counters = Counters()
-            db_session.add(counters)
+        # if not counters:
+        #     counters = Counters()
+        #     db_session.add(counters)
 
-            counters.counter_no = 25
-            counters.counter_bez = "G/L Transaction Journal"
-        counters.counter = counters.counter + 1
+        #     counters.counter_no = 25
+        #     counters.counter_bez = "G/L Transaction Journal"
+        # counters.counter = counters.counter + 1
+        last_count, error_lock = get_output(next_counter_for_update(25))
+
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
@@ -318,7 +331,9 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         gl_jouhdr = Gl_jouhdr()
 
-        gl_jouhdr.jnr = counters.counter
+        # gl_jouhdr.jnr = counters.counter
+        gl_jouhdr.jnr = last_count
+        
         # gl_jouhdr.refno = "CANCEL-" + \
         #     to_string(queasy.number1) + "-" + to_string(bill_date)
         gl_jouhdr.refno = f"CANCEL-{queasy.number1}-{bill_date}"
