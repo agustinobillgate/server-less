@@ -1,13 +1,17 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Zimkateg, Kontline, Bediener, Counters, Res_line
+from functions.next_counter_for_update import next_counter_for_update
 
 k_list_data, K_list = create_model_like(Kontline)
 
-def globalreservebl(case_type:int, k_list_data:[K_list], rmcat:string, gastnr:int, curr_mode:string, last_code:string, argt:string, comments:string, user_init:string):
+def globalreservebl(case_type:int, k_list_data:[K_list], rmcat:string, gastnr:int, curr_mode:string, 
+                    last_code:string, argt:string, comments:string, user_init:string):
 
     prepare_cache ([Zimkateg, Kontline, Bediener, Counters, Res_line])
 
@@ -26,6 +30,14 @@ def globalreservebl(case_type:int, k_list_data:[K_list], rmcat:string, gastnr:in
     globalreserve_list_data, Globalreserve_list = create_model("Globalreserve_list", {"kontcode":string, "ankunft":date, "abreise":date, "kurzbez":string, "arrangement":string, "zimmeranz":int, "erwachs":int, "kind1":int, "kind2":int, "userinit":string, "useridanlage":string, "resdat":date, "ansprech":string, "bemerk":string, "kontignr":int, "zikatnr":int, "overbooking":int, "ruecktage":int, "rueckdatum":date})
 
     Kline = create_buffer("Kline",Kontline)
+    last_count = 0
+    error_lock:string = ""
+    rmcat = rmcat.strip()
+    curr_mode = curr_mode.strip()
+    user_init = user_init.strip()
+    last_code = last_code.strip()
+    argt = argt.strip()
+    comments = comments.strip()
 
 
     db_session = local_storage.db_session
@@ -46,6 +58,7 @@ def globalreservebl(case_type:int, k_list_data:[K_list], rmcat:string, gastnr:in
         nonlocal msg_int, globalreserve_list_data, allot_list_data, katnr, ok, error, zimkateg, kontline, bediener, counters, res_line
         nonlocal case_type, rmcat, gastnr, curr_mode, last_code, argt, comments, user_init
         nonlocal kline
+        nonlocal last_count, error_lock
 
 
         nonlocal allot_list, z_list, k_list, globalreserve_list, kline
@@ -64,11 +77,14 @@ def globalreservebl(case_type:int, k_list_data:[K_list], rmcat:string, gastnr:in
 
                 counters.counter_no = 10
                 counters.counter_bez = "Allotment counter"
-            counters.counter = counters.counter + 1
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = next_counter_for_update(10)
             kontline = Kontline()
             db_session.add(kontline)
 
-            kontline.kontignr = counters.counter
+            # kontline.kontignr = counters.counter
+            kontline.kontignr = last_count
+
             pass
             kontline.gastnr = gastnr
             kontline.useridanlage = ""
@@ -99,7 +115,7 @@ def globalreservebl(case_type:int, k_list_data:[K_list], rmcat:string, gastnr:in
         nonlocal msg_int, globalreserve_list_data, allot_list_data, katnr, ok, error, zimkateg, kontline, bediener, counters, res_line
         nonlocal case_type, rmcat, gastnr, curr_mode, last_code, argt, comments, user_init
         nonlocal kline
-
+        nonlocal last_count, error_lock
 
         nonlocal allot_list, z_list, k_list, globalreserve_list, kline
         nonlocal allot_list_data, z_list_data, globalreserve_list_data
@@ -137,7 +153,7 @@ def globalreservebl(case_type:int, k_list_data:[K_list], rmcat:string, gastnr:in
         nonlocal msg_int, globalreserve_list_data, allot_list_data, katnr, ok, error, zimkateg, kontline, bediener, counters, res_line
         nonlocal case_type, rmcat, gastnr, curr_mode, last_code, argt, comments, user_init
         nonlocal kline
-
+        nonlocal last_count, error_lock
 
         nonlocal allot_list, z_list, k_list, globalreserve_list, kline
         nonlocal allot_list_data, z_list_data, globalreserve_list_data
