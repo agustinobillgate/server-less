@@ -3,6 +3,7 @@ import decimal
 from datetime import date
 from sqlalchemy import func
 from models import Res_line, Artikel, Bill, Htparam, Waehrung, Counters, Bill_line, Umsatz, Billjournal, Master, Mast_art
+from functions.next_counter_for_update import next_counter_for_update
 
 def book_article(zinr:str, artnr:int, dept:int, anzahl:int):
     success = False
@@ -20,6 +21,8 @@ def book_article(zinr:str, artnr:int, dept:int, anzahl:int):
 
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:str = ""
 
     def generate_output():
         nonlocal success, amount, resnr, billno, master_flag, bill_date, user_init, bookflag, double_currency, exchg_rate, amount_foreign, res_line, artikel, bill, htparam, waehrung, counters, bill_line, umsatz, billjournal, master, mast_art
@@ -90,10 +93,12 @@ def book_article(zinr:str, artnr:int, dept:int, anzahl:int):
 
             if mbill.rechnr == 0:
 
-                counters = db_session.query(Counters).filter(
-                         (Counters.counter_no == 3)).first()
-                counters.counter = counters.counter + 1
-                mbill.rechnr = counters.counter
+                # counters = db_session.query(Counters).filter(
+                #          (Counters.counter_no == 3)).first()
+                # counters.counter = counters.counter + 1
+                # mbill.rechnr = counters.counter
+                last_count, error_lock = get_output(next_counter_for_update(3))
+                mbill.rechnr = last_count
                 master.rechnr = mbill.rechnr
             bill_line = Bill_line()
             db_session.add(bill_line)
@@ -228,10 +233,12 @@ def book_article(zinr:str, artnr:int, dept:int, anzahl:int):
 
         if bill.rechnr == 0:
 
-            counters = db_session.query(Counters).filter(
-                     (Counters.counter_no == 3)).first()
-            counters.counter = counters.counter + 1
-            bill.rechnr = counters.counter
+            # counters = db_session.query(Counters).filter(
+            #          (Counters.counter_no == 3)).first()
+            # counters.counter = counters.counter + 1
+            # bill.rechnr = counters.counter
+            last_count, error_lock = get_output(next_counter_for_update(3))
+            bill.rechnr = last_count
         bill_line = Bill_line()
         db_session.add(bill_line)
 

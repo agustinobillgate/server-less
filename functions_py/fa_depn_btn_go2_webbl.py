@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gl_acct, Gl_jouhdr, Htparam, Counters, Gl_journal, Fa_artikel, Queasy
+from functions.next_counter_for_update import next_counter_for_update
 
 g_list_data, G_list = create_model("G_list", {"nr":int, "jnr":int, "fibukonto":string, "debit":Decimal, "credit":Decimal, "bemerk":string, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "duplicate":bool, "gl_acct1_fibukonto":string, "gl_acct1_bezeich":string}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 
@@ -23,6 +26,8 @@ def fa_depn_btn_go2_webbl(g_list_data:[G_list], datum:date, refno:string, bezeic
 
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal success_flag, new_hdr, gl_acct, gl_jouhdr, htparam, counters, gl_journal, fa_artikel, queasy
@@ -48,17 +53,19 @@ def fa_depn_btn_go2_webbl(g_list_data:[G_list], datum:date, refno:string, bezeic
         db_session.add(gl_jouhdr)
 
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
 
-        if not counters:
-            counters = Counters()
-            db_session.add(counters)
+        # if not counters:
+        #     counters = Counters()
+        #     db_session.add(counters)
 
-            counters.counter_no = 25
-            counters.counter_bez = "G/L Transaction Journal"
-        counters.counter = counters.counter + 1
+        #     counters.counter_no = 25
+        #     counters.counter_bez = "G/L Transaction Journal"
+        # counters.counter = counters.counter + 1
+        last_count, error_lock = get_output(next_counter_for_update(25))
         pass
-        gl_jouhdr.jnr = counters.counter
+        # gl_jouhdr.jnr = counters.counter
+        gl_jouhdr.jnr = last_count
         gl_jouhdr.refno = refno
         gl_jouhdr.datum = datum
         gl_jouhdr.bezeich = bezeich
@@ -80,7 +87,8 @@ def fa_depn_btn_go2_webbl(g_list_data:[G_list], datum:date, refno:string, bezeic
             gl_journal = Gl_journal()
             db_session.add(gl_journal)
 
-            gl_journal.jnr = counters.counter
+            # gl_journal.jnr = counters.counter
+            gl_journal.jnr = last_count
             gl_journal.fibukonto = g_list.fibukonto
             gl_journal.debit =  to_decimal(g_list.debit)
             gl_journal.credit =  to_decimal(g_list.credit)
