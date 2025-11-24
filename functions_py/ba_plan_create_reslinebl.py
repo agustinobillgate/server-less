@@ -1,5 +1,4 @@
 #using conversion tools version: 1.0.0.119
-
 #---------------------------------------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #---------------------------------------------------------------------
@@ -11,7 +10,8 @@ from models import Htparam, Guest, Counters, Bk_reser, Bk_raum, Akt_kont, Bk_fun
 from functions.next_counter_for_update import next_counter_for_update
 
 
-def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bkl_ttime:int, bkl_raum:string, bkl_datum:date, bkl_tdatum:date, bediener_nr:int, ba_dept:int, curr_resstatus:int, user_init:string):
+def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bkl_ttime:int, bkl_raum:string, 
+                             bkl_datum:date, bkl_tdatum:date, bediener_nr:int, ba_dept:int, curr_resstatus:int, user_init:string):
 
     prepare_cache ([Htparam, Guest, Counters, Bk_reser, Bk_raum, Akt_kont, Bk_func, Bk_veran])
 
@@ -35,7 +35,6 @@ def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bk
     t_bk_reser1_data, T_bk_reser1 = create_model("T_bk_reser1", {"veran_nr":int, "resstatus":int, "datum":date, "bis_datum":date, "raum":string, "von_zeit":string, "bis_zeit":string, "veran_resnr":int})
 
     db_session = local_storage.db_session
-    
     last_count = 0
     error_lock:string = ""
     

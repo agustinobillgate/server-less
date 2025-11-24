@@ -1,13 +1,17 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Gl_jouhdr, Counters, Queasy, Gl_journal
+from functions.next_counter_for_update import next_counter_for_update
 
 g_list_data, G_list = create_model("G_list", {"docu_nr":string, "lscheinnr":string, "jnr":int, "fibukonto":string, "debit":Decimal, "credit":Decimal, "bemerk":string, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "add_note":string, "duplicate":bool, "acct_fibukonto":string, "bezeich":string}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 
-def gl_linkstock2bl(pvilanguage:int, link_in:bool, to_date:date, remains:Decimal, credits:Decimal, debits:Decimal, refno:string, datum:date, bezeich:string, jtype:int, g_list_data:[G_list]):
+def gl_linkstock2bl(pvilanguage:int, link_in:bool, to_date:date, remains:Decimal, credits:Decimal, 
+                    debits:Decimal, refno:string, datum:date, bezeich:string, jtype:int, g_list_data:[G_list]):
 
     prepare_cache ([Htparam, Gl_jouhdr, Counters, Queasy, Gl_journal])
 
@@ -18,6 +22,10 @@ def gl_linkstock2bl(pvilanguage:int, link_in:bool, to_date:date, remains:Decimal
     g_list = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    refno = refno.strip()
+    bezeich = bezeich.strip()   
 
     def generate_output():
         nonlocal new_hdr, lvcarea, htparam, gl_jouhdr, counters, queasy, gl_journal
@@ -32,6 +40,7 @@ def gl_linkstock2bl(pvilanguage:int, link_in:bool, to_date:date, remains:Decimal
 
         nonlocal new_hdr, lvcarea, htparam, gl_jouhdr, counters, queasy, gl_journal
         nonlocal pvilanguage, link_in, to_date, remains, credits, debits, refno, datum, bezeich, jtype
+        nonlocal last_count, error_lock
 
 
         nonlocal g_list
@@ -41,17 +50,22 @@ def gl_linkstock2bl(pvilanguage:int, link_in:bool, to_date:date, remains:Decimal
         db_session.add(gl_jouhdr)
 
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
 
-        if not counters:
-            counters = Counters()
-            db_session.add(counters)
+        # if not counters:
+        #     counters = Counters()
+        #     db_session.add(counters)
 
-            counters.counter_no = 25
-            counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
-        counters.counter = counters.counter + 1
+        #     counters.counter_no = 25
+        #     counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
+        # counters.counter = counters.counter + 1
+        last_count, error_lock = next_counter_for_update(25)
+
         pass
-        gl_jouhdr.jnr = counters.counter
+        # gl_jouhdr.jnr = counters.counter
+        gl_jouhdr.jnr = last_count
+
+
         gl_jouhdr.refno = refno
         gl_jouhdr.datum = datum
         gl_jouhdr.bezeich = bezeich
@@ -79,6 +93,7 @@ def gl_linkstock2bl(pvilanguage:int, link_in:bool, to_date:date, remains:Decimal
 
         nonlocal new_hdr, lvcarea, htparam, gl_jouhdr, counters, queasy, gl_journal
         nonlocal pvilanguage, link_in, to_date, remains, credits, debits, refno, datum, bezeich, jtype
+        nonlocal last_count, error_lock
 
 
         nonlocal g_list
@@ -87,7 +102,9 @@ def gl_linkstock2bl(pvilanguage:int, link_in:bool, to_date:date, remains:Decimal
             gl_journal = Gl_journal()
             db_session.add(gl_journal)
 
-            gl_journal.jnr = counters.counter
+            # gl_journal.jnr = counters.counter
+            gl_journal.jnr = last_count
+            
             gl_journal.fibukonto = g_list.fibukonto
             gl_journal.debit =  to_decimal(g_list.debit)
             gl_journal.credit =  to_decimal(g_list.credit)

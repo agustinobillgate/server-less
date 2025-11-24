@@ -1,14 +1,18 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpdate import htpdate
 from models import Htparam, Gl_jouhdr, Counters, Gl_journal, Queasy
+from functions.next_counter_for_update import next_counter_for_update
 
 g_list_data, G_list = create_model("G_list", {"jnr":int, "fibukonto":string, "acct_fibukonto":string, "debit":Decimal, "credit":Decimal, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "bemerk":string, "bezeich":string, "duplicate":bool, "tax_code":string, "tax_amount":string, "tot_amt":string}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 
-def gl_postjourn_btn_gobl(g_list_data:[G_list], pvilanguage:int, curr_step:int, bezeich:string, credits:[Decimal], debits:[Decimal], remains:[Decimal], refno:string, datum:date, adjust_flag:bool, journaltype:int):
+def gl_postjourn_btn_gobl(g_list_data:[G_list], pvilanguage:int, curr_step:int, bezeich:string, credits:[Decimal], debits:[Decimal], remains:[Decimal], 
+                          refno:string, datum:date, adjust_flag:bool, journaltype:int):
 
     prepare_cache ([Htparam, Gl_jouhdr, Counters, Gl_journal, Queasy])
 
@@ -22,6 +26,11 @@ def gl_postjourn_btn_gobl(g_list_data:[G_list], pvilanguage:int, curr_step:int, 
     g_list = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    bezeich = bezeich.strip()
+    refno = refno.strip()
+
 
     def generate_output():
         nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal, queasy
@@ -36,6 +45,7 @@ def gl_postjourn_btn_gobl(g_list_data:[G_list], pvilanguage:int, curr_step:int, 
 
         nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal, queasy
         nonlocal pvilanguage, curr_step, bezeich, refno, datum, adjust_flag, journaltype
+        nonlocal last_count, error_lock
 
 
         nonlocal g_list
@@ -109,6 +119,7 @@ def gl_postjourn_btn_gobl(g_list_data:[G_list], pvilanguage:int, curr_step:int, 
 
         nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal, queasy
         nonlocal pvilanguage, curr_step, bezeich, refno, datum, adjust_flag, journaltype
+        nonlocal last_count, error_lock
 
 
         nonlocal g_list
@@ -123,12 +134,16 @@ def gl_postjourn_btn_gobl(g_list_data:[G_list], pvilanguage:int, curr_step:int, 
             counters.counter_no = 25
 
 
-        counters.counter = counters.counter + 1
+        # counters.counter = counters.counter + 1
+        last_count, error_lock = next_counter_for_update(25)
+
         pass
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
-        gl_jouhdr.jnr = counters.counter
+        # gl_jouhdr.jnr = counters.counter
+        gl_jouhdr.jnr = last_count
+
         gl_jouhdr.refno = refno
         gl_jouhdr.datum = datum
         gl_jouhdr.bezeich = bezeich
@@ -147,6 +162,7 @@ def gl_postjourn_btn_gobl(g_list_data:[G_list], pvilanguage:int, curr_step:int, 
 
         nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal, queasy
         nonlocal pvilanguage, curr_step, bezeich, refno, datum, adjust_flag, journaltype
+        nonlocal last_count, error_lock
 
 
         nonlocal g_list

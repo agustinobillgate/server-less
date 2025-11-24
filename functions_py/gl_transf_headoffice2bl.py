@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_jouhdr, Gl_journal, Gl_htljournal, Counters
+from functions.next_counter_for_update import next_counter_for_update
 
 t_gl_jouhdr_data, T_gl_jouhdr = create_model_like(Gl_jouhdr)
 t_gl_journal_data, T_gl_journal = create_model_like(Gl_journal)
@@ -16,6 +19,9 @@ def gl_transf_headoffice2bl(lic_nr:string, t_gl_jouhdr_data:[T_gl_jouhdr], t_gl_
     t_gl_jouhdr = t_gl_journal = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    lic_nr = lic_nr.strip()
 
     def generate_output():
         nonlocal gl_jouhdr, gl_journal, gl_htljournal, counters
@@ -52,7 +58,8 @@ def gl_transf_headoffice2bl(lic_nr:string, t_gl_jouhdr_data:[T_gl_jouhdr], t_gl_
                 counters.counter_bez = "G/L Transaction Journal"
 
 
-            counters.counter = counters.counter + 1
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = next_counter_for_update(25)
 
 
             pass
@@ -60,7 +67,9 @@ def gl_transf_headoffice2bl(lic_nr:string, t_gl_jouhdr_data:[T_gl_jouhdr], t_gl_
             db_session.add(gl_htljournal)
 
             gl_htljournal.htl_jnr = t_gl_jouhdr.jnr
-            gl_htljournal.jnr = counters.counter
+            # gl_htljournal.jnr = counters.counter
+            gl_htljournal.jnr = last_count
+            
             gl_htljournal.htl_license = lic_nr
             gl_htljournal.datum = t_gl_jouhdr.datum
 
