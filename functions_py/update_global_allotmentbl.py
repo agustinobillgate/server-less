@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Kontline, Counters
+from functions.next_counter_for_update import next_counter_for_update
 
 allot_list_data, Allot_list = create_model("Allot_list", {"datum":date, "w_day":string, "tot_rm":int, "ooo":int, "occ":int, "avl_rm":int, "stat1":int, "stat2":int, "stat5":int, "glres":int, "avail1":int, "ovb1":int, "allot1":int, "gl_allot":int, "gl_used":int, "gl_remain":int, "allot2":int, "blank_str":string, "avail2":int, "ovb2":int, "s_avail2":int, "expired":bool})
 
@@ -16,6 +19,10 @@ def update_global_allotmentbl(user_init:string, currcode:string, allot_list_data
     allot_list = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    currcode = currcode.strip()
+
 
     def generate_output():
         nonlocal kontline, counters
@@ -53,28 +60,34 @@ def update_global_allotmentbl(user_init:string, currcode:string, allot_list_data
                     pass
                 else:
 
-                    counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
-                    counters.counter = counters.counter + 1
+                    # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
+                    # counters.counter = counters.counter + 1
+                    last_count, error_lock = next_counter_for_update(10)
                     pass
                     kline = Kontline()
                     db_session.add(kline)
 
                     buffer_copy(kontline, kline,except_fields=["kontignr"])
                     kline.abreise = allot_list.datum - timedelta(days=1)
-                    kline.kontignr = counters.counter
+                    # kline.kontignr = counters.counter
+                    kline.kontignr = last_count
+
 
 
                     pass
 
-                    counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
-                    counters.counter = counters.counter + 1
+                    # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
+                    # counters.counter = counters.counter + 1
+                    last_count, error_lock = next_counter_for_update(10)
                     pass
                     kline = Kontline()
                     db_session.add(kline)
 
                     buffer_copy(kontline, kline,except_fields=["kontignr"])
                     kline.ankunft = allot_list.datum + timedelta(days=1)
-                    kline.kontignr = counters.counter
+                    # kline.kontignr = counters.counter
+                    kline.kontignr = last_count
+                    
 
 
                     pass

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -7,8 +9,13 @@ from functions.rest_addgastinfo import rest_addgastinfo
 from functions.ts_splitbill_update_billbl import ts_splitbill_update_billbl
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from models import H_bill_line, Kellner, H_bill, Bill, H_artikel, Counters, Htparam, Artikel, Bill_line, Billjournal, H_journal, Queasy
+from functions.next_counter_for_update import next_counter_for_update
 
-def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr_select:int, multi_vat:bool, balance:Decimal, pay_type:int, transdate:date, price_decimal:int, exchg_rate:Decimal, foreign_rate:bool, dept:int, change_str:string, add_zeit:int, hoga_card:string, cancel_str:string, curr_waiter:int, curr_room:string, user_init:string, cc_comment:string, guestnr:int, tischnr:int, double_currency:bool, amount_foreign:Decimal):
+def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr_select:int, multi_vat:bool, balance:Decimal, 
+                                           pay_type:int, transdate:date, price_decimal:int, exchg_rate:Decimal, foreign_rate:bool, 
+                                           dept:int, change_str:string, add_zeit:int, hoga_card:string, cancel_str:string, 
+                                           curr_waiter:int, curr_room:string, user_init:string, cc_comment:string, guestnr:int, 
+                                           tischnr:int, double_currency:bool, amount_foreign:Decimal):
 
     prepare_cache ([Kellner, H_bill, Bill, H_artikel, Counters, Htparam, Artikel, Bill_line, Billjournal, H_journal])
 
@@ -32,8 +39,15 @@ def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr
 
     Kellner1 = create_buffer("Kellner1",Kellner)
 
-
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    change_str = change_str.strip()
+    hoga_card = hoga_card.strip()
+    cancel_str = cancel_str.strip()
+    curr_room = curr_room.strip()
+    cc_comment = cc_comment.strip()
+
 
     def generate_output():
         nonlocal err_flag, billart, qty, price, amount, description, bill_date, fl_code, t_h_bill_line_data, bname, payment_found, h_bill_line, kellner, h_bill, bill, h_artikel, counters, htparam, artikel, bill_line, billjournal, h_journal, queasy
@@ -87,9 +101,12 @@ def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr
 
             if bill.rechnr == 0:
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                counters.counter = counters.counter + 1
-                bill.rechnr = counters.counter
+                # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                # counters.counter = counters.counter + 1
+                # bill.rechnr = counters.counter
+                last_count, error_lock = next_counter_for_update(3, last_count, error_lock)
+                bill.rechnr = last_count
+
                 pass
             update_bill_umsatz()
 
@@ -612,10 +629,13 @@ def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr
 
     if bill.rechnr == 0:
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-        counters.counter = counters.counter + 1
-        pass
-        bill.rechnr = counters.counter
+        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        # counters.counter = counters.counter + 1
+        # pass
+        # bill.rechnr = counters.counter
+        last_count, error_lock = next_counter_for_update(3, last_count, error_lock)
+        bill.rechnr = last_count
+        
         pass
 
     if pay_type == 2:

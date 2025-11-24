@@ -1,11 +1,15 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Res_line, Guest, Reservation, Master, Brief, Segment, Sourccod, Bill, Counters, Htparam, Waehrung
+from functions.next_counter_for_update import next_counter_for_update
 
-def update_mainresbl(pvilanguage:int, res_mode:string, user_init:string, mr_comment:string, letter:string, curr_segm:string, curr_source:string, groupname:string, m_voucher:string, limitdate:date, deposit:Decimal, contact_nr:int, cutoff_days:int, resno:int, gastno:int, l_grpnr:int, fixrateflag:bool):
+def update_mainresbl(pvilanguage:int, res_mode:string, user_init:string, mr_comment:string, letter:string, curr_segm:string, 
+                     curr_source:string, groupname:string, m_voucher:string, limitdate:date, deposit:Decimal, contact_nr:int, cutoff_days:int, resno:int, gastno:int, l_grpnr:int, fixrateflag:bool):
 
     prepare_cache ([Res_line, Reservation, Master, Brief, Segment, Sourccod, Bill, Counters, Htparam, Waehrung])
 
@@ -14,6 +18,15 @@ def update_mainresbl(pvilanguage:int, res_mode:string, user_init:string, mr_comm
     res_line = guest = reservation = master = brief = segment = sourccod = bill = counters = htparam = waehrung = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    res_mode = res_mode.strip()
+    mr_comment = mr_comment.strip()
+    letter = letter.strip()
+    curr_segm = curr_segm.strip()
+    curr_source = curr_source.strip()
+    groupname = groupname.strip()
+    m_voucher = m_voucher.strip()
 
     def generate_output():
         nonlocal msg_str, lvcarea, res_line, guest, reservation, master, brief, segment, sourccod, bill, counters, htparam, waehrung
@@ -119,10 +132,11 @@ def update_mainresbl(pvilanguage:int, res_mode:string, user_init:string, mr_comm
                         bill.rechnr = master.rechnr
                     else:
 
-                        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                        counters.counter = counters.counter + 1
-                        bill.rechnr = counters.counter
-                        pass
+                        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                        # counters.counter = counters.counter + 1
+                        # bill.rechnr = counters.counter
+                        last_count, error_lock = get_output(next_counter_for_update(3))
+                        bill.rechnr = last_count
                         pass
                         master.rechnr = bill.rechnr
                         pass
