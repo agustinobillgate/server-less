@@ -45,7 +45,7 @@ def main_fs_create_banquet_billbl(resnr:int):
 
     # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
     # counters.counter = counters.counter + 1
-    last_count, error_lock = next_counter_for_update(3)
+    last_count, error_lock = get_output(next_counter_for_update(3))
 
     pass
     bill = Bill()

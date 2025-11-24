@@ -53,14 +53,14 @@ def manual_arbl(pvilanguage:int, s_list_data:[S_list], rgdatum:date, firma:strin
         counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
 
     # counters.counter = counters.counter + 1
-    last_count, error_lock = next_counter_for_update(25)
+    last_count, error_lock = get_output(next_counter_for_update(25))
 
     gl_jouhdr = Gl_jouhdr()
     db_session.add(gl_jouhdr)
 
     # gl_jouhdr.jnr = counters.counter
     gl_jouhdr.jnr = last_count
-    
+
     gl_jouhdr.refno = refno
     gl_jouhdr.datum = rgdatum
     gl_jouhdr.bezeich = firma

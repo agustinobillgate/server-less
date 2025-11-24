@@ -68,9 +68,9 @@ def mastbill_exitbl(resnr:int, gastnrpay:int, rechnrstart:int, rechnrend:int, cu
         # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
         # counters.counter = counters.counter + 1
         # bill.rechnr = counters.counter
-        last_count, error_lock = next_counter_for_update(3)
+        last_count, error_lock = get_output(next_counter_for_update(3))
         bill.rechnr = last_count
-        
+
         pass
         master.rechnr = bill.rechnr
         pass

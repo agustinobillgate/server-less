@@ -57,7 +57,7 @@ def gl_adjustment_xlsjourn_post_itbl(g_list_data:[G_list], pvilanguage:int, datu
 
 
         # counters.counter = counters.counter + 1
-        last_count, error_lock = next_counter_for_update(25)
+        last_count, error_lock = get_output(next_counter_for_update(25))
         pass
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
