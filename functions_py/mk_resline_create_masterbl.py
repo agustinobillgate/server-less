@@ -3,6 +3,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Master, Bediener, Counters, Res_history
+from functions.next_counter_for_update import next_counter_for_update
 
 def mk_resline_create_masterbl(resnr:int, gastnr:int, invno_flag:bool, user_init:string):
 
@@ -17,11 +18,13 @@ def mk_resline_create_masterbl(resnr:int, gastnr:int, invno_flag:bool, user_init
     t_master_data, T_master = create_model_like(Master)
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    user_init = user_init.strip()
 
     def generate_output():
         nonlocal gastnrpay, t_master_data, master, bediener, counters, res_history
         nonlocal resnr, gastnr, invno_flag, user_init
-
 
         nonlocal t_master
         nonlocal t_master_data
@@ -54,10 +57,13 @@ def mk_resline_create_masterbl(resnr:int, gastnr:int, invno_flag:bool, user_init
 
         if invno_flag:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-            counters.counter = counters.counter + 1
+            # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(3))
+
             pass
-            master.rechnr = counters.counter
+            # master.rechnr = counters.counter
+            master.rechnr = last_count
 
 
         pass

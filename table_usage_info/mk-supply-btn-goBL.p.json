@@ -1,16 +1,15 @@
 {
-    "Akthdr": {
-        "read": [
-            "aktnr",
-            "_recid"
-        ],
+    "L_lieferant": {
+        "read": [],
+        "write": []
+    },
+    "Gl_acct": {
+        "read": [],
         "write": []
     },
     "Counters": {
         "read": [
             "counter",
-            "counter_no",
-            "counter_bez",
             "_recid"
         ],
         "write": []

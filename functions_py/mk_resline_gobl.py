@@ -1,24 +1,35 @@
-#using conversion tools version: 1.0.0.117
-
+#using conversion tools version: 1.0.0.119
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpint import htpint
 from functions.htpdate import htpdate
-from sqlalchemy import func
 from functions.intevent_1 import intevent_1
 from functions.res_changesbl import res_changesbl
 from functions.create_historybl import create_historybl
 from functions.ratecode_rate import ratecode_rate
 from functions.res_dyna_rmrate import res_dyna_rmrate
-from models import Res_line, Bill, Htparam, Queasy, Nation, Arrangement, Reservation, Bediener, Outorder, Zimmer, Mealcoup, Reslin_queasy, Resplan, Zimkateg, Messages, Waehrung, Guest_pr, Guest, Res_history, Master, Brief, Segment, Sourccod, Counters, Mc_guest, Interface, Guestseg
+from models import Res_line, Bill, Htparam, Arrangement, Reservation, Bediener, Outorder, Zimmer, Queasy, Mealcoup, Reslin_queasy, Resplan, Zimkateg, Messages, Waehrung, Guest_pr, Guest, Res_history, Master, Brief, Segment, Sourccod, Counters, Interface, Guestseg
+from functions.next_counter_for_update import next_counter_for_update
 
 reslin_list_data, Reslin_list = create_model_like(Res_line)
 res_dynarate_data, Res_dynarate = create_model("Res_dynarate", {"date1":date, "date2":date, "rate":Decimal, "rmcat":string, "argt":string, "prcode":string, "rcode":string, "markno":int, "setup":int, "adult":int, "child":int})
 
-def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:int, accompany_tmpnr3:int, accompany_gastnr:int, accompany_gastnr2:int, accompany_gastnr3:int, comchild:int, rm_bcol:int, marknr:int, bill_instruct:int, restype:int, restype0:int, restype1:int, contact_nr:int, cutoff_days:int, segm__purcode:int, deposit:Decimal, limitdate:date, wechsel_str:string, origcontcode:string, groupname:string, guestname:string, main_voucher:string, resline_comment:string, mainres_comment:string, purpose_svalue:string, letter_svalue:string, segm_svalue:string, source_svalue:string, res_mode:string, prev_zinr:string, memo_zinr:string, voucherno:string, contcode:string, child_age:string, flight1:string, flight2:string, eta:string, etd:string, user_init:string, currency_changed:bool, fixed_rate:bool, grpflag:bool, memozinr_readonly:bool, group_enable:bool, init_fixrate:bool, oral_flag:bool, pickup_flag:bool, drop_flag:bool, ebdisc_flag:bool, kbdisc_flag:bool, restricted:bool, sharer:bool, coder_exist:bool, gname_chged:bool, earlyci:bool, gdpr_flag:bool, mark_flag:bool, news_flag:bool, reslin_list_data:[Reslin_list], res_dynarate_data:[Res_dynarate], tot_qty:int):
+def mk_resline_gobl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:int, accompany_tmpnr3:int, accompany_gastnr:int, 
+                    accompany_gastnr2:int, accompany_gastnr3:int, comchild:int, rm_bcol:int, marknr:int, bill_instruct:int, 
+                    restype:int, restype0:int, restype1:int, contact_nr:int, cutoff_days:int, segm__purcode:int, deposit:Decimal, 
+                    limitdate:date, wechsel_str:string, origcontcode:string, groupname:string, guestname:string, main_voucher:string, 
+                    resline_comment:string, mainres_comment:string, purpose_svalue:string, letter_svalue:string, segm_svalue:string, 
+                    source_svalue:string, res_mode:string, prev_zinr:string, memo_zinr:string, voucherno:string, contcode:string, 
+                    child_age:string, flight1:string, flight2:string, eta:string, etd:string, user_init:string, currency_changed:bool, 
+                    fixed_rate:bool, grpflag:bool, memozinr_readonly:bool, group_enable:bool, init_fixrate:bool, oral_flag:bool, 
+                    pickup_flag:bool, drop_flag:bool, ebdisc_flag:bool, kbdisc_flag:bool, restricted:bool, sharer:bool, coder_exist:bool, 
+                    gname_chged:bool, earlyci:bool, reslin_list_data:[Reslin_list], res_dynarate_data:[Res_dynarate], tot_qty:int):
 
-    prepare_cache ([Bill, Htparam, Queasy, Nation, Arrangement, Reservation, Bediener, Outorder, Zimmer, Mealcoup, Reslin_queasy, Resplan, Zimkateg, Waehrung, Guest_pr, Guest, Res_history, Master, Brief, Segment, Sourccod, Counters, Interface, Guestseg])
+    prepare_cache ([Bill, Htparam, Arrangement, Reservation, Bediener, Outorder, Zimmer, Queasy, Mealcoup, Reslin_queasy, Resplan, Zimkateg, Waehrung, Guest_pr, Res_history, Master, Brief, Segment, Sourccod, Counters, Interface, Guestseg])
 
     update_kcard = False
     msg_str = ""
@@ -42,44 +53,52 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
     wig_gastnr:int = 0
     source_changed:bool = False
     priscilla_active:bool = True
-    avail_gdpr:bool = False
-    curr_nat:string = ""
-    avail_mark:bool = False
-    avail_news:bool = False
     lvcarea:string = "mk-resline"
     move_str:string = ""
-    res_line = bill = htparam = queasy = nation = arrangement = reservation = bediener = outorder = zimmer = mealcoup = reslin_queasy = resplan = zimkateg = messages = waehrung = guest_pr = guest = res_history = master = brief = segment = sourccod = counters = mc_guest = interface = guestseg = None
+    res_line = bill = htparam = arrangement = reservation = bediener = outorder = zimmer = queasy = mealcoup = reslin_queasy = resplan = zimkateg = messages = waehrung = guest_pr = guest = res_history = master = brief = segment = sourccod = counters = interface = guestseg = None
 
-    res_dynarate = reslin_list = nation_list = resline = bbuff = None
-
-    nation_list_data, Nation_list = create_model("Nation_list", {"nr":int, "kurzbez":string, "bezeich":string})
+    res_dynarate = reslin_list = resline = bbuff = None
 
     Resline = create_buffer("Resline",Res_line)
     Bbuff = create_buffer("Bbuff",Bill)
 
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    wechsel_str = wechsel_str.strip()
+    origcontcode = origcontcode.strip()
+    groupname = groupname.strip()
+    guestname = guestname.strip()
+    main_voucher = main_voucher.strip()
+    source_svalue = source_svalue.strip()
+    res_mode = res_mode.strip()
+    prev_zinr = prev_zinr.strip()
+    memo_zinr = memo_zinr.strip()
+    voucherno = voucherno.strip()
+    contcode = contcode.strip()
+    child_age = child_age.strip()
+    flight1 = flight1.strip()
+    flight2 = flight2.strip()
+    eta = eta.strip()
+    etd = etd.strip()
 
     def generate_output():
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
-
-
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         return {"update_kcard": update_kcard, "msg_str": msg_str, "waehrungnr": waehrungnr, "reserve_dec": reserve_dec, "dyna_rmrate": dyna_rmrate, "tot_qty": tot_qty}
 
     def static_ratecode_rates():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         to_date:date = None
         bill_date:date = None
@@ -122,13 +141,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def min_resplan():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         curr_date:date = None
         beg_datum:date = None
@@ -170,15 +188,14 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                 curr_date = curr_date + timedelta(days=1)
 
 
-    def rmchg_ressharer(act_zinr:string, new_zinr:string, main_nr:int):
+    def rmchg_ressharer(act_zinr:string, new_zinr:string):
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         curr_datum:date = None
         res_line2 = None
@@ -189,10 +206,10 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         Rpbuff =  create_buffer("Rpbuff",Resplan)
 
         res_line2 = db_session.query(Res_line2).filter(
-                 (Res_line2.resnr == reslin_list.resnr) & (Res_line2.kontakt_nr == main_nr) & (Res_line2.resstatus == 11) & (((Res_line2.zinr != "") & (Res_line2.zinr == (act_zinr).lower())) | (Res_line2.zinr == ""))).first()
+                 (Res_line2.resnr == reslin_list.resnr) & (Res_line2.zinr != "") & (Res_line2.zinr == (act_zinr).lower()) & (Res_line2.resstatus == 11)).first()
         while None != res_line2:
 
-            if res_line2.zinr != "" and reslin_list.zikatnr != res_line2.zikatnr:
+            if reslin_list.zikatnr != res_line2.zikatnr:
                 for curr_datum in date_range(res_line2.ankunft,(res_line2.abreise - 1)) :
 
                     resplan = get_cache (Resplan, {"zikatnr": [(eq, res_line2.zikatnr)],"datum": [(eq, curr_datum)]})
@@ -239,18 +256,17 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
             curr_recid = res_line2._recid
             res_line2 = db_session.query(Res_line2).filter(
-                     (Res_line2.resnr == reslin_list.resnr) & (Res_line2.kontakt_nr == main_nr) & (Res_line2.resstatus == 11) & (((Res_line2.zinr != "") & (Res_line2.zinr == (act_zinr).lower())) | (Res_line2.zinr == "")) & (Res_line2._recid > curr_recid)).first()
+                     (Res_line2.resnr == reslin_list.resnr) & (Res_line2.zinr != "") & (Res_line2.zinr == (act_zinr).lower()) & (Res_line2.resstatus == 11) & (Res_line2._recid > curr_recid)).first()
 
 
     def rmchg_sharer(act_zinr:string, new_zinr:string):
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         res_recid1:int = 0
         parent_nr:int = 0
@@ -405,13 +421,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def update_billzinr():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         old_zinr:string = ""
         new_zinr:string = ""
@@ -491,13 +506,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def check_currency():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         waehrung1 = None
         Waehrung1 =  create_buffer("Waehrung1",Waehrung)
@@ -550,13 +564,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def add_keycard():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         maxkey:int = 2
         errcode:int = 0
@@ -576,13 +589,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def res_changes():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         do_it:bool = False
         guest1 = None
@@ -664,13 +676,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def res_changes0():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         guest1 = None
         cid:string = " "
@@ -703,13 +714,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def add_resplan():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         curr_date:date = None
         beg_datum:date = None
@@ -765,18 +775,16 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def update_mainres():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         ct:string = ""
         answer:bool = True
         l_grpnr:int = 0
-        source_code:string = ""
         rline = None
         rgast = None
         Rline =  create_buffer("Rline",Res_line)
@@ -791,7 +799,8 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         htparam = get_cache (Htparam, {"paramnr": [(eq, 440)]})
         l_grpnr = htparam.finteger
 
-        rgast = get_cache (Guest, {"gastnr": [(eq, reslin_list.gastnr)]})
+        rgast = db_session.query(Rgast).filter(
+                 (Rgast.gastnr == reslin_list.gastnr)).first()
 
         master = get_cache (Master, {"resnr": [(eq, reslin_list.resnr)]})
 
@@ -812,46 +821,11 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
             reservation.briefnr = 0
         ct = segm_svalue
 
-        if to_int(substring(ct, 0, get_index(ct, " "))) != reservation.segmentcode:
-
-            segment = get_cache (Segment, {"segmentcode": [(eq, to_int(substring(ct, 0, get_index(ct, " "))))]})
-            res_history = Res_history()
-            db_session.add(res_history)
-
-            res_history.nr = bediener.nr
-            res_history.resnr = res_line.resnr
-            res_history.reslinnr = res_line.reslinnr
-            res_history.datum = get_current_date()
-            res_history.zeit = get_current_time_in_seconds()
-            res_history.action = "Segment"
-            res_history.aenderung = "Segment has been changed to " + segment.bezeich
-
         segment = get_cache (Segment, {"segmentcode": [(eq, to_int(substring(ct, 0, get_index(ct, " "))))]})
 
         if segment:
             reservation.segmentcode = segment.segmentcode
         ct = source_svalue
-
-        sourccod = get_cache (Sourccod, {"source_code": [(eq, reservation.resart)]})
-
-        if sourccod:
-            source_code = sourccod.bezeich
-
-        if to_int(substring(ct, 0, get_index(ct, " "))) != reservation.resart:
-
-            sourccod = get_cache (Sourccod, {"source_code": [(eq, to_int(substring(ct, 0, get_index(ct, " "))))]})
-            res_history = Res_history()
-            db_session.add(res_history)
-
-            res_history.nr = bediener.nr
-            res_history.resnr = res_line.resnr
-            res_history.reslinnr = res_line.reslinnr
-            res_history.datum = get_current_date()
-            res_history.zeit = get_current_time_in_seconds()
-            res_history.action = "Source"
-            res_history.aenderung = "Source has been changed from: " + source_code.upper() + " to: " +\
-                    sourccod.bezeich.upper() + " ResNo: " + to_string(res_line.resnr) +\
-                    " - " + to_string(res_line.reslinnr)
 
         sourccod = get_cache (Sourccod, {"source_code": [(eq, to_int(substring(ct, 0, get_index(ct, " "))))]})
 
@@ -920,7 +894,9 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                         bill.rechnr = master.rechnr
                     else:
 
-                        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                        counters = db_session.query(Counters).filter(
+                                 (Counters.counter_no == 3)).with_for_update().first()
                         counters.counter = counters.counter + 1
                         bill.rechnr = counters.counter
                         pass
@@ -946,13 +922,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def update_resline():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         hh:int = 0
         mm:int = 0
@@ -970,7 +945,6 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         resline = None
         rline = None
         accguest = None
-        do_it:bool = False
         ratecode_date:date = None
         b_receiver = None
         Qsy =  create_buffer("Qsy",Queasy)
@@ -997,10 +971,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                 if accompany_gastnr > 0:
 
-                    accguest = get_cache (Guest, {"gastnr": [(eq, accompany_gastnr)]})
+                    accguest = db_session.query(Accguest).filter(
+                             (Accguest.gastnr == accompany_gastnr)).first()
                 else:
 
-                    accguest = get_cache (Guest, {"gastnr": [(eq, accompany_tmpnr[0])]})
+                    accguest = db_session.query(Accguest).filter(
+                             (Accguest.gastnr == accompany_tmpnr[0])).first()
                 resline = Res_line()
                 db_session.add(resline)
 
@@ -1037,7 +1013,8 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
             elif (resline.gastnrmember != accompany_tmpnr[0]) and (accompany_tmpnr[0] > 0):
 
-                accguest = get_cache (Guest, {"gastnr": [(eq, accompany_tmpnr[0])]})
+                accguest = db_session.query(Accguest).filter(
+                         (Accguest.gastnr == accompany_tmpnr[0])).first()
                 pass
                 resline.name = accguest.name + ", " + accguest.vorname1 +\
                         ", " + accguest.anrede1
@@ -1064,10 +1041,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                 if accompany_gastnr2 > 0:
 
-                    accguest = get_cache (Guest, {"gastnr": [(eq, accompany_gastnr2)]})
+                    accguest = db_session.query(Accguest).filter(
+                             (Accguest.gastnr == accompany_gastnr2)).first()
                 else:
 
-                    accguest = get_cache (Guest, {"gastnr": [(eq, accompany_tmpnr[1])]})
+                    accguest = db_session.query(Accguest).filter(
+                             (Accguest.gastnr == accompany_tmpnr[1])).first()
                 resline = Res_line()
                 db_session.add(resline)
 
@@ -1104,7 +1083,8 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
             elif (resline.gastnrmember != accompany_tmpnr[1]) and (accompany_tmpnr[1] > 0):
 
-                accguest = get_cache (Guest, {"gastnr": [(eq, accompany_tmpnr[1])]})
+                accguest = db_session.query(Accguest).filter(
+                         (Accguest.gastnr == accompany_tmpnr[1])).first()
                 pass
                 resline.name = accguest.name + ", " + accguest.vorname1 +\
                         ", " + accguest.anrede1
@@ -1131,10 +1111,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                 if accompany_gastnr3 > 0:
 
-                    accguest = get_cache (Guest, {"gastnr": [(eq, accompany_gastnr3)]})
+                    accguest = db_session.query(Accguest).filter(
+                             (Accguest.gastnr == accompany_gastnr3)).first()
                 else:
 
-                    accguest = get_cache (Guest, {"gastnr": [(eq, accompany_tmpnr[2])]})
+                    accguest = db_session.query(Accguest).filter(
+                             (Accguest.gastnr == accompany_tmpnr[2])).first()
                 resline = Res_line()
                 db_session.add(resline)
 
@@ -1171,7 +1153,8 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
             elif (resline.gastnrmember != accompany_tmpnr[2]) and (accompany_tmpnr[2] > 0):
 
-                accguest = get_cache (Guest, {"gastnr": [(eq, accompany_tmpnr[2])]})
+                accguest = db_session.query(Accguest).filter(
+                         (Accguest.gastnr == accompany_tmpnr[2])).first()
                 pass
                 resline.name = accguest.name + ", " + accguest.vorname1 +\
                         ", " + accguest.anrede1
@@ -1234,161 +1217,6 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         if kbdisc_flag:
             ct = ct + "kbdisc;"
 
-        if gdpr_flag:
-            ct = ct + "GDPRyes;"
-
-        elif not gdpr_flag:
-
-            if avail_gdpr:
-
-                guest = get_cache (Guest, {"gastnr": [(eq, reslin_list.gastnrmember)]})
-
-                if guest:
-
-                    mc_guest = get_cache (Mc_guest, {"gastnr": [(eq, reslin_list.gastnrmember)]})
-
-                    if mc_guest:
-                        do_it = False
-
-
-                    else:
-                        do_it = True
-
-                    if do_it :
-
-                        if guest.land != " ":
-                            curr_nat = guest.land
-
-                            nation_list = query(nation_list_data, filters=(lambda nation_list: nation_list.kurzbez.lower()  == (curr_nat).lower()), first=True)
-
-                            if nation_list:
-                                do_it = True
-                            else:
-                                do_it = False
-
-                        if do_it == False:
-
-                            if guest.nation1 != " ":
-                                curr_nat = guest.nation1
-
-                            nation_list = query(nation_list_data, filters=(lambda nation_list: nation_list.kurzbez.lower()  == (curr_nat).lower()), first=True)
-
-                            if nation_list:
-                                do_it = True
-                            else:
-                                do_it = False
-
-                    if do_it:
-
-                        if not matches(reslin_list.zimmer_wunsch,r"*GDPR*"):
-                            ct = ct + "GDPRyes;"
-
-                        elif matches(reslin_list.zimmer_wunsch,r"*GDPRyes*"):
-                            ct = ct + "GDPRno;"
-
-                    elif do_it == False:
-                        ct = ct + "GDPRno;"
-            else:
-
-                if matches(reslin_list.zimmer_wunsch,r"*GDPRyes*"):
-                    ct = ct + "GDPRno;"
-
-        if not gdpr_flag and matches(res_line.zimmer_wunsch,r"*GDPRyes*"):
-            res_history = Res_history()
-            db_session.add(res_history)
-
-            res_history.nr = bediener.nr
-            res_history.resnr = res_line.resnr
-            res_history.reslinnr = res_line.reslinnr
-            res_history.datum = get_current_date()
-            res_history.zeit = get_current_time_in_seconds()
-            res_history.action = "GDPR"
-
-
-            res_history.aenderung = "GDPR has been removed in reservation No " + to_string(res_line.resnr) + "-" + to_string(res_line.reslinnr)
-
-        if gdpr_flag and (matches(res_line.zimmer_wunsch,("*GDPRno*")) or not matches(res_line.zimmer_wunsch,r"*GDPR*")):
-            res_history = Res_history()
-            db_session.add(res_history)
-
-            res_history.nr = bediener.nr
-            res_history.resnr = res_line.resnr
-            res_history.reslinnr = res_line.reslinnr
-            res_history.datum = get_current_date()
-            res_history.zeit = get_current_time_in_seconds()
-            res_history.action = "GDPR"
-
-
-            res_history.aenderung = "GDPR has been created in reservation No " + to_string(res_line.resnr) + "-" + to_string(res_line.reslinnr)
-
-        if mark_flag :
-            ct = ct + "MARKETINGyes;"
-
-        elif mark_flag == False:
-            ct = ct + "MARKETINGno;"
-
-        if not mark_flag and matches(res_line.zimmer_wunsch,r"*MARKETINGyes*"):
-            res_history = Res_history()
-            db_session.add(res_history)
-
-            res_history.nr = bediener.nr
-            res_history.resnr = res_line.resnr
-            res_history.reslinnr = res_line.reslinnr
-            res_history.datum = get_current_date()
-            res_history.zeit = get_current_time_in_seconds()
-            res_history.action = "MARKETING NEWS"
-
-
-            res_history.aenderung = "MARKETING has been removed in reservation No " + to_string(res_line.resnr) + "-" + to_string(res_line.reslinnr)
-
-        if mark_flag and (matches(res_line.zimmer_wunsch,("*MARKETINGno*")) or not matches(res_line.zimmer_wunsch,r"*MARKETING*")):
-            res_history = Res_history()
-            db_session.add(res_history)
-
-            res_history.nr = bediener.nr
-            res_history.resnr = res_line.resnr
-            res_history.reslinnr = res_line.reslinnr
-            res_history.datum = get_current_date()
-            res_history.zeit = get_current_time_in_seconds()
-            res_history.action = "MARKETING NEWS"
-
-
-            res_history.aenderung = "MARKETING has been created in reservation No " + to_string(res_line.resnr) + "-" + to_string(res_line.reslinnr)
-
-        if news_flag :
-            ct = ct + "NEWSLETTERyes;"
-
-        elif news_flag == False:
-            ct = ct + "NEWSLETTERno;"
-
-        if not news_flag and matches(res_line.zimmer_wunsch,r"*NEWSLETTERyes*"):
-            res_history = Res_history()
-            db_session.add(res_history)
-
-            res_history.nr = bediener.nr
-            res_history.resnr = res_line.resnr
-            res_history.reslinnr = res_line.reslinnr
-            res_history.datum = get_current_date()
-            res_history.zeit = get_current_time_in_seconds()
-            res_history.action = "NEWSLETTER"
-
-
-            res_history.aenderung = "NEWSLETTER has been removed in reservation No " + to_string(res_line.resnr) + "-" + to_string(res_line.reslinnr)
-
-        if news_flag and (matches(res_line.zimmer_wunsch,("*NEWSLETTERno*")) or not matches(res_line.zimmer_wunsch,r"*NEWSLETTER*")):
-            res_history = Res_history()
-            db_session.add(res_history)
-
-            res_history.nr = bediener.nr
-            res_history.resnr = res_line.resnr
-            res_history.reslinnr = res_line.reslinnr
-            res_history.datum = get_current_date()
-            res_history.zeit = get_current_time_in_seconds()
-            res_history.action = "NEWSLETTER"
-
-
-            res_history.aenderung = "NEWSLETTER has been created in reservation No " + to_string(res_line.resnr) + "-" + to_string(res_line.reslinnr)
-
         if restricted or dynarate_created:
             ct = ct + "restricted;"
         for n in range(1,num_entries(reslin_list.zimmer_wunsch, ";") - 1 + 1) :
@@ -1422,15 +1250,6 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                 pass
 
             elif substring(st, 0, 14) == ("drop-passanger").lower() :
-                pass
-
-            elif substring(st, 0, 4) == ("GDPR").lower() :
-                pass
-
-            elif substring(st, 0, 9) == ("MARKETING").lower() :
-                pass
-
-            elif substring(st, 0, 10) == ("NEWSLETTER").lower() :
                 pass
 
             elif trim(st) == "":
@@ -1642,7 +1461,8 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                 B_receiver =  create_buffer("B_receiver",Guest)
                 bill.gastnr = reslin_list.gastnrpay
 
-                b_receiver = get_cache (Guest, {"gastnr": [(eq, bill.gastnr)]})
+                b_receiver = db_session.query(B_receiver).filter(
+                         (B_receiver.gastnr == bill.gastnr)).first()
                 bill.name = b_receiver.name
                 pass
                 pass
@@ -1723,13 +1543,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def check_vhponline_conf_email():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 39)]})
 
@@ -1757,18 +1576,18 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def store_vip():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         gmember = None
         Gmember =  create_buffer("Gmember",Guest)
 
-        gmember = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+        gmember = db_session.query(Gmember).filter(
+                 (Gmember.gastnr == res_line.gastnrmember)).first()
 
         if gmember.karteityp != 0:
 
@@ -1785,13 +1604,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def accompany_vip():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         gmember = None
         Gmember =  create_buffer("Gmember",Guest)
@@ -1803,7 +1621,8 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
             return
 
-        gmember = get_cache (Guest, {"gastnr": [(eq, resline.gastnrmember)]})
+        gmember = db_session.query(Gmember).filter(
+                 (Gmember.gastnr == resline.gastnrmember)).first()
 
         if not gmember:
 
@@ -1827,13 +1646,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def resline_reserve_dec():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         exchg_rate:Decimal = to_decimal("0.0")
         rline = None
@@ -1862,13 +1680,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def res_dyna_rmrate():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         rmrate:Decimal = None
         arrival_date:date = None
@@ -1950,13 +1767,12 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     def update_qsy171():
 
-        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, avail_mark, avail_news, lvcarea, move_str, res_line, bill, htparam, queasy, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
-        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, tot_qty
+        nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, lvcarea, move_str, res_line, bill, htparam, arrangement, reservation, bediener, outorder, zimmer, queasy, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, interface, guestseg
+        nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, tot_qty
         nonlocal resline, bbuff
 
 
-        nonlocal res_dynarate, reslin_list, nation_list, resline, bbuff
-        nonlocal nation_list_data
+        nonlocal res_dynarate, reslin_list, resline, bbuff
 
         qsy = None
         bqsy = None
@@ -2024,26 +1840,24 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                 queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, "")]})
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                    pass
+                    queasy.logi2 = True
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                    if qsy:
-                        qsy.logi2 = True
-                        pass
-                        pass
+                    pass
+                    pass
 
                 if do_it:
 
                     queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                        pass
+                        queasy.logi2 = True
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                        if qsy:
-                            qsy.logi2 = True
-                            pass
-                            pass
+                        pass
+                        pass
 
             if reslin_list.ankunft == reslin_list.abreise:
                 upto_date = reslin_list.abreise
@@ -2054,26 +1868,24 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                 queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr1)],"char1": [(eq, "")]})
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                    pass
+                    queasy.logi2 = True
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                    if qsy:
-                        qsy.logi2 = True
-                        pass
-                        pass
+                    pass
+                    pass
 
                 if do_it:
 
                     queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr1)],"char1": [(eq, origcode)]})
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                        pass
+                        queasy.logi2 = True
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                        if qsy:
-                            qsy.logi2 = True
-                            pass
-                            pass
+                        pass
+                        pass
 
         elif res_line.zikatnr == reslin_list.zikatnr:
 
@@ -2123,26 +1935,24 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                     queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr1)],"char1": [(eq, "")]})
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                        pass
+                        queasy.logi2 = True
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                        if qsy:
-                            qsy.logi2 = True
-                            pass
-                            pass
+                        pass
+                        pass
 
                     if do_it:
 
                         queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr1)],"char1": [(eq, origcode)]})
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                            pass
+                            queasy.logi2 = True
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                            if qsy:
-                                qsy.logi2 = True
-                                pass
-                                pass
+                            pass
+                            pass
 
             elif res_line.ankunft == reslin_list.ankunft and res_line.abreise != reslin_list.abreise:
 
@@ -2152,26 +1962,24 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                         queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, "")]})
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                            pass
+                            queasy.logi2 = True
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                            if qsy:
-                                qsy.logi2 = True
-                                pass
-                                pass
+                            pass
+                            pass
 
                         if do_it:
 
                             queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
 
                             if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                                pass
+                                queasy.logi2 = True
 
-                                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                                if qsy:
-                                    qsy.logi2 = True
-                                    pass
-                                    pass
+                                pass
+                                pass
 
                 elif reslin_list.abreise > res_line.abreise:
                     for datum in date_range(res_line.abreise,reslin_list.abreise - 1) :
@@ -2179,26 +1987,24 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                         queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, "")]})
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                            pass
+                            queasy.logi2 = True
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                            if qsy:
-                                qsy.logi2 = True
-                                pass
-                                pass
+                            pass
+                            pass
 
                         if do_it:
 
                             queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
 
                             if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                                pass
+                                queasy.logi2 = True
 
-                                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                                if qsy:
-                                    qsy.logi2 = True
-                                    pass
-                                    pass
+                                pass
+                                pass
 
             elif res_line.ankunft != reslin_list.ankunft and res_line.abreise == reslin_list.abreise:
 
@@ -2208,26 +2014,24 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                         queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, "")]})
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                            pass
+                            queasy.logi2 = True
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                            if qsy:
-                                qsy.logi2 = True
-                                pass
-                                pass
+                            pass
+                            pass
 
                         if do_it:
 
                             queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
 
                             if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                                pass
+                                queasy.logi2 = True
 
-                                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                                if qsy:
-                                    qsy.logi2 = True
-                                    pass
-                                    pass
+                                pass
+                                pass
 
                 elif reslin_list.ankunft > res_line.ankunft:
                     for datum in date_range(res_line.ankunft,reslin_list.ankunft - 1) :
@@ -2235,26 +2039,24 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                         queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, "")]})
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                            pass
+                            queasy.logi2 = True
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                            if qsy:
-                                qsy.logi2 = True
-                                pass
-                                pass
+                            pass
+                            pass
 
                         if do_it:
 
                             queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
 
                             if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                                pass
+                                queasy.logi2 = True
 
-                                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                                if qsy:
-                                    qsy.logi2 = True
-                                    pass
-                                    pass
+                                pass
+                                pass
 
             elif res_line.ankunft != reslin_list.ankunft and res_line.abreise != reslin_list.abreise:
 
@@ -2267,26 +2069,24 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                     queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, "")]})
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                        pass
+                        queasy.logi2 = True
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                        if qsy:
-                            qsy.logi2 = True
-                            pass
-                            pass
+                        pass
+                        pass
 
                     if do_it:
 
                         queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                            pass
+                            queasy.logi2 = True
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                            if qsy:
-                                qsy.logi2 = True
-                                pass
-                                pass
+                            pass
+                            pass
 
                 if reslin_list.ankunft == reslin_list.abreise:
                     upto_date = reslin_list.abreise
@@ -2297,26 +2097,25 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                     queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr1)],"char1": [(eq, "")]})
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                        pass
+                        queasy.logi2 = True
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                        if qsy:
-                            qsy.logi2 = True
-                            pass
-                            pass
+                        pass
+                        pass
 
                     if do_it:
 
                         queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr1)],"char1": [(eq, origcode)]})
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
+                            pass
+                            queasy.logi2 = True
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
 
-                            if qsy:
-                                qsy.logi2 = True
-                                pass
-                                pass
+                            pass
+                            pass
+
 
     wig_gastnr = get_output(htpint(109))
     ind_gastnr = get_output(htpint(123))
@@ -2372,37 +2171,6 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
     if htparam.finteger != 0:
         vipnr9 = htparam.finteger
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 346)]})
-
-    if htparam:
-        avail_gdpr = htparam.flogical
-
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 477)]})
-
-    if htparam and htparam.bezeichnung.lower()  != ("not used").lower() :
-        avail_news = htparam.flogical
-        avail_mark = htparam.flogical
-
-    if avail_gdpr:
-
-        nation_obj_list = {}
-        nation = Nation()
-        queasy = Queasy()
-        for nation.nationnr, nation.kurzbez, nation.bezeich, nation._recid, queasy.char1, queasy.logi2, queasy._recid in db_session.query(Nation.nationnr, Nation.kurzbez, Nation.bezeich, Nation._recid, Queasy.char1, Queasy.logi2, Queasy._recid).join(Queasy,(Queasy.key == 6) & (Queasy.number1 == Nation.untergruppe) & (matches(Queasy.char1,"*europe*"))).filter(
-                 (Nation.natcode == 0)).order_by(Nation.kurzbez).all():
-            if nation_obj_list.get(nation._recid):
-                continue
-            else:
-                nation_obj_list[nation._recid] = True
-
-
-            nation_list = Nation_list()
-            nation_list_data.append(nation_list)
-
-            nation_list.nr = nation.nationnr
-            nation_list.kurzbez = nation.kurzbez
-            nation_list.bezeich = entry(0, nation.bezeich, ";")
-
     reslin_list = query(reslin_list_data, first=True)
 
     arrangement = get_cache (Arrangement, {"arrangement": [(eq, reslin_list.arrangement)]})
@@ -2412,6 +2180,9 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
     res_line = get_cache (Res_line, {"resnr": [(eq, reslin_list.resnr)],"reslinnr": [(eq, reslin_list.reslinnr)]})
 
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+
+    if to_int(substring(source_svalue, 0, get_index(source_svalue, " "))) != reservation.resart:
+        source_changed = True
 
     if res_mode.lower()  == ("modify").lower()  or res_mode.lower()  == ("split").lower()  or res_mode.lower()  == ("inhouse").lower() :
         min_resplan()
@@ -2466,7 +2237,7 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
     elif res_mode.lower()  == ("modify").lower() :
 
         if res_line.zinr != reslin_list.zinr and (res_line.resstatus <= 2 or res_line.resstatus == 5):
-            rmchg_ressharer(res_line.zinr, reslin_list.zinr, res_line.reslinnr)
+            rmchg_ressharer(res_line.zinr, reslin_list.zinr)
 
     res_line = get_cache (Res_line, {"resnr": [(eq, reslin_list.resnr)],"reslinnr": [(eq, reslin_list.reslinnr)]})
     prev_zinr = res_line.zinr

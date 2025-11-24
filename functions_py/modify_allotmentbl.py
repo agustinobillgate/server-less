@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -254,7 +256,10 @@ def modify_allotmentbl(i_case:int, user_init:string, reslin_list_data:[Reslin_li
 
                 else:
 
-                    counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
+                    # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
+                    counters = db_session.query(Counters).with_for_update().filter(
+                             (Counters.counter_no == 10)).first()
+                    
                     counters.counter = counters.counter + 1
                     pass
                     kline2 = Kontline()
@@ -272,7 +277,10 @@ def modify_allotmentbl(i_case:int, user_init:string, reslin_list_data:[Reslin_li
 
                 if create_it:
 
-                    counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
+                    # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
+                    counters = db_session.query(Counters).with_for_update().filter(
+                             (Counters.counter_no == 10)).first()
+                    
                     counters.counter = counters.counter + 1
                     pass
                     kline = Kontline()
