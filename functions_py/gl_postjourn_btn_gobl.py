@@ -124,7 +124,10 @@ def gl_postjourn_btn_gobl(g_list_data:[G_list], pvilanguage:int, curr_step:int, 
 
         nonlocal g_list
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        # Rd, 24/11/2025, get counters dengan for update
+        # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(
+                     (Counters.counter_no == 25)).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -134,15 +137,13 @@ def gl_postjourn_btn_gobl(g_list_data:[G_list], pvilanguage:int, curr_step:int, 
             counters.counter_no = 25
 
 
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = next_counter_for_update(25)
+        counters.counter = counters.counter + 1
 
         pass
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
-        # gl_jouhdr.jnr = counters.counter
-        gl_jouhdr.jnr = last_count
+        gl_jouhdr.jnr = counters.counter
 
         gl_jouhdr.refno = refno
         gl_jouhdr.datum = datum

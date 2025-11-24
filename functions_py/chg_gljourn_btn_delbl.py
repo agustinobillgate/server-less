@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_journal, Gl_jouhdr
@@ -22,9 +24,14 @@ def chg_gljourn_btn_delbl(jnr:int, rec_id:int):
         return {"debits": debits, "credits": credits, "remains": remains}
 
 
-    gl_journal = get_cache (Gl_journal, {"_recid": [(eq, rec_id)]})
+    # gl_journal = get_cache (Gl_journal, {"_recid": [(eq, rec_id)]})
+    gl_journal = db_session.query(Gl_journal).filter(
+                 (Gl_journal._recid == rec_id)).with_for_update().first()
 
-    gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
+    # gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
+    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+                 (Gl_jouhdr.jnr == jnr)).with_for_update().first()
+    
     gl_jouhdr.debit =  to_decimal(gl_jouhdr.debit) - to_decimal(gl_journal.debit)
     gl_jouhdr.credit =  to_decimal(gl_jouhdr.credit) - to_decimal(gl_journal.credit)
     gl_jouhdr.remain =  to_decimal(gl_jouhdr.debit) - to_decimal(gl_jouhdr.credit)
