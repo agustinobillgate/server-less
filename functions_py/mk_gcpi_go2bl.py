@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Counters, Gc_pi
+from functions.next_counter_for_update import next_counter_for_update
 
 def mk_gcpi_go2bl(pi_number:string, billdate:date):
 
@@ -14,6 +17,9 @@ def mk_gcpi_go2bl(pi_number:string, billdate:date):
     counters = gc_pi = None
 
     db_session = local_storage.db_session
+    pi_number = pi_number.strip()
+    last_count = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal pbuff_docu_nr2, printed2, counters, gc_pi
@@ -22,7 +28,8 @@ def mk_gcpi_go2bl(pi_number:string, billdate:date):
         return {"pbuff_docu_nr2": pbuff_docu_nr2, "printed2": printed2}
 
 
-    counters = get_cache (Counters, {"counter_no": [(eq, 43)]})
+    # counters = get_cache (Counters, {"counter_no": [(eq, 43)]})
+    counters = db_session.query(Counters).filter(Counters.counter_no == 43).with_for_update().first()
 
     if not counters:
         counters = Counters()
