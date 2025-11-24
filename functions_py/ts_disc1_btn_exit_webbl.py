@@ -49,7 +49,7 @@ payload_list_data, Payload_list = create_model(
     {
         "voucher_number": str
     })
-menu_data, Menu = create_model(
+menu_data, Menu_list = create_model(
     "Menu",
     {
         "artnr": int,
@@ -69,27 +69,27 @@ menu_data, Menu = create_model(
     })
 
 
-def ts_disc1_btn_exit_webbl(rec_id: int, billart: int, dept: int, transdate: date, amount: Decimal, description: str, netto_betrag: Decimal, exchg_rate: Decimal, tischnr: int, curr_select: int, disc_value: Decimal, qty: int, cancel_str: str, curr_waiter: int, procent: Decimal, b_artnrfront: int, o_artnrfront: int, price_decimal: int, user_init: str, disc_list_data: Disc_list, vat_list_data: Vat_list, payload_list_data: Payload_list, menu_data: Menu):
+def ts_disc1_btn_exit_webbl(rec_id: int, billart: int, dept: int, transdate: date, amount: Decimal, description: str, netto_betrag: Decimal, exchg_rate: Decimal, tischnr: int, curr_select: int, disc_value: Decimal, qty: int, cancel_str: str, curr_waiter: int, procent: Decimal, b_artnrfront: int, o_artnrfront: int, price_decimal: int, user_init: str, disc_list_data: Disc_list, vat_list_data: Vat_list, payload_list_data: Payload_list, menu_data: Menu_list):
 
     prepare_cache([H_bill, H_artikel, Htparam, H_bill_line, H_umsatz, Umsatz, H_journal, Artikel, Arrangement, Argt_line, Billjournal])
 
     h_bill = h_artikel = htparam = h_bill_line = h_umsatz = umsatz = h_journal = artikel = arrangement = argt_line = billjournal = None
 
-    menu = disc_list = vat_list = payload_list = None
+    menu_list = disc_list = vat_list = payload_list = None
 
     db_session = local_storage.db_session
 
     def generate_output():
         nonlocal h_bill, h_artikel, htparam, h_bill_line, h_umsatz, umsatz, h_journal, artikel, arrangement, argt_line, billjournal
         nonlocal rec_id, billart, dept, transdate, amount, description, netto_betrag, exchg_rate, tischnr, curr_select, disc_value, qty, cancel_str, curr_waiter, procent, b_artnrfront, o_artnrfront, price_decimal, user_init
-        nonlocal menu, disc_list, vat_list, payload_list
+        nonlocal menu_list, disc_list, vat_list, payload_list
 
         return {}
 
     def update_bill(h_artart: int, h_artnrfront: int):
         nonlocal h_bill, h_artikel, htparam, h_bill_line, h_umsatz, umsatz, h_journal, artikel, arrangement, argt_line, billjournal
         nonlocal rec_id, billart, dept, transdate, amount, description, netto_betrag, exchg_rate, tischnr, curr_select, disc_value, qty, cancel_str, curr_waiter, procent, b_artnrfront, o_artnrfront, price_decimal, user_init
-        nonlocal menu, disc_list, vat_list, payload_list
+        nonlocal menu_list, disc_list, vat_list, payload_list
 
         bill_date: date
         curr_time: int = 0
@@ -258,13 +258,33 @@ def ts_disc1_btn_exit_webbl(rec_id: int, billart: int, dept: int, transdate: dat
     def update_rev_argtart(h_artnrfront: int):
         nonlocal h_bill, h_artikel, htparam, h_bill_line, h_umsatz, umsatz, h_journal, artikel, arrangement, argt_line, billjournal
         nonlocal rec_id, billart, dept, transdate, description, netto_betrag, exchg_rate, tischnr, curr_select, disc_value, qty, cancel_str, curr_waiter, procent, b_artnrfront, o_artnrfront, price_decimal, user_init
-        nonlocal menu, disc_list, vat_list, payload_list
+        nonlocal menu_list, disc_list, vat_list, payload_list
 
         amount: Decimal = to_decimal("0.0")
 
         h_artikel_obj_list = {}
-        for h_artikel, artikel in db_session.query(H_artikel, Artikel).join(Artikel, (Artikel.artnr == H_artikel.artnrfront) & (Artikel.departement == H_artikel.departement) & (Artikel.artart == 9) & (Artikel.artgrp != 0)).filter(
-                ((H_artikel.artnr.in_(list(set([menu.artnr for menu in menu_data if menu.prtflag == 1])))) & (H_artikel.departement == h_bill.departement))).order_by(H_artikel._recid).all():
+        
+        if menu_list is None:
+            menu_artnr_list = []
+        else:
+            menu_artnr_list = [menu.artnr for menu in menu_list if getattr(menu, 'prtflag', 0) == 1]
+            
+            menu_artnr_list = list(set(menu_artnr_list))
+            
+        query = (db_session.query(H_artikel, Artikel).join(
+            Artikel, 
+            (Artikel.artnr == H_artikel.artnrfront)
+            & (Artikel.departement == H_artikel.departement) 
+            & (Artikel.artart == 9)
+            & (Artikel.artgrp != 0)
+        )).filter(
+            H_artikel.artnr.in_(menu_artnr_list),
+            H_artikel.departement == h_bill.departement
+        ).order_by(H_artikel._recid)
+        
+        result = query.all()
+        
+        for h_artikel, artikel in result:
             if h_artikel_obj_list.get(h_artikel._recid):
                 continue
             else:
@@ -279,7 +299,7 @@ def ts_disc1_btn_exit_webbl(rec_id: int, billart: int, dept: int, transdate: dat
     def rev_bdown(h_artnrfront: int, qty: int, amount: Decimal):
         nonlocal h_bill, h_artikel, htparam, h_bill_line, h_umsatz, umsatz, h_journal, artikel, arrangement, argt_line, billjournal
         nonlocal rec_id, billart, dept, transdate, description, netto_betrag, exchg_rate, tischnr, curr_select, disc_value, cancel_str, curr_waiter, procent, b_artnrfront, o_artnrfront, price_decimal, user_init
-        nonlocal menu, disc_list, vat_list, payload_list
+        nonlocal menu_list, disc_list, vat_list, payload_list
 
         discart: int = 0
         bill_date: date
@@ -426,7 +446,7 @@ def ts_disc1_btn_exit_webbl(rec_id: int, billart: int, dept: int, transdate: dat
     def cal_vat_amount():
         nonlocal h_bill, h_artikel, htparam, h_bill_line, h_umsatz, umsatz, h_journal, artikel, arrangement, argt_line, billjournal
         nonlocal rec_id, billart, dept, transdate, amount, description, netto_betrag, exchg_rate, tischnr, curr_select, disc_value, cancel_str, curr_waiter, procent, b_artnrfront, o_artnrfront, price_decimal, user_init
-        nonlocal menu, disc_list, vat_list, payload_list
+        nonlocal menu_list, disc_list, vat_list, payload_list
 
         mwst = to_decimal("0.0")
         h_service: Decimal = to_decimal("0.0")
