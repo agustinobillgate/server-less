@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -32,8 +34,12 @@ def delete_gl_jouhdr_1bl(case_type:int, int1:int, int2:int, char1:string, date1:
         return {"successflag": successflag}
 
     if case_type == 1:
-
-        gl_jouhdr = get_cache (Gl_jouhdr, {"refno": [(eq, char1)],"jnr": [(eq, int1)],"jtype": [(eq, int2)]})
+        # Rd, 24/11/2025, get gl_jouhdr dengan for update
+        # gl_jouhdr = get_cache (Gl_jouhdr, {"refno": [(eq, char1)],"jnr": [(eq, int1)],"jtype": [(eq, int2)]})
+        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+                     (Gl_jouhdr.refno == char1) &
+                     (Gl_jouhdr.jnr == int1) &
+                     (Gl_jouhdr.jtype == int2)).with_for_update().first()
 
         if gl_jouhdr:
             db_session.delete(gl_jouhdr)
@@ -42,8 +48,10 @@ def delete_gl_jouhdr_1bl(case_type:int, int1:int, int2:int, char1:string, date1:
 
 
     elif case_type == 2:
-
-        gl_jouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, int1)]})
+        # Rd, 24/11/2025, get gl_jouhdr dengan for update
+        # gl_jouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, int1)]})
+        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+                     (Gl_jouhdr._recid == int1)).with_for_update().first()
 
         if gl_jouhdr:
             db_session.delete(gl_jouhdr)
@@ -52,9 +60,10 @@ def delete_gl_jouhdr_1bl(case_type:int, int1:int, int2:int, char1:string, date1:
 
 
     elif case_type == 3:
-
-        gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, int1)]})
-
+        # Rd, 24/11/2025, get gl_jouhdr dengan for update
+        # gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, int1)]})
+        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+                     (Gl_jouhdr.jnr == int1)).with_for_update().first()
         if gl_jouhdr:
             datum = gl_jouhdr.datum
             refno = gl_jouhdr.refno

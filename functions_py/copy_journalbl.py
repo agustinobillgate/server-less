@@ -37,10 +37,11 @@ def copy_journalbl(desc_cj:string, credit:Decimal, debit:Decimal, remain:Decimal
 
     gl_hdr = Gl_jouhdr()
     db_session.add(gl_hdr)
-    last_count:int = 0
-    error_lock:string = ""
 
-    counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+    # Rd, 24/11/2025, get counters dengan for update
+    # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+    counters = db_session.query(Counters).filter(
+                 (Counters.counter_no == 25)).with_for_update().first()
 
     if not counters:
         counters = Counters()
@@ -48,11 +49,9 @@ def copy_journalbl(desc_cj:string, credit:Decimal, debit:Decimal, remain:Decimal
 
         counters.counter_no = 25
         counters.counter_bez = "G/L Transaction Journal"
-    # counters.counter = counters.counter + 1
-    last_count, error_lock = get_output(next_counter_for_update(25))
+    counters.counter = counters.counter + 1
 
-    # gl_hdr.jnr = counters.counter
-    gl_hdr.jnr = last_count
+    gl_hdr.jnr = counters.counter
 
     gl_hdr.refno = refno
     gl_hdr.datum = datum
@@ -67,8 +66,7 @@ def copy_journalbl(desc_cj:string, credit:Decimal, debit:Decimal, remain:Decimal
         gl_jnal = Gl_journal()
         db_session.add(gl_jnal)
 
-        # gl_jnal.jnr = counters.counter
-        gl_jnal.jnr = last_count
+        gl_jnal.jnr = counters.counter
 
         gl_jnal.fibukonto = gl_jou.fibukonto
         gl_jnal.debit =  to_decimal(gl_jou.debit)

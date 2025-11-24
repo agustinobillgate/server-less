@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#--------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#--------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_acct
@@ -20,8 +22,10 @@ def gl_acct_admin_if_foundbl(fibukonto:string):
 
         return {"success_flag": success_flag}
 
-
-    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fibukonto)]})
+    # Rd, 24/11/2025, get gl_acct dengan for update
+    # gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, fibukonto)]})
+    gl_acct = db_session.query(Gl_acct).filter(
+                 (Gl_acct.fibukonto == fibukonto)).with_for_update().first()
 
     if gl_acct:
         for i in range(1,12 + 1) :

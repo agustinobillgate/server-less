@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#--------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#--------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -36,8 +38,11 @@ def budget_exrate_update_exratebl(g_list_data:[G_list]):
         curr_date:date = None
 
         for g_list in query(g_list_data):
-
-            exrate = get_cache (Exrate, {"artnr": [(eq, 99998)],"datum": [(eq, g_list.datum)]})
+            # Rd, 24/11/2025, get exrate dengan for update
+            # exrate = get_cache (Exrate, {"artnr": [(eq, 99998)],"datum": [(eq, g_list.datum)]})
+            exrate = db_session.query(Exrate).filter(
+                         (Exrate.artnr == 99998) &
+                         (Exrate.datum == g_list.datum)).with_for_update().first()
 
             if not exrate:
                 exrate = Exrate()
