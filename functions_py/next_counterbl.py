@@ -7,7 +7,7 @@ from decimal import Decimal
 from models import Counters
 from functions.next_counter_for_update import next_counter_for_update
 
-def read_countersbl(case_type:int, counterno:int):
+def next_counterbl(counterno:int):
     t_counters_data = []
     counters = None
 
@@ -18,10 +18,10 @@ def read_countersbl(case_type:int, counterno:int):
     db_session = local_storage.db_session
     last_count = 0
     error_lock:string = ""
-    
+
     def generate_output():
         nonlocal t_counters_data, counters
-        nonlocal case_type, counterno
+        nonlocal counterno
 
 
         nonlocal t_counters
@@ -29,27 +29,26 @@ def read_countersbl(case_type:int, counterno:int):
 
         return {"t-counters": t_counters_data}
 
-    if case_type == 1:
+    # counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
 
-        counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
+    # if not counters:
+    #     counters = Counters()
+    #     db_session.add(counters)
 
-        if counters:
-            t_counters = T_counters()
-            t_counters_data.append(t_counters)
-
-            buffer_copy(counters, t_counters)
-    elif case_type == 2:
-
-        # counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = next_counter_for_update(counterno, last_count, error_lock)
-        counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
+    #     counters.counter_no = counterno
+    #     counters.counter_bez = to_string(counterno)
+    #     counters.counter = 0
 
 
-        pass
-        t_counters = T_counters()
-        t_counters_data.append(t_counters)
+    # counters.counter = counters.counter + 1
+    last_count, error_lock = next_counter_for_update(counterno, last_count, error_lock)
+    counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
 
-        buffer_copy(counters, t_counters)
+
+    pass
+    t_counters = T_counters()
+    t_counters_data.append(t_counters)
+
+    buffer_copy(counters, t_counters)
 
     return generate_output()

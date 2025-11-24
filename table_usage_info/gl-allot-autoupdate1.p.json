@@ -1,0 +1,53 @@
+{
+    "Kontline": {
+        "read": [
+            "kontcode",
+            "_recid",
+            "ankunft",
+            "abreise",
+            "kontignr"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "char3",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimkateg": {
+        "read": [
+            "zikatnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Counters": {
+        "read": [
+            "counter",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Zimmer": {
+        "read": [
+            "sleeping",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Outorder": {
+        "read": [
+            "zinr",
+            "gespstart",
+            "gespende",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Res_line": {
+        "read": [],
+        "write": []
+    }
+}

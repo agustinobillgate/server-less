@@ -1,13 +1,18 @@
 #using conversion tools version: 1.0.0.117
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Counters, Gl_jouhdr, Gl_journal
+from functions.next_counter_for_update import next_counter_for_update
 
 g_list_data, G_list = create_model("G_list", {"jnr":int, "fibukonto":string, "fibukonto2":string, "debit":Decimal, "credit":Decimal, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "bemerk":string, "descr":string, "duplicate":bool, "correct":int}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 
-def gl_adjustment_xlsjourn_post_itbl(g_list_data:[G_list], pvilanguage:int, datum:date, journ_no:string, jour_type:int, journ_name:string, debits:[Decimal], credits:[Decimal], remains:[Decimal]):
+def gl_adjustment_xlsjourn_post_itbl(g_list_data:[G_list], pvilanguage:int, datum:date, journ_no:string, 
+                                     jour_type:int, journ_name:string, debits:[Decimal], credits:[Decimal], remains:[Decimal]):
 
     prepare_cache ([Counters, Gl_jouhdr, Gl_journal])
 
@@ -18,6 +23,11 @@ def gl_adjustment_xlsjourn_post_itbl(g_list_data:[G_list], pvilanguage:int, datu
     g_list = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    journ_no = journ_no.strip()
+    journ_name = journ_name.strip()
+
 
     def generate_output():
         nonlocal t_jnr, lvcarea, counters, gl_jouhdr, gl_journal
@@ -44,12 +54,17 @@ def gl_adjustment_xlsjourn_post_itbl(g_list_data:[G_list], pvilanguage:int, datu
 
             counters.counter_no = 25
             counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
-        counters.counter = counters.counter + 1
+
+
+        # counters.counter = counters.counter + 1
+        last_count, error_lock = next_counter_for_update(25)
         pass
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
-        gl_jouhdr.jnr = counters.counter
+        # gl_jouhdr.jnr = counters.counter
+        gl_jouhdr.jnr = last_count
+        
         gl_jouhdr.refno = journ_no
         gl_jouhdr.datum = datum
         gl_jouhdr.bezeich = journ_name

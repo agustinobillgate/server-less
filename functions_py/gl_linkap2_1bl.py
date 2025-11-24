@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gl_jouhdr, Counters, Gl_journal, Htparam
+from functions.next_counter_for_update import next_counter_for_update
 
 g_list_data, G_list = create_model("G_list", {"nr":int, "remark":string, "docu_nr":string, "lscheinnr":string, "jnr":int, "fibukonto":string, "debit":Decimal, "credit":Decimal, "bemerk":string, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "duplicate":bool, "acct_fibukonto":string, "bezeich":string}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 
@@ -20,6 +23,11 @@ def gl_linkap2_1bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:Dec
     g_list = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    c_bezeich = c_bezeich.strip()
+    c_refno = c_refno.strip()
+
 
     def generate_output():
         nonlocal msg_str, new_hdr, hdr_found, lvcarea, gl_jouhdr, counters, gl_journal, htparam
@@ -69,9 +77,13 @@ def gl_linkap2_1bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:Dec
 
             counters.counter_no = 25
             counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
-        counters.counter = counters.counter + 1
+        # counters.counter = counters.counter + 1
+        last_count, error_lock = next_counter_for_update(25)
+
         pass
-        gl_jouhdr.jnr = counters.counter
+        # gl_jouhdr.jnr = counters.counter  
+        gl_jouhdr.jnr = last_count
+
         gl_jouhdr.refno = c_refno
         gl_jouhdr.datum = to_date
         gl_jouhdr.bezeich = c_bezeich
@@ -92,7 +104,11 @@ def gl_linkap2_1bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:Dec
             gl_journal = Gl_journal()
             db_session.add(gl_journal)
 
-            gl_journal.jnr = counters.counter
+            # gl_journal.jnr = counters.counter
+            gl_journal.jnr = last_count
+            
+
+            
             gl_journal.fibukonto = g_list.fibukonto
             gl_journal.debit =  to_decimal(g_list.debit)
             gl_journal.credit =  to_decimal(g_list.credit)

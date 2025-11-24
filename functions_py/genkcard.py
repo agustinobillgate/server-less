@@ -1,33 +1,49 @@
+#using conversion tools version: 1.0.0.119
+
+#------------------------------------------
+# SKIP SKIP
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#------------------------------------------
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
 from models import Htparam, Res_line, Zimmer, Counters, Queasy
+from functions.next_counter_for_update import next_counter_for_update
 
-def genkcard(ipccommand:int, iocroomno:str, room2:str, room3:str, iodfrom:date, iodto:date, ioitimefrom:int, ioitimeto:int, iocparms:str):
+def genkcard(ipccommand:int, iocroomno:string, room2:string, room3:string, iodfrom:date, iodto:date, ioitimefrom:int, ioitimeto:int, iocparms:string):
+
+    prepare_cache ([Htparam, Res_line, Zimmer, Counters, Queasy])
+
     lvires = 0
     variable = None
     ci_date:date = None
-    lvcport:str = ""
-    lvcdatea:str = ""
-    lvcdateb:str = ""
-    lvchotelid:str = ""
+    lvcport:string = ""
+    lvcdatea:string = ""
+    lvcdateb:string = ""
+    lvchotelid:string = ""
     lviwtime:int = 4
-    lvcrw:str = ""
-    lvccard:str = ""
-    lvcguest:str = ""
-    lvcroom:str = ""
+    lvcrw:string = ""
+    lvccard:string = ""
+    lvcguest:string = ""
+    lvcroom:string = ""
     lvm1:bytes = None
     lvm2:bytes = None
     lviidx:int = 0
     lviresnr:int = 0
     lviresnlinr:int = 1
-    lvlexec:bool = TRUE
-    lvcerror:str = ""
+    lvlexec:bool = True
+    lvcerror:string = ""
     lvicntr:int = 0
     htparam = res_line = zimmer = counters = queasy = None
 
-
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    iocroomno = iocroomno.strip()
+    room2 = room2.strip()
+    room3 = room3.strip()
+    iocparms = iocparms.strip()
+
 
     def generate_output():
         nonlocal lvires, variable, ci_date, lvcport, lvcdatea, lvcdateb, lvchotelid, lviwtime, lvcrw, lvccard, lvcguest, lvcroom, lvm1, lvm2, lviidx, lviresnr, lviresnlinr, lvlexec, lvcerror, lvicntr, htparam, res_line, zimmer, counters, queasy
@@ -41,17 +57,16 @@ def genkcard(ipccommand:int, iocroomno:str, room2:str, room3:str, iodfrom:date, 
         nonlocal ipccommand, iocroomno, room2, room3, iodfrom, iodto, ioitimefrom, ioitimeto, iocparms
 
         i:int = 0
-        t1_info:str = "VHP-"
-        gname:str = "-,"
-        ct:str = ""
-        st:str = ""
-        floor:str = ""
-        building:str = ""
+        t1_info:string = "VHP-"
+        gname:string = "-,"
+        ct:string = ""
+        st:string = ""
+        floor:string = ""
+        building:string = ""
 
         if lviresnr > 0:
 
-            res_line = db_session.query(Res_line).filter(
-                     (Res_line.resnr == lviresnr) & (Res_line.reslinnr == lviresnlinr)).first()
+            res_line = get_cache (Res_line, {"resnr": [(eq, lviresnr)],"reslinnr": [(eq, lviresnlinr)]})
 
             if res_line:
                 gname = replace_str(trim(res_line.name) , " ", "_")
@@ -59,11 +74,10 @@ def genkcard(ipccommand:int, iocroomno:str, room2:str, room3:str, iodfrom:date, 
                 gname = gname + ","
 
 
-        else:
-            gname = "-,"
+            else:
+                gname = "-,"
 
-        zimmer = db_session.query(Zimmer).filter(
-                 (Zimmer.zinr == lvcroom)).first()
+        zimmer = get_cache (Zimmer, {"zinr": [(eq, lvcroom)]})
 
         if zimmer:
             floor = to_string(zimmer.etage)
@@ -76,8 +90,7 @@ def genkcard(ipccommand:int, iocroomno:str, room2:str, room3:str, iodfrom:date, 
             st = st + ";R3" + room3
         ct = "XW" + ";PN" + "1" + ";RN" + lvcroom + st + ";NA" + gname + ";KC" + lvcport + ";TY" + lvccard + ";ct" + to_string(ioitimefrom) + ";OT" + to_string(ioitimeto) + ";CD" + to_string(get_month(iodfrom) , "99") + "/" + to_string(get_day(iodfrom) , "99") + "/" + to_string(get_year(iodfrom) , "9999") + ";OD" + to_string(get_month(iodto) , "99") + "/" + to_string(get_day(iodto) , "99") + "/" + to_string(get_year(iodto) , "9999") + ";ID" + user_init + ";T1" + t1_info + ";T2" + "-" + ";T3" + "-" + ";FL" + floor + ";BD" + building
 
-        counters = db_session.query(Counters).filter(
-                     (Counters.counter_no == 30)).first()
+        counters = get_cache (Counters, {"counter_no": [(eq, 30)]})
 
         if not counters:
             counters = Counters()
@@ -87,10 +100,19 @@ def genkcard(ipccommand:int, iocroomno:str, room2:str, room3:str, iodfrom:date, 
             counters.counter_bez = "Counter for KeyCard Sequence"
 
 
-        counters.counter = counters.counter + 1
+        # counters.counter = counters.counter + 1
+        # last_count, error_lock = next_counter_for_update(30)
 
+        # if counters.counter > 9999:
+        #     counters.counter = 1
+        counters = db_session.query(Counters).with_for_update().filter(Counters.counter_no == 30).first()
+        counters.counter = counters.counter + 1
         if counters.counter > 9999:
             counters.counter = 1
+        db_session.commit()
+        
+
+        pass
         lvicntr = counters.counter
 
 
@@ -113,17 +135,18 @@ def genkcard(ipccommand:int, iocroomno:str, room2:str, room3:str, iodfrom:date, 
 
         pass
         pass
+        pass
+
 
     def readcard():
 
         nonlocal lvires, variable, ci_date, lvcport, lvcdatea, lvcdateb, lvchotelid, lviwtime, lvcrw, lvccard, lvcguest, lvcroom, lvm1, lvm2, lviidx, lviresnr, lviresnlinr, lvlexec, lvcerror, lvicntr, htparam, res_line, zimmer, counters, queasy
         nonlocal ipccommand, iocroomno, room2, room3, iodfrom, iodto, ioitimefrom, ioitimeto, iocparms
 
-        ct:str = ""
+        ct:string = ""
         ct = "XR" + ";KC" + lvcport
 
-        counters = db_session.query(Counters).filter(
-                     (Counters.counter_no == 30)).first()
+        counters = get_cache (Counters, {"counter_no": [(eq, 30)]})
 
         if not counters:
             counters = Counters()
@@ -133,10 +156,18 @@ def genkcard(ipccommand:int, iocroomno:str, room2:str, room3:str, iodfrom:date, 
             counters.counter_bez = "Counter for KeyCard Sequence"
 
 
-        counters.counter = counters.counter + 1
+        # counters.counter = counters.counter + 1
 
+        # if counters.counter > 99999999:
+        #     counters.counter = 1
+
+        counters = db_session.query(Counters).with_for_update().filter(Counters.counter_no == 30).first()
+        counters.counter = counters.counter + 1
         if counters.counter > 99999999:
             counters.counter = 1
+        db_session.commit()
+
+        pass
         lvicntr = counters.counter
 
 
@@ -159,17 +190,18 @@ def genkcard(ipccommand:int, iocroomno:str, room2:str, room3:str, iodfrom:date, 
 
         pass
         pass
+        pass
+
 
     def erasecard():
 
         nonlocal lvires, variable, ci_date, lvcport, lvcdatea, lvcdateb, lvchotelid, lviwtime, lvcrw, lvccard, lvcguest, lvcroom, lvm1, lvm2, lviidx, lviresnr, lviresnlinr, lvlexec, lvcerror, lvicntr, htparam, res_line, zimmer, counters, queasy
         nonlocal ipccommand, iocroomno, room2, room3, iodfrom, iodto, ioitimefrom, ioitimeto, iocparms
 
-        ct:str = ""
+        ct:string = ""
         ct = "XE" + ";KC" + lvcport + ";RN" + lvcroom
 
-        counters = db_session.query(Counters).filter(
-                     (Counters.counter_no == 30)).first()
+        counters = get_cache (Counters, {"counter_no": [(eq, 30)]})
 
         if not counters:
             counters = Counters()
@@ -179,10 +211,17 @@ def genkcard(ipccommand:int, iocroomno:str, room2:str, room3:str, iodfrom:date, 
             counters.counter_bez = "Counter for KeyCard Sequence"
 
 
-        counters.counter = counters.counter + 1
+        # counters.counter = counters.counter + 1
 
+        # if counters.counter > 99999999:
+        #     counters.counter = 1
+        counters = db_session.query(Counters).with_for_update().filter(Counters.counter_no == 30).first()
+        counters.counter = counters.counter + 1
         if counters.counter > 99999999:
             counters.counter = 1
+        db_session.commit()
+
+        pass
         lvicntr = counters.counter
 
 
@@ -205,30 +244,26 @@ def genkcard(ipccommand:int, iocroomno:str, room2:str, room3:str, iodfrom:date, 
 
         pass
         pass
+        pass
 
-
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 922)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 922)]})
 
     if not htparam:
 
         return generate_output()
     lvchotelid = htparam.fchar
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 923)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 923)]})
 
     if not htparam:
 
         return generate_output()
     lviwtime = to_int(htparam.fchar)
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 87)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
     ci_date = htparam.fdate
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 924)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 924)]})
 
     if not htparam:
 
