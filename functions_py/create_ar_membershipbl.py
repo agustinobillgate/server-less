@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------
+# Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
+#---------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Cl_member, Guest, Artikel, Mc_fee, Cl_memtype, Htparam, Counters, Bill, Bill_line, Billjournal, Umsatz, Debitor, Bediener, Cl_histpay, Cl_log, Cl_histstatus
+from functions.next_counter_for_update import next_counter_for_update
 
 def create_ar_membershipbl(guestno:int, init_fee:Decimal, mber_fee:Decimal, user_init:string):
 
@@ -50,6 +53,8 @@ def create_ar_membershipbl(guestno:int, init_fee:Decimal, mber_fee:Decimal, user
 
 
     db_session = local_storage.db_session
+    last_count:int = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal msg_str, art_init, artnr1, art_disc, art_disc1, art_tax, art_ccard, pay_art, str_art, billdate, dept, member_code, i, s, from_date, to_date, billname, active_flag, validity, memname, betrag, paid_amt, paid_flag, typenr, membertype, payment, curr_time, billgastnr, cl_member, guest, artikel, mc_fee, cl_memtype, htparam, counters, bill, bill_line, billjournal, umsatz, debitor, bediener, cl_histpay, cl_log, cl_histstatus
@@ -158,14 +163,19 @@ def create_ar_membershipbl(guestno:int, init_fee:Decimal, mber_fee:Decimal, user
 
         nonlocal mbuff, gbuff, gbuff1, artikel1, fbuff, tbuff
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-        counters.counter = counters.counter + 1
+        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        # counters.counter = counters.counter + 1
+        last_count, error_lock = get_output(next_counter_for_update(3))
+
         pass
         bill = Bill()
         db_session.add(bill)
 
         bill.gastnr = guestno
-        bill.rechnr = counters.counter
+        # bill.rechnr = counters.counter
+        bill.rechnr = last_count
+        
+
         bill.datum = billdate
         bill.billtyp = dept
         bill.name = billname

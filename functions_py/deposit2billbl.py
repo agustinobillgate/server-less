@@ -1,10 +1,13 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------
+# Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
+#---------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpdate import htpdate
 from models import Artikel, Res_line, Bill, Reservation, Htparam, Counters, Bill_line, Billjournal, Umsatz, Master, Waehrung, Exrate
+from functions.next_counter_for_update import next_counter_for_update
 
 def deposit2billbl(resno:int, reslinno:int):
 
@@ -22,8 +25,9 @@ def deposit2billbl(resno:int, reslinno:int):
 
     Art1 = create_buffer("Art1",Artikel)
 
-
     db_session = local_storage.db_session
+    last_count:int = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal bill_date, sys_id, it_is, inv_nr, deposit, deposit_foreign, artikel, res_line, bill, reservation, htparam, counters, bill_line, billjournal, umsatz, master, waehrung, exrate
@@ -94,8 +98,11 @@ def deposit2billbl(resno:int, reslinno:int):
                 counters.counter_bez = "Counter for Bill No"
 
 
-            counters.counter = counters.counter + 1
-            mbill.rechnr = counters.counter
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(3))
+            mbill.rechnr = last_count
+
+            
             pass
             pass
             master.rechnr = mbill.rechnr

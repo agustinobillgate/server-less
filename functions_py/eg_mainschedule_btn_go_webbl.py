@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------
+# Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
+#---------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Eg_action, Eg_maintain, Counters, Eg_mdetail
+from functions.next_counter_for_update import next_counter_for_update
 
 maintain_data, Maintain = create_model_like(Eg_maintain)
 action_data, Action = create_model_like(Eg_action, {"selected":bool})
@@ -27,6 +30,8 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
     action = maintain = None
 
     db_session = local_storage.db_session
+    last_count:int = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal fl_daily, fl_weekly, fl_monthly, fl_quarter, fl_half_yearly, fl_yearly, a, b, tdate, nr, eg_action, eg_maintain, counters, eg_mdetail
@@ -74,9 +79,10 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
                 counters.counter = 0
 
 
-            counters.counter = counters.counter + 1
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(38))
             pass
-            nr = counters.counter
+            nr = last_count
             eg_maintain = Eg_maintain()
             db_session.add(eg_maintain)
 
@@ -116,9 +122,13 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
                 counters.counter = 0
 
 
-            counters.counter = counters.counter + 1
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(38))
+
             pass
-            nr = counters.counter
+            # nr = counters.counter
+            nr = last_count
+
             eg_maintain = Eg_maintain()
             db_session.add(eg_maintain)
 
@@ -158,9 +168,13 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
                 counters.counter = 0
 
 
-            counters.counter = counters.counter + 1
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(38))
+
             pass
-            nr = counters.counter
+            # nr = counters.counter
+            nr = last_count
+
             eg_maintain = Eg_maintain()
             db_session.add(eg_maintain)
 
@@ -200,9 +214,13 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
                 counters.counter = 0
 
 
-            counters.counter = counters.counter + 1
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(38))
+
             pass
-            nr = counters.counter
+            # nr = counters.counter
+            nr = last_count
+
             eg_maintain = Eg_maintain()
             db_session.add(eg_maintain)
 
@@ -242,9 +260,13 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
                 counters.counter = 0
 
 
-            counters.counter = counters.counter + 1
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(38))
+
             pass
-            nr = counters.counter
+            # nr = counters.counter
+            nr = last_count
+
             eg_maintain = Eg_maintain()
             db_session.add(eg_maintain)
 
@@ -284,9 +306,13 @@ def eg_mainschedule_btn_go_webbl(maintain_data:[Maintain], action_data:[Action],
                 counters.counter = 0
 
 
-            counters.counter = counters.counter + 1
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(38))
+
             pass
-            nr = counters.counter
+            # nr = counters.counter
+            nr = last_count
+            
             eg_maintain = Eg_maintain()
             db_session.add(eg_maintain)
 

@@ -27,6 +27,8 @@ def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezei
     bill = htparam = artikel = counters = umsatz = bill_line = billjournal = res_line = None
 
     db_session = local_storage.db_session
+    last_count:int = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal bill_descript, success_flag, msg_str, gname, bill_date, billart, qty, descript_str, error_flag, lvcarea, dept_char, bill, htparam, artikel, counters, umsatz, bill_line, billjournal, res_line
@@ -86,7 +88,7 @@ def combo_transfer_bill_1bl(pvilanguage:int, dept_type:int, dept:int, dept_bezei
         # bill.rechnr = counters.counter
         last_count, error_lock = get_output(next_counter_for_update(3))
         bill.rechnr = last_count
-        
+
 
     if bill.datum < bill_date:
         bill.datum = bill_date

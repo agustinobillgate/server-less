@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------
+# Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
+#---------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Eg_request, Htparam, Eg_queasy, Bediener, Eg_property, Counters, Eg_location, Res_line, History, Guest
+from functions.next_counter_for_update import next_counter_for_update
 
 request1_data, Request1 = create_model_like(Eg_request)
 
@@ -17,6 +20,11 @@ def eg_mkreq_btn_go_webbl(request1_data:[Request1], sguestflag:bool, sub_str:str
     request1 = None
 
     db_session = local_storage.db_session
+    last_count:int = 0
+    error_lock:string = ""
+    sub_str = sub_str.strip()
+    main_str = main_str.strip()
+    prop_bezeich = prop_bezeich.strip()
 
     def generate_output():
         nonlocal ci_date, eg_request, htparam, eg_queasy, bediener, eg_property, counters, eg_location, res_line, history, guest
@@ -59,11 +67,13 @@ def eg_mkreq_btn_go_webbl(request1_data:[Request1], sguestflag:bool, sub_str:str
             pass
         else:
             pass
-            counters.counter = counters.counter + 1
-
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(34))
 
             pass
-        request1.reqnr = counters.counter
+        # request1.reqnr = counters.counter
+        request1.reqnr = last_count
+
         request1.opened_time = get_current_time_in_seconds()
 
         if request1.propertynr == 0:

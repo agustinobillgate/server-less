@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------
+# Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
+#---------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gl_journal, Gl_jouhdr, Counters
+from functions.next_counter_for_update import next_counter_for_update
 
 def copy_journalbl(desc_cj:string, credit:Decimal, debit:Decimal, remain:Decimal, jnr:int, user_init:string, datum:date, refno:string):
 
@@ -16,9 +19,11 @@ def copy_journalbl(desc_cj:string, credit:Decimal, debit:Decimal, remain:Decimal
     Gl_jnal = create_buffer("Gl_jnal",Gl_journal)
     Gl_jou = create_buffer("Gl_jou",Gl_journal)
     Gl_hdr = create_buffer("Gl_hdr",Gl_jouhdr)
-
-
     db_session = local_storage.db_session
+    last_count:int = 0
+    error_lock:string = ""
+    desc_cj = desc_cj.strip()
+
 
     def generate_output():
         nonlocal gl_journal, gl_jouhdr, counters
@@ -32,7 +37,8 @@ def copy_journalbl(desc_cj:string, credit:Decimal, debit:Decimal, remain:Decimal
 
     gl_hdr = Gl_jouhdr()
     db_session.add(gl_hdr)
-
+    last_count:int = 0
+    error_lock:string = ""
 
     counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
 
@@ -42,9 +48,12 @@ def copy_journalbl(desc_cj:string, credit:Decimal, debit:Decimal, remain:Decimal
 
         counters.counter_no = 25
         counters.counter_bez = "G/L Transaction Journal"
-    counters.counter = counters.counter + 1
-    pass
-    gl_hdr.jnr = counters.counter
+    # counters.counter = counters.counter + 1
+    last_count, error_lock = get_output(next_counter_for_update(25))
+
+    # gl_hdr.jnr = counters.counter
+    gl_hdr.jnr = last_count
+
     gl_hdr.refno = refno
     gl_hdr.datum = datum
     gl_hdr.bezeich = desc_cj
@@ -58,7 +67,9 @@ def copy_journalbl(desc_cj:string, credit:Decimal, debit:Decimal, remain:Decimal
         gl_jnal = Gl_journal()
         db_session.add(gl_jnal)
 
-        gl_jnal.jnr = counters.counter
+        # gl_jnal.jnr = counters.counter
+        gl_jnal.jnr = last_count
+
         gl_jnal.fibukonto = gl_jou.fibukonto
         gl_jnal.debit =  to_decimal(gl_jou.debit)
         gl_jnal.bemerk = gl_jou.bemerk
