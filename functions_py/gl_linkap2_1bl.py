@@ -78,7 +78,7 @@ def gl_linkap2_1bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:Dec
             counters.counter_no = 25
             counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
         # counters.counter = counters.counter + 1
-        last_count, error_lock = next_counter_for_update(25)
+        last_count, error_lock = get_output(next_counter_for_update(25))
 
         pass
         # gl_jouhdr.jnr = counters.counter  
@@ -106,7 +106,7 @@ def gl_linkap2_1bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:Dec
 
             # gl_journal.jnr = counters.counter
             gl_journal.jnr = last_count
-            
+
 
             
             gl_journal.fibukonto = g_list.fibukonto

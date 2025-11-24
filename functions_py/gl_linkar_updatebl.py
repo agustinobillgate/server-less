@@ -54,7 +54,7 @@ def gl_linkar_updatebl(pvilanguage:int, remains:Decimal, credits:[Decimal], debi
             counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
         # counters.counter = counters.counter + 1
 
-        last_count, error_lock = next_counter_for_update(25)
+        last_count, error_lock = get_output(next_counter_for_update(25))
 
         # curr_counter = counters.counter
         curr_counter = last_count

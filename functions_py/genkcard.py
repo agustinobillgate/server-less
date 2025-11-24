@@ -101,7 +101,7 @@ def genkcard(ipccommand:int, iocroomno:string, room2:string, room3:string, iodfr
 
 
         # counters.counter = counters.counter + 1
-        # last_count, error_lock = next_counter_for_update(30)
+        # last_count, error_lock = get_output(next_counter_for_update(30))
 
         # if counters.counter > 9999:
         #     counters.counter = 1

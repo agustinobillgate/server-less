@@ -78,7 +78,7 @@ def globalreservebl(case_type:int, k_list_data:[K_list], rmcat:string, gastnr:in
                 counters.counter_no = 10
                 counters.counter_bez = "Allotment counter"
             # counters.counter = counters.counter + 1
-            last_count, error_lock = next_counter_for_update(10)
+            last_count, error_lock = get_output(next_counter_for_update(10))
             kontline = Kontline()
             db_session.add(kontline)
 
