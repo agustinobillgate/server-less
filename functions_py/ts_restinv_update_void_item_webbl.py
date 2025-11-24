@@ -723,7 +723,10 @@ def ts_restinv_update_void_item_webbl(pvilanguage:int, rec_id:int, rec_id_h_arti
                 h_bill.resnr = guest.gastnr
                 h_bill.reslinnr = 0
 
-        counters = get_cache (Counters, {"counter_no": [(eq, (100 + curr_dept))]})
+        # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+        # counters = get_cache (Counters, {"counter_no": [(eq, (100 + curr_dept))]})
+        counters = db_session.query(Counters).filter(
+                     (Counters.counter_no == (100 + curr_dept))).with_for_update().first()
 
         if counters:
             pass
@@ -735,16 +738,12 @@ def ts_restinv_update_void_item_webbl(pvilanguage:int, rec_id:int, rec_id_h_arti
 
             counters.counter_no = 100 + curr_dept
             counters.counter_bez = "Outlet Invoice: " + hoteldpt.depart
-        # counters.counter = counters.counter + 1
+        counters.counter = counters.counter + 1
 
         if counters.counter > 999999:
-            # counters.counter = 1
-            counters.counter = 0
+            counters.counter = 1
 
-        last_count, error_lock = get_output(next_counter_for_update(100 + curr_dept))
-        pass
-        # h_bill.rechnr = counters.counter
-        h_bill.rechnr = last_count
+        h_bill.rechnr = counters.counter
 
         rechnr = h_bill.rechnr
         fl_code2 = 1

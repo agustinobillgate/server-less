@@ -7,7 +7,9 @@
 #         submenu_list.menurecid == submenu_list.menurecid
 #         Masih harus di pastikan apakah benar validasinya seperti itu 
 # =======================================
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -703,7 +705,10 @@ def ts_restinv_update_bill_1bl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int
                 h_bill.resnr = guest.gastnr
                 h_bill.reslinnr = 0
 
-        counters = get_cache (Counters, {"counter_no": [(eq, (100 + curr_dept))]})
+        # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+        # counters = get_cache (Counters, {"counter_no": [(eq, (100 + curr_dept))]})
+        counters = db_session.query(Counters).filter(
+                     (Counters.counter_no == (100 + curr_dept))).with_for_update().first()  
 
         if counters:
             pass
