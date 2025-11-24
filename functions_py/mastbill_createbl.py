@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Master, Guest, Bill, Reservation, Counters
+from functions.next_counter_for_update import next_counter_for_update
 
 def mastbill_createbl(resnr:int, curr_segm:int):
 
@@ -23,6 +26,8 @@ def mastbill_createbl(resnr:int, curr_segm:int):
 
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal bill_receiver, t_master_data, t_guest_data, bill_no, master, guest, bill, reservation, counters
@@ -56,10 +61,13 @@ def mastbill_createbl(resnr:int, curr_segm:int):
     guest = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
     bill_receiver = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
-    counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-    counters.counter = counters.counter + 1
+    # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+    # counters.counter = counters.counter + 1
+    last_count, error_lock = next_counter_for_update(3)
+
     pass
-    master.rechnr = counters.counter
+    master.rechnr = last_count
+    
 
     bill = get_cache (Bill, {"resnr": [(eq, resnr)],"reslinnr": [(eq, 0)]})
 
@@ -71,8 +79,10 @@ def mastbill_createbl(resnr:int, curr_segm:int):
     bill.reslinnr = 0
     bill.rgdruck = 1
     bill.billtyp = 2
-    bill.rechnr = counters.counter
-    bill.gastnr = gastnrpay
+    # bill.rechnr = counters.counter
+    bill.rechnr = last_count
+
+    bill.gastnr = master.gastnrpay
     bill.name = bill_receiver
     bill.segmentcode = curr_segm
 

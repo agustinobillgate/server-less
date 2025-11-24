@@ -9,7 +9,6 @@ from datetime import date
 from models import Htparam, Guest, Counters, Bk_reser, Bk_raum, Akt_kont, Bk_func, Bk_veran
 from functions.next_counter_for_update import next_counter_for_update
 
-
 def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bkl_ttime:int, bkl_raum:string, 
                              bkl_datum:date, bkl_tdatum:date, bediener_nr:int, ba_dept:int, curr_resstatus:int, user_init:string):
 
