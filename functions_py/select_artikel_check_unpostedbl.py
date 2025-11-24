@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -151,7 +153,10 @@ def select_artikel_check_unpostedbl(veran_nr:int, veran_seite:int, sub_group:int
 
         guest = get_cache (Guest, {"gastnr": [(eq, bk_veran.gastnrver)]})
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        counters = db_session.query(Counters).with_for_update().filter(
+                 (Counters.counter_no == 3)).first()
         counters.counter = counters.counter + 1
         pass
         bill = Bill()

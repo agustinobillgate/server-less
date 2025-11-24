@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -83,8 +85,11 @@ def splitbill_updatebillbl(pvilanguage:int, j:int, recid_curr:int, recid_j:int, 
         billj = get_cache (Bill, {"_recid": [(eq, recid_j)]})
 
         if billj.rechnr == 0:
-
-            counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+            # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            counters = db_session.query(Counters).with_for_update().filter(
+                     (Counters.counter_no == 3)).first()
+            
             counters.counter = counters.counter + 1
             billj.rechnr = counters.counter
             pass

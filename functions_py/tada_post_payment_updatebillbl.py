@@ -1,15 +1,19 @@
-#using conversion tools version: 1.0.0.29
-
+#using conversion tools version: 1.0.0.119
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from datetime import date
-from sqlalchemy import func
 from functions.ts_restinv_rinv_arbl import ts_restinv_rinv_arbl
 from models import Kellner, H_bill, H_bill_line, H_mjourn, H_artikel, Htparam, Queasy, Guest, Counters, Hoteldpt, H_umsatz, H_journal, Umsatz, Artikel, Interface, Arrangement, Argt_line, Billjournal
 
-submenu_list_list, Submenu_list = create_model("Submenu_list", {"menurecid":int, "zeit":int, "nr":int, "artnr":int, "bezeich":str, "anzahl":int, "zknr":int, "request":str})
+submenu_list_data, Submenu_list = create_model("Submenu_list", {"menurecid":int, "zeit":int, "nr":int, "artnr":int, "bezeich":string, "anzahl":int, "zknr":int, "request":string})
 
-def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int, deptname:str, transdate:date, h_artart:int, cancel_order:bool, h_artikel_service_code:int, amount:decimal, amount_foreign:decimal, price:decimal, double_currency:bool, qty:int, exchg_rate:decimal, price_decimal:int, order_taker:int, tischnr:int, curr_dept:int, curr_waiter:int, gname:str, pax:int, kreditlimit:decimal, add_zeit:int, billart:int, description:str, change_str:str, cc_comment:str, cancel_str:str, req_str:str, voucher_str:str, hoga_card:str, print_to_kitchen:bool, from_acct:bool, h_artnrfront:int, pay_type:int, guestnr:int, transfer_zinr:str, curedept_flag:bool, foreign_rate:bool, curr_room:str, user_init:str, hoga_resnr:int, hoga_reslinnr:int, submenu_list_list:[Submenu_list]):
+def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int, deptname:string, transdate:date, h_artart:int, cancel_order:bool, h_artikel_service_code:int, amount:Decimal, amount_foreign:Decimal, price:Decimal, double_currency:bool, qty:int, exchg_rate:Decimal, price_decimal:int, order_taker:int, tischnr:int, curr_dept:int, curr_waiter:int, gname:string, pax:int, kreditlimit:Decimal, add_zeit:int, billart:int, description:string, change_str:string, cc_comment:string, cancel_str:string, req_str:string, voucher_str:string, hoga_card:string, print_to_kitchen:bool, from_acct:bool, h_artnrfront:int, pay_type:int, guestnr:int, transfer_zinr:string, curedept_flag:bool, foreign_rate:bool, curr_room:string, user_init:string, hoga_resnr:int, hoga_reslinnr:int, submenu_list_data:[Submenu_list]):
+
+    prepare_cache ([H_bill_line, H_mjourn, H_artikel, Htparam, Queasy, Guest, Counters, Hoteldpt, H_umsatz, H_journal, Umsatz, Artikel, Interface, Arrangement, Argt_line, Billjournal])
+
     bill_date = None
     cancel_flag = False
     fl_code = 0
@@ -24,25 +28,25 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
     fl_code3 = 0
     p_88 = False
     closed = False
-    t_h_bill_list = []
-    t_kellner1_list = []
-    lvcarea:str = "TS-restinv"
+    t_h_bill_data = []
+    t_kellner1_data = []
+    lvcarea:string = "TS-restinv"
     incl_vat:bool = False
     get_price:int = 0
-    mc_str:str = ""
-    tax:decimal = to_decimal("0.0")
-    serv:decimal = to_decimal("0.0")
-    h_service:decimal = to_decimal("0.0")
-    unit_price:decimal = to_decimal("0.0")
-    nett_amount_foreign:decimal = to_decimal("0.0")
-    h_mwst:decimal = to_decimal("0.0")
-    h_mwst_foreign:decimal = to_decimal("0.0")
-    h_service_foreign:decimal = to_decimal("0.0")
-    nett_amount:decimal = to_decimal("0.0")
-    subtotal:decimal = to_decimal("0.0")
-    subtotal_foreign:decimal = to_decimal("0.0")
-    service:decimal = to_decimal("0.0")
-    service_foreign:decimal = to_decimal("0.0")
+    mc_str:string = ""
+    tax:Decimal = to_decimal("0.0")
+    serv:Decimal = to_decimal("0.0")
+    h_service:Decimal = to_decimal("0.0")
+    unit_price:Decimal = to_decimal("0.0")
+    nett_amount_foreign:Decimal = to_decimal("0.0")
+    h_mwst:Decimal = to_decimal("0.0")
+    h_mwst_foreign:Decimal = to_decimal("0.0")
+    h_service_foreign:Decimal = to_decimal("0.0")
+    nett_amount:Decimal = to_decimal("0.0")
+    subtotal:Decimal = to_decimal("0.0")
+    subtotal_foreign:Decimal = to_decimal("0.0")
+    service:Decimal = to_decimal("0.0")
+    service_foreign:Decimal = to_decimal("0.0")
     recid_h_bill_line:int = 0
     recid_hbill:int = 0
     sysdate:date = None
@@ -51,21 +55,21 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
     succed:bool = False
     active_deposit:bool = False
     serv_vat:bool = False
-    ct:str = ""
+    ct:string = ""
     l_deci:int = 2
-    vat:decimal = to_decimal("0.0")
-    vat2:decimal = to_decimal("0.0")
+    vat:Decimal = to_decimal("0.0")
+    vat2:Decimal = to_decimal("0.0")
     tax_vat:bool = False
-    fact_scvat:decimal = 1
+    fact_scvat:Decimal = 1
     get_rechnr:int = 0
-    get_amount:decimal = to_decimal("0.0")
+    get_amount:Decimal = to_decimal("0.0")
     curr_time:int = 0
     kellner = h_bill = h_bill_line = h_mjourn = h_artikel = htparam = queasy = guest = counters = hoteldpt = h_umsatz = h_journal = umsatz = artikel = interface = arrangement = argt_line = billjournal = None
 
     t_kellner1 = t_h_bill = submenu_list = h_bline = kellner1 = bbill = mjou = bill_guest = None
 
-    t_kellner1_list, T_kellner1 = create_model_like(Kellner)
-    t_h_bill_list, T_h_bill = create_model_like(H_bill, {"rec_id":int})
+    t_kellner1_data, T_kellner1 = create_model_like(Kellner)
+    t_h_bill_data, T_h_bill = create_model_like(H_bill, {"rec_id":int})
 
     H_bline = create_buffer("H_bline",H_bill_line)
     Kellner1 = create_buffer("Kellner1",Kellner)
@@ -73,37 +77,37 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
     Mjou = create_buffer("Mjou",H_mjourn)
     Bill_guest = create_buffer("Bill_guest",Guest)
 
+
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal bill_date, cancel_flag, fl_code, mwst, mwst_foreign, rechnr, balance, bcol, balance_foreign, fl_code1, fl_code2, fl_code3, p_88, closed, t_h_bill_list, t_kellner1_list, lvcarea, incl_vat, get_price, mc_str, tax, serv, h_service, unit_price, nett_amount_foreign, h_mwst, h_mwst_foreign, h_service_foreign, nett_amount, subtotal, subtotal_foreign, service, service_foreign, recid_h_bill_line, recid_hbill, sysdate, zeit, condiment, succed, active_deposit, serv_vat, ct, l_deci, vat, vat2, tax_vat, fact_scvat, get_rechnr, get_amount, curr_time, kellner, h_bill, h_bill_line, h_mjourn, h_artikel, htparam, queasy, guest, counters, hoteldpt, h_umsatz, h_journal, umsatz, artikel, interface, arrangement, argt_line, billjournal
+        nonlocal bill_date, cancel_flag, fl_code, mwst, mwst_foreign, rechnr, balance, bcol, balance_foreign, fl_code1, fl_code2, fl_code3, p_88, closed, t_h_bill_data, t_kellner1_data, lvcarea, incl_vat, get_price, mc_str, tax, serv, h_service, unit_price, nett_amount_foreign, h_mwst, h_mwst_foreign, h_service_foreign, nett_amount, subtotal, subtotal_foreign, service, service_foreign, recid_h_bill_line, recid_hbill, sysdate, zeit, condiment, succed, active_deposit, serv_vat, ct, l_deci, vat, vat2, tax_vat, fact_scvat, get_rechnr, get_amount, curr_time, kellner, h_bill, h_bill_line, h_mjourn, h_artikel, htparam, queasy, guest, counters, hoteldpt, h_umsatz, h_journal, umsatz, artikel, interface, arrangement, argt_line, billjournal
         nonlocal pvilanguage, rec_id, rec_id_h_artikel, deptname, transdate, h_artart, cancel_order, h_artikel_service_code, amount, amount_foreign, price, double_currency, qty, exchg_rate, price_decimal, order_taker, tischnr, curr_dept, curr_waiter, gname, pax, kreditlimit, add_zeit, billart, description, change_str, cc_comment, cancel_str, req_str, voucher_str, hoga_card, print_to_kitchen, from_acct, h_artnrfront, pay_type, guestnr, transfer_zinr, curedept_flag, foreign_rate, curr_room, user_init, hoga_resnr, hoga_reslinnr
         nonlocal h_bline, kellner1, bbill, mjou, bill_guest
 
 
         nonlocal t_kellner1, t_h_bill, submenu_list, h_bline, kellner1, bbill, mjou, bill_guest
-        nonlocal t_kellner1_list, t_h_bill_list
+        nonlocal t_kellner1_data, t_h_bill_data
 
-        return {"bill_date": bill_date, "cancel_flag": cancel_flag, "fl_code": fl_code, "mwst": mwst, "mwst_foreign": mwst_foreign, "rechnr": rechnr, "balance": balance, "bcol": bcol, "balance_foreign": balance_foreign, "fl_code1": fl_code1, "fl_code2": fl_code2, "fl_code3": fl_code3, "p_88": p_88, "closed": closed, "t-h-bill": t_h_bill_list, "t-kellner1": t_kellner1_list}
+        return {"bill_date": bill_date, "cancel_flag": cancel_flag, "fl_code": fl_code, "mwst": mwst, "mwst_foreign": mwst_foreign, "rechnr": rechnr, "balance": balance, "bcol": bcol, "balance_foreign": balance_foreign, "fl_code1": fl_code1, "fl_code2": fl_code2, "fl_code3": fl_code3, "p_88": p_88, "closed": closed, "t-h-bill": t_h_bill_data, "t-kellner1": t_kellner1_data}
 
     def rev_bdown():
 
-        nonlocal bill_date, cancel_flag, fl_code, mwst, mwst_foreign, rechnr, balance, bcol, balance_foreign, fl_code1, fl_code2, fl_code3, p_88, closed, t_h_bill_list, t_kellner1_list, lvcarea, incl_vat, get_price, mc_str, tax, serv, h_service, unit_price, nett_amount_foreign, h_mwst, h_mwst_foreign, h_service_foreign, nett_amount, subtotal, subtotal_foreign, service, service_foreign, recid_h_bill_line, recid_hbill, sysdate, zeit, condiment, succed, active_deposit, serv_vat, ct, l_deci, vat, vat2, tax_vat, fact_scvat, get_rechnr, get_amount, curr_time, kellner, h_bill, h_bill_line, h_mjourn, h_artikel, htparam, queasy, guest, counters, hoteldpt, h_umsatz, h_journal, umsatz, artikel, interface, arrangement, argt_line, billjournal
+        nonlocal bill_date, cancel_flag, fl_code, mwst, mwst_foreign, rechnr, balance, bcol, balance_foreign, fl_code1, fl_code2, fl_code3, p_88, closed, t_h_bill_data, t_kellner1_data, lvcarea, incl_vat, get_price, mc_str, tax, serv, h_service, unit_price, nett_amount_foreign, h_mwst, h_mwst_foreign, h_service_foreign, nett_amount, subtotal, subtotal_foreign, service, service_foreign, recid_h_bill_line, recid_hbill, sysdate, zeit, condiment, succed, active_deposit, serv_vat, ct, l_deci, vat, vat2, tax_vat, fact_scvat, get_rechnr, get_amount, curr_time, kellner, h_bill, h_bill_line, h_mjourn, h_artikel, htparam, queasy, guest, counters, hoteldpt, h_umsatz, h_journal, umsatz, artikel, interface, arrangement, argt_line, billjournal
         nonlocal pvilanguage, rec_id, rec_id_h_artikel, deptname, transdate, h_artart, cancel_order, h_artikel_service_code, amount, amount_foreign, price, double_currency, qty, exchg_rate, price_decimal, order_taker, tischnr, curr_dept, curr_waiter, gname, pax, kreditlimit, add_zeit, billart, description, change_str, cc_comment, cancel_str, req_str, voucher_str, hoga_card, print_to_kitchen, from_acct, h_artnrfront, pay_type, guestnr, transfer_zinr, curedept_flag, foreign_rate, curr_room, user_init, hoga_resnr, hoga_reslinnr
         nonlocal h_bline, kellner1, bbill, mjou, bill_guest
 
 
         nonlocal t_kellner1, t_h_bill, submenu_list, h_bline, kellner1, bbill, mjou, bill_guest
-        nonlocal t_kellner1_list, t_h_bill_list
+        nonlocal t_kellner1_data, t_h_bill_data
 
         artikel1 = None
-        rest_betrag:decimal = to_decimal("0.0")
-        argt_betrag:decimal = to_decimal("0.0")
+        rest_betrag:Decimal = to_decimal("0.0")
+        argt_betrag:Decimal = to_decimal("0.0")
         Artikel1 =  create_buffer("Artikel1",Artikel)
         rest_betrag =  to_decimal(amount)
 
-        arrangement = db_session.query(Arrangement).filter(
-                 (Arrangement.argtnr == artikel.artgrp)).first()
+        arrangement = get_cache (Arrangement, {"argtnr": [(eq, artikel.artgrp)]})
 
         for argt_line in db_session.query(Argt_line).filter(
                  (Argt_line.argtnr == arrangement.argtnr)).order_by(Argt_line._recid).all():
@@ -118,11 +122,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
                 argt_betrag = to_decimal(round(argt_betrag , price_decimal))
             rest_betrag =  to_decimal(rest_betrag) - to_decimal(argt_betrag)
 
-            artikel1 = db_session.query(Artikel1).filter(
-                     (Artikel1.artnr == argt_line.argt_artnr) & (Artikel1.departement == argt_line.departement)).first()
+            artikel1 = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
 
-            umsatz = db_session.query(Umsatz).filter(
-                     (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).first()
+            umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
 
             if not umsatz:
                 umsatz = Umsatz()
@@ -133,6 +135,7 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
                 umsatz.departement = artikel1.departement
             umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(argt_betrag)
             umsatz.anzahl = umsatz.anzahl + qty
+            pass
             billjournal = Billjournal()
             db_session.add(billjournal)
 
@@ -150,11 +153,12 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
             billjournal.userinit = user_init
             billjournal.bill_datum = bill_date
 
-        artikel1 = db_session.query(Artikel1).filter(
-                 (Artikel1.artnr == arrangement.artnr_logis) & (Artikel1.departement == arrangement.intervall)).first()
 
-        umsatz = db_session.query(Umsatz).filter(
-                 (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).first()
+            pass
+
+        artikel1 = get_cache (Artikel, {"artnr": [(eq, arrangement.artnr_logis)],"departement": [(eq, arrangement.intervall)]})
+
+        umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
 
         if not umsatz:
             umsatz = Umsatz()
@@ -165,6 +169,7 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
             umsatz.departement = artikel1.departement
         umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(rest_betrag)
         umsatz.anzahl = umsatz.anzahl + qty
+        pass
         billjournal = Billjournal()
         db_session.add(billjournal)
 
@@ -183,17 +188,18 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
         if double_currency:
             billjournal.fremdwaehrng = to_decimal(round(rest_betrag / exchg_rate , 2))
+        pass
 
 
     def update_selforder():
 
-        nonlocal bill_date, cancel_flag, fl_code, mwst, mwst_foreign, rechnr, balance, bcol, balance_foreign, fl_code1, fl_code2, fl_code3, p_88, closed, t_h_bill_list, t_kellner1_list, lvcarea, incl_vat, get_price, mc_str, tax, serv, h_service, unit_price, nett_amount_foreign, h_mwst, h_mwst_foreign, h_service_foreign, nett_amount, subtotal, subtotal_foreign, service, service_foreign, recid_h_bill_line, recid_hbill, sysdate, zeit, condiment, succed, active_deposit, serv_vat, ct, l_deci, vat, vat2, tax_vat, fact_scvat, get_rechnr, get_amount, curr_time, kellner, h_bill, h_bill_line, h_mjourn, h_artikel, htparam, queasy, guest, counters, hoteldpt, h_umsatz, h_journal, umsatz, artikel, interface, arrangement, argt_line, billjournal
+        nonlocal bill_date, cancel_flag, fl_code, mwst, mwst_foreign, rechnr, balance, bcol, balance_foreign, fl_code1, fl_code2, fl_code3, p_88, closed, t_h_bill_data, t_kellner1_data, lvcarea, incl_vat, get_price, mc_str, tax, serv, h_service, unit_price, nett_amount_foreign, h_mwst, h_mwst_foreign, h_service_foreign, nett_amount, subtotal, subtotal_foreign, service, service_foreign, recid_h_bill_line, recid_hbill, sysdate, zeit, condiment, succed, active_deposit, serv_vat, ct, l_deci, vat, vat2, tax_vat, fact_scvat, get_rechnr, get_amount, curr_time, kellner, h_bill, h_bill_line, h_mjourn, h_artikel, htparam, queasy, guest, counters, hoteldpt, h_umsatz, h_journal, umsatz, artikel, interface, arrangement, argt_line, billjournal
         nonlocal pvilanguage, rec_id, rec_id_h_artikel, deptname, transdate, h_artart, cancel_order, h_artikel_service_code, amount, amount_foreign, price, double_currency, qty, exchg_rate, price_decimal, order_taker, tischnr, curr_dept, curr_waiter, gname, pax, kreditlimit, add_zeit, billart, description, change_str, cc_comment, cancel_str, req_str, voucher_str, hoga_card, print_to_kitchen, from_acct, h_artnrfront, pay_type, guestnr, transfer_zinr, curedept_flag, foreign_rate, curr_room, user_init, hoga_resnr, hoga_reslinnr
         nonlocal h_bline, kellner1, bbill, mjou, bill_guest
 
 
         nonlocal t_kellner1, t_h_bill, submenu_list, h_bline, kellner1, bbill, mjou, bill_guest
-        nonlocal t_kellner1_list, t_h_bill_list
+        nonlocal t_kellner1_data, t_h_bill_data
 
         paramqsy = None
         searchbill = None
@@ -204,12 +210,12 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
         pickup_table = None
         qpayment_gateway = None
         found_bill:int = 0
-        session_parameter:str = ""
-        mess_str:str = ""
+        session_parameter:string = ""
+        mess_str:string = ""
         i_str:int = 0
-        mess_token:str = ""
-        mess_keyword:str = ""
-        mess_value:str = ""
+        mess_token:string = ""
+        mess_keyword:string = ""
+        mess_value:string = ""
         dynamic_qr:bool = False
         room_serviceflag:bool = False
         Paramqsy =  create_buffer("Paramqsy",Queasy)
@@ -231,7 +237,7 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
                 room_serviceflag = genparamso.logi1
 
         for searchbill in db_session.query(Searchbill).filter(
-                 (Searchbill.key == 225) & (Searchbill.number1 == curr_dept) & (func.lower(Searchbill.char1) == ("orderbill").lower())).order_by(Searchbill._recid).all():
+                 (Searchbill.key == 225) & (Searchbill.number1 == curr_dept) & (Searchbill.char1 == ("orderbill").lower())).order_by(Searchbill._recid).all():
             mess_str = searchbill.char2
             for i_str in range(1,num_entries(mess_str, "|")  + 1) :
                 mess_token = entry(i_str - 1, mess_str, "|")
@@ -246,8 +252,7 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
                 session_parameter = searchbill.char3
                 break
 
-        paramqsy = db_session.query(Paramqsy).filter(
-                     (Paramqsy.key == 230) & (func.lower(Paramqsy.char1) == (session_parameter).lower())).first()
+        paramqsy = get_cache (Queasy, {"key": [(eq, 230)],"char1": [(eq, session_parameter)]})
 
         if paramqsy:
             paramqsy.betriebsnr = get_rechnr
@@ -255,13 +260,15 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
             if dynamic_qr:
 
                 pickup_table = db_session.query(Pickup_table).filter(
-                             (Pickup_table.key == 225) & (func.lower(Pickup_table.char1) == ("taken-table").lower()) & (Pickup_table.number1 == curr_dept) & (Pickup_table.logi1) & (Pickup_table.logi2) & (Pickup_table.number2 == paramqsy.number2) & (entry(0, Pickup_table.char3, "|") == (session_parameter).lower())).first()
+                             (Pickup_table.key == 225) & (Pickup_table.char1 == ("taken-table").lower()) & (Pickup_table.number1 == curr_dept) & (Pickup_table.logi1) & (Pickup_table.logi2) & (Pickup_table.number2 == paramqsy.number2) & (entry(0, Pickup_table.char3, "|") == (session_parameter).lower())).first()
 
                 if pickup_table:
                     pickup_table.char3 = entry(0, pickup_table.char3, "|", session_parameter + "T" + replace_str(to_string(get_current_date()) , "/", "") + replace_str(to_string(get_current_time_in_seconds(), "HH:MM") , ":", ""))
 
-            orderbill = db_session.query(Orderbill).filter(
-                         (Orderbill.key == 225) & (func.lower(Orderbill.char1) == ("orderbill").lower()) & (func.lower(Orderbill.char3) == (session_parameter).lower())).first()
+
+                    pass
+
+            orderbill = get_cache (Queasy, {"key": [(eq, 225)],"char1": [(eq, "orderbill")],"char3": [(eq, session_parameter)]})
 
             if orderbill:
                 orderbill.deci1 =  to_decimal(get_amount)
@@ -270,7 +277,7 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
                 orderbill.logi1 = False
 
                 for orderbill_close in db_session.query(Orderbill_close).filter(
-                             (Orderbill_close.key == 225) & (func.lower(Orderbill_close.char1) == ("orderbill").lower()) & (func.lower(Orderbill_close.char3) == (session_parameter).lower()) & (Orderbill_close.logi1)).order_by(Orderbill_close._recid).all():
+                             (Orderbill_close.key == 225) & (Orderbill_close.char1 == ("orderbill").lower()) & (Orderbill_close.char3 == (session_parameter).lower()) & (Orderbill_close.logi1)).order_by(Orderbill_close._recid).all():
                     orderbill_close.char3 = session_parameter + "T" + replace_str(to_string(get_current_date()) , "/", "") + replace_str(to_string(get_current_time_in_seconds(), "HH:MM") , ":", "")
                     orderbill_close.logi1 = False
 
@@ -294,88 +301,82 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
                     queasy.logi1 = True
 
                 for orderbilline in db_session.query(Orderbilline).filter(
-                             (Orderbilline.key == 225) & (func.lower(Orderbilline.char1) == ("orderbill-line").lower()) & (entry(3, Orderbilline.char2, "|") == (session_parameter).lower())).order_by(Orderbilline._recid).all():
+                             (Orderbilline.key == 225) & (Orderbilline.char1 == ("orderbill-line").lower()) & (entry(3, Orderbilline.char2, "|") == (session_parameter).lower())).order_by(Orderbilline._recid).all():
                     orderbilline.char2 = entry(0, orderbilline.char2, "|") + "|" + entry(1, orderbilline.char2, "|") + "|" + entry(2, orderbilline.char2, "|") + "|" + session_parameter + "T" + replace_str(to_string(get_current_date()) , "/", "") + replace_str(to_string(get_current_time_in_seconds(), "HH:MM") , ":", "")
 
-            qpayment_gateway = db_session.query(Qpayment_gateway).filter(
-                         (Qpayment_gateway.key == 223) & (func.lower(Qpayment_gateway.char3) == (session_parameter).lower()) & (Qpayment_gateway.betriebsnr == get_rechnr)).first()
+            qpayment_gateway = get_cache (Queasy, {"key": [(eq, 223)],"char3": [(eq, session_parameter)],"betriebsnr": [(eq, get_rechnr)]})
 
             if qpayment_gateway:
                 qpayment_gateway.betriebsnr = 0
+                pass
+            pass
 
 
     def remove_rsv_table():
 
-        nonlocal bill_date, cancel_flag, fl_code, mwst, mwst_foreign, rechnr, balance, bcol, balance_foreign, fl_code1, fl_code2, fl_code3, p_88, closed, t_h_bill_list, t_kellner1_list, lvcarea, incl_vat, get_price, mc_str, tax, serv, h_service, unit_price, nett_amount_foreign, h_mwst, h_mwst_foreign, h_service_foreign, nett_amount, subtotal, subtotal_foreign, service, service_foreign, recid_h_bill_line, recid_hbill, sysdate, zeit, condiment, succed, active_deposit, serv_vat, ct, l_deci, vat, vat2, tax_vat, fact_scvat, get_rechnr, get_amount, curr_time, kellner, h_bill, h_bill_line, h_mjourn, h_artikel, htparam, queasy, guest, counters, hoteldpt, h_umsatz, h_journal, umsatz, artikel, interface, arrangement, argt_line, billjournal
+        nonlocal bill_date, cancel_flag, fl_code, mwst, mwst_foreign, rechnr, balance, bcol, balance_foreign, fl_code1, fl_code2, fl_code3, p_88, closed, t_h_bill_data, t_kellner1_data, lvcarea, incl_vat, get_price, mc_str, tax, serv, h_service, unit_price, nett_amount_foreign, h_mwst, h_mwst_foreign, h_service_foreign, nett_amount, subtotal, subtotal_foreign, service, service_foreign, recid_h_bill_line, recid_hbill, sysdate, zeit, condiment, succed, active_deposit, serv_vat, ct, l_deci, vat, vat2, tax_vat, fact_scvat, get_rechnr, get_amount, curr_time, kellner, h_bill, h_bill_line, h_mjourn, h_artikel, htparam, queasy, guest, counters, hoteldpt, h_umsatz, h_journal, umsatz, artikel, interface, arrangement, argt_line, billjournal
         nonlocal pvilanguage, rec_id, rec_id_h_artikel, deptname, transdate, h_artart, cancel_order, h_artikel_service_code, amount, amount_foreign, price, double_currency, qty, exchg_rate, price_decimal, order_taker, tischnr, curr_dept, curr_waiter, gname, pax, kreditlimit, add_zeit, billart, description, change_str, cc_comment, cancel_str, req_str, voucher_str, hoga_card, print_to_kitchen, from_acct, h_artnrfront, pay_type, guestnr, transfer_zinr, curedept_flag, foreign_rate, curr_room, user_init, hoga_resnr, hoga_reslinnr
         nonlocal h_bline, kellner1, bbill, mjou, bill_guest
 
 
         nonlocal t_kellner1, t_h_bill, submenu_list, h_bline, kellner1, bbill, mjou, bill_guest
-        nonlocal t_kellner1_list, t_h_bill_list
+        nonlocal t_kellner1_data, t_h_bill_data
 
         recid_q33:int = 0
         buffq33 = None
         Buffq33 =  create_buffer("Buffq33",Queasy)
 
-        queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 251) & (Queasy.number1 == recid_hbill)).first()
+        queasy = get_cache (Queasy, {"key": [(eq, 251)],"number1": [(eq, recid_hbill)]})
 
         if queasy:
             recid_q33 = queasy.number2
 
-            buffq33 = db_session.query(Buffq33).filter(
-                     (Buffq33._recid == recid_q33)).first()
+            buffq33 = get_cache (Queasy, {"_recid": [(eq, recid_q33)]})
 
             if buffq33:
+                pass
                 buffq33.betriebsnr = 1
 
 
+                pass
                 pass
 
 
     if rec_id != 0:
 
-        h_bill = db_session.query(H_bill).filter(
-                 (H_bill._recid == rec_id)).first()
+        h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
 
-    h_artikel = db_session.query(H_artikel).filter(
-             (H_artikel._recid == rec_id_h_artikel)).first()
+    h_artikel = get_cache (H_artikel, {"_recid": [(eq, rec_id_h_artikel)]})
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 110)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
     bill_date = htparam.fdate
 
     if transdate != None:
         bill_date = transdate
     else:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 253)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 253)]})
 
         if htparam.flogical and bill_date < get_current_date():
             bill_date = bill_date + timedelta(days=1)
 
     if h_bill and h_artart == 0:
 
-        h_bill_line = db_session.query(H_bill_line).filter(
-                 (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == h_bill.departement) & (H_bill_line.bill_datum != bill_date)).first()
+        h_bill_line = get_cache (H_bill_line, {"rechnr": [(eq, h_bill.rechnr)],"departement": [(eq, h_bill.departement)],"bill_datum": [(ne, bill_date)]})
 
         if h_bill_line:
             fl_code = 1
 
             return generate_output()
 
-    queasy = db_session.query(Queasy).filter(
-             (Queasy.key == 10) & (func.lower(Queasy.char3) == (user_init).lower())).first()
+    queasy = get_cache (Queasy, {"key": [(eq, 10)],"char3": [(eq, user_init)]})
 
     if queasy:
         order_taker = queasy.number1
 
     if cancel_order:
 
-        h_bline = db_session.query(H_bline).filter(
-                 (H_bline._recid == h_bill_line._recid)).first()
+        h_bline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
     nett_amount =  to_decimal(amount)
     nett_amount_foreign =  to_decimal(amount_foreign)
     h_service =  to_decimal("0")
@@ -396,13 +397,11 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
         subtotal =  to_decimal(subtotal) + to_decimal(nett_amount)
         subtotal_foreign =  to_decimal(subtotal_foreign) + to_decimal(nett_amount_foreign)
 
-    htparam = db_session.query(Htparam).filter(
-             (paramnr == 135)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 135)]})
 
     if not htparam.flogical and h_artart == 0 and h_artikel and h_artikel_service_code != 0:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == h_artikel.service_code)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, h_artikel.service_code)]})
 
         if htparam.fdecimal != 0:
             serv =  to_decimal(htparam.fdecimal) / to_decimal("100")
@@ -420,20 +419,17 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
             service =  to_decimal(service) + to_decimal(h_service) * to_decimal(qty)
 
-    htparam = db_session.query(Htparam).filter(
-             (paramnr == 134)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 134)]})
 
     if not htparam.flogical and h_artart == 0 and h_artikel and h_artikel.mwst_code != 0:
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == h_artikel.mwst_code)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, h_artikel.mwst_code)]})
 
         if htparam.fdecimal != 0:
             tax =  to_decimal(htparam.fdecimal) / to_decimal("100")
             h_mwst =  to_decimal(htparam.fdecimal)
 
-            htparam = db_session.query(Htparam).filter(
-                     (Htparam.paramnr == 479)).first()
+            htparam = get_cache (Htparam, {"paramnr": [(eq, 479)]})
 
             if htparam.flogical:
                 tax =  to_decimal(tax) * to_decimal((1) + to_decimal(serv) )
@@ -463,11 +459,15 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
     amount_foreign =  to_decimal(amount_foreign) +\
             (h_service_foreign + to_decimal(h_mwst_foreign)) * to_decimal(qty)
 
-    if h_bill:
-        else:
 
-            bbill = db_session.query(Bbill).filter(
-                         (Bbill.tischnr == tischnr) & (Bbill.departement == curr_dept) & (Bbill.flag == 0)).first()
+    pass
+
+    if h_bill:
+        pass
+    else:
+
+        bbill = db_session.query(Bbill).filter(
+                     (Bbill.tischnr == tischnr) & (Bbill.departement == curr_dept) & (Bbill.flag == 0)).first()
 
         if bbill:
             fl_code = 2
@@ -484,12 +484,14 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
         h_bill.bilname = gname
         h_bill.belegung = pax
 
-        queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 31) & (Queasy.number1 == curr_dept) & (Queasy.number2 == tischnr)).first()
+        queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, curr_dept)],"number2": [(eq, tischnr)]})
 
         if queasy:
             queasy.number3 = get_current_time_in_seconds()
             queasy.date1 = get_current_date()
+
+
+            pass
 
         if hoga_resnr > 0:
             h_bill.resnr = hoga_resnr
@@ -497,21 +499,22 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
         if hoga_reslinnr == 0 and gname != "":
 
-            guest = db_session.query(Guest).filter(
-                         (func.lower(Guest.name + "," + Guest.vorname1) == (gname).lower())).first()
+            guest = get_cache (Guest, {"vorname1": [(eq, gname)]})
 
             if guest:
                 h_bill.resnr = guest.gastnr
                 h_bill.reslinnr = 0
 
+        # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+        # counters = get_cache (Counters, {"counter_no": [(eq, (100 + curr_dept))]})
         counters = db_session.query(Counters).filter(
-                     (Counters.counter_no == (100 + curr_dept))).first()
+                     (Counters.counter_no == (100 + curr_dept))).with_for_update().first()
 
         if counters:
-            else:
+            pass
+        else:
 
-                hoteldpt = db_session.query(Hoteldpt).filter(
-                             (Hoteldpt.num == curr_dept)).first()
+            hoteldpt = get_cache (Hoteldpt, {"num": [(eq, curr_dept)]})
             counters = Counters()
             db_session.add(counters)
 
@@ -521,6 +524,7 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
         if counters.counter > 999999:
             counters.counter = 1
+        pass
         h_bill.rechnr = counters.counter
         rechnr = h_bill.rechnr
         fl_code2 = 1
@@ -533,7 +537,7 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
     if kellner1:
         t_kellner1 = T_kellner1()
-        t_kellner1_list.append(t_kellner1)
+        t_kellner1_data.append(t_kellner1)
 
         buffer_copy(kellner1, t_kellner1)
 
@@ -558,12 +562,12 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
     if billart != 0:
 
-        h_umsatz = db_session.query(H_umsatz).filter(
-                     (H_umsatz.artnr == billart) & (H_umsatz.departement == curr_dept) & (H_umsatz.datum == bill_date)).first()
+        h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, billart)],"departement": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
 
         if h_umsatz:
-            else:
-                h_umsatz = H_umsatz()
+            pass
+        else:
+            h_umsatz = H_umsatz()
             db_session.add(h_umsatz)
 
             h_umsatz.artnr = billart
@@ -571,6 +575,7 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
             h_umsatz.departement = curr_dept
         h_umsatz.betrag =  to_decimal(h_umsatz.betrag) + to_decimal(amount)
         h_umsatz.anzahl = h_umsatz.anzahl + qty
+        pass
         pass
     h_journal = H_journal()
     db_session.add(h_journal)
@@ -598,8 +603,7 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
         if mc_str != " ":
 
-            queasy = db_session.query(Queasy).filter(
-                         (Queasy.key == 197) & (func.lower(Queasy.char1) == (mc_str).lower()) & (Queasy.date1 == bill_date) & (Queasy.number1 == billart)).first()
+            queasy = get_cache (Queasy, {"key": [(eq, 197)],"char1": [(eq, mc_str)],"date1": [(eq, bill_date)],"number1": [(eq, billart)]})
 
             if not queasy:
                 queasy = Queasy()
@@ -613,9 +617,11 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
 
             else:
+                pass
                 queasy.deci1 =  to_decimal(queasy.deci1) + to_decimal(amount)
 
 
+                pass
                 pass
     h_bill_line = H_bill_line()
     db_session.add(h_bill_line)
@@ -643,7 +649,7 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
         if not cancel_order:
 
-            for submenu_list in query(submenu_list_list, filters=(lambda submenu_list: submenu_list.nr == h_artikel.betriebsnr and submenu_list.menurecid == menurecid)):
+            for submenu_list in query(submenu_list_data, filters=(lambda submenu_list: submenu_list.nr == h_artikel.betriebsnr and submenu_list.menurecid == menurecid)):
                 submenu_list.zeit = zeit
                 h_mjourn = H_mjourn()
                 db_session.add(h_mjourn)
@@ -660,12 +666,12 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
                 h_mjourn.kellner_nr = curr_waiter
                 h_mjourn.bill_datum = bill_date
                 h_mjourn.sysdate = sysdate
+                pass
                 condiment = True
 
         else:
 
-            h_journal = db_session.query(H_journal).filter(
-                         (H_journal.artnr == h_bline.artnr) & (H_journal.departement == h_bline.departement) & (H_journal.rechnr == h_bline.rechnr) & (H_journal.bill_datum == h_bline.bill_datum) & (H_journal.zeit == h_bline.zeit) & (H_journal.sysdate == h_bline.sysdate)).first()
+            h_journal = get_cache (H_journal, {"artnr": [(eq, h_bline.artnr)],"departement": [(eq, h_bline.departement)],"rechnr": [(eq, h_bline.rechnr)],"bill_datum": [(eq, h_bline.bill_datum)],"zeit": [(eq, h_bline.zeit)],"sysdate": [(eq, h_bline.sysdate)]})
 
             if h_journal:
 
@@ -686,6 +692,7 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
                     h_mjourn.kellner_nr = curr_waiter
                     h_mjourn.bill_datum = bill_date
                     h_mjourn.sysdate = sysdate
+                    pass
                     condiment = True
 
     if h_artikel:
@@ -709,15 +716,19 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
         h_bill_line.betriebsnr = 1
         h_journal.betriebsnr = 1
 
+
+    pass
+    pass
+
     if h_artart == 0:
         fl_code3 = 1
 
-        umsatz = db_session.query(Umsatz).filter(
-                     (Umsatz.artnr == h_artikel.artnrfront) & (Umsatz.departement == curr_dept) & (Umsatz.datum == bill_date)).first()
+        umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
 
         if umsatz:
-            else:
-                umsatz = Umsatz()
+            pass
+        else:
+            umsatz = Umsatz()
             db_session.add(umsatz)
 
             umsatz.artnr = h_artikel.artnrfront
@@ -726,21 +737,21 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
         umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(amount)
         umsatz.anzahl = umsatz.anzahl + qty
         pass
+        pass
 
-        artikel = db_session.query(Artikel).filter(
-                     (Artikel.artnr == h_artnrfront) & (Artikel.departement == curr_dept)).first()
+        artikel = get_cache (Artikel, {"artnr": [(eq, h_artnrfront)],"departement": [(eq, curr_dept)]})
 
         if artikel.artart == 9 and artikel.artgrp != 0:
             rev_bdown()
 
     elif h_artart == 11 or h_artart == 12:
 
-        umsatz = db_session.query(Umsatz).filter(
-                     (Umsatz.artnr == h_artikel.artnrfront) & (Umsatz.departement == curr_dept) & (Umsatz.datum == bill_date)).first()
+        umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
 
         if umsatz:
-            else:
-                umsatz = Umsatz()
+            pass
+        else:
+            umsatz = Umsatz()
             db_session.add(umsatz)
 
             umsatz.artnr = h_artikel.artnrfront
@@ -748,15 +759,16 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
             umsatz.departement = curr_dept
         umsatz.anzahl = umsatz.anzahl + h_bill.belegung
         pass
+        pass
 
     elif h_artart == 6:
 
-        umsatz = db_session.query(Umsatz).filter(
-                     (Umsatz.artnr == h_artikel.artnrfront) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).first()
+        umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
 
         if umsatz:
-            else:
-                umsatz = Umsatz()
+            pass
+        else:
+            umsatz = Umsatz()
             db_session.add(umsatz)
 
             umsatz.artnr = h_artikel.artnrfront
@@ -765,21 +777,20 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
         umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(amount)
         umsatz.anzahl = umsatz.anzahl + 1
         pass
+        pass
+    pass
     closed = False
 
     if h_artart == 2 or h_artart == 7:
 
         if guestnr == 0:
 
-            htparam = db_session.query(Htparam).filter(
-                         (Htparam.paramnr == 867)).first()
+            htparam = get_cache (Htparam, {"paramnr": [(eq, 867)]})
             guestnr = htparam.finteger
 
-        bill_guest = db_session.query(Bill_guest).filter(
-                     (Bill_guest.gastnr == guestnr)).first()
+        bill_guest = get_cache (Guest, {"gastnr": [(eq, guestnr)]})
 
-        artikel = db_session.query(Artikel).filter(
-                     (Artikel.artnr == h_artikel.artnrfront) & (Artikel.departement == 0)).first()
+        artikel = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)]})
 
         if foreign_rate and amount_foreign == 0:
             amount_foreign =  to_decimal(amount) / to_decimal(exchg_rate)
@@ -789,12 +800,12 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
         if balance == 0:
             closed = True
+            pass
             h_bill.flag = 1
 
             if h_artart == 11 or h_artart == 12:
 
-                htparam = db_session.query(Htparam).filter(
-                             (Htparam.paramnr == 739)).first()
+                htparam = get_cache (Htparam, {"paramnr": [(eq, 739)]})
 
                 if htparam.flogical:
                     fl_code1 = 1
@@ -814,19 +825,19 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
 
             pass
+            pass
+            pass
             get_rechnr = h_bill.rechnr
 
             for h_bill_line in db_session.query(H_bill_line).filter(
                          (H_bill_line.departement == h_bill.departement) & (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.betrag < 0)).order_by(H_bill_line._recid).all():
 
-                h_artikel = db_session.query(H_artikel).filter(
-                             (H_artikel.departement == h_bill_line.departement) & (H_artikel.artnr == h_bill_line.artnr) & (H_artikel.artart != 0)).first()
+                h_artikel = get_cache (H_artikel, {"departement": [(eq, h_bill_line.departement)],"artnr": [(eq, h_bill_line.artnr)],"artart": [(ne, 0)]})
 
                 if h_artikel:
                     get_amount =  to_decimal(get_amount) + to_decimal(h_bill_line.betrag)
 
-            queasy = db_session.query(Queasy).filter(
-                         (Queasy.key == 230)).first()
+            queasy = get_cache (Queasy, {"key": [(eq, 230)]})
 
             if queasy:
                 update_selforder()
@@ -834,13 +845,14 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
             if active_deposit:
                 remove_rsv_table()
+            pass
     succed = True
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 88)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 88)]})
     p_88 = htparam.flogical
+    pass
     t_h_bill = T_h_bill()
-    t_h_bill_list.append(t_h_bill)
+    t_h_bill_data.append(t_h_bill)
 
     buffer_copy(h_bill, t_h_bill)
     t_h_bill.rec_id = h_bill._recid

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.119
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Counters, Ratecode, Queasy, Zimkateg
@@ -24,7 +26,10 @@ def ratecode_admin_fill_dynarate_counterbl(r_code:string, dynarate_list_rmtype:s
         nonlocal curr_counter, counters, ratecode, queasy, zimkateg
         nonlocal r_code, dynarate_list_rmtype, dynarate_list_rcode, dynarate_list_w_day
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 50)]})
+        # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+        # counters = get_cache (Counters, {"counter_no": [(eq, 50)]})
+        counters = db_session.query(Counters).with_for_update().filter(
+                 (Counters.counter_no == 50)).first()
 
         if not counters:
             counters = Counters()

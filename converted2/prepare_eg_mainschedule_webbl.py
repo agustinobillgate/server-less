@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -144,7 +146,9 @@ def prepare_eg_mainschedule_webbl(user_init:string, dayplan:date, firstday:date,
         nonlocal t_eg_location, t_eg_property, t_eg_staff, t_zimmer, t_queasy, action, staff, maintain, resline1, guest1
         nonlocal t_eg_location_data, t_eg_property_data, t_eg_staff_data, t_zimmer_data, t_queasy_data, action_data, staff_data, maintain_data
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
+        counters = db_session.query(Counters).with_for_update().filter(
+                 (Counters.counter_no == 38)).first()
 
         if not counters:
             counters = Counters()

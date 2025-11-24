@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -634,8 +636,10 @@ def ts_restinv_update_bill1bl(rec_id_h_bill:int, transdate:date, double_currency
         pass
 
         if bill.rechnr == 0:
-
-            counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            # Rd, 24/11/2023, modified to use get_cache with eq operator
+            # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+            
             counters.counter = counters.counter + 1
             pass
             bill.rechnr = counters.counter

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill, Bill, Counters
@@ -42,8 +44,10 @@ def ts_closeinv_pay_typegt1bl(bilrecid:int, recid_h_bill:int, balance_foreign:De
     amount =  - to_decimal(balance)
 
     if bill.rechnr == 0:
-
-        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        counters = db_session.query(Counters).filter(
+                     (Counters.counter_no == 3)).with_for_update().first()
         counters.counter = counters.counter + 1
         pass
         pass

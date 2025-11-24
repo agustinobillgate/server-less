@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.29
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 import decimal
 from datetime import date
@@ -314,14 +316,16 @@ def tada_update_billbl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int, deptna
             h_bill.resnr = hoga_resnr
             h_bill.reslinnr = hoga_reslinnr
 
+        # Rd, 24/11/2025, counter with for update
         counters = db_session.query(Counters).filter(
-                     (Counters.counter_no == (100 + curr_dept))).first()
+                     (Counters.counter_no == (100 + curr_dept))).with_for_update().first()
 
         if counters:
-            else:
+            pass
+        else:
 
-                hoteldpt = db_session.query(Hoteldpt).filter(
-                             (Hoteldpt.num == curr_dept)).first()
+            hoteldpt = db_session.query(Hoteldpt).filter(
+                            (Hoteldpt.num == curr_dept)).first()
             counters = Counters()
             db_session.add(counters)
 
@@ -372,8 +376,9 @@ def tada_update_billbl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int, deptna
                      (H_umsatz.artnr == billart) & (H_umsatz.departement == curr_dept) & (H_umsatz.datum == bill_date)).first()
 
         if h_umsatz:
-            else:
-                h_umsatz = H_umsatz()
+            pass
+        else:
+            h_umsatz = H_umsatz()
             db_session.add(h_umsatz)
 
             h_umsatz.artnr = billart
@@ -502,8 +507,9 @@ def tada_update_billbl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int, deptna
                      (Umsatz.artnr == h_artikel.artnrfront) & (Umsatz.departement == curr_dept) & (Umsatz.datum == bill_date)).first()
 
         if umsatz:
-            else:
-                umsatz = Umsatz()
+            pass
+        else:
+            umsatz = Umsatz()
             db_session.add(umsatz)
 
             umsatz.artnr = h_artikel.artnrfront
@@ -525,8 +531,9 @@ def tada_update_billbl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int, deptna
                      (Umsatz.artnr == h_artikel.artnrfront) & (Umsatz.departement == curr_dept) & (Umsatz.datum == bill_date)).first()
 
         if umsatz:
-            else:
-                umsatz = Umsatz()
+            pass
+        else:
+            umsatz = Umsatz()
             db_session.add(umsatz)
 
             umsatz.artnr = h_artikel.artnrfront
@@ -541,8 +548,9 @@ def tada_update_billbl(pvilanguage:int, rec_id:int, rec_id_h_artikel:int, deptna
                      (Umsatz.artnr == h_artikel.artnrfront) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).first()
 
         if umsatz:
-            else:
-                umsatz = Umsatz()
+            pass
+        else:
+            umsatz = Umsatz()
             db_session.add(umsatz)
 
             umsatz.artnr = h_artikel.artnrfront

@@ -64,7 +64,10 @@ def ratecode_admin_dyna_gobl(curr_select:string, inp_str:string, user_init:strin
         # Fixing inden else new_flag
         if new_flag:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 50)]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, 50)]})
+            # Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
+            counters = db_session.query(Counters).with_for_update().filter(
+                     (Counters.counter_no == 50)).first()
 
             if not counters:
                 counters = Counters()
