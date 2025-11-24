@@ -7,7 +7,9 @@
 # - last update from ITA: Program terkait feature service apartement
 # - fix python indentation
 # -----------------------------------------
-
+# ============================
+# Rd, 24/11/2025, update last_count for counter update
+# ============================
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date, timedelta
@@ -15,6 +17,7 @@ from functions.post_dayuse import post_dayuse
 from functions.intevent_1 import intevent_1
 from functions.mk_mcoupon import mk_mcoupon
 from models import Res_line, Guest, Bill, Queasy, Htparam, Outorder, Reservation, Resplan, Waehrung, Master, Counters, Bediener, Bill_line, Artikel, Billjournal, Umsatz, Res_history, Reslin_queasy, Exrate, Messages, Zimkateg, Zimmer, Zimplan, resplan, zimkateg
+from functions.next_counter_for_update import next_counter_for_update
 
 
 def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: string, silenzio: bool):
@@ -81,6 +84,9 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
     Art1 = create_buffer("Art1", Artikel)
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock = ""
+
 
     def generate_output():
         nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, art_security, loopi, ar_ledger, lvcarea, res_line, guest, bill, queasy, htparam, outorder, reservation, waehrung, master, counters, bediener, bill_line, artikel, billjournal, umsatz, res_history, reslin_queasy, exrate, messages
@@ -158,8 +164,10 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                 counters.counter_no = 3
                 counters.counter_bez = "Counter for Bill No"
 
-            counters.counter = counters.counter + 1
-            mbill.rechnr = counters.counter
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(3))
+            mbill.rechnr = last_count
+
             master.rechnr = mbill.rechnr
         inv_nr = mbill.rechnr
 
@@ -788,9 +796,11 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                         bill_no = bill.rechnr
 
                     elif casenum == 2:
-                        counters = get_cache(
-                            Counters, {"counter_no": [(eq, 3)]})
-                        counters.counter = counters.counter + 1
+                        # counters = get_cache(
+                        #     Counters, {"counter_no": [(eq, 3)]})
+                        # counters.counter = counters.counter + 1
+                        last_count, error_lock = get_output(next_counter_for_update(3))
+
                         bill = Bill()
                         db_session.add(bill)
 
@@ -798,7 +808,9 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                         bill.reslinnr = 0
                         bill.rgdruck = 1
                         bill.billtyp = 2
-                        bill.rechnr = counters.counter
+                        # bill.rechnr = counters.counter
+                        bill.rechnr = last_count
+
                         bill.gastnr = master.gastnrpay
                         bill.datum = bill_date
                         bill.name = b_receiver.name
@@ -828,8 +840,12 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                     counters.counter_no = 3
                     counters.counter_bez = "Counter for Bill No"
 
-                counters.counter = counters.counter + 1
-                bill.rechnr = counters.counter
+                # counters.counter = counters.counter + 1
+                last_count, error_lock = get_output(next_counter_for_update(3))
+                
+                # bill.rechnr = counters.counter
+                bill.rechnr = last_count
+
                 master.rechnr = bill.rechnr
                 bill.gastnr = master.gastnrpay
 
@@ -893,8 +909,10 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                         counters.counter_no = 3
                         counters.counter_bez = "Counter for Bill No"
 
-                    counters.counter = counters.counter + 1
-                    bill.rechnr = counters.counter
+                    # counters.counter = counters.counter + 1
+                    last_count, error_lock = get_output(next_counter_for_update(3))
+                    bill.rechnr = last_count
+
             else:
                 counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
 
@@ -905,8 +923,10 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                     counters.counter_no = 3
                     counters.counter_bez = "Counter for Bill No"
 
-                counters.counter = counters.counter + 1
-                bill.rechnr = counters.counter
+                # counters.counter = counters.counter + 1
+                last_count, error_lock = get_output(next_counter_for_update(3))
+                bill.rechnr = last_count
+
             # end ITA: Program terkait feature service apartement
             queasy = get_cache(
                 Queasy, {"key": [(eq, 301)], "number1": [(eq, res_line.resnr)], "logi1": [(eq, True)]})
@@ -939,8 +959,9 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                         counters.counter_no = 3
                         counters.counter_bez = "Counter for Bill No"
 
-                    counters.counter = counters.counter + 1
-                    bbill.rechnr = counters.counter
+                    # counters.counter = counters.counter + 1
+                    last_count, error_lock = get_output(next_counter_for_update(3))
+                    bbill.rechnr = last_count
 
                     # ITA: Program terkait feature service apartement
                     if loopi == 3:
@@ -1025,10 +1046,12 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                 counters.counter_no = 29
                 counters.counter_bez = "Counter for Registration No"
 
-            counters.counter = counters.counter + 1
+            # counters.counter = counters.counter + 1
+            last_count, error_lock = get_output(next_counter_for_update(29))
 
             if bill:
-                bill.rechnr2 = counters.counter
+                # bill.rechnr2 = counters.counter
+                bill.rechnr2 = last_count
 
         if reservation.depositbez != 0 and reservation.bestat_datum == None and bill:
             htparam = get_cache(Htparam, {"paramnr": [(eq, 120)]})
@@ -1077,8 +1100,10 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                             counters.counter_no = 3
                             counters.counter_bez = "Counter for Bill No"
 
-                        counters.counter = counters.counter + 1
-                        bill.rechnr = counters.counter
+                        # counters.counter = counters.counter + 1
+                        last_count, error_lock = get_output(next_counter_for_update(3))
+                        bill.rechnr = last_count
+                        
                         bill.saldo = to_decimal(
                             bill.saldo) + to_decimal(deposit)
                         bill.mwst[98] = bill.mwst[98] + deposit_foreign

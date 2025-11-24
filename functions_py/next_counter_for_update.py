@@ -23,7 +23,7 @@ def next_counter_for_update(counter_no: int) -> int:
         row = (
             db_session.query(Counters)
             .filter(Counters.counter_no == counter_no)
-            .with_for_update()
+            .with_for_update(nowait=False)
             .first()
         )
         row.counter += 1

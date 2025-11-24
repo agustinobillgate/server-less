@@ -4,11 +4,15 @@
 # Rulita, 21-10-2025 
 # Issue : New compile program
 # ============================
+# Rd, 24/11/2025, update last_count for counter update
+# ============================
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bk_rart, Htparam, Waehrung, Bk_reser, Bk_veran, Guest, Counters, Bill, Bk_func, Artikel, Bill_line, Umsatz, Billjournal
+from functions.next_counter_for_update import next_counter_for_update
+
 
 def nt_bapostbill():
 
@@ -39,6 +43,9 @@ def nt_bapostbill():
 
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock = ""
+
 
     def generate_output():
         nonlocal zugriff, veran_nr, invnr, curr_resnr, banquet_dep, bill_date, price, amount, amount_foreign, room_amount, fb_amount, deposit_amount, exchg_rate, double_currency, foreign_rate, charge_flag, i, bk_rart, htparam, waehrung, bk_reser, bk_veran, guest, counters, bill, bk_func, artikel, bill_line, umsatz, billjournal
@@ -193,8 +200,11 @@ def nt_bapostbill():
 
             if bk_veran.rechnr == 0:
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                counters.counter = counters.counter + 1
+                # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                # counters.counter = counters.counter + 1
+                
+                last_count, error_lock = get_output(next_counter_for_update(3))
+
                 pass
                 bill = Bill()
                 db_session.add(bill)
@@ -205,7 +215,9 @@ def nt_bapostbill():
                         " " + guest.vorname1
                 bill.reslinnr = 1
                 bill.rgdruck = 1
-                bill.rechnr = counters.counter
+                # bill.rechnr = counters.counter
+                bill.rechnr = last_count
+                
                 bill.flag = 0
 
 
