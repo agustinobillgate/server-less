@@ -1,13 +1,17 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Gl_jouhdr, Counters, Queasy, Gl_journal
+from functions.next_counter_for_update import next_counter_for_update
 
 g_list_data, G_list = create_model("G_list", {"docu_nr":string, "lscheinnr":string, "jnr":int, "fibukonto":string, "debit":Decimal, "credit":Decimal, "bemerk":string, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "add_note":string, "duplicate":bool, "acct_fibukonto":string, "bezeich":string}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 
-def gl_linkcompli2bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:Decimal, to_date:date, refno:string, datum:date, bezeich:string, g_list_data:[G_list]):
+def gl_linkcompli2bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:Decimal, to_date:date, refno:string, 
+                     datum:date, bezeich:string, g_list_data:[G_list]):
 
     prepare_cache ([Htparam, Gl_jouhdr, Counters, Queasy, Gl_journal])
 
@@ -18,6 +22,12 @@ def gl_linkcompli2bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:D
     g_list = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    refno = refno.strip()
+    bezeich = bezeich.strip()
+    docu_nr = docu_nr.strip()
+
 
     def generate_output():
         nonlocal new_hdr, lvcarea, htparam, gl_jouhdr, counters, queasy, gl_journal
@@ -31,7 +41,7 @@ def gl_linkcompli2bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:D
     def create_header():
 
         nonlocal new_hdr, lvcarea, htparam, gl_jouhdr, counters, queasy, gl_journal
-        nonlocal pvilanguage, remains, credits, debits, to_date, refno, datum, bezeich
+        nonlocal pvilanguage, remains, credits, debits, to_date, refno, datum, bezeich, last_count
 
 
         nonlocal g_list
@@ -49,9 +59,14 @@ def gl_linkcompli2bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:D
 
             counters.counter_no = 25
             counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
-        counters.counter = counters.counter + 1
+
+        # counters.counter = counters.counter + 1
+        last_count, error_lock = next_counter_for_update(25, last_count, error_lock)
+
         pass
-        gl_jouhdr.jnr = counters.counter
+        # gl_jouhdr.jnr = counters.counter
+        gl_jouhdr.jnr = last_count
+
         gl_jouhdr.refno = refno
         gl_jouhdr.datum = datum
         gl_jouhdr.bezeich = bezeich
@@ -70,13 +85,13 @@ def gl_linkcompli2bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:D
             queasy.char2 = bezeich
             queasy.char3 = "Compliment Journal"
             queasy.date1 = datum
-            queasy.number1 = jtype
+            queasy.number1 = gl_jouhdr.jtype
 
 
     def create_journals():
 
         nonlocal new_hdr, lvcarea, htparam, gl_jouhdr, counters, queasy, gl_journal
-        nonlocal pvilanguage, remains, credits, debits, to_date, refno, datum, bezeich
+        nonlocal pvilanguage, remains, credits, debits, to_date, refno, datum, bezeich, last_count
 
 
         nonlocal g_list
@@ -85,7 +100,9 @@ def gl_linkcompli2bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:D
             gl_journal = Gl_journal()
             db_session.add(gl_journal)
 
-            gl_journal.jnr = counters.counter
+            # gl_journal.jnr = counters.counter
+            gl_journal.jnr = last_count
+            
             gl_journal.fibukonto = g_list.fibukonto
             gl_journal.debit = to_decimal(round(g_list.debit , 2))
             gl_journal.credit = to_decimal(round(g_list.credit , 2))

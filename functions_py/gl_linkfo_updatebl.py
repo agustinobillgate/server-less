@@ -1,13 +1,17 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gl_jouhdr, Counters, Gl_journal, Htparam
+from functions.next_counter_for_update import next_counter_for_update
 
 g_list_data, G_list = create_model("G_list", {"flag":int, "datum":date, "artnr":int, "dept":int, "jnr":int, "fibukonto":string, "debit":Decimal, "credit":Decimal, "bemerk":string, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "duplicate":bool, "acct_fibukonto":string, "bezeich":string}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 
-def gl_linkfo_updatebl(pvilanguage:int, remains:Decimal, credits:[Decimal], debits:[Decimal], to_date:date, c_refno:string, c_bezeich:string, g_list_data:[G_list]):
+def gl_linkfo_updatebl(pvilanguage:int, remains:Decimal, credits:[Decimal], debits:[Decimal], to_date:date, 
+                       c_refno:string, c_bezeich:string, g_list_data:[G_list]):
 
     prepare_cache ([Gl_jouhdr, Counters, Gl_journal, Htparam])
 
@@ -18,6 +22,11 @@ def gl_linkfo_updatebl(pvilanguage:int, remains:Decimal, credits:[Decimal], debi
     g_list = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    c_refno = c_refno.strip()
+    c_bezeich = c_bezeich.strip()
+
 
     def generate_output():
         nonlocal new_hdr, lvcarea, gl_jouhdr, counters, gl_journal, htparam
@@ -31,7 +40,7 @@ def gl_linkfo_updatebl(pvilanguage:int, remains:Decimal, credits:[Decimal], debi
     def create_header():
 
         nonlocal new_hdr, lvcarea, gl_jouhdr, counters, gl_journal, htparam
-        nonlocal pvilanguage, remains, to_date, c_refno, c_bezeich
+        nonlocal pvilanguage, remains, to_date, c_refno, c_bezeich, last_count
 
 
         nonlocal g_list
@@ -49,8 +58,13 @@ def gl_linkfo_updatebl(pvilanguage:int, remains:Decimal, credits:[Decimal], debi
 
             counters.counter_no = 25
             counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
-        counters.counter = counters.counter + 1
-        gl_jouhdr.jnr = counters.counter
+        # counters.counter = counters.counter + 1
+        last_count, error_lock = next_counter_for_update(25)
+
+
+        # gl_jouhdr.jnr = counters.counter
+        gl_jouhdr.jnr = last_count
+
         gl_jouhdr.datum = to_date
         gl_jouhdr.refno = c_refno
         gl_jouhdr.bezeich = c_bezeich
