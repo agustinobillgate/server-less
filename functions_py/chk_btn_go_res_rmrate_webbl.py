@@ -8,6 +8,9 @@
                     - fix closing bracket position
                     - fix string.lower()
 """
+#------------------------------------------
+# Rd, 25/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -25,7 +28,8 @@ p_list_data, P_list = create_model(
     })
 
 
-def chk_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate: Decimal, fact1: Decimal, inp_wahrnr: int, inp_zikatnr: int, user_init: str, resnr: int, reslinnr: int, recid_reslin: int, contcode: str, repeat_charge: bool, p_list_data: P_list):
+def chk_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate: Decimal, fact1: Decimal, inp_wahrnr: int, 
+                                inp_zikatnr: int, user_init: str, resnr: int, reslinnr: int, recid_reslin: int, contcode: str, repeat_charge: bool, p_list_data: P_list):
 
     prepare_cache([Reslin_queasy, Waehrung, Htparam, Res_line, Bediener, Arrangement, Queasy, Guest_pr, Katpreis])
 
@@ -557,8 +561,9 @@ def chk_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate: De
 
     p_list = query(p_list_data, first=True)
 
-    res_line = get_cache(
-        Res_line, {"resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
+    # res_line = get_cache(
+    #     Res_line, {"resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
+    res_line = db_session.query(Res_line).filter(Res_line.resnr == resnr, Res_line.reslinnr == reslinnr).with_for_update().first()  
 
     bediener = get_cache(
         Bediener, {"userinit": [(eq, user_init)]})
@@ -685,8 +690,9 @@ def chk_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate: De
                 breslin.number1 = get_current_time_in_seconds()
                 breslin.char3 = ""
 
-        res_line = get_cache(
-            Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+        # res_line = get_cache(
+        #     Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+        res_line = db_session.query(Res_line).filter(Res_line.resnr == reslin_queasy.resnr, Res_line.reslinnr == reslin_queasy.reslinnr).with_for_update().first()
         res_changes_chg()
         
         reslin_queasy.key = "arrangement"

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 25/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -243,7 +245,8 @@ def prepare_res_rmrate_1bl(pvilanguage:int, user_init:string, reslin_list_data:[
             return generate_output()
         output_list.foreign_nr = waehrung.waehrungsnr
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 1108)]})
+    # htparam = get_cache (Htparam, {"paramnr": [(eq, 1108)]})
+    htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1108).with_for_update().first()
 
     if htparam.feldtyp == 1:
         pass

@@ -8,6 +8,9 @@
                     - fix closing bracket position
                     - fix string.lower()
 """
+#------------------------------------------
+# Rd, 25/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date

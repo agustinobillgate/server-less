@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 25/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -101,7 +103,9 @@ def reservationbl(case_type:int, gastno:int, resno:int):
         for res_line in db_session.query(Res_line).filter(
                  (Res_line.resnr == resno) & (Res_line.gastnr == gastno) & (Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99)).order_by(Res_line._recid).all():
 
-            guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+            # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+            guest = db_session.query(Guest).filter(
+                     (Guest.gastnr == res_line.gastnrmember)).with_for_update().first
 
             if guest.erste_res == None:
                 guest.erste_res = ci_date
@@ -148,7 +152,9 @@ def reservationbl(case_type:int, gastno:int, resno:int):
 
         else:
 
-            reservation = get_cache (Reservation, {"gastnr": [(eq, gastno)],"resnr": [(eq, resno)],"activeflag": [(eq, 0)]})
+            # reservation = get_cache (Reservation, {"gastnr": [(eq, gastno)],"resnr": [(eq, resno)],"activeflag": [(eq, 0)]})
+            reservation = db_session.query(Reservation).filter(
+                     (Reservation.gastnr == gastno) & (Reservation.resnr == resno) & (Reservation.activeflag == 0)).with_for_update().first()
 
             if reservation:
                 mainres_list = Mainres_list()
@@ -207,7 +213,7 @@ def reservationbl(case_type:int, gastno:int, resno:int):
             for i in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
                 str = entry(i - 1, res_line.zimmer_wunsch, ";")
 
-                if substring(str, 0, 6) == ("$CODE$").lower() :
+                if substring(str, 0, 6) == ("$CODE$") :
                     res_list.ratecode = substring(str, 6)
             res_list.karteityp = guest.karteityp
             res_list.l_zuord3 = res_line.l_zuordnung[2]

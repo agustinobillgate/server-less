@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 25/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -289,7 +291,8 @@ def chk_btn_go_res_rmratebl(pvilanguage:int, curr_select:string, max_rate:Decima
 
     p_list = query(p_list_data, first=True)
 
-    res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+    # res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+    res_line = db_session.query(Res_line).filter(Res_line.resnr == resnr, Res_line.reslinnr == reslinnr).with_for_update().first()
 
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
