@@ -5,6 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_acct
+from sqlalchemy.orm import flag_modified
 
 coa_list_data, Coa_list = create_model_like(Gl_acct)
 
@@ -21,18 +22,13 @@ def coa_budget_update_budgetbl(coa_list_data:[Coa_list], sorttype:int):
     def generate_output():
         nonlocal gl_acct
         nonlocal sorttype
-
-
         nonlocal coa_list, cbuff
-
         return {}
 
     def update_budget():
 
         nonlocal gl_acct
         nonlocal sorttype
-
-
         nonlocal coa_list, cbuff
 
 
@@ -79,6 +75,8 @@ def coa_budget_update_budgetbl(coa_list_data:[Coa_list], sorttype:int):
 
 
                 pass
+        flag_modified(gl_acct, "budget")
+        flag_modified(gl_acct, "debit") 
 
     update_budget()
 

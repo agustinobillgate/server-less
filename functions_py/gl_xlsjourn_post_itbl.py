@@ -6,7 +6,6 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Counters, Gl_jouhdr, Gl_journal
-from functions.next_counter_for_update import next_counter_for_update
 
 g_list_data, G_list = create_model("G_list", {"jnr":int, "fibukonto":string, "fibukonto2":string, "debit":Decimal, "credit":Decimal, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "bemerk":string, "descr":string, "duplicate":bool, "correct":int}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 

@@ -77,7 +77,6 @@ def gl_postjourn_btn_gobl(g_list_data:[G_list], pvilanguage:int, curr_step:int, 
                     chr_unicode(10) +\
                     translateExtended ("(ParamNo 372, 558, 597, 975)", lvcarea, "")
 
-
             error_flag = True
 
             return
@@ -174,8 +173,6 @@ def gl_postjourn_btn_gobl(g_list_data:[G_list], pvilanguage:int, curr_step:int, 
 
             buffer_copy(g_list, gl_journal)
             gl_journal.jnr = curr_jnr
-
-
             pass
 
 
@@ -183,18 +180,19 @@ def gl_postjourn_btn_gobl(g_list_data:[G_list], pvilanguage:int, curr_step:int, 
 
         nonlocal curr_jnr, msg_str, error_flag, f_date, lvcarea, htparam, gl_jouhdr, counters, gl_journal, queasy
         nonlocal pvilanguage, curr_step, refno, adjust_flag, journaltype
-
-
         nonlocal g_list
 
-        queasy = get_cache (Queasy, {"key": [(eq, 345)],"number1": [(eq, jnr)],"date1": [(eq, datum)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 345)],"number1": [(eq, jnr)],"date1": [(eq, datum)]})
+        queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 345) &
+                     (Queasy.number1 == jnr) &
+                     (Queasy.date1 == datum)).with_for_update().first()
 
         if queasy:
             pass
             queasy.logi1 = True
             queasy.logi2 = False
             queasy.logi3 = False
-
 
             pass
             pass
@@ -210,8 +208,6 @@ def gl_postjourn_btn_gobl(g_list_data:[G_list], pvilanguage:int, curr_step:int, 
             queasy.logi1 = True
             queasy.logi2 = False
             queasy.logi3 = False
-
-
             pass
 
 

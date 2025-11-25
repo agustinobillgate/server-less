@@ -38,7 +38,6 @@ def chg_gljourn_fill_gl_journal_vhpwebbl(jnr:int, user_init:string, t_bezeich:st
         nonlocal jnr, user_init, t_bezeich, t_refno
         nonlocal buffglhdr
 
-
         nonlocal b1_list, g_list, buffglhdr
         nonlocal b1_list_data
 

@@ -6,6 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Waehrung, Gl_jouhdr, Exrate, Gl_acct, Gl_journal
+from sqlalchemy.orm import flag_modified
 
 def trial_closemon2bl():
 
@@ -46,7 +47,7 @@ def trial_closemon2bl():
                     gl_acct.actual[curr_month - 1] = gl_acct.actual[prev_month - 1]
                 else:
                     gl_acct.actual[curr_month - 1] = gl_acct.last_yr[end_month - 1]
-
+        flag_modified(gl_acct, "actual")
 
     def process_journal(jnr:int, datum:date):
 
@@ -81,7 +82,7 @@ def trial_closemon2bl():
             curr_recid = gl_journal._recid
             gl_journal = db_session.query(Gl_journal).filter(
                      (Gl_journal.jnr == jnr) & (Gl_journal.activeflag == 0) & (Gl_journal._recid > curr_recid)).first()
-
+        flag_modified(gl_acct, "actual")
 
     def closing_month():
 
@@ -139,7 +140,9 @@ def trial_closemon2bl():
     if prev_month == 0:
         prev_month = 12
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
+    # htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
+    htparam = db_session.query(Htparam).filter(
+                 (Htparam.paramnr == 983)).with_for_update().first()
     htparam.flogical = True
     update_glacct()
 
@@ -172,9 +175,12 @@ def trial_closemon2bl():
     gl_acct = db_session.query(Gl_acct).filter(
                  (Gl_acct.fibukonto == htparam.fchar)).with_for_update().first()
     gl_acct.actual[curr_month - 1] = gl_acct.actual[curr_month - 1] - profit + lost
+    flag_modified(gl_acct, "actual")
     pass
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
+    # htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
+    htparam = db_session.query(Htparam).filter(
+                 (Htparam.paramnr == 983)).with_for_update().first()
     htparam.flogical = False
     pass
 

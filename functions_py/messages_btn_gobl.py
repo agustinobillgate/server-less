@@ -8,7 +8,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.intevent_1 import intevent_1
-from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy.orm import flag_modified
 from models import Res_line, Messages, Bediener, Htparam
 
 def messages_btn_gobl(rec_id:int, i_case:int, gastnr:int, resnr:int, reslinnr:int, user_init:string, mess_text_sv:string, caller_sv:string, rufnr_sv:string):

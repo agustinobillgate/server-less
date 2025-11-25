@@ -55,10 +55,14 @@ def cancel_close_monthbl(from_date:date, to_date:date):
             gl_jouhdr = db_session.query(Gl_jouhdr).filter(
                          (Gl_jouhdr.datum >= from_date) & (Gl_jouhdr.datum <= to_date) & (Gl_jouhdr._recid > curr_recid)).with_for_update().first()
             
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
+        htparam = db_session.query(Htparam).filter(
+                     (Htparam.paramnr == 597)).with_for_update().first()
         htparam.fdate = to_date
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 558)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 558)]})
+        htparam = db_session.query(Htparam).filter(
+                     (Htparam.paramnr == 558)).with_for_update().first()
         htparam.fdate = from_date - timedelta(days=1)
 
 

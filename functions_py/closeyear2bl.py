@@ -6,7 +6,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gl_acct, Gl_accthis, Htparam, Gl_jouhdr, Gl_journal, Gl_jourhis, Gl_jhdrhis, Bediener, Res_history
-from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy.orm import flag_modified
 
 def closeyear2bl(curr_yr:int, curr_date:date, user_init:string):
 

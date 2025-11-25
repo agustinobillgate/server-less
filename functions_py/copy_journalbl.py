@@ -6,7 +6,6 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gl_journal, Gl_jouhdr, Counters
-from functions.next_counter_for_update import next_counter_for_update
 
 def copy_journalbl(desc_cj:string, credit:Decimal, debit:Decimal, remain:Decimal, jnr:int, user_init:string, datum:date, refno:string):
 
@@ -20,8 +19,6 @@ def copy_journalbl(desc_cj:string, credit:Decimal, debit:Decimal, remain:Decimal
     Gl_jou = create_buffer("Gl_jou",Gl_journal)
     Gl_hdr = create_buffer("Gl_hdr",Gl_jouhdr)
     db_session = local_storage.db_session
-    last_count:int = 0
-    error_lock:string = ""
     desc_cj = desc_cj.strip()
 
 

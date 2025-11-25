@@ -9,7 +9,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Waehrung, Gl_jouhdr, Gl_acct, Exrate, Gl_journal
-from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy.orm import flag_modified
 
 def closemonth2bl():
 
@@ -236,7 +236,9 @@ def closemonth2bl():
 
     pass
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
+    # htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
+    htparam = db_session.query(Htparam).filter(
+                 (Htparam.paramnr == 983)).with_for_update().first()
 
     if htparam:
         pass

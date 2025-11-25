@@ -5,7 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_acct, Gl_accthis, Gl_jourhis, Gl_journal
-from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy.orm import flag_modified
 
 coa_list_data, Coa_list = create_model("Coa_list", {"old_fibu":string, "new_fibu":string, "bezeich":string, "coastat":int, "old_main":int, "new_main":int, "bezeichm":string, "old_dept":int, "new_dept":int, "bezeichd":string, "catno":int, "acct":int, "old_acct":int}, {"coastat": -1})
 
