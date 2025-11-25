@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------------------
+# Rd, 25/11/2025, with_for_update()
+#-----------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -37,7 +39,9 @@ def update_rmstatusbl(na_list_data:[Na_list], ci_date:date):
 
         na_list = query(na_list_data, filters=(lambda na_list: na_list.reihenfolge == 3), first=True)
 
-        zimmer = db_session.query(Zimmer).first()
+        # zimmer = db_session.query(Zimmer).first()
+        # Rd, 25/11/2025, modified to use with_for_update()
+        zimmer = db_session.query(Zimmer).order_by(Zimmer._recid).with_for_update().first()
         while None != zimmer:
 
             if zimmer.zistatus == 0 or zimmer.zistatus == 1 or zimmer.zistatus == 2:
@@ -130,9 +134,12 @@ def update_rmstatusbl(na_list_data:[Na_list], ci_date:date):
                         pass
 
             curr_recid = zimmer._recid
-            zimmer = db_session.query(Zimmer).filter(Zimmer._recid > curr_recid).first()
+            # zimmer = db_session.query(Zimmer).filter(Zimmer._recid > curr_recid).first()
+            # Rd, 25/11/2025, modified to use with_for_update()
+            zimmer = db_session.query(Zimmer).filter(Zimmer._recid > curr_recid).order_by(Zimmer._recid).with_for_update().first()
 
-        for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg._recid).all():
+        # for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg._recid).all():
+        for zimkateg in db_session.query(Zimkateg).order_by(Zimkateg._recid).with_for_update().all():
             i = 0
 
             for zimmer in db_session.query(Zimmer).filter(

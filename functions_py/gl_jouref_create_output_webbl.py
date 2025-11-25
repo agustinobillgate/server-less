@@ -50,8 +50,8 @@ def gl_jouref_create_output_webbl(idflag:string, output_list_data:[Output_list])
         # bqueasy = db_session.query(Bqueasy).filter(
         #          (Bqueasy._recid == queasy._recid)).first()
         # Rd 14/8/2025
-        bqueasy = db_session.query(Bqueasy).with_for_update().filter(
-                 (Bqueasy._recid == queasy._recid)).first()
+        bqueasy = db_session.query(Bqueasy).filter(
+                 (Bqueasy._recid == queasy._recid)).with_for_update().first()
 
         if bqueasy:
             db_session.delete(bqueasy)

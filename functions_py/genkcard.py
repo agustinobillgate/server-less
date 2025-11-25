@@ -105,7 +105,7 @@ def genkcard(ipccommand:int, iocroomno:string, room2:string, room3:string, iodfr
 
         # if counters.counter > 9999:
         #     counters.counter = 1
-        counters = db_session.query(Counters).with_for_update().filter(Counters.counter_no == 30).first()
+        counters = db_session.query(Counters).filter(Counters.counter_no == 30).with_for_update().first()
         counters.counter = counters.counter + 1
         if counters.counter > 9999:
             counters.counter = 1
@@ -161,7 +161,7 @@ def genkcard(ipccommand:int, iocroomno:string, room2:string, room3:string, iodfr
         # if counters.counter > 99999999:
         #     counters.counter = 1
 
-        counters = db_session.query(Counters).with_for_update().filter(Counters.counter_no == 30).first()
+        counters = db_session.query(Counters).filter(Counters.counter_no == 30).with_for_update().first()
         counters.counter = counters.counter + 1
         if counters.counter > 99999999:
             counters.counter = 1
@@ -215,7 +215,7 @@ def genkcard(ipccommand:int, iocroomno:string, room2:string, room3:string, iodfr
 
         # if counters.counter > 99999999:
         #     counters.counter = 1
-        counters = db_session.query(Counters).with_for_update().filter(Counters.counter_no == 30).first()
+        counters = db_session.query(Counters).filter(Counters.counter_no == 30).with_for_update().first()
         counters.counter = counters.counter + 1
         if counters.counter > 99999999:
             counters.counter = 1

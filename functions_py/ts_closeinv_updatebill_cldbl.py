@@ -649,8 +649,8 @@ def ts_closeinv_updatebill_cldbl(pvilanguage:int, rec_id:int, rec_id_h_artikel:i
 
         # Rd, 24/11/2025, counter with for update
         # counters = get_cache (Counters, {"counter_no": [(eq, (100 + curr_dept))]})
-        counters = db_session.query(Counters).with_for_update().filter(
-                     (Counters.counter_no == (100 + curr_dept))).first()
+        counters = db_session.query(Counters).filter(
+                     (Counters.counter_no == (100 + curr_dept))).with_for_update().first()
 
         if counters:
             pass

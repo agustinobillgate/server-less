@@ -25,7 +25,7 @@ def chg_gl_journ_btn_go1_1bl(t_refno:string, t_bezeich:string, t_recid:int, user
 
     # Rd, 25/11/2025, add with_for_update
     # gl_jouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, t_recid)]})
-    gl_jouhdr = db_session.query(Gl_jouhdr).with_for_update().filter(Gl_jouhdr._recid == t_recid).first()
+    gl_jouhdr = db_session.query(Gl_jouhdr).filter(Gl_jouhdr._recid == t_recid).with_for_update().first()
     refno = gl_jouhdr.refno
     bez = gl_jouhdr.bezeich
     datum = gl_jouhdr.datum

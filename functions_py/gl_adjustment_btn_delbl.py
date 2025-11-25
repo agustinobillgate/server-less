@@ -27,7 +27,7 @@ def gl_adjustment_btn_delbl(jnr:int):
     else:
         # Rd, 25/11/2025, add .with_for_update
         # gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
-        gl_jouhdr = db_session.query(Gl_jouhdr).with_for_update().filter(Gl_jouhdr.jnr == jnr).first()
+        gl_jouhdr = db_session.query(Gl_jouhdr).filter(Gl_jouhdr.jnr == jnr).with_for_update().first()
         if gl_jouhdr:
             db_session.delete(gl_jouhdr)
             success_flag = True

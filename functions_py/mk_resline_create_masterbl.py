@@ -1,9 +1,10 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 25/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Master, Bediener, Counters, Res_history
-from functions.next_counter_for_update import next_counter_for_update
 
 def mk_resline_create_masterbl(resnr:int, gastnr:int, invno_flag:bool, user_init:string):
 
@@ -18,8 +19,6 @@ def mk_resline_create_masterbl(resnr:int, gastnr:int, invno_flag:bool, user_init
     t_master_data, T_master = create_model_like(Master)
 
     db_session = local_storage.db_session
-    last_count = 0
-    error_lock:string = ""
     user_init = user_init.strip()
 
     def generate_output():
@@ -58,12 +57,9 @@ def mk_resline_create_masterbl(resnr:int, gastnr:int, invno_flag:bool, user_init
         if invno_flag:
 
             # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-            # counters.counter = counters.counter + 1
-            last_count, error_lock = get_output(next_counter_for_update(3))
-
-            pass
-            # master.rechnr = counters.counter
-            master.rechnr = last_count
+            counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+            counters.counter = counters.counter + 1
+            master.rechnr = counters.counter
 
 
         pass
@@ -84,7 +80,7 @@ def mk_resline_create_masterbl(resnr:int, gastnr:int, invno_flag:bool, user_init
 
         pass
         pass
-
+        
 
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
     create_master()

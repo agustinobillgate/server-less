@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------------
+# Rd, 25/11/2025, check with_for_update
+#-------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Reservation, Res_line
@@ -57,7 +59,8 @@ def write_reservationbl(case_type:int, resno:int, t_reservation_data:[T_reservat
 
     elif case_type == 3:
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        reservation = db_session.query(Reservation).filter(Reservation.resnr == resno).with_for_update().first()
 
         if reservation:
             db_session.delete(reservation)
@@ -77,7 +80,8 @@ def write_reservationbl(case_type:int, resno:int, t_reservation_data:[T_reservat
             success_flag = True
     elif case_type == 5:
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        reservation = db_session.query(Reservation).filter(Reservation.resnr == resno).with_for_update().first()
 
         if reservation:
             reservation.activeflag = 0
@@ -85,7 +89,8 @@ def write_reservationbl(case_type:int, resno:int, t_reservation_data:[T_reservat
             success_flag = True
     elif case_type == 6:
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        reservation = db_session.query(Reservation).filter(Reservation.resnr == resno).with_for_update().first()
 
         if reservation:
             reservation.verstat = 1
@@ -93,7 +98,8 @@ def write_reservationbl(case_type:int, resno:int, t_reservation_data:[T_reservat
             success_flag = True
     elif case_type == 7:
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        reservation = db_session.query(Reservation).filter(Reservation.resnr == resno).with_for_update().first()
 
         if reservation:
             reservation.verstat = 0
@@ -103,7 +109,8 @@ def write_reservationbl(case_type:int, resno:int, t_reservation_data:[T_reservat
 
         t_reservation = query(t_reservation_data, first=True)
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        reservation = db_session.query(Reservation).filter(Reservation.resnr == resno).with_for_update().first()
 
         if reservation:
             buffer_copy(t_reservation, reservation)
@@ -126,7 +133,8 @@ def write_reservationbl(case_type:int, resno:int, t_reservation_data:[T_reservat
 
         if not res_line:
 
-            reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+            # reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+            reservation = db_session.query(Reservation).filter(Reservation.resnr == resno).with_for_update().first()
 
             if reservation:
                 db_session.delete(reservation)

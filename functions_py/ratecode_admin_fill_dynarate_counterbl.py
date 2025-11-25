@@ -28,8 +28,8 @@ def ratecode_admin_fill_dynarate_counterbl(r_code:string, dynarate_list_rmtype:s
 
         # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
         # counters = get_cache (Counters, {"counter_no": [(eq, 50)]})
-        counters = db_session.query(Counters).with_for_update().filter(
-                 (Counters.counter_no == 50)).first()
+        counters = db_session.query(Counters).filter(
+                 (Counters.counter_no == 50)).with_for_update().first()
 
         if not counters:
             counters = Counters()

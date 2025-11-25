@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 13/8/2025
 # num-entries
+# Rd, 25/11/2025, check with_for_update
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -43,19 +44,24 @@ def update_vip_segmentbl(inp_gastnr:int, inp_segmcode:int):
 
     vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9 = get_output(get_vipnrbl())
 
+    # for guestseg in db_session.query(Guestseg).filter(
+    #          (Guestseg.gastnr == inp_gastnr)).order_by(Guestseg._recid).all():
     for guestseg in db_session.query(Guestseg).filter(
-             (Guestseg.gastnr == inp_gastnr)).order_by(Guestseg._recid).all():
+             (Guestseg.gastnr == inp_gastnr)).order_by(Guestseg._recid).with_for_update().all():
         db_session.delete(guestseg)
 
     if inp_segmcode == 0:
 
-        guestseg = get_cache (Guestseg, {"gastnr": [(eq, inp_gastnr)]})
+        # guestseg = get_cache (Guestseg, {"gastnr": [(eq, inp_gastnr)]})
+        guestseg = db_session.query(Guestseg).filter(
+                        Guestseg.gastnr == inp_gastnr
+                    ).with_for_update().first()
 
         if guestseg:
             db_session.delete(guestseg)
 
         for res_line in db_session.query(Res_line).filter(
-                 (Res_line.gastnrmember == inp_gastnr) & (Res_line.active_flag <= 1)).order_by(Res_line._recid).all():
+                 (Res_line.gastnrmember == inp_gastnr) & (Res_line.active_flag <= 1)).with_for_update().order_by(Res_line._recid).all():
             res_line.betrieb_gastmem = 0
 
     segment = get_cache (Segment, {"segmentcode": [(eq, inp_segmcode)]})
@@ -68,7 +74,10 @@ def update_vip_segmentbl(inp_gastnr:int, inp_segmcode:int):
         guestseg.segmentcode = inp_segmcode
         guestseg.reihenfolge = 1
 
-    guestseg = get_cache (Guestseg, {"gastnr": [(eq, inp_gastnr)]})
+    # guestseg = get_cache (Guestseg, {"gastnr": [(eq, inp_gastnr)]})
+    guestseg = db_session.query(Guestseg).filter(
+                    Guestseg.gastnr == inp_gastnr
+                ).with_for_update().first()
 
     if guestseg:
         prev_segm = guestseg.segmentcode
@@ -115,7 +124,11 @@ def update_vip_segmentbl(inp_gastnr:int, inp_segmcode:int):
 
     if vip_flag1:
 
-        res_line = get_cache (Res_line, {"gastnrmember": [(eq, inp_gastnr)],"active_flag": [(le, 1)]})
+        # res_line = get_cache (Res_line, {"gastnrmember": [(eq, inp_gastnr)],"active_flag": [(le, 1)]})
+        res_line = db_session.query(Res_line).filter(
+            Res_line.gastnrmember==inp_gastnr &
+            Res_line.active_flag <= 1
+        ).with_for_update().first()
         while None != res_line:
             pass
             res_line.betrieb_gastmem = vip_segm
@@ -123,6 +136,6 @@ def update_vip_segmentbl(inp_gastnr:int, inp_segmcode:int):
 
             curr_recid = res_line._recid
             res_line = db_session.query(Res_line).filter(
-                     (Res_line.gastnrmember == inp_gastnr) & (Res_line.active_flag <= 1) & (Res_line._recid > curr_recid)).first()
+                     (Res_line.gastnrmember == inp_gastnr) & (Res_line.active_flag <= 1) & (Res_line._recid > curr_recid)).with_for_update().first()
 
     return generate_output()
