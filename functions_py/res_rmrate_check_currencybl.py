@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 25/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Waehrung, Res_line, Guest_pr, Reslin_queasy, Queasy
@@ -17,14 +19,13 @@ def res_rmrate_check_currencybl(pvilanguage:int, resnr:int, reslinnr:int, contco
     Waehrung1 = create_buffer("Waehrung1",Waehrung)
     Resline = create_buffer("Resline",Res_line)
 
-
     db_session = local_storage.db_session
+    contcode = contcode.strip()
 
     def generate_output():
         nonlocal msg_str, lvcarea, waehrung, res_line, guest_pr, reslin_queasy, queasy
         nonlocal pvilanguage, resnr, reslinnr, contcode
         nonlocal waehrung1, resline
-
 
         nonlocal waehrung1, resline
 
@@ -35,7 +36,6 @@ def res_rmrate_check_currencybl(pvilanguage:int, resnr:int, reslinnr:int, contco
         nonlocal msg_str, lvcarea, waehrung, res_line, guest_pr, reslin_queasy, queasy
         nonlocal pvilanguage, resnr, reslinnr, contcode
         nonlocal waehrung1, resline
-
 
         nonlocal waehrung1, resline
 
@@ -58,7 +58,8 @@ def res_rmrate_check_currencybl(pvilanguage:int, resnr:int, reslinnr:int, contco
 
                 if waehrung1 and waehrung1.waehrungsnr != res_line.betriebsnr:
 
-                    rline = get_cache (Res_line, {"_recid": [(eq, res_line._recid)]})
+                    # rline = get_cache (Res_line, {"_recid": [(eq, res_line._recid)]})
+                    rline = db_session.query(Res_line).filter(Res_line._recid == res_line._recid).with_for_update().first()
 
                     if rline:
                         rline.betriebsnr = waehrung1.waehrungsnr

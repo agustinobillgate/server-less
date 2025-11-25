@@ -7,6 +7,9 @@
                     - changed string to str
                     - fix string.lower()
 """
+#----------------------------------------------------------------
+# Rd, 25/11/2025, with_for_update
+#----------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 # from functions.del_reslinebl import del_reslinebl
@@ -30,6 +33,8 @@ def del_reserve_webbl(pvilanguage: int, res_mode: str, resnr: int, user_init: st
     Bqueasy = create_buffer("Bqueasy", Queasy)
 
     db_session = local_storage.db_session
+    res_mode = res_mode.strip()
+    cancel_str = cancel_str.strip()
 
     def generate_output():
         nonlocal msg_str, del_mainres, lvcarea, res_line, queasy, bediener, htparam
@@ -56,9 +61,10 @@ def del_reserve_webbl(pvilanguage: int, res_mode: str, resnr: int, user_init: st
             res_line = db_session.query(Res_line).filter(
                 (Res_line.resnr == resnr) & (Res_line.active_flag == 0) & (Res_line.l_zuordnung[inc_value(2)] == 0) & (Res_line._recid > curr_recid)).first()
 
-        bqueasy = get_cache(
-            Queasy, {"key": [(eq, 329)], "number1": [(eq, resnr)], "logi1": [(eq, False)]})
-
+        # bqueasy = get_cache(
+        #     Queasy, {"key": [(eq, 329)], "number1": [(eq, resnr)], "logi1": [(eq, False)]})
+        bqueasy = db_session.query(Bqueasy).filter(
+                 (Bqueasy.key == 329) & (Bqueasy.number1 == resnr) & (Bqueasy.logi1 == False)).with_for_update().first()
         if bqueasy:
             get_output(leasing_cancel_rsvbl(bqueasy._recid, user_init))
             bqueasy.logi1 = True

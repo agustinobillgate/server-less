@@ -40,6 +40,9 @@ def res_overbookbl(pvilanguage:int, res_mode:string, inp_resnr:int, inp_reslinnr
     occ_list_data, Occ_list = create_model("Occ_list", {"datum":date, "anz_avail":int, "anz_alot":int, "anz_ooo":int})
 
     db_session = local_storage.db_session
+    rmcat = rmcat.strip()
+    res_mode = res_mode.strip()
+    bed_setup = bed_setup.strip()
 
     def generate_output():
         nonlocal overbook, overmax, overanz, overdate, incl_allot, msg_str, zimkateg_overbook, origcontcode, statcode, res_argt, curr_date, i, anz, anz0, anzooo, anzalot, delta, maxzimmer, ci_date, overbook_flag, do_it, lvcarea, zimkateg, zimmer, res_line, kontline, queasy, outorder

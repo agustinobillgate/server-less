@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+# ================================
+# Rd, 25/11/2025, with_for_update
+# ================================
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -48,11 +50,12 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
     Rmember = create_buffer("Rmember",Res_line)
     Rbuff = create_buffer("Rbuff",Res_line)
     Raccomp = create_buffer("Raccomp",Res_line)
-    Spreqbuff = create_buffer("Spreqbuff",Reslin_queasy)
+    spreqbuff = create_buffer("spreqbuff",Reslin_queasy)
     Resline = create_buffer("Resline",Res_line)
 
 
     db_session = local_storage.db_session
+    c_apply = c_apply.strip()
 
     def generate_output():
         nonlocal msg_str, do_it, allflag, curr_i, ct, zikatstr, curr_msg, init_time, init_date, ankunft1, abreise1, i, str, m_flight, overbook, overmax, overanz, overdate, incl_allot, rmcat_ovb, lvcarea, res_line, reslin_queasy, bediener, outorder, zimkateg, guest, res_history
@@ -70,7 +73,6 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
         nonlocal msg_str, allflag, curr_i, ct, zikatstr, curr_msg, init_time, init_date, ankunft1, abreise1, i, str, m_flight, overbook, overmax, overanz, overdate, incl_allot, rmcat_ovb, lvcarea, res_line, reslin_queasy, bediener, outorder, zimkateg, guest, res_history
         nonlocal pvilanguage, user_init, specrequest, c_apply, incl_gname, incl_ginhouse
         nonlocal rline, rmember, rbuff, raccomp, spreqbuff, resline
-
 
         nonlocal curr_resline, t_resline, member_list, zwunsch_rline, zwunsch_rmember, update_fixrate, rline, rmember, rbuff, raccomp, spreqbuff, resline
         nonlocal t_resline_data, member_list_data, zwunsch_rline_data, zwunsch_rmember_data, update_fixrate_data
@@ -93,7 +95,7 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             start_time = reslin_queasy.number1
 
         for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                 (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == curr_resline.resnr) & (Reslin_queasy.reslinnr == curr_resline.reslinnr)).order_by(Reslin_queasy.date1).all():
+                 (Reslin_queasy.key == ("arrangement")) & (Reslin_queasy.resnr == curr_resline.resnr) & (Reslin_queasy.reslinnr == curr_resline.reslinnr)).order_by(Reslin_queasy.date1).all():
 
             if reslin_queasy.date1 < reslin_queasy.date2:
                 for curr_date in date_range(reslin_queasy.date1 + 1,reslin_queasy.date2) :
@@ -106,9 +108,9 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
 
 
                     pass
-
+                
                 rqsy = db_session.query(Rqsy).filter(
-                         (Rqsy._recid == reslin_queasy._recid)).first()
+                         (Rqsy._recid == reslin_queasy._recid)).with_for_update().first()
                 rqsy.date2 = rqsy.date1
 
                 update_fixrate = query(update_fixrate_data, filters=(lambda update_fixrate: update_fixrate.date1 == rqsy.date1 and update_fixrate.date2 == rqsy.date2), first=True)
@@ -126,7 +128,7 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
                 pass
 
         for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                 (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == rmember.resnr) & (Reslin_queasy.reslinnr == rmember.reslinnr)).order_by(Reslin_queasy.date1).all():
+                 (Reslin_queasy.key == ("arrangement")) & (Reslin_queasy.resnr == rmember.resnr) & (Reslin_queasy.reslinnr == rmember.reslinnr)).order_by(Reslin_queasy.date1).all():
 
             if reslin_queasy.date1 < reslin_queasy.date2:
                 for curr_date in date_range(reslin_queasy.date1 + 1,reslin_queasy.date2) :
@@ -146,22 +148,21 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
                     pass
 
                 rqsy = db_session.query(Rqsy).filter(
-                         (Rqsy._recid == reslin_queasy._recid)).first()
+                         (Rqsy._recid == reslin_queasy._recid)).with_for_update().first()
                 rqsy.date2 = rqsy.date1
 
 
-                pass
-                pass
 
         for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                 (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == curr_resline.resnr) & (Reslin_queasy.reslinnr == curr_resline.reslinnr)).order_by(Reslin_queasy.date1).all():
+                 (Reslin_queasy.key == ("arrangement")) & (Reslin_queasy.resnr == curr_resline.resnr) & (Reslin_queasy.reslinnr == curr_resline.reslinnr)).order_by(Reslin_queasy.date1).all():
             do_it = (start_date < reslin_queasy.date3) or ((start_date == reslin_queasy.date3) and (start_time <= reslin_queasy.number2))
 
             if do_it:
                 chg_mode = "CHG"
 
                 rqsy = db_session.query(Rqsy).filter(
-                         (Rqsy.key == ("arrangement").lower()) & (Rqsy.resnr == rmember.resnr) & (Rqsy.reslinnr == rmember.reslinnr) & (Rqsy.date1 == reslin_queasy.date1)).first()
+                         (Rqsy.key == ("arrangement")) & (Rqsy.resnr == rmember.resnr) & 
+                         (Rqsy.reslinnr == rmember.reslinnr) & (Rqsy.date1 == reslin_queasy.date1)).first()
                 chgflag = not None != rqsy or (None != rqsy and reslin_queasy.deci1 != rqsy.deci1)
 
                 if chgflag:
@@ -201,7 +202,7 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             cid = rmember.changed_id
             cdate = to_string(rmember.changed)
 
-        if chg_mode.lower()  == ("CHG").lower() :
+        if chg_mode  == ("CHG") :
             rqy = Reslin_queasy()
             db_session.add(rqy)
 
@@ -210,7 +211,6 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             rqy.reslinnr = rmember.reslinnr
             rqy.date2 = get_current_date()
             rqy.number2 = get_current_time_in_seconds()
-
 
             rqy.char3 = to_string(rmember.ankunft) + ";" + to_string(rmember.ankunft) + ";" + to_string(rmember.abreise) + ";" + to_string(rmember.abreise) + ";" + to_string(rmember.zimmeranz) + ";" + to_string(rmember.zimmeranz) + ";" + to_string(rmember.erwachs) + ";" + to_string(rmember.erwachs) + ";" + to_string(rmember.kind1) + ";" + to_string(rmember.kind1) + ";" + to_string(rmember.gratis) + ";" + to_string(rmember.gratis) + ";" + to_string(rmember.zikatnr) + ";" + to_string(rmember.zikatnr) + ";" + to_string(rmember.zinr) + ";" + to_string(rmember.zinr) + ";" + to_string(rmember.arrangement) + ";" + to_string(rmember.arrangement) + ";" + to_string(rmember.zipreis) + ";" + to_string(rmember.zipreis) + ";" + to_string(cid) + ";" + to_string(user_init) + ";" + to_string(cdate, "x(8)") + ";" + to_string(get_current_date()) + ";" + to_string("CHG Fixrate FR:") + ";" + to_string(curr_date) + "-" + to_string(old_rate) + ";" + to_string("YES", "x(3)") + ";" + to_string("YES", "x(3)") + ";"
             pass
@@ -223,7 +223,6 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
         rqy.reslinnr = rmember.reslinnr
         rqy.date2 = get_current_date()
         rqy.number2 = get_current_time_in_seconds()
-
 
         rqy.char3 = to_string(rmember.ankunft) + ";" + to_string(rmember.ankunft) + ";" + to_string(rmember.abreise) + ";" + to_string(rmember.abreise) + ";" + to_string(rmember.zimmeranz) + ";" + to_string(rmember.zimmeranz) + ";" + to_string(rmember.erwachs) + ";" + to_string(rmember.erwachs) + ";" + to_string(rmember.kind1) + ";" + to_string(rmember.kind1) + ";" + to_string(rmember.gratis) + ";" + to_string(rmember.gratis) + ";" + to_string(rmember.zikatnr) + ";" + to_string(rmember.zikatnr) + ";" + to_string(rmember.zinr) + ";" + to_string(rmember.zinr) + ";" + to_string(rmember.arrangement) + ";" + to_string(rmember.arrangement) + ";" + to_string(rmember.zipreis) + ";" + to_string(rmember.zipreis) + ";" + to_string(cid) + ";" + to_string(user_init) + ";" + to_string(cdate, "x(8)") + ";" + to_string(get_current_date()) + ";" + chg_mode + " " + to_string("Fixrate TO:") + ";" + to_string(curr_date) + "-" + to_string(new_rate) + ";" + to_string("YES", "x(3)") + ";" + to_string("YES", "x(3)") + ";"
         pass
@@ -315,7 +314,7 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
         Rqsy =  create_buffer("Rqsy",Reslin_queasy)
 
         rqsy = db_session.query(Rqsy).filter(
-                 (Rqsy.key == ("specialRequest").lower()) & (Rqsy.resnr == rmember.resnr) & (Rqsy.reslinnr == rmember.reslinnr)).first()
+                 (Rqsy.key == ("specialRequest")) & (Rqsy.resnr == rmember.resnr) & (Rqsy.reslinnr == rmember.reslinnr)).with_for_update().first()
 
         if not rqsy:
             rqsy = Reslin_queasy()
@@ -326,7 +325,7 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             rqsy.reslinnr = rmember.reslinnr
 
 
-        rqsy.char3 = spreqBuff.char3
+        rqsy.char3 = spreqbuff.char3
 
 
         pass
@@ -343,55 +342,55 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
 
     if specrequest:
 
-        spreqbuff = db_session.query(Spreqbuff).filter(
-                 (spreqBuff.key == ("specialRequest").lower()) & (spreqBuff.resnr == curr_resline.resnr) & (spreqBuff.reslinnr == curr_resline.reslinnr)).first()
+        spreqbuff = db_session.query(spreqbuff).filter(
+                 (spreqbuff.key == ("specialRequest")) & (spreqbuff.resnr == curr_resline.resnr) & (spreqbuff.reslinnr == curr_resline.reslinnr)).first()
     for i in range(1,num_entries(curr_resline.zimmer_wunsch, ";") - 1 + 1) :
         zwunsch_rline = Zwunsch_rline()
         zwunsch_rline_data.append(zwunsch_rline)
 
         str = entry(i - 1, curr_resline.zimmer_wunsch, ";")
 
-        if substring(str, 0, 7) == ("voucher").lower() :
+        if substring(str, 0, 7) == ("voucher") :
             zwunsch_rline.s_label = "voucher"
             zwunsch_rline.s_value1 = substring(str, 7)
 
-        elif substring(str, 0, 5) == ("ChAge").lower() :
+        elif substring(str, 0, 5) == ("ChAge") :
             zwunsch_rline.s_label = "chAge"
             zwunsch_rline.s_value1 = substring(str, 5)
 
-        elif substring(str, 0, 10) == ("$OrigCode$").lower() :
+        elif substring(str, 0, 10) == ("$OrigCode$") :
             zwunsch_rline.s_label = "$OrigCode$"
             zwunsch_rline.s_value1 = substring(str, 10)
 
-        elif substring(str, 0, 6) == ("$CODE$").lower() :
+        elif substring(str, 0, 6) == ("$CODE$") :
             zwunsch_rline.s_label = "$CODE$"
             zwunsch_rline.s_value1 = substring(str, 6)
 
-        elif substring(str, 0, 5) == ("DATE,").lower() :
+        elif substring(str, 0, 5) == ("DATE,") :
             zwunsch_rline.s_label = "DATE,"
             zwunsch_rline.s_value1 = substring(str, 5)
 
-        elif substring(str, 0, 8) == ("SEGM_PUR").lower() :
+        elif substring(str, 0, 8) == ("SEGM_PUR") :
             zwunsch_rline.s_label = "SEGM_PUR"
             zwunsch_rline.s_value1 = substring(str, 8)
 
-        elif substring(str, 0, 6) == ("ebdisc").lower() :
+        elif substring(str, 0, 6) == ("ebdisc") :
             zwunsch_rline.s_label = "ebdisc"
             zwunsch_rline.s_value1 = "Y"
 
-        elif substring(str, 0, 6) == ("kbdisc").lower() :
+        elif substring(str, 0, 6) == ("kbdisc") :
             zwunsch_rline.s_label = "kbdisc"
             zwunsch_rline.s_value1 = "Y"
 
-        elif substring(str, 0, 10) == ("restricted").lower() :
+        elif substring(str, 0, 10) == ("restricted") :
             zwunsch_rline.s_label = "restricted"
             zwunsch_rline.s_value1 = "Y"
 
-        elif substring(str, 0, 6) == ("pickup").lower() :
+        elif substring(str, 0, 6) == ("pickup") :
             zwunsch_rline.s_label = "pickup"
             zwunsch_rline.s_value1 = "Y"
 
-        elif substring(str, 0, 14) == ("drop-passanger").lower() :
+        elif substring(str, 0, 14) == ("drop-passanger") :
             zwunsch_rline.s_label = "drop-passanger"
             zwunsch_rline.s_value1 = "Y"
 
@@ -406,9 +405,9 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
 
         str = entry(i - 1, res_line.zimmer_wunsch, ";")
 
-        if substring(str, 0, 7) == ("voucher").lower() :
+        if substring(str, 0, 7) == ("voucher") :
 
-            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label.lower()  == ("voucher").lower()), first=True)
+            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label  == ("voucher")), first=True)
 
             if not zwunsch_rline:
                 zwunsch_rline = Zwunsch_rline()
@@ -417,9 +416,9 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             zwunsch_rline.s_label = "voucher"
             zwunsch_rline.s_value2 = substring(str, 7)
 
-        elif substring(str, 0, 5) == ("ChAge").lower() :
+        elif substring(str, 0, 5) == ("ChAge") :
 
-            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label.lower()  == ("ChAge").lower()), first=True)
+            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label  == ("ChAge")), first=True)
 
             if not zwunsch_rline:
                 zwunsch_rline = Zwunsch_rline()
@@ -428,9 +427,9 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             zwunsch_rline.s_label = "ChAge"
             zwunsch_rline.s_value2 = substring(str, 5)
 
-        elif substring(str, 0, 10) == ("$OrigCode$").lower() :
+        elif substring(str, 0, 10) == ("$OrigCode$") :
 
-            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label.lower()  == ("voucher").lower()), first=True)
+            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label  == ("voucher")), first=True)
 
             if not zwunsch_rline:
                 zwunsch_rline = Zwunsch_rline()
@@ -439,9 +438,9 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             zwunsch_rline.s_label = "$OrigCode$"
             zwunsch_rline.s_value2 = substring(str, 10)
 
-        elif substring(str, 0, 6) == ("$CODE$").lower() :
+        elif substring(str, 0, 6) == ("$CODE$") :
 
-            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label.lower()  == ("&CODE$").lower()), first=True)
+            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label  == ("&CODE$")), first=True)
 
             if not zwunsch_rline:
                 zwunsch_rline = Zwunsch_rline()
@@ -450,9 +449,9 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             zwunsch_rline.s_label = "$CODE$"
             zwunsch_rline.s_value2 = substring(str, 6)
 
-        elif substring(str, 0, 5) == ("DATE,").lower() :
+        elif substring(str, 0, 5) == ("DATE,") :
 
-            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label.lower()  == ("DATE,").lower()), first=True)
+            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label  == ("DATE,")), first=True)
 
             if not zwunsch_rline:
                 zwunsch_rline = Zwunsch_rline()
@@ -461,9 +460,9 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             zwunsch_rline.s_label = "DATE,"
             zwunsch_rline.s_value2 = substring(str, 5)
 
-        elif substring(str, 0, 8) == ("SEGM_PUR").lower() :
+        elif substring(str, 0, 8) == ("SEGM_PUR") :
 
-            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label.lower()  == ("SEGM_PUR").lower()), first=True)
+            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label  == ("SEGM_PUR")), first=True)
 
             if not zwunsch_rline:
                 zwunsch_rline = Zwunsch_rline()
@@ -472,9 +471,9 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             zwunsch_rline.s_label = "SEGM_PUR"
             zwunsch_rline.s_value2 = substring(str, 8)
 
-        elif substring(str, 0, 6) == ("ebdisc").lower() :
+        elif substring(str, 0, 6) == ("ebdisc") :
 
-            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label.lower()  == ("ebdisc").lower()), first=True)
+            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label  == ("ebdisc")), first=True)
 
             if not zwunsch_rline:
                 zwunsch_rline = Zwunsch_rline()
@@ -483,9 +482,9 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             zwunsch_rline.s_label = "ebdisc"
             zwunsch_rline.s_value2 = "Y"
 
-        elif substring(str, 0, 6) == ("kbdisc").lower() :
+        elif substring(str, 0, 6) == ("kbdisc") :
 
-            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label.lower()  == ("kbdisx").lower()), first=True)
+            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label  == ("kbdisx")), first=True)
 
             if not zwunsch_rline:
                 zwunsch_rline = Zwunsch_rline()
@@ -494,9 +493,9 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             zwunsch_rline.s_label = "kbdisc"
             zwunsch_rline.s_value2 = "Y"
 
-        elif substring(str, 0, 10) == ("restricted").lower() :
+        elif substring(str, 0, 10) == ("restricted") :
 
-            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label.lower()  == ("restricted").lower()), first=True)
+            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label  == ("restricted")), first=True)
 
             if not zwunsch_rline:
                 zwunsch_rline = Zwunsch_rline()
@@ -505,9 +504,9 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             zwunsch_rline.s_label = "restricted"
             zwunsch_rline.s_value2 = "Y"
 
-        elif substring(str, 0, 6) == ("pickup").lower() :
+        elif substring(str, 0, 6) == ("pickup") :
 
-            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label.lower()  == ("pickup").lower()), first=True)
+            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label  == ("pickup")), first=True)
 
             if not zwunsch_rline:
                 zwunsch_rline = Zwunsch_rline()
@@ -516,9 +515,9 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             zwunsch_rline.s_label = "pickup"
             zwunsch_rline.s_value2 = "Y"
 
-        elif substring(str, 0, 14) == ("drop-passanger").lower() :
+        elif substring(str, 0, 14) == ("drop-passanger") :
 
-            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label.lower()  == ("drop-passanger").lower()), first=True)
+            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label  == ("drop-passanger")), first=True)
 
             if not zwunsch_rline:
                 zwunsch_rline = Zwunsch_rline()
@@ -529,7 +528,7 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
 
         elif matches(str,r"*WCI-req*"):
 
-            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label.lower()  == ("WCI-req").lower()), first=True)
+            zwunsch_rline = query(zwunsch_rline_data, filters=(lambda zwunsch_rline: zwunsch_rline.s_label  == ("WCI-req")), first=True)
 
             if not zwunsch_rline:
                 zwunsch_rline = Zwunsch_rline()
@@ -566,7 +565,7 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
         if do_it:
 
             rbuff = db_session.query(Rbuff).filter(
-                     (Rbuff._recid == resline._recid)).first()
+                     (Rbuff._recid == resline._recid)).with_for_update().first()
 
             if curr_resline.bemerk != res_line.bemerk:
                 rbuff.bemerk = res_line.bemerk
@@ -608,7 +607,7 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             buffer_copy(rmember, t_resline)
 
             rbuff = db_session.query(Rbuff).filter(
-                     (Rbuff._recid == rmember._recid)).first()
+                     (Rbuff._recid == rmember._recid)).with_for_update().first()
             m_flight = ""
 
             if substring(curr_resline.flight_nr, 0, 6) != substring(res_line.flight_nr, 0, 6):
@@ -735,7 +734,7 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
             if do_it and curr_resline.zipreis != res_line.zipreis and rmember.resstatus != 11 and rmember.resstatus != 13:
                 rbuff.zipreis =  to_decimal(res_line.zipreis)
 
-            if do_it and specrequest and spreqBuff:
+            if do_it and specrequest and spreqbuff:
                 update_special_request()
 
             if do_it:
@@ -745,47 +744,47 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
 
                     str = entry(i - 1, rmember.zimmer_wunsch, ";")
 
-                    if substring(str, 0, 7) == ("voucher").lower() :
+                    if substring(str, 0, 7) == ("voucher") :
                         zwunsch_rmember.s_label = "voucher"
                         zwunsch_rmember.s_value2 = substring(str, 7)
 
-                    elif substring(str, 0, 5) == ("ChAge").lower() :
+                    elif substring(str, 0, 5) == ("ChAge") :
                         zwunsch_rmember.s_label = "chAge"
                         zwunsch_rmember.s_value2 = substring(str, 5)
 
-                    elif substring(str, 0, 10) == ("$OrigCode$").lower() :
+                    elif substring(str, 0, 10) == ("$OrigCode$") :
                         zwunsch_rmember.s_label = "$OrigCode$"
                         zwunsch_rmember.s_value2 = substring(str, 10)
 
-                    elif substring(str, 0, 6) == ("$CODE$").lower() :
+                    elif substring(str, 0, 6) == ("$CODE$") :
                         zwunsch_rmember.s_label = "$CODE$"
                         zwunsch_rmember.s_value2 = substring(str, 6)
 
-                    elif substring(str, 0, 5) == ("DATE,").lower() :
+                    elif substring(str, 0, 5) == ("DATE,") :
                         zwunsch_rmember.s_label = "DATE,"
                         zwunsch_rmember.s_value2 = substring(str, 5)
 
-                    elif substring(str, 0, 8) == ("SEGM_PUR").lower() :
+                    elif substring(str, 0, 8) == ("SEGM_PUR") :
                         zwunsch_rmember.s_label = "SEGM_PUR"
                         zwunsch_rmember.s_value2 = substring(str, 8)
 
-                    elif substring(str, 0, 6) == ("ebdisc").lower() :
+                    elif substring(str, 0, 6) == ("ebdisc") :
                         zwunsch_rmember.s_label = "ebdisc"
                         zwunsch_rmember.s_value2 = "Y"
 
-                    elif substring(str, 0, 6) == ("kbdisc").lower() :
+                    elif substring(str, 0, 6) == ("kbdisc") :
                         zwunsch_rmember.s_label = "kbdisc"
                         zwunsch_rmember.s_value2 = "Y"
 
-                    elif substring(str, 0, 10) == ("restricted").lower() :
+                    elif substring(str, 0, 10) == ("restricted") :
                         zwunsch_rmember.s_label = "restricted"
                         zwunsch_rmember.s_value2 = "Y"
 
-                    elif substring(str, 0, 6) == ("pickup").lower() :
+                    elif substring(str, 0, 6) == ("pickup") :
                         zwunsch_rmember.s_label = "pickup"
                         zwunsch_rmember.s_value2 = "Y"
 
-                    elif substring(str, 0, 14) == ("drop-passanger").lower() :
+                    elif substring(str, 0, 14) == ("drop-passanger") :
                         zwunsch_rmember.s_label = "drop-passanger"
                         zwunsch_rmember.s_value2 = "Y"
 
@@ -815,7 +814,7 @@ def mk_resline_go1_1bl(pvilanguage:int, user_init:string, specrequest:bool, c_ap
 
                 if zwunsch_rmember.s_value2 != "":
 
-                    if zwunsch_rmember.s_value2.lower()  == ("Y").lower() :
+                    if zwunsch_rmember.s_value2  == ("Y") :
                         ct = ct + zwunsch_rmember.s_label + ";"
                     else:
                         ct = ct + zwunsch_rmember.s_label + zwunsch_rmember.s_value2 + ";"
