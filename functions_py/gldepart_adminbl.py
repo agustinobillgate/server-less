@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 25/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_acct, Gl_department
@@ -25,8 +27,10 @@ def gldepart_adminbl(pvilanguage:int, nr:int):
 
         return generate_output()
     else:
-
-        gl_department = get_cache (Gl_department, {"nr": [(eq, nr)]})
+        # Rd, 25/11/2025, with_for_update added
+        # gl_department = get_cache (Gl_department, {"nr": [(eq, nr)]})
+        gl_department = db_session.query(Gl_department).filter(
+                     (Gl_department.nr == nr)).with_for_update().first()
 
         if gl_department:
             db_session.delete(gl_department)
