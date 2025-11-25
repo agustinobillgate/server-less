@@ -2,11 +2,13 @@
 #------------------------------------------
 # Rd, 10/10/2025
 # fchar -> htparam.fchar
+# Rd, 25/11/2025, add .with_for_update
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Gl_acct, Gl_jouhdr, Gl_journal, Gl_accthis, Bediener, Res_history
+from sqlalchemy import flag_modified
 
 def close_adjustmentbl(pvilanguage:int, user_init:string):
 
@@ -47,10 +49,12 @@ def close_adjustmentbl(pvilanguage:int, user_init:string):
         while None != gl_journal:
             pass
 
-            gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)]})
-
-            gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_journal.fibukonto)],"year": [(eq, curr_year)]})
-
+            # Rd, 25/11/2025, add .with_for_update
+            # gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)]})
+            # gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_journal.fibukonto)],"year": [(eq, curr_year)]})
+            gl_acct = db_session.query(Gl_acct).filter(Gl_acct.fibukonto == gl_journal.fibukonto).with_for_update().first()
+            gl_accthis = db_session.query(Gl_accthis).filter(
+                (Gl_accthis.fibukonto == gl_journal.fibukonto) & (Gl_accthis.year == curr_year)).with_for_update().first()
             if not gl_accthis:
                 gl_accthis = Gl_accthis()
                 db_session.add(gl_accthis)
@@ -60,8 +64,6 @@ def close_adjustmentbl(pvilanguage:int, user_init:string):
 
 
             gl_accthis.actual[curr_month - 1] = gl_accthis.actual[curr_month - 1] + gl_journal.debit - gl_journal.credit
-            pass
-            pass
             gl_acct.last_yr[curr_month - 1] = gl_acct.last_yr[curr_month - 1] + gl_journal.debit - gl_journal.credit
 
             if gl_acct.acc_type == 1:
@@ -84,6 +86,9 @@ def close_adjustmentbl(pvilanguage:int, user_init:string):
             curr_recid = gl_journal._recid
             gl_journal = db_session.query(Gl_journal).filter(
                      (Gl_journal.jnr == inp_jnr) & (Gl_journal.activeflag == 0) & (Gl_journal._recid > curr_recid)).first()
+        flag_modified(gl_acct, "actual")
+        flag_modified(gl_acct, "last_yr")
+        flag_modified(gl_accthis, "actual")
 
 
     def process_jouhdr():
@@ -91,15 +96,16 @@ def close_adjustmentbl(pvilanguage:int, user_init:string):
         nonlocal closed, msg_str, lvcarea, curr_date, curr_month, curr_year, prev_month, from_month, to_month, pnl_acct, balance, profit, lost, i, htparam, gl_acct, gl_jouhdr, gl_journal, gl_accthis, bediener, res_history
         nonlocal pvilanguage, user_init
 
-        gl_jouhdr = get_cache (Gl_jouhdr, {"activeflag": [(eq, 0)],"datum": [(eq, curr_date)]})
-        while None != gl_jouhdr:
-            pass
+        # Rd, 25/11/2025, add .with_for_update
+        # gl_jouhdr = get_cache (Gl_jouhdr, {"activeflag": [(eq, 0)],"datum": [(eq, curr_date)]})
+        # while None != gl_jouhdr:
+        for gl_jouhdr in db_session.query(Gl_jouhdr).filter(
+                 (Gl_jouhdr.activeflag == 0) & (Gl_jouhdr.datum == curr_date)).order_by(Gl_jouhdr._recid).all():
             gl_jouhdr.activeflag = 1
-            pass
 
-            curr_recid = gl_jouhdr._recid
-            gl_jouhdr = db_session.query(Gl_jouhdr).filter(
-                     (Gl_jouhdr.activeflag == 0) & (Gl_jouhdr.datum == curr_date) & (Gl_jouhdr._recid > curr_recid)).first()
+            # curr_recid = gl_jouhdr._recid
+            # gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+            #          (Gl_jouhdr.activeflag == 0) & (Gl_jouhdr.datum == curr_date) & (Gl_jouhdr._recid > curr_recid)).first()
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 795)]})
     curr_date = htparam.fdate
@@ -143,7 +149,9 @@ def close_adjustmentbl(pvilanguage:int, user_init:string):
         gl_jouhdr = db_session.query(Gl_jouhdr).filter(
                  (Gl_jouhdr.activeflag == 0) & (Gl_jouhdr.datum == curr_date) & (Gl_jouhdr._recid > curr_recid)).first()
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
+    # Rd, 25/11/2025, add .with_for_update
+    # htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
+    htparam = db_session.query(Htparam).filter(Htparam.paramnr == 983).with_for_update().first()
     htparam.flogical = True
     pass
 
@@ -154,7 +162,9 @@ def close_adjustmentbl(pvilanguage:int, user_init:string):
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 980)]})
 
-    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
+    # Rd, 25/11/2025, add .with_for_update
+    # gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
+    gl_acct = db_session.query(Gl_acct).filter(Gl_acct.fibukonto == htparam.fchar).with_for_update().first()
     gl_acct.last_yr[curr_month - 1] = gl_acct.last_yr[curr_month - 1] -\
             profit + lost
 
@@ -162,9 +172,13 @@ def close_adjustmentbl(pvilanguage:int, user_init:string):
     for i in range(from_month,to_month + 1) :
         gl_acct.actual[i - 1] = gl_acct.actual[i - 1] - profit + lost
     pass
+    flag_modified(gl_acct, "last_yr")
+    flag_modified(gl_acct, "actual")
 
-    gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_acct.fibukonto)],"year": [(eq, curr_year)]})
-
+    # Rd, 25/11/2025, add .with_for_update
+    # gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, gl_acct.fibukonto)],"year": [(eq, curr_year)]})
+    gl_accthis = db_session.query(Gl_accthis).filter(
+        (Gl_accthis.fibukonto == gl_acct.fibukonto) & (Gl_accthis.year == curr_year)).with_for_update().first()
     if not gl_accthis:
         gl_accthis = Gl_accthis()
         db_session.add(gl_accthis)
@@ -176,8 +190,7 @@ def close_adjustmentbl(pvilanguage:int, user_init:string):
     gl_accthis.actual[curr_month - 1] = gl_accthis.actual[curr_month - 1] -\
             profit + lost
 
-
-    pass
+    flag_modified(gl_accthis, "actual")
 
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
     res_history = Res_history()
@@ -194,7 +207,8 @@ def close_adjustmentbl(pvilanguage:int, user_init:string):
     pass
     closed = True
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
+    # Rd, 25/11/2025, add .with_for_update
+    htparam = db_session.query(Htparam).filter(Htparam.paramnr == 983).with_for_update().first()
     htparam.flogical = False
     pass
 

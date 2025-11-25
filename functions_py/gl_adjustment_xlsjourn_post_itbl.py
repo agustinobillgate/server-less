@@ -7,7 +7,6 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Counters, Gl_jouhdr, Gl_journal
-from functions.next_counter_for_update import next_counter_for_update
 
 g_list_data, G_list = create_model("G_list", {"jnr":int, "fibukonto":string, "fibukonto2":string, "debit":Decimal, "credit":Decimal, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "bemerk":string, "descr":string, "duplicate":bool, "correct":int}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 
@@ -23,8 +22,6 @@ def gl_adjustment_xlsjourn_post_itbl(g_list_data:[G_list], pvilanguage:int, datu
     g_list = None
 
     db_session = local_storage.db_session
-    last_count = 0
-    error_lock:string = ""
     journ_no = journ_no.strip()
     journ_name = journ_name.strip()
 
@@ -46,7 +43,8 @@ def gl_adjustment_xlsjourn_post_itbl(g_list_data:[G_list], pvilanguage:int, datu
 
         nonlocal g_list
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == 25).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -56,14 +54,12 @@ def gl_adjustment_xlsjourn_post_itbl(g_list_data:[G_list], pvilanguage:int, datu
             counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
 
 
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = get_output(next_counter_for_update(25))
+        counters.counter = counters.counter + 1
         pass
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
-        # gl_jouhdr.jnr = counters.counter
-        gl_jouhdr.jnr = last_count
+        gl_jouhdr.jnr = counters.counter
         
         gl_jouhdr.refno = journ_no
         gl_jouhdr.datum = datum

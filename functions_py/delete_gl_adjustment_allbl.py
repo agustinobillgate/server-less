@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------------------------------------
+# Rd, 25/11/2025, add .with_for_update
+#----------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -26,16 +28,20 @@ def delete_gl_adjustment_allbl(refno:string, jnr:int, bezeich:string, user_init:
     htparam = get_cache (Htparam, {"paramnr": [(eq, 795)]})
     close_year = htparam.fdate
 
-    gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
+    # Rd, 25/11/2025, add .with_for_update
+    # gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
+    gl_jouhdr = db_session.query(Gl_jouhdr).filter(Gl_jouhdr.jnr == jnr).with_for_update().first()
 
     if gl_jouhdr:
 
         if gl_jouhdr.activeflag == 0 and gl_jouhdr.jtype == 0:
 
             if gl_jouhdr.datum == to_date:
-
+                # Rd, 25/11/2025, add .with_for_update
+                # for gl_journal in db_session.query(Gl_journal).filter(
+                #          (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).all():
                 for gl_journal in db_session.query(Gl_journal).filter(
-                         (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).all():
+                         (Gl_journal.jnr == gl_jouhdr.jnr)).with_for_update().order_by(Gl_journal._recid).all():
                     db_session.delete(gl_journal)
                 pass
                 db_session.delete(gl_jouhdr)

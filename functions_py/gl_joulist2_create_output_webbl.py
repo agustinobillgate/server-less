@@ -2,11 +2,13 @@
 #------------------------------------------
 # Rd, 14/8/2025
 # if available bqueasy
+# Rd, 25/11/2025, with_for_update added
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Queasy, Paramtext
+from sqlalchemy import func
 
 out_list_data, Out_list = create_model("Out_list", {"s_recid":int, "marked":string, "fibukonto":string, "jnr":int, "jtype":int, "bemerk":string, "trans_date":date, "bezeich":string, "number1":string, "debit":Decimal, "credit":Decimal, "balance":Decimal, "debit_str":string, "credit_str":string, "balance_str":string, "refno":string, "uid":string, "created":date, "chgid":string, "chgdate":date, "tax_code":string, "tax_amount":string, "tot_amt":string, "approved":bool, "prev_bal":string})
 
@@ -70,7 +72,7 @@ def gl_joulist2_create_output_webbl(out_list_data:[Out_list]):
         htl_no = decode_string(paramtext.ptexte)
 
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 280) & (Queasy.char1 == ("General Ledger").lower())).order_by(Queasy.number1).yield_per(100):
+             (Queasy.key == 280) & ((func.lower(Queasy.char1)) == ("General Ledger").lower())).order_by(Queasy.number1).yield_per(100):
         counter = counter + 1
 
         if counter > 700:
@@ -100,10 +102,10 @@ def gl_joulist2_create_output_webbl(out_list_data:[Out_list]):
         out_list.tot_amt = entry(22, queasy.char2, "|")
         out_list.prev_bal = entry(24, queasy.char2, "|")
 
-        if entry(23, queasy.char2, "|") == ("no").lower() :
+        if entry(23, (queasy.char2).lower(), "|") == ("no").lower() :
             out_list.approved = False
 
-        elif entry(23, queasy.char2, "|") == ("yes").lower() :
+        elif entry(23, (queasy.char2).lower(), "|") == ("yes").lower() :
             out_list.approved = True
 
         if entry(6, queasy.char2, "|") != "":
@@ -115,15 +117,17 @@ def gl_joulist2_create_output_webbl(out_list_data:[Out_list]):
         if entry(19, queasy.char2, "|") != "":
             out_list.chgdate = date_mdy(to_int(entry(1, entry(19, queasy.char2, "|") , "/")) , to_int(entry(0, entry(19, queasy.char2, "|") , "/")) , to_int(entry(2, entry(19, queasy.char2, "|") , "/")))
 
-        bqueasy = db_session.query(Bqueasy).filter(
-                 (Bqueasy._recid == queasy._recid)).first()
+        # bqueasy = db_session.query(Bqueasy).filter(
+        #          (Bqueasy._recid == queasy._recid)).first()
         # Rd 14/8/2025
+        bqueasy = db_session.query(Bqueasy).filter(
+                 (Bqueasy._recid == queasy._recid)).with_for_update().first()
         if bqueasy:
             db_session.delete(bqueasy)
         pass
 
     pqueasy = db_session.query(Pqueasy).filter(
-             (Pqueasy.key == 280) & (Pqueasy.char1 == ("General Ledger").lower()) & (Pqueasy.char3 == ("PROCESS").lower())).first()
+             (Pqueasy.key == 280) & (func.lower(Pqueasy.char1) == ("General Ledger").lower()) & (func.lower(Pqueasy.char3) == ("PROCESS").lower())).first()
 
     if pqueasy:
         doneflag = False
