@@ -961,8 +961,8 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                     else:
 
                         # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                        counters = db_session.query(Counters).with_for_update().filter(
-                                 (Counters.counter_no == 3)).first()    
+                        counters = db_session.query(Counters).filter(
+                                 (Counters.counter_no == 3)).with_for_update().first()    
                         
                         counters.counter = counters.counter + 1
                         bill.rechnr = counters.counter

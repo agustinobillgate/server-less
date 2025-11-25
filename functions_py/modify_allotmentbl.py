@@ -257,8 +257,8 @@ def modify_allotmentbl(i_case:int, user_init:string, reslin_list_data:[Reslin_li
                 else:
 
                     # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
-                    counters = db_session.query(Counters).with_for_update().filter(
-                             (Counters.counter_no == 10)).first()
+                    counters = db_session.query(Counters).filter(
+                             (Counters.counter_no == 10)).with_for_update().first()
                     
                     counters.counter = counters.counter + 1
                     pass
@@ -278,7 +278,7 @@ def modify_allotmentbl(i_case:int, user_init:string, reslin_list_data:[Reslin_li
                 if create_it:
 
                     # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
-                    counters = db_session.query(Counters).with_for_update().filter(
+                    counters = db_session.query(Counters).filter(
                              (Counters.counter_no == 10)).first()
                     
                     counters.counter = counters.counter + 1

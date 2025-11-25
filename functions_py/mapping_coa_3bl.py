@@ -64,7 +64,7 @@ def mapping_coa_3bl(coa_list_data:[Coa_list]):
             while None != temp_gl_accthis:
                 # Rd, 25/11/2025, with_for_update
                 # gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, coa_list.new_fibu)],"year": [(eq, temp_gl_accthis.year)]})
-                gl_accthis = db_session.query(Gl_accthis).with_for_update().filter(Gl_accthis.fibukonto == coa_list.new_fibu, Gl_accthis.year == temp_gl_accthis.year).first()
+                gl_accthis = db_session.query(Gl_accthis).filter(Gl_accthis.fibukonto == coa_list.new_fibu, Gl_accthis.year == temp_gl_accthis.year).with_for_update().first()
                 if gl_accthis:
                     for i in range(1,12 + 1) :
                         gl_accthis.actual[i - 1] = gl_accthis.actual[i - 1] + temp_gl_accthis.actual[i - 1]

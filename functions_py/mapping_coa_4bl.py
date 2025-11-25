@@ -119,7 +119,7 @@ def mapping_coa_4bl(coa_list_data:[Coa_list]):
         for coa_list in query(coa_list_data, filters=(lambda coa_list: coa_list.coaStat == -1)):
             # Rd, 25/11/2025, with_for_update
             # gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, coa_list.old_fibu)]})
-            gl_acct = db_session.query(Gl_acct).with_for_update().filter(Gl_acct.fibukonto == coa_list.old_fibu).first()
+            gl_acct = db_session.query(Gl_acct).filter(Gl_acct.fibukonto == coa_list.old_fibu).with_for_update().first()
 
             if gl_acct:
                 db_session.delete(gl_acct)
@@ -127,21 +127,21 @@ def mapping_coa_4bl(coa_list_data:[Coa_list]):
 
             # Rd, 25/11/2025, with_for_update
             # gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, coa_list.old_fibu)]})
-            gl_accthis = db_session.query(Gl_accthis).with_for_update().filter(Gl_accthis.fibukonto == coa_list.old_fibu).first()
+            gl_accthis = db_session.query(Gl_accthis).filter(Gl_accthis.fibukonto == coa_list.old_fibu).with_for_update().first()
 
             if gl_accthis:
                 db_session.delete(gl_accthis)
                 pass
 
             # gl_jourhis = get_cache (Gl_jourhis, {"fibukonto": [(eq, coa_list.old_fibu)]})
-            gl_jourhis = db_session.query(Gl_jourhis).with_for_update().filter(Gl_jourhis.fibukonto == coa_list.old_fibu).first()
+            gl_jourhis = db_session.query(Gl_jourhis).filter(Gl_jourhis.fibukonto == coa_list.old_fibu).with_for_update().first()
 
             if gl_jourhis:
                 db_session.delete(gl_jourhis)
                 pass
 
             # gl_journal = get_cache (Gl_journal, {"fibukonto": [(eq, coa_list.old_fibu)]})
-            gl_journal = db_session.query(Gl_journal).with_for_update().filter(Gl_journal.fibukonto == coa_list.old_fibu).first()
+            gl_journal = db_session.query(Gl_journal).filter(Gl_journal.fibukonto == coa_list.old_fibu).with_for_update().first()
 
             if gl_journal:
                 db_session.delete(gl_journal)

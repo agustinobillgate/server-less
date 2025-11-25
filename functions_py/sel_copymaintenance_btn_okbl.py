@@ -85,8 +85,8 @@ def sel_copymaintenance_btn_okbl(property_data:[Property], maintain_nr:int, all_
 
                     # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
                     # counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
-                    counters = db_session.query(Counters).with_for_update().filter(
-                             (Counters.counter_no == 38)).first()
+                    counters = db_session.query(Counters).filter(
+                             (Counters.counter_no == 38)).with_for_update().first()
 
                     if not counters:
                         counters = Counters()
@@ -183,8 +183,8 @@ def sel_copymaintenance_btn_okbl(property_data:[Property], maintain_nr:int, all_
 
                     # counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
                     # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
-                    counters = db_session.query(Counters).with_for_update().filter(
-                             (Counters.counter_no == 38)).first()
+                    counters = db_session.query(Counters).filter(
+                             (Counters.counter_no == 38)).with_for_update().first()
 
                     if not counters:
                         counters = Counters()
