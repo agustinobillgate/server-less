@@ -1,10 +1,13 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------------------------------
+# Rd, 25/11/2025, with_for_update
+#----------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Waehrung, Res_line, Guest, Htparam, Queasy, Ratecode, Reslin_queasy, Guest_pr
 
-def mk_resline_get_currencybl(reslin_list_betriebsnr:int, marknr:int, foreign_rate:bool, t_contcode:string, reslin_list_resnr:int, reslin_list_reslinnr:int, reslin_list_adrflag:bool, res_mode:string, gastnr:int, resnr:int, reslinnr:int):
+def mk_resline_get_currencybl(reslin_list_betriebsnr:int, marknr:int, foreign_rate:bool, t_contcode:string, 
+                              reslin_list_resnr:int, reslin_list_reslinnr:int, reslin_list_adrflag:bool, res_mode:string, gastnr:int, resnr:int, reslinnr:int):
 
     prepare_cache ([Res_line, Guest, Htparam, Queasy, Ratecode, Guest_pr])
 
@@ -33,14 +36,14 @@ def mk_resline_get_currencybl(reslin_list_betriebsnr:int, marknr:int, foreign_ra
     Rline = create_buffer("Rline",Res_line)
     Gbuff = create_buffer("Gbuff",Guest)
 
-
     db_session = local_storage.db_session
+    t_contcode = t_contcode.strip()
+    res_mode = res_mode.strip()
 
     def generate_output():
         nonlocal local_nr, foreign_nr, guest_currency, curr_wabnr, waehrung1_wabkurz, err_msg, return_flag, err_whr, t_waehrung1_data, tokcounter, iftask, mestoken, mesvalue, rcode, found, waehrung, res_line, guest, htparam, queasy, ratecode, reslin_queasy, guest_pr
         nonlocal reslin_list_betriebsnr, marknr, foreign_rate, t_contcode, reslin_list_resnr, reslin_list_reslinnr, reslin_list_adrflag, res_mode, gastnr, resnr, reslinnr
         nonlocal waehrung1, rline, gbuff
-
 
         nonlocal t_waehrung1, waehrung1, rline, gbuff
         nonlocal t_waehrung1_data
@@ -99,11 +102,9 @@ def mk_resline_get_currencybl(reslin_list_betriebsnr:int, marknr:int, foreign_ra
             if rcode != "":
 
                 ratecode = get_cache (Ratecode, {"code": [(eq, rcode)]})
-
                 queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, ratecode.marknr)]})
 
                 if queasy:
-
                     waehrung1 = db_session.query(Waehrung1).filter(
                              (Waehrung1.wabkurz == queasy.char3)).first()
 
@@ -177,7 +178,9 @@ def mk_resline_get_currencybl(reslin_list_betriebsnr:int, marknr:int, foreign_ra
                         found = True
                         curr_wabnr = waehrung1.waehrungsnr
 
-                        rline = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+                        # rline = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+                        rline = db_session.query(Rline).filter(
+                                 (Rline.resnr == resnr) & (Rline.reslinnr == reslinnr)).with_for_update().first()
 
                         if rline:
                             rline.betriebsnr = waehrung1.waehrungsnr

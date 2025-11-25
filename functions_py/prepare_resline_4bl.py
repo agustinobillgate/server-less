@@ -512,7 +512,9 @@ def prepare_resline_4bl(pvilanguage:int, res_mode:string, session_date:string, u
                             found = True
                             curr_wabnr = waehrung1.waehrungsnr
 
-                            rline = get_cache (Res_line, {"resnr": [(eq, inp_resnr)],"reslinnr": [(eq, inp_reslinnr)]})
+                            # rline = get_cache (Res_line, {"resnr": [(eq, inp_resnr)],"reslinnr": [(eq, inp_reslinnr)]})
+                            rline = db_session.query(Rline).filter(
+                                     (Rline.resnr == inp_resnr) & (Rline.reslinnr == inp_reslinnr)).with_for_update().first()
 
                             if rline:
                                 rline.betriebsnr = waehrung1.waehrungsnr

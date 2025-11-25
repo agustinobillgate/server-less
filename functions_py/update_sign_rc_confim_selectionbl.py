@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------------------
+# Rd, 25/11/2025, with_for_update()
+#-----------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Res_line
@@ -30,7 +32,8 @@ def update_sign_rc_confim_selectionbl(resno:int, reslino:int, gastno:int, gdpr_f
     if news_flag == None:
         news_flag = False
 
-    res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslino)],"gastnrmember": [(eq, gastno)]})
+    # res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslino)],"gastnrmember": [(eq, gastno)]})
+    res_line = db_session.query(Res_line).filter(Res_line.resnr == resno, Res_line.reslinnr == reslino, Res_line.gastnrmember == gastno).with_for_update().first()
 
     if res_line:
 

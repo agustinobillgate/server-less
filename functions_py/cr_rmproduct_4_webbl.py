@@ -3,7 +3,7 @@
 #==========================================================
 # Rulita, 02/09/2025
 # Fixing disptype eq 8 dont used, and else inden
-# 
+# Rd, 25/11/2025, with_for_update(), tidak ada excl-lock
 #==========================================================
 
 from functions.additional_functions import *
@@ -16,7 +16,9 @@ from models import Htparam, Waehrung, Nation, Res_line, Guest, Genstat, Guestseg
 segm1_list_data, Segm1_list = create_model("Segm1_list", {"selected":bool, "segm":int, "bezeich":string, "bezeich1":string}, {"selected": True})
 zikat_list_data, Zikat_list = create_model("Zikat_list", {"selected":bool, "zikatnr":int, "kurzbez":string, "bezeich":string}, {"selected": True})
 
-def cr_rmproduct_4_webbl(pvilanguage:int, op_type:int, printer_nr:int, call_from:int, txt_file:string, disptype_1:int, cardtype_1:int, currency_type:int, ytd_flag:int, excl_comp:bool, last_sort:int, f_date:date, t_date:date, to_date:date, argt_code:string, dispopt:bool, segm1_list_data:[Segm1_list], zikat_list_data:[Zikat_list]):
+def cr_rmproduct_4_webbl(pvilanguage:int, op_type:int, printer_nr:int, call_from:int, 
+                         txt_file:string, disptype_1:int, cardtype_1:int, currency_type:int, ytd_flag:int, excl_comp:bool, 
+                         last_sort:int, f_date:date, t_date:date, to_date:date, argt_code:string, dispopt:bool, segm1_list_data:[Segm1_list], zikat_list_data:[Zikat_list]):
 
     prepare_cache ([Htparam, Waehrung, Nation, Res_line, Genstat, Exrate, Bediener, Queasy, Sourccod, Arrangement])
 
@@ -120,6 +122,8 @@ def cr_rmproduct_4_webbl(pvilanguage:int, op_type:int, printer_nr:int, call_from
     tmp_room1_data, Tmp_room1 = create_model_like(Tmp_room)
 
     db_session = local_storage.db_session
+    txt_file = txt_file.strip()
+    argt_code = argt_code.strip()
 
     def generate_output():
         nonlocal output_list_data, lvcarea, cardtype, ota_only, comp_only, foreign_nr, exchg_rate, price_decimal, incl_comp, message_it, ind, room, c_room, pax, logis, rmrev, avrgrate, exc_avrgrate, comp_room, comp_pax, m_room, mc_room, m_pax, m_logis, m_rmrev, m_avrgrate, exc_m_avrgrate, comp_m_room, comp_m_pax, y_room, yc_room, y_pax, y_logis, y_rmrev, y_avrgrate, exc_y_avrgrate, comp_y_room, comp_y_pax, from_bez, to_bez, fdate_mtd, from_date, mm, yy, curr_select, rmrate, m_rmrate, y_rmrate, d_child, m_child, y_child, d_los, mtd_los, ytd_los, curr_d_reslinnr, curr_d_resnr, tot_d_room_resv, curr_m_reslinnr, curr_m_resnr, tot_m_room_resv, curr_y_reslinnr, curr_y_resnr, tot_y_room_resv, tot_d_anztage, tot_m_anztage, tot_y_anztage, curr_d_reslinnr1, curr_d_resnr1, tot_d_room_resv1, curr_m_reslinnr1, curr_m_resnr1, tot_m_room_resv1, curr_y_reslinnr1, curr_y_resnr1, do_it, datums, curr_zinr, prev_zinr, curr_gastnr, prev_gastnr, tot, per_region, disptype, intsegment, ota_segment, default_country, tot_pax_d, tot_pax_m, tot_pax_y, htparam, waehrung, nation, res_line, guest, genstat, guestseg, exrate, bediener, queasy, zimkateg, sourccod, arrangement

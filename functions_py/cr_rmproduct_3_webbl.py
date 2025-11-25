@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#==========================================================
+# Rd, 25/11/2025, with_for_update(), tidak ada excl-lock
+#==========================================================
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date

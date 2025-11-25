@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------------------
+# Rd, 25/11/2025, with_for_update()
+#-----------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.get_vipnrbl import get_vipnrbl
@@ -43,8 +45,10 @@ def mk_segmbl(gsegm_list_data:[Gsegm_list], gastnr:int, done:bool, flag:bool, ch
 
     if done  and flag  and change_it:
 
+        # for guestseg in db_session.query(Guestseg).filter(
+        #          (Guestseg.gastnr == gastnr)).order_by(Guestseg._recid).all():
         for guestseg in db_session.query(Guestseg).filter(
-                 (Guestseg.gastnr == gastnr)).order_by(Guestseg._recid).all():
+                 (Guestseg.gastnr == gastnr)).order_by(Guestseg._recid).with_for_update().all():
             db_session.delete(guestseg)
 
         gsegm_list = query(gsegm_list_data, filters=(lambda gsegm_list: gsegm_list.segmentcode == mainscode), first=True)
@@ -80,7 +84,9 @@ def mk_segmbl(gsegm_list_data:[Gsegm_list], gastnr:int, done:bool, flag:bool, ch
 
     if vip_flag1 != vip_flag2:
 
-        res_line = get_cache (Res_line, {"gastnrmember": [(eq, gastnr)],"active_flag": [(le, 1)]})
+        # res_line = get_cache (Res_line, {"gastnrmember": [(eq, gastnr)],"active_flag": [(le, 1)]})
+        res_line = db_session.query(Res_line).filter(
+                 (Res_line.gastnrmember == gastnr) & (Res_line.active_flag <= 1)).with_for_update().first()
         while None != res_line:
             pass
             res_line.betrieb_gastmem = vip_segm
@@ -88,6 +94,6 @@ def mk_segmbl(gsegm_list_data:[Gsegm_list], gastnr:int, done:bool, flag:bool, ch
 
             curr_recid = res_line._recid
             res_line = db_session.query(Res_line).filter(
-                     (Res_line.gastnrmember == gastnr) & (Res_line.active_flag <= 1) & (Res_line._recid > curr_recid)).first()
+                     (Res_line.gastnrmember == gastnr) & (Res_line.active_flag <= 1) & (Res_line._recid > curr_recid)).order_by(Res_line._recid).with_for_update().first()
 
     return generate_output()

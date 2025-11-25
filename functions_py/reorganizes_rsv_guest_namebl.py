@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-----------------------------------------------------
+# Rd, 25/11/2025, with_for_update()
+#-----------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Res_line, Guest, Reservation
@@ -20,8 +22,12 @@ def reorganizes_rsv_guest_namebl():
 
         return {"v_success": v_success, "counter": counter}
 
-
-    res_line = get_cache (Res_line, {"resstatus": [(ne, 8),(ne, 9),(ne, 10),(ne, 12),(ne, 99)],"gastnrmember": [(gt, 0)]})
+    # Rd, 25/11/2025, modified to use with_for_update()
+    # res_line = get_cache (Res_line, {"resstatus": [(ne, 8),(ne, 9),(ne, 10),(ne, 12),(ne, 99)],"gastnrmember": [(gt, 0)]})
+    res_line = db_session.query(Res_line).filter(
+             (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & 
+             (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & 
+             (Res_line.resstatus != 99) & (Res_line.gastnrmember > 0)).order_by(Res_line._recid).with_for_update().first()
     while None != res_line:
 
         guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
@@ -46,8 +52,11 @@ def reorganizes_rsv_guest_namebl():
                 counter = counter + 1
 
         curr_recid = res_line._recid
+        # Rd, 25/11/2025, modified to use with_for_update()
         res_line = db_session.query(Res_line).filter(
-                 (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99) & (Res_line.gastnrmember > 0) & (Res_line._recid > curr_recid)).first()
+                 (Res_line.resstatus != 8) & (Res_line.resstatus != 9) & 
+                 (Res_line.resstatus != 10) & (Res_line.resstatus != 12) & 
+                 (Res_line.resstatus != 99) & (Res_line.gastnrmember > 0) & (Res_line._recid > curr_recid)).order_by(Res_line._recid).with_for_update().first()
     pass
     v_success = True
 

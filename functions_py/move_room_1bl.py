@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 17/10/2025
 # .NAME -> .name
+# Rd, 25/11/2025, with_for_update()
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -10,6 +11,7 @@ from datetime import date, time
 from functions.intevent_1 import intevent_1
 from functions.create_historybl import create_historybl
 from models import Bill, Res_line, Zimmer, Htparam, Mealcoup, Zimkateg, Resplan, Messages, Queasy, Guest, Reslin_queasy
+from sqlalchemy.orm import flag_modified
 
 def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, user_init:string, movereason:string):
 
@@ -29,6 +31,8 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
 
 
     db_session = local_storage.db_session
+    moved_room = moved_room.strip()
+    movereason = movereason.strip()
 
     def generate_output():
         nonlocal changed, msg_str, resnr, reslinnr, res_mode, lvcarea, bill, res_line, zimmer, htparam, mealcoup, zimkateg, resplan, messages, queasy, guest, reslin_queasy
@@ -63,7 +67,10 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
 
         if res_mode  == ("inhouse") :
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, moved_room)]})
+            # Rd, 25/11/2025, modified to use with_for_update()
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, moved_room)]})
+            zimmer = db_session.query(Zimmer).filter(
+                     (Zimmer.zinr == moved_room)).with_for_update().first()
 
             if res_line.abreise == ci_date:
                 zimmer.zistatus = 3
@@ -103,8 +110,10 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
                          (Resline.resnr == res_line.resnr) & ((Resline.active_flag == 0) | (Resline.active_flag == 1)) & (Resline.resstatus != 12) & (Resline.zinr == (prev_zinr))).first()
 
             if not resline:
-
-                mealcoup = get_cache (Mealcoup, {"zinr": [(eq, prev_zinr)],"activeflag": [(eq, True)]})
+                # Rd, 25/11/2025, modified to use with_for_update()
+                # mealcoup = get_cache (Mealcoup, {"zinr": [(eq, prev_zinr)],"activeflag": [(eq, True)]})
+                mealcoup = db_session.query(Mealcoup).filter(
+                         (Mealcoup.zinr == prev_zinr) & (Mealcoup.activeflag == True)).with_for_update().first()
 
                 if mealcoup:
                     mealcoup.zinr = res_line.zinr
@@ -144,7 +153,9 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
             curr_date = beg_datum
             while curr_date >= beg_datum and curr_date < rline.abreise:
 
-                resplan = get_cache (Resplan, {"zikatnr": [(eq, zimkateg.zikatnr)],"datum": [(eq, curr_date)]})
+                # resplan = get_cache (Resplan, {"zikatnr": [(eq, zimkateg.zikatnr)],"datum": [(eq, curr_date)]})
+                resplan = db_session.query(Resplan).filter(
+                         (Resplan.zikatnr == zimkateg.zikatnr) & (Resplan.datum == curr_date)).with_for_update().first()
 
                 if resplan:
                     pass
@@ -152,15 +163,13 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
                     pass
                 pass
                 curr_date = curr_date + timedelta(days=1)
-
+            flag_modified(resplan, "anzzim")
 
     def rmchg_sharer(act_zinr:string, new_zinr:string):
 
         nonlocal changed, msg_str, resnr, reslinnr, res_mode, lvcarea, bill, res_line, zimmer, htparam, mealcoup, zimkateg, resplan, messages, queasy, guest, reslin_queasy
         nonlocal pvilanguage, recid1, moved_room, ci_date, user_init, movereason
         nonlocal bbuff
-
-
         nonlocal bbuff
 
         res_recid1:int = 0
@@ -184,11 +193,15 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
         res_recid1 = 0
 
         for messages in db_session.query(Messages).filter(
-                     (Messages.zinr == (act_zinr)) & (Messages.resnr == res_line.resnr) & (Messages.reslinnr >= 1)).order_by(Messages._recid).all():
+                     (Messages.zinr == (act_zinr)) & 
+                     (Messages.resnr == res_line.resnr) & 
+                     (Messages.reslinnr >= 1)).order_by(Messages._recid).with_for_update().all():
             messages.zinr = new_zinr
 
         for res_line1 in db_session.query(Res_line1).filter(
-                     (Res_line1.resnr == resnr) & (Res_line1.zinr == (act_zinr)) & (Res_line1.resstatus == 13)).order_by(Res_line1._recid).all():
+                     (Res_line1.resnr == resnr) & 
+                     (Res_line1.zinr == (act_zinr)) & 
+                     (Res_line1.resstatus == 13)).order_by(Res_line1._recid).all():
 
             if end_datum <= res_line1.abreise:
                 res_recid1 = res_line1._recid
@@ -196,7 +209,9 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
 
         if res_line.resstatus == 6 and res_recid1 == 0:
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, act_zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, act_zinr)]})
+            zimmer = db_session.query(Zimmer).filter(
+                     (Zimmer.zinr == act_zinr)).with_for_update().first()
             zimmer.zistatus = 2
             pass
 
@@ -205,7 +220,8 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
             res_line1 = get_cache (Res_line, {"_recid": [(eq, res_recid1)]})
 
             for res_line2 in db_session.query(Res_line2).filter(
-                             (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr)) & (Res_line2.resstatus == 13) & (Res_line2.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line2._recid).all():
+                             (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr)) & 
+                             (Res_line2.resstatus == 13) & (Res_line2.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line2._recid).with_for_update().all():
 
                 zimmer = get_cache (Zimmer, {"zinr": [(eq, new_zinr)]})
 
@@ -214,7 +230,9 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
                 if new_zkat.zikatnr != res_line2.zikatnr:
                     for curr_datum in date_range(beg_datum,(res_line2.abreise - timedelta(days=1))) :
 
-                        resplan = get_cache (Resplan, {"zikatnr": [(eq, res_line2.zikatnr)],"datum": [(eq, curr_datum)]})
+                        # resplan = get_cache (Resplan, {"zikatnr": [(eq, res_line2.zikatnr)],"datum": [(eq, curr_datum)]})
+                        resplan = db_session.query(Resplan).filter(
+                                 (Resplan.zikatnr == res_line2.zikatnr) & (Resplan.datum == curr_datum)).with_for_update().first()
 
                         if resplan:
                             pass
@@ -222,7 +240,9 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
                             pass
                             pass
 
-                        resplan = get_cache (Resplan, {"zikatnr": [(eq, new_zkat.zikatnr)],"datum": [(eq, curr_datum)]})
+                        # resplan = get_cache (Resplan, {"zikatnr": [(eq, new_zkat.zikatnr)],"datum": [(eq, curr_datum)]})
+                        resplan = db_session.query(Resplan).filter(
+                                 (Resplan.zikatnr == new_zkat.zikatnr) & (Resplan.datum == curr_datum)).with_for_update().first()
 
                         if not resplan:
                             resplan = Resplan()
@@ -233,11 +253,14 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
                         resplan.anzzim[12] = resplan.anzzim[12] + 1
                         pass
                         pass
+                    flag_modified(resplan, "anzzim")
 
                 for bill in db_session.query(Bill).filter(
                                  (Bill.resnr == resnr) & (Bill.parent_nr == res_line2.reslinnr)).order_by(Bill._recid).all():
 
-                    bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+                    # bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+                    bbuff = db_session.query(Bill).filter(
+                             (Bill._recid == bill._recid)).with_for_update().first()
                     bbuff.zinr = new_zinr
                     pass
                     pass
@@ -249,7 +272,9 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
                 pass
 
             for res_line2 in db_session.query(Res_line2).filter(
-                             (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr)) & (Res_line2.resstatus == 12)).order_by(Res_line2._recid).all():
+                             (Res_line2.resnr == resnr) & 
+                             (Res_line2.zinr == (act_zinr)) & 
+                             (Res_line2.resstatus == 12)).order_by(Res_line2._recid).with_for_update().all():
                 res_line2.zinr = new_zinr
                 res_line2.zikatnr = new_zkat.zikatnr
                 res_line2.setup = zimmer.setup
@@ -257,7 +282,9 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
 
                 pass
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, act_zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, act_zinr)]})
+            zimmer = db_session.query(Zimmer).filter(
+                     (Zimmer.zinr == act_zinr)).with_for_update().first()
             zimmer.zistatus = 2
             pass
 
@@ -280,13 +307,17 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
         for bill in db_session.query(Bill).filter(
                  (Bill.resnr == res_line.resnr) & (Bill.parent_nr == res_line.reslinnr) & (Bill.flag == 0)).order_by(Bill._recid).all():
 
-            bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+            # bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+            bbuff = db_session.query(Bill).filter(
+                     (Bill._recid == bill._recid)).with_for_update().first()
+            
             bbuff.zinr = moved_room
             pass
             pass
 
-            resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
-
+            # resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
+            resline = db_session.query(Resline).filter(
+                     (Resline.resnr == bill.resnr) & (Resline.reslinnr == bill.reslinnr)).with_for_update().first()
             if resline.resstatus == 12:
                 pass
                 resline.zinr = moved_room
@@ -298,12 +329,16 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
             for bill in db_session.query(Bill).filter(
                      (Bill.resnr == res_line.resnr) & (Bill.parent_nr == res_line.reslinnr) & (Bill.flag == 1)).order_by(Bill._recid).all():
 
-                bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+                # bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+                bbuff = db_session.query(Bill).filter(
+                         (Bill._recid == bill._recid)).with_for_update().first()
                 bbuff.zinr = moved_room
                 pass
                 pass
 
-                resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
+                # resline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
+                resline = db_session.query(Resline).filter(
+                         (Resline.resnr == bill.resnr) & (Resline.reslinnr == bill.reslinnr)).with_for_update().first() 
 
                 if resline.resstatus == 12:
                     pass
@@ -316,8 +351,6 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
         nonlocal changed, msg_str, resnr, reslinnr, res_mode, lvcarea, bill, res_line, zimmer, htparam, mealcoup, zimkateg, resplan, messages, queasy, guest, reslin_queasy
         nonlocal pvilanguage, recid1, moved_room, ci_date, user_init, movereason
         nonlocal bbuff
-
-
         nonlocal bbuff
 
         new_zkat = None
@@ -331,22 +364,26 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
         zimmer = get_cache (Zimmer, {"zinr": [(eq, moved_room)]})
 
         for rline2 in db_session.query(Rline2).filter(
-                 (Rline2.resnr == resnr) & (Rline2.zinr != "") & (Rline2.zinr == (act_zinr)) & (Rline2.resstatus == 11)).order_by(Rline2._recid).all():
+                 (Rline2.resnr == resnr) & (Rline2.zinr != "") & 
+                 (Rline2.zinr == (act_zinr)) & (Rline2.resstatus == 11)).order_by(Rline2._recid).with_for_update().all():
 
             res_line2 = get_cache (Res_line, {"_recid": [(eq, rline2._recid)]})
 
             if zimmer.zikatnr != res_line2.zikatnr:
                 for curr_datum in date_range(res_line2.ankunft,(res_line2.abreise - timedelta(days=1))) :
 
-                    resplan = get_cache (Resplan, {"zikatnr": [(eq, res_line2.zikatnr)],"datum": [(eq, curr_datum)]})
+                    # resplan = get_cache (Resplan, {"zikatnr": [(eq, res_line2.zikatnr)],"datum": [(eq, curr_datum)]})
+                    resplan = db_session.query(Resplan).filter(
+                             (Resplan.zikatnr == res_line2.zikatnr) & (Resplan.datum == curr_datum)).with_for_update().first()
 
                     if resplan:
                         pass
                         resplan.anzzim[10] = resplan.anzzim[10] - 1
-                        pass
-                        pass
+                        flag_modified(resplan, "anzzim")
 
-                    resplan = get_cache (Resplan, {"zikatnr": [(eq, zimmer.zikatnr)],"datum": [(eq, curr_datum)]})
+                    # resplan = get_cache (Resplan, {"zikatnr": [(eq, zimmer.zikatnr)],"datum": [(eq, curr_datum)]})
+                    resplan = db_session.query(Resplan).filter(
+                             (Resplan.zikatnr == zimmer.zikatnr) & (Resplan.datum == curr_datum)).with_for_update().first()
 
                     if not resplan:
                         resplan = Resplan()
@@ -356,7 +393,8 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
                         resplan.zikatnr = zimmer.zikatnr
                     resplan.anzzim[10] = resplan.anzzim[10] + 1
                     pass
-                    pass
+                flag_modified(resplan, "anzzim")
+
             res_line2.zinr = new_zinr
             res_line2.zikatnr = zimmer.zikatnr
             pass
@@ -382,8 +420,10 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
             queasy = get_cache (Queasy, {"key": [(eq, 24)],"char1": [(eq, res_line.zinr)]})
             while None != queasy:
 
+                # qsy = db_session.query(Qsy).filter(
+                #          (Qsy._recid == queasy._recid)).first()
                 qsy = db_session.query(Qsy).filter(
-                         (Qsy._recid == queasy._recid)).first()
+                         (Qsy._recid == queasy._recid)).with_for_update().first()
                 qsy.char1 = moved_room
                 pass
 
@@ -402,14 +442,16 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
 
         pass
 
-        rline = get_cache (Res_line, {"resnr": [(eq, res_line.resnr)],"kontakt_nr": [(eq, res_line.reslinnr)],"l_zuordnung[2]": [(eq, 1)]})
+        # rline = get_cache (Res_line, {"resnr": [(eq, res_line.resnr)],"kontakt_nr": [(eq, res_line.reslinnr)],"l_zuordnung[2]": [(eq, 1)]})
+        rline = db_session.query(Rline).filter(
+                 (Rline.resnr == res_line.resnr) & (Rline.kontakt_nr == res_line.reslinnr) & (Rline.l_zuordnung[inc_value(2)] == 1)).with_for_update().first()
         while None != rline:
             pass
             rline.zinr = moved_room
 
             curr_recid = rline._recid
             rline = db_session.query(Rline).filter(
-                     (Rline.resnr == res_line.resnr) & (Rline.kontakt_nr == res_line.reslinnr) & (Rline.l_zuordnung[inc_value(2)] == 1) & (Rline._recid > curr_recid)).first()
+                     (Rline.resnr == res_line.resnr) & (Rline.kontakt_nr == res_line.reslinnr) & (Rline.l_zuordnung[inc_value(2)] == 1) & (Rline._recid > curr_recid)).with_for_update().first()
 
 
     def add_resplan():
@@ -549,8 +591,9 @@ def move_room_1bl(pvilanguage:int, recid1:int, moved_room:string, ci_date:date, 
             maxkey = htparam.finteger
         msg_str = msg_str + chr_unicode(2) + translateExtended ("The Keycard has been created (Qty =", lvcarea, "") + " " + to_string(res_line.betrieb_gast) + ") " + translateExtended ("and can be replaced now.", lvcarea, "")
 
-    res_line = get_cache (Res_line, {"_recid": [(eq, recid1)]})
-
+    # res_line = get_cache (Res_line, {"_recid": [(eq, recid1)]})
+    res_line = db_session.query(Res_line).filter(
+             (Res_line._recid == recid1)).with_for_update().first()
     if res_line:
         move_room()
         changed = True
