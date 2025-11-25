@@ -3,6 +3,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_ophdr, L_op, L_ophis, L_ophhis, Artikel, L_artikel, L_order, Htparam, L_lieferant, Fa_op, Parameters, Zwkum, L_untergrup, Fa_artikel, Fa_grup
+from sqlalchemy import func
 
 coa_list_data, Coa_list = create_model("Coa_list", {"old_fibu":string, "new_fibu":string, "bezeich":string, "coastat":int, "old_main":int, "new_main":int, "bezeichm":string, "old_dept":int, "new_dept":int, "bezeichd":string, "catno":int, "acct":int, "old_acct":int}, {"coastat": -1})
 
@@ -57,8 +58,9 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == l_op.stornogrund and coa_list.new_fibu != None), first=True)
 
             if coa_list:
-
-                l_opbuff = get_cache (L_op, {"_recid": [(eq, l_op._recid)]})
+                # Rd, 25/11/2025, add .with_for_update
+                # l_opbuff = get_cache (L_op, {"_recid": [(eq, l_op._recid)]})
+                l_opbuff = db_session.query(L_op).filter(L_op._recid == l_op._recid).with_for_update().first()
                 l_opbuff.stornogrund = coa_list.new_fibu
 
 
@@ -75,13 +77,10 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == l_ophis.fibukonto and coa_list.new_fibu != None), first=True)
 
             if coa_list:
-
-                l_ophisbuff = get_cache (L_ophis, {"_recid": [(eq, l_ophis._recid)]})
+                # Rd, 25/11/2025, add .with_for_update
+                # l_ophisbuff = get_cache (L_ophis, {"_recid": [(eq, l_ophis._recid)]})
+                l_ophisbuff = db_session.query(L_ophis).filter(L_ophis._recid == l_ophis._recid).with_for_update().first()
                 l_ophisbuff.fibukonto = coa_list.new_fibu
-
-
-                pass
-                pass
 
             curr_recid = l_ophis._recid
             l_ophis = db_session.query(L_ophis).filter(
@@ -92,9 +91,10 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
 
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == l_ophdr.fibukonto and coa_list.new_fibu != None), first=True)
 
-            if coa_list:
-
-                l_ophdrbuff = get_cache (L_ophdr, {"_recid": [(eq, l_ophdr._recid)]})
+            if coa_list: 
+                # Rd, 25/11/2025, add .with_for_update
+                # l_ophdrbuff = get_cache (L_ophdr, {"_recid": [(eq, l_ophdr._recid)]})
+                l_ophdrbuff = db_session.query(L_ophdr).filter(L_ophdr._recid == l_ophdr._recid).with_for_update().first()
                 l_ophdrbuff.fibukonto = coa_list.new_fibu
 
 
@@ -103,7 +103,7 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
 
             curr_recid = l_ophdr._recid
             l_ophdr = db_session.query(L_ophdr).filter(
-                     (L_ophdr.op_typ == ("STT").lower()) & (L_ophdr.fibukonto != "") & (L_ophdr._recid > curr_recid)).first()
+                     (func.lower(L_ophdr.op_typ) == ("STT").lower()) & (L_ophdr.fibukonto != "") & (L_ophdr._recid > curr_recid)).first()
 
         l_ophhis = get_cache (L_ophhis, {"op_typ": [(eq, "stt")],"fibukonto": [(ne, "")]})
         while None != l_ophhis:
@@ -111,8 +111,9 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == l_ophhis.fibukonto and coa_list.new_fibu != None), first=True)
 
             if coa_list:
-
-                l_ophhisbuff = get_cache (L_ophhis, {"_recid": [(eq, l_ophhis._recid)]})
+                # Rd, 25/11/2025, add .with_for_update
+                # l_ophhisbuff = get_cache (L_ophhis, {"_recid": [(eq, l_ophhis._recid)]})
+                l_ophhisbuff = db_session.query(L_ophhis).filter(L_ophhis._recid == l_ophhis._recid).with_for_update().first()
                 l_ophhisbuff.fibukonto = coa_list.new_fibu
 
 
@@ -121,7 +122,7 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
 
             curr_recid = l_ophhis._recid
             l_ophhis = db_session.query(L_ophhis).filter(
-                     (L_ophhis.op_typ == ("STT").lower()) & (L_ophhis.fibukonto != "") & (L_ophhis._recid > curr_recid)).first()
+                     (func.lower(L_ophhis.op_typ) == ("STT").lower()) & (L_ophhis.fibukonto != "") & (L_ophhis._recid > curr_recid)).first()
 
 
     def update_order():
@@ -138,8 +139,9 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == l_order.stornogrund and coa_list.new_fibu != None), first=True)
 
             if coa_list:
-
-                lodbuff = get_cache (L_order, {"_recid": [(eq, l_order._recid)]})
+                # Rd, 25/11/2025, add .with_for_update
+                # lodbuff = get_cache (L_order, {"_recid": [(eq, l_order._recid)]})
+                lodbuff = db_session.query(L_order).filter(L_order._recid == l_order._recid).with_for_update().first()
                 lodbuff.stornogrund = coa_list.new_fibu
 
 
@@ -165,8 +167,9 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == l_lieferant.z_code and coa_list.new_fibu != None), first=True)
 
             if coa_list:
-
-                suppbuff = get_cache (L_lieferant, {"_recid": [(eq, l_lieferant._recid)]})
+                # Rd, 25/11/2025, add .with_for_update
+                # suppbuff = get_cache (L_lieferant, {"_recid": [(eq, l_lieferant._recid)]})
+                suppbuff = db_session.query(L_lieferant).filter(L_lieferant._recid == l_lieferant._recid).with_for_update().first()
                 suppbuff.z_code = coa_list.new_fibu
 
 
@@ -192,8 +195,9 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == parameters.vstring and coa_list.new_fibu != None), first=True)
 
             if coa_list:
-
-                parambuff = get_cache (Parameters, {"_recid": [(eq, parameters._recid)]})
+                # Rd, 25/11/2025, add .with_for_update
+                # parambuff = get_cache (Parameters, {"_recid": [(eq, parameters._recid)]})
+                parambuff = db_session.query(Parameters).filter(Parameters._recid == parameters._recid).with_for_update().first()
                 parambuff.vstring = coa_list.new_fibu
 
 
@@ -202,7 +206,7 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
 
             curr_recid = parameters._recid
             parameters = db_session.query(Parameters).filter(
-                     (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Alloc").lower()) & (Parameters._recid > curr_recid)).first()
+                     (func.lower(Parameters.progname) == ("CostCenter").lower()) & (func.lower(Parameters.section) == ("Alloc").lower()) & (Parameters._recid > curr_recid)).first()
 
 
     def update_htparam():
@@ -219,8 +223,9 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == htparam.fchar and coa_list.new_fibu != None), first=True)
 
             if coa_list:
-
-                htpbuff = get_cache (Htparam, {"_recid": [(eq, htparam._recid)]})
+                # Rd, 25/11/2025, add .with_for_update
+                # htpbuff = get_cache (Htparam, {"_recid": [(eq, htparam._recid)]})
+                htpbuff = db_session.query(Htparam).filter(Htparam._recid == htparam._recid).with_for_update().first()
                 htpbuff.fchar = coa_list.new_fibu
 
 
@@ -242,8 +247,9 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
 
         artikel = db_session.query(Artikel).first()
         while None != artikel:
-
-            artbuff = get_cache (Artikel, {"_recid": [(eq, artikel._recid)]})
+            # Rd, 25/11/2025, add .with_for_update
+            # artbuff = get_cache (Artikel, {"_recid": [(eq, artikel._recid)]})
+            artbuff = db_session.query(Artikel).filter(Artikel._recid == artikel._recid).with_for_update().first()
 
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == artikel.bezeich1 and coa_list.new_fibu != None), first=True)
 
@@ -268,8 +274,9 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == zwkum.fibukonto and coa_list.new_fibu != None), first=True)
 
             if coa_list:
-
-                zwkumbuff = get_cache (Zwkum, {"_recid": [(eq, zwkum._recid)]})
+                # Rd, 25/11/2025, add .with_for_update
+                # zwkumbuff = get_cache (Zwkum, {"_recid": [(eq, zwkum._recid)]})
+                zwkumbuff = db_session.query(Zwkum).filter(Zwkum._recid == zwkum._recid).with_for_update().first()
                 zwkumbuff.fibukonto = coa_list.new_fibu
 
 
@@ -295,8 +302,9 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == l_artikel.fibukonto and coa_list.new_fibu != None), first=True)
 
             if coa_list:
-
-                lartbuff = get_cache (L_artikel, {"_recid": [(eq, l_artikel._recid)]})
+                # Rd, 25/11/2025, add .with_for_update
+                # lartbuff = get_cache (L_artikel, {"_recid": [(eq, l_artikel._recid)]})
+                lartbuff = db_session.query(L_artikel).filter(L_artikel._recid == l_artikel._recid).with_for_update().first()
                 lartbuff.fibukonto = coa_list.new_fibu
 
 
@@ -313,8 +321,9 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == l_untergrup.fibukonto and coa_list.new_fibu != None), first=True)
 
             if coa_list:
-
-                lzwkumbuff = get_cache (L_untergrup, {"_recid": [(eq, l_untergrup._recid)]})
+                # Rd, 25/11/2025, add .with_for_update
+                # lzwkumbuff = get_cache (L_untergrup, {"_recid": [(eq, l_untergrup._recid)]})
+                lzwkumbuff = db_session.query(L_untergrup).filter(L_untergrup._recid == l_untergrup._recid).with_for_update().first()
                 lzwkumbuff.fibukonto = coa_list.new_fibu
 
 
@@ -336,8 +345,9 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
 
         fa_artikel = db_session.query(Fa_artikel).first()
         while None != fa_artikel:
-
-            fa_artbuff = get_cache (Fa_artikel, {"_recid": [(eq, fa_artikel._recid)]})
+            # Rd, 25/11/2025, add .with_for_update
+            # fa_artbuff = get_cache (Fa_artikel, {"_recid": [(eq, fa_artikel._recid)]})
+            fa_artbuff = db_session.query(Fa_artikel).filter(Fa_artikel._recid == fa_artikel._recid).with_for_update().first()
 
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == fa_artikel.fibukonto and coa_list.new_fibu != None), first=True)
 
@@ -363,8 +373,9 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
 
         fa_grup = db_session.query(Fa_grup).first()
         while None != fa_grup:
-
-            fa_zwbuff = get_cache (Fa_grup, {"_recid": [(eq, fa_grup._recid)]})
+            # Rd, 25/11/2025, add .with_for_update
+            # fa_zwbuff = get_cache (Fa_grup, {"_recid": [(eq, fa_grup._recid)]})
+            fa_zwbuff = db_session.query(Fa_grup).filter(Fa_grup._recid == fa_grup._recid).with_for_update().first()
 
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == fa_grup.fibukonto and coa_list.new_fibu != None), first=True)
 
@@ -394,8 +405,9 @@ def mapping_coa_1bl(coa_list_data:[Coa_list]):
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == fa_op.fibukonto and coa_list.new_fibu != None), first=True)
 
             if coa_list:
-
-                faopbuff = get_cache (Fa_op, {"_recid": [(eq, fa_op._recid)]})
+                # Rd, 25/11/2025, add .with_for_update
+                # faopbuff = get_cache (Fa_op, {"_recid": [(eq, fa_op._recid)]})
+                faopbuff = db_session.query(Fa_op).filter(Fa_op._recid == fa_op._recid).with_for_update().first()
                 faopbuff.fibukonto = coa_list.new_fibu
 
 

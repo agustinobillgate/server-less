@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#--------------------------------------------------------------
+# Rd, 25/11/2025, with_for_update
+#--------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_acct, Gl_accthis, Gl_jourhis, Gl_journal
+from sqlalchemy.orm.attributes import flag_modified
 
 coa_list_data, Coa_list = create_model("Coa_list", {"old_fibu":string, "new_fibu":string, "bezeich":string, "coastat":int, "old_main":int, "new_main":int, "bezeichm":string, "old_dept":int, "new_dept":int, "bezeichd":string, "catno":int, "acct":int, "old_acct":int}, {"coastat": -1})
 
@@ -36,7 +39,8 @@ def mapping_coa_4bl(coa_list_data:[Coa_list]):
         for acct_list in query(acct_list_data):
             acct_list_data.remove(acct_list)
 
-        gl_acct = db_session.query(Gl_acct).first()
+        # gl_acct = db_session.query(Gl_acct).first()
+        gl_acct = db_session.query(Gl_acct).with_for_update().first()
         while None != gl_acct:
 
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == gl_acct.fibukonto), first=True)
@@ -87,6 +91,13 @@ def mapping_coa_4bl(coa_list_data:[Coa_list]):
 
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu != None), next=True)
 
+        flag_modified(gl_acct, "actual")
+        flag_modified(gl_acct, "last_yr")
+        flag_modified(gl_acct, "budget")
+        flag_modified(gl_acct, "ly_budget")
+        flag_modified(gl_acct, "debit")
+        flag_modified(gl_acct, "credit")
+
         for coa_list in query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == None and coa_list.new_fibu != "")):
             gl_acct = Gl_acct()
             db_session.add(gl_acct)
@@ -102,32 +113,35 @@ def mapping_coa_4bl(coa_list_data:[Coa_list]):
     def delete_gl():
 
         nonlocal i, gl_acct, gl_accthis, gl_jourhis, gl_journal
-
-
         nonlocal coa_list, acct_list
         nonlocal acct_list_data
 
         for coa_list in query(coa_list_data, filters=(lambda coa_list: coa_list.coaStat == -1)):
-
-            gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, coa_list.old_fibu)]})
+            # Rd, 25/11/2025, with_for_update
+            # gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, coa_list.old_fibu)]})
+            gl_acct = db_session.query(Gl_acct).with_for_update().filter(Gl_acct.fibukonto == coa_list.old_fibu).first()
 
             if gl_acct:
                 db_session.delete(gl_acct)
                 pass
 
-            gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, coa_list.old_fibu)]})
+            # Rd, 25/11/2025, with_for_update
+            # gl_accthis = get_cache (Gl_accthis, {"fibukonto": [(eq, coa_list.old_fibu)]})
+            gl_accthis = db_session.query(Gl_accthis).with_for_update().filter(Gl_accthis.fibukonto == coa_list.old_fibu).first()
 
             if gl_accthis:
                 db_session.delete(gl_accthis)
                 pass
 
-            gl_jourhis = get_cache (Gl_jourhis, {"fibukonto": [(eq, coa_list.old_fibu)]})
+            # gl_jourhis = get_cache (Gl_jourhis, {"fibukonto": [(eq, coa_list.old_fibu)]})
+            gl_jourhis = db_session.query(Gl_jourhis).with_for_update().filter(Gl_jourhis.fibukonto == coa_list.old_fibu).first()
 
             if gl_jourhis:
                 db_session.delete(gl_jourhis)
                 pass
 
-            gl_journal = get_cache (Gl_journal, {"fibukonto": [(eq, coa_list.old_fibu)]})
+            # gl_journal = get_cache (Gl_journal, {"fibukonto": [(eq, coa_list.old_fibu)]})
+            gl_journal = db_session.query(Gl_journal).with_for_update().filter(Gl_journal.fibukonto == coa_list.old_fibu).first()
 
             if gl_journal:
                 db_session.delete(gl_journal)

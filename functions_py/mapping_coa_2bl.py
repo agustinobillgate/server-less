@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#--------------------------------------------------------------
+# Rd, 25/11/2025, with_for_update
+#--------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_journal, Gl_jourhis, Gl_accthis, Gl_acct
@@ -54,8 +56,9 @@ def mapping_coa_2bl(coa_list_data:[Coa_list]):
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == gl_journal.fibukonto and coa_list.new_fibu != None), first=True)
 
             if coa_list:
-
-                gljourbuff2 = get_cache (Gl_journal, {"_recid": [(eq, gl_journal._recid)]})
+                # Rd, 25/11/2025, with_for_update
+                # gljourbuff2 = get_cache (Gl_journal, {"_recid": [(eq, gl_journal._recid)]})
+                gljourbuff2 = db_session.query(Gl_journal).with_for_update().filter(Gl_journal._recid == gl_journal._recid).first()
                 gljourbuff2.fibukonto = coa_list.new_fibu
 
 
@@ -71,8 +74,9 @@ def mapping_coa_2bl(coa_list_data:[Coa_list]):
             coa_list = query(coa_list_data, filters=(lambda coa_list: coa_list.old_fibu == gl_jourhis.fibukonto), first=True)
 
             if coa_list:
-
-                jouhisbuff2 = get_cache (Gl_jourhis, {"_recid": [(eq, gl_jourhis._recid)]})
+                # Rd, 25/11/2025, with_for_update
+                # jouhisbuff2 = get_cache (Gl_jourhis, {"_recid": [(eq, gl_jourhis._recid)]})
+                jouhisbuff2 = db_session.query(Gl_jourhis).with_for_update().filter(Gl_jourhis._recid == gl_jourhis._recid).first()
                 jouhisbuff2.fibukonto = coa_list.new_fibu
 
 
