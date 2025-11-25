@@ -1,6 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #-------------------------------------------------------
 # Rd, 25/11/2025, with_for_update added
+# Rd, 25/11/2025, chgdate -> chgdate
 #-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -131,12 +132,12 @@ def gl_joulist2_web_1bl(from_date:date, to_date:date, last_2yr:date, close_year:
         else:
             crdate = to_string(out_list.created)
 
-        if out_list.chgDate == None:
+        if out_list.chgdate == None:
             cgdate = ""
 
 
         else:
-            cgdate = to_string(out_list.chgDate)
+            cgdate = to_string(out_list.chgdate)
 
 
         queasy = Queasy()
@@ -163,7 +164,7 @@ def gl_joulist2_web_1bl(from_date:date, to_date:date, last_2yr:date, close_year:
                 out_list.refno + "|" +\
                 out_list.uid + "|" +\
                 crdate + "|" +\
-                out_list.chgID + "|" +\
+                out_list.chgid + "|" +\
                 cgdate + "|" +\
                 out_list.tax_code + "|" +\
                 out_list.tax_amount + "|" +\
