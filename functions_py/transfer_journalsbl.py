@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------
+# Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
+#---------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -47,16 +49,20 @@ def transfer_journalsbl(from_date:date, to_date:date, depttype:int):
 
         for gl_jouhdr1 in db_session.query(Gl_jouhdr1).filter(
                  (Gl_jouhdr1.activeflag == 0) & (Gl_jouhdr1.datum >= date1) & (Gl_jouhdr1.datum <= date2) & (Gl_jouhdr1.jtype == depttype) & (Gl_jouhdr1.batch)).order_by(Gl_jouhdr1._recid).all():
-
-            bjouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, gl_jouhdr1._recid)]})
+            # Rd, 24/11/2025, get gl_jouhdr dengan for update
+            # bjouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, gl_jouhdr1._recid)]})
+            bjouhdr = db_session.query(Gl_jouhdr).filter(
+                         (Gl_jouhdr._recid == gl_jouhdr1._recid)).with_for_update().first()
             bjouhdr.batch = False
             pass
             pass
 
         for gl_jouhdr2 in db_session.query(Gl_jouhdr2).filter(
                  (Gl_jouhdr2.activeflag == 0) & (Gl_jouhdr2.datum >= date1) & (Gl_jouhdr2.datum <= date2) & (Gl_jouhdr2.jtype == 0) & (Gl_jouhdr2.batch)).order_by(Gl_jouhdr2._recid).all():
-
-            bjouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, gl_jouhdr2._recid)]})
+            # Rd, 24/11/2025, get gl_jouhdr dengan for update
+            # bjouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, gl_jouhdr2._recid)]})
+            bjouhdr = db_session.query(Gl_jouhdr).filter(
+                         (Gl_jouhdr._recid == gl_jouhdr2._recid)).with_for_update().first()
             bjouhdr.batch = False
             pass
             pass
@@ -90,16 +96,20 @@ def transfer_journalsbl(from_date:date, to_date:date, depttype:int):
 
         for gl_jouhdr3 in db_session.query(Gl_jouhdr3).filter(
                  (Gl_jouhdr3.activeflag == 0) & (Gl_jouhdr3.datum >= date3) & (Gl_jouhdr3.datum <= date4) & (Gl_jouhdr3.jtype == depttype) & (Gl_jouhdr3.batch)).order_by(Gl_jouhdr3._recid).all():
-
-            bjouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, gl_jouhdr3._recid)]})
+            # Rd, 24/11/2025, get gl_jouhdr dengan for update
+            # bjouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, gl_jouhdr3._recid)]})
+            bjouhdr = db_session.query(Gl_jouhdr).filter(
+                         (Gl_jouhdr._recid == gl_jouhdr3._recid)).with_for_update().first()
             bjouhdr.batch = False
             pass
             pass
 
         for gl_jouhdr4 in db_session.query(Gl_jouhdr4).filter(
                  (Gl_jouhdr4.activeflag == 0) & (Gl_jouhdr4.datum >= date3) & (Gl_jouhdr4.datum <= date4) & (Gl_jouhdr4.jtype == 0) & (Gl_jouhdr4.batch)).order_by(Gl_jouhdr4._recid).all():
-
-            bjouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, gl_jouhdr4._recid)]})
+            # Rd, 24/11/2025, get gl_jouhdr dengan for update
+            # bjouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, gl_jouhdr4._recid)]})
+            bjouhdr = db_session.query(Gl_jouhdr).filter(
+                         (Gl_jouhdr._recid == gl_jouhdr4._recid)).with_for_update().first()
             bjouhdr.batch = False
             pass
             pass

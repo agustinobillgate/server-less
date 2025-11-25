@@ -12,26 +12,18 @@ g_list_data, G_list = create_model("G_list", {"monat":int, "wert":Decimal, "datu
 def budget_exrate_update_exratebl(g_list_data:[G_list]):
 
     prepare_cache ([Exrate])
-
     exrate = None
-
     g_list = None
-
     db_session = local_storage.db_session
 
     def generate_output():
         nonlocal exrate
-
-
         nonlocal g_list
 
         return {}
 
     def update_exrate():
-
         nonlocal exrate
-
-
         nonlocal g_list
 
         i:int = 0

@@ -2,11 +2,13 @@
 #------------------------------------------
 # Rd, 14/8/2025
 # if available bqueasy
+# Rd, 25/11/2025, with_for_update added
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Queasy, Paramtext
+from sqlalchemy import func, and_, or_
 
 out_list_data, Out_list = create_model("Out_list", {"s_recid":int, "marked":string, "fibukonto":string, "jnr":int, "jtype":int, "bemerk":string, "trans_date":date, "bezeich":string, "number1":string, "debit":Decimal, "credit":Decimal, "balance":Decimal, "debit_str":string, "credit_str":string, "balance_str":string, "refno":string, "uid":string, "created":date, "chgid":string, "chgdate":date, "tax_code":string, "tax_amount":string, "tot_amt":string, "approved":bool, "prev_bal":string, "dept_code":int, "coa_bezeich":string})
 
@@ -106,10 +108,10 @@ def gl_joulist2_create_output_web_1bl(idflag:string, out_list_data:[Out_list]):
         out_list.dept_code = to_int(entry(25, queasy.char2, "|"))
         out_list.coa_bezeich = entry(26, queasy.char2, "|")
 
-        if entry(23, queasy.char2, "|") == ("no").lower() :
+        if entry(23, (queasy.char2).lower(), "|") == ("no").lower() :
             out_list.approved = False
 
-        elif entry(23, queasy.char2, "|") == ("yes").lower() :
+        elif entry(23, (queasy.char2).lower(), "|") == ("yes").lower() :
             out_list.approved = True
 
         if entry(6, queasy.char2, "|") != "":
@@ -121,8 +123,9 @@ def gl_joulist2_create_output_web_1bl(idflag:string, out_list_data:[Out_list]):
         if entry(19, queasy.char2, "|") != "":
             out_list.chgdate = date_mdy(to_int(entry(1, entry(19, queasy.char2, "|") , "/")) , to_int(entry(0, entry(19, queasy.char2, "|") , "/")) , to_int(entry(2, entry(19, queasy.char2, "|") , "/")))
 
+        # Rd 25/11/2025, with_for_update added
         bqueasy = db_session.query(Bqueasy).filter(
-                 (Bqueasy._recid == queasy._recid)).first()
+                 (Bqueasy._recid == queasy._recid)).with_for_update().first()
         
         # Rd 14/8/2025
         if bqueasy:
@@ -131,10 +134,10 @@ def gl_joulist2_create_output_web_1bl(idflag:string, out_list_data:[Out_list]):
 
         curr_recid = queasy._recid
         queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 280) & (Queasy.char1 == ("General Ledger").lower()) & (Queasy.char3 == idflag) & (Queasy._recid > curr_recid)).first()
+                 (Queasy.key == 280) & (func.lower(Queasy.char1) == ("General Ledger").lower()) & (Queasy.char3 == idflag) & (Queasy._recid > curr_recid)).first()
 
     pqueasy = db_session.query(Pqueasy).filter(
-             (Pqueasy.key == 280) & (Pqueasy.char1 == ("General Ledger").lower()) & (Pqueasy.char3 == idflag)).first()
+             (Pqueasy.key == 280) & (func.lower(Pqueasy.char1) == ("General Ledger").lower()) & (Pqueasy.char3 == idflag)).first()
 
     if pqueasy:
         doneflag = False
@@ -152,8 +155,9 @@ def gl_joulist2_create_output_web_1bl(idflag:string, out_list_data:[Out_list]):
         else:
             doneflag = True
 
+    # Rd, 25/11/2025, with_for_update added
     tqueasy = db_session.query(Tqueasy).filter(
-             (Tqueasy.key == 285) & (Tqueasy.char1 == ("General Ledger").lower()) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == idflag)).first()
+             (Tqueasy.key == 285) & (func.lower(Tqueasy.char1) == ("General Ledger").lower()) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == idflag)).with_for_update().first()
 
     if tqueasy:
         pass

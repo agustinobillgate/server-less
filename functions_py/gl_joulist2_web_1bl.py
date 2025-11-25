@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 25/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -174,7 +176,10 @@ def gl_joulist2_web_1bl(from_date:date, to_date:date, last_2yr:date, close_year:
 
         out_list = query(out_list_data, next=True)
 
-    bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "general ledger")],"char2": [(eq, idflag)]})
+    # Rd, 25/11/2025, with_for_update added
+    # bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "general ledger")],"char2": [(eq, idflag)]})
+    bqueasy = db_session.query(Queasy).filter(
+             (Queasy.key == 285) & (func.lower(Queasy.char1) == ("General Ledger").lower()) & (Queasy.char2 == idflag)).with_for_update().first()
 
     if bqueasy:
         pass

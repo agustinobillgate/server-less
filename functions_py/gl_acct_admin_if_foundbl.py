@@ -5,6 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_acct
+from sqlalchemy.orm import flag_modified
 
 def gl_acct_admin_if_foundbl(fibukonto:string):
 
@@ -39,5 +40,8 @@ def gl_acct_admin_if_foundbl(fibukonto:string):
             if gl_acct.debit[i - 1] > 0:
                 gl_acct.debit[i - 1] = - gl_acct.debit[i - 1]
         success_flag = True
-
+        flag_modified(gl_acct, "budget")
+        flag_modified(gl_acct, "ly_budget")
+        flag_modified(gl_acct, "debit")
+        db_session.commit()
     return generate_output()

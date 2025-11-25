@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------------------------------------
+# Rd, 25/11/2025, add .with_for_update
+#----------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_journal, Gl_jouhdr
@@ -23,9 +25,9 @@ def gl_adjustment_btn_delbl(jnr:int):
 
         return generate_output()
     else:
-
-        gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
-
+        # Rd, 25/11/2025, add .with_for_update
+        # gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
+        gl_jouhdr = db_session.query(Gl_jouhdr).with_for_update().filter(Gl_jouhdr.jnr == jnr).first()
         if gl_jouhdr:
             db_session.delete(gl_jouhdr)
             success_flag = True

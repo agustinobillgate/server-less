@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 25/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -68,17 +70,23 @@ def gl_joulist2_webbl(from_date:date, to_date:date, last_2yr:date, close_year:da
 
         return generate_inner_output()
 
+    # Rd, 25/11/2025, with_for_update added
+    # for queasy in db_session.query(Queasy).filter(
+    #          (Queasy.key == 285) & (Queasy.number1 == 1)).order_by(Queasy._recid).all():
 
+    #     tqueasy = db_session.query(Tqueasy).filter(
+    #              (Tqueasy._recid == queasy._recid)).first()
+    #     db_session.delete(tqueasy)
+    #     pass
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 285) & (Queasy.number1 == 1)).order_by(Queasy._recid).all():
+             (Queasy.key == 285) & (Queasy.number1 == 1)).order_by(Queasy._recid).with_for_update().all():
 
-        tqueasy = db_session.query(Tqueasy).filter(
-                 (Tqueasy._recid == queasy._recid)).first()
-        db_session.delete(tqueasy)
-        pass
+        db_session.delete(queasy)
 
+    # bqueasy = db_session.query(Bqueasy).filter(
+    #          (Bqueasy.key == 285) & (Bqueasy.char1 == ("General Ledger"))).first()
     bqueasy = db_session.query(Bqueasy).filter(
-             (Bqueasy.key == 285) & (Bqueasy.char1 == ("General Ledger").lower())).first()
+             (Bqueasy.key == 285) & (Bqueasy.char1 == ("General Ledger"))).with_for_update().first()
 
     if bqueasy:
         pass
@@ -176,8 +184,10 @@ def gl_joulist2_webbl(from_date:date, to_date:date, last_2yr:date, close_year:da
                     out_list.prev_bal
             queasy.number1 = counter
 
+    # bqueasy = db_session.query(Bqueasy).filter(
+    #          (Bqueasy.key == 285) & (Bqueasy.char1 == ("General Ledger"))).first()
     bqueasy = db_session.query(Bqueasy).filter(
-             (Bqueasy.key == 285) & (Bqueasy.char1 == ("General Ledger").lower())).first()
+            (Bqueasy.key == 285) & (Bqueasy.char1 == ("General Ledger"))).with_for_update().first()
 
     if bqueasy:
         pass

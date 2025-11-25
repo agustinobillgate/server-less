@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 25/11/2025, with_for_update added
+# di program ini hanya menggunakan temp-table, (tdk ada operasi insert/update/delete pada tabel model)
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_acct, Gl_jouhdr
@@ -20,8 +23,6 @@ def chg_check_gljourn_fill_gl_journalbl(g_list_data:[G_list]):
 
     def generate_output():
         nonlocal case_type, gl_acct, gl_jouhdr
-
-
         nonlocal b1_list, g_list, t_gl_acct, t_gl_jouhdr
         nonlocal b1_list_data, t_gl_acct_data, t_gl_jouhdr_data
 
@@ -36,8 +37,6 @@ def chg_check_gljourn_fill_gl_journalbl(g_list_data:[G_list]):
 
         t_gl_jouhdr = query(t_gl_jouhdr_data, filters=(lambda t_gl_jouhdr: t_gl_jouhdr.jnr == g_list.jnr), first=True)
         t_gl_jouhdr.debit =  to_decimal(g_list.debit)
-
-
         t_gl_jouhdr.credit =  to_decimal(g_list.credit)
         pass
 

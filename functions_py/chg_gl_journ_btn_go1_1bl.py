@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 25/11/2025, add with_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_jouhdr, Bediener, Res_history
@@ -21,8 +23,9 @@ def chg_gl_journ_btn_go1_1bl(t_refno:string, t_bezeich:string, t_recid:int, user
 
         return {}
 
-
-    gl_jouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, t_recid)]})
+    # Rd, 25/11/2025, add with_for_update
+    # gl_jouhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, t_recid)]})
+    gl_jouhdr = db_session.query(Gl_jouhdr).with_for_update().filter(Gl_jouhdr._recid == t_recid).first()
     refno = gl_jouhdr.refno
     bez = gl_jouhdr.bezeich
     datum = gl_jouhdr.datum

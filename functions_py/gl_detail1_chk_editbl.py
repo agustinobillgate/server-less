@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 25/11/2025, with_for_update added
+# tidak ada EXCL-LOCK
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_jouhdr, Htparam
@@ -31,7 +34,8 @@ def gl_detail1_chk_editbl(pvilanguage:int, jnr:int):
 
             return generate_output()
         else:
-            break
+            # break
+            pass
     else:
         msg_str = msg_str + chr_unicode(2) + translateExtended ("Archived journals can not be edited", lvcarea, "")
 

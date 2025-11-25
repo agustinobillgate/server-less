@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Waehrung, Gl_jouhdr, Exrate, Gl_acct, Gl_journal
+from sqlalchemy.orm import flag_modified
 
 def trial_closemon2bl():
 
@@ -35,7 +38,7 @@ def trial_closemon2bl():
 
         nonlocal lost, profit, revlocal, revfremd, curr_date, beg_month, end_month, foreign_rate, curr_month, prev_month, first_date, double_currency, wahrno, htparam, waehrung, gl_jouhdr, exrate, gl_acct, gl_journal
 
-        for gl_acct in db_session.query(Gl_acct).order_by(Gl_acct._recid).all():
+        for gl_acct in db_session.query(Gl_acct).order_by(Gl_acct._recid).with_for_update().all():
             gl_acct.actual[curr_month - 1] = 0
 
             if gl_acct.acc_type == 3 or gl_acct.acc_type == 4:
@@ -44,7 +47,7 @@ def trial_closemon2bl():
                     gl_acct.actual[curr_month - 1] = gl_acct.actual[prev_month - 1]
                 else:
                     gl_acct.actual[curr_month - 1] = gl_acct.last_yr[end_month - 1]
-
+        flag_modified(gl_acct, "actual")
 
     def process_journal(jnr:int, datum:date):
 
@@ -53,7 +56,9 @@ def trial_closemon2bl():
         gl_journal = get_cache (Gl_journal, {"jnr": [(eq, jnr)],"activeflag": [(eq, 0)]})
         while None != gl_journal:
 
-            gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)]})
+            # gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, gl_journal.fibukonto)]})
+            gl_acct = db_session.query(Gl_acct).filter(
+                         (Gl_acct.fibukonto == gl_journal.fibukonto)).with_for_update().first()
 
             if gl_acct:
                 pass
@@ -77,7 +82,7 @@ def trial_closemon2bl():
             curr_recid = gl_journal._recid
             gl_journal = db_session.query(Gl_journal).filter(
                      (Gl_journal.jnr == jnr) & (Gl_journal.activeflag == 0) & (Gl_journal._recid > curr_recid)).first()
-
+        flag_modified(gl_acct, "actual")
 
     def closing_month():
 
@@ -135,7 +140,9 @@ def trial_closemon2bl():
     if prev_month == 0:
         prev_month = 12
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
+    # htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
+    htparam = db_session.query(Htparam).filter(
+                 (Htparam.paramnr == 983)).with_for_update().first()
     htparam.flogical = True
     update_glacct()
 
@@ -143,7 +150,9 @@ def trial_closemon2bl():
              (Gl_jouhdr.activeflag == 0) & (Gl_jouhdr.datum >= first_date) & (Gl_jouhdr.datum <= curr_date)).order_by(Gl_jouhdr._recid).all():
         process_journal(gl_jouhdr.jnr, gl_jouhdr.datum)
 
-    exrate = get_cache (Exrate, {"artnr": [(eq, 99999)],"datum": [(eq, curr_date)]})
+    # exrate = get_cache (Exrate, {"artnr": [(eq, 99999)],"datum": [(eq, curr_date)]})
+    exrate = db_session.query(Exrate).filter(
+                 (Exrate.artnr == 99999) & (Exrate.datum == curr_date)).with_for_update().first()
 
     if not exrate:
         exrate = Exrate()
@@ -162,11 +171,16 @@ def trial_closemon2bl():
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 979)]})
 
-    gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
+    # gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, htparam.fchar)]})
+    gl_acct = db_session.query(Gl_acct).filter(
+                 (Gl_acct.fibukonto == htparam.fchar)).with_for_update().first()
     gl_acct.actual[curr_month - 1] = gl_acct.actual[curr_month - 1] - profit + lost
+    flag_modified(gl_acct, "actual")
     pass
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
+    # htparam = get_cache (Htparam, {"paramnr": [(eq, 983)]})
+    htparam = db_session.query(Htparam).filter(
+                 (Htparam.paramnr == 983)).with_for_update().first()
     htparam.flogical = False
     pass
 
