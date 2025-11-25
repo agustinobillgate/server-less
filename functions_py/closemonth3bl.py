@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 25/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -32,9 +34,10 @@ def closemonth3bl(case_type:int, user_init:string, acct_date:date):
 
 
     if case_type == 1:
-
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
-
+        # Rd, 25/11/2025, with_for_update added
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
+        htparam = db_session.query(Htparam).filter(
+                     (Htparam.paramnr == 597)).with_for_update().first()
         if htparam:
             pass
             htparam.fdate = acct_date
@@ -46,7 +49,10 @@ def closemonth3bl(case_type:int, user_init:string, acct_date:date):
             pass
             pass
 
-        bparam = get_cache (Htparam, {"paramnr": [(eq, 558)]})
+        # Rd, 25/11/2025, with_for_update added
+        # bparam = get_cache (Htparam, {"paramnr": [(eq, 558)]})
+        bparam = db_session.query(Htparam).filter(
+                     (Htparam.paramnr == 558)).with_for_update().first()
 
         if bparam:
             pass
@@ -57,7 +63,6 @@ def closemonth3bl(case_type:int, user_init:string, acct_date:date):
             pass
 
     elif case_type == 2:
-
         htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
         curr_date = htparam.fdate
 

@@ -22,8 +22,6 @@ def gl_xlsjourn_post_itbl(g_list_data:[G_list], pvilanguage:int, datum:date, jou
     g_list = None
 
     db_session = local_storage.db_session
-    last_count = 0
-    error_lock:string = ""
     journ_no = journ_no.strip()
     journ_name = journ_name.strip()
 
@@ -43,7 +41,9 @@ def gl_xlsjourn_post_itbl(g_list_data:[G_list], pvilanguage:int, datum:date, jou
         nonlocal pvilanguage, datum, journ_no, jour_type, journ_name
         nonlocal g_list
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(
+                     (Counters.counter_no == 25)).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -51,15 +51,13 @@ def gl_xlsjourn_post_itbl(g_list_data:[G_list], pvilanguage:int, datum:date, jou
 
             counters.counter_no = 25
             counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = next_counter_for_update(25)
+        counters.counter = counters.counter + 1
 
         pass
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
-        # gl_jouhdr.jnr = counters.counter
-        gl_jouhdr.jnr = last_count
+        gl_jouhdr.jnr = counters.counter
 
         gl_jouhdr.refno = journ_no
         gl_jouhdr.datum = datum
@@ -79,8 +77,7 @@ def gl_xlsjourn_post_itbl(g_list_data:[G_list], pvilanguage:int, datum:date, jou
             gl_journal = Gl_journal()
             db_session.add(gl_journal)
 
-            # gl_journal.jnr = counters.counter
-            gl_journal.jnr = last_count
+            gl_journal.jnr = counters.counter
             
             gl_journal.fibukonto = g_list.fibukonto2
             gl_journal.debit =  to_decimal(g_list.debit)

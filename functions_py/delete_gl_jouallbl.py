@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------
+# Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
+#---------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -45,7 +47,10 @@ def delete_gl_jouallbl(refno:string, idnr:string):
     htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
     gl_close = htparam.fdate
 
-    gl_jouhdr = get_cache (Gl_jouhdr, {"refno": [(eq, refno)]})
+    # Rd, 24/11/2025, get gl_jouhdr dengan for update
+    # gl_jouhdr = get_cache (Gl_jouhdr, {"refno": [(eq, refno)]})
+    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+                 (Gl_jouhdr.refno == refno)).with_for_update().first()
 
     if gl_jouhdr:
 
@@ -56,7 +61,7 @@ def delete_gl_jouallbl(refno:string, idnr:string):
                 if gl_jouhdr.datum >= date_mdy(get_month(fb_close) , 1, get_year(fb_close)) or gl_jouhdr.datum >= date_mdy(get_month(mat_close) , 1, get_year(mat_close)):
 
                     for gl_journal in db_session.query(Gl_journal).filter(
-                             (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).all():
+                             (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).all().with_for_update():
                         db_session.delete(gl_journal)
                     pass
                     db_session.delete(gl_jouhdr)
@@ -75,7 +80,7 @@ def delete_gl_jouallbl(refno:string, idnr:string):
                 if gl_jouhdr.datum >= date_mdy(get_month(gl_close) , 1, get_year(gl_close)):
 
                     for gl_journal in db_session.query(Gl_journal).filter(
-                             (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).all():
+                             (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).with_for_update().all():
                         db_session.delete(gl_journal)
                     pass
                     db_session.delete(gl_jouhdr)
