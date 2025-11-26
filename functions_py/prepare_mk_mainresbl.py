@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -68,7 +70,9 @@ def prepare_mk_mainresbl(gastnr:int, resnr:int, res_mode:string, user_init:strin
 
     guest = get_cache (Guest, {"gastnr": [(eq, gastnr)]})
 
-    reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
+    # reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
+    reservation = db_session.query(Reservation).filter(
+                 (Reservation.resnr == resnr)).with_for_update().first()
 
     if reservation:
         pass

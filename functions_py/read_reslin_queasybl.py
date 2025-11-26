@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.119
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -26,6 +28,8 @@ def read_reslin_queasybl(case_type:int, rkey:string, inpchar:string, resno:int, 
     t_reslin_queasy_data, T_reslin_queasy = create_model_like(Reslin_queasy)
 
     db_session = local_storage.db_session
+    rkey = rkey.strip()
+    inpchar = inpchar.strip()
 
     def generate_output():
         nonlocal t_reslin_queasy_data, curr_datum, fixleist_flag, fixleist_tot, roomrate_tot, grand_tot, delta, start_date, tmpint, tmpdate, reslin_queasy, res_line, fixleist

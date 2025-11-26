@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Res_line, Reservation, Fixleist, Reslin_queasy
@@ -43,21 +45,25 @@ def res_cancel_editbl(res_mode:string, done:bool, inp_resno:int, tot_qty:int, re
             if not res_line:
 
                 rline = db_session.query(Rline).filter(
-                         (Rline.resnr == inp_resno) & (Rline.reslinnr == reslinno)).first()
+                         (Rline.resnr == inp_resno) & (Rline.reslinnr == reslinno)).with_for_update().first()
                 gastno = rline.gastnr
 
 
                 db_session.delete(rline)
                 pass
 
-                reservation = get_cache (Reservation, {"resnr": [(eq, inp_resno)]})
+                # reservation = get_cache (Reservation, {"resnr": [(eq, inp_resno)]})
+                reservation = db_session.query(Reservation).filter(
+                         (Reservation.resnr == inp_resno)).with_for_update().first()
                 db_session.delete(reservation)
                 pass
                 delete_it = True
 
             if res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("insert").lower() :
 
-                res_line = get_cache (Res_line, {"resnr": [(eq, inp_resno)],"reslinnr": [(eq, reslinno)]})
+                # res_line = get_cache (Res_line, {"resnr": [(eq, inp_resno)],"reslinnr": [(eq, reslinno)]})
+                res_line = db_session.query(Rline).filter(
+                         (Rline.resnr == inp_resno) & (Rline.reslinnr == reslinno)).with_for_update().first()
 
                 if res_line:
                     gastno = res_line.gastnr
@@ -70,10 +76,12 @@ def res_cancel_editbl(res_mode:string, done:bool, inp_resno:int, tot_qty:int, re
             if delete_it:
 
                 for fixleist in db_session.query(Fixleist).filter(
-                         (Fixleist.resnr == inp_resno) & (Fixleist.reslinnr == reslinno)).order_by(Fixleist._recid).all():
+                         (Fixleist.resnr == inp_resno) & (Fixleist.reslinnr == reslinno)).order_by(Fixleist._recid).with_for_update().all():
                     db_session.delete(fixleist)
 
-                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, inp_resno)],"reslinnr": [(eq, reslinno)]})
+                # reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, inp_resno)],"reslinnr": [(eq, reslinno)]})
+                reslin_queasy = db_session.query(Reslin_queasy).filter(
+                         (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == inp_resno) & (Reslin_queasy.reslinnr == reslinno)).with_for_update().first()
                 while None != reslin_queasy:
                     pass
                     db_session.delete(reslin_queasy)
@@ -83,12 +91,14 @@ def res_cancel_editbl(res_mode:string, done:bool, inp_resno:int, tot_qty:int, re
                              (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == inp_resno) & (Reslin_queasy.reslinnr == reslinno) & (Reslin_queasy._recid > curr_recid)).first()
 
                 for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                         (Reslin_queasy.key == ("flag").lower()) & (Reslin_queasy.resnr == inp_resno) & (Reslin_queasy.reslinnr == reslinno)).order_by(Reslin_queasy._recid).all():
+                         (Reslin_queasy.key == ("flag").lower()) & (Reslin_queasy.resnr == inp_resno) & (Reslin_queasy.reslinnr == reslinno)).order_by(Reslin_queasy._recid).with_for_update().all():
                     db_session.delete(reslin_queasy)
 
                 if res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("qci").lower() :
 
-                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "rate-prog")],"number1": [(eq, inp_resno)],"number2": [(eq, 0)],"char1": [(eq, "")],"reslinnr": [(eq, 1)]})
+                    # reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "rate-prog")],"number1": [(eq, inp_resno)],"number2": [(eq, 0)],"char1": [(eq, "")],"reslinnr": [(eq, 1)]})
+                    reslin_queasy = db_session.query(Reslin_queasy).filter(
+                             (Reslin_queasy.key == ("rate-prog").lower()) & (Reslin_queasy.number1 == inp_resno) & (Reslin_queasy.number2 == 0) & (Reslin_queasy.char1 == "") & (Reslin_queasy.reslinnr == 1)).with_for_update().first()
 
                     if reslin_queasy:
                         db_session.delete(reslin_queasy)
@@ -97,7 +107,7 @@ def res_cancel_editbl(res_mode:string, done:bool, inp_resno:int, tot_qty:int, re
         if (res_mode.lower()  == ("new").lower()  or res_mode.lower()  == ("insert").lower()  or res_mode.lower()  == ("qci").lower()) and done and (tot_qty > 1):
 
             for res_line in db_session.query(Res_line).filter(
-                     (Res_line.resnr == inp_resno) & (Res_line.gastnr == gastno)).order_by(Res_line._recid).all():
+                     (Res_line.resnr == inp_resno) & (Res_line.gastnr == gastno)).order_by(Res_line._recid).with_for_update().all():
                 res_line.grpflag = True
                 pass
 

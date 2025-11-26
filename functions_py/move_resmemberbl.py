@@ -6,7 +6,6 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Res_line, Htparam, Master, Bill, Reservation, Counters, Gentable, Reslin_queasy, Res_history, Fixleist
-from functions.next_counter_for_update import next_counter_for_update
 
 r_list_data, R_list = create_model_like(Res_line, {"select_flag":bool})
 
@@ -22,8 +21,6 @@ def move_resmemberbl(case_type:int, resno:int, sorttype:int, newresno:int, r_lis
     r_list = rbuff = None
 
     db_session = local_storage.db_session
-    last_count = 0
-    error_lock:string = ""
 
     def generate_output():
         nonlocal done, r_list_data, ci_date, res_line, htparam, master, bill, reservation, counters, gentable, reslin_queasy, res_history, fixleist
@@ -132,15 +129,14 @@ def move_resmemberbl(case_type:int, resno:int, sorttype:int, newresno:int, r_lis
         if master:
 
             # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-            # counters.counter = counters.counter + 1
-            last_count, error_lock = get_output(next_counter_for_update(3))
+            counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+            counters.counter = counters.counter + 1
             pass
             msbuff = Master()
             db_session.add(msbuff)
 
             buffer_copy(master, msbuff,except_fields=["resnr","rechnr"])
-            # msbuff.rechnr = counters.counter
-            msbuff.rechnr = last_count
+            msbuff.rechnr = counters.counter
             msbuff.resnr = newresno
 
 
@@ -153,8 +149,7 @@ def move_resmemberbl(case_type:int, resno:int, sorttype:int, newresno:int, r_lis
                 db_session.add(mbill)
 
                 buffer_copy(bill, mbill,except_fields=["resnr","rechnr","saldo"])
-                # mbill.rechnr = counters.counter
-                mbill.rechnr = last_count
+                mbill.rechnr = counters.counter
                 mbill.resnr = newresno
                 mbill.saldo =  to_decimal("0")
 
@@ -170,7 +165,9 @@ def move_resmemberbl(case_type:int, resno:int, sorttype:int, newresno:int, r_lis
                 for bill in db_session.query(Bill).filter(
                              (Bill.resnr == res_line.resnr) & (Bill.parent_nr == res_line.reslinnr)).order_by(Bill._recid).all():
 
-                    rline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)],"resstatus": [(eq, 12)]})
+                    # rline = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)],"resstatus": [(eq, 12)]})
+                    rline = db_session.query(Rline).filter(
+                                 (Rline.resnr == bill.resnr) & (Rline.reslinnr == bill.reslinnr) & (Rline.resstatus == 12)).with_for_update().first()
 
                     if rline:
                         rline.resnr = newresno
@@ -178,45 +175,54 @@ def move_resmemberbl(case_type:int, resno:int, sorttype:int, newresno:int, r_lis
 
                     bill.resnr = newresno
 
-            gentable = get_cache (Gentable, {"key": [(eq, "reservation")],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)]})
+            # gentable = get_cache (Gentable, {"key": [(eq, "reservation")],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)]})
+            gentable = db_session.query(Gentable).filter(
+                         (Gentable.key == "reservation") & (Gentable.number1 == res_line.resnr) & (Gentable.number2 == res_line.reslinnr)).with_for_update().first()
 
             if gentable:
                 gentable.number1 = newresno
 
             for rline in db_session.query(Rline).filter(
-                         (Rline.resnr == rbuff.resnr) & ((Rline.resstatus == 11) | (Rline.resstatus == 13)) & (Rline.kontakt_nr == res_line.reslinnr)).order_by(Rline._recid).all():
+                         (Rline.resnr == rbuff.resnr) & ((Rline.resstatus == 11) | (Rline.resstatus == 13)) & (Rline.kontakt_nr == res_line.reslinnr)).order_by(Rline._recid).with_for_update().all():
                 rline.resnr = newresno
 
             for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                         (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).all():
+                         (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == res_line.resnr) & 
+                         (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).with_for_update().all():
                 reslin_queasy.resnr = newresno
 
             for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                         (Reslin_queasy.key == ("resChanges").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).all():
+                         (Reslin_queasy.key == ("resChanges").lower()) & (Reslin_queasy.resnr == res_line.resnr) & 
+                         (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).with_for_update().all():
                 reslin_queasy.resnr = newresno
 
             for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                         (Reslin_queasy.key == ("flag").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).all():
+                         (Reslin_queasy.key == ("flag").lower()) & (Reslin_queasy.resnr == res_line.resnr) & 
+                         (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).with_for_update().all():
                 reslin_queasy.resnr = newresno
 
             for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                         (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.resnr == res_line.resnr) & (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).all():
+                         (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.resnr == res_line.resnr) & 
+                         (Reslin_queasy.reslinnr == res_line.reslinnr)).order_by(Reslin_queasy._recid).with_for_update().all():
                 reslin_queasy.resnr = newresno
 
             for res_history in db_session.query(Res_history).filter(
-                         (Res_history.action == ("Remark").lower()) & (Res_history.resnr == res_line.resnr) & (Res_history.reslinnr == res_line.reslinnr)).order_by(Res_history._recid).all():
+                         (Res_history.action == ("Remark").lower()) & (Res_history.resnr == res_line.resnr) & 
+                         (Res_history.reslinnr == res_line.reslinnr)).order_by(Res_history._recid).with_for_update().all():
                 res_history.resnr = newresno
 
             for res_history in db_session.query(Res_history).filter(
-                         (Res_history.action == ("Pickup").lower()) & (Res_history.resnr == res_line.resnr) & (Res_history.reslinnr == res_line.reslinnr)).order_by(Res_history._recid).all():
+                         (Res_history.action == ("Pickup").lower()) & (Res_history.resnr == res_line.resnr) & 
+                         (Res_history.reslinnr == res_line.reslinnr)).order_by(Res_history._recid).with_for_update().all():
                 res_history.resnr = newresno
 
             for res_history in db_session.query(Res_history).filter(
-                         (Res_history.action == ("Drop").lower()) & (Res_history.resnr == res_line.resnr) & (Res_history.reslinnr == res_line.reslinnr)).order_by(Res_history._recid).all():
+                         (Res_history.action == ("Drop").lower()) & (Res_history.resnr == res_line.resnr) & 
+                         (Res_history.reslinnr == res_line.reslinnr)).order_by(Res_history._recid).with_for_update().all():
                 res_history.resnr = newresno
 
             for fixleist in db_session.query(Fixleist).filter(
-                         (Fixleist.resnr == res_line.resnr) & (Fixleist.reslinnr == res_line.reslinnr)).order_by(Fixleist._recid).all():
+                         (Fixleist.resnr == res_line.resnr) & (Fixleist.reslinnr == res_line.reslinnr)).order_by(Fixleist._recid).with_for_update().all():
                 fixleist.resnr = newresno
             res_line.resnr = newresno
 

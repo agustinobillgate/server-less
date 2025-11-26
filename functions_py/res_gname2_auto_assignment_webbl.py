@@ -6,7 +6,8 @@
 # Added custom get_timestamp_with_ms function
 #-----------------------------------------
 #using conversion tools version: 1.0.0.119
-
+# Rd, 26/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date, datetime, timezone
@@ -122,7 +123,7 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
                     if s1_list.resstatus <= 5:
 
                         queasy_359 = db_session.query(Queasy_359).filter(
-                                 (Queasy_359.key == 359) & (Queasy_359.number1 == rline.resnr) & (Queasy_359.number2 == rline.reslinnr) & (Queasy_359.number3 == 1)).first()
+                                 (Queasy_359.key == 359) & (Queasy_359.number1 == rline.resnr) & (Queasy_359.number2 == rline.reslinnr) & (Queasy_359.number3 == 1)).with_for_update().first()
 
                         if queasy_359:
                             db_session.delete(queasy_359)
@@ -208,7 +209,7 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
                     if s1_list.resstatus <= 5:
 
                         queasy_359 = db_session.query(Queasy_359).filter(
-                                 (Queasy_359.key == 359) & (Queasy_359.number1 == rline.resnr) & (Queasy_359.number2 == rline.reslinnr) & (Queasy_359.number3 == 1)).first()
+                                 (Queasy_359.key == 359) & (Queasy_359.number1 == rline.resnr) & (Queasy_359.number2 == rline.reslinnr) & (Queasy_359.number3 == 1)).with_for_update().first()
 
                         if queasy_359:
                             db_session.delete(queasy_359)
@@ -301,7 +302,7 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
                     if s1_list.resstatus <= 5:
 
                         queasy_359 = db_session.query(Queasy_359).filter(
-                                 (Queasy_359.key == 359) & (Queasy_359.number1 == rline.resnr) & (Queasy_359.number2 == rline.reslinnr) & (Queasy_359.number3 == 1)).first()
+                                 (Queasy_359.key == 359) & (Queasy_359.number1 == rline.resnr) & (Queasy_359.number2 == rline.reslinnr) & (Queasy_359.number3 == 1)).with_for_update().first()
 
                         if queasy_359:
                             db_session.delete(queasy_359)
@@ -370,7 +371,7 @@ def res_gname2_auto_assignment_webbl(s_list_data:[S_list], active_roomlist_data:
                     if s1_list.resstatus <= 5:
 
                         queasy_359 = db_session.query(Queasy_359).filter(
-                                 (Queasy_359.key == 359) & (Queasy_359.number1 == rline.resnr) & (Queasy_359.number2 == rline.reslinnr) & (Queasy_359.number3 == 1)).first()
+                                 (Queasy_359.key == 359) & (Queasy_359.number1 == rline.resnr) & (Queasy_359.number2 == rline.reslinnr) & (Queasy_359.number3 == 1)).with_for_update().first()
 
                         if queasy_359:
                             db_session.delete(queasy_359)

@@ -3,6 +3,8 @@
 # Rd, 28/10/2025
 # remark ke-4 blm muncul
 #------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -105,16 +107,22 @@ def chg_rcomment_webbl(icase:int, resno:int, reslinno:int, user_init:string, res
 
         nonlocal buf_q
 
-        res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslinno)]})
+        # res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslinno)]})
+        res_line = db_session.query(Res_line).filter(
+                     (Res_line.resnr == resno) & (Res_line.reslinnr == reslinno)).with_for_update().first()
 
         if not res_line:
 
             return
         pass
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        reservation = db_session.query(Reservation).filter(
+                     (Reservation.resnr == resno)).with_for_update().first()
 
-        guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+        # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+        guest = db_session.query(Guest).filter(
+                     (Guest.gastnr == res_line.gastnrmember)).with_for_update().first()
 
         if (res_com != reservation.bemerk) or (resl_com != res_line.bemerk):
             heute = get_current_date()
@@ -173,7 +181,7 @@ def chg_rcomment_webbl(icase:int, resno:int, reslinno:int, user_init:string, res
         res_line.bemerk = resl_com
 
         # buf_q = get_cache (Queasy, {"key": [(eq, 267)],"number1": [(eq, resno)],"number2": [(eq, reslinno)]})
-        buf_q = db_session.query(Queasy).filter((Queasy.key == 267) & (Queasy.number1 == resno) & (Queasy.number2 == reslinno)).first()
+        buf_q = db_session.query(Queasy).filter((Queasy.key == 267) & (Queasy.number1 == resno) & (Queasy.number2 == reslinno)).with_for_update().first()
 
         if not buf_q:
             buf_q = Queasy()

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#--------------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#--------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -122,7 +124,13 @@ def mkres_ratesbl(from_date:date, user_init:string, chg_zikat:bool, chg_flag:boo
             if res_line.zikatnr != zimkateg.zikatnr:
                 for datum in date_range(res_line.ankunft,upto_date) :
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
+                    # queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
+                    queasy = db_session.query(Queasy).filter(
+                        (Queasy.key == 171) &
+                        (Queasy.date1 == datum) &
+                        (Queasy.number1 == roomnr) &
+                        (Queasy.char1 == origcode)
+                    ).with_for_update().first()
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
                         pass
@@ -130,7 +138,13 @@ def mkres_ratesbl(from_date:date, user_init:string, chg_zikat:bool, chg_flag:boo
                         pass
                         pass
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr1)],"char1": [(eq, newcode)]})
+                    # queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr1)],"char1": [(eq, newcode)]})
+                    queasy = db_session.query(Queasy).filter(
+                        (Queasy.key == 171) &
+                        (Queasy.date1 == datum) &
+                        (Queasy.number1 == roomnr1) &
+                        (Queasy.char1 == newcode)
+                    ).with_for_update().first()
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
                         pass
@@ -141,7 +155,13 @@ def mkres_ratesbl(from_date:date, user_init:string, chg_zikat:bool, chg_flag:boo
             elif res_line.zikatnr == zimkateg.zikatnr and origcode.lower()  != (newcode).lower() :
                 for datum in date_range(res_line.ankunft,upto_date) :
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
+                    # queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, origcode)]})
+                    queasy = db_session.query(Queasy).filter(
+                        (Queasy.key == 171) &
+                        (Queasy.date1 == datum) &
+                        (Queasy.number1 == roomnr) &
+                        (Queasy.char1 == origcode)
+                    ).with_for_update().first()
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
                         pass
@@ -149,7 +169,13 @@ def mkres_ratesbl(from_date:date, user_init:string, chg_zikat:bool, chg_flag:boo
                         pass
                         pass
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, newcode)]})
+                    # queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, newcode)]})
+                    queasy = db_session.query(Queasy).filter(
+                        (Queasy.key == 171) &
+                        (Queasy.date1 == datum) &
+                        (Queasy.number1 == roomnr) &
+                        (Queasy.char1 == newcode)
+                    ).with_for_update().first()
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
                         pass
@@ -214,7 +240,10 @@ def mkres_ratesbl(from_date:date, user_init:string, chg_zikat:bool, chg_flag:boo
                  (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == resno) & (Reslin_queasy.reslinnr == reslinno) & (Reslin_queasy.date1 < Reslin_queasy.date2)).order_by(Reslin_queasy._recid).all():
         to_date = reslin_queasy.date2
 
-        r_qsy = get_cache (Reslin_queasy, {"_recid": [(eq, reslin_queasy._recid)]})
+        # r_qsy = get_cache (Reslin_queasy, {"_recid": [(eq, reslin_queasy._recid)]})
+        r_qsy = db_session.query(Reslin_queasy).filter(
+            (Reslin_queasy._recid == reslin_queasy._recid)
+        ).with_for_update().first()
         r_qsy.date2 = r_qsy.date1
 
 
@@ -287,7 +316,11 @@ def mkres_ratesbl(from_date:date, user_init:string, chg_zikat:bool, chg_flag:boo
 
     zimkateg = get_cache (Zimkateg, {"kurzbez": [(eq, room_list.rmcat)]})
 
-    res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslinno)]})
+    # res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslinno)]})
+    res_line = db_session.query(Res_line).filter(
+        (Res_line.resnr == resno) &
+        (Res_line.reslinnr == reslinno)
+    ).with_for_update().first()
     update_qsy171()
     res_line.zimmer_wunsch = reslin_list.zimmer_wunsch
     res_line.arrangement = reslin_list.arrangement
@@ -318,7 +351,11 @@ def mkres_ratesbl(from_date:date, user_init:string, chg_zikat:bool, chg_flag:boo
 
         if segment:
 
-            reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+            # reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+            reservation = db_session.query(Reservation).filter(
+                (Reservation.resnr == resno)
+            ).with_for_update().first()
+
             reservation.segmentcode = segment.segmentcode
             new_segm = to_string(segment.segmentcode) + " " +\
                     segment.bezeich
@@ -356,7 +393,14 @@ def mkres_ratesbl(from_date:date, user_init:string, chg_zikat:bool, chg_flag:boo
             res_dynarate.prcode = room_list.prcode[curr_i - 1]
             res_dynarate.rate =  to_decimal(room_list.rmrate[curr_i - 1])
 
-            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, resno)],"reslinnr": [(eq, reslinno)],"date1": [(eq, fr_date)],"date2": [(eq, fr_date)]})
+            # reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "arrangement")],"resnr": [(eq, resno)],"reslinnr": [(eq, reslinno)],"date1": [(eq, fr_date)],"date2": [(eq, fr_date)]})
+            reslin_queasy = db_session.query(Reslin_queasy).filter(
+                (Reslin_queasy.key == "arrangement") &
+                (Reslin_queasy.resnr == resno) &
+                (Reslin_queasy.reslinnr == reslinno) &
+                (Reslin_queasy.date1 == fr_date) &  
+                (Reslin_queasy.date2 == fr_date)
+            ).with_for_update().first()
 
             if not reslin_queasy:
                 reslin_queasy = Reslin_queasy()
@@ -381,7 +425,8 @@ def mkres_ratesbl(from_date:date, user_init:string, chg_zikat:bool, chg_flag:boo
             reslin_queasy.char1 = room_list.argt
 
     for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                 (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == resno) & (Reslin_queasy.reslinnr == reslinno)).order_by(Reslin_queasy._recid).all():
+                 (Reslin_queasy.key == ("arrangement").lower()) & (Reslin_queasy.resnr == resno) & 
+                 (Reslin_queasy.reslinnr == reslinno)).order_by(Reslin_queasy._recid).with_for_update().all():
 
         if reslin_queasy.date2 < reslin_list.ankunft:
             db_session.delete(reslin_queasy)

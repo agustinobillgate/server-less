@@ -1,9 +1,11 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
+#--------------------------------------------------
 # Rd 21/7/2025
 # Gitlab: 252
 # Add safe_divide, if argm, if room
-#-----------------------------------------
+#--------------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#--------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date

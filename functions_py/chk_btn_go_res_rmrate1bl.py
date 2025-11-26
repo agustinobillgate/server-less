@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -334,7 +336,8 @@ def chk_btn_go_res_rmrate1bl(pvilanguage:int, curr_select:string, max_rate:Decim
 
             reslin_queasy = get_cache (Reslin_queasy, {"_recid": [(eq, recid_reslin)]})
 
-            res_line = get_cache (Res_line, {"resnr": [(eq, reslin_queasy.resnr)],"reslinnr": [(eq, reslin_queasy.reslinnr)]})
+            # res_line = get_cache (Res_line, {"resnr": [(eq, reslin_queasy.resnr)],"reslinnr": [(eq, reslin_queasy.reslinnr)]})
+            res_line = db_session.query(Res_line).filter(Res_line.resnr == reslin_queasy.resnr, Res_line.reslinnr == reslin_queasy.reslinnr).with_for_update().first()
             res_changes_chg()
             pass
             reslin_queasy.key = "arrangement"
