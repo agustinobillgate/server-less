@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_artikel, L_bestand, L_order, L_op, H_rezlin, H_rezept, H_artikel, Dml_art, Reslin_queasy, Dml_artdep, L_lager, L_verbrauch
@@ -118,14 +120,16 @@ def sarticle_list_bulk_delete_article_webbl(pvilanguage:int, t_l_artikel_data:[T
         for l_lager in db_session.query(L_lager).order_by(L_lager._recid).all():
 
             for l_bestand in db_session.query(L_bestand).filter(
-                     (L_bestand.artnr == t_l_artikel.artnr) & (L_bestand.lager_nr == l_lager.lager_nr)).order_by(L_bestand._recid).all():
+                     (L_bestand.artnr == t_l_artikel.artnr) & (L_bestand.lager_nr == l_lager.lager_nr)).order_by(L_bestand._recid).with_for_update().all():
                 db_session.delete(l_bestand)
 
         for l_verbrauch in db_session.query(L_verbrauch).filter(
-                 (L_verbrauch.artnr == t_l_artikel.artnr)).order_by(L_verbrauch._recid).all():
+                 (L_verbrauch.artnr == t_l_artikel.artnr)).order_by(L_verbrauch._recid).with_for_update().all():
             db_session.delete(l_verbrauch)
 
-        l_artikel = get_cache (L_artikel, {"artnr": [(eq, t_l_artikel.artnr)]})
+        # l_artikel = get_cache (L_artikel, {"artnr": [(eq, t_l_artikel.artnr)]})
+        l_artikel = db_session.query(L_artikel).filter(
+                 (L_artikel.artnr == t_l_artikel.artnr)).with_for_update().first()
 
         if l_artikel:
             pass

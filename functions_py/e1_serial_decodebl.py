@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -57,7 +59,7 @@ def e1_serial_decodebl(serial_number:string):
         j:int = 0
         tmp_dec:int = 0
         for i in range(0,length(hexvalue) - 1 + 1) :
-            tmp_dec = CharToInt (substring(hexvalue, length(hexvalue) - i - 1, 1))
+            tmp_dec = chartoint (substring(hexvalue, length(hexvalue) - i - 1, 1))
             for j in range(1,i + 1) :
                 tmp_dec = tmp_dec * 26
             decvalue = decvalue + tmp_dec
@@ -75,7 +77,7 @@ def e1_serial_decodebl(serial_number:string):
         kk:int = 0
         numbers:List[int] = create_empty_list(15,0)
         for i in range(1,15 + 1) :
-            numbers[i - 1] = CharToInt (substring(input_serial, i - 1, 1))
+            numbers[i - 1] = chartoint (substring(input_serial, i - 1, 1))
         for i in range(5,15 + 1) :
             for k in range(1,4 + 1) :
                 numbers[k - 1] = (numbers[k - 1] - numbers[i - 1] + 4 * k) % 26
@@ -87,7 +89,7 @@ def e1_serial_decodebl(serial_number:string):
                 numbers[k - 1] = numbers[k - 1] - numbers[i - 1] + k
         input_serial = ""
         for i in range(1,15 + 1) :
-            input_serial = input_serial + IntToChar (numbers[i - 1] - CharToInt (substring(input_rand, rand_pos - 1, 1)) - i * 11)
+            input_serial = input_serial + inttochar (numbers[i - 1] - chartoint (substring(input_rand, rand_pos - 1, 1)) - i * 11)
         return input_serial
 
 
@@ -109,33 +111,33 @@ def e1_serial_decodebl(serial_number:string):
         i:int = 0
         numbers:List[int] = create_empty_list(17,0)
         for i in range(1,17 + 1) :
-            numbers[i - 1] = CharToInt (substring(input_serial, i - 1, 1))
+            numbers[i - 1] = chartoint (substring(input_serial, i - 1, 1))
         for i in range(1,16 + 1) :
-            checksum = (checksum + CombineNumber (numbers[i - 1] + numbers[i + 1 - 1])) % 26
-        return IntToChar (checksum)
+            checksum = (checksum + combinenumber (numbers[i - 1] + numbers[i + 1 - 1])) % 26
+        return inttochar (checksum)
 
 
     the_serial = substring(serial_number, 0, 15)
     the_randomizer = substring(serial_number, 15, 2)
     the_checksum = substring(serial_number, 17, 1)
-    checksum = calcChecksum (serial_number + the_randomizer)
+    checksum = calcchecksum (serial_number + the_randomizer)
 
     if checksum.lower()  != (the_checksum).lower() :
         valid_flag = False
     else:
         valid_flag = True
-    the_serial = Unrandomize (the_serial, the_randomizer, 2)
-    the_serial = Unrandomize (the_serial, the_randomizer, 1)
+    the_serial = unrandomize (the_serial, the_randomizer, 2)
+    the_serial = unrandomize (the_serial, the_randomizer, 1)
     license_hex = substring(the_serial, 0, 4)
     valid_hex = substring(the_serial, 4, 6)
     case_hex = substring(the_serial, 10, 2)
     parameter_hex = substring(the_serial, 12, 3)
-    license_nr = HexToDec (license_hex)
-    valid_str = to_string(HexToDec (valid_hex))
+    license_nr = hextodec (license_hex)
+    valid_str = to_string(hextodec (valid_hex))
     while length(valid_str) < 8:
         valid_str = "0" + valid_str
     valid_until = date_mdy(to_int(substring(valid_str, 0, 2)) , to_int(substring(valid_str, 2, 2)) , to_int(substring(valid_str, 4, 4)))
-    case_id = HexToDec (case_hex)
-    parameter_int = HexToDec (parameter_hex)
+    case_id = hextodec (case_hex)
+    parameter_int = hextodec (parameter_hex)
 
     return generate_output()

@@ -4,7 +4,8 @@
 # Rulita, 16-10-2025 
 # Tiket ID : 6526C2 | New compile program
 # =======================================
-
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -24,6 +25,7 @@ def check_timebl(case_type:int, id_table:int, id_table1:int, name_table:string, 
     queasy = None
 
     db_session = local_storage.db_session
+    name_table = name_table.strip()
 
     def generate_output():
         nonlocal flag_ok, init_time1, init_date1, delta_time, init_time, init_date, setting_time, tmp_time, tmp_today, con_day, queasy
@@ -91,10 +93,19 @@ def check_timebl(case_type:int, id_table:int, id_table1:int, name_table:string, 
 
         if id_table1 != None:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 9999)],"char1": [(eq, name_table)],"number2": [(eq, id_table)],"number3": [(eq, id_table1)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 9999)],"char1": [(eq, name_table)],"number2": [(eq, id_table)],"number3": [(eq, id_table1)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 9999) &
+                     (Queasy.char1 == name_table) &
+                     (Queasy.number2 == id_table) &
+                     (Queasy.number3 == id_table1)).with_for_update().first()
         else:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 9999)],"char1": [(eq, name_table)],"number2": [(eq, id_table)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 9999)],"char1": [(eq, name_table)],"number2": [(eq, id_table)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 9999) &
+                     (Queasy.char1 == name_table) &
+                     (Queasy.number2 == id_table)).with_for_update().first()
 
         if queasy:
 

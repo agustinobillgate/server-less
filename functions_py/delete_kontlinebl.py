@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -19,15 +21,13 @@ def delete_kontlinebl(case_type:int, kontignr:int, kontcode:string, gastno:int):
     Qsy = create_buffer("Qsy",Queasy)
     Kline = create_buffer("Kline",Kontline)
 
-
     db_session = local_storage.db_session
+    kontcode = kontcode.strip()
 
     def generate_output():
         nonlocal success_flag, curr_date, zikatnr, queasy, kontline, zimkateg, res_history
         nonlocal case_type, kontignr, kontcode, gastno
         nonlocal qsy, kline
-
-
         nonlocal qsy, kline
 
         return {"success_flag": success_flag}
@@ -36,13 +36,9 @@ def delete_kontlinebl(case_type:int, kontignr:int, kontcode:string, gastno:int):
     if case_type == 1:
 
         kontline = get_cache (Kontline, {"kontignr": [(eq, kontignr)],"gastnr": [(eq, gastno)]})
-
         zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, kontline.zikatnr)]})
-
         if zimkateg:
-
             queasy = get_cache (Queasy, {"key": [(eq, 152)]})
-
             if queasy and zimkateg.typ != 0:
                 zikatnr = zimkateg.typ
             else:
@@ -53,14 +49,18 @@ def delete_kontlinebl(case_type:int, kontignr:int, kontcode:string, gastno:int):
 
             if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                qsy = db_session.query(Queasy).filter(
+                     (Queasy._recid == queasy._recid)).with_for_update().first
 
                 if qsy:
                     qsy.logi2 = True
                     pass
                     pass
 
-        kontline = get_cache (Kontline, {"kontignr": [(eq, kontignr)],"gastnr": [(eq, gastno)]})
+        # kontline = get_cache (Kontline, {"kontignr": [(eq, kontignr)],"gastnr": [(eq, gastno)]})
+        kontline = db_session.query(Kontline).filter(
+                 (Kontline.kontignr == kontignr) & (Kontline.gastnr == gastno)).with_for_update().first()
 
         if kontline:
             db_session.delete(kontline)
@@ -102,7 +102,9 @@ def delete_kontlinebl(case_type:int, kontignr:int, kontcode:string, gastno:int):
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Queasy).filter(
+                         (Queasy._recid == queasy._recid)).with_for_update().first()
 
                     if qsy:
                         qsy.logi2 = True
@@ -110,12 +112,13 @@ def delete_kontlinebl(case_type:int, kontignr:int, kontcode:string, gastno:int):
                         pass
 
             kline = db_session.query(Kline).filter(
-                     (Kline._recid == kontline._recid)).first()
+                     (Kline._recid == kontline._recid)).with_for_update().first()
             db_session.delete(kline)
 
             curr_recid = kontline._recid
             kontline = db_session.query(Kontline).filter(
                      (Kontline.kontcode == (kontcode).lower()) & (Kontline._recid > curr_recid)).first()
+            
         res_history = Res_history()
         db_session.add(res_history)
 

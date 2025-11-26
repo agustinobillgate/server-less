@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -17,8 +19,8 @@ def enter_passwd_btn_approvebl(q_recid:int, keystr:string, q_date1:date, q_numbe
 
     Qbuff = create_buffer("Qbuff",Queasy)
 
-
     db_session = local_storage.db_session
+    keystr = keystr.strip()
 
     def generate_output():
         nonlocal reason, q_logi2, queasy
@@ -31,7 +33,13 @@ def enter_passwd_btn_approvebl(q_recid:int, keystr:string, q_date1:date, q_numbe
         return {"reason": reason, "q_logi2": q_logi2}
 
 
-    qbuff = get_cache (Queasy, {"key": [(eq, 36)],"char1": [(eq, keystr)],"date1": [(eq, q_date1)],"number1": [(eq, q_number1)],"betriebsnr": [(eq, 1)]})
+    # qbuff = get_cache (Queasy, {"key": [(eq, 36)],"char1": [(eq, keystr)],"date1": [(eq, q_date1)],"number1": [(eq, q_number1)],"betriebsnr": [(eq, 1)]})
+    qbuff = db_session.query(Queasy).filter(
+             (Queasy.key == 36) &
+             (Queasy.char1 == keystr) &
+             (Queasy.date1 == q_date1) &
+             (Queasy.number1 == q_number1) &
+             (Queasy.betriebsnr == 1)).with_for_update().first()
 
     if not qbuff:
 
