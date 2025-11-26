@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#--------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#--------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -123,7 +125,8 @@ def kitchen_display_configbl(case_type:int, kds_param_data:[Kds_param]):
 
         for kds_param in query(kds_param_data):
 
-            queasy = get_cache (Queasy, {"key": [(eq, 320)],"number1": [(eq, kds_param.nr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 320)],"number1": [(eq, kds_param.nr)]})
+            queasy = get_cache (Queasy, {"key": [(eq, 320)],"number1": [(eq, kds_param.nr)]}, with_for_update=True)
 
             if queasy:
                 pass

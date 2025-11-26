@@ -8,9 +8,9 @@
                     - fix ("string").lower()
                     - use f"string"
 """
-#----------------------------------------
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
-#----------------------------------------
+#--------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#--------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -18,7 +18,6 @@ from datetime import date
 # from functions.calc_servtaxesbl import calc_servtaxesbl
 from functions_py.calc_servtaxesbl import calc_servtaxesbl
 from models import Reslin_queasy, Waehrung, Res_line, Htparam, Bediener, Arrangement, Guest_pr, Ratecode, Pricecod, Katpreis, Queasy, Artikel, Debitor, Guest, Counters, Gl_jouhdr, Gl_journal, Bresline
-from functions.next_counter_for_update import next_counter_for_update
 
 p_list_data, P_list = create_model(
     "P_list",
@@ -95,8 +94,6 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
     Breslin = create_buffer("Breslin", Reslin_queasy)
     Preslin = create_buffer("Preslin", Res_line)
     db_session = local_storage.db_session
-    last_count = 0
-    error_lock: str = ""
     curr_select = curr_select.strip()
     contcode = contcode.strip()
 
@@ -719,23 +716,22 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
         loopi: int = 0
 
         # counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == 25).with_for_update().first()
 
-        # if not counters:
-        #     counters = Counters()
-        #     db_session.add(counters)
+        if not counters:
+            counters = Counters()
+            db_session.add(counters)
 
-        #     counters.counter_no = 25
-        #     counters.counter_bez = "G/L Transaction Journal"
-        # counters.counter = counters.counter + 1
-
-        last_count, error_lock = get_output(next_counter_for_update(25))
+            counters.counter_no = 25
+            counters.counter_bez = "G/L Transaction Journal"
+        counters.counter = counters.counter + 1
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
 
         if res_line:
-            guest = get_cache(
-                Guest, {"gastnr": [(eq, res_line.gastnr)]})
+            # guest = get_cache( Guest, {"gastnr": [(eq, res_line.gastnr)]})
+            guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).with_for_update().first()
 
             if guest:
                 gname = guest.name
@@ -744,7 +740,7 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
         db_session.add(gl_jouhdr)
 
         # gl_jouhdr.jnr = counters.counter
-        gl_jouhdr.jnr = last_count
+        gl_jouhdr.jnr = counters.counter
 
 
         # gl_jouhdr.refno = "CANCEL-" + \
@@ -946,22 +942,22 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
 
         # counters = get_cache(
         #     Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == 25).with_for_update().first()
+        if not counters:
+            counters = Counters()
+            db_session.add(counters)
 
-        # if not counters:
-        #     counters = Counters()
-        #     db_session.add(counters)
-
-        #     counters.counter_no = 25
-        #     counters.counter_bez = "G/L Transaction Journal"
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = get_output(next_counter_for_update(25))
+            counters.counter_no = 25
+            counters.counter_bez = "G/L Transaction Journal"
+        counters.counter = counters.counter + 1
 
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
 
         if res_line:
-            guest = get_cache(Guest, {"gastnr": [(eq, res_line.gastnr)]})
+            # guest = get_cache(Guest, {"gastnr": [(eq, res_line.gastnr)]})
+            guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnr).with_for_update().first()
 
             if guest:
                 gname = guest.name
@@ -969,8 +965,7 @@ def leasing_btn_go_res_rmrate_webbl(pvilanguage: int, curr_select: str, max_rate
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
-        # gl_jouhdr.jnr = counters.counter
-        gl_jouhdr.jnr = last_count
+        gl_jouhdr.jnr = counters.counter
         
         # gl_jouhdr.refno = to_string(
         #     queasy.number1) + "-" + to_string(bill_date)

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#--------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#--------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -34,7 +36,7 @@ def hubspot_configbl(case_type:int, hubspot_param_data:[Hubspot_param]):
         nonlocal hubspot_param
 
         paramnr:int = 0
-        htparam.paramnr = 1
+        paramnr = 1
 
         queasy = get_cache (Queasy, {"key": [(eq, 319)],"number1": [(eq, paramnr)]})
 
@@ -43,12 +45,12 @@ def hubspot_configbl(case_type:int, hubspot_param_data:[Hubspot_param]):
             db_session.add(queasy)
 
             queasy.key = 320
-            queasy.number1 = htparam.paramnr
+            queasy.number1 = paramnr
             queasy.char1 = "Hubspot URL"
             queasy.char2 = ""
 
 
-        htparam.paramnr = 2
+        paramnr = 2
 
         queasy = get_cache (Queasy, {"key": [(eq, 319)],"number1": [(eq, paramnr)]})
 
@@ -57,7 +59,7 @@ def hubspot_configbl(case_type:int, hubspot_param_data:[Hubspot_param]):
             db_session.add(queasy)
 
             queasy.key = 320
-            queasy.number1 = htparam.paramnr
+            queasy.number1 = paramnr
             queasy.char1 = "Hubspot Secret Key"
             queasy.char2 = ""
 
@@ -67,7 +69,9 @@ def hubspot_configbl(case_type:int, hubspot_param_data:[Hubspot_param]):
 
         for hubspot_param in query(hubspot_param_data):
 
-            queasy = get_cache (Queasy, {"key": [(eq, 319)],"number1": [(eq, hubspot_param.nr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 319)],"number1": [(eq, hubspot_param.nr)]})
+            queasy = db_session.query(Queasy).with_for_update().filter(
+                (Queasy.key == 319) & (Queasy.number1 == hubspot_param.nr)).first()
 
             if queasy:
                 pass

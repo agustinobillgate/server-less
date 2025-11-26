@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#--------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#--------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from sqlalchemy import func
@@ -24,7 +26,9 @@ def if_fcs0bl_resend_api(p_resend:int, p_irecid:int):
 
     if p_resend == 1:
 
-        interface = get_cache (Interface, {"_recid": [(eq, p_irecid)]})
+        # interface = get_cache (Interface, {"_recid": [(eq, p_irecid)]})
+        interface = db_session.query(Interface).filter(
+            (Interface._recid == p_irecid)).with_for_update().first()
 
         if interface:
 
@@ -41,7 +45,10 @@ def if_fcs0bl_resend_api(p_resend:int, p_irecid:int):
     elif p_resend == 2:
 
         for interface in db_session.query(Interface).filter(
-                 (Interface.key == 38) & (matches(Interface.nebenstelle,"*$FCS0$*")) & ((Interface.parameters != ("modify").lower()) | (Interface.parameters == ("modify").lower()) & (Interface.zinr != ""))).order_by(Interface._recid).all():
+                 (Interface.key == 38) & (matches(Interface.nebenstelle,"*$FCS0$*")) & 
+                 ((Interface.parameters != ("modify").lower()) | (Interface.parameters == ("modify").lower()) & 
+                  (Interface.zinr != ""))).order_by(Interface._recid).with_for_update().all():
+            
             interface.nebenstelle = ""
             interface.intdate = get_current_date()
             v_count = v_count + 1

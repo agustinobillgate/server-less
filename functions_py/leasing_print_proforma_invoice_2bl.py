@@ -8,6 +8,9 @@
                     - using f"string"
                     - fix ("string").lower()
 """
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -265,9 +268,11 @@ def leasing_print_proforma_invoice_2bl(qrecid: int, user_init: str, instalment: 
         Htparam, {"paramnr": [(eq, 491)]})
     price_decimal = htparam.finteger
 
-    queasy = get_cache(
-        Queasy, {"key": [(eq, 329)], "_recid": [(eq, qrecid)]})
-
+    # queasy = get_cache(
+    #     Queasy, {"key": [(eq, 329)], "_recid": [(eq, qrecid)]})
+    queasy = db_session.query(Queasy).filter(
+        (Queasy.key == 329) & (Queasy._recid == qrecid)).with_for_update().first()
+    
     if queasy:
         curr_resnr = queasy.number1
         curr_reslinnr = queasy.number2
