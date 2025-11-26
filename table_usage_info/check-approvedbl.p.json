@@ -1,0 +1,13 @@
+{
+    "Queasy": {
+        "read": [
+            "number1",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Messages": {
+        "read": [],
+        "write": []
+    }
+}

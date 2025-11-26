@@ -3,7 +3,8 @@
 # Rd, 05/11/2025
 # to_int(res_line.code))]}) -> to_int(res_line.code.strip()))}).first() 
 #------------------------------------------
-
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -5493,7 +5494,9 @@ def bill_parserbl(pvilanguage:int, case_type:int, briefnr:int, reslinnr:int, res
         nonlocal brief_list, htp_list, loop_list, loop1_list, header_list, bill_list, output_list, s_list, t_list, bline_list, t_spbill_list, rmember, mainres
         nonlocal brief_list_data, htp_list_data, loop_list_data, loop1_list_data, header_list_data, bill_list_data, output_list_data, s_list_data, t_list_data, bline_list_data
 
-        bill = get_cache (Bill, {"rechnr": [(eq, rechnr)]})
+        # bill = get_cache (Bill, {"rechnr": [(eq, rechnr)]})
+        bill = db_session.query(Bill).filter(
+                 (Bill.rechnr == rechnr)).with_for_update().first()
 
         if bill:
             bill.rechnr2 = briefnr

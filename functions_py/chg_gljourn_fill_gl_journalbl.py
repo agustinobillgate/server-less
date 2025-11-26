@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.update_bemerkbl import update_bemerkbl
@@ -28,6 +30,9 @@ def chg_gljourn_fill_gl_journalbl(case_type:int, jnr:int, comment:string, user_i
     b1_list_data, B1_list = create_model("B1_list", {"fibukonto":string, "debit":Decimal, "credit":Decimal, "bemerk":string, "bezeich":string, "chginit":string, "chgdate":date, "sysdate":date, "zeit":int, "activeflag":int, "rec_gl_journ":int, "tax_code":string, "tax_amount":string, "tot_amt":string})
 
     db_session = local_storage.db_session
+    t_bezeich = t_bezeich.strip()
+    t_refno = t_refno.strip()
+    comment = comment.strip()
 
     def generate_output():
         nonlocal debits, credits, remains, b1_list_data, fibukonto, bemerk, debit, credit, datum, gl_jouhdr, gl_journal, gl_acct, bediener, res_history, queasy
@@ -48,7 +53,11 @@ def chg_gljourn_fill_gl_journalbl(case_type:int, jnr:int, comment:string, user_i
         nonlocal b1_list, g_list
         nonlocal b1_list_data
 
-        queasy = get_cache (Queasy, {"key": [(eq, 345)],"number1": [(eq, jnr)],"date1": [(eq, datum)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 345)],"number1": [(eq, jnr)],"date1": [(eq, datum)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 345) &
+                 (Queasy.number1 == jnr) &
+                 (Queasy.date1 == datum)).with_for_update().first()
 
         if queasy:
             pass
@@ -143,15 +152,19 @@ def chg_gljourn_fill_gl_journalbl(case_type:int, jnr:int, comment:string, user_i
 
         g_list = query(g_list_data, first=True)
 
-        gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
+        # gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
+        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+                 (Gl_jouhdr.jnr == jnr)).with_for_update().first()
 
-        gl_journal = get_cache (Gl_journal, {"_recid": [(eq, jou_recid)]})
+        # gl_journal = get_cache (Gl_journal, {"_recid": [(eq, jou_recid)]})
+        gl_journal = db_session.query(Gl_journal).filter(
+                    (Gl_journal._recid == jou_recid)).with_for_update().first()
+        
         fibukonto = gl_journal.fibukonto
         bemerk = gl_journal.bemerk
         debit =  to_decimal(gl_journal.debit)
         credit =  to_decimal(gl_journal.credit)
         datum = gl_jouhdr.datum
-
 
         gl_journal.chginit = user_init
         gl_journal.chgdate = get_current_date()
@@ -198,8 +211,6 @@ def chg_gljourn_fill_gl_journalbl(case_type:int, jnr:int, comment:string, user_i
                 res_history.zeit = get_current_time_in_seconds()
                 res_history.aenderung = "Modify Journal, Date: " + to_string(datum) + ", AcctNo From: " + fibukonto + " To: " + gl_journal.fibukonto
                 res_history.action = "G/L"
-
-
                 pass
                 pass
 

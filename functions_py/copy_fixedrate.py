@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Res_line, Reslin_queasy, Arrangement
@@ -34,7 +36,9 @@ def copy_fixedrate(resnr:int, reslinnr:int):
     arrangement = get_cache (Arrangement, {"arrangement": [(eq, res_line.arrangement)]})
 
     resmember = db_session.query(Resmember).filter(
-             (Resmember.resnr == resnr) & (Resmember.reslinnr != reslinnr) & (res_line.active_flag != 2) & (Resmember.resstatus != 12) & (Resmember.resstatus != 11) & (Resmember.resstatus != 13) & (Resmember.arrangement == res_line.arrangement)).first()
+             (Resmember.resnr == resnr) & (Resmember.reslinnr != reslinnr) & (res_line.active_flag != 2) & 
+             (Resmember.resstatus != 12) & (Resmember.resstatus != 11) & (Resmember.resstatus != 13) & 
+             (Resmember.arrangement == res_line.arrangement)).with_for_update().first()
     while None != resmember:
         pass
         resmember.zipreis =  to_decimal(res_line.zipreis)
@@ -43,11 +47,14 @@ def copy_fixedrate(resnr:int, reslinnr:int):
         pass
 
         for rqueasy in db_session.query(Rqueasy).filter(
-                 (Rqueasy.key == ("fargt-line").lower()) & (Rqueasy.char1 == "") & (Rqueasy.resnr == resnr) & (Rqueasy.number2 == arrangement.argtnr) & (Rqueasy.reslinnr == resmember.reslinnr)).order_by(Rqueasy._recid).all():
+                 (Rqueasy.key == ("fargt-line").lower()) & (Rqueasy.char1 == "") & (Rqueasy.resnr == resnr) & 
+                 (Rqueasy.number2 == arrangement.argtnr) & (Rqueasy.reslinnr == resmember.reslinnr)).order_by(Rqueasy._recid).with_for_update().all():
             db_session.delete(rqueasy)
 
         for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                 (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.resnr == resnr) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == reslinnr)).order_by(Reslin_queasy._recid).all():
+                 (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & 
+                 (Reslin_queasy.resnr == resnr) & (Reslin_queasy.number2 == arrangement.argtnr) & 
+                 (Reslin_queasy.reslinnr == reslinnr)).order_by(Reslin_queasy._recid).all():
             rqueasy = Reslin_queasy()
             db_session.add(rqueasy)
 
@@ -63,7 +70,7 @@ def copy_fixedrate(resnr:int, reslinnr:int):
             pass
 
         for rqueasy in db_session.query(Rqueasy).filter(
-                 (Rqueasy.key == ("arrangement").lower()) & (Rqueasy.resnr == resnr) & (Rqueasy.reslinnr == resmember.reslinnr)).order_by(Rqueasy._recid).all():
+                 (Rqueasy.key == ("arrangement").lower()) & (Rqueasy.resnr == resnr) & (Rqueasy.reslinnr == resmember.reslinnr)).order_by(Rqueasy._recid).with_for_update().all():
             db_session.delete(rqueasy)
 
         for reslin_queasy in db_session.query(Reslin_queasy).filter(
@@ -83,6 +90,8 @@ def copy_fixedrate(resnr:int, reslinnr:int):
 
         curr_recid = resmember._recid
         resmember = db_session.query(Resmember).filter(
-                 (Resmember.resnr == resnr) & (Resmember.reslinnr != reslinnr) & (res_line.active_flag != 2) & (Resmember.resstatus != 12) & (Resmember.resstatus != 11) & (Resmember.resstatus != 13) & (Resmember.arrangement == res_line.arrangement) & (Resmember._recid > curr_recid)).first()
+                 (Resmember.resnr == resnr) & (Resmember.reslinnr != reslinnr) & (res_line.active_flag != 2) & 
+                 (Resmember.resstatus != 12) & (Resmember.resstatus != 11) & (Resmember.resstatus != 13) & 
+                 (Resmember.arrangement == res_line.arrangement) & (Resmember._recid > curr_recid)).with_for_update().first()
 
     return generate_output()

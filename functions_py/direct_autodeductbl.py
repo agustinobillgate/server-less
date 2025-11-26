@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+# =======================================
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+# =======================================
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -7,11 +9,10 @@ from functions.htpdate import htpdate
 from functions.htplogic import htplogic
 from models import Htparam, H_bill_line, H_artikel, Artikel, L_artikel, H_rezept, H_rezlin, L_lager, Hoteldpt, L_ophdr, L_op, L_bestand
 
-def nt_autodeduct():
+def direct_autodeductbl(bill_date:date):
 
     prepare_cache ([Htparam, H_bill_line, H_artikel, Artikel, L_artikel, H_rezlin, Hoteldpt, L_ophdr, L_op, L_bestand])
 
-    bill_date:date = None
     inv_closedate:date = None
     food_closedate:date = None
     transdate:date = None
@@ -36,7 +37,8 @@ def nt_autodeduct():
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal bill_date, inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal bill_date
 
 
         nonlocal s_list, t_list, sbuff
@@ -46,7 +48,8 @@ def nt_autodeduct():
 
     def create_list():
 
-        nonlocal bill_date, inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal bill_date
 
 
         nonlocal s_list, t_list, sbuff
@@ -101,7 +104,8 @@ def nt_autodeduct():
 
     def get_l_artikels():
 
-        nonlocal bill_date, inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal bill_date
 
 
         nonlocal s_list, t_list, sbuff
@@ -171,7 +175,8 @@ def nt_autodeduct():
 
     def get_recipe(p_artnr:int, menge:Decimal):
 
-        nonlocal bill_date, inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal bill_date
 
 
         nonlocal s_list, t_list, sbuff
@@ -232,7 +237,8 @@ def nt_autodeduct():
 
     def get_recipe2(p_artnr:int, menge:Decimal):
 
-        nonlocal bill_date, inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal bill_date
 
 
         nonlocal s_list, t_list, sbuff
@@ -293,7 +299,8 @@ def nt_autodeduct():
 
     def get_recipe3(p_artnr:int, menge:Decimal):
 
-        nonlocal bill_date, inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal bill_date
 
 
         nonlocal s_list, t_list, sbuff
@@ -354,7 +361,8 @@ def nt_autodeduct():
 
     def get_recipe4(p_artnr:int, menge:Decimal):
 
-        nonlocal bill_date, inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal bill_date
 
 
         nonlocal s_list, t_list, sbuff
@@ -415,7 +423,8 @@ def nt_autodeduct():
 
     def get_recipe5(p_artnr:int, menge:Decimal):
 
-        nonlocal bill_date, inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal bill_date
 
 
         nonlocal s_list, t_list, sbuff
@@ -472,7 +481,8 @@ def nt_autodeduct():
 
     def create_outgoing():
 
-        nonlocal bill_date, inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal bill_date
 
 
         nonlocal s_list, t_list, sbuff
@@ -572,7 +582,8 @@ def nt_autodeduct():
 
     def init_onhand():
 
-        nonlocal bill_date, inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal inv_closedate, food_closedate, transdate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal bill_date
 
 
         nonlocal s_list, t_list, sbuff
@@ -583,7 +594,8 @@ def nt_autodeduct():
         L_oh =  create_buffer("L_oh",L_bestand)
         Buf_lart =  create_buffer("Buf_lart",L_artikel)
 
-        l_oh = get_cache (L_bestand, {"lager_nr": [(eq, 0)]})
+        # l_oh = get_cache (L_bestand, {"lager_nr": [(eq, 0)]})
+        l_oh = db_session.query(L_oh).filter(L_oh.lager_nr == 0).with_for_update().first()
         while None != l_oh:
 
             buf_lart = get_cache (L_artikel, {"artnr": [(eq, l_oh.artnr)]})
@@ -601,12 +613,13 @@ def nt_autodeduct():
 
             curr_recid = l_oh._recid
             l_oh = db_session.query(L_oh).filter(
-                     (L_oh.lager_nr == 0) & (L_oh._recid > curr_recid)).first()
+                     (L_oh.lager_nr == 0) & (L_oh._recid > curr_recid)).with_for_update().first()
 
         l_lager = db_session.query(L_lager).first()
         while None != l_lager:
 
-            l_oh = get_cache (L_bestand, {"lager_nr": [(eq, l_lager.lager_nr)]})
+            # l_oh = get_cache (L_bestand, {"lager_nr": [(eq, l_lager.lager_nr)]})
+            l_oh = db_session.query(L_oh).filter(L_oh.lager_nr == l_lager.lager_nr).with_for_update().first()
             while None != l_oh:
 
                 buf_lart = get_cache (L_artikel, {"artnr": [(eq, l_oh.artnr)]})
@@ -624,7 +637,7 @@ def nt_autodeduct():
 
                 curr_recid = l_oh._recid
                 l_oh = db_session.query(L_oh).filter(
-                             (L_oh.lager_nr == l_lager.lager_nr) & (L_oh._recid > curr_recid)).first()
+                             (L_oh.lager_nr == l_lager.lager_nr) & (L_oh._recid > curr_recid)).with_for_update().first()
 
             curr_recid = l_lager._recid
             l_lager = db_session.query(L_lager).filter(L_lager._recid > curr_recid).first()
@@ -632,7 +645,8 @@ def nt_autodeduct():
 
     def update_eingang():
 
-        nonlocal bill_date, inv_closedate, food_closedate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal inv_closedate, food_closedate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal bill_date
 
 
         nonlocal s_list, t_list, sbuff
@@ -654,7 +668,11 @@ def nt_autodeduct():
 
         if l_op.op_art == 1 or (l_op.op_art == 2 and l_op.herkunftflag == 3):
 
-            l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, s_artnr)]})
+            # l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, s_artnr)]})
+            l_bestand = db_session.query(L_bestand).filter(
+                (L_bestand.lager_nr == 0) &
+                (L_bestand.artnr == s_artnr)
+            ).with_for_update().first()
 
             if not l_bestand:
                 l_bestand = L_bestand()
@@ -670,7 +688,11 @@ def nt_autodeduct():
 
             pass
 
-        l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, curr_lager)],"artnr": [(eq, s_artnr)]})
+        # l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, curr_lager)],"artnr": [(eq, s_artnr)]})
+        l_bestand = db_session.query(L_bestand).filter(
+            (L_bestand.lager_nr == curr_lager) &
+            (L_bestand.artnr == s_artnr)
+        ).with_for_update().first()
 
         if not l_bestand:
             l_bestand = L_bestand()
@@ -679,7 +701,6 @@ def nt_autodeduct():
             l_bestand.lager_nr = curr_lager
             l_bestand.artnr = s_artnr
             l_bestand.anf_best_dat = transdate
-
 
         l_bestand.anz_eingang =  to_decimal(l_bestand.anz_eingang) + to_decimal(anzahl)
         l_bestand.wert_eingang =  to_decimal(l_bestand.wert_eingang) + to_decimal(wert)
@@ -690,7 +711,8 @@ def nt_autodeduct():
 
     def update_ausgang():
 
-        nonlocal bill_date, inv_closedate, food_closedate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal inv_closedate, food_closedate, deductflag, mm1, yy1, mm2, yy2, deduct_compli, to_date, from_date, main_grp1, main_grp2, main_grp3, htparam, h_bill_line, h_artikel, artikel, l_artikel, h_rezept, h_rezlin, l_lager, hoteldpt, l_ophdr, l_op, l_bestand
+        nonlocal bill_date
 
 
         nonlocal s_list, t_list, sbuff
@@ -709,7 +731,11 @@ def nt_autodeduct():
 
         if l_op.op_art == 3 or (l_op.op_art == 4 and l_op.herkunftflag == 3):
 
-            l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, s_artnr)]})
+            # l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, 0)],"artnr": [(eq, s_artnr)]})
+            l_bestand = db_session.query(L_bestand).filter(
+                (L_bestand.lager_nr == 0) &
+                (L_bestand.artnr == s_artnr)
+            ).with_for_update().first()
 
             if not l_bestand:
                 l_bestand = L_bestand()
@@ -725,7 +751,11 @@ def nt_autodeduct():
 
             pass
 
-        l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, curr_lager)],"artnr": [(eq, s_artnr)]})
+        # l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, curr_lager)],"artnr": [(eq, s_artnr)]})
+        l_bestand = db_session.query(L_bestand).filter(
+            (L_bestand.lager_nr == curr_lager) &        
+            (L_bestand.artnr == s_artnr)
+        ).with_for_update().first()
 
         if not l_bestand:
             l_bestand = L_bestand()
@@ -743,7 +773,6 @@ def nt_autodeduct():
         pass
 
 
-    bill_date = get_output(htpdate(110))
     inv_closedate = get_output(htpdate(224))
     food_closedate = get_output(htpdate(221))
     deduct_compli = get_output(htplogic(947))

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_journal, Gl_jouhdr, Bediener, Res_history
@@ -19,6 +21,7 @@ def chg_gljourn_btn_del_1bl(jnr:int, rec_id:int, user_init:string, fibukonto:str
     gl_journal = gl_jouhdr = bediener = res_history = None
 
     db_session = local_storage.db_session
+    fibukonto = fibukonto.strip()
 
     def generate_output():
         nonlocal debits, credits, remains, str, datum, refno, debit, credit, gl_journal, gl_jouhdr, bediener, res_history
@@ -27,9 +30,14 @@ def chg_gljourn_btn_del_1bl(jnr:int, rec_id:int, user_init:string, fibukonto:str
         return {"debits": debits, "credits": credits, "remains": remains}
 
 
-    gl_journal = get_cache (Gl_journal, {"_recid": [(eq, rec_id)]})
+    # gl_journal = get_cache (Gl_journal, {"_recid": [(eq, rec_id)]})
+    gl_journal = db_session.query(Gl_journal).filter(
+             (Gl_journal._recid == rec_id)).with_for_update().first()
 
-    gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
+    # gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
+    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+             (Gl_jouhdr.jnr == jnr)).with_for_update().first()
+    
     datum = gl_jouhdr.datum
     refno = gl_jouhdr.refno
     debit =  to_decimal(gl_journal.debit)

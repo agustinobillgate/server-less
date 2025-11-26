@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -26,8 +28,9 @@ def delete_gl_jouall_webbl(refno:string, idnr:string):
 
     Queasy_buff = create_buffer("Queasy_buff",Queasy)
 
-
     db_session = local_storage.db_session
+    idnr = idnr.strip()
+    refno = refno.strip()
 
     def generate_output():
         nonlocal flag, msg, fb_close, mat_close, gl_close, tdate, iday, imon, iyear, queasy, htparam, gl_jouhdr, gl_journal, bediener, res_history
@@ -49,7 +52,9 @@ def delete_gl_jouall_webbl(refno:string, idnr:string):
     htparam = get_cache (Htparam, {"paramnr": [(eq, 597)]})
     gl_close = htparam.fdate
 
-    gl_jouhdr = get_cache (Gl_jouhdr, {"refno": [(eq, refno)]})
+    # gl_jouhdr = get_cache (Gl_jouhdr, {"refno": [(eq, refno)]})
+    gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+             (Gl_jouhdr.refno == refno)).with_for_update().first()
 
     if gl_jouhdr:
 
@@ -60,7 +65,7 @@ def delete_gl_jouall_webbl(refno:string, idnr:string):
                 if gl_jouhdr.datum >= date_mdy(get_month(fb_close) , 1, get_year(fb_close)) or gl_jouhdr.datum >= date_mdy(get_month(mat_close) , 1, get_year(mat_close)):
 
                     for gl_journal in db_session.query(Gl_journal).filter(
-                             (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).all():
+                             (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).with_for_update().all():
                         db_session.delete(gl_journal)
                     pass
                     db_session.delete(gl_jouhdr)
@@ -71,7 +76,7 @@ def delete_gl_jouall_webbl(refno:string, idnr:string):
                     if queasy:
 
                         for queasy_buff in db_session.query(Queasy_buff).filter(
-                                 (Queasy_buff.key == 348) & (Queasy_buff.date1 == gl_jouhdr.datum)).order_by(Queasy_buff._recid).all():
+                                 (Queasy_buff.key == 348) & (Queasy_buff.date1 == gl_jouhdr.datum)).order_by(Queasy_buff._recid).with_for_update().all():
                             db_session.delete(queasy_buff)
                 else:
                     flag = False
@@ -85,7 +90,7 @@ def delete_gl_jouall_webbl(refno:string, idnr:string):
                 if gl_jouhdr.datum >= date_mdy(get_month(gl_close) , 1, get_year(gl_close)):
 
                     for gl_journal in db_session.query(Gl_journal).filter(
-                             (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).all():
+                             (Gl_journal.jnr == gl_jouhdr.jnr)).order_by(Gl_journal._recid).with_for_update().all():
                         db_session.delete(gl_journal)
                     pass
                     db_session.delete(gl_jouhdr)
@@ -96,7 +101,7 @@ def delete_gl_jouall_webbl(refno:string, idnr:string):
                     if queasy:
 
                         for queasy_buff in db_session.query(Queasy_buff).filter(
-                                 (Queasy_buff.key == 348) & (Queasy_buff.date1 == gl_jouhdr.datum)).order_by(Queasy_buff._recid).all():
+                                 (Queasy_buff.key == 348) & (Queasy_buff.date1 == gl_jouhdr.datum)).order_by(Queasy_buff._recid).with_for_update().all():
                             db_session.delete(queasy_buff)
                 else:
                     flag = False

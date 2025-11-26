@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -125,7 +127,7 @@ def check_incoming_ap_webbl(in_list_data:[In_list], s_list_data:[S_list]):
                          (L_kredit.lscheinnr == s_list.lschein)).order_by(L_kredit._recid).all():
 
                     b_kredit = db_session.query(B_kredit).filter(
-                             (B_kredit._recid == l_kredit._recid)).first()
+                             (B_kredit._recid == l_kredit._recid)).with_for_update().first()
                     db_session.delete(b_kredit)
                     pass
 
@@ -133,7 +135,7 @@ def check_incoming_ap_webbl(in_list_data:[In_list], s_list_data:[S_list]):
                          (Ap_journal.lscheinnr == s_list.lschein)).order_by(Ap_journal._recid).all():
 
                     b_journal = db_session.query(B_journal).filter(
-                             (B_journal._recid == ap_journal._recid)).first()
+                             (B_journal._recid == ap_journal._recid)).with_for_update().first()
                     db_session.delete(b_journal)
                     pass
                 b_kredit = L_kredit()

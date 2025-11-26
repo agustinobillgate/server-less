@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -23,6 +25,7 @@ def e1_serialbl(inp_serial:string):
     paramtext = htparam = None
 
     db_session = local_storage.db_session
+    inp_serial = inp_serial.strip()
 
     def generate_output():
         nonlocal i_case, i_number, d_datum, error_flag, license_nr, lic_nr, htl_name, max_ext_date, zahl, valid_flag, paramtext, htparam
@@ -46,7 +49,10 @@ def e1_serialbl(inp_serial:string):
 
             if ct != "":
 
-                htparam = get_cache (Htparam, {"paramnr": [(eq, to_int(ct))]})
+                # htparam = get_cache (Htparam, {"paramnr": [(eq, to_int(ct))]})
+                htparam = db_session.query(Htparam).filter(
+                        (Htparam.paramnr == to_int(ct))).with_for_update().first()
+                
                 htparam.flogical = True
                 htpchar = to_string(lic_nr) + to_string(htparam.paramnr, "9999") +\
                         to_string(htparam.flogical)
@@ -92,7 +98,10 @@ def e1_serialbl(inp_serial:string):
         htpchar:string = ""
         htpchar1:string = ""
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, i_param)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, i_param)]})
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == i_param)).with_for_update().first()
+        
         htparam.finteger = i_number
         htpchar = to_string(lic_nr) + to_string(htparam.paramnr, "9999") + to_string(htparam.finteger)
         htpchar1 = encode_string(htpchar)
@@ -161,7 +170,9 @@ def e1_serialbl(inp_serial:string):
         vhp_lite:bool = False
         maxroom:int = 0
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 976)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 976)]})
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 976)).with_for_update().first()
         pass
         htparam.fdate = d_datum
         htpchar = to_string(lic_nr) + to_string(htparam.paramnr, "9999") + to_string(get_month(htparam.fdate) , "99") + to_string(get_day(htparam.fdate) , "99") + to_string(get_year(htparam.fdate) , "9999")
@@ -169,14 +180,18 @@ def e1_serialbl(inp_serial:string):
         htparam.fchar = htpchar1
         pass
 
-        paramtext = get_cache (Paramtext, {"txtnr": [(eq, 976)]})
+        # paramtext = get_cache (Paramtext, {"txtnr": [(eq, 976)]})
+        paramtext = db_session.query(Paramtext).filter(
+                (Paramtext.txtnr == 976)).with_for_update().first()
 
         if paramtext:
             paramtext.ptexte = to_string(htparam.fdate, "99/99/9999")
             paramtext.notes = htparam.fchar
             pass
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 1072)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 1072)]})
+        htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr == 1072)).with_for_update().first()
         htparam.finteger = 0
 
 
@@ -194,7 +209,9 @@ def e1_serialbl(inp_serial:string):
 
             if not vhp_lite and maxroom != 1:
 
-                htparam = get_cache (Htparam, {"paramnr": [(eq, 996)]})
+                # htparam = get_cache (Htparam, {"paramnr": [(eq, 996)]})
+                htparam = db_session.query(Htparam).filter(
+                        (Htparam.paramnr == 996)).with_for_update().first()
                 htparam.flogical = True
                 htpchar = to_string(lic_nr) + to_string(htparam.paramnr, "9999") + to_string(htparam.flogical)
                 htpchar1 = encode_string(htpchar)
@@ -227,7 +244,9 @@ def e1_serialbl(inp_serial:string):
         str1 = datum_1_enc + " " + license_enc + " " + datum_2_enc + " " + schluessel
         str2 = nama1 + " " + nama2 + " " + nama3 + " " + nama4
 
-        paramtext = get_cache (Paramtext, {"txtnr": [(eq, 200)]})
+        # paramtext = get_cache (Paramtext, {"txtnr": [(eq, 200)]})
+        paramtext = db_session.query(Paramtext).filter(
+                (Paramtext.txtnr == 200)).with_for_update().first()
 
         if paramtext:
             paramtext.passwort = str1

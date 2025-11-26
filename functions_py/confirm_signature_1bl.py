@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Bediener, Res_history
@@ -11,6 +13,10 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
     queasy = bediener = res_history = None
 
     db_session = local_storage.db_session
+    app_id = app_id.strip()
+    docu_nr = docu_nr.strip()
+    user_init = user_init.strip()   
+    flag_type = flag_type.strip()
 
     def generate_output():
         nonlocal queasy, bediener, res_history
@@ -22,8 +28,11 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
     if confirmsign_flag :
 
         if flag_type.lower()  == ("PR").lower() :
-
-            queasy = get_cache (Queasy, {"key": [(eq, 227)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 227)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 227) &
+                     (Queasy.char1 == docu_nr) &
+                     (Queasy.number1 == app_no) ).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()
@@ -74,7 +83,11 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
 
         if flag_type.lower()  == ("PO").lower() :
 
-            queasy = get_cache (Queasy, {"key": [(eq, 245)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 245)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 245) &
+                     (Queasy.char1 == docu_nr) &
+                     (Queasy.number1 == app_no) ).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()
@@ -125,7 +138,11 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
 
         if flag_type.lower()  == ("DML").lower() :
 
-            queasy = get_cache (Queasy, {"key": [(eq, 352)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 352)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 352) &
+                     (Queasy.char1 == docu_nr) &
+                     (Queasy.number1 == app_no) ).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()
@@ -178,7 +195,12 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
 
         if flag_type.lower()  == ("PR").lower() :
 
-            queasy = get_cache (Queasy, {"key": [(eq, 227)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
+
+            # queasy = get_cache (Queasy, {"key": [(eq, 227)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 227) &
+                     (Queasy.char1 == docu_nr) &
+                     (Queasy.number1 == app_no) ).with_for_update().first()
 
             if queasy:
                 db_session.delete(queasy)
@@ -200,7 +222,11 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
 
         if flag_type.lower()  == ("PO").lower() :
 
-            queasy = get_cache (Queasy, {"key": [(eq, 245)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 245)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 245) &
+                     (Queasy.char1 == docu_nr) &
+                     (Queasy.number1 == app_no) ).with_for_update().first()
 
             if queasy:
                 db_session.delete(queasy)
@@ -222,7 +248,11 @@ def confirm_signature_1bl(app_id:string, app_no:int, docu_nr:string, user_init:s
 
         if flag_type.lower()  == ("DML").lower() :
 
-            queasy = get_cache (Queasy, {"key": [(eq, 352)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 352)],"char1": [(eq, docu_nr)],"number1": [(eq, app_no)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 352) &
+                     (Queasy.char1 == docu_nr) &
+                     (Queasy.number1 == app_no) ).with_for_update().first() 
 
             if queasy:
                 db_session.delete(queasy)

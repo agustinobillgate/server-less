@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 import random
@@ -13,6 +15,8 @@ def chg_new_password_webbl(uname:string, new_pwd:string):
     bediener = res_history = None
 
     db_session = local_storage.db_session
+    uname = uname.strip()
+    new_pwd = new_pwd.strip()
 
     def generate_output():
         nonlocal pswd, bediener, res_history
@@ -54,7 +58,9 @@ def chg_new_password_webbl(uname:string, new_pwd:string):
 
     pswd = encode_string(new_pwd)
 
-    bediener = get_cache (Bediener, {"username": [(eq, uname)]})
+    # bediener = get_cache (Bediener, {"username": [(eq, uname)]})
+    bediener = db_session.query(Bediener).filter(
+             (Bediener.username == uname)).with_for_update().first()
 
     if bediener:
         pass
