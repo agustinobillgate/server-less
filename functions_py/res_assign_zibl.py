@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Res_line, Zimkateg, Zimmer, Resplan, Zimplan, Guest, Reslin_queasy
+from sqlalchemy.orm import flag_modified
 
 def res_assign_zibl(resnr:int, reslinnr:int, rmcat:string, ses_param:string, user_init:string, zinr:string):
 
@@ -14,6 +17,9 @@ def res_assign_zibl(resnr:int, reslinnr:int, rmcat:string, ses_param:string, use
     htparam = res_line = zimkateg = zimmer = resplan = zimplan = guest = reslin_queasy = None
 
     db_session = local_storage.db_session
+    rmcat = rmcat.strip()
+    ses_param = ses_param.strip()
+    zinr = zinr.strip()
 
     def generate_output():
         nonlocal msg_str, ci_date, htparam, res_line, zimkateg, zimmer, resplan, zimplan, guest, reslin_queasy
@@ -26,7 +32,9 @@ def res_assign_zibl(resnr:int, reslinnr:int, rmcat:string, ses_param:string, use
         nonlocal msg_str, ci_date, htparam, res_line, zimkateg, zimmer, resplan, zimplan, guest, reslin_queasy
         nonlocal resnr, reslinnr, rmcat, ses_param, user_init, zinr
 
-        res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)],"zinr": [(eq, "")],"active_flag": [(eq, 0)]})
+        # res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)],"zinr": [(eq, "")],"active_flag": [(eq, 0)]})
+        res_line = db_session.query(Res_line).filter(
+                 (Res_line.resnr == resnr) & (Res_line.reslinnr == reslinnr) & (Res_line.zinr == "") & (Res_line.active_flag == 0)).with_for_update().first()
 
         zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
 
@@ -66,7 +74,9 @@ def res_assign_zibl(resnr:int, reslinnr:int, rmcat:string, ses_param:string, use
         curr_date = res_line.ankunft
         while curr_date >= res_line.ankunft and curr_date < res_line.abreise:
 
-            resplan = get_cache (Resplan, {"zikatnr": [(eq, zimkateg.zikatnr)],"datum": [(eq, curr_date)]})
+            # resplan = get_cache (Resplan, {"zikatnr": [(eq, zimkateg.zikatnr)],"datum": [(eq, curr_date)]})
+            resplan = db_session.query(Resplan).filter(
+                     (Resplan.zikatnr == zimkateg.zikatnr) & (Resplan.datum == curr_date)).with_for_update().first()
 
             if resplan:
                 pass
@@ -74,7 +84,7 @@ def res_assign_zibl(resnr:int, reslinnr:int, rmcat:string, ses_param:string, use
                 pass
                 pass
             curr_date = curr_date + timedelta(days=1)
-
+        flag_modified(resplan, "anzzim")
 
     def add_resplan():
 
@@ -89,7 +99,9 @@ def res_assign_zibl(resnr:int, reslinnr:int, rmcat:string, ses_param:string, use
         curr_date = res_line.ankunft
         while curr_date >= res_line.ankunft and curr_date < res_line.abreise:
 
-            resplan = get_cache (Resplan, {"zikatnr": [(eq, zbuff.zikatnr)],"datum": [(eq, curr_date)]})
+            # resplan = get_cache (Resplan, {"zikatnr": [(eq, zbuff.zikatnr)],"datum": [(eq, curr_date)]})
+            resplan = db_session.query(Resplan).filter(
+                     (Resplan.zikatnr == zbuff.zikatnr) & (Resplan.datum == curr_date)).with_for_update().first()
 
             if resplan:
                 pass
@@ -97,7 +109,7 @@ def res_assign_zibl(resnr:int, reslinnr:int, rmcat:string, ses_param:string, use
                 pass
                 pass
             curr_date = curr_date + timedelta(days=1)
-
+        flag_modified(resplan, "anzzim")
 
     def assign_zinr():
 

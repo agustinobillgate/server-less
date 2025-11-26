@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Guest, Res_line
@@ -35,14 +37,16 @@ def res_checkin_assignbl(case_type:int, resnr:int, reslinnr:int, nat_bez:string,
 
     if case_type == 1:
 
-        gast = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+        # gast = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+        gast = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).with_for_update().first()
         pass
         gast.land = nat_bez
         pass
 
     elif case_type == 2:
 
-        gast = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+        # gast = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+        gast = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).with_for_update().first()
         pass
         gast.nation1 = nat_bez
         pass
@@ -60,7 +64,8 @@ def res_checkin_assignbl(case_type:int, resnr:int, reslinnr:int, nat_bez:string,
 
             if not matches(res_line1.zimmer_wunsch,r"*SEGM_PUR*"):
 
-                rline = get_cache (Res_line, {"_recid": [(eq, res_line1._recid)]})
+                # rline = get_cache (Res_line, {"_recid": [(eq, res_line1._recid)]})
+                rline = db_session.query(Res_line).filter(Res_line._recid == res_line1._recid).with_for_update().first()
 
                 if rline:
                     rline.zimmer_wunsch = rline.zimmer_wunsch +\
@@ -77,7 +82,7 @@ def res_checkin_assignbl(case_type:int, resnr:int, reslinnr:int, nat_bez:string,
         pass
 
         for res_sharer in db_session.query(Res_sharer).filter(
-                 (Res_sharer.resnr == resnr) & (Res_sharer.kontakt_nr == reslinnr) & (Res_sharer.l_zuordnung[inc_value(2)] == 1)).order_by(Res_sharer._recid).all():
+                 (Res_sharer.resnr == resnr) & (Res_sharer.kontakt_nr == reslinnr) & (Res_sharer.l_zuordnung[inc_value(2)] == 1)).order_by(Res_sharer._recid).with_for_update().all():
             res_sharer.zinr = res_line.zinr
             res_sharer.zikatnr = res_line.zikatnr
             res_sharer.setup = res_line.setup

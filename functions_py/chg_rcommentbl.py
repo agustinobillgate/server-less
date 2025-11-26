@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -21,6 +23,10 @@ def chg_rcommentbl(icase:int, resno:int, reslinno:int, user_init:string, res_com
     res_line = reservation = guest = queasy = reslin_queasy = bediener = res_history = None
 
     db_session = local_storage.db_session
+    res_com = res_com.strip()
+    resl_com = resl_com.strip()
+    g_com = g_com.strip()
+    web_com = web_com.strip()
 
     def generate_output():
         nonlocal str1, str2, loopi, loopj, loopk, heute, zeit, cid, cdate, res_line, reservation, guest, queasy, reslin_queasy, bediener, res_history
@@ -70,11 +76,17 @@ def chg_rcommentbl(icase:int, resno:int, reslinno:int, user_init:string, res_com
         nonlocal str1, str2, loopi, loopj, loopk, heute, zeit, cid, cdate, res_line, reservation, guest, queasy, reslin_queasy, bediener, res_history
         nonlocal icase, resno, reslinno, user_init, res_com, resl_com, g_com, web_com
 
-        res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslinno)]})
+        # res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslinno)]})
+        res_line = db_session.query(Res_line).filter(
+                     (Res_line.resnr == resno) & (Res_line.reslinnr == reslinno)).with_for_update().first()
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        reservation = db_session.query(Reservation).filter(
+                     (Reservation.resnr == resno)).with_for_update().first()
 
-        guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+        # guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+        guest = db_session.query(Guest).filter(
+                     (Guest.gastnr == res_line.gastnrmember)).with_for_update().first()
 
         if (res_com != reservation.bemerk) or (resl_com != res_line.bemerk):
             heute = get_current_date()

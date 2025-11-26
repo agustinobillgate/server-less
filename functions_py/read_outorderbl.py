@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -14,6 +16,7 @@ def read_outorderbl(case_type:int, rmno:string, resno:int, ci_date:date, to_date
     t_outorder_data, T_outorder = create_model_like(Outorder)
 
     db_session = local_storage.db_session
+    rmno = rmno.strip()
 
     def generate_output():
         nonlocal t_outorder_data, outorder
