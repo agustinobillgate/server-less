@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#--------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#--------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_artikel, Queasy
@@ -19,8 +21,9 @@ def sarticle_list_create_output_webbl(idflag:string, t_l_artikel_data:[T_l_artik
     Dqueasy = create_buffer("Dqueasy",Queasy)
     Pqueasy = create_buffer("Pqueasy",Queasy)
 
-
     db_session = local_storage.db_session
+    idflag = idflag.strip()
+
 
     def generate_output():
         nonlocal curr_art, curr_art1, doneflag, counter, l_artikel, queasy
@@ -69,7 +72,7 @@ def sarticle_list_create_output_webbl(idflag:string, t_l_artikel_data:[T_l_artik
             curr_art1 = 1
 
     tqueasy = db_session.query(Tqueasy).filter(
-             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Artikel List").lower()) & (Tqueasy.number1 == 0)).first()
+             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Artikel List").lower()) & (Tqueasy.number1 == 0)).with_for_update().first()
 
     if tqueasy:
         pass

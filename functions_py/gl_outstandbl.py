@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#--------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#--------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -20,7 +22,9 @@ def gl_outstandbl(date1:date, int1:int, deci1:Decimal):
         return {}
 
 
-    uebertrag = get_cache (Uebertrag, {"datum": [(eq, date1)],"betriebsnr": [(eq, int1)]})
+    # uebertrag = get_cache (Uebertrag, {"datum": [(eq, date1)],"betriebsnr": [(eq, int1)]})
+    uebertrag = db_session.query(Uebertrag).filter(
+             (Uebertrag.datum == date1) & (Uebertrag.betriebsnr == int1)).with_for_update().first()
 
     if uebertrag:
         uebertrag.betrag =  to_decimal(deci1)

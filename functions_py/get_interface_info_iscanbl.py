@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#--------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#--------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 import random
@@ -25,6 +27,7 @@ def get_interface_info_iscanbl(usersession:string):
 
 
     db_session = local_storage.db_session
+    usersession = usersession.strip()
 
     def generate_output():
         nonlocal scan_data, scan_image, finish_flag, success_flag, pointer, guestnumber, recguestbook, logid, logstr, guestbook, queasy
@@ -46,7 +49,7 @@ def get_interface_info_iscanbl(usersession:string):
     logstr = "logid=" + to_string(logid) + "|SESSION=" + usersession + "|START"
 
     queasy = db_session.query(Queasy).filter(
-             (Queasy.key == 999) & (Queasy.char1 == usersession)).order_by(Queasy._recid.desc()).first()
+             (Queasy.key == 999) & (Queasy.char1 == usersession)).order_by(Queasy._recid.desc()).with_for_update().first()
 
     if queasy:
         pass
@@ -81,7 +84,7 @@ def get_interface_info_iscanbl(usersession:string):
             db_session.delete(queasy)
 
             bguestbook = db_session.query(Bguestbook).filter(
-                     (Bguestbook._recid == recguestbook)).first()
+                     (Bguestbook._recid == recguestbook)).with_for_update().first()
 
             if bguestbook:
                 db_session.delete(bguestbook)

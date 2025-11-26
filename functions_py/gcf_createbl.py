@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -137,7 +139,9 @@ def gcf_createbl(user_init:string, guest_list_data:[Guest_list]):
 
                 if segment:
 
-                    guestseg = get_cache (Guestseg, {"gastnr": [(eq, curr_gastnr)],"reihenfolge": [(eq, 1)]})
+                    # guestseg = get_cache (Guestseg, {"gastnr": [(eq, curr_gastnr)],"reihenfolge": [(eq, 1)]})
+                    guestseg = db_session.query(Guestseg).filter(
+                             (Guestseg.gastnr == curr_gastnr) & (Guestseg.reihenfolge == 1)).with_for_update().first()
 
                     if not guestseg:
                         guestseg = Guestseg()
@@ -153,7 +157,9 @@ def gcf_createbl(user_init:string, guest_list_data:[Guest_list]):
 
                 if htparam.flogical:
 
-                    akt_cust = get_cache (Akt_cust, {"gastnr": [(eq, curr_gastnr)]})
+                    # akt_cust = get_cache (Akt_cust, {"gastnr": [(eq, curr_gastnr)]})
+                    akt_cust = db_session.query(Akt_cust).filter(
+                             (Akt_cust.gastnr == curr_gastnr)).with_for_update().first
 
                     if not akt_cust:
                         akt_cust = Akt_cust()
@@ -177,7 +183,9 @@ def gcf_createbl(user_init:string, guest_list_data:[Guest_list]):
                             pass
             else:
 
-                akt_cust = get_cache (Akt_cust, {"gastnr": [(eq, curr_gastnr)],"userinit": [(eq, guest_list.salesid)]})
+                # akt_cust = get_cache (Akt_cust, {"gastnr": [(eq, curr_gastnr)],"userinit": [(eq, guest_list.salesid)]})
+                akt_cust = db_session.query(Akt_cust).filter(
+                         (Akt_cust.gastnr == curr_gastnr) & (Akt_cust.userinit == guest_list.salesid)).with_for_update().first()
 
                 if akt_cust:
                     db_session.delete(akt_cust)
@@ -185,7 +193,9 @@ def gcf_createbl(user_init:string, guest_list_data:[Guest_list]):
 
             if guest_list.refno4 != "":
 
-                queasy = get_cache (Queasy, {"key": [(eq, 231)],"number1": [(eq, curr_gastnr)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 231)],"number1": [(eq, curr_gastnr)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 231) & (Queasy.number1 == curr_gastnr)).with_for_update().first()
 
                 if queasy:
                     queasy.char1 = guest_list.refno4
