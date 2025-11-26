@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ==========================================
+# Rulita, 25-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -91,7 +96,8 @@ def argt_frate_fill_rate_1_webbl(icase:int, s_recid:int, argtnr:int, resnr:int, 
         nonlocal p_list, t_reslin_queasy
         nonlocal t_reslin_queasy_data
 
-        reslin_queasy = get_cache (Reslin_queasy, {"_recid": [(eq, s_recid)]})
+        # reslin_queasy = get_cache (Reslin_queasy, {"_recid": [(eq, s_recid)]})
+        reslin_queasy = db_session.query(Reslin_queasy).filter(Reslin_queasy._recid == s_recid).with_for_update().first()
 
         if reslin_queasy:
             t_reslin_queasy = T_reslin_queasy()
@@ -108,6 +114,7 @@ def argt_frate_fill_rate_1_webbl(icase:int, s_recid:int, argtnr:int, resnr:int, 
 
             pass
             pass
+            db_session.refresh(reslin_queasy, with_for_update=True)
 
         bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
@@ -159,7 +166,8 @@ def argt_frate_fill_rate_1_webbl(icase:int, s_recid:int, argtnr:int, resnr:int, 
         argt_artnr:int = 0
         dpt:int = 0
 
-        reslin_queasy = get_cache (Reslin_queasy, {"_recid": [(eq, s_recid)]})
+        # reslin_queasy = get_cache (Reslin_queasy, {"_recid": [(eq, s_recid)]})
+        reslin_queasy = db_session.query(Reslin_queasy).filter(Reslin_queasy._recid == s_recid).with_for_update().first()
 
         if reslin_queasy:
             argt_artnr = reslin_queasy.number3
@@ -167,6 +175,7 @@ def argt_frate_fill_rate_1_webbl(icase:int, s_recid:int, argtnr:int, resnr:int, 
 
             pass
             db_session.delete(reslin_queasy)
+            db_session.refresh(reslin_queasy, with_for_update=True)
             pass
 
         bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})

@@ -2,6 +2,12 @@
 #------------------------------------------
 # Rd, 30/10/2025
 #------------------------------------------
+
+# ==========================================
+# Rulita, 25-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date, datetime, timedelta
@@ -130,14 +136,12 @@ def arl_list_disp_arlist6_webbl(t_payload_list_data:[T_payload_list], show_rate:
 
             guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
 
-            rline = db_session.query(Rline).filter(
-                         (Rline._recid == res_line._recid)).first()
+            rline = db_session.query(Res_line).filter(
+                         (rline._recid == res_line._recid)).with_for_update().first()
 
             # if rline:
             if rline and guest:
                 rline.resname = guest.name
-
-
                 pass
                 pass
 

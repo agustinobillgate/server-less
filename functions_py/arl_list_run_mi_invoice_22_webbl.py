@@ -1,13 +1,4 @@
-#using conversion tools version: 1.0.0.119
-#------------------------------------------
-# Rd, 31/10/2025
-# Ticket:4ED7C7
-#------------------------------------------
-
-# ==========================================
-# Rulita, 25-11-2025
-# - Added with_for_update all query 
-# ==========================================
+#using conversion tools version: 1.0.0.117
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -17,11 +8,11 @@ from functions.ratecode_rate import ratecode_rate
 from functions.pricecod_rate import pricecod_rate
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from sqlalchemy import func
-from models import Reservation, Res_line, Guest, Bill, Htparam, Master, Waehrung, Bill_line, Artikel, Zimkateg, Arrangement, Reslin_queasy, Guest_pr, Queasy, Fixleist, Billjournal, Genstat, Exrate
+from models import Reservation, Res_line, Guest, Bill, Htparam, Master, Exrate, Waehrung, Bill_line, Artikel, Zimkateg, Arrangement, Reslin_queasy, Guest_pr, Queasy, Fixleist, Billjournal
 
-def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:int, t_active_flag:int, printtype:int, split_bill:bool):
+def arl_list_run_mi_invoice_22_webbl(resnr:int, curr_resnr:int, arl_list_reslinnr:int, t_active_flag:int, printtype:int, split_bill:bool):
 
-    prepare_cache ([Reservation, Res_line, Bill, Htparam, Master, Waehrung, Bill_line, Artikel, Zimkateg, Arrangement, Reslin_queasy, Guest_pr, Fixleist, Billjournal, Genstat, Exrate])
+    prepare_cache ([Reservation, Res_line, Bill, Htparam, Master, Exrate, Waehrung, Bill_line, Artikel, Zimkateg, Arrangement, Reslin_queasy, Guest_pr, Fixleist, Billjournal])
 
     err_flag = 0
     avail_master = False
@@ -45,15 +36,20 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
     fact1:Decimal = to_decimal("0.0")
     netto:Decimal = to_decimal("0.0")
     bill_receiver:string = ""
-    argt_options:string = ""
+    currency:string = " "
+    local_currency:string = " "
+    frate:Decimal = 1
+    waehrungsnr:int = 1
+    price_decimal:int = 0
+    tot_deposit:Decimal = to_decimal("0.0")
     t_char:string = ""
     t_resnr:int = 0
-    reservation = res_line = guest = bill = htparam = master = waehrung = bill_line = artikel = zimkateg = arrangement = reslin_queasy = guest_pr = queasy = fixleist = billjournal = genstat = exrate = None
+    reservation = res_line = guest = bill = htparam = master = exrate = waehrung = bill_line = artikel = zimkateg = arrangement = reslin_queasy = guest_pr = queasy = fixleist = billjournal = None
 
     s_list = t_list = t_reservation = t_res_line = t_guest = rline = mbill = mainres = b_bill = None
 
-    s_list_data, S_list = create_model("S_list", {"nr":int, "ankunft":date, "abreise":date, "bezeich":string, "rmcat":string, "preis":Decimal, "lrate":Decimal, "datum":date, "qty":int, "erwachs":int, "kind1":int, "kind2":int, "zinr":string})
-    t_list_data, T_list = create_model("T_list", {"nr":int, "ankunft":date, "abreise":date, "bezeich":string, "rmcat":string, "preis":Decimal, "lrate":Decimal, "tage":int, "date1":date, "date2":date, "qty":int, "betrag":Decimal, "erwachs":int, "kind1":int, "kind2":int, "vat":Decimal, "svc":Decimal, "zinr":string, "depo_billjour":bool, "resno_billjour":int})
+    s_list_data, S_list = create_model("S_list", {"nr":int, "ankunft":date, "abreise":date, "bezeich":string, "rmcat":string, "preis":Decimal, "lrate":Decimal, "datum":date, "qty":int, "erwachs":int, "kind1":int, "kind2":int, "zinr":string, "wabkurz":string}, {"wabkurz": " "})
+    t_list_data, T_list = create_model("T_list", {"nr":int, "ankunft":date, "abreise":date, "bezeich":string, "rmcat":string, "preis":Decimal, "lrate":Decimal, "tage":int, "date1":date, "date2":date, "qty":int, "betrag":Decimal, "erwachs":int, "kind1":int, "kind2":int, "vat":Decimal, "svc":Decimal, "zinr":string, "depo_billjour":bool, "resno_billjour":int, "wabkurz":string}, {"wabkurz": " "})
     t_reservation_data, T_reservation = create_model_like(Reservation, {"bill_receiver":string})
     t_res_line_data, T_res_line = create_model_like(Res_line)
     t_guest_data, T_guest = create_model_like(Guest)
@@ -67,7 +63,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal err_flag, avail_master, avail_bill, reslinnr, master_rechnr, bill_rechnr, mainres_gastnr, t_reservation_data, t_res_line_data, t_guest_data, t_list_data, new_contrate, resline_exrate, billdate, bonus_array, tot_amt, serv1, vat1, vat3, fact1, netto, bill_receiver, argt_options, t_char, t_resnr, reservation, res_line, guest, bill, htparam, master, waehrung, bill_line, artikel, zimkateg, arrangement, reslin_queasy, guest_pr, queasy, fixleist, billjournal, genstat, exrate
+        nonlocal err_flag, avail_master, avail_bill, reslinnr, master_rechnr, bill_rechnr, mainres_gastnr, t_reservation_data, t_res_line_data, t_guest_data, t_list_data, new_contrate, resline_exrate, billdate, bonus_array, tot_amt, serv1, vat1, vat3, fact1, netto, bill_receiver, currency, local_currency, frate, waehrungsnr, price_decimal, tot_deposit, t_char, t_resnr, reservation, res_line, guest, bill, htparam, master, exrate, waehrung, bill_line, artikel, zimkateg, arrangement, reslin_queasy, guest_pr, queasy, fixleist, billjournal
         nonlocal resnr, curr_resnr, arl_list_reslinnr, t_active_flag, printtype, split_bill
         nonlocal rline, mbill, mainres, b_bill
 
@@ -79,7 +75,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
 
     def read_proforma_inv(resnr:int, rechnr:int):
 
-        nonlocal err_flag, avail_master, avail_bill, reslinnr, master_rechnr, bill_rechnr, mainres_gastnr, t_reservation_data, t_res_line_data, t_guest_data, t_list_data, new_contrate, resline_exrate, billdate, bonus_array, tot_amt, serv1, vat1, vat3, fact1, netto, bill_receiver, argt_options, t_char, t_resnr, reservation, res_line, guest, bill, htparam, master, waehrung, bill_line, artikel, zimkateg, arrangement, reslin_queasy, guest_pr, queasy, fixleist, billjournal, genstat, exrate
+        nonlocal err_flag, avail_master, avail_bill, reslinnr, master_rechnr, bill_rechnr, mainres_gastnr, t_reservation_data, t_res_line_data, t_guest_data, t_list_data, new_contrate, resline_exrate, billdate, bonus_array, tot_amt, serv1, vat1, vat3, fact1, netto, bill_receiver, currency, local_currency, frate, waehrungsnr, price_decimal, tot_deposit, t_char, t_resnr, reservation, res_line, guest, bill, htparam, master, exrate, waehrung, bill_line, artikel, zimkateg, arrangement, reslin_queasy, guest_pr, queasy, fixleist, billjournal
         nonlocal curr_resnr, arl_list_reslinnr, t_active_flag, printtype, split_bill
         nonlocal rline, mbill, mainres, b_bill
 
@@ -125,9 +121,6 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
         i:int = 0
         j:int = 0
         qty1:int = 0
-        argt_rgbez_temp:string = ""
-        argtnr_temp:int = 0
-        zimkateg_kurzbez_tmp:string = ""
         ct:string = ""
         contcode:string = ""
         W1 =  create_buffer("W1",Waehrung)
@@ -147,25 +140,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
 
             zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, resline.zikatnr)]})
 
-            if zimkateg:
-                zimkateg_kurzbez_tmp = zimkateg.kurzbez
-            else:
-                zimkateg_kurzbez_tmp = ""
-
             arrangement = get_cache (Arrangement, {"arrangement": [(eq, resline.arrangement)]})
-
-            if arrangement:
-                argt_rgbez_temp = arrangement.argt_rgbez
-                argtnr_temp = arrangement.argtnr
-                argt_options = arrangement.options
-
-
-            else:
-                argt_rgbez_temp = ""
-                argtnr_temp = 0
-                argt_options = ""
-
-
             ankunft = resline.ankunft
             abreise = resline.abreise
             fixed_rate = False
@@ -196,40 +171,45 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
 
                     guest = get_cache (Guest, {"gastnr": [(eq, resline.gastnr)]})
 
-                    if guest:
+                    guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, guest.gastnr)]})
 
-                        guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, guest.gastnr)]})
+                    if guest_pr:
 
-                        if guest_pr:
+                        queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, resline.reserve_int)]})
 
-                            queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, resline.reserve_int)]})
+                        if queasy and queasy.logi3:
+                            bill_date = resline.ankunft
 
-                            if queasy and queasy.logi3:
-                                bill_date = resline.ankunft
+                        if new_contrate:
 
-                            if new_contrate:
-
-                                if resline_exrate != 0:
-                                    rate_found, rm_rate, early_flag, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, resline.resnr, resline.reslinnr, guest_pr.code, None, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, argtnr_temp, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline_exrate, resline.betriebsnr))
-                                else:
-                                    rate_found, rm_rate, early_flag, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, resline.resnr, resline.reslinnr, guest_pr.code, None, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, argtnr_temp, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline.reserve_dec, resline.betriebsnr))
+                            if resline_exrate != 0:
+                                rate_found, rm_rate, early_flag, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, resline.resnr, resline.reslinnr, guest_pr.code, None, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, arrangement.argtnr, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline_exrate, resline.betriebsnr))
                             else:
-                                rm_rate, rate_found = get_output(pricecod_rate(resline.resnr, resline.reslinnr, guest_pr.code, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, argtnr_temp, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline.reserve_dec, resline.betriebsnr))
+                                rate_found, rm_rate, early_flag, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, resline.resnr, resline.reslinnr, guest_pr.code, None, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, arrangement.argtnr, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline.reserve_dec, resline.betriebsnr))
+                        else:
+                            rm_rate, rate_found = get_output(pricecod_rate(resline.resnr, resline.reslinnr, guest_pr.code, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, arrangement.argtnr, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline.reserve_dec, resline.betriebsnr))
 
-                                if it_exist:
-                                    rate_found = True
+                            if it_exist:
+                                rate_found = True
 
-                                if not it_exist and bonus_array[datum - resline.ankunft + 1 - 1] :
-                                    rm_rate =  to_decimal("0")
+                            if not it_exist and bonus_array[datum - resline.ankunft + 1 - 1] :
+                                rm_rate =  to_decimal("0")
 
-                s_list = query(s_list_data, filters=(lambda s_list: s_list.bezeich  == (argt_rgbez_temp)  and s_list.rmcat  == (zimkateg_kurzbez_tmp)  and s_list.preis == rm_rate and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2), first=True)
+                waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, resline.betriebsnr)]})
+
+                if waehrung:
+                    currency = waehrung.wabkurz
+                    frate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+                    waehrungsnr = waehrung.waehrungsnr
+
+                s_list = query(s_list_data, filters=(lambda s_list: s_list.bezeich == arrangement.argt_rgbez and s_list.rmcat == zimkateg.kurzbez and s_list.preis == rm_rate and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2 and s_list.wabkurz.lower()  == (currency).lower()), first=True)
 
                 if not s_list:
                     s_list = S_list()
                     s_list_data.append(s_list)
 
-                    s_list.bezeich = argt_rgbez_temp
-                    s_list.rmcat = zimkateg_kurzbez_tmp
+                    s_list.bezeich = arrangement.argt_rgbez
+                    s_list.rmcat = zimkateg.kurzbez
                     s_list.preis =  to_decimal(rm_rate)
                     s_list.datum = datum
                     s_list.ankunft = resline.ankunft
@@ -238,6 +218,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                     s_list.kind1 = resline.kind1
                     s_list.kind2 = resline.kind2
                     s_list.zinr = resline.zinr
+                    s_list.wabkurz = currency
                 s_list.qty = s_list.qty + resline.zimmeranz
 
                 for fixleist in db_session.query(Fixleist).filter(
@@ -292,14 +273,14 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                                 ct = substring(ct, get_index(ct, "$CODE$") + 6 - 1)
                                 contcode = substring(ct, 0, get_index(ct, ";") - 1)
 
-                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, resline.reserve_int)],"number2": [(eq, argtnr_temp)],"reslinnr": [(eq, resline.zikatnr)],"number3": [(eq, fixleist.artnr)],"resnr": [(eq, fixleist.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
+                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, resline.reserve_int)],"number2": [(eq, arrangement.argtnr)],"reslinnr": [(eq, resline.zikatnr)],"number3": [(eq, fixleist.artnr)],"resnr": [(eq, fixleist.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
 
                             if reslin_queasy:
                                 argt_rate =  to_decimal(reslin_queasy.deci1) * to_decimal(fixleist.number)
 
                     if argt_rate != 0:
 
-                        s_list = query(s_list_data, filters=(lambda s_list: s_list.bezeich == artikel.bezeich and s_list.preis == (argt_rate / fixleist.number) and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2), first=True)
+                        s_list = query(s_list_data, filters=(lambda s_list: s_list.bezeich == artikel.bezeich and s_list.preis == (argt_rate / fixleist.number) and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2 and s_list.wabkurz.lower()  == (currency).lower()), first=True)
 
                         if not s_list:
                             s_list = S_list()
@@ -314,13 +295,14 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                             s_list.erwachs = pax
                             s_list.kind1 = resline.kind1
                             s_list.kind2 = resline.kind2
+                            s_list.wabkurz = currency
                         s_list.qty = s_list.qty + (fixleist.number * resline.zimmeranz)
 
         for s_list in query(s_list_data, sort_by=[("ankunft",False),("datum",False),("bezeich",False),("erwachs",False)]):
 
             if s_list.nr == 0:
 
-                t_list = query(t_list_data, filters=(lambda t_list: t_list.bezeich == s_list.bezeich and t_list.rmcat == s_list.rmcat and t_list.preis == s_list.preis and t_list.ankunft == s_list.ankunft and t_list.abreise == s_list.abreise and t_list.erwachs == s_list.erwachs and t_list.kind1 == s_list.kind1 and t_list.kind2 == s_list.kind2), first=True)
+                t_list = query(t_list_data, filters=(lambda t_list: t_list.bezeich == s_list.bezeich and t_list.rmcat == s_list.rmcat and t_list.preis == s_list.preis and t_list.ankunft == s_list.ankunft and t_list.abreise == s_list.abreise and t_list.erwachs == s_list.erwachs and t_list.kind1 == s_list.kind1 and t_list.kind2 == s_list.kind2 and t_list.wabkurz == s_list.wabkurz), first=True)
 
                 if not t_list:
                     t_list = T_list()
@@ -337,6 +319,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                     t_list.kind1 = s_list.kind1
                     t_list.kind2 = s_list.kind2
                     t_list.zinr = s_list.zinr
+                    t_list.wabkurz = s_list.wabkurz
 
                 if s_list.qty >= t_list.qty:
                     t_list.tage = t_list.tage + 1
@@ -363,9 +346,8 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                     t_list.date1 = s_list.datum
                     t_list.date2 = s_list.datum
                     t_list.tage = 1
-
-
                     t_list.zinr = s_list.zinr
+                    t_list.wabkurz = s_list.wabkurz
 
                     if s_list.qty > qty1:
                         j = s_list.qty - qty1
@@ -379,7 +361,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
 
             else:
 
-                t_list = query(t_list_data, filters=(lambda t_list: t_list.bezeich == s_list.bezeich and t_list.preis == s_list.preis and t_list.ankunft == s_list.ankunft and t_list.abreise == s_list.abreise and t_list.erwachs == s_list.erwachs and t_list.kind1 == s_list.kind1 and t_list.kind2 == s_list.kind2 and t_list.qty == s_list.qty), first=True)
+                t_list = query(t_list_data, filters=(lambda t_list: t_list.bezeich == s_list.bezeich and t_list.preis == s_list.preis and t_list.ankunft == s_list.ankunft and t_list.abreise == s_list.abreise and t_list.erwachs == s_list.erwachs and t_list.kind1 == s_list.kind1 and t_list.kind2 == s_list.kind2 and t_list.wabkurz == s_list.wabkurz), first=True)
 
                 if not t_list:
                     t_list = T_list()
@@ -394,6 +376,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                     t_list.erwachs = s_list.erwachs
                     t_list.kind1 = s_list.kind1
                     t_list.kind2 = s_list.kind2
+                    t_list.wabkurz = s_list.wabkurz
                 t_list.tage = t_list.tage + 1
                 t_list.date2 = s_list.datum
 
@@ -475,58 +458,74 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                     t_list.vat =  to_decimal(netto) * to_decimal((vat1) + to_decimal(vat3) )
 
 
-            else:
+        else:
 
-                billjournal_obj_list = {}
-                billjournal = Billjournal()
-                artikel = Artikel()
-                for billjournal.bezeich, billjournal.betrag, billjournal.bill_datum, billjournal._recid, artikel.bezeich, artikel.artnr, artikel.departement, artikel.epreis, artikel.artart, artikel._recid in db_session.query(Billjournal.bezeich, Billjournal.betrag, Billjournal.bill_datum, Billjournal._recid, Artikel.bezeich, Artikel.artnr, Artikel.departement, Artikel.epreis, Artikel.artart, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement)).filter(
-                         (Billjournal.rechnr == 0) & (Billjournal.anzahl != 0) & (matches(Billjournal.bezeich,"*Deposit #*"))).order_by(Billjournal._recid).all():
-                    if billjournal_obj_list.get(billjournal._recid):
-                        continue
-                    else:
-                        billjournal_obj_list[billjournal._recid] = True
-
-
-                    t_char = entry(1, billjournal.bezeich, "#")
-                    t_resnr = to_int(entry(0, t_char, "]"))
-
-                    if t_resnr == resnr:
-                        serv1 =  to_decimal("0")
-                        vat1 =  to_decimal("0")
-                        vat3 =  to_decimal("0")
-                        fact1 =  to_decimal("0")
-
-                        res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
-                        t_list = T_list()
-                        t_list_data.append(t_list)
-
-                        curr_no = curr_no + 1
-                        t_list.nr = curr_no
-                        t_list.betrag =  to_decimal(billjournal.betrag)
-                        t_list.bezeich = billjournal.bezeich
-                        t_list.date1 = billjournal.bill_datum
-                        t_list.ankunft = res_line.ankunft
-                        t_list.abreise = res_line.abreise
+            billjournal_obj_list = {}
+            billjournal = Billjournal()
+            artikel = Artikel()
+            for billjournal.bezeich, billjournal.betrag, billjournal.bill_datum, billjournal._recid, artikel.bezeich, artikel.artnr, artikel.departement, artikel.epreis, artikel.artart, artikel._recid in db_session.query(Billjournal.bezeich, Billjournal.betrag, Billjournal.bill_datum, Billjournal._recid, Artikel.bezeich, Artikel.artnr, Artikel.departement, Artikel.epreis, Artikel.artart, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement)).filter(
+                     (Billjournal.rechnr == 0) & (Billjournal.anzahl != 0) & (matches(Billjournal.bezeich,"*Deposit #*"))).order_by(Billjournal._recid).all():
+                if billjournal_obj_list.get(billjournal._recid):
+                    continue
+                else:
+                    billjournal_obj_list[billjournal._recid] = True
 
 
-                        serv1, vat1, vat3, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, billjournal.bill_datum))
-                        netto =  to_decimal(billjournal.betrag) / to_decimal(fact1)
-                        t_list.vat =  to_decimal(netto) * to_decimal((vat1) + to_decimal(vat3) )
+                t_char = entry(1, billjournal.bezeich, "#")
+                t_resnr = to_int(entry(0, t_char, "]"))
+
+                if t_resnr == resnr:
+                    serv1 =  to_decimal("0")
+                    vat1 =  to_decimal("0")
+                    vat3 =  to_decimal("0")
+                    fact1 =  to_decimal("0")
+
+                    res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+                    t_list = T_list()
+                    t_list_data.append(t_list)
+
+                    curr_no = curr_no + 1
+                    t_list.nr = curr_no
+                    t_list.betrag =  to_decimal(billjournal.betrag)
+                    t_list.bezeich = billjournal.bezeich
+                    t_list.date1 = billjournal.bill_datum
+                    t_list.ankunft = res_line.ankunft
+                    t_list.abreise = res_line.abreise
 
 
-                        t_list.depo_billjour = True
-                        t_list.resno_billjour = t_resnr
+                    serv1, vat1, vat3, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, billjournal.bill_datum))
+                    netto =  to_decimal(billjournal.betrag) / to_decimal(fact1)
+                    t_list.vat =  to_decimal(netto) * to_decimal((vat1) + to_decimal(vat3) )
 
-                for t_list in query(t_list_data, filters=(lambda t_list: t_list.depo_billjour)):
 
-                    billjournal = db_session.query(Billjournal).filter(
-                             (Billjournal.billjou_ref == t_list.resno_billjour) & (matches(Billjournal.bezeich,"*Refund #*"))).first()
+                    t_list.depo_billjour = True
+                    t_list.resno_billjour = t_resnr
 
-                    if billjournal:
+            billjournal = db_session.query(Billjournal).filter(
+                     (Billjournal.billjou_ref == t_resnr) & (matches(Billjournal.bezeich,"*Refund #*"))).first()
 
-                        if (t_list.betrag + billjournal.betrag) == 0:
-                            t_list_data.remove(t_list)
+            for t_list in query(t_list_data, filters=(lambda t_list: t_list.depo_billjour), sort_by=[("nr",False)]):
+                tot_deposit =  to_decimal(tot_deposit) + to_decimal(t_list.betrag)
+
+                if billjournal:
+
+                    if (t_list.betrag + billjournal.betrag) == 0:
+                        t_list_data.remove(t_list)
+                        tot_deposit =  to_decimal("0")
+
+                        curr_recid = billjournal._recid
+                        billjournal = db_session.query(Billjournal).filter(
+                                 (Billjournal.billjou_ref == t_resnr) & (matches(Billjournal.bezeich,"*Refund #*")) & (Billjournal._recid > curr_recid)).first()
+
+                    elif (tot_deposit + billjournal.betrag) == 0:
+
+                        for buff_t in query(t_list_data, filters=(lambda buff_t: buff_t.depo_billjour  and buff_t.nr <= t_list.nr), sort_by=[("nr",False)]):
+                            t_list_data.remove(buff_t)
+                        tot_deposit =  to_decimal("0")
+
+                        curr_recid = billjournal._recid
+                        billjournal = db_session.query(Billjournal).filter(
+                                 (Billjournal.billjou_ref == t_resnr) & (matches(Billjournal.bezeich,"*Refund #*")) & (Billjournal._recid > curr_recid)).first()
 
         res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
 
@@ -601,7 +600,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
 
     def read_proforma_inv1(resnr:int, reslinnr:int, rechnr:int):
 
-        nonlocal err_flag, avail_master, avail_bill, master_rechnr, bill_rechnr, mainres_gastnr, t_reservation_data, t_res_line_data, t_guest_data, t_list_data, new_contrate, resline_exrate, billdate, bonus_array, tot_amt, serv1, vat1, vat3, fact1, netto, bill_receiver, argt_options, t_char, t_resnr, reservation, res_line, guest, bill, htparam, master, waehrung, bill_line, artikel, zimkateg, arrangement, reslin_queasy, guest_pr, queasy, fixleist, billjournal, genstat, exrate
+        nonlocal err_flag, avail_master, avail_bill, master_rechnr, bill_rechnr, mainres_gastnr, t_reservation_data, t_res_line_data, t_guest_data, t_list_data, new_contrate, resline_exrate, billdate, bonus_array, tot_amt, serv1, vat1, vat3, fact1, netto, bill_receiver, currency, local_currency, frate, waehrungsnr, price_decimal, tot_deposit, t_char, t_resnr, reservation, res_line, guest, bill, htparam, master, exrate, waehrung, bill_line, artikel, zimkateg, arrangement, reslin_queasy, guest_pr, queasy, fixleist, billjournal
         nonlocal curr_resnr, arl_list_reslinnr, t_active_flag, printtype, split_bill
         nonlocal rline, mbill, mainres, b_bill
 
@@ -646,9 +645,6 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
         resline = None
         buff_bill_line = None
         buff_art = None
-        argt_rgbez_temp1:string = ""
-        argtnr_temp1:int = 0
-        zimkateg_kurzbez_tmp:string = ""
         ct:string = ""
         contcode:string = ""
         W1 =  create_buffer("W1",Waehrung)
@@ -668,25 +664,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
 
             zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, resline.zikatnr)]})
 
-            if zimkateg:
-                zimkateg_kurzbez_tmp = zimkateg.kurzbez
-            else:
-                zimkateg_kurzbez_tmp = ""
-
             arrangement = get_cache (Arrangement, {"arrangement": [(eq, resline.arrangement)]})
-
-            if arrangement:
-                argt_rgbez_temp1 = arrangement.argt_rgbez
-                argtnr_temp1 = arrangement.argtnr
-                argt_options = arrangement.options
-
-
-            else:
-                argt_rgbez_temp1 = ""
-                argtnr_temp1 = 0
-
-
-                argt_options = ""
             ankunft = resline.ankunft
             abreise = resline.abreise
             fixed_rate = False
@@ -717,60 +695,46 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
 
                     guest = get_cache (Guest, {"gastnr": [(eq, resline.gastnr)]})
 
-                    if guest:
+                    guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, guest.gastnr)]})
 
-                        guest_pr = get_cache (Guest_pr, {"gastnr": [(eq, guest.gastnr)]})
+                    if guest_pr:
 
-                        if guest_pr:
+                        queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, resline.reserve_int)]})
 
-                            queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, resline.reserve_int)]})
+                        if queasy and queasy.logi3:
+                            bill_date = resline.ankunft
 
-                            if queasy and queasy.logi3:
-                                bill_date = resline.ankunft
+                        if new_contrate:
 
-                            if new_contrate:
-
-                                if resline_exrate != 0:
-                                    rate_found, rm_rate, early_flag, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, resline.resnr, resline.reslinnr, guest_pr.code, None, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, argtnr_temp1, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline_exrate, resline.betriebsnr))
-                                else:
-                                    rate_found, rm_rate, early_flag, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, resline.resnr, resline.reslinnr, guest_pr.code, None, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, argtnr_temp1, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline.reserve_dec, resline.betriebsnr))
+                            if resline_exrate != 0:
+                                rate_found, rm_rate, early_flag, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, resline.resnr, resline.reslinnr, guest_pr.code, None, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, arrangement.argtnr, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline_exrate, resline.betriebsnr))
                             else:
-                                rm_rate, rate_found = get_output(pricecod_rate(resline.resnr, resline.reslinnr, guest_pr.code, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, argtnr_temp1, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline.reserve_dec, resline.betriebsnr))
+                                rate_found, rm_rate, early_flag, kback_flag = get_output(ratecode_rate(ebdisc_flag, kbdisc_flag, resline.resnr, resline.reslinnr, guest_pr.code, None, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, arrangement.argtnr, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline.reserve_dec, resline.betriebsnr))
+                        else:
+                            rm_rate, rate_found = get_output(pricecod_rate(resline.resnr, resline.reslinnr, guest_pr.code, bill_date, resline.ankunft, resline.abreise, resline.reserve_int, arrangement.argtnr, curr_zikatnr, resline.erwachs, resline.kind1, resline.kind2, resline.reserve_dec, resline.betriebsnr))
 
-                                if it_exist:
-                                    rate_found = True
+                            if it_exist:
+                                rate_found = True
 
-                                if not it_exist and bonus_array[datum - resline.ankunft + 1 - 1] :
-                                    rm_rate =  to_decimal("0")
+                            if not it_exist and bonus_array[datum - resline.ankunft + 1 - 1] :
+                                rm_rate =  to_decimal("0")
                 lrate =  to_decimal(rm_rate)
 
-                if datum < billdate:
+                waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, resline.betriebsnr)]})
 
-                    genstat = get_cache (Genstat, {"resnr": [(eq, resnr)],"res_int[0]": [(eq, reslinnr)],"datum": [(eq, datum)]})
+                if waehrung:
+                    currency = waehrung.wabkurz
+                    frate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+                    waehrungsnr = waehrung.waehrungsnr
 
-                    if genstat:
-                        rm_rate =  to_decimal(genstat.ratelocal)
-                    else:
-
-                        exrate = get_cache (Exrate, {"artnr": [(eq, resline.betriebsnr)],"datum": [(eq, datum)]})
-
-                        if exrate:
-                            lrate =  to_decimal(rm_rate) * to_decimal(exrate.betrag)
-                else:
-
-                    waehrung = get_cache (Waehrung, {"waehrungsnr": [(eq, resline.betriebsnr)]})
-
-                    if waehrung:
-                        lrate =  to_decimal(rm_rate) * to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
-
-                s_list = query(s_list_data, filters=(lambda s_list: s_list.bezeich  == (argt_rgbez_temp1)  and s_list.rmcat  == (zimkateg_kurzbez_tmp)  and s_list.preis == rm_rate and s_list.lrate == lrate and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2), first=True)
+                s_list = query(s_list_data, filters=(lambda s_list: s_list.bezeich == arrangement.argt_rgbez and s_list.rmcat == zimkateg.kurzbez and s_list.preis == rm_rate and s_list.lrate == lrate and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2 and s_list.wabkurz.lower()  == (currency).lower()), first=True)
 
                 if not s_list:
                     s_list = S_list()
                     s_list_data.append(s_list)
 
-                    s_list.bezeich = argt_rgbez_temp1
-                    s_list.rmcat = zimkateg_kurzbez_tmp
+                    s_list.bezeich = arrangement.argt_rgbez
+                    s_list.rmcat = zimkateg.kurzbez
                     s_list.preis =  to_decimal(rm_rate)
                     s_list.lrate =  to_decimal(lrate)
                     s_list.datum = datum
@@ -780,6 +744,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                     s_list.kind1 = resline.kind1
                     s_list.kind2 = resline.kind2
                     s_list.zinr = resline.zinr
+                    s_list.wabkurz = currency
 
 
                 s_list.qty = s_list.qty + resline.zimmeranz
@@ -836,14 +801,14 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                                 ct = substring(ct, get_index(ct, "$CODE$") + 6 - 1)
                                 contcode = substring(ct, 0, get_index(ct, ";") - 1)
 
-                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, resline.reserve_int)],"number2": [(eq, argtnr_temp1)],"reslinnr": [(eq, resline.zikatnr)],"number3": [(eq, fixleist.artnr)],"resnr": [(eq, fixleist.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
+                            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, resline.reserve_int)],"number2": [(eq, arrangement.argtnr)],"reslinnr": [(eq, resline.zikatnr)],"number3": [(eq, fixleist.artnr)],"resnr": [(eq, fixleist.departement)],"date1": [(le, bill_date)],"date2": [(ge, bill_date)]})
 
                             if reslin_queasy:
                                 argt_rate =  to_decimal(reslin_queasy.deci1) * to_decimal(fixleist.number)
 
                     if argt_rate != 0:
 
-                        s_list = query(s_list_data, filters=(lambda s_list: s_list.bezeich == artikel.bezeich and s_list.preis == (argt_rate / fixleist.number) and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2), first=True)
+                        s_list = query(s_list_data, filters=(lambda s_list: s_list.bezeich == artikel.bezeich and s_list.preis == (argt_rate / fixleist.number) and s_list.datum == datum and s_list.ankunft == resline.ankunft and s_list.abreise == resline.abreise and s_list.erwachs == pax and s_list.kind1 == resline.kind1 and s_list.kind2 == resline.kind2 and s_list.wabkurz.lower()  == (currency).lower()), first=True)
 
                         if not s_list:
                             s_list = S_list()
@@ -859,6 +824,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                             s_list.erwachs = pax
                             s_list.kind1 = resline.kind1
                             s_list.kind2 = resline.kind2
+                            s_list.wabkurz = currency
 
 
                         s_list.qty = s_list.qty + (fixleist.number * resline.zimmeranz)
@@ -867,7 +833,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
 
             if s_list.nr == 0:
 
-                t_list = query(t_list_data, filters=(lambda t_list: t_list.bezeich == s_list.bezeich and t_list.rmcat == s_list.rmcat and t_list.preis == s_list.preis and t_list.lrate == s_list.lrate and t_list.ankunft == s_list.ankunft and t_list.abreise == s_list.abreise and t_list.erwachs == s_list.erwachs and t_list.kind1 == s_list.kind1 and t_list.kind2 == s_list.kind2), first=True)
+                t_list = query(t_list_data, filters=(lambda t_list: t_list.bezeich == s_list.bezeich and t_list.rmcat == s_list.rmcat and t_list.preis == s_list.preis and t_list.lrate == s_list.lrate and t_list.ankunft == s_list.ankunft and t_list.abreise == s_list.abreise and t_list.erwachs == s_list.erwachs and t_list.kind1 == s_list.kind1 and t_list.kind2 == s_list.kind2 and t_list.wabkurz == s_list.wabkurz), first=True)
 
                 if not t_list:
                     t_list = T_list()
@@ -885,6 +851,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                     t_list.kind1 = s_list.kind1
                     t_list.kind2 = s_list.kind2
                     t_list.zinr = s_list.zinr
+                    t_list.wabkurz = s_list.wabkurz
 
 
                 t_list.tage = t_list.tage + 1
@@ -894,7 +861,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                     t_list.qty = t_list.qty + s_list.qty
             else:
 
-                t_list = query(t_list_data, filters=(lambda t_list: t_list.bezeich == s_list.bezeich and t_list.preis == s_list.preis and t_list.lrate == s_list.lrate and t_list.ankunft == s_list.ankunft and t_list.abreise == s_list.abreise and t_list.erwachs == s_list.erwachs and t_list.kind1 == s_list.kind1 and t_list.kind2 == s_list.kind2), first=True)
+                t_list = query(t_list_data, filters=(lambda t_list: t_list.bezeich == s_list.bezeich and t_list.preis == s_list.preis and t_list.lrate == s_list.lrate and t_list.ankunft == s_list.ankunft and t_list.abreise == s_list.abreise and t_list.erwachs == s_list.erwachs and t_list.kind1 == s_list.kind1 and t_list.kind2 == s_list.kind2 and t_list.wabkurz == s_list.wabkurz), first=True)
 
                 if not t_list:
                     t_list = T_list()
@@ -910,6 +877,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                     t_list.erwachs = s_list.erwachs
                     t_list.kind1 = s_list.kind1
                     t_list.kind2 = s_list.kind2
+                    t_list.wabkurz = s_list.wabkurz
 
 
                 t_list.tage = t_list.tage + 1
@@ -1071,7 +1039,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
             billjournal = Billjournal()
             artikel = Artikel()
             for billjournal.bezeich, billjournal.betrag, billjournal.bill_datum, billjournal._recid, artikel.bezeich, artikel.artnr, artikel.departement, artikel.epreis, artikel.artart, artikel._recid in db_session.query(Billjournal.bezeich, Billjournal.betrag, Billjournal.bill_datum, Billjournal._recid, Artikel.bezeich, Artikel.artnr, Artikel.departement, Artikel.epreis, Artikel.artart, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement)).filter(
-                        (Billjournal.rechnr == 0) & (Billjournal.anzahl != 0) & (matches(Billjournal.bezeich,"*Deposit #*"))).order_by(Billjournal._recid).all():
+                     (Billjournal.rechnr == 0) & (Billjournal.anzahl != 0) & (matches(Billjournal.bezeich,"*Deposit #*"))).order_by(Billjournal._recid).all():
                 if billjournal_obj_list.get(billjournal._recid):
                     continue
                 else:
@@ -1108,15 +1076,31 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                     t_list.depo_billjour = True
                     t_list.resno_billjour = t_resnr
 
-            for t_list in query(t_list_data, filters=(lambda t_list: t_list.depo_billjour)):
+            billjournal = db_session.query(Billjournal).filter(
+                     (Billjournal.billjou_ref == t_resnr) & (matches(Billjournal.bezeich,"*Refund #*"))).first()
 
-                billjournal = db_session.query(Billjournal).filter(
-                            (Billjournal.billjou_ref == t_list.resno_billjour) & (matches(Billjournal.bezeich,"*Refund #*"))).first()
+            for t_list in query(t_list_data, filters=(lambda t_list: t_list.depo_billjour), sort_by=[("nr",False)]):
+                tot_deposit =  to_decimal(tot_deposit) + to_decimal(t_list.betrag)
 
                 if billjournal:
 
                     if (t_list.betrag + billjournal.betrag) == 0:
                         t_list_data.remove(t_list)
+                        tot_deposit =  to_decimal("0")
+
+                        curr_recid = billjournal._recid
+                        billjournal = db_session.query(Billjournal).filter(
+                                 (Billjournal.billjou_ref == t_resnr) & (matches(Billjournal.bezeich,"*Refund #*")) & (Billjournal._recid > curr_recid)).first()
+
+                    elif (tot_deposit + billjournal.betrag) == 0:
+
+                        for buff_t in query(buff_t_data, filters=(lambda buff_t: buff_t.depo_billjour  and buff_t.NR <= t_list.nr), sort_by=[("nr",False)]):
+                            buff_t_data.remove(buff_t)
+                        tot_deposit =  to_decimal("0")
+
+                        curr_recid = billjournal._recid
+                        billjournal = db_session.query(Billjournal).filter(
+                                 (Billjournal.billjou_ref == t_resnr) & (matches(Billjournal.bezeich,"*Refund #*")) & (Billjournal._recid > curr_recid)).first()
 
         res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
 
@@ -1190,7 +1174,7 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
 
     def create_bonus():
 
-        nonlocal err_flag, avail_master, avail_bill, reslinnr, master_rechnr, bill_rechnr, mainres_gastnr, t_reservation_data, t_res_line_data, t_guest_data, t_list_data, new_contrate, resline_exrate, billdate, bonus_array, tot_amt, serv1, vat1, vat3, fact1, netto, bill_receiver, argt_options, t_char, t_resnr, reservation, res_line, guest, bill, htparam, master, waehrung, bill_line, artikel, zimkateg, arrangement, reslin_queasy, guest_pr, queasy, fixleist, billjournal, genstat, exrate
+        nonlocal err_flag, avail_master, avail_bill, reslinnr, master_rechnr, bill_rechnr, mainres_gastnr, t_reservation_data, t_res_line_data, t_guest_data, t_list_data, new_contrate, resline_exrate, billdate, bonus_array, tot_amt, serv1, vat1, vat3, fact1, netto, bill_receiver, currency, local_currency, frate, waehrungsnr, price_decimal, tot_deposit, t_char, t_resnr, reservation, res_line, guest, bill, htparam, master, exrate, waehrung, bill_line, artikel, zimkateg, arrangement, reslin_queasy, guest_pr, queasy, fixleist, billjournal
         nonlocal resnr, curr_resnr, arl_list_reslinnr, t_active_flag, printtype, split_bill
         nonlocal rline, mbill, mainres, b_bill
 
@@ -1209,8 +1193,8 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
             bonus_array[i - 1] = False
         j = 1
         for i in range(1,4 + 1) :
-            stay = to_int(substring(argt_options, j - 1, 2))
-            pay = to_int(substring(argt_options, j + 2 - 1, 2))
+            stay = to_int(substring(arrangement.options, j - 1, 2))
+            pay = to_int(substring(arrangement.options, j + 2 - 1, 2))
 
             if (stay - pay) > 0:
                 n = num_bonus + pay + 1
@@ -1232,6 +1216,12 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
     billdate = htparam.fdate
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 491)]})
+    price_decimal = htparam.finteger
+
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 152)]})
+    local_currency = htparam.fchar
 
     mainres = get_cache (Reservation, {"resnr": [(eq, resnr)]})
     mainres_gastnr = mainres.gastnr
@@ -1301,5 +1291,26 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                 read_proforma_inv1(resnr, reslinnr, bill.rechnr)
             else:
                 read_proforma_inv1(resnr, reslinnr, 0)
+
+        if currency.lower()  != (local_currency).lower() :
+
+            for t_list in query(t_list_data, filters=(lambda t_list: trim(t_list.wabkurz.lower() ) == "" or t_list.wabkurz.lower()  == (local_currency).lower())):
+                t_list.wabkurz = currency
+
+                if t_list.date1 < billdate:
+
+                    exrate = get_cache (Exrate, {"artnr": [(eq, waehrungsnr)],"datum": [(eq, t_list.date1)]})
+
+                    if exrate:
+                        t_list.betrag =  to_decimal(t_list.betrag) / to_decimal(exrate.betrag)
+                else:
+                    t_list.betrag =  to_decimal(t_list.betrag) / to_decimal(frate)
+
+                if price_decimal != 0:
+                    t_list.betrag = to_decimal(round(t_list.betrag , price_decimal))
+        else:
+
+            for t_list in query(t_list_data, filters=(lambda t_list: trim(t_list.wabkurz) == "")):
+                t_list.wabkurz = local_currency
 
     return generate_output()
