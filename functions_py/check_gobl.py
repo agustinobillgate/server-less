@@ -4,6 +4,11 @@
 # strip issues with res_dynarate.rmcat and arrangement.argt, memo_zinr
 #------------------------------------------
 
+# =========================================
+# Rulita, 25-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -706,7 +711,7 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
             for curr_datum in date_range(beg_datum,tmp_datum) :
 
                 zimplan1 = db_session.query(Zimplan1).filter(
-                         (Zimplan1.datum == curr_datum) & (Zimplan1.zinr == (zinr).lower())).first()
+                         (Zimplan1.datum == curr_datum) & (Zimplan1.zinr == (zinr).lower())).with_for_update().first()
 
                 if (not zimplan1) and (not room_blocked):
                     zimplan = Zimplan()
@@ -737,14 +742,17 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
                             zimplan1.bemerk = bemerk
                             zimplan1.resstatus = resstatus
                             zimplan1.name = name
-                            pass
-                            pass
+                            # pass
+                            # pass
+                            db_session.refresh(zimplan1, with_for_update=True)
 
             if room_blocked:
                 tmp_datum = abreise - timedelta(days=1)
                 for curr_datum in date_range(beg_datum,tmp_datum) :
 
-                    zimplan = get_cache (Zimplan, {"datum": [(eq, curr_datum)],"zinr": [(eq, zinr)],"res_recid": [(eq, resline_recid)]})
+                    # zimplan = get_cache (Zimplan, {"datum": [(eq, curr_datum)],"zinr": [(eq, zinr)],"res_recid": [(eq, resline_recid)]})
+                    zimplan = db_session.query(Zimplan).filter(
+                             (Zimplan.datum == curr_datum) & (Zimplan.zinr == (zinr).lower()) & (Zimplan.res_recid == resline_recid)).with_for_update().first()
 
                     if zimplan:
                         db_session.delete(zimplan)
@@ -755,7 +763,8 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
 
                 if resstatus == 6 or resstatus == 13:
 
-                    zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+                    # zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+                    zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == zinr).with_for_update().first()
 
                     if abreise > htparam.fdate and zimmer.zistatus == 0:
                         zimmer.zistatus = 5
@@ -809,13 +818,16 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
 
             if res_mode.lower()  == ("delete").lower()  or res_mode.lower()  == ("cancel").lower()  and rline.resstatus == 1:
 
-                res_line1 = get_cache (Res_line, {"resnr": [(eq, reslin_list.resnr)],"zinr": [(eq, rline.zinr)],"resstatus": [(eq, 11)]})
+                # res_line1 = get_cache (Res_line, {"resnr": [(eq, reslin_list.resnr)],"zinr": [(eq, rline.zinr)],"resstatus": [(eq, 11)]})
+                res_line1 = db_session.query(Res_line).filter(
+                         (Res_line.resnr == reslin_list.resnr) & (Res_line.zinr == rline.zinr) & (Res_line.resstatus == 11)).with_for_update().first()
 
                 if res_line1:
                     pass
                     res_line1.resstatus = 1
                     pass
                     res_recid1 = res_line1._recid
+                db_session.refresh(res_line1, with_for_update=True)
 
             if res_mode.lower()  == ("inhouse").lower() :
                 answer = True
@@ -830,28 +842,32 @@ def check_gobl(pvilanguage:int, user_init:string, gastno:int, res_mode:string, c
                         for res_line3 in db_session.query(Res_line3).filter(
                                  (Res_line3.resnr == res_line.resnr) & (Res_line3.zinr == rline.zinr) & (Res_line3.resstatus == 13)).order_by(Res_line3._recid).all():
 
-                            res_line2 = get_cache (Res_line, {"_recid": [(eq, res_line3._recid)]})
+                            # res_line2 = get_cache (Res_line, {"_recid": [(eq, res_line3._recid)]})
+                            res_line2 = db_session.query(Res_line).filter(Res_line._recid == res_line3._recid).with_for_update().first()
 
                             if res_line2:
 
-                                bill = get_cache (Bill, {"resnr": [(eq, res_line2.resnr)],"reslinnr": [(eq, res_line2.reslinnr)],"flag": [(eq, 0)],"zinr": [(eq, res_line2.zinr)]})
+                                # bill = get_cache (Bill, {"resnr": [(eq, res_line2.resnr)],"reslinnr": [(eq, res_line2.reslinnr)],"flag": [(eq, 0)],"zinr": [(eq, res_line2.zinr)]})
+                                bill = db_session.query(Bill).filter(
+                                         (Bill.resnr == res_line2.resnr) & (Bill.reslinnr == res_line2.reslinnr) & (Bill.flag == 0) & (Bill.zinr == res_line2.zinr)).with_for_update().first()
                                 bill.zinr = new_zinr
                                 parent_nr = bill.parent_nr
                                 pass
 
                                 for bill in db_session.query(Bill).filter(
-                                         (Bill.resnr == res_line2.resnr) & (Bill.parent_nr == parent_nr) & (Bill.flag == 0) & (Bill.zinr == res_line2.zinr)).order_by(Bill._recid).all():
+                                         (Bill.resnr == res_line2.resnr) & (Bill.parent_nr == parent_nr) & (Bill.flag == 0) & (Bill.zinr == res_line2.zinr)).order_by(Bill._recid).with_for_update().all():
                                     bill.zinr = new_zinr
                                     pass
                                 res_line2.zinr = new_zinr
                                 pass
 
-                        zimmer = get_cache (Zimmer, {"zinr": [(eq, rline.zinr)]})
+                        # zimmer = get_cache (Zimmer, {"zinr": [(eq, rline.zinr)]})
+                        zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == rline.zinr).with_for_update().first()
                         zimmer.zistatus = 2
                         pass
 
             for zimplan in db_session.query(Zimplan).filter(
-                         (Zimplan.zinr == rline.zinr) & (Zimplan.datum >= beg_datum) & (Zimplan.datum < rline.abreise)).order_by(Zimplan._recid).all():
+                         (Zimplan.zinr == rline.zinr) & (Zimplan.datum >= beg_datum) & (Zimplan.datum < rline.abreise)).order_by(Zimplan._recid).with_for_update().all():
 
                 if res_recid1 != 0:
                     zimplan.res_recid = res_recid1
