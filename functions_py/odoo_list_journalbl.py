@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -53,7 +55,10 @@ def odoo_list_journalbl(inp_fdate:date, inp_tdate:date):
 
                 if mapping != "":
 
-                    bqueasy = get_cache (Queasy, {"key": [(eq, 345)],"number1": [(eq, gl_jouhdr.jnr)],"date1": [(eq, gl_jouhdr.datum)]})
+                    # bqueasy = get_cache (Queasy, {"key": [(eq, 345)],"number1": [(eq, gl_jouhdr.jnr)],"date1": [(eq, gl_jouhdr.datum)]})
+                    bqueasy = db_session.query(Queasy).filter(
+                                (Queasy.key == 345) & (Queasy.number1 == gl_jouhdr.jnr) & 
+                                (Queasy.date1 == gl_jouhdr.datum)).with_for_update().first()
 
                     if bqueasy:
                         pass

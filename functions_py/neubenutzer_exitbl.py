@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 import random
@@ -20,6 +22,10 @@ def neubenutzer_exitbl(pvilanguage:int, name_str:string, id_str:string, new_id:s
     t_bediener_data, T_bediener = create_model_like(Bediener)
 
     db_session = local_storage.db_session
+    name_str = name_str.strip()
+    id_str = id_str.strip()
+    new_id = new_id.strip()
+    new_id1 = new_id1.strip()
 
     def generate_output():
         nonlocal user_init, user_name, msg_str, error_flag, t_bediener_data, nr, lvcarea, bediener
@@ -138,7 +144,11 @@ def neubenutzer_exitbl(pvilanguage:int, name_str:string, id_str:string, new_id:s
 
         return generate_output()
 
-    bediener = get_cache (Bediener, {"username": [(eq, name_str)],"usercode": [(eq, id_str)],"betriebsnr": [(eq, 0)],"flag": [(eq, 0)]})
+    # bediener = get_cache (Bediener, {"username": [(eq, name_str)],"usercode": [(eq, id_str)],"betriebsnr": [(eq, 0)],"flag": [(eq, 0)]})
+    bediener = db_session.query(Bediener).filter(Bediener.username == name_str, 
+                                                 Bediener.usercode == encode_string(id_str),
+                                                 Bediener.betriebsnr == 0,
+                                                 Bediener.flag == 0).with_for_update().first()
 
     if not bediener:
         nr = decode_usercode()

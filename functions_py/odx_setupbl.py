@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Bediener, Res_history
@@ -120,7 +122,9 @@ def odx_setupbl(case_type:int, user_init:string, t_param_data:[T_param]):
 
         for t_param in query(t_param_data, sort_by=[("number",False)]):
 
-            queasy = get_cache (Queasy, {"key": [(eq, 242)],"number1": [(eq, t_param.number)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 242)],"number1": [(eq, t_param.number)]})
+            queasy = db_session.query(Queasy).filter(
+                        (Queasy.key == 242) & (Queasy.number1 == t_param.number)).with_for_update().first()
 
             if queasy:
 
@@ -142,7 +146,7 @@ def odx_setupbl(case_type:int, user_init:string, t_param_data:[T_param]):
     t_param_data.clear()
 
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 242) & (Queasy.number1 != 99)).order_by(number1).all():
+             (Queasy.key == 242) & (Queasy.number1 != 99)).order_by(Queasy.number1).all():
         t_param = T_param()
         t_param_data.append(t_param)
 

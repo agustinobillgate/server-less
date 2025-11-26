@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_artikel, Queasy, Wgrpdep
@@ -50,7 +52,10 @@ def odx_mapping_artbl(case_type:int, dept:int, art_list_data:[Art_list]):
 
         for art_list in query(art_list_data, sort_by=[("vhp_artnr",False)]):
 
-            queasy = get_cache (Queasy, {"key": [(eq, 242)],"number1": [(eq, 98)],"number2": [(eq, art_list.vhp_artdept)],"number3": [(eq, art_list.vhp_artnr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 242)],"number1": [(eq, 98)],"number2": [(eq, art_list.vhp_artdept)],"number3": [(eq, art_list.vhp_artnr)]})
+            queasy = db_session.query(Queasy).filter(
+                        (Queasy.key == 242) & (Queasy.number1 == 98) & 
+                        (Queasy.number2 == art_list.vhp_artdept) & (Queasy.number3 == art_list.vhp_artnr)).with_for_update().first()
 
             if queasy:
                 queasy.char2 = art_list.rms_arttype

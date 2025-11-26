@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from sqlalchemy import func
@@ -14,6 +16,10 @@ def prog_file_btn_savebl(case_type:int, main_nr:int, counter:int, grupno:int, ti
     prog_list_data, Prog_list = create_model("Prog_list", {"counter":int, "prog_grup":int, "prog_title":string, "prog_name":string, "prog_desc":string, "prog_active":bool, "rec_id":int})
 
     db_session = local_storage.db_session
+    titleno = titleno.strip()
+    rname = rname.strip()
+    bezeich = bezeich.strip()
+
 
     def generate_output():
         nonlocal count_no, progfile
@@ -68,7 +74,7 @@ def prog_file_btn_savebl(case_type:int, main_nr:int, counter:int, grupno:int, ti
     elif case_type == 3:
 
         progfile = db_session.query(Progfile).filter(
-                 (Progfile.catnr == main_nr) & (matches(Progfile.bezeich,"*;*")) & (to_int(entry(0, Progfile.bezeich, ";")) == counter)).first()
+                 (Progfile.catnr == main_nr) & (matches(Progfile.bezeich,"*;*")) & (to_int(entry(0, Progfile.bezeich, ";")) == counter)).with_for_update().first()
 
         if progfile:
             pass

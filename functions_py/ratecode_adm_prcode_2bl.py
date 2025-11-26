@@ -1,11 +1,17 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Queasy, Guest, Guest_pr, Bediener, Res_history, Waehrung
 
-def ratecode_adm_prcode_2bl(curr_select:string, prcode:string, bezeich:string, segmentcode:string, minstay:int, maxstay:int, minadvance:int, maxadvance:int, frdate:date, todate:date, user_init:string, foreign_rate:bool, local_flag:bool, drate_flag:bool, gastnr:int, local_nr:int, foreign_nr:int, rcode_element:string):
+def ratecode_adm_prcode_2bl(curr_select:string, prcode:string, bezeich:string, 
+                            segmentcode:string, minstay:int, maxstay:int, minadvance:int, 
+                            maxadvance:int, frdate:date, todate:date, user_init:string, foreign_rate:bool, 
+                            local_flag:bool, drate_flag:bool, gastnr:int, local_nr:int, foreign_nr:int, 
+                            rcode_element:string):
 
     prepare_cache ([Queasy, Guest, Guest_pr, Bediener, Res_history, Waehrung])
 
@@ -19,9 +25,13 @@ def ratecode_adm_prcode_2bl(curr_select:string, prcode:string, bezeich:string, s
     tb1_data, Tb1 = create_model_like(Queasy, {"waehrungsnr":int, "wabkurz":string, "active_flag":bool})
 
     Bqueasy = create_buffer("Bqueasy",Queasy)
-
-
     db_session = local_storage.db_session
+    curr_select = curr_select.strip()
+    prcode = prcode.strip()
+    bezeich = bezeich.strip()
+    segmentcode = segmentcode.strip()
+    rcode_element = rcode_element.strip()
+    
 
     def generate_output():
         nonlocal tb1_data, queasy_number1, ct, queasy, guest, guest_pr, bediener, res_history, waehrung
@@ -34,7 +44,7 @@ def ratecode_adm_prcode_2bl(curr_select:string, prcode:string, bezeich:string, s
 
         return {"tb1": tb1_data}
 
-    if curr_select.lower()  == ("add").lower() :
+    if curr_select  == ("add") :
         queasy = Queasy()
         db_session.add(queasy)
 
@@ -113,7 +123,9 @@ def ratecode_adm_prcode_2bl(curr_select:string, prcode:string, bezeich:string, s
             pass
     else:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, prcode)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, prcode)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 2) & (Queasy.char1 == prcode)).with_for_update().first()
 
         if queasy:
             pass
@@ -144,7 +156,9 @@ def ratecode_adm_prcode_2bl(curr_select:string, prcode:string, bezeich:string, s
             pass
             pass
 
-        bqueasy = get_cache (Queasy, {"key": [(eq, 289)],"char1": [(eq, prcode)]})
+        # bqueasy = get_cache (Queasy, {"key": [(eq, 289)],"char1": [(eq, prcode)]})
+        bqueasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 289) & (Queasy.char1 == prcode)).with_for_update().first()
 
         if bqueasy:
             pass

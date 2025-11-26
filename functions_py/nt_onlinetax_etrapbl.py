@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -356,7 +358,9 @@ def nt_onlinetax_etrapbl(fdate:date, tdate:date):
 
             if datum >= (bqueasy.date1 + 1):
 
-                tqueasy = get_cache (Queasy, {"key": [(eq, 291)]})
+                # tqueasy = get_cache (Queasy, {"key": [(eq, 291)]})
+                tqueasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 291)).with_for_update().first()
 
                 if tqueasy:
                     pass

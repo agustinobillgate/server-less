@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -37,7 +39,8 @@ def na_update171():
     queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, ci_date)],"logi2": [(eq, False)],"logi1": [(eq, False)]})
     while None != queasy:
 
-        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+        # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+        qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
         if qsy:
             qsy.logi2 = True
