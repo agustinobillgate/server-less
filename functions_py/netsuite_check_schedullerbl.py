@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -56,7 +58,7 @@ def netsuite_check_schedullerbl(casetype:int, month_val:int, if_list_data:[If_li
     datum = htparam.fdate
 
     if casetype == 1:
-        lastdate = date_mdy(get_month(datum) + timedelta(days=1, 1, get_year(datum)))
+        lastdate = date_mdy(get_month(datum) + timedelta(days=1), 1, get_year(datum))
         lastdate = lastdate - timedelta(days=1)
         lastday = get_day(lastdate)
         daynum = get_weekday(datum)
@@ -150,7 +152,10 @@ def netsuite_check_schedullerbl(casetype:int, month_val:int, if_list_data:[If_li
 
         for if_list in query(if_list_data):
 
-            queasy = get_cache (Queasy, {"key": [(eq, 259)],"betriebsnr": [(eq, get_month(if_list.send_date))],"number1": [(eq, if_list.perideno)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 259)],"betriebsnr": [(eq, get_month(if_list.send_date))],"number1": [(eq, if_list.perideno)]})
+            queasy = db_session.query(Queasy).filter(Queasy.key == 259, 
+                                                   Queasy.betriebsnr == get_month(if_list.send_date), 
+                                                   Queasy.number1 == if_list.perideno).with_for_update().first()
 
             if queasy:
                 queasy.logi1 = True

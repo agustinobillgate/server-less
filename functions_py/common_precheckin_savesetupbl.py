@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.check_userkeybl import check_userkeybl
@@ -36,7 +38,11 @@ def common_precheckin_savesetupbl(input_username:string, input_userkey:string, p
 
     for pci_setup in query(pci_setup_data, sort_by=[("number1",False)]):
 
-        queasy = get_cache (Queasy, {"key": [(eq, 216)],"number1": [(eq, pci_setup.number1)],"number2": [(eq, pci_setup.number2)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 216)],"number1": [(eq, pci_setup.number1)],"number2": [(eq, pci_setup.number2)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 216) &
+                 (Queasy.number1 == pci_setup.number1) &
+                 (Queasy.number2 == pci_setup.number2)).with_for_update().first()
 
         if pci_setup.number1 == 1:
 

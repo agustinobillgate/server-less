@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -39,7 +41,8 @@ def memberid_membershipbl(case_type:int, gastnr:int, member_list_data:[Member_li
 
     if case_type == 1:
 
-        mc_guest = get_cache (Mc_guest, {"gastnr": [(eq, gastnr)]})
+        # mc_guest = get_cache (Mc_guest, {"gastnr": [(eq, gastnr)]})
+        mc_guest = db_session.query(Mc_guest).filter(Mc_guest.gastnr == gastnr).with_for_update().first()
 
         if not mc_guest:
             mc_guest = Mc_guest()
@@ -68,7 +71,8 @@ def memberid_membershipbl(case_type:int, gastnr:int, member_list_data:[Member_li
                 mc_types.nr = nr
                 mc_guest.nr = nr
 
-            bguest = get_cache (Guest, {"gastnr": [(eq, gastnr)]})
+            # bguest = get_cache (Guest, {"gastnr": [(eq, gastnr)]})
+            bguest = db_session.query(Guest).filter(Guest.gastnr == gastnr).with_for_update().first()
 
             if bguest:
 
@@ -103,7 +107,8 @@ def memberid_membershipbl(case_type:int, gastnr:int, member_list_data:[Member_li
             mc_guest.number1 = member_list.stamps
             mc_guest.activeflag = member_list.is_active
 
-            mc_types = get_cache (Mc_types, {"bezeich": [(eq, member_list.member_type)]})
+            # mc_types = get_cache (Mc_types, {"bezeich": [(eq, member_list.member_type)]})
+            mc_types = db_session.query(Mc_types).filter(Mc_types.bezeich == member_list.member_type).with_for_update().first()
 
             if mc_types:
                 mc_guest.nr = mc_types.nr
@@ -123,7 +128,8 @@ def memberid_membershipbl(case_type:int, gastnr:int, member_list_data:[Member_li
             pass
             pass
 
-            bguest = get_cache (Guest, {"gastnr": [(eq, gastnr)]})
+            # bguest = get_cache (Guest, {"gastnr": [(eq, gastnr)]})
+            bguest = db_session.query(Guest).filter(Guest.gastnr == gastnr).with_for_update().first()
 
             if bguest:
 
@@ -153,7 +159,8 @@ def memberid_membershipbl(case_type:int, gastnr:int, member_list_data:[Member_li
                 res_history.aenderung = "updated MemberID " + member_list.member_code + " to PMS, Date:" + to_string(get_current_date(), "99/99/99") + "."
     elif case_type == 2:
 
-        mc_guest = get_cache (Mc_guest, {"cardnum": [(eq, member_list.member_code)]})
+        # mc_guest = get_cache (Mc_guest, {"cardnum": [(eq, member_list.member_code)]})
+        mc_guest = db_session.query(Mc_guest).filter(Mc_guest.cardnum == member_list.member_code).with_for_update().first()
 
         if mc_guest:
             gastnr = mc_guest.gastnr
@@ -162,7 +169,8 @@ def memberid_membershipbl(case_type:int, gastnr:int, member_list_data:[Member_li
             mc_guest.number1 = member_list.stamps
             mc_guest.activeflag = member_list.is_active
 
-            mc_types = get_cache (Mc_types, {"bezeich": [(eq, member_list.member_type)]})
+            # mc_types = get_cache (Mc_types, {"bezeich": [(eq, member_list.member_type)]})
+            mc_types = db_session.query(Mc_types).filter(Mc_types.bezeich == member_list.member_type).with_for_update().first()
 
             if mc_types:
                 mc_guest.nr = mc_types.nr
@@ -182,7 +190,8 @@ def memberid_membershipbl(case_type:int, gastnr:int, member_list_data:[Member_li
             pass
             pass
 
-            bguest = get_cache (Guest, {"gastnr": [(eq, gastnr)]})
+            # bguest = get_cache (Guest, {"gastnr": [(eq, gastnr)]})
+            bguest = db_session.query(Guest).filter(Guest.gastnr == gastnr).with_for_update().first()
 
             if bguest:
 
@@ -264,7 +273,8 @@ def memberid_membershipbl(case_type:int, gastnr:int, member_list_data:[Member_li
                         if nation:
                             t_guest_nat = nation.kurzbez
 
-                guest = db_session.query(Guest).order_by(Guest._recid.desc()).first()
+                # guest = db_session.query(Guest).order_by(Guest._recid.desc()).first()
+                guest = db_session.query(Guest).order_by(Guest.gastnr.desc()).first()
 
                 if guest:
                     gastnr = guest.gastnr + 1
@@ -290,7 +300,8 @@ def memberid_membershipbl(case_type:int, gastnr:int, member_list_data:[Member_li
             else:
                 gastnr = guest.gastnr
 
-                bguest = get_cache (Guest, {"_recid": [(eq, guest._recid)]})
+                # bguest = get_cache (Guest, {"_recid": [(eq, guest._recid)]})
+                bguest = db_session.query(Guest).filter(Guest._recid == guest._recid).with_for_update().first()
 
                 if bguest:
                     bguest.anrede1 = member_list.titled
@@ -309,7 +320,8 @@ def memberid_membershipbl(case_type:int, gastnr:int, member_list_data:[Member_li
             mc_guest.number1 = member_list.stamps
             mc_guest.activeflag = member_list.is_active
 
-            mc_types = get_cache (Mc_types, {"bezeich": [(eq, member_list.member_type)]})
+            # mc_types = get_cache (Mc_types, {"bezeich": [(eq, member_list.member_type)]})
+            mc_types = db_session.query(Mc_types).filter(Mc_types.bezeich == member_list.member_type).with_for_update().first()
 
             if mc_types:
                 mc_guest.nr = mc_types.nr

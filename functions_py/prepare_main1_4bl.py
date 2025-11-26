@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -11,7 +13,7 @@ from functions.nt_bahistory import nt_bahistory
 from functions.nt_bapostbill import nt_bapostbill
 from models import Queasy, Htparam, Paramtext, Akt_line, Bediener
 
-def prepare_main1_5bl(user_init:string):
+def prepare_main1_4bl(user_init:string):
 
     prepare_cache ([Htparam, Paramtext])
 
@@ -50,7 +52,6 @@ def prepare_main1_5bl(user_init:string):
     new_setup = False
     lic_nr = ""
     p_282 = False
-    p_1371 = False
     golf_license:bool = False
     condo_flag:bool = False
     queasy = htparam = paramtext = akt_line = bediener = None
@@ -65,18 +66,18 @@ def prepare_main1_5bl(user_init:string):
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal telop_sensitive, setting_sensitive, condotel_sensitive, club_sensitive, eng_sensitive, repgen_sensitive, wo_sensitive, new_contrate, ci_date, hpname_training, aktlist_flag, dynarate_flag, htl_city, curr_htl_city, p_1072, p_244, p_975, p_996, p_1002, p_997, p_988, p_992, p_1016, p_868, p_990, p_1015, p_169, p_991, p_2000, p_329, p_985, p_473, new_setup, lic_nr, p_282, p_1371, golf_license, condo_flag, queasy, htparam, paramtext, akt_line, bediener
+        nonlocal telop_sensitive, setting_sensitive, condotel_sensitive, club_sensitive, eng_sensitive, repgen_sensitive, wo_sensitive, new_contrate, ci_date, hpname_training, aktlist_flag, dynarate_flag, htl_city, curr_htl_city, p_1072, p_244, p_975, p_996, p_1002, p_997, p_988, p_992, p_1016, p_868, p_990, p_1015, p_169, p_991, p_2000, p_329, p_985, p_473, new_setup, lic_nr, p_282, golf_license, condo_flag, queasy, htparam, paramtext, akt_line, bediener
         nonlocal user_init
         nonlocal bqueasy, htp1, htp2
 
 
         nonlocal bqueasy, htp1, htp2
 
-        return {"telop_sensitive": telop_sensitive, "setting_sensitive": setting_sensitive, "condotel_sensitive": condotel_sensitive, "club_sensitive": club_sensitive, "eng_sensitive": eng_sensitive, "repgen_sensitive": repgen_sensitive, "wo_sensitive": wo_sensitive, "new_contrate": new_contrate, "ci_date": ci_date, "hpname_training": hpname_training, "aktlist_flag": aktlist_flag, "dynarate_flag": dynarate_flag, "htl_city": htl_city, "curr_htl_city": curr_htl_city, "p_1072": p_1072, "p_244": p_244, "p_975": p_975, "p_996": p_996, "p_1002": p_1002, "p_997": p_997, "p_988": p_988, "p_992": p_992, "p_1016": p_1016, "p_868": p_868, "p_990": p_990, "p_1015": p_1015, "p_169": p_169, "p_991": p_991, "p_2000": p_2000, "p_329": p_329, "p_985": p_985, "p_473": p_473, "new_setup": new_setup, "lic_nr": lic_nr, "p_282": p_282, "p_1371": p_1371}
+        return {"telop_sensitive": telop_sensitive, "setting_sensitive": setting_sensitive, "condotel_sensitive": condotel_sensitive, "club_sensitive": club_sensitive, "eng_sensitive": eng_sensitive, "repgen_sensitive": repgen_sensitive, "wo_sensitive": wo_sensitive, "new_contrate": new_contrate, "ci_date": ci_date, "hpname_training": hpname_training, "aktlist_flag": aktlist_flag, "dynarate_flag": dynarate_flag, "htl_city": htl_city, "curr_htl_city": curr_htl_city, "p_1072": p_1072, "p_244": p_244, "p_975": p_975, "p_996": p_996, "p_1002": p_1002, "p_997": p_997, "p_988": p_988, "p_992": p_992, "p_1016": p_1016, "p_868": p_868, "p_990": p_990, "p_1015": p_1015, "p_169": p_169, "p_991": p_991, "p_2000": p_2000, "p_329": p_329, "p_985": p_985, "p_473": p_473, "new_setup": new_setup, "lic_nr": lic_nr, "p_282": p_282}
 
     def decode_string(in_str:string):
 
-        nonlocal telop_sensitive, setting_sensitive, condotel_sensitive, club_sensitive, eng_sensitive, repgen_sensitive, wo_sensitive, new_contrate, ci_date, hpname_training, aktlist_flag, dynarate_flag, htl_city, curr_htl_city, p_1072, p_244, p_975, p_996, p_1002, p_997, p_988, p_992, p_1016, p_868, p_990, p_1015, p_169, p_991, p_2000, p_329, p_985, p_473, new_setup, lic_nr, p_282, p_1371, golf_license, condo_flag, queasy, htparam, paramtext, akt_line, bediener
+        nonlocal telop_sensitive, setting_sensitive, condotel_sensitive, club_sensitive, eng_sensitive, repgen_sensitive, wo_sensitive, new_contrate, ci_date, hpname_training, aktlist_flag, dynarate_flag, htl_city, curr_htl_city, p_1072, p_244, p_975, p_996, p_1002, p_997, p_988, p_992, p_1016, p_868, p_990, p_1015, p_169, p_991, p_2000, p_329, p_985, p_473, new_setup, lic_nr, p_282, golf_license, condo_flag, queasy, htparam, paramtext, akt_line, bediener
         nonlocal user_init
         nonlocal bqueasy, htp1, htp2
 
@@ -191,16 +192,6 @@ def prepare_main1_5bl(user_init:string):
     p_2000 = get_output(htplogic(2000))
     p_329 = get_output(htplogic(329))
     p_985 = get_output(htplogic(985))
-    p_1371 = get_output(htplogic(1371))
-
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 1371)],"bezeichnung": [(ne, "not used")]})
-
-    if htparam:
-        p_1371 = htparam.flogical
-
-
-    else:
-        p_1371 = False
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 282)],"bezeichnung": [(ne, "not used")]})
 
@@ -280,14 +271,18 @@ def prepare_main1_5bl(user_init:string):
 
         htp2 = get_cache (Htparam, {"paramnr": [(eq, 724)]})
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
+        htparam = db_session.query(Htparam).filter(
+                 (Htparam.paramnr == 110)).with_for_update().first()
 
         if htparam and htparam.fdate != get_current_date():
             pass
             htparam.fdate = get_current_date()
             pass
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+        htparam = db_session.query(Htparam).filter(
+                 (Htparam.paramnr == 87)).with_for_update().first()
 
         if htparam and htparam.fdate != get_current_date():
             pass

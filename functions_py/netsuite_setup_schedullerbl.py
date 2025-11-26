@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -40,7 +42,10 @@ def netsuite_setup_schedullerbl(case_type:int, month_val:int, week:int, send_dat
 
     elif case_type == 2:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 259)],"number2": [(eq, month_val)],"number1": [(eq, week)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 259)],"number2": [(eq, month_val)],"number1": [(eq, week)]})
+        queasy = db_session.query(Queasy).filter(Queasy.key == 259, 
+                                               Queasy.number2 == month_val, 
+                                               Queasy.number1 == week).with_for_update().first()
 
         if queasy:
             queasy.date1 = send_date
@@ -50,7 +55,10 @@ def netsuite_setup_schedullerbl(case_type:int, month_val:int, week:int, send_dat
 
     elif case_type == 3:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 259)],"number2": [(eq, month_val)],"number1": [(eq, week)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 259)],"number2": [(eq, month_val)],"number1": [(eq, week)]})
+        queasy = db_session.query(Queasy).filter(Queasy.key == 259, 
+                                               Queasy.number2 == month_val, 
+                                               Queasy.number1 == week).with_for_update().first()
 
         if queasy:
             db_session.delete(queasy)

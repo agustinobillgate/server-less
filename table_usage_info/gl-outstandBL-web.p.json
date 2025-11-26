@@ -1,9 +1,0 @@
-{
-    "Uebertrag": {
-        "read": [
-            "betrag",
-            "_recid"
-        ],
-        "write": []
-    }
-}
