@@ -6,6 +6,7 @@
 # yusufwijasena, 25/11/2025
 # - fix to_decimal(debt) => to_decimal(debt.saldo), debt = Debitor()
 # - fix query(soa_list_data, filters=(lambda soa_list: soa_list.done_step == 0), next=True) => query(soa_list_data, filters=(lambda soa_list: soa_list.done_step == 0), first=True)
+# - cast int(Artikel._recid) in for loop when display reprint soalist
 # -----------------------------------------
 
 
@@ -719,7 +720,7 @@ def ar_printsoa1_1_webbl(show_type: int, bof_month: date, eof_month: date, param
                 new_fcrdt = to_decimal("0")
                 isprintedb4 = (soa_list.debref > 0)
 
-                for soabuff in query(soabuff_data, filters=(lambda soabuff: soabuff.rechnr == soa_list.rechnr and soabuff.dptnr == soa_list.dptnr and soabuff.artno == soa_list.artno and soabuff.done_step == 0 and soabuff._recid == soa_list._recid)):
+                for soabuff in query(soabuff_data, filters=(lambda soabuff: soabuff.rechnr == soa_list.rechnr and soabuff.dptnr == soa_list.dptnr and soabuff.artno == soa_list.artno and soabuff.done_step == 0 and soabuff.arrecid == soa_list.arrecid)):
                     soabuff.done_step = 1
                     debt = to_decimal(soabuff.saldo)
                     fdebt = to_decimal(fdebt) + to_decimal(soabuff.vesrdep)
@@ -741,8 +742,57 @@ def ar_printsoa1_1_webbl(show_type: int, bof_month: date, eof_month: date, param
                     debt_obj_list = {}
                     debt = Debitor()
                     artikel = Artikel()
-                    for debt.gastnr, debt.rechnr, debt.betriebsnr, debt._recid, debt.rgdatum, debt.vesrcod, debt.artnr, debt.counter, debt.debref, debt.saldo, debt.vesrdep, debt.gastnrmember, debt.zahlkonto, debt.opart, artikel.artart, artikel.artnr, artikel.mwst_code, artikel._recid in db_session.query(debt.gastnr, debt.rechnr, debt.betriebsnr, debt._recid, debt.rgdatum, debt.vesrcod, debt.artnr, debt.counter, debt.debref, debt.saldo, debt.vesrdep, debt.gastnrmember, debt.zahlkonto, debt.opart, Artikel.artart, Artikel.artnr, Artikel.mwst_code, Artikel._recid).join(Artikel, (Artikel.artnr == debt.artnr) & (Artikel.artart == 2) & (Artikel.departement == 0)).filter(
-                            (debt.rechnr == soabuff.rechnr) & (debt.gastnr == soabuff.gastnr) & (debt.betriebsnr == soabuff.dptnr) & (debt.opart <= 1) & (soabuff.saldo != 0) & (debt.zahlkonto == 0) & (debt._recid != soa_list.arrecid)).order_by(debt._recid).all():
+                    for (
+                        debt.gastnr, 
+                        debt.rechnr, 
+                        debt.betriebsnr, 
+                        debt._recid,
+                        debt.rgdatum,
+                        debt.vesrcod,
+                        debt.artnr,
+                        debt.counter,
+                        debt.debref,
+                        debt.saldo,
+                        debt.vesrdep,
+                        debt.gastnrmember,
+                        debt.zahlkonto,
+                        debt.opart,
+                        Artikel.artart,
+                        Artikel.artnr,
+                        Artikel.mwst_code,
+                        int(Artikel._recid)
+                        ) in db_session.query(
+                            debt.gastnr, 
+                            debt.rechnr,
+                            debt.betriebsnr,
+                            debt._recid, 
+                            debt.rgdatum,
+                            debt.vesrcod,
+                            debt.artnr,
+                            debt.counter,
+                            debt.debref,
+                            debt.saldo,
+                            debt.vesrdep,
+                            debt.gastnrmember,
+                            debt.zahlkonto,
+                            debt.opart,
+                            Artikel.artart,
+                            Artikel.artnr,
+                            Artikel.mwst_code,
+                            int(Artikel._recid)
+                            ).join(
+                                Artikel, 
+                                (Artikel.artnr == debt.artnr) & 
+                                (Artikel.artart == 2) & 
+                                (Artikel.departement == 0)
+                                ).filter(
+                                    (debt.rechnr == soabuff.rechnr) & 
+                                    (debt.gastnr == soabuff.gastnr) & 
+                                    (debt.betriebsnr == soabuff.dptnr) & 
+                                    (debt.opart <= 1) & 
+                                    (soabuff.saldo != 0) & 
+                                    (debt.zahlkonto == 0) & 
+                                    (debt._recid != soa_list.arrecid)).order_by(debt._recid).all():
                         if debt_obj_list.get(debt._recid):
                             continue
                         else:
