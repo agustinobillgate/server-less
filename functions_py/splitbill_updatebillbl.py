@@ -87,8 +87,8 @@ def splitbill_updatebillbl(pvilanguage:int, j:int, recid_curr:int, recid_j:int, 
         if billj.rechnr == 0:
             # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
             # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-            counters = db_session.query(Counters).with_for_update().filter(
-                     (Counters.counter_no == 3)).first()
+            counters = db_session.query(Counters).filter(
+                     (Counters.counter_no == 3)).with_for_update().first()
             
             counters.counter = counters.counter + 1
             billj.rechnr = counters.counter

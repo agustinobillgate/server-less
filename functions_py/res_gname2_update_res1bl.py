@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -49,18 +51,20 @@ def res_gname2_update_res1bl(inp_resnr:int, name:string, fname:string, ftitle:st
         nonlocal s_list, t_resline, resline, resline1
         nonlocal t_resline_data
 
-        accbuff = None
+        accb = None
         still_error:bool = False
         gcf_found:bool = False
         master_exist:bool = False
         prev_zinr:string = ""
         gastmember:int = 0
         flight_info:string = ""
-        Accbuff =  create_buffer("Accbuff",Res_line)
+        accb =  create_buffer("accb",Res_line)
 
         for s_list in query(s_list_data):
 
-            res_line = get_cache (Res_line, {"_recid": [(eq, s_list.res_recid)]})
+            # res_line = get_cache (Res_line, {"_recid": [(eq, s_list.res_recid)]})
+            res_line = db_session.query(Res_line.filter(
+                     (Res_line._recid == s_list.res_recid)).with_for_update().first()
 
             if res_line:
                 buffer_copy(res_line, t_resline)
@@ -120,7 +124,9 @@ def res_gname2_update_res1bl(inp_resnr:int, name:string, fname:string, ftitle:st
 
                         if resline.gastnrpay != guest.gastnr and resline.active_flag == 1:
 
-                            bill = get_cache (Bill, {"resnr": [(eq, resline.resnr)],"reslinnr": [(eq, resline.reslinnr)]})
+                            # bill = get_cache (Bill, {"resnr": [(eq, resline.resnr)],"reslinnr": [(eq, resline.reslinnr)]})
+                            bill = db_session.query(Bill).filter(
+                                     (Bill.resnr == resline.resnr) & (Bill.reslinnr == resline.reslinnr)).with_for_update().first()
 
                             if bill:
                                 bill.gastnr = guest.gastnr
@@ -160,15 +166,17 @@ def res_gname2_update_res1bl(inp_resnr:int, name:string, fname:string, ftitle:st
 
                             if s_list.zinr != "":
 
-                                zimmer = get_cache (Zimmer, {"zinr": [(eq, s_list.zinr)]})
+                                # zimmer = get_cache (Zimmer, {"zinr": [(eq, s_list.zinr)]})
+                                zimmer = db_session.query(Zimmer).filter(
+                                         (Zimmer.zinr == s_list.zinr)).with_for_update().first()
 
                                 if zimmer:
                                     resline.setup = zimmer.setup
                                     resline.zikatnr = zimmer.zikatnr
 
-                            for accbuff in db_session.query(Accbuff).filter(
-                                     (accBuff.resnr == resline.resnr) & (accBuff.kontakt_nr == resline.reslinnr) & (accBuff.l_zuordnung[2] == 1)).order_by(Accbuff._recid).all():
-                                accbuff.zinr = resline.zinr
+                            for accb in db_session.query(accb).filter(
+                                     (accb.resnr == resline.resnr) & (accb.kontakt_nr == resline.reslinnr) & (accb.l_zuordnung[2] == 1)).order_by(accb._recid).all():
+                                accb.zinr = resline.zinr
 
                             if resline.active_flag == 1:
 
@@ -177,10 +185,12 @@ def res_gname2_update_res1bl(inp_resnr:int, name:string, fname:string, ftitle:st
                                 get_output(create_history(resline.resnr, resline.reslinnr, prev_zinr, "roomchg"))
 
                                 for bill in db_session.query(Bill).filter(
-                                         (Bill.resnr == resline.resnr) & (Bill.parent_nr == resline.reslinnr) & (Bill.flag == 0)).order_by(Bill._recid).all():
+                                         (Bill.resnr == resline.resnr) & (Bill.parent_nr == resline.reslinnr) & (Bill.flag == 0)).order_by(Bill._recid).with_for_update().all():
                                     bill.zinr = s_list.zinr
 
-                                    resline1 = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
+                                    # resline1 = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
+                                    resline1 = db_session.query(Res_line).filter(
+                                        (Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.parent_nr)).with_for_update().first()
 
                                     if resline1:
 
@@ -264,7 +274,9 @@ def res_gname2_update_res1bl(inp_resnr:int, name:string, fname:string, ftitle:st
 
             if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                qsy = db_session.query(Queasy).filter(
+                         (Queasy._recid == queasy._recid)).with_for_update().first()
 
                 if qsy:
                     qsy.logi2 = True
@@ -275,7 +287,9 @@ def res_gname2_update_res1bl(inp_resnr:int, name:string, fname:string, ftitle:st
 
             if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                qsy = db_session.query(Queasy).filter(
+                         (Queasy._recid == queasy._recid)).with_for_update().first()
 
                 if qsy:
                     qsy.logi2 = True
@@ -288,7 +302,9 @@ def res_gname2_update_res1bl(inp_resnr:int, name:string, fname:string, ftitle:st
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Queasy).filter(
+                             (Queasy._recid == queasy._recid)).with_for_update().first()    
 
                     if qsy:
                         qsy.logi2 = True
@@ -299,7 +315,9 @@ def res_gname2_update_res1bl(inp_resnr:int, name:string, fname:string, ftitle:st
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Queasy).filter(
+                             (Queasy._recid == queasy._recid)).with_for_update().first()
 
                     if qsy:
                         qsy.logi2 = True
@@ -439,7 +457,7 @@ def res_gname2_update_res1bl(inp_resnr:int, name:string, fname:string, ftitle:st
             for curr_datum in date_range(beg_datum,(abreise - 1)) :
 
                 zimplan1 = db_session.query(Zimplan1).filter(
-                         (Zimplan1.datum == curr_datum) & (Zimplan1.zinr == (zinr).lower())).first()
+                         (Zimplan1.datum == curr_datum) & (Zimplan1.zinr == (zinr).lower())).with_for_update().first()
 
                 if (not zimplan1) and (not room_blocked):
                     zimplan = Zimplan()
@@ -478,7 +496,9 @@ def res_gname2_update_res1bl(inp_resnr:int, name:string, fname:string, ftitle:st
             if room_blocked:
                 for curr_datum in date_range(beg_datum,(abreise - 1)) :
 
-                    zimplan = get_cache (Zimplan, {"datum": [(eq, curr_datum)],"zinr": [(eq, zinr)],"res_recid": [(eq, resline_recid)]})
+                    # zimplan = get_cache (Zimplan, {"datum": [(eq, curr_datum)],"zinr": [(eq, zinr)],"res_recid": [(eq, resline_recid)]})
+                    zimplan = db_session.query(Zimplan).filter(
+                             (Zimplan.datum == curr_datum) & (Zimplan.zinr == (zinr).lower()) & (Zimplan.res_recid == resline_recid)).with_for_update().first()
 
                     if zimplan:
                         db_session.delete(zimplan)
@@ -487,7 +507,9 @@ def res_gname2_update_res1bl(inp_resnr:int, name:string, fname:string, ftitle:st
 
                 if resstatus == 6 or resstatus == 13:
 
-                    zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+                    # zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+                    zimmer = db_session.query(Zimmer).filter(
+                             (Zimmer.zinr == (zinr).lower())).with_for_update().first()
 
                     if abreise > htparam.fdate and zimmer.zistatus == 0:
                         zimmer.zistatus = 5
@@ -557,26 +579,30 @@ def res_gname2_update_res1bl(inp_resnr:int, name:string, fname:string, ftitle:st
                     if res_line1:
 
                         for res_line2 in db_session.query(Res_line2).filter(
-                                 (Res_line2.resnr == inp_resnr) & (Res_line2.zinr == rline.zinr) & (Res_line2.resstatus == 13)).order_by(Res_line2._recid).all():
+                                 (Res_line2.resnr == inp_resnr) & (Res_line2.zinr == rline.zinr) & (Res_line2.resstatus == 13)).order_by(Res_line2._recid).with_for_update().all():
 
-                            bill = get_cache (Bill, {"resnr": [(eq, inp_resnr)],"reslinnr": [(eq, res_line2.reslinnr)],"flag": [(eq, 0)],"zinr": [(eq, res_line2.zinr)]})
+                            # bill = get_cache (Bill, {"resnr": [(eq, inp_resnr)],"reslinnr": [(eq, res_line2.reslinnr)],"flag": [(eq, 0)],"zinr": [(eq, res_line2.zinr)]})
+                            bill = db_session.query(Bill).filter(
+                                     (Bill.resnr == inp_resnr) & (Bill.reslinnr == res_line2.reslinnr) & (Bill.flag == 0) & (Bill.zinr == res_line2.zinr)).with_for_update().first()
                             bill.zinr = new_zinr
                             parent_nr = bill.parent_nr
                             pass
 
                             for bill in db_session.query(Bill).filter(
-                                     (Bill.resnr == inp_resnr) & (Bill.parent_nr == parent_nr) & (Bill.flag == 0) & (Bill.zinr == res_line2.zinr)).order_by(Bill._recid).all():
+                                     (Bill.resnr == inp_resnr) & (Bill.parent_nr == parent_nr) & (Bill.flag == 0) & (Bill.zinr == res_line2.zinr)).order_by(Bill._recid).with_for_update().all():
                                 bill.zinr = new_zinr
                                 pass
                             res_line2.zinr = new_zinr
                             pass
 
-                        zimmer = get_cache (Zimmer, {"zinr": [(eq, rline.zinr)]})
+                        # zimmer = get_cache (Zimmer, {"zinr": [(eq, rline.zinr)]})
+                        zimmer = db_session.query(Zimmer).filter(
+                                 (Zimmer.zinr == (rline.zinr).lower())).with_for_update().first()
                         zimmer.zistatus = 2
                         pass
 
             for zimplan in db_session.query(Zimplan).filter(
-                         (Zimplan.zinr == rline.zinr) & (Zimplan.datum >= beg_datum) & (Zimplan.datum < rline.abreise)).order_by(Zimplan._recid).all():
+                         (Zimplan.zinr == rline.zinr) & (Zimplan.datum >= beg_datum) & (Zimplan.datum < rline.abreise)).order_by(Zimplan._recid).with_for_update().all():
 
                 if res_recid1 != 0:
                     zimplan.res_recid = res_recid1

@@ -61,8 +61,8 @@ def mk_supply_btn_gobl(pvilanguage:int, lname:string, zcode:string, t_l_lieferan
     t_l_lieferant = query(t_l_lieferant_data, first=True)
 
     # counters = get_cache (Counters, {"counter_no": [(eq, 14)]})
-    counters = db_session.query(Counters).with_for_update().filter(
-             (Counters.counter_no == 14)).first()
+    counters = db_session.query(Counters).filter(
+             (Counters.counter_no == 14)).with_for_update().first()
     counters.counter = counters.counter + 1
     t_l_lieferant.lief_nr = counters.counter
     pass

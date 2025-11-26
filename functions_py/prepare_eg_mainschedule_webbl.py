@@ -147,8 +147,8 @@ def prepare_eg_mainschedule_webbl(user_init:string, dayplan:date, firstday:date,
         nonlocal t_eg_location_data, t_eg_property_data, t_eg_staff_data, t_zimmer_data, t_queasy_data, action_data, staff_data, maintain_data
 
         # counters = get_cache (Counters, {"counter_no": [(eq, 38)]})
-        counters = db_session.query(Counters).with_for_update().filter(
-                 (Counters.counter_no == 38)).first()
+        counters = db_session.query(Counters).filter(
+                 (Counters.counter_no == 38)).with_for_update().first()
 
         if not counters:
             counters = Counters()
