@@ -135,8 +135,6 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
         if res_line.abreise > co_date:
             co_ok = substring(bediener.permissions, 69, 1) >= "2"
             co_str = translateExtended ("EARLY Check-out", lvcarea, "")
-
-
         else:
             co_ok = True
             co_str = translateExtended ("Check-out", lvcarea, "")
@@ -245,7 +243,8 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
             if not res_line1:
 
                 outorder = get_cache (Outorder, {"zinr": [(eq, zimmer.zinr)],"gespstart": [(le, co_date)],"gespende": [(ge, co_date)],"betriebsnr": [(le, 1)]})
-                pass
+                
+                db_session.refresh(zimmer, with_for_update=True)
 
                 if not outorder:
                     zimmer.zistatus = 2
@@ -267,7 +266,8 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
 
         if not bill1:
 
-            res_line1 = get_cache (Res_line, {"_recid": [(eq, res_line._recid)]})
+            res_line1 = db_session.query(Res_line1).filter(
+                     (Res_line1._recid == res_line._recid)).with_for_update().first()
             res_line1.resstatus = 8
             res_line1.abreise = co_date
             res_line1.abreisezeit = get_current_time_in_seconds()
@@ -275,7 +275,8 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
             res_line1.changed_id = user_init
             res_line1.active_flag = 2
 
-            guest = get_cache (Guest, {"gastnr": [(eq, res_line1.gastnrmember)]})
+            guest = db_session.query(Guest).filter(
+                     (Guest.gastnr == res_line1.gastnrmember)).with_for_update().first()
             guest.date1 = res_line1.ankunft
             guest.date2 = res_line1.abreise
             guest.zimmeranz = guest.zimmeranz + 1
@@ -306,7 +307,7 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
                 resline.changed_id = user_init
 
         for bill1 in db_session.query(Bill1).filter(
-                 (Bill1.resnr == resnr) & (Bill1.parent_nr == reslinnr) & (Bill1.flag == 0)).order_by(Bill1._recid).all():
+                 (Bill1.resnr == resnr) & (Bill1.parent_nr == reslinnr) & (Bill1.flag == 0)).with_for_update().order_by(Bill1._recid).all():
             bill1.vesrcod = user_init
             bill1.flag = 1
             bill1.datum = co_date
@@ -320,18 +321,21 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
 
             if bl_saldo != bill1.saldo:
 
-                tbuff = get_cache (Bill, {"_recid": [(eq, bill1._recid)]})
+                tbuff = db_session.query(Tbuff).filter(
+                         (Tbuff._recid == bill1._recid)).with_for_update().first()
                 tbuff.saldo =  to_decimal(bl_saldo)
                 pass
                 pass
 
         for bill1 in db_session.query(Bill1).filter(
-                 (Bill1.resnr == resnr) & (Bill1.parent_nr == reslinnr) & (Bill1.zinr == (zinr).lower())).order_by(Bill1._recid).all():
+                 (Bill1.resnr == resnr) & (Bill1.parent_nr == reslinnr) & (Bill1.zinr == (zinr).lower())).with_for_update().order_by(Bill1._recid).all():
 
-            res_line = get_cache (Res_line, {"resnr": [(eq, bill1.resnr)],"reslinnr": [(eq, bill1.reslinnr)],"zinr": [(eq, bill1.zinr)]})
+            res_line = db_session.query(Res_line).filter(
+                     (Res_line.resnr == bill1.resnr) & (Res_line.reslinnr == bill1.reslinnr) & (Res_line.zinr == (bill1.zinr).lower())).with_for_update().first()
 
             if res_line:
-                pass
+                db_session.refresh(res_line, with_for_update=True)
+
                 res_recid = res_line._recid
                 resstatus = res_line.resstatus
                 ankunft = res_line.ankunft
@@ -339,33 +343,36 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
 
                 if res_line.resstatus != 12:
                     res_line.resstatus = 8
+
                 res_line.abreise = co_date
                 abreise_date = res_line.abreise
+
                 res_line.abreisezeit = get_current_time_in_seconds()
                 res_line.changed = co_date
                 res_line.changed_id = user_init
                 res_line.active_flag = 2
 
-                res_line2 = get_cache (Res_line, {"resnr": [(eq, res_line.resnr)],"active_flag": [(lt, 2)]})
+                res_line2 = db_session.query(Res_line2).filter(
+                         (Res_line2.resnr == res_line.resnr) & (Res_line2.active_flag < 2)).first()
 
                 if not res_line2:
-                    pass
+                    db_session.refresh(reservation, with_for_update=True)
                     reservation.activeflag = 1
-                    pass
-                pass
-                pass
 
             if tot_umsatz != 0:
+                guest = db_session.query(Guest).filter(
+                         (Guest.gastnr == bill1.gastnr)).with_for_update().first()
 
-                guest = get_cache (Guest, {"gastnr": [(eq, bill1.gastnr)]})
+
                 guest.logisumsatz =  to_decimal(guest.logisumsatz) + to_decimal(bill1.logisumsatz)
                 guest.argtumsatz =  to_decimal(guest.argtumsatz) + to_decimal(bill1.argtumsatz)
                 guest.f_b_umsatz =  to_decimal(guest.f_b_umsatz) + to_decimal(bill1.f_b_umsatz)
                 guest.sonst_umsatz =  to_decimal(guest.sonst_umsatz) + to_decimal(bill1.sonst_umsatz)
                 guest.gesamtumsatz =  to_decimal(guest.gesamtumsatz) + to_decimal(bill1.gesamtumsatz)
-                pass
+                
 
-                guestat = get_cache (Guestat, {"gastnr": [(eq, res_line.gastnr)],"monat": [(eq, get_month(bill_date))],"jahr": [(eq, get_year(bill_date))],"betriebsnr": [(eq, 0)]})
+                guestat = db_session.query(Guestat).filter(
+                         (Guestat.gastnr == res_line.gastnr) & (Guestat.monat == get_month(bill_date)) & (Guestat.jahr == get_year(bill_date)) & (Guestat.betriebsnr == 0)).with_for_update().first()
 
                 if not guestat:
                     guestat = Guestat()
@@ -401,7 +408,8 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
 
                 if bediener:
 
-                    salestat = get_cache (Salestat, {"bediener_nr": [(eq, bediener.nr)],"jahr": [(eq, get_year(bill_date))],"monat": [(eq, get_month(bill_date))]})
+                    salestat = db_session.query(Salestat).filter(
+                             (Salestat.bediener_nr == bediener.nr) & (Salestat.jahr == get_year(bill_date)) & (Salestat.monat == get_month(bill_date))).with_for_update().first()
 
                     if not salestat:
                         salestat = Salestat()
@@ -430,7 +438,8 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
 
             if real_guest and res_line.resstatus != 12:
 
-                guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+                guest = db_session.query(Guest).filter(
+                         (Guest.gastnr == res_line.gastnrmember)).with_for_update().first()
                 guest.date1 = res_line.ankunft
                 guest.date2 = res_line.abreise
                 guest.zimmeranz = guest.zimmeranz + 1
@@ -442,8 +451,9 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
 
                 if res_line.gastnrmember != res_line.gastnr:
                     get_min_reslinnr()
+                    guest = db_session.query(Guest).filter(
+                             (Guest.gastnr == res_line.gastnr)).with_for_update().first()
 
-                    guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
                     guest.zimmeranz = guest.zimmeranz + 1
 
                     if min_reslinnr == 1:
@@ -457,7 +467,7 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
             res_recid1 = 0
 
             for zimplan in db_session.query(Zimplan).filter(
-                     (Zimplan.datum >= co_date) & (Zimplan.datum < abreise) & (Zimplan.zinr == (zinr).lower()) & (Zimplan.res_recid == res_recid)).order_by(Zimplan._recid).all():
+                     (Zimplan.datum >= co_date) & (Zimplan.datum < abreise) & (Zimplan.zinr == zinr) & (Zimplan.res_recid == res_recid)).with_for_update().order_by(Zimplan._recid).all():
 
                 if res_recid1 != 0:
 
@@ -469,7 +479,7 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
             if resstatus != 12:
 
                 for resplan in db_session.query(Resplan).filter(
-                         (Resplan.datum >= co_date) & (Resplan.datum < abreise) & (Resplan.zikatnr == zimmer.zikatnr)).order_by(Resplan._recid).all():
+                         (Resplan.datum >= co_date) & (Resplan.datum < abreise) & (Resplan.zikatnr == zimmer.zikatnr)).with_for_update().order_by(Resplan._recid).all():
                     resplan.anzzim[resstatus - 1] = resplan.anzzim[resstatus - 1] - 1
                     pass
 
@@ -478,7 +488,8 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
 
             if not resline:
 
-                mealcoup = get_cache (Mealcoup, {"zinr": [(eq, zinr)],"activeflag": [(eq, True)]})
+                mealcoup = db_session.query(Mealcoup).filter(
+                         (Mealcoup.zinr == zinr) & (Mealcoup.activeflag == True)).with_for_update().first()
 
                 if mealcoup:
                     pass
@@ -488,7 +499,7 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
                     pass
 
             for queasy in db_session.query(Queasy).filter(
-                     (Queasy.key == 16) & (Queasy.number1 == resnr) & (Queasy.number2 == reslinnr)).order_by(Queasy._recid).all():
+                     (Queasy.key == 16) & (Queasy.number1 == resnr) & (Queasy.number2 == reslinnr)).with_for_update().order_by(Queasy._recid).all():
                 db_session.delete(queasy)
                 pass
 
@@ -497,26 +508,23 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
 
         if not res_line1:
 
-            master = get_cache (Master, {"resnr": [(eq, resnr)]})
-
+            master = db_session.query(Master).filter(
+                     (Master.resnr == resnr)).with_for_update().first()
+            
             if master:
-                pass
+                db_session.refresh(master, with_for_update=True)
                 master.active = False
-                pass
-                pass
 
                 bill1 = get_cache (Bill, {"resnr": [(eq, resnr)],"reslinnr": [(eq, 0)]})
-                 # Rd 221/7/2025
-                # if not available return
-                if bill1 is None:
-                    return generate_output()
 
                 if bill1.rechnr != 0:
 
-                    guest = get_cache (Guest, {"gastnr": [(eq, bill1.gastnr)]})
+                    guest = db_session.query(Guest).filter(
+                             (Guest.gastnr == bill1.gastnr)).first()
 
                     if guest:
-                        pass
+                        db_session.refresh(guest, with_for_update=True)
+
                         guest.logisumsatz =  to_decimal(guest.logisumsatz) + to_decimal(bill1.logisumsatz)
                         guest.argtumsatz =  to_decimal(guest.argtumsatz) + to_decimal(bill1.argtumsatz)
                         guest.f_b_umsatz =  to_decimal(guest.f_b_umsatz) + to_decimal(bill1.f_b_umsatz)
@@ -528,14 +536,17 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
                         pass
 
             for queasy in db_session.query(Queasy).filter(
-                     (Queasy.key == 24) & (Queasy.char1 == (zinr).lower())).order_by(Queasy._recid).all():
+                     (Queasy.key == 24) & (Queasy.char1 == (zinr).lower())).with_for_update().order_by(Queasy._recid).all():
                 db_session.delete(queasy)
                 pass
 
-        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "flag")],"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)],"betriebsnr": [(eq, 0)]})
+        # reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "flag")],"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)],"betriebsnr": [(eq, 0)]})
+        reslin_queasy = db_session.query(Reslin_queasy).filter(
+                 (Reslin_queasy.key == "flag") & (Reslin_queasy.resnr == resnr) & (Reslin_queasy.reslinnr == reslinnr) & (Reslin_queasy.betriebsnr == 0)).with_for_update().first()
 
         if reslin_queasy:
             db_session.delete(reslin_queasy)
+
         checked_out = True
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1002)]})
@@ -634,13 +645,15 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
                     upto_date = abreise_date - timedelta(days=1)
                 else:
                     upto_date = co_date
+
             for datum in date_range(co_date,upto_date) :
 
                 queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(eq, datum)],"number1": [(eq, roomnr)],"char1": [(eq, "")]})
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Qsy).filter(
+                             (Qsy._recid == queasy._recid)).with_for_update().first
 
                     if qsy:
                         qsy.logi2 = True
@@ -653,12 +666,11 @@ def res_checkoutbl(pvilanguage:int, case_type:int, resnr:int, reslinnr:int, sile
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        qsy = db_session.query(Qsy).filter(
+                                 (Qsy._recid == queasy._recid)).with_for_update().first
 
                         if qsy:
                             qsy.logi2 = True
-                            pass
-                            pass
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 974)]})
     unbalanced_bill = htparam.flogical

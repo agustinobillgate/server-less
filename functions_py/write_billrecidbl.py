@@ -31,11 +31,11 @@ def write_billrecidbl(t_bill_data:[T_bill]):
 
     if t_bill:
 
-        bill = get_cache (Bill, {"_recid": [(eq, t_bill.bl_recid)]})
+        # bill = get_cache (Bill, {"_recid": [(eq, t_bill.bl_recid)]})
+        bill = db_session.query(Bill).filter(Bill._recid == t_bill.bl_recid).with_for_update().first()
 
         if bill:
             buffer_copy(t_bill, bill,except_fields=["flag"])
-            pass
             success_flag = True
 
     return generate_output()

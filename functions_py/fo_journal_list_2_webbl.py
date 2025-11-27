@@ -48,17 +48,12 @@ def fo_journal_list_2_webbl(from_art:int, to_art:int, from_dept:int, to_dept:int
     pass
     gtot, output_list_data = get_output(fo_journal_cld_3bl(from_art, to_art, from_dept, to_dept, from_date, to_date, sorttype, exclude_artrans, long_digit, foreign_flag, onlyjournal, excljournal, mi_post, mi_showrelease, mi_break, id_flag))
 
-    bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "fo transaction")],"char2": [(eq, id_flag)]})
-
+    bqueasy = db_session.query(Queasy).filter((Queasy.key == 285) & (Queasy.char1 == "FO Transaction") & (Queasy.char2 == id_flag)).first() 
     if bqueasy:
         done_flag = True
-        pass
+        db_session.refresh(bqueasy, with_for_update=True)
         bqueasy.number1 = 0
 
-
-        pass
-        pass
-    
     fo_journal_list_data.clear()
 
     for output_list in query(output_list_data):

@@ -2,6 +2,12 @@
 #------------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #------------------------------------------
+
+# ==================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# ==================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -46,12 +52,16 @@ def update_mainresbl(pvilanguage:int, res_mode:string, user_init:string, mr_comm
         Rline =  create_buffer("Rline",Res_line)
         Rgast =  create_buffer("Rgast",Guest)
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        reservation = db_session.query(Reservation).filter(
+                 (Reservation.resnr == resno)).with_for_update().first()
 
         rgast = db_session.query(Rgast).filter(
                  (Rgast.gastnr == gastno)).first()
 
-        master = get_cache (Master, {"resnr": [(eq, resno)]})
+        # master = get_cache (Master, {"resnr": [(eq, resno)]})
+        master = db_session.query(Master).filter(
+                 (Master.resnr == resno)).with_for_update().first()
 
         if master and master.active:
             reservation.verstat = 1
@@ -106,7 +116,7 @@ def update_mainresbl(pvilanguage:int, res_mode:string, user_init:string, mr_comm
 
                 if bill and bill.saldo != 0:
                     master.active = True
-            pass
+            db_session.refresh(master,with_for_update=True)
 
             if master.active:
                 reservation.verstat = 1

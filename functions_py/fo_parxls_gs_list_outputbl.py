@@ -6,8 +6,7 @@ from datetime import date
 from functions.prepare_fo_parxlsbl import prepare_fo_parxlsbl
 from models import Brief, Parameters, Queasy, Artikel, Wgrpdep
 
-def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user_init:string):
-
+def fo_parxls_gs_list_outputbl(pvilanguage:int, briefnr:int, link:string):
     msg_str = ""
     mess_result = "Failed to generate data"
     success_flag = False
@@ -48,14 +47,7 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
     msg_ans:bool = False
     outfile_dir:string = ""
     anz0:int = 0
-    i:int = 0
-    j:int = 0
-    l:int = 0
-    continued:bool = False
-    c:string = ""
-    ct:string = ""
     brief = parameters = queasy = artikel = wgrpdep = None
-    recid_w1_w2: int = 1
 
     detail_list = brief_list = batch_list = htp_list = htv_list = t_brief = w1 = w2 = t_parameters = ww1 = ww2 = w11 = None
 
@@ -65,15 +57,15 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
     htp_list_data, Htp_list = create_model("Htp_list", {"paramnr":int, "fchar":string})
     htv_list_data, Htv_list = create_model("Htv_list", {"paramnr":int, "fchar":string})
     t_brief_data, T_brief = create_model_like(Brief)
-    w1_data, W1 = create_model("W1", {"nr":int, "varname":string, "main_code":int, "s_artnr":string, "artnr":int, "dept":int, "grpflag":int, "done":bool, "bezeich":string, "int_flag":bool, "tday":Decimal, "tday_serv":Decimal, "tday_tax":Decimal, "mtd_serv":Decimal, "mtd_tax":Decimal, "ytd_serv":Decimal, "ytd_tax":Decimal, "yesterday":Decimal, "saldo":Decimal, "lastmon":Decimal, "pmtd_serv":Decimal, "pmtd_tax":Decimal, "lmtd_serv":Decimal, "lmtd_tax":Decimal, "lastyr":Decimal, "lytoday":Decimal, "ytd_saldo":Decimal, "lytd_saldo":Decimal, "year_saldo":[Decimal,12], "mon_saldo":[Decimal,31], "mon_budget":[Decimal,31], "mon_lmtd":[Decimal,31], "tbudget":Decimal, "budget":Decimal, "lm_budget":Decimal, "lm_today":Decimal, "lm_today_serv":Decimal, "lm_today_tax":Decimal, "lm_mtd":Decimal, "lm_ytd":Decimal, "ly_budget":Decimal, "ny_budget":Decimal, "ytd_budget":Decimal, "nytd_budget":Decimal, "nmtd_budget":Decimal, "lytd_budget":Decimal, "lytd_serv":Decimal, "lytd_tax":Decimal, "lytoday_serv":Decimal, "lytoday_tax":Decimal, "month_budget":Decimal, "year_budget":Decimal, "tischnr":int, "mon_serv":[Decimal,31], "mon_tax":[Decimal,31], "_recid":int})
-    w2_data, W2 = create_model("W2", {"val_sign":int, "nr1":int, "nr2":int, "_recid":int}, {"val_sign": 1})
+    w1_data, W1 = create_model("W1", {"nr":int, "varname":string, "main_code":int, "s_artnr":string, "artnr":int, "dept":int, "grpflag":int, "done":bool, "bezeich":string, "int_flag":bool, "tday":Decimal, "tday_serv":Decimal, "tday_tax":Decimal, "mtd_serv":Decimal, "mtd_tax":Decimal, "ytd_serv":Decimal, "ytd_tax":Decimal, "yesterday":Decimal, "saldo":Decimal, "lastmon":Decimal, "pmtd_serv":Decimal, "pmtd_tax":Decimal, "lmtd_serv":Decimal, "lmtd_tax":Decimal, "lastyr":Decimal, "lytoday":Decimal, "ytd_saldo":Decimal, "lytd_saldo":Decimal, "year_saldo":[Decimal,12], "mon_saldo":[Decimal,31], "mon_budget":[Decimal,31], "mon_lmtd":[Decimal,31], "tbudget":Decimal, "budget":Decimal, "lm_budget":Decimal, "lm_today":Decimal, "lm_today_serv":Decimal, "lm_today_tax":Decimal, "lm_mtd":Decimal, "lm_ytd":Decimal, "ly_budget":Decimal, "ny_budget":Decimal, "ytd_budget":Decimal, "nytd_budget":Decimal, "nmtd_budget":Decimal, "lytd_budget":Decimal, "lytd_serv":Decimal, "lytd_tax":Decimal, "lytoday_serv":Decimal, "lytoday_tax":Decimal, "month_budget":Decimal, "year_budget":Decimal, "tischnr":int, "mon_serv":[Decimal,31], "mon_tax":[Decimal,31]})
+    w2_data, W2 = create_model("W2", {"val_sign":int, "nr1":int, "nr2":int}, {"val_sign": 1})
     t_parameters_data, T_parameters = create_model_like(Parameters)
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, i, j, l, continued, c, ct, brief, parameters, queasy, artikel, wgrpdep
-        nonlocal pvilanguage, briefnr, link, user_init
+        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, brief, parameters, queasy, artikel, wgrpdep
+        nonlocal pvilanguage, briefnr, link
 
 
         nonlocal detail_list, brief_list, batch_list, htp_list, htv_list, t_brief, w1, w2, t_parameters, ww1, ww2, w11
@@ -83,8 +75,8 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
 
     def check_result():
 
-        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, i, j, l, continued, c, ct, brief, parameters, queasy, artikel, wgrpdep
-        nonlocal pvilanguage, briefnr, link, user_init
+        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, brief, parameters, queasy, artikel, wgrpdep
+        nonlocal pvilanguage, briefnr, link
 
 
         nonlocal detail_list, brief_list, batch_list, htp_list, htv_list, t_brief, w1, w2, t_parameters, ww1, ww2, w11
@@ -186,23 +178,12 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
                 wgrpdep = get_cache (Wgrpdep, {"zknr": [(eq, subgr)],"departement": [(eq, sg_dept)]})
 
                 if not wgrpdep:
-                    msg_str = msg_str + chr_unicode(2) + translateExtended ("SubGroup not found : ", lvcarea, "") + ww1.varname
+                    msg_str = msg_str + chr_unicode(2) + translateExtended ("SubGroup not found : ", lvcarea, "") + w1.varname
                     error_nr = -1
 
                     return
 
             elif ww1.main_code == 1084:
-
-                w11 = query(w11_data, filters=(lambda w11: w11._recid == ww1._recid), first=True)
-
-                artikel = get_cache (Artikel, {"artnr": [(eq, w11.artnr)],"departement": [(eq, w11.dept)]})
-
-                if not artikel:
-                    msg_str = msg_str + chr_unicode(2) + translateExtended ("No such article number : ", lvcarea, "") + to_string(w11.artnr) + " " + translateExtended ("dept", lvcarea, "") + " " + to_string(w11.dept)
-
-                    return
-
-            elif ww1.main_code == 809:
 
                 artikel = get_cache (Artikel, {"artnr": [(eq, ww1.artnr)],"departement": [(eq, ww1.dept)]})
 
@@ -211,11 +192,20 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
 
                     return
 
+            elif ww1.main_code == 809:
+
+                artikel = get_cache (Artikel, {"artnr": [(eq, ww1.artnr)],"departement": [(eq, ww1.dept)]})
+
+                if not artikel:
+                    msg_str = msg_str + chr_unicode(2) + translateExtended ("No such article number : ", lvcarea, "") + to_string(w1.artnr) + " " + translateExtended ("dept", lvcarea, "") + " " + to_string(w1.dept)
+
+                    return
+
 
     def create_var0(texte:string, int_flag:bool):
 
-        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, i, j, l, continued, c, ct, brief, parameters, queasy, artikel, wgrpdep
-        nonlocal pvilanguage, briefnr, link, user_init, recid_w1_w2
+        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, brief, parameters, queasy, artikel, wgrpdep
+        nonlocal pvilanguage, briefnr, link
 
 
         nonlocal detail_list, brief_list, batch_list, htp_list, htv_list, t_brief, w1, w2, t_parameters, ww1, ww2, w11
@@ -247,17 +237,14 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
             w1.int_flag = int_flag
             w1.varname = varname
             w1.main_code = curr_cmd
-            w1._recid = recid_w1_w2
-
-            recid_w1_w2 += 1
             curr_column = length(curr_texte) + 1
             curr_cmd = 0
 
 
     def create_var1(texte:string, int_flag:bool):
 
-        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, i, j, l, continued, c, ct, brief, parameters, queasy, artikel, wgrpdep
-        nonlocal pvilanguage, briefnr, link, user_init, recid_w1_w2
+        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, brief, parameters, queasy, artikel, wgrpdep
+        nonlocal pvilanguage, briefnr, link
 
 
         nonlocal detail_list, brief_list, batch_list, htp_list, htv_list, t_brief, w1, w2, t_parameters, ww1, ww2, w11
@@ -304,9 +291,6 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
             w1.int_flag = int_flag
             w1.varname = varname
             w1.main_code = curr_cmd
-            w1._recid = recid_w1_w2
-
-            recid_w1_w2 += 1
 
             if curr_cmd == 192:
                 w1.dept = nr
@@ -525,8 +509,8 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
 
     def create_var2(texte:string, int_flag:bool):
 
-        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, i, j, l, continued, c, ct, brief, parameters, queasy, artikel, wgrpdep
-        nonlocal pvilanguage, briefnr, link, user_init, recid_w1_w2
+        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, brief, parameters, queasy, artikel, wgrpdep
+        nonlocal pvilanguage, briefnr, link
 
 
         nonlocal detail_list, brief_list, batch_list, htp_list, htv_list, t_brief, w1, w2, t_parameters, ww1, ww2, w11
@@ -559,7 +543,6 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
             if correct:
                 dept = to_int(substring(subtext, 0, 2))
                 nr = to_int(substring(subtext, 2, 6))
-
             w1 = W1()
             w1_data.append(w1)
 
@@ -570,17 +553,14 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
             w1.main_code = curr_cmd
             w1.artnr = nr
             w1.dept = dept
-            w1._recid = recid_w1_w2
-
-            recid_w1_w2 += 1
             curr_column = length(curr_texte) + 1
             curr_cmd = 0
 
 
     def create_w1():
 
-        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, i, j, l, continued, c, ct, brief, parameters, queasy, artikel, wgrpdep
-        nonlocal pvilanguage, briefnr, link, user_init, recid_w1_w2
+        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, brief, parameters, queasy, artikel, wgrpdep
+        nonlocal pvilanguage, briefnr, link
 
 
         nonlocal detail_list, brief_list, batch_list, htp_list, htv_list, t_brief, w1, w2, t_parameters, ww1, ww2, w11
@@ -601,9 +581,6 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
         w1.nr = curr_nr
         w1.varname = varname
         w1.grpflag = grpflag
-        w1._recid = recid_w1_w2
-
-        recid_w1_w2 += 1
 
         if grpflag == 2:
             w1.bezeich = bezeich
@@ -616,8 +593,8 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
 
     def create_w2(ind:int, nr2:int, nr:int, val_sign:int):
 
-        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, i, j, l, continued, c, ct, brief, parameters, queasy, artikel, wgrpdep
-        nonlocal pvilanguage, briefnr, link, user_init
+        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, brief, parameters, queasy, artikel, wgrpdep
+        nonlocal pvilanguage, briefnr, link
 
 
         nonlocal detail_list, brief_list, batch_list, htp_list, htv_list, t_brief, w1, w2, t_parameters, ww1, ww2, w11
@@ -636,8 +613,8 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
 
     def analyse_textheader(texte:string):
 
-        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, i, j, l, continued, c, ct, brief, parameters, queasy, artikel, wgrpdep
-        nonlocal pvilanguage, briefnr, link, user_init
+        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, brief, parameters, queasy, artikel, wgrpdep
+        nonlocal pvilanguage, briefnr, link
 
 
         nonlocal detail_list, brief_list, batch_list, htp_list, htv_list, t_brief, w1, w2, t_parameters, ww1, ww2, w11
@@ -652,8 +629,8 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
 
     def get_subtext(texte:string, subtext:string):
 
-        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, i, l, continued, c, ct, brief, parameters, queasy, artikel, wgrpdep
-        nonlocal pvilanguage, briefnr, link, user_init
+        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, brief, parameters, queasy, artikel, wgrpdep
+        nonlocal pvilanguage, briefnr, link
 
 
         nonlocal detail_list, brief_list, batch_list, htp_list, htv_list, t_brief, w1, w2, t_parameters, ww1, ww2, w11
@@ -682,8 +659,8 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
 
     def interprete_subtext(texte:string, subtext:string):
 
-        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, i, l, continued, c, ct, brief, parameters, queasy, artikel, wgrpdep
-        nonlocal pvilanguage, briefnr, link, user_init
+        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, brief, parameters, queasy, artikel, wgrpdep
+        nonlocal pvilanguage, briefnr, link
 
 
         nonlocal detail_list, brief_list, batch_list, htp_list, htv_list, t_brief, w1, w2, t_parameters, ww1, ww2, w11
@@ -692,23 +669,14 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
         j:int = 0
         found:bool = False
 
-        # htp_list = query(htp_list_data, first=True)
-        # while None != htp_list and not found:
+        htp_list = query(htp_list_data, first=True)
+        while None != htp_list and not found:
 
-        #     if htp_list.fchar.lower()  == (subtext).lower() :
-        #         found = True
-        #         curr_cmd = htp_list.paramnr
+            if htp_list.fchar.lower()  == (subtext).lower() :
+                found = True
+                curr_cmd = htp_list.paramnr
 
-        #     htp_list = query(htp_list_data, next=True)
-
-        if len(htp_list_data) != 0:
-            found = True
-
-        if found:
-            for htp_list in query(htp_list_data):
-                if htp_list.fchar.lower() == subtext.lower():
-                    found = True
-                    curr_cmd = htp_list.paramnr
+            htp_list = query(htp_list_data, next=True)
 
         if not found:
             msg_str = translateExtended ("Can not understand line", lvcarea, "") + " " + to_string(curr_row) + chr_unicode(10) + substring(curr_texte, 0, length(curr_texte))
@@ -720,8 +688,8 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
 
     def check_integer(texte:string):
 
-        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, j, l, continued, c, ct, brief, parameters, queasy, artikel, wgrpdep
-        nonlocal pvilanguage, briefnr, link, user_init
+        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, brief, parameters, queasy, artikel, wgrpdep
+        nonlocal pvilanguage, briefnr, link
 
 
         nonlocal detail_list, brief_list, batch_list, htp_list, htv_list, t_brief, w1, w2, t_parameters, ww1, ww2, w11
@@ -733,18 +701,13 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
         def generate_inner_output():
             return (correct)
 
-        texte = texte.strip()
 
-        if len(texte) == 0:
+        if length(texte) == 0:
             correct = False
+        for i in range(1,length(texte)  + 1) :
 
-        # for i in range(1,length(texte)  + 1) :
-
-        #     if asc(substring(texte, i - 1, 1)) > 57 or asc(substring(texte, i, 1)) < 48:
-        #         correct = False
-
-        if (not re.fullmatch(r"[0-9]+", texte)) and correct:
-            correct = False
+            if asc(substring(texte, i - 1, 1)) > 57 or asc(substring(texte, i, 1)) < 48:
+                correct = False
 
         if not correct:
             msg_str = translateExtended ("Program expected a number : ", lvcarea, "") + texte + chr_unicode(10) + translateExtended ("at line number", lvcarea, "") + " " + to_string(curr_row) + chr_unicode(10) + substring(curr_texte, 0, length(curr_texte))
@@ -758,8 +721,8 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
 
     def create_group(texte:string):
 
-        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, i, j, l, continued, c, ct, brief, parameters, queasy, artikel, wgrpdep
-        nonlocal pvilanguage, briefnr, link, user_init
+        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, brief, parameters, queasy, artikel, wgrpdep
+        nonlocal pvilanguage, briefnr, link
 
 
         nonlocal detail_list, brief_list, batch_list, htp_list, htv_list, t_brief, w1, w2, t_parameters, ww1, ww2, w11
@@ -800,8 +763,8 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
 
     def create_group_variable(texte:string):
 
-        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, j, l, continued, c, ct, brief, parameters, queasy, artikel, wgrpdep
-        nonlocal pvilanguage, briefnr, link, user_init
+        nonlocal msg_str, mess_result, success_flag, lvcarea, ch, xls_dir, budget_flag, ytd_flag, lytd_flag, lmtd_flag, pmtd_flag, budget_all, serv_vat, zeit, no_decimal, prog_error, error_nr, curr_row, curr_column, curr_cmd, curr_texte, curr_pos, actual_cmd, grp_nr, curr_nr, varname, bezeich, grpflag, n, keycmd, keyvar, foreign_flag, foreign_nr, start_date, lytoday, lytoday_flag, price_decimal, msg_ans, outfile_dir, anz0, brief, parameters, queasy, artikel, wgrpdep
+        nonlocal pvilanguage, briefnr, link
 
 
         nonlocal detail_list, brief_list, batch_list, htp_list, htv_list, t_brief, w1, w2, t_parameters, ww1, ww2, w11
@@ -842,8 +805,15 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
 
     detail_list.nr = 0
 
+    t_brief = query(t_brief_data, first=True)
+    batch_list = Batch_list()
+    batch_list_data.append(batch_list)
+
+    batch_list.briefnr = briefnr
+    batch_list.fname = t_brief.fname
+
     for brief_list in query(brief_list_data):
-        curr_texte = trim(brief_list.b_text)
+        curr_texte = trim(b_text)
         curr_pos = 1
         curr_column = 1
         curr_row = curr_row + 1
@@ -853,7 +823,6 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
 
         detail_list = query(detail_list_data, filters=(lambda detail_list: detail_list.nr == 0), first=True)
         detail_list.str_buffer = ""
-
         for n in range(1,12 + 1) :
             detail_list.field_value[n - 1] = 0
             detail_list.use_flag[n - 1] = False
@@ -1176,9 +1145,8 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
                 elif curr_cmd == 2029:
                     create_var1(curr_texte, True)
 
-                # function create_var3 is not defined
-                # elif curr_cmd == 2031:
-                #     create_var3(curr_texte, True)
+                elif curr_cmd == 2031:
+                    create_var3(curr_texte, True)
 
                 elif curr_cmd == 2032:
                     create_var1(curr_texte, True)
@@ -1264,12 +1232,6 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
                 elif curr_cmd == 2059:
                     create_var1(curr_texte, True)
 
-                elif curr_cmd == 2060:
-                    create_var0(curr_texte, True)
-
-                elif curr_cmd == 2061:
-                    create_var0(curr_texte, True)
-
                 elif curr_cmd == 9092:
                     create_var1(curr_texte, True)
 
@@ -1354,34 +1316,22 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
                 if prog_error:
 
                     return generate_output()
-
     check_result()
 
     if msg_str != "":
-        queasy = db_session.query(Queasy).filter(
-            (Queasy.key == 293) &
-            (Queasy.deci1 == briefnr) &
-            (Queasy.char2 == trim(link)) &
-            (Queasy.date1 == get_current_date()) &
-            (Queasy.char1 == trim(user_init))
-        ).with_for_update().first()
-        
+
+        queasy = db_session.query(Queasy).filter(Queasy.key == 293, Queasy.deci1 == briefnr, Queasy.char2 == trim(link), Queasy.date1 == get_current_date()).with_for_update().first()
+
         if queasy:
             db_session.delete(queasy)
 
         return generate_output()
 
-    queasy = db_session.query(Queasy).filter(
-        (Queasy.key == 293) &
-        (Queasy.deci1 == briefnr) &
-        (Queasy.char2 == trim(link)) &
-        (Queasy.date1 == get_current_date()) &
-        (Queasy.char1 == trim(user_init))
-    ).with_for_update().first()
-    
+    queasy = db_session.query(Queasy).filter(Queasy.key == 293, Queasy.deci1 == briefnr, Queasy.char2 == trim(link), Queasy.date1 == get_current_date()).with_for_update().first()
+
     if queasy:
         db_session.delete(queasy)
         mess_result = "Successfully generate data"
         success_flag = True
-        
+
     return generate_output()

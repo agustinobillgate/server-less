@@ -1,11 +1,8 @@
-# using conversion tools version: 1.0.0.117
-# ------------------------------------------
+#using conversion tools version: 1.0.0.117
+#------------------------------------------
 # Rd, 14/8/2025
 # if available bqueasy
-
-# yusufwijasena, 25/11/2025
-# - fix (Queasy.char2 == id_flag)
-# ------------------------------------------
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -13,60 +10,24 @@ from models import Queasy, Artikel, Htparam
 
 import time
 
-fo_journal_list_data, Fo_journal_list = create_model(
-    "Fo_journal_list",
-    {
-        "datum": date,
-        "c": string,
-        "roomnumber": string,
-        "nsflag": string,
-        "mbflag": string,
-        "shift": string,
-        "billno": int,
-        "artno": int,
-        "bezeich": string,
-        "voucher": string,
-        "depart": string,
-        "outlet": string,
-        "qty": int,
-        "amount": Decimal,
-        "guestname": string,
-        "billrcvr": string,
-        "zeit": string,
-        "id": string,
-        "sysdate": date,
-        "remark": string,
-        "checkin": date,
-        "checkout": date,
-        "segcode": string,
-        "amt_nett": Decimal,
-        "service": Decimal,
-        "vat": Decimal,
-        "vat_percentage": Decimal,
-        "serv_percentage": Decimal,
-        "deptno": int,
-        "nationality": string,
-        "resnr": int,
-        "book_source": string,
-        "resname": string
-    })
+fo_journal_list_data, Fo_journal_list = create_model("Fo_journal_list", {"datum":date, "c":string, "roomnumber":string, "nsflag":string, "mbflag":string, "shift":string, "billno":int, "artno":int, "bezeich":string, "voucher":string, "depart":string, "outlet":string, "qty":int, "amount":Decimal, "guestname":string, "billrcvr":string, "zeit":string, "id":string, "sysdate":date, "remark":string, "checkin":date, "checkout":date, "segcode":string, "amt_nett":Decimal, "service":Decimal, "vat":Decimal, "vat_percentage":Decimal, "serv_percentage":Decimal, "deptno":int, "nationality":string, "resnr":int, "book_source":string, "resname":string})
 
+def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journal_list]):
 
-def fo_journal_create_list_webbl(id_flag: string, fo_journal_list_data: [Fo_journal_list]):
-
-    prepare_cache([Artikel, Htparam])
+    prepare_cache ([Artikel, Htparam])
 
     done_flag = False
-    counter: int = 0
-    queasy_str1: string = ""
-    queasy_str2: string = ""
+    counter:int = 0
+    queasy_str1:string = ""
+    queasy_str2:string = ""
     queasy = artikel = htparam = None
 
     fo_journal_list = bqueasy = pqueasy = tqueasy = None
 
-    Bqueasy = create_buffer("Bqueasy", Queasy)
-    Pqueasy = create_buffer("Pqueasy", Queasy)
-    Tqueasy = create_buffer("Tqueasy", Queasy)
+    Bqueasy = create_buffer("Bqueasy",Queasy)
+    Pqueasy = create_buffer("Pqueasy",Queasy)
+    Tqueasy = create_buffer("Tqueasy",Queasy)
+
 
     db_session = local_storage.db_session
 
@@ -74,6 +35,8 @@ def fo_journal_create_list_webbl(id_flag: string, fo_journal_list_data: [Fo_jour
         nonlocal done_flag, counter, queasy_str1, queasy_str2, queasy, artikel, htparam
         nonlocal id_flag
         nonlocal bqueasy, pqueasy, tqueasy
+
+
         nonlocal fo_journal_list, bqueasy, pqueasy, tqueasy
 
         return {"done_flag": done_flag, "fo-journal-list": fo_journal_list_data}
@@ -83,7 +46,7 @@ def fo_journal_create_list_webbl(id_flag: string, fo_journal_list_data: [Fo_jour
         count = db_session.query(Queasy).filter(
             (Queasy.key == 280) &
             (Queasy.char1 == "FO Transaction") &
-            (Queasy.char2 == id_flag)
+            (Queasy.char2 == (id_flag))
         ).count()
 
         if count >= 1000:
@@ -101,7 +64,7 @@ def fo_journal_create_list_webbl(id_flag: string, fo_journal_list_data: [Fo_jour
         time.sleep(0.3)
 
     for queasy in db_session.query(Queasy).filter(
-            (Queasy.key == 280) & (Queasy.char1 == ("FO Transaction")) & (Queasy.char2 == (id_flag))).order_by(Queasy.number1).all():
+             (Queasy.key == 280) & (Queasy.char1 == ("FO Transaction")) & (Queasy.char2 == (id_flag))).order_by(Queasy.number1).all():
         counter = counter + 1
         queasy_str1 = entry(0, queasy.char3, "|")
         queasy_str2 = entry(1, queasy.char3, "|")
@@ -141,60 +104,55 @@ def fo_journal_create_list_webbl(id_flag: string, fo_journal_list_data: [Fo_jour
         fo_journal_list.resname = trim(substring(queasy_str2, 348, 25))
 
         if queasy.logi1:
-            fo_journal_list.amt_nett = to_decimal(
-                substring(queasy_str2, 373, 21))
-            fo_journal_list.service = to_decimal(
-                substring(queasy_str2, 394, 21))
+            fo_journal_list.amt_nett = to_decimal(substring(queasy_str2, 373, 21))
+            fo_journal_list.service = to_decimal(substring(queasy_str2, 394, 21))
             fo_journal_list.vat = to_decimal(substring(queasy_str2, 415, 21))
 
-            artikel = get_cache(Artikel, {"departement": [
-                                (eq, fo_journal_list.deptno)], "artnr": [(eq, fo_journal_list.artno)]})
+            artikel = get_cache (Artikel, {"departement": [(eq, fo_journal_list.deptno)],"artnr": [(eq, fo_journal_list.artno)]})
 
             if artikel:
 
-                htparam = get_cache(
-                    Htparam, {"paramnr": [(eq, artikel.mwst_code)]})
+                htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.mwst_code)]})
 
                 if htparam:
-                    fo_journal_list.vat_percentage = to_decimal(
-                        htparam.fdecimal)
+                    fo_journal_list.vat_percentage =  to_decimal(htparam.fdecimal)
                 else:
-                    fo_journal_list.vat_percentage = to_decimal("0")
+                    fo_journal_list.vat_percentage =  to_decimal("0")
 
-                htparam = get_cache(
-                    Htparam, {"paramnr": [(eq, artikel.service_code)]})
+                htparam = get_cache (Htparam, {"paramnr": [(eq, artikel.service_code)]})
 
                 if htparam:
-                    fo_journal_list.serv_percentage = to_decimal(
-                        htparam.fdecimal)
+                    fo_journal_list.serv_percentage =  to_decimal(htparam.fdecimal)
                 else:
-                    fo_journal_list.serv_percentage = to_decimal("0")
+                    fo_journal_list.serv_percentage =  to_decimal("0")
 
-        bqueasy = db_session.query(Bqueasy).filter(
-            (Bqueasy._recid == queasy._recid)).first()
+        bqueasy = db_session.query(Bqueasy).filter(Bqueasy._recid == queasy._recid).with_for_update().first()
         db_session.delete(bqueasy)
-        pass
 
     pqueasy = db_session.query(Pqueasy).filter(
-        (Pqueasy.key == 280) & (Pqueasy.char1 == ("FO Transaction")) & (Pqueasy.char2 == (id_flag))).first()
+             (Pqueasy.key == 280) & (Pqueasy.char1 == ("FO Transaction")) & (Pqueasy.char2 == (id_flag))).first()
 
     if pqueasy:
         done_flag = False
 
+
     else:
+
         tqueasy = db_session.query(Tqueasy).filter(
-            (Tqueasy.key == 285) & (Tqueasy.char1 == ("FO Transaction")) & (Tqueasy.number1 == 1) & (Tqueasy.char2 == (id_flag))).first()
+                 (Tqueasy.key == 285) & (Tqueasy.char1 == ("FO Transaction")) & (Tqueasy.number1 == 1) & (Tqueasy.char2 == (id_flag))).first()
 
         if tqueasy:
             done_flag = False
+
 
         else:
             done_flag = True
 
     tqueasy = db_session.query(Tqueasy).filter(
-        (Tqueasy.key == 285) & (Tqueasy.char1 == ("FO Transaction")) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == (id_flag))).first()
+             (Tqueasy.key == 285) & (Tqueasy.char1 == ("FO Transaction")) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == (id_flag))).first()
 
     if tqueasy:
+        db_session.refresh(tqueasy, with_for_update=True)
         db_session.delete(tqueasy)
 
     return generate_output()
