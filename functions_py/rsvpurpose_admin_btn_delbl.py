@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd 24/7/2025
 # gitlab: 772
+# Rd, 27/11/2025, with_for_update added
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -41,7 +42,10 @@ def rsvpurpose_admin_btn_delbl(pvilanguage:int, number1:int):
         msg_str = msg_str + chr_unicode(2) + translateExtended ("Reservation exists, deleting not possible.", lvcarea, "")
     else:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 143)],"number1": [(eq, number1)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 143)],"number1": [(eq, number1)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 143) &
+                 (Queasy.number1 == number1)).with_for_update().first()
 
         if queasy:
             db_session.delete(queasy)

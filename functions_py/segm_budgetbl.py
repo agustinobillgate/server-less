@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -29,7 +31,10 @@ def segm_budgetbl(fdate:date, tdate:date, datum:date, segmentcode:int, room:int,
         return generate_output()
     for datum in date_range(fdate,tdate) :
 
-        segmentstat = get_cache (Segmentstat, {"datum": [(eq, datum)],"segmentcode": [(eq, segmentcode)]})
+        # segmentstat = get_cache (Segmentstat, {"datum": [(eq, datum)],"segmentcode": [(eq, segmentcode)]})
+        segmentstat = db_session.query(Segmentstat).filter(
+                 (Segmentstat.datum == datum) &
+                 (Segmentstat.segmentcode == segmentcode)).with_for_update().first()
 
         if not segmentstat:
             segmentstat = Segmentstat()

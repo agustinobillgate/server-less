@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 13/8/2025
 # num_entries, db_commit()
+# Rd, 27/11/2025, with_for_update added
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -35,7 +36,9 @@ def delete_ratecodebl(case_type:int, int1:int, user_init:string):
 
     if case_type == 1:
 
-        ratecode = get_cache (Ratecode, {"_recid": [(eq, int1)]})
+        # ratecode = get_cache (Ratecode, {"_recid": [(eq, int1)]})
+        ratecode = db_session.query(Ratecode).filter(
+                 (Ratecode._recid == int1)).with_for_update().first()
 
         if ratecode:
             pass
@@ -86,8 +89,15 @@ def delete_ratecodebl(case_type:int, int1:int, user_init:string):
             if (num_entries(queasy.char3, ";") > 2):
                 chcode = queasy.char1
 
-                ratecode = get_cache (Ratecode, {"code": [(eq, queasy.char1)],"startperiode": [(eq, startperiode)],"endperiode": [(eq, endperiode)],"wday": [(eq, wday)],"erwachs": [(eq, adult)],"zikatnr": [(eq, rmcode)]})
-
+                # ratecode = get_cache (Ratecode, {"code": [(eq, queasy.char1)],"startperiode": [(eq, startperiode)],
+                # "endperiode": [(eq, endperiode)],"wday": [(eq, wday)],"erwachs": [(eq, adult)],"zikatnr": [(eq, rmcode)]})
+                ratecode = db_session.query(Ratecode).filter(
+                         (Ratecode.code == queasy.char1) &
+                         (Ratecode.startperiode == startperiode) &
+                         (Ratecode.endperiode == endperiode) &
+                         (Ratecode.wday == wday) &
+                         (Ratecode.erwachs == adult) &
+                         (Ratecode.zikatnr == rmcode)).with_for_update().first()
                 if ratecode:
                     pass
                     db_session.delete(ratecode)

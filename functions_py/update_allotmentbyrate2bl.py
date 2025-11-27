@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+# #-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -20,6 +22,8 @@ def update_allotmentbyrate2bl(from_date:date, to_date:date, allotment:int, inp_s
     queasy = zimkateg = bediener = res_history = None
 
     db_session = local_storage.db_session
+    inp_str = inp_str.strip()
+    rmtype = rmtype.strip()
 
     def generate_output():
         nonlocal datum, cat_flag, i_typ, currcode, user_init, created, avail_qsy, betribnr, queasy, zimkateg, bediener, res_history
@@ -69,7 +73,12 @@ def update_allotmentbyrate2bl(from_date:date, to_date:date, allotment:int, inp_s
 
         if allotment != 0:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 171)],"char1": [(eq, currcode)],"date1": [(eq, datum)],"number1": [(eq, i_typ)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 171)],"char1": [(eq, currcode)],"date1": [(eq, datum)],"number1": [(eq, i_typ)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 171) &
+                     (Queasy.char1 == currcode) &
+                     (Queasy.date1 == datum) &
+                     (Queasy.number1 == i_typ)).with_for_update().first()
 
             if queasy and queasy.number3 != allotment:
 
@@ -101,7 +110,12 @@ def update_allotmentbyrate2bl(from_date:date, to_date:date, allotment:int, inp_s
 
         elif allotment == 0:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 171)],"char1": [(eq, currcode)],"date1": [(eq, datum)],"number1": [(eq, i_typ)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 171)],"char1": [(eq, currcode)],"date1": [(eq, datum)],"number1": [(eq, i_typ)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 171) &
+                     (Queasy.char1 == currcode) &
+                     (Queasy.date1 == datum) &
+                     (Queasy.number1 == i_typ)).with_for_update().first()
 
             if queasy and queasy.number3 != allotment:
                 avail_qsy = True
@@ -111,8 +125,13 @@ def update_allotmentbyrate2bl(from_date:date, to_date:date, allotment:int, inp_s
 
             if avail_qsy:
 
-                queasy = get_cache (Queasy, {"key": [(eq, 171)],"char1": [(eq, "")],"date1": [(eq, datum)],"number1": [(eq, i_typ)],"betriebsnr": [(eq, betribnr)]})
-
+                # queasy = get_cache (Queasy, {"key": [(eq, 171)],"char1": [(eq, "")],"date1": [(eq, datum)],"number1": [(eq, i_typ)],"betriebsnr": [(eq, betribnr)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 171) &
+                         (Queasy.char1 == "") &
+                         (Queasy.date1 == datum) &
+                         (Queasy.number1 == i_typ) &
+                         (Queasy.betriebsnr == betribnr)).with_for_update().first()
                 if queasy and queasy.logi1 == False and queasy.logi2 == False and queasy.logi3 == False:
                     pass
                     queasy.logi1 = True

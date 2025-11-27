@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bediener, Queasy
@@ -16,6 +18,9 @@ def benutzer_adminbl(case_type:int, mphone:string, email:string, pager:string, t
     t_bediener = t_queasy = None
 
     db_session = local_storage.db_session
+    mphone = mphone.strip()
+    email = email.strip()
+    pager = pager.strip()   
 
     def generate_output():
         nonlocal bediener, queasy
@@ -50,13 +55,18 @@ def benutzer_adminbl(case_type:int, mphone:string, email:string, pager:string, t
 
         if t_bediener:
 
-            bediener = get_cache (Bediener, {"nr": [(eq, t_bediener.nr)]})
+            # bediener = get_cache (Bediener, {"nr": [(eq, t_bediener.nr)]})
+            bediener = db_session.query(Bediener).filter(
+                     (Bediener.nr == t_bediener.nr)).with_for_update().first()
 
             if bediener:
                 buffer_copy(t_bediener, bediener)
                 pass
 
-        queasy = get_cache (Queasy, {"key": [(eq, 134)],"number1": [(eq, t_bediener.nr)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 134)],"number1": [(eq, t_bediener.nr)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 134) &
+                 (Queasy.number1 == t_bediener.nr)).with_for_update().first()
 
         if not queasy:
             queasy = Queasy()

@@ -6,6 +6,8 @@
                     - import from function_py
                     - fix closing bracet on timedelta(days=1)
 """
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -37,6 +39,8 @@ def delete_reslin_queasy1_webbl(case_type: int, int1: int, char1: string, date1:
     del_list = None
 
     db_session = local_storage.db_session
+    char1 = char1.strip()
+
 
     def generate_output():
         nonlocal success_flag, user_init, loopdate, bill_date, htparam, reslin_queasy, res_line
@@ -119,8 +123,12 @@ def delete_reslin_queasy1_webbl(case_type: int, int1: int, char1: string, date1:
                 Reslin_queasy, {"_recid": [(eq, del_list.recid_reslin)]})
 
             if reslin_queasy:
-                res_line = get_cache(
-                    Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+                # res_line = get_cache(
+                    # Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+                
+                res_line = db_session.query(Res_line).filter(
+                    (Res_line.resnr == reslin_queasy.resnr) & (Res_line.reslinnr == reslin_queasy.reslinnr)).first()
+                
                 res_changes()
                 db_session.delete(reslin_queasy)
                 success_flag = True
@@ -137,8 +145,10 @@ def delete_reslin_queasy1_webbl(case_type: int, int1: int, char1: string, date1:
                         Reslin_queasy, {"key": [(eq, "arrangement")], "resnr": [(eq, del_list.resnr)], "reslinnr": [(eq, del_list.reslinnr)], "date1": [(le, loopdate)], "date2": [(ge, loopdate)]})
 
                     if reslin_queasy:
-                        res_line = get_cache(
-                            Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+                        # res_line = get_cache(
+                        #     Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+                        res_line = db_session.query(Res_line).filter(
+                            (Res_line.resnr == reslin_queasy.resnr) & (Res_line.reslinnr == reslin_queasy.reslinnr)).first()
                         res_changes()
                         db_session.delete(reslin_queasy)
                         success_flag = True
@@ -151,7 +161,9 @@ def delete_reslin_queasy1_webbl(case_type: int, int1: int, char1: string, date1:
 
             if reslin_queasy:
                 for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                        (Reslin_queasy.key == "arrangement") & (Reslin_queasy.resnr == del_list.resnr) & (Reslin_queasy.reslinnr == del_list.reslinnr) & ((Reslin_queasy.date1 < del_list.ankunft) | (Reslin_queasy.date1 > del_list.abreise))).order_by(Reslin_queasy._recid).all():
+                        (Reslin_queasy.key == "arrangement") & (Reslin_queasy.resnr == del_list.resnr) & 
+                        (Reslin_queasy.reslinnr == del_list.reslinnr) & 
+                        ((Reslin_queasy.date1 < del_list.ankunft) | (Reslin_queasy.date1 > del_list.abreise))).order_by(Reslin_queasy._recid).with_for_update().all():
                     db_session.delete(reslin_queasy)
 
     return generate_output()

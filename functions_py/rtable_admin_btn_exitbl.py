@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Tisch
@@ -50,7 +52,10 @@ def rtable_admin_btn_exitbl(t_list_data:[T_list], case_type:int):
 
     elif case_type == 2:
 
-        tisch = get_cache (Tisch, {"departement": [(eq, t_list.departement)],"tischnr": [(eq, t_list.tischnr)]})
+        # tisch = get_cache (Tisch, {"departement": [(eq, t_list.departement)],"tischnr": [(eq, t_list.tischnr)]})
+        tisch = db_session.query(Tisch).filter(
+                 (Tisch.departement == t_list.departement) &
+                 (Tisch.tischnr == t_list.tischnr)).with_for_update().first()
 
         if tisch:
             pass

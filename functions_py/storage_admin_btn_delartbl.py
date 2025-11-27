@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_lager, L_bestand
@@ -17,7 +19,9 @@ def storage_admin_btn_delartbl(lager_nr:int):
         return {"err_code": err_code}
 
 
-    l_lager = get_cache (L_lager, {"lager_nr": [(eq, lager_nr)]})
+    # l_lager = get_cache (L_lager, {"lager_nr": [(eq, lager_nr)]})
+    l_lager = db_session.query(L_lager).filter(
+             (L_lager.lager_nr == lager_nr)).with_for_update().first()
 
     l_bestand = get_cache (L_bestand, {"lager_nr": [(eq, l_lager.lager_nr)]})
 

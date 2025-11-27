@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -32,6 +34,9 @@ def update_restriction_read_queasy_1bl(rcode:string, rmtype:string, ota:string):
 
 
     db_session = local_storage.db_session
+    rcode = rcode.strip()
+    rmtype = rmtype.strip()
+    ota = ota.strip()
 
     def generate_output():
         nonlocal t_list_data, roomnr, i, end_month, cat_flag, datum, ci_date, to_date, prev_day, curr_anz, otanr, mm, yy, queasy, htparam, zimkateg
@@ -65,7 +70,13 @@ def update_restriction_read_queasy_1bl(rcode:string, rmtype:string, ota:string):
         if zimkateg:
             roomnr = zimkateg.zikatnr
 
-    queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode)],"number1": [(eq, roomnr)],"number3": [(eq, otanr)],"date1": [(eq, None)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode)],"number1": [(eq, roomnr)],"number3": [(eq, otanr)],"date1": [(eq, None)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 174) &
+             (Queasy.char1 == (rcode).lower()) &
+             (Queasy.number1 == roomnr) &
+             (Queasy.number3 == otanr) &
+             (Queasy.date1 == None)).with_for_update().first()
     while None != queasy:
         yy = queasy.number2
         datum = date_mdy(1, 1, yy) - timedelta(days=1)
@@ -99,10 +110,11 @@ def update_restriction_read_queasy_1bl(rcode:string, rmtype:string, ota:string):
 
         curr_recid = queasy._recid
         queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 174) & (Queasy.char1 == (rcode).lower()) & (Queasy.number1 == roomnr) & (Queasy.number3 == otanr) & (Queasy.date1 == None) & (Queasy._recid > curr_recid)).first()
+                 (Queasy.key == 174) & (Queasy.char1 == (rcode).lower()) & (Queasy.number1 == roomnr) & 
+                 (Queasy.number3 == otanr) & (Queasy.date1 == None) & (Queasy._recid > curr_recid)).with_for_update().first()
 
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 174) & (Queasy.date1 < ci_date - timedelta(days=30))).order_by(Queasy._recid).all():
+             (Queasy.key == 174) & (Queasy.date1 < ci_date - timedelta(days=30))).order_by(Queasy._recid).with_for_update().all():
         db_session.delete(queasy)
         pass
     to_date = ci_date + timedelta(days=365)
