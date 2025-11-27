@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Brief
@@ -53,7 +55,9 @@ def word_admin_btn_exitbl(b_list_data:[B_list], case_type:int, kateg:int, rec_id
 
     elif case_type == 2:
 
-        brief = get_cache (Brief, {"_recid": [(eq, rec_id)]})
+        # brief = get_cache (Brief, {"_recid": [(eq, rec_id)]})
+        brief = db_session.query(Brief).filter(
+                 (Brief._recid == rec_id)).with_for_update().first()
 
         if brief:
             fill_brief()

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Artikel
@@ -38,7 +40,9 @@ def write_artikelbl(case_type:int, t_artikel_data:[T_artikel]):
         success_flag = True
     elif case_type == 2:
 
-        artikel = get_cache (Artikel, {"_recid": [(eq, t_artikel.rec_id)]})
+        # artikel = get_cache (Artikel, {"_recid": [(eq, t_artikel.rec_id)]})
+        artikel = db_session.query(Artikel).filter(
+                 (Artikel.rec_id == t_artikel.rec_id)).with_for_update().first()
 
         if artikel:
             buffer_copy(t_artikel, artikel)

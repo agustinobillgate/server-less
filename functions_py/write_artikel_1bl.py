@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Artikel, Queasy
@@ -50,14 +52,20 @@ def write_artikel_1bl(case_type:int, t_artikel_data:[T_artikel]):
 
     elif case_type == 2:
 
-        artikel = get_cache (Artikel, {"_recid": [(eq, t_artikel.rec_id)]})
+        # artikel = get_cache (Artikel, {"_recid": [(eq, t_artikel.rec_id)]})
+        artikel = db_session.query(Artikel).filter(
+                 (Artikel.rec_id == t_artikel.rec_id)).with_for_update().first()
 
         if artikel:
             buffer_copy(t_artikel, artikel)
             pass
             success_flag = True
 
-        queasy = get_cache (Queasy, {"key": [(eq, 266)],"number1": [(eq, t_artikel.departement)],"number2": [(eq, t_artikel.artnr)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 266)],"number1": [(eq, t_artikel.departement)],"number2": [(eq, t_artikel.artnr)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 266) &
+                 (Queasy.number1 == t_artikel.departement) &
+                 (Queasy.number2 == t_artikel.artnr)).with_for_update().first()
 
         if not queasy:
             queasy = Queasy()

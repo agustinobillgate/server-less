@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Briefzei
@@ -31,7 +33,10 @@ def write_briefzeibl(case_type:int, int1:int, int2:int, int3:int, char1:string, 
             pass
         else:
 
-            briefzei = get_cache (Briefzei, {"briefnr": [(eq, int1)]})
+            # briefzei = get_cache (Briefzei, {"briefnr": [(eq, int1)]})
+            briefzei = db_session.query(Briefzei).filter(
+                     (Briefzei.briefnr == int1)).with_for_update().first()
+            
         briefzei.texte = char1
         pass
         success_flag = True

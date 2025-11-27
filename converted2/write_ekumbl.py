@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Ekum
@@ -38,7 +40,9 @@ def write_ekumbl(case_type:int, t_ekum_data:[T_ekum]):
         success_flag = True
     elif case_type == 2:
 
-        ekum = get_cache (Ekum, {"eknr": [(eq, t_ekum.eknr)]})
+        # ekum = get_cache (Ekum, {"eknr": [(eq, t_ekum.eknr)]})
+        ekum = db_session.query(Ekum).filter(
+                 (Ekum.eknr == t_ekum.eknr)).with_for_update().first()
 
         if ekum:
             buffer_copy(t_ekum, ekum)

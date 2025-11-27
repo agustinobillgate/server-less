@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Arrangement, Waehrung
@@ -50,7 +52,10 @@ def write_arrangementbl(case_type:int, char1:string, t_arrangement_data:[T_arran
 
     elif case_type == 2:
 
-        arrangement = get_cache (Arrangement, {"argtnr": [(eq, t_arrangement.argtnr)],"arrangement": [(eq, t_arrangement.arrangement)]})
+        # arrangement = get_cache (Arrangement, {"argtnr": [(eq, t_arrangement.argtnr)],"arrangement": [(eq, t_arrangement.arrangement)]})
+        arrangement = db_session.query(Arrangement).filter(
+                 (Arrangement.argtnr == t_arrangement.argtnr) &     
+                (Arrangement.arrangement == t_arrangement.arrangement)).with_for_update().first()
 
         if arrangement:
             buffer_copy(t_arrangement, arrangement)

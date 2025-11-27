@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Printer, Printcod
@@ -38,7 +40,9 @@ def write_printer_web1bl(case_type:int, recid_emu:int, t_printer_data:[T_printer
 
         buffer_copy(t_printer, printer)
 
-        printcod = get_cache (Printcod, {"_recid": [(eq, recid_emu)]})
+        # printcod = get_cache (Printcod, {"_recid": [(eq, recid_emu)]})
+        printcod = db_session.query(Printcod).filter(
+                 (Printcod._recid == recid_emu)).with_for_update().first()
 
         if printcod:
             printer.emu = printcod.emu
@@ -46,7 +50,9 @@ def write_printer_web1bl(case_type:int, recid_emu:int, t_printer_data:[T_printer
         success_flag = True
     elif case_type == 2:
 
-        printer = get_cache (Printer, {"nr": [(eq, t_printer.nr)]})
+        # printer = get_cache (Printer, {"nr": [(eq, t_printer.nr)]})
+        printer = db_session.query(Printer).filter(
+                 (Printer.nr == t_printer.nr)).with_for_update().first()
 
         if printer:
             buffer_copy(t_printer, printer,except_fields=["emu"])
