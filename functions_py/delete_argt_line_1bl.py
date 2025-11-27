@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Argt_line, Bediener, Res_history
@@ -40,8 +42,18 @@ def delete_argt_line_1bl(case_type:int, int1:int, user_init:string, t_argt_line_
 
             return generate_output()
 
-        argt_line = get_cache (Argt_line, {"argtnr": [(eq, t_argt_line.argtnr)],"argt_artnr": [(eq, t_argt_line.argt_artnr)],"departement": [(eq, t_argt_line.departement)],"fakt_modus": [(eq, t_argt_line.fakt_modus)],"intervall": [(eq, t_argt_line.intervall)],"kind1": [(eq, t_argt_line.kind1)],"kind2": [(eq, t_argt_line.kind2)],"betrag": [(eq, t_argt_line.betrag)],"betriebsnr": [(eq, t_argt_line.betriebsnr)],"vt_percnt": [(eq, t_argt_line.vt_percnt)]})
-
+        # argt_line = get_cache (Argt_line, {"argtnr": [(eq, t_argt_line.argtnr)],"argt_artnr": [(eq, t_argt_line.argt_artnr)],"departement": [(eq, t_argt_line.departement)],"fakt_modus": [(eq, t_argt_line.fakt_modus)],"intervall": [(eq, t_argt_line.intervall)],"kind1": [(eq, t_argt_line.kind1)],"kind2": [(eq, t_argt_line.kind2)],"betrag": [(eq, t_argt_line.betrag)],"betriebsnr": [(eq, t_argt_line.betriebsnr)],"vt_percnt": [(eq, t_argt_line.vt_percnt)]})
+        argt_line = db_session.query(Argt_line).filter(
+                 (Argt_line.argtnr == t_argt_line.argtnr) &
+                 (Argt_line.argt_artnr == t_argt_line.argt_artnr) &
+                 (Argt_line.departement == t_argt_line.departement) &
+                 (Argt_line.fakt_modus == t_argt_line.fakt_modus) &
+                 (Argt_line.intervall == t_argt_line.intervall) &
+                 (Argt_line.kind1 == t_argt_line.kind1) &
+                 (Argt_line.kind2 == t_argt_line.kind2) &
+                 (Argt_line.betrag == t_argt_line.betrag) &
+                 (Argt_line.betriebsnr == t_argt_line.betriebsnr) &
+                 (Argt_line.vt_percnt == t_argt_line.vt_percnt)).with_for_update().first()
         if argt_line:
             db_session.delete(argt_line)
             pass
@@ -72,7 +84,9 @@ def delete_argt_line_1bl(case_type:int, int1:int, user_init:string, t_argt_line_
 
     elif case_type == 2:
 
-        argt_line = get_cache (Argt_line, {"_recid": [(eq, int1)]})
+        # argt_line = get_cache (Argt_line, {"_recid": [(eq, int1)]})
+        argt_line = db_session.query(Argt_line).filter(
+                 (Argt_line._recid == int1)).with_for_update().first()
 
         if argt_line:
             db_session.delete(argt_line)

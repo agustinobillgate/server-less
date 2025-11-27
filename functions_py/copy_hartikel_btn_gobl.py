@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Wgrpdep, H_artikel, Artikel, Queasy
@@ -47,7 +49,10 @@ def copy_hartikel_btn_gobl(all_flag:bool, dept1:int, dept2:int, art1:int, art2:i
         for h_art in db_session.query(H_art).filter(
                  (H_art.departement == dept1) & (H_art.activeflag) & (H_art.artart == 0) & (H_art.artnr >= art1) & (H_art.artnr <= art2)).order_by(H_art._recid).all():
 
-            h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_art.artnr)],"departement": [(eq, dept2)]})
+            # h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_art.artnr)],"departement": [(eq, dept2)]})
+            h_artikel = db_session.query(H_artikel).filter(
+                     (H_artikel.artnr == h_art.artnr) &
+                     (H_artikel.departement == dept2)).with_for_update().first()
 
             if h_artikel and not overwrite_flag:
                 pass
@@ -156,7 +161,10 @@ def copy_hartikel_btn_gobl(all_flag:bool, dept1:int, dept2:int, art1:int, art2:i
         for h_art in db_session.query(H_art).filter(
                  (H_art.departement == dept1) & (H_art.activeflag) & (H_art.artnr >= art1) & (H_art.artnr <= art2)).order_by(H_art._recid).all():
 
-            h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_art.artnr)],"departement": [(eq, dept2)]})
+            # h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_art.artnr)],"departement": [(eq, dept2)]})
+            h_artikel = db_session.query(H_artikel).filter(
+                     (H_artikel.artnr == h_art.artnr) &
+                     (H_artikel.departement == dept2)).with_for_update().first()
 
             if h_artikel and not overwrite_flag:
                 pass
