@@ -1,9 +1,5 @@
-#using conversion tools version: 1.0.0.117
-#----------------------------------------
-# Rd, 1/8/2025
-# if available l_kredit
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
-#----------------------------------------
+#using conversion tools version: 1.0.0.119
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -71,13 +67,10 @@ def ap_debtpay_get_voucherbl(age_list_data:[Age_list], pvilanguage:int):
         # abuff.rechnr = counters.counter
         abuff.rechnr = last_count
 
-        l_kredit = get_cache (L_kredit, {"_recid": [(eq, abuff.ap_recid)]})
-        # Rd, 1/8/2025
+        l_kredit = db_session.query(L_kredit).filter(L_kredit._recid == abuff.ap_recid).with_for_update().first()
         if l_kredit:
             # l_kredit.rechnr = counters.counter
             l_kredit.rechnr = last_count
-
-        pass
 
     if trim(p_786) != "":
         queasy = Queasy()

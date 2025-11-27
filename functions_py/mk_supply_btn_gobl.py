@@ -1,5 +1,7 @@
+#using conversion tools version: 1.0.0.119
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 from sqlalchemy import func
 from models import L_lieferant, Gl_acct, Counters
 
@@ -8,7 +10,7 @@ t_l_lieferant_list, T_l_lieferant = create_model_like(L_lieferant)
 def mk_supply_btn_gobl(pvilanguage:int, lname:str, zcode:str, t_l_lieferant_list:[T_l_lieferant]):
     msg_str = ""
     created = False
-    lvcarea:str = "mk-supply"
+    lvcarea:string = "mk-supply"
     l_lieferant = gl_acct = counters = None
 
     t_l_lieferant = l_supp = None
@@ -53,9 +55,10 @@ def mk_supply_btn_gobl(pvilanguage:int, lname:str, zcode:str, t_l_lieferant_list
     t_l_lieferant = query(t_l_lieferant_list, first=True)
 
     counters = db_session.query(Counters).filter(
-             (Counters.counter_no == 14)).first()
+             (Counters.counter_no == 14)).with_for_update().first()
     counters.counter = counters.counter + 1
     t_l_lieferant.lief_nr = counters.counter
+    
     l_lieferant = L_lieferant()
     db_session.add(l_lieferant)
 
