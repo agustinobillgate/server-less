@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_artikel, Queasy
@@ -15,6 +17,7 @@ def rarticle_admin_btn_exitbl(h_list_data:[H_list], case_type:int, fract_flag:bo
     h_list = None
 
     db_session = local_storage.db_session
+    bezeich2 = bezeich2.strip()
 
     def generate_output():
         nonlocal h_artikel, queasy
@@ -63,13 +66,21 @@ def rarticle_admin_btn_exitbl(h_list_data:[H_list], case_type:int, fract_flag:bo
 
         if bezeich2 == "":
 
-            queasy = get_cache (Queasy, {"key": [(eq, 38)],"number1": [(eq, h_list.departement)],"number2": [(eq, h_list.artnr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 38)],"number1": [(eq, h_list.departement)],"number2": [(eq, h_list.artnr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 38) &
+                     (Queasy.number1 == h_list.departement) &
+                     (Queasy.number2 == h_list.artnr)).with_for_update().first()
 
             if queasy:
                 db_session.delete(queasy)
         else:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 38)],"number1": [(eq, h_list.departement)],"number2": [(eq, h_list.artnr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 38)],"number1": [(eq, h_list.departement)],"number2": [(eq, h_list.artnr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 38) &
+                     (Queasy.number1 == h_list.departement) &
+                     (Queasy.number2 == h_list.artnr)).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()
@@ -96,7 +107,10 @@ def rarticle_admin_btn_exitbl(h_list_data:[H_list], case_type:int, fract_flag:bo
 
     elif case_type == 2:
 
-        h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_list.artnr)],"departement": [(eq, h_list.departement)]})
+        # h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_list.artnr)],"departement": [(eq, h_list.departement)]})
+        h_artikel = db_session.query(H_artikel).filter(
+                 (H_artikel.artnr == h_list.artnr) &
+                 (H_artikel.departement == h_list.departement)).with_for_update().first()
 
         if h_artikel:
             fill_artikel()

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_artikel, H_umsatz
@@ -17,7 +19,10 @@ def rarticle_admin_btn_delbl(h_artnr:int, h_dept:int):
         return {"flag": flag}
 
 
-    h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_artnr)],"departement": [(eq, h_dept)]})
+    # h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_artnr)],"departement": [(eq, h_dept)]})
+    h_artikel = db_session.query(H_artikel).filter(
+             (H_artikel.artnr == h_artnr) &
+             (H_artikel.departement == h_dept)).with_for_update().first()
 
     h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, h_artnr)],"departement": [(eq, h_dept)]})
 

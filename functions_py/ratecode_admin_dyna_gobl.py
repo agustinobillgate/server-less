@@ -8,7 +8,8 @@
 # Rulita, 21-11-2025
 # - Fixing add data ratecode array char1[4] 
 # =============================================
-
+# Rd, 27/11/2025, with_for_update added
+# =============================================
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Zimkateg, Queasy, Ratecode, Bediener, Res_history, Counters, Guest, Guest_pr
@@ -159,7 +160,7 @@ def ratecode_admin_dyna_gobl(curr_select:string, inp_str:string, user_init:strin
                 while None != qsy170:
 
                     qsy = db_session.query(Qsy).filter(
-                             (Qsy._recid == qsy170._recid)).first()
+                             (Qsy._recid == qsy170._recid)).with_for_update().first()
 
                     if qsy:
                         qsy.logi2 = True
