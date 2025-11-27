@@ -4,12 +4,14 @@
 # Rulita, 15-10-2025 
 # Tiket ID : 6526C2 | New compile program
 # =======================================
-
+# Rd, 27/11/2025, with_for_update added
+# =======================================
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Zimmer, Bediener, Res_line
 
-def hk_discrepancy_webbl(pvilanguage:int, case_type:string, zinno:string, housestat:int, feat:string, fo_stat1:string, hk_stat1:string, user_init:string, hk_str:string, fo_pax:int, fo_ch1:int, hk_pax:int, hk_ch1:int):
+def hk_discrepancy_webbl(pvilanguage:int, case_type:string, zinno:string, housestat:int, feat:string, fo_stat1:string, 
+                         hk_stat1:string, user_init:string, hk_str:string, fo_pax:int, fo_ch1:int, hk_pax:int, hk_ch1:int):
 
     prepare_cache ([Zimmer, Bediener, Res_line])
 
@@ -30,8 +32,13 @@ def hk_discrepancy_webbl(pvilanguage:int, case_type:string, zinno:string, houses
     Room = create_buffer("Room",Zimmer)
     Usr = create_buffer("Usr",Bediener)
 
-
     db_session = local_storage.db_session
+    case_type = case_type.strip()
+    zinno = zinno.strip()
+    feat = feat.strip()
+    fo_stat1 = fo_stat1.strip()
+    hk_stat1 = hk_stat1.strip()
+    hk_str = hk_str.strip()
 
     def generate_output():
         nonlocal msg_str, fo_stat, hk_stat, hkdiscrepancy_list_data, rmplan_data, lvcarea, i, zimmer, bediener, res_line
@@ -82,7 +89,8 @@ def hk_discrepancy_webbl(pvilanguage:int, case_type:string, zinno:string, houses
 
     if case_type.lower()  == ("deactivate-disc").lower() :
 
-        zimmer = get_cache (Zimmer, {"zinr": [(eq, zinno)]})
+        # zimmer = get_cache (Zimmer, {"zinr": [(eq, zinno)]})
+        zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == zinno).with_for_update().first()
         zimmer.house_status = housestat
         zimmer.features = feat
 
@@ -138,7 +146,8 @@ def hk_discrepancy_webbl(pvilanguage:int, case_type:string, zinno:string, houses
 
     elif case_type.lower()  == ("of-exit").lower() :
 
-        zimmer = get_cache (Zimmer, {"zinr": [(eq, zinno)]})
+        # zimmer = get_cache (Zimmer, {"zinr": [(eq, zinno)]})
+        zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == zinno).with_for_update().first()
 
         if zimmer:
             pass

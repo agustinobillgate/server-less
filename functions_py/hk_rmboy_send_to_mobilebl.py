@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -32,7 +34,7 @@ def hk_rmboy_send_to_mobilebl(rmlist_data:[Rmlist]):
     ci_date = htparam.fdate
 
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 196) & (Queasy.date1 == ci_date) & (Queasy.char2 == "") & (Queasy.number1 == 0) & (Queasy.number2 == 0)).order_by(Queasy._recid).all():
+             (Queasy.key == 196) & (Queasy.date1 == ci_date) & (Queasy.char2 == "") & (Queasy.number1 == 0) & (Queasy.number2 == 0)).order_by(Queasy._recid).with_for_update().all():
         db_session.delete(queasy)
 
     for rmlist in query(rmlist_data, sort_by=[("pic",False)]):
@@ -47,7 +49,7 @@ def hk_rmboy_send_to_mobilebl(rmlist_data:[Rmlist]):
             user_init = " "
 
         queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 196) & (entry(0, Queasy.char1, ";") == rmlist.zinr) & (Queasy.date1 == ci_date)).first()
+                 (Queasy.key == 196) & (entry(0, Queasy.char1, ";") == rmlist.zinr) & (Queasy.date1 == ci_date)).with_for_update().first()
 
         if queasy:
             queasy.char1 = " "
