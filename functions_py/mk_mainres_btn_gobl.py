@@ -6,6 +6,12 @@
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #----------------------------------------
 
+# ====================================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# - Fix variable name from rechnrstart to rechnerstart
+# - Fix procedure in progress not used
+# ====================================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -86,7 +92,8 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
 
             return
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, inp_resnr)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, inp_resnr)]})
+        reservation = db_session.query(Reservation).filter(Reservation.resnr == inp_resnr).with_for_update().with_for_update().first()
 
         if not reservation:
             msg_str = translateExtended ("Reservation record is being used by other user.", lvcarea, "")
@@ -97,7 +104,8 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
         bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
         prev_gastnr = reservation.gastnr
 
-        master = get_cache (Master, {"resnr": [(eq, reservation.resnr)]})
+        # master = get_cache (Master, {"resnr": [(eq, reservation.resnr)]})
+        master = db_session.query(Master).filter(Master.resnr == reservation.resnr).with_for_update().first()
 
         if master and master.active:
             reservation.verstat = 1
@@ -128,13 +136,15 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
         reservation.insurance = fixed_rate
         reservation.kontakt_nr = contact_nr
 
-        res_line = get_cache (Res_line, {"resnr": [(eq, reservation.resnr)],"active_flag": [(le, 1)]})
+        # res_line = get_cache (Res_line, {"resnr": [(eq, reservation.resnr)],"active_flag": [(le, 1)]})
+        res_line = db_session.query(Res_line).filter(Res_line.resnr == reservation.resnr, Res_line.active_flag <= 1).with_for_update().first()
+
         while None != res_line:
             pass
 
             if res_line:
                 res_line.grpflag = reservation.grpflag
-                pass
+                db_session.refresh(res_line, with_for_update=True)
 
             curr_recid = res_line._recid
             res_line = db_session.query(Res_line).filter(
@@ -155,7 +165,7 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
                 pass
             pass
             master.active = master_active
-            master.rechnrstart = rechnrstart
+            master.rechnrstart = rechnerstart                   # Rulita, 27-11-2025 | Fix variable name from rechnrstart to rechnerstart
             master.rechnrend = rechnrend
             master.umsatzart[0] = umsatz1
             master.umsatzart[1] = umsatz2
@@ -170,7 +180,8 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
 
                 if bill and bill.saldo != 0:
                     master.active = True
-            pass
+            
+            db_session.refresh(master, with_for_update=True)
 
             if master.active:
                 reservation.verstat = 1
@@ -181,7 +192,8 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
 
             if res_line:
 
-                bill = get_cache (Bill, {"resnr": [(eq, inp_resnr)],"reslinnr": [(eq, 0)]})
+                # bill = get_cache (Bill, {"resnr": [(eq, inp_resnr)],"reslinnr": [(eq, 0)]})
+                bill = db_session.query(Bill).filter(Bill.resnr == inp_resnr, Bill.reslinnr == 0).with_for_update().first()
 
                 if not bill:
                     bill = Bill()
@@ -220,9 +232,10 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
                     pass
                     db_session.delete(buff_bill)
                     pass
-
-        if (reservation.insurance and not init_rate) or (not reservation.insurance and init_rate):
-            resline_reserve_dec()
+        
+        # Rulita, 27-11-2025 | Fix in progress not used
+        # if (reservation.insurance and not init_rate) or (not reservation.insurance and init_rate):
+        #     resline_reserve_dec()
 
         if reservation.gastnr != gastnrherk:
             curr_name = reservation.name
@@ -245,7 +258,8 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
 
             pass
 
-            master = get_cache (Master, {"resnr": [(eq, reservation.resnr)]})
+            # master = get_cache (Master, {"resnr": [(eq, reservation.resnr)]})
+            master = db_session.query(Master).filter(Master.resnr == reservation.resnr).with_for_update().first()
 
             if master:
                 master.gastnr = gastnrherk
@@ -253,7 +267,8 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
                 master.name = reservation.name
                 pass
 
-                bill = get_cache (Bill, {"resnr": [(eq, reservation.resnr)],"reslinnr": [(eq, 0)]})
+                # bill = get_cache (Bill, {"resnr": [(eq, reservation.resnr)],"reslinnr": [(eq, 0)]})
+                bill = db_session.query(Bill).filter(Bill.resnr == reservation.resnr, Bill.reslinnr == 0).with_for_update().first()
 
                 if bill:
                     bill.gastnr = gastnrherk
@@ -261,13 +276,13 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
                     pass
 
             for res_line in db_session.query(Res_line).filter(
-                     (Res_line.resnr == reservation.resnr) & (Res_line.reslinnr >= 1)).order_by(Res_line._recid).all():
+                     (Res_line.resnr == reservation.resnr) & (Res_line.reslinnr >= 1)).order_by(Res_line._recid).with_for_update().all():
                 res_line.gastnr = gastnrherk
 
                 if res_line.gastnrpay == prev_gastnr:
 
                     for bill in db_session.query(Bill).filter(
-                             (Bill.resnr == res_line.resnr) & (Bill.reslinnr == res_line.reslinnr) & (Bill.zinr == res_line.zinr)).order_by(Bill._recid).all():
+                             (Bill.resnr == res_line.resnr) & (Bill.reslinnr == res_line.reslinnr) & (Bill.zinr == res_line.zinr)).order_by(Bill._recid).with_for_update().all():
                         bill.gastnr = gastnrherk
                         bill.name = guest.name
                     res_line.gastnrpay = gastnrherk
