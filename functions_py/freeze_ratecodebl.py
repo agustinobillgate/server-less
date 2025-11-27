@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -30,7 +32,10 @@ def freeze_ratecodebl(trate_code_data:[Trate_code]):
 
     for trate_code in query(trate_code_data):
 
-        bqueasy = get_cache (Queasy, {"key": [(eq, 264)],"char1": [(eq, trate_code.char1)]})
+        # bqueasy = get_cache (Queasy, {"key": [(eq, 264)],"char1": [(eq, trate_code.char1)]})
+        bqueasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 264) &
+                 (Queasy.char1 == trate_code.char1)).with_for_update().first()
 
         if not bqueasy and trate_code.active_flag :
             bqueasy = Queasy()

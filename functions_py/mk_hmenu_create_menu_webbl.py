@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.119
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_menu, H_artikel, Queasy
@@ -55,11 +57,13 @@ def mk_hmenu_create_menu_webbl(hmenu_list_data:[Hmenu_list], menu_list_data:[Men
         if h_art and h_art.betriebsnr != 0:
 
             for h_menu in db_session.query(H_menu).filter(
-                     (H_menu.departement == payload_list.dept) & (H_menu.nr == h_art.betriebsnr)).order_by(H_menu._recid).all():
+                     (H_menu.departement == payload_list.dept) & (H_menu.nr == h_art.betriebsnr)).order_by(H_menu._recid).with_for_update().all():
                 db_session.delete(h_menu)
 
             for queasy in db_session.query(Queasy).filter(
-                     (Queasy.key == 361) & (Queasy.number2 == payload_list.dept) & (Queasy.char1 == ("Qty-Sub-Menu").lower()) & (Queasy.number3 == h_art.betriebsnr)).order_by(Queasy._recid).all():
+                     (Queasy.key == 361) & (Queasy.number2 == payload_list.dept) & 
+                     (Queasy.char1 == ("Qty-Sub-Menu")) & 
+                     (Queasy.number3 == h_art.betriebsnr)).order_by(Queasy._recid).with_for_update().all():
                 db_session.delete(queasy)
 
         for menu_list in query(menu_list_data):
@@ -98,7 +102,11 @@ def mk_hmenu_create_menu_webbl(hmenu_list_data:[Hmenu_list], menu_list_data:[Men
 
         elif not created and h_art.betriebsnr != 0:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 361)],"number2": [(eq, payload_list.dept)],"char1": [(eq, "fixed-sub-menu")],"number3": [(eq, h_art.betriebsnr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 361)],"number2": [(eq, payload_list.dept)],"char1": [(eq, "fixed-sub-menu")],"number3": [(eq, h_art.betriebsnr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 361) & (Queasy.number2 == payload_list.dept) & 
+                     (Queasy.char1 == ("Qty-Sub-Menu")) & 
+                     (Queasy.number3 == h_art.betriebsnr)).with_for_update().first()
 
             if queasy:
                 pass
@@ -140,7 +148,10 @@ def mk_hmenu_create_menu_webbl(hmenu_list_data:[Hmenu_list], menu_list_data:[Men
     output_list_data.append(output_list)
 
 
-    h_art = get_cache (H_artikel, {"departement": [(eq, payload_list.dept)],"artnr": [(eq, payload_list.h_artnr)]})
+    # h_art = get_cache (H_artikel, {"departement": [(eq, payload_list.dept)],"artnr": [(eq, payload_list.h_artnr)]})
+    h_art = db_session.query(H_artikel).filter(
+             (H_artikel.departement == payload_list.dept) &
+             (H_artikel.artnr == payload_list.h_artnr)).with_for_update().first()
     create_menu()
 
     return generate_output()

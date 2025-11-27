@@ -3,6 +3,8 @@
 # Rd, 12/11/2025
 # CM: 
 #---------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#---------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -824,7 +826,8 @@ def if_custom_pushall_ratebl(currcode:string, start_counter:int, inp_str:string,
 
         if qsy170:
 
-            qsy = get_cache (Queasy, {"_recid": [(eq, qsy170._recid)]})
+            # qsy = get_cache (Queasy, {"_recid": [(eq, qsy170._recid)]})
+            qsy = db_session.query(Queasy).filter(Queasy._recid==qsy170._recid).with_for_update().first()
 
             if qsy:
                 qsy.logi3 = True

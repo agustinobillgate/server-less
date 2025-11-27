@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -58,7 +60,9 @@ def interface_param_settingbl(case_type:int, hotel_config_data:[Hotel_config]):
                 return generate_output()
             else:
 
-                queasy = get_cache (Queasy, {"key": [(eq, hotel_config.keynr)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, hotel_config.keynr)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == hotel_config.keynr)).with_for_update().first()
 
                 if queasy:
                     buffer_copy(hotel_config, queasy)
@@ -87,7 +91,9 @@ def interface_param_settingbl(case_type:int, hotel_config_data:[Hotel_config]):
                 return generate_output()
             else:
 
-                queasy = get_cache (Queasy, {"key": [(eq, hotel_config.keynr)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, hotel_config.keynr)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == hotel_config.keynr)).with_for_update().first()
 
                 if queasy:
                     db_session.delete(queasy)
@@ -98,7 +104,9 @@ def interface_param_settingbl(case_type:int, hotel_config_data:[Hotel_config]):
             return generate_output()
     hotel_config_data.clear()
 
-    queasy = get_cache (Queasy, {"key": [(eq, 306)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 306)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 306)).with_for_update().first()
 
     if queasy:
         hotel_config = Hotel_config()

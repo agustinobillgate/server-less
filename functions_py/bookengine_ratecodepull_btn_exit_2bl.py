@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Bediener, Res_history
@@ -83,7 +85,7 @@ def bookengine_ratecodepull_btn_exit_2bl(t_push_list_data:[T_push_list], bookeng
                     t_push_list.argtvhp
 
             qsy = db_session.query(Qsy).filter(
-                     (Qsy._recid == t_push_list.flag)).first()
+                     (Qsy._recid == t_push_list.flag)).with_for_update().first()
 
             if qsy:
                 old_str = qsy.char1
@@ -113,7 +115,7 @@ def bookengine_ratecodepull_btn_exit_2bl(t_push_list_data:[T_push_list], bookeng
         for t_push_list in query(t_push_list_data):
 
             qsy = db_session.query(Qsy).filter(
-                     (Qsy._recid == t_push_list.flag)).first()
+                     (Qsy._recid == t_push_list.flag)).with_for_update().first()
 
             if qsy:
                 db_session.delete(qsy)
