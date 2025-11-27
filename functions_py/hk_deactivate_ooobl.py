@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -44,13 +46,24 @@ def hk_deactivate_ooobl(userinit:string, rec_id:int):
         oos_flag = (outorder.betriebsnr == 3 or outorder.betriebsnr == 4)
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 195) & (Queasy.char1 == ("ooo;room=" + outorder.zinr + ";from=" + to_string(get_day(outorder.gespstart) , "99") + "/" + to_string(get_month(outorder.gespstart) , "99") + "/" + to_string(get_year(outorder.gespstart) , "9999") + ";to=" + to_string(get_day(outorder.gespende) , "99") + "/" + to_string(get_month(outorder.gespende) , "99") + "/" + to_string(get_year(outorder.gespende) , "9999").lower()))).order_by(Queasy._recid).all():
+                 (Queasy.key == 195) & 
+                 (Queasy.char1 == ("ooo;room=" + outorder.zinr + ";from=" + 
+                                   to_string(get_day(outorder.gespstart) , "99") + "/" + 
+                                   to_string(get_month(outorder.gespstart) , "99") + "/" + 
+                                   to_string(get_year(outorder.gespstart) , "9999") + ";to=" + 
+                                   to_string(get_day(outorder.gespende) , "99") + "/" + 
+                                   to_string(get_month(outorder.gespende) , "99") + "/" + 
+                                   to_string(get_year(outorder.gespende) , "9999").lower()))).with_for_update().order_by(Queasy._recid).all():
 
-            guestbook = get_cache (Guestbook, {"gastnr": [(eq, queasy.number1)]})
+            # guestbook = get_cache (Guestbook, {"gastnr": [(eq, queasy.number1)]})
+            guestbook = db_session.query(Guestbook).filter(
+                            (Guestbook.gastnr == queasy.number1)
+                        ).order_by(Guestbook._recid).with_for_update().first()
 
             if guestbook:
                 db_session.delete(guestbook)
             db_session.delete(queasy)
+            
         ooo_list2 = Ooo_list2()
         ooo_list2_data.append(ooo_list2)
 

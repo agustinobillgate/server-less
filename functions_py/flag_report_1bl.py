@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -63,13 +65,25 @@ def flag_report_1bl(case_type:int, n:int, resnr:int, reslinnr:int, user_init:str
 
         if not s_list:
 
-            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "flag")],"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)],"betriebsnr": [(eq, n)]})
+            # reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "flag")],"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)],"betriebsnr": [(eq, n)]})
+            reslin_queasy = db_session.query(Reslin_queasy).filter(
+                                Reslin_queasy.key == "flag",
+                                Reslin_queasy.resnr == resnr,
+                                Reslin_queasy.reslinnr == reslinnr,
+                                Reslin_queasy.betriebsnr == n
+                            ).with_for_update().first()
 
             if reslin_queasy:
                 db_session.delete(reslin_queasy)
         else:
 
-            reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "flag")],"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)],"betriebsnr": [(eq, n)]})
+            # reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "flag")],"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)],"betriebsnr": [(eq, n)]})
+            reslin_queasy = db_session.query(Reslin_queasy).filter(
+                                Reslin_queasy.key == "flag",
+                                Reslin_queasy.resnr == resnr,
+                                Reslin_queasy.reslinnr == reslinnr,
+                                Reslin_queasy.betriebsnr == n
+                            ).with_for_update().first()
 
             if not reslin_queasy:
                 reslin_queasy = Reslin_queasy()
