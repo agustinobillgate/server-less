@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -23,6 +25,9 @@ def update_dynaratecode_update_ratecodebl(rate_list1_data:[Rate_list1], rmtype:s
 
 
     db_session = local_storage.db_session
+    rmtype = rmtype.strip()
+    inp_str = inp_str.strip()
+
 
     def generate_output():
         nonlocal inp_zikatnr, currcode, bookengid, lastrcode, queasy, zimkateg, bediener, res_history
@@ -53,8 +58,16 @@ def update_dynaratecode_update_ratecodebl(rate_list1_data:[Rate_list1], rmtype:s
 
                 if rate_list1.rcode[curr_i - 1] == rate_list1.origcode:
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 145)],"char1": [(eq, currcode)],"char2": [(eq, rate_list1.origcode)],"number1": [(eq, inp_zikatnr)],"deci1": [(eq, rate_list1.w_day)],"deci2": [(eq, rate_list1.counter)],"date1": [(eq, curr_date)]})
-
+                    # queasy = get_cache (Queasy, {"key": [(eq, 145)],"char1": [(eq, currcode)],"char2": [(eq, rate_list1.origcode)],"number1": [(eq, inp_zikatnr)],
+                    # "deci1": [(eq, rate_list1.w_day)],"deci2": [(eq, rate_list1.counter)],"date1": [(eq, curr_date)]})
+                    queasy = db_session.query(Queasy).filter(
+                             (Queasy.key == 145) &
+                             (Queasy.char1 == currcode) &
+                             (Queasy.char2 == rate_list1.origcode) &
+                             (Queasy.number1 == inp_zikatnr) &
+                             (Queasy.deci1 == to_decimal(rate_list1.w_day)) &
+                             (Queasy.deci2 == to_decimal(rate_list1.counter)) &
+                             (Queasy.date1 == curr_date)).with_for_update().first()
                     if queasy:
                         db_session.delete(queasy)
 
@@ -78,8 +91,16 @@ def update_dynaratecode_update_ratecodebl(rate_list1_data:[Rate_list1], rmtype:s
                         res_history.aenderung = "RateCode: " + currcode + ", Occupancy: " + rate_list1.rooms + " Date: " + to_string(get_year(curr_date) , "9999") + to_string(get_month(curr_date) , "99") +\
                                 to_string(get_day(curr_date) , "99") + "," + lastrcode + " ChangeTo " + rate_list1.rcode[curr_i - 1]
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 145)],"char1": [(eq, currcode)],"char2": [(eq, rate_list1.origcode)],"number1": [(eq, inp_zikatnr)],"deci1": [(eq, rate_list1.w_day)],"deci2": [(eq, rate_list1.counter)],"date1": [(eq, curr_date)]})
-
+                    # queasy = get_cache (Queasy, {"key": [(eq, 145)],"char1": [(eq, currcode)],"char2": [(eq, rate_list1.origcode)],"number1": [(eq, inp_zikatnr)],
+                    # "deci1": [(eq, rate_list1.w_day)],"deci2": [(eq, rate_list1.counter)],"date1": [(eq, curr_date)]})
+                    queasy = db_session.query(Queasy).filter(
+                             (Queasy.key == 145) &
+                             (Queasy.char1 == currcode) &
+                             (Queasy.char2 == rate_list1.origcode) &
+                             (Queasy.number1 == inp_zikatnr) &
+                             (Queasy.deci1 == to_decimal(rate_list1.w_day)) &
+                             (Queasy.deci2 == to_decimal(rate_list1.counter)) &
+                             (Queasy.date1 == curr_date)).with_for_update().first() 
                     if not queasy:
                         queasy = Queasy()
                         db_session.add(queasy)

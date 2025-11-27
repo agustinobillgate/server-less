@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Eg_property, Eg_request, Eg_location
@@ -38,7 +40,9 @@ def eg_location_btn_delartbl(location_nr:int, rec_id:int):
 
         return generate_output()
 
-    eg_location = get_cache (Eg_location, {"_recid": [(eq, rec_id)]})
+    # eg_location = get_cache (Eg_location, {"_recid": [(eq, rec_id)]})
+    eg_location = db_session.query(Eg_location).filter(
+             (Eg_location._recid == rec_id)).with_for_update().first()
 
     if eg_location:
         pass
