@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -48,7 +50,9 @@ def bqtsob_admin_btn_exitbl(queasy_list_data:[Queasy_list], icase:int, recid_que
         fill_new_queasy()
     else:
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, recid_queasy)]})
+        # queasy = get_cache (Queasy, {"_recid": [(eq, recid_queasy)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy._recid == recid_queasy)).with_for_update().first()
         queasy.char3 = queasy_list.char3
         pass
 

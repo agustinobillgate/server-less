@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Eg_property, Eg_request, Eg_subtask, Queasy
@@ -41,7 +43,9 @@ def eg_maintask_btn_delartbl(maintask_number1:int, rec_id:int):
 
             return generate_output()
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+        # queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy._recid == rec_id)).with_for_update().first()
 
         if queasy:
             pass

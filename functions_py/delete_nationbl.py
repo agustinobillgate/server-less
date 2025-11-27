@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Nation
@@ -19,7 +21,10 @@ def delete_nationbl(case_type:int, int1:int, char1:string):
 
     if case_type == 1:
 
-        nation = get_cache (Nation, {"nationnr": [(eq, int1)],"kurzbez": [(eq, char1)]})
+        # nation = get_cache (Nation, {"nationnr": [(eq, int1)],"kurzbez": [(eq, char1)]})
+        nation = db_session.query(Nation).filter(
+                 (Nation.nationnr == int1) &    
+                 (Nation.kurzbez == char1)).with_for_update().first()
 
         if nation:
             db_session.delete(nation)

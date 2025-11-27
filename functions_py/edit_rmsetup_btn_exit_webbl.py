@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_rset
@@ -61,7 +63,9 @@ def edit_rmsetup_btn_exit_webbl(bk_list_data:[Bk_list], case_type:int, t_bk_raum
 
         nonlocal bk_list
 
-        bk_rset = get_cache (Bk_rset, {"_recid": [(eq, bk_list.rec_id)]})
+        # bk_rset = get_cache (Bk_rset, {"_recid": [(eq, bk_list.rec_id)]})
+        bk_rset = db_session.query(Bk_rset).filter(
+                 (Bk_rset._recid == bk_list.rec_id)).with_for_update().first()
 
         if bk_rset:
             pass

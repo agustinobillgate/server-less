@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Parameters
@@ -64,7 +66,9 @@ def cost_center_btn_gobl(case_type:int, num1:int, name1:string):
         nonlocal cost_list
         nonlocal cost_list_data
 
-        parameters = get_cache (Parameters, {"_recid": [(eq, num1)]})
+        # parameters = get_cache (Parameters, {"_recid": [(eq, num1)]})
+        parameters = db_session.query(Parameters).filter(
+                 (Parameters._recid == num1)).with_for_update().first()
 
         if parameters:
             pass

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Guestbook
@@ -70,7 +72,10 @@ def delete_imagesetupbl(case_type:int, image_number:int):
 
         return generate_output()
 
-    guestbook = get_cache (Guestbook, {"gastnr": [(eq, pic_number)],"reserve_int[0]": [(eq, image_number)]})
+    # guestbook = get_cache (Guestbook, {"gastnr": [(eq, pic_number)],"reserve_int[0]": [(eq, image_number)]})
+    guestbook = db_session.query(Guestbook).filter(
+             (Guestbook.gastnr == pic_number) &
+             (Guestbook.reserve_int[0] == image_number)).with_for_update().first()
 
     if not guestbook:
         result_message = "2 - Image Not exist!"

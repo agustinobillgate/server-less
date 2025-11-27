@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_acct, Parameters
@@ -65,7 +67,10 @@ def cost_center_btn_go2bl(fibu1:string, curr_select:string, cost_list_num:int):
         nonlocal alloc_list
         nonlocal alloc_list_data
 
-        parameters = get_cache (Parameters, {"_recid": [(eq, alloc_list.rec_id)]})
+        # parameters = get_cache (Parameters, {"_recid": [(eq, alloc_list.rec_id)]})
+        parameters = db_session.query(Parameters).filter(
+                 (Parameters._recid == alloc_list.rec_id)).with_for_update().first()
+        
         parameters.vstring = fibu1
         pass
 

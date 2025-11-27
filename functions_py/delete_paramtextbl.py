@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Paramtext, Zimmer
@@ -20,7 +22,11 @@ def delete_paramtextbl(case_type:int, int1:int, int2:int, int3:int):
 
     if case_type == 1:
 
-        paramtext = get_cache (Paramtext, {"txtnr": [(eq, int1)],"number": [(eq, int2)],"sprachcode": [(eq, int3)]})
+        # paramtext = get_cache (Paramtext, {"txtnr": [(eq, int1)],"number": [(eq, int2)],"sprachcode": [(eq, int3)]})
+        paramtext = db_session.query(Paramtext).filter(
+                 (Paramtext.txtnr == int1) &
+                 (Paramtext.number == int2) &
+                 (Paramtext.sprachcode == int3)).with_for_update().first()
 
         if paramtext:
             db_session.delete(paramtext)
@@ -28,7 +34,11 @@ def delete_paramtextbl(case_type:int, int1:int, int2:int, int3:int):
             success_flag = True
     elif case_type == 2:
 
-        paramtext = get_cache (Paramtext, {"txtnr": [(eq, int1)],"number": [(eq, int2)],"sprachcode": [(eq, int3)]})
+        # paramtext = get_cache (Paramtext, {"txtnr": [(eq, int1)],"number": [(eq, int2)],"sprachcode": [(eq, int3)]})
+        paramtext = db_session.query(Paramtext).filter(
+                 (Paramtext.txtnr == int1) &
+                 (Paramtext.number == int2) &
+                 (Paramtext.sprachcode == int3)).with_for_update().first()
 
         if paramtext:
 
