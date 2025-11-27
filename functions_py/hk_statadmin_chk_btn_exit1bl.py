@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -74,7 +76,9 @@ def hk_statadmin_chk_btn_exit1bl(bline_list_data:[Bline_list], om_list_data:[Om_
         queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(ge, ci_date)],"number1": [(eq, z_nr)]})
         while None != queasy and queasy.logi1 == False and queasy.logi2 == False :
 
-            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+            # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+            qsy = db_session.query(Queasy).filter(
+                     (Queasy._recid == queasy._recid)).with_for_update().first()
 
             if qsy:
                 qsy.logi2 = True
@@ -139,7 +143,9 @@ def hk_statadmin_chk_btn_exit1bl(bline_list_data:[Bline_list], om_list_data:[Om_
 
     for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.selected)):
 
-        zimmer = get_cache (Zimmer, {"zinr": [(eq, bline_list.zinr)]})
+        # zimmer = get_cache (Zimmer, {"zinr": [(eq, bline_list.zinr)]})
+        zimmer = db_session.query(Zimmer).filter(
+                 (Zimmer.zinr == bline_list.zinr)).with_for_update().first()
 
         om_list = query(om_list_data, filters=(lambda om_list: om_list.zinr == bline_list.zinr), first=True)
         from_stat = to_string(zimmer.zistatus) + " " + stat_list[om_list.ind - 1]

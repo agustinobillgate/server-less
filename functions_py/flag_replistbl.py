@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Reslin_queasy
@@ -19,7 +21,12 @@ def flag_replistbl(s_resnr:int, s_reslinnr:int, s_ind:int, s_done:bool, s_recid:
         return {}
 
 
-    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "flag")],"resnr": [(eq, s_resnr)],"reslinnr": [(eq, s_reslinnr)],"_recid": [(eq, s_recid)]})
+    # reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "flag")],"resnr": [(eq, s_resnr)],"reslinnr": [(eq, s_reslinnr)],"_recid": [(eq, s_recid)]})
+    reslin_queasy = db_session.query(Reslin_queasy).filter(
+             (Reslin_queasy.key == "flag") &
+             (Reslin_queasy.resnr == s_resnr) &
+             (Reslin_queasy.reslinnr == s_reslinnr) &
+             (Reslin_queasy._recid == s_recid)).with_for_update().first()
 
     if reslin_queasy:
         pass

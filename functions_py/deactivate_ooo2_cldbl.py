@@ -42,8 +42,11 @@ def deactivate_ooo2_cldbl(user_nr:int, oos_flag:bool, ci_date:date, ooo_list2_da
 
     ooo_list2 = query(ooo_list2_data, first=True)
 
-    outorder = get_cache (Outorder, {"zinr": [(eq, ooo_list2.zinr)],"betriebsnr": [(eq, ooo_list2.betriebsnr)],"gespstart": [(eq, ooo_list2.gespstart)],"gespende": [(eq, ooo_list2.gespende)]})
-
+    # outorder = get_cache (Outorder, {"zinr": [(eq, ooo_list2.zinr)],"betriebsnr": [(eq, ooo_list2.betriebsnr)],"gespstart": [(eq, ooo_list2.gespstart)],"gespende": [(eq, ooo_list2.gespende)]})
+    outorder = db_session.query(Outorder).filter(Outorder.zinr == ooo_list2.zinr,
+                                 Outorder.betriebsnr == ooo_list2.betriebsnr,
+                                 Outorder.gespstart == ooo_list2.gespstart,
+                                 Outorder.gespende == ooo_list2.gespende).with_for_update().first()
     if outorder:
 
         if outorder.betriebsnr <= 1:
@@ -82,7 +85,8 @@ def deactivate_ooo2_cldbl(user_nr:int, oos_flag:bool, ci_date:date, ooo_list2_da
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                     if qsy:
                         qsy.logi2 = True
@@ -91,7 +95,8 @@ def deactivate_ooo2_cldbl(user_nr:int, oos_flag:bool, ci_date:date, ooo_list2_da
 
         if oos_flag and (outorder.gespstart == outorder.gespende):
 
-            zinrstat = get_cache (Zinrstat, {"zinr": [(eq, "oos")],"datum": [(eq, ci_date)]})
+            # zinrstat = get_cache (Zinrstat, {"zinr": [(eq, "oos")],"datum": [(eq, ci_date)]})
+            zinrstat = db_session.query(Zinrstat).filter(Zinrstat.zinr == "oos", Zinrstat.datum == ci_date).with_for_update().first()
 
             if not zinrstat:
                 zinrstat = Zinrstat()
@@ -100,13 +105,13 @@ def deactivate_ooo2_cldbl(user_nr:int, oos_flag:bool, ci_date:date, ooo_list2_da
                 zinrstat.datum = ci_date
                 zinrstat.zinr = "oos"
 
-
             zinrstat.zimmeranz = zinrstat.zimmeranz + 1
         pass
         db_session.delete(outorder)
         pass
 
-        zimmer = get_cache (Zimmer, {"zinr": [(eq, ooo_list2.zinr)]})
+        # zimmer = get_cache (Zimmer, {"zinr": [(eq, ooo_list2.zinr)]})
+        zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == ooo_list2.zinr).with_for_update().first()
 
         if zimmer:
             pass

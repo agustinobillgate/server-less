@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -8,7 +10,8 @@ from models import Zimmer, Bediener, Res_history, Queasy, Res_line, Outorder
 bline_list_data, Bline_list = create_model("Bline_list", {"zinr":string, "selected":bool, "bl_recid":int})
 om_list_data, Om_list = create_model("Om_list", {"zinr":string, "ind":int})
 
-def hk_statadmin_chg_zistatusbl(bline_list_data:[Bline_list], om_list_data:[Om_list], pvilanguage:int, ci_date:date, chgsort:int, t_zinr:string, user_init:string, user_nr:int):
+def hk_statadmin_chg_zistatusbl(bline_list_data:[Bline_list], om_list_data:[Om_list], pvilanguage:int, ci_date:date, chgsort:int, 
+                                t_zinr:string, user_init:string, user_nr:int):
 
     prepare_cache ([Bediener, Res_history, Queasy, Outorder])
 
@@ -26,6 +29,7 @@ def hk_statadmin_chg_zistatusbl(bline_list_data:[Bline_list], om_list_data:[Om_l
     z_list_data, Z_list = create_model("Z_list", {"zinr":string, "setup":int, "zikatnr":int, "etage":int, "zistatus":int, "code":string, "bediener_nr_stat":int, "checkout":bool, "str_reason":string})
 
     db_session = local_storage.db_session
+    t_zinr = t_zinr.strip()
 
     def generate_output():
         nonlocal curr_zinr, curr_stat, z_list_data, from_stat, to_stat, lvcarea, stat_list, zimmer, bediener, res_history, queasy, res_line, outorder
@@ -50,7 +54,10 @@ def hk_statadmin_chg_zistatusbl(bline_list_data:[Bline_list], om_list_data:[Om_l
 
         for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.selected)):
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, bline_list.zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, bline_list.zinr)]})
+            zimmer = db_session.query(Zimmer).filter(
+                     (Zimmer.zinr == bline_list.zinr)).with_for_update().first()
+            
             from_stat = to_string(zimmer.zistatus) + " " + stat_list[zimmer.zistatus + 1 - 1]
 
             if chgsort == 8:
@@ -93,7 +100,9 @@ def hk_statadmin_chg_zistatusbl(bline_list_data:[Bline_list], om_list_data:[Om_l
 
             if zimmer.zistatus == 0:
 
-                queasy = get_cache (Queasy, {"key": [(eq, 162)],"char1": [(eq, zimmer.zinr)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 162)],"char1": [(eq, zimmer.zinr)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 162) & (Queasy.char1 == zimmer.zinr)).with_for_update().first()
 
                 if queasy:
                     queasy.number1 = 1
@@ -147,7 +156,9 @@ def hk_statadmin_chg_zistatusbl(bline_list_data:[Bline_list], om_list_data:[Om_l
     stat_list[8] = translateExtended ("Do not Disturb", lvcarea, "")
     stat_list[9] = translateExtended ("Out-of-Service", lvcarea, "")
 
-    zimmer = get_cache (Zimmer, {"zinr": [(eq, t_zinr)]})
+    # zimmer = get_cache (Zimmer, {"zinr": [(eq, t_zinr)]})
+    zimmer = db_session.query(Zimmer).filter(
+             (Zimmer.zinr == t_zinr)).with_for_update().first()
     chg_zistatus()
 
     return generate_output()

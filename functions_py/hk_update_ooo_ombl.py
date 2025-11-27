@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -26,6 +28,7 @@ def hk_update_ooo_ombl(case_type:int, user_init:string, rec_id:int, from_date:da
     t_outorder_data, T_outorder = create_model_like(Outorder)
 
     db_session = local_storage.db_session
+    reason = reason.strip()
 
     def generate_output():
         nonlocal msg_int, resno, resname, ankunft, abreise, ooo_list_ind, user_nr, prev_from_date, prev_to_date, outorder, bediener, queasy
@@ -60,7 +63,13 @@ def hk_update_ooo_ombl(case_type:int, user_init:string, rec_id:int, from_date:da
         if msg_int == 0:
 
             for queasy in db_session.query(Queasy).filter(
-                     (Queasy.key == 195) & (Queasy.char1 == ("ooo;room=" + outorder.zinr + ";from=" + to_string(get_day(prev_from_date) , "99") + "/" + to_string(get_month(prev_from_date) , "99") + "/" + to_string(get_year(prev_from_date) , "9999") + ";to=" + to_string(get_day(prev_to_date) , "99") + "/" + to_string(get_month(prev_to_date) , "99") + "/" + to_string(get_year(prev_to_date) , "9999").lower()))).order_by(Queasy._recid).all():
+                     (Queasy.key == 195) & (Queasy.char1 == ("ooo;room=" + outorder.zinr + ";from=" + 
+                                                             to_string(get_day(prev_from_date) , "99") + 
+                                                             "/" + to_string(get_month(prev_from_date) , "99") + 
+                                                             "/" + to_string(get_year(prev_from_date) , "9999") + 
+                                                             ";to=" + to_string(get_day(prev_to_date) , "99") + 
+                                                             "/" + to_string(get_month(prev_to_date) , "99") + 
+                                                             "/" + to_string(get_year(prev_to_date) , "9999").lower()))).order_by(Queasy._recid).with_for_update().all():
 
                 if queasy:
                     queasy.char1 = "ooo;room=" + outorder.zinr + ";from=" + to_string(get_day(from_date) , "99") + "/" + to_string(get_month(from_date) , "99") + "/" + to_string(get_year(from_date) , "9999") + ";to=" + to_string(get_day(to_date) , "99") + "/" + to_string(get_month(to_date) , "99") + "/" + to_string(get_year(to_date) , "9999")

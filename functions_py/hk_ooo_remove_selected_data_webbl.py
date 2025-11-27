@@ -54,7 +54,8 @@ def hk_ooo_remove_selected_data_webbl(case_type:int, user_init:string, ci_date:d
 
         for ooo_list in query(ooo_list_data):
 
-            outorder = get_cache (Outorder, {"_recid": [(eq, ooo_list.rec_id)]})
+            # outorder = get_cache (Outorder, {"_recid": [(eq, ooo_list.rec_id)]})
+            outorder = db_session.query(Outorder).filter(Outorder._recid == ooo_list.rec_id).with_for_update().first()
 
             zimmer = get_cache (Zimmer, {"zinr": [(eq, outorder.zinr)]})
 

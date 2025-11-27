@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -56,16 +58,21 @@ def hk_statadmin_deactivate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om
 
         for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.selected)):
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, bline_list.zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, bline_list.zinr)]})
+            zimmer = db_session.query(Zimmer).filter(
+                     (Zimmer.zinr == bline_list.zinr)).with_for_update().first()
 
             for outorder in db_session.query(Outorder).filter(
-                     (Outorder.zinr == bline_list.zinr)).order_by(Outorder._recid).all():
+                     (Outorder.zinr == bline_list.zinr)).order_by(Outorder._recid).with_for_update().all():
                 oos_flag = (outorder.betriebsnr == 3 or outorder.betriebsnr == 4)
                 ooo_flag = (outorder.betriebsnr <= 1 and ci_date >= outorder.gespstart and ci_date <= outorder.gespende)
 
                 if oos_flag and (outorder.gespstart == outorder.gespende):
 
-                    zinrstat = get_cache (Zinrstat, {"zinr": [(eq, "oos")],"datum": [(eq, ci_date)]})
+                    # zinrstat = get_cache (Zinrstat, {"zinr": [(eq, "oos")],"datum": [(eq, ci_date)]})
+                    zinrstat = db_session.query(Zinrstat).filter(
+                             (Zinrstat.zinr == "oos") &
+                             (Zinrstat.datum == ci_date)).with_for_update().first()
 
                     if not zinrstat:
                         zinrstat = Zinrstat()
@@ -100,7 +107,9 @@ def hk_statadmin_deactivate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            qsy = db_session.query(Queasy).filter(
+                                     (Queasy._recid == queasy._recid)).with_for_update().first()
 
                             if qsy:
                                 qsy.logi2 = True

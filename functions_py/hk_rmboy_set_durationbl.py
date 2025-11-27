@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -14,6 +16,7 @@ def hk_rmboy_set_durationbl(userinit:string, zinr:string, duration:int):
     htparam = queasy = bediener = None
 
     db_session = local_storage.db_session
+    zinr = zinr.strip()
 
     def generate_output():
         nonlocal msg_str, ci_date, htparam, queasy, bediener
@@ -26,7 +29,7 @@ def hk_rmboy_set_durationbl(userinit:string, zinr:string, duration:int):
     ci_date = htparam.fdate
 
     queasy = db_session.query(Queasy).filter(
-             (Queasy.key == 196) & (Queasy.date1 == ci_date) & (entry(0, Queasy.char1, ";") == (zinr).lower())).first()
+             (Queasy.key == 196) & (Queasy.date1 == ci_date) & (entry(0, Queasy.char1, ";") == (zinr).lower())).with_for_update().first()
 
     if queasy:
 

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -7,7 +9,8 @@ from models import Outorder, Zimkateg, Queasy, Htparam, Res_line, Res_history, Z
 
 t_outorder_data, T_outorder = create_model_like(Outorder)
 
-def hk_ooo1bl(case_type:int, t_outorder_data:[T_outorder], from_date:date, to_date:date, service_flag:bool, zinr:string, user_nr:int, reason:string, dept:int, user_init:string):
+def hk_ooo1bl(case_type:int, t_outorder_data:[T_outorder], from_date:date, to_date:date, service_flag:bool, 
+              zinr:string, user_nr:int, reason:string, dept:int, user_init:string):
 
     prepare_cache ([Zimkateg, Queasy, Htparam, Res_line, Res_history, Zimmer, Bediener])
 
@@ -34,6 +37,9 @@ def hk_ooo1bl(case_type:int, t_outorder_data:[T_outorder], from_date:date, to_da
 
 
     db_session = local_storage.db_session
+    zinr = zinr.strip()
+    reason = reason.strip()
+
 
     def generate_output():
         nonlocal msg_int, resno, resname, ankunft, abreise, ooo_list_ind, cat_flag, roomnr, datum, do_it, i, zistatus, ci_date, outorder, zimkateg, queasy, htparam, res_line, res_history, zimmer, bediener
@@ -100,18 +106,21 @@ def hk_ooo1bl(case_type:int, t_outorder_data:[T_outorder], from_date:date, to_da
             pass
             pass
 
-        outorder = get_cache (Outorder, {"zinr": [(eq, t_outorder.zinr)],"betriebsnr": [(eq, t_outorder.betriebsnr)],"gespstart": [(eq, t_outorder.gespstart)],"gespende": [(eq, t_outorder.gespende)]})
+        # outorder = get_cache (Outorder, {"zinr": [(eq, t_outorder.zinr)],"betriebsnr": [(eq, t_outorder.betriebsnr)],"gespstart": [(eq, t_outorder.gespstart)],"gespende": [(eq, t_outorder.gespende)]})
+        outorder = db_session.query(Outorder).filter(
+                 (Outorder.zinr == t_outorder.zinr) & (Outorder.betriebsnr == t_outorder.betriebsnr) & 
+                 (Outorder.gespstart == t_outorder.gespstart) & (Outorder.gespende == t_outorder.gespende)).with_for_update().first()
         outorder.gespstart = from_date
         outorder.gespende = to_date
         outorder.gespgrund = reason + "$" + user_init
-
-
         outorder.betriebsnr = dept
 
         if service_flag:
             outorder.betriebsnr = outorder.betriebsnr + 3
 
-        zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+        # zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+        zimmer = db_session.query(Zimmer).filter(
+                 (Zimmer.zinr == zinr)).with_for_update().first()
 
         queasy = get_cache (Queasy, {"key": [(eq, 152)]})
 
@@ -132,7 +141,9 @@ def hk_ooo1bl(case_type:int, t_outorder_data:[T_outorder], from_date:date, to_da
 
             if queasy:
 
-                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                qsy = db_session.query(Queasy).filter(
+                         (Queasy._recid == queasy._recid)).with_for_update().first()
 
                 if qsy:
                     qsy.logi2 = True
@@ -144,7 +155,9 @@ def hk_ooo1bl(case_type:int, t_outorder_data:[T_outorder], from_date:date, to_da
 
             if queasy:
 
-                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                qsy = db_session.query(Queasy).filter(
+                         (Queasy._recid == queasy._recid)).with_for_update().first()
 
                 if qsy:
                     qsy.logi2 = True
@@ -231,7 +244,7 @@ def hk_ooo1bl(case_type:int, t_outorder_data:[T_outorder], from_date:date, to_da
                 zimmer.bediener_nr_stat = 0
 
                 obuff = db_session.query(Obuff).filter(
-                         (Obuff.zinr == (zinr).lower()) & (Obuff.gespstart < res_line.abreise)).first()
+                         (Obuff.zinr == (zinr).lower()) & (Obuff.gespstart < res_line.abreise)).with_for_update().first()
 
                 if obuff:
                     db_session.delete(obuff)
@@ -298,14 +311,17 @@ def hk_ooo1bl(case_type:int, t_outorder_data:[T_outorder], from_date:date, to_da
 
         if do_it:
 
-            outorder = get_cache (Outorder, {"zinr": [(eq, t_outorder.zinr)]})
-
-
+            # outorder = get_cache (Outorder, {"zinr": [(eq, t_outorder.zinr)]})
+            outorder = db_session.query(Outorder).filter(
+                     (Outorder.zinr == t_outorder.zinr)).with_for_update().first()
+    
             outorder.gespstart = from_date
             outorder.gespende = to_date
             outorder.gespgrund = reason + "$" + user_init
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, t_outorder.zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, t_outorder.zinr)]})
+            zimmer = db_session.query(Zimmer).filter(
+                     (Zimmer.zinr == t_outorder.zinr)).with_for_update().first()
             zimmer.bediener_nr_stat = user_nr
             pass
             pass
