@@ -3,6 +3,8 @@
 # Rd 4/8/2025
 # if available, bezeichnung
 #-----------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Ba_typ
@@ -52,7 +54,9 @@ def batype_admin_btn_exitbl(icase:int, rec_id:int, ba_list_data:[Ba_list]):
         fill_new_ba_typ()
     else:
 
-        ba_typ = get_cache (Ba_typ, {"_recid": [(eq, rec_id)]})
+        # ba_typ = get_cache (Ba_typ, {"_recid": [(eq, rec_id)]})
+        ba_typ = db_session.query(Ba_typ).filter(
+                 (Ba_typ._recid == rec_id)).with_for_update().first()
         # Rd 4/8/2025
         # if available
         if ba_typ:

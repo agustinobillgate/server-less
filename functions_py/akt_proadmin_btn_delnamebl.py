@@ -1,15 +1,12 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd 4/8/2025
-# if available, bezeichnung
-#-----------------------------------------
+#-------------------------------------------------------
 # Rd, 27/11/2025, with_for_update added
-#-----------------------------------------
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Akt_code, Akthdr
 
-def akt_refadmin_btn_delnamebl(rec_id:int):
+def akt_proadmin_btn_delnamebl(rec_id:int):
     err = 0
     akt_code = akthdr = None
 
@@ -25,17 +22,19 @@ def akt_refadmin_btn_delnamebl(rec_id:int):
     # akt_code = get_cache (Akt_code, {"_recid": [(eq, rec_id)]})
     akt_code = db_session.query(Akt_code).filter(
              (Akt_code._recid == rec_id)).with_for_update().first()
-    # Rd 4/8/2025
-    # if available
-    if akt_code is None:
-        return generate_output()
-    
-    akthdr = get_cache (Akthdr, {"referred": [(eq, akt_code.aktionscode)]})
 
-    if akthdr:
-        err = 1
-    else:
-        pass
-        db_session.delete(akt_code)
+    if akt_code:
+
+        akthdr = db_session.query(Akthdr).filter(
+                 (Akthdr.product[inc_value(0)] == akt_code.aktionscode) | (Akthdr.product[inc_value(1)] == akt_code.aktionscode) | (Akthdr.product[inc_value(2)] == akt_code.aktionscode)).first()
+
+        if akthdr:
+            err = 1
+
+
+        else:
+            pass
+            db_session.delete(akt_code)
+            pass
 
     return generate_output()

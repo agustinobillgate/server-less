@@ -1,57 +1,46 @@
 #using conversion tools version: 1.0.0.117
-
-# =======================================
-# Rulita, 15-10-2025 
-# Tiket ID : 6526C2 | New compile program
-# =======================================
+#-------------------------------------------------------
 # Rd, 27/11/2025, with_for_update added
-# =======================================
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_artikel, Queasy, Bediener, Res_history
 
-h_list_data, H_list = create_model_like(H_artikel, {"max_soldout_qty":int, "soldout_flag":bool, "isincluded":bool})
+h_list_data, H_list = create_model_like(H_artikel, {"max_soldout_qty":int, "soldout_flag":bool})
 
-def rarticle_admin_btn_exit3_webbl(h_list_data:[H_list], case_type:int, fract_flag:bool, ask_voucher:bool, bezeich2:string, barcode:string, user_init:string):
+def rarticle_admin_btn_exit2_webbl(h_list_data:[H_list], case_type:int, fract_flag:bool, ask_voucher:bool, bezeich2:string, barcode:string, user_init:string):
 
     prepare_cache ([H_artikel, Bediener, Res_history])
 
-    t_output_list_data = []
     v_log:bool = False
     v_log2:bool = False
     h_artikel = queasy = bediener = res_history = None
 
-    h_list = t_output_list = buff_hart = None
-
-    t_output_list_data, T_output_list = create_model("T_output_list", {"vsuccessflag":bool, "verrormessage":string}, {"vsuccessflag": True})
+    h_list = buff_hart = None
 
     Buff_hart = create_buffer("Buff_hart",H_artikel)
 
+
     db_session = local_storage.db_session
-    bezeich2 = bezeich2.strip()
-    barcode = barcode.strip()
-    user_init = user_init.strip()
 
     def generate_output():
-        nonlocal t_output_list_data, v_log, v_log2, h_artikel, queasy, bediener, res_history
+        nonlocal v_log, v_log2, h_artikel, queasy, bediener, res_history
         nonlocal case_type, fract_flag, ask_voucher, bezeich2, barcode, user_init
         nonlocal buff_hart
 
 
-        nonlocal h_list, t_output_list, buff_hart
-        nonlocal t_output_list_data
+        nonlocal h_list, buff_hart
 
-        return {"t-output-list": t_output_list_data}
+        return {}
 
     def fill_artikel():
 
-        nonlocal t_output_list_data, v_log, v_log2, h_artikel, queasy, bediener, res_history
+        nonlocal v_log, v_log2, h_artikel, queasy, bediener, res_history
         nonlocal case_type, fract_flag, ask_voucher, bezeich2, barcode, user_init
         nonlocal buff_hart
 
 
-        nonlocal h_list, t_output_list, buff_hart
-        nonlocal t_output_list_data
+        nonlocal h_list, buff_hart
 
         if case_type == 2:
 
@@ -108,9 +97,6 @@ def rarticle_admin_btn_exit3_webbl(h_list_data:[H_list], case_type:int, fract_fl
                 if h_artikel.activeflag != h_list.activeflag:
                     res_history.aenderung = res_history.aenderung + "ActiveArt " + to_string(h_artikel.activeflag) + " to " + to_string(h_list.activeflag) + ";"
 
-                if h_artikel.prozent != h_list.prozent:
-                    res_history.aenderung = res_history.aenderung + "Cost(%) " + to_string(h_artikel.prozent) + " to " + to_string(h_list.prozent) + ";"
-
                 if v_log2 and queasy:
 
                     if to_int(queasy.deci1) != h_list.max_soldout_qty:
@@ -130,6 +116,7 @@ def rarticle_admin_btn_exit3_webbl(h_list_data:[H_list], case_type:int, fract_fl
         h_artikel.artart = h_list.artart
         h_artikel.epreis2 =  to_decimal(h_list.epreis2)
         h_artikel.gang = to_int(fract_flag)
+        h_artikel.bondruckernr[0] = h_list.bondruckernr[0]
         h_artikel.aenderwunsch = h_list.aenderwunsch
         h_artikel.artnrfront = h_list.artnrfront
         h_artikel.mwst_code = h_list.mwst_code
@@ -142,41 +129,7 @@ def rarticle_admin_btn_exit3_webbl(h_list_data:[H_list], case_type:int, fract_fl
         h_artikel.prozent =  to_decimal(h_list.prozent)
         h_artikel.lagernr = h_list.lagernr
         h_artikel.betriebsnr = h_list.betriebsnr
-        # h_artikel.bondruckernr[0] = h_list.bondruckernr[0]
-        # h_artikel.bondruckernr[3] = to_int(ask_voucher)
-
-        if type(h_list.bondruckernr[0]) == str:
-            h_list.bondruckernr[0] = to_int(h_list.bondruckernr[0].strip)
-
-        tmp_h_list_bondruckerner = [h_list.bondruckernr[0], h_list.bondruckernr[1], h_list.bondruckernr[2], to_int(ask_voucher)]
-        h_list.bondruckernr = tmp_h_list_bondruckerner
-
-        # queasy = get_cache (Queasy, {"key": [(eq, 361)],"number2": [(eq, h_list.departement)],"number1": [(eq, h_list.artnr)],"char1": [(eq, "fixed-sub-menu")],"number3": [(eq, h_list.betriebsnr)]})
-        queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 361) &
-                 (Queasy.number1 == h_list.artnr) &
-                 (Queasy.number2 == h_list.departement) &
-                 (Queasy.number3 == h_list.betriebsnr) &
-                 (Queasy.char1 == "Fixed-Sub-Menu")).with_for_update().first()
-        if queasy:
-            pass
-            queasy.logi1 = h_list.isincluded
-
-
-            pass
-            pass
-        else:
-
-            if h_list.betriebsnr != 0:
-                queasy = Queasy()
-                db_session.add(queasy)
-
-                queasy.key = 361
-                queasy.number1 = h_list.artnr
-                queasy.number2 = h_list.departement
-                queasy.number3 = h_list.betriebsnr
-                queasy.logi1 = h_list.isincluded
-                queasy.char1 = "Fixed-Sub-Menu"
+        h_artikel.bondruckernr[3] = to_int(ask_voucher)
 
         if bezeich2 == "":
 
@@ -214,7 +167,7 @@ def rarticle_admin_btn_exit3_webbl(h_list_data:[H_list], case_type:int, fract_fl
         queasy = db_session.query(Queasy).filter(
                  (Queasy.key == 200) &
                  (Queasy.number1 == h_list.departement) &
-                 (Queasy.number2 == h_list.artnr)).with_for_update().first()    
+                 (Queasy.number2 == h_list.artnr)).with_for_update().first()
 
         if not queasy:
             queasy = Queasy()
@@ -260,18 +213,8 @@ def rarticle_admin_btn_exit3_webbl(h_list_data:[H_list], case_type:int, fract_fl
         pass
         pass
 
+
     h_list = query(h_list_data, first=True)
-    t_output_list = T_output_list()
-    t_output_list_data.append(t_output_list)
-
-
-    if h_list.epreis1 == 0:
-
-        if h_list.artnrlager != 0 or h_list.artnrrezept != 0:
-            t_output_list.vsuccessflag = False
-            t_output_list.verrormessage = "This article is an open-price article (with price = 0). Stock Item and Recipe in Costing must be zero(0)."
-
-            return generate_output()
 
     if case_type == 1:
         h_artikel = H_artikel()
