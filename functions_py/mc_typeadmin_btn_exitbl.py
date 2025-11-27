@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Mc_types, Mc_disc, Mc_guest
@@ -35,16 +37,18 @@ def mc_typeadmin_btn_exitbl(g_list_data:[G_list], case_type:int, rec_id:int):
 
     elif case_type == 2:
 
-        mc_types = get_cache (Mc_types, {"_recid": [(eq, rec_id)]})
+        # mc_types = get_cache (Mc_types, {"_recid": [(eq, rec_id)]})
+        mc_types = db_session.query(Mc_types).filter(
+                 (Mc_types._recid == rec_id)).with_for_update().first()
 
         if mc_types.nr != g_list.nr:
 
             for mc_disc in db_session.query(Mc_disc).filter(
-                     (Mc_disc.nr == mc_type.nr)).order_by(Mc_disc._recid).all():
+                     (Mc_disc.nr == mc_types.nr)).order_by(Mc_disc._recid).all():
                 mc_disc.nr = g_list.nr
 
             for mc_guest in db_session.query(Mc_guest).filter(
-                     (Mc_guest.nr == mc_type.nr)).order_by(Mc_guest._recid).all():
+                     (Mc_guest.nr == mc_types.nr)).order_by(Mc_guest._recid).all():
                 mc_guest.nr = g_list.nr
         buffer_copy(g_list, mc_types)
 
