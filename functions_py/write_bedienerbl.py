@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bediener, Kellner, Bill_line, H_bill_line, Reservation, Artikel, H_journal, Hoteldpt
@@ -86,7 +88,10 @@ def write_bedienerbl(case_type:int, t_bediener_data:[T_bediener]):
 
                             dept_list.deptno = deptnr
 
-                            kellner = get_cache (Kellner, {"departement": [(eq, deptnr)],"kellner_nr": [(eq, to_int(bediener.userinit))]})
+                            # kellner = get_cache (Kellner, {"departement": [(eq, deptnr)],"kellner_nr": [(eq, to_int(bediener.userinit))]})
+                            kellner = db_session.query(Kellner).filter(
+                                     (Kellner.departement == deptnr) &
+                                     (Kellner.kellner_nr == to_int(bediener.userinit))).with_for_update().first()
 
                             if kellner and kellner.masterkey != mkey:
                                 pass
@@ -136,7 +141,7 @@ def write_bedienerbl(case_type:int, t_bediener_data:[T_bediener]):
                             if not h_journal:
 
                                 kbuff = db_session.query(Kbuff).filter(
-                                         (Kbuff._recid == kellner._recid)).first()
+                                         (Kbuff._recid == kellner._recid)).with_for_update().first()
                                 db_session.delete(kbuff)
                                 pass
 
@@ -232,7 +237,9 @@ def write_bedienerbl(case_type:int, t_bediener_data:[T_bediener]):
 
     elif case_type == 2:
 
-        bediener = get_cache (Bediener, {"userinit": [(eq, t_bediener.userinit)]})
+        # bediener = get_cache (Bediener, {"userinit": [(eq, t_bediener.userinit)]})
+        bediener = db_session.query(Bediener).filter(
+                 (Bediener.userinit == t_bediener.userinit)).with_for_update
 
         if bediener:
             buffer_copy(t_bediener, bediener)
@@ -242,12 +249,12 @@ def write_bedienerbl(case_type:int, t_bediener_data:[T_bediener]):
 
     elif case_type == 3:
 
-        bediener = get_cache (Bediener, {"nr": [(eq, t_bediener.nr)]})
+        # bediener = get_cache (Bediener, {"nr": [(eq, t_bediener.nr)]})
+        bediener = db_session.query(Bediener).filter(
+                 (Bediener.nr == t_bediener.nr)).with_for_update().first()
 
         if bediener:
             prevname = bediener.username
-
-
             buffer_copy(t_bediener, bediener)
             pass
 
@@ -257,7 +264,7 @@ def write_bedienerbl(case_type:int, t_bediener_data:[T_bediener]):
                 while None != kellner:
 
                     kbuff = db_session.query(Kbuff).filter(
-                             (Kbuff._recid == kellner._recid)).first()
+                             (Kbuff._recid == kellner._recid)).with_for_update().first()
                     kbuff.kellnername = t_bediener.username
 
 
@@ -273,7 +280,9 @@ def write_bedienerbl(case_type:int, t_bediener_data:[T_bediener]):
 
     elif case_type == 4:
 
-        bediener = get_cache (Bediener, {"nr": [(eq, t_bediener.nr)]})
+        # bediener = get_cache (Bediener, {"nr": [(eq, t_bediener.nr)]})
+        bediener = db_session.query(Bediener).filter(
+                 (Bediener.nr == t_bediener.nr)).with_for_update().first
 
         if not bediener:
 
@@ -304,7 +313,10 @@ def write_bedienerbl(case_type:int, t_bediener_data:[T_bediener]):
             kellner = get_cache (Kellner, {"kellner_nr": [(eq, to_int(bediener.userinit))]})
             while None != kellner:
 
-                artikel = get_cache (Artikel, {"artnr": [(eq, kellner.kumsatz_nr)],"departement": [(eq, kellner.departement)]})
+                # artikel = get_cache (Artikel, {"artnr": [(eq, kellner.kumsatz_nr)],"departement": [(eq, kellner.departement)]})
+                artikel = db_session.query(Artikel).filter(
+                         (Artikel.artnr == kellner.kumsatz_nr) &
+                         (Artikel.departement == kellner.departement)).with_for_update().first()
 
                 if artikel:
                     db_session.delete(artikel)
@@ -315,14 +327,16 @@ def write_bedienerbl(case_type:int, t_bediener_data:[T_bediener]):
 
                 if not kbuff:
 
-                    artikel = get_cache (Artikel, {"departement": [(eq, 0)],"artnr": [(eq, kellner.kcredit_nr)]})
+                    # artikel = get_cache (Artikel, {"departement": [(eq, 0)],"artnr": [(eq, kellner.kcredit_nr)]})
+                    artikel = db_session.query(Artikel).filter(
+                             (Artikel.departement == 0) & (Artikel.artnr == kellner.kcredit_nr)).with_for_update().first()
 
                     if artikel:
                         db_session.delete(artikel)
                         pass
 
                 kbuff = db_session.query(Kbuff).filter(
-                         (Kbuff._recid == kellner._recid)).first()
+                         (Kbuff._recid == kellner._recid)).with_for_update().first()
                 db_session.delete(kbuff)
                 pass
 

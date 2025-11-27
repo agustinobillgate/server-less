@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Brief, Briefzei
@@ -24,11 +26,16 @@ def word_admin_btn_delnamebl(kateg:int, b_list_briefnr:int, recid_brief:int):
 
         return {"t-brief": t_brief_data}
 
-    brief = get_cache (Brief, {"_recid": [(eq, recid_brief)]})
+    # brief = get_cache (Brief, {"_recid": [(eq, recid_brief)]})
+    brief = db_session.query(Brief).filter(
+             (Brief._recid == recid_brief)).with_for_update().first()
 
     if brief:
 
-        briefzei = get_cache (Briefzei, {"briefnr": [(eq, b_list_briefnr)],"briefzeilnr": [(eq, 1)]})
+        # briefzei = get_cache (Briefzei, {"briefnr": [(eq, b_list_briefnr)],"briefzeilnr": [(eq, 1)]})
+        briefzei = db_session.query(Briefzei).filter(
+                 (Briefzei.briefnr == b_list_briefnr) &
+                 (Briefzei.briefzeilnr == 1)).with_for_update().first()
 
         if briefzei:
             db_session.delete(briefzei)
