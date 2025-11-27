@@ -1,9 +1,5 @@
-#using conversion tools version: 1.0.0.117
-#-------------------------------------------
-# Rd 28/7/2025
-# gitlab: 280
-# tested di UI Baru
-#-------------------------------------------
+#using conversion tools version: 1.0.0.119
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -56,34 +52,34 @@ def release_ar_def_actionbl(pvilanguage:int, pay_list_paynr:int, pay_list_s_reci
 
         return generate_output()
 
-    debt = get_cache (Debitor, {"_recid": [(eq, pay_list_s_recid)]})
+    debt = db_session.query(Debt).filter(
+             (Debt._recid == pay_list_s_recid)).with_for_update().first()
 
     if debt:
 
-        debitor = get_cache (Debitor, {"artnr": [(eq, debt.artnr)],"counter": [(eq, debt.counter)],"zahlkonto": [(eq, 0)]})
+        debitor = db_session.query(Debitor).filter(
+                 (Debitor.artnr == debt.artnr) & (Debitor.counter == debt.counter) & (Debitor.zahlkonto == 0)).first()
 
         if debitor:
             i_counter = debitor.counter
             pay_amount =  to_decimal(debt.saldo)
             debt_no = debt.zahlkonto
 
+            db_session.refresh(debt, with_for_update=True)
 
-            pass
-
-            umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, debt.zahlkonto)],"datum": [(eq, debt.rgdatum)]})
+            umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.departement == 0) & (Umsatz.artnr == debt.zahlkonto) & (Umsatz.datum == debt.rgdatum)).with_for_update().first()
 
             if umsatz:
                 umsatz.anzahl = umsatz.anzahl - 1
                 umsatz.betrag =  to_decimal(umsatz.betrag) - to_decimal(debt.saldo)
 
 
-                pass
             db_session.delete(debt)
 
             if debitor:
-                pass
+                db_session.refresh(debitor, with_for_update=True)
                 debitor.opart = 0
-                pass
 
             htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
             billjournal = Billjournal()

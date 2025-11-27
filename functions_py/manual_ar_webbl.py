@@ -1,7 +1,5 @@
-#using conversion tools version: 1.0.0.117
-#---------------------------------------------------------------------
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
-#---------------------------------------------------------------------
+#using conversion tools version: 1.0.0.119
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -10,8 +8,7 @@ from functions.next_counter_for_update import next_counter_for_update
 
 s_list_data, S_list = create_model("S_list", {"fibukonto":string, "debit":Decimal, "credit":Decimal, "remark":string}, {"fibukonto": "000000000000"})
 
-def manual_ar_webbl(pvilanguage:int, s_list_data:[S_list], rgdatum:date, firma:string, 
-                    art_fibukonto:string, user_init:string, invoice:int, saldo:Decimal, refno:string):
+def manual_ar_webbl(pvilanguage:int, s_list_data:[S_list], rgdatum:date, firma:string, art_fibukonto:string, user_init:string, invoice:int, saldo:Decimal, refno:string):
 
     prepare_cache ([Counters, Gl_jouhdr, Gl_journal])
 
@@ -49,11 +46,10 @@ def manual_ar_webbl(pvilanguage:int, s_list_data:[S_list], rgdatum:date, firma:s
 
         counters.counter_no = 25
         counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
-    
+
     # counters.counter = counters.counter + 1
     last_count, error_lock = get_output(next_counter_for_update(25))
-
-    pass
+    
     gl_jouhdr = Gl_jouhdr()
     db_session.add(gl_jouhdr)
 
