@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -28,7 +30,9 @@ def setup_new_drrbl(setup_list_data:[Setup_list]):
 
     if setup_list:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 265)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 265)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 265)).with_for_update().first()
 
         if queasy:
             pass

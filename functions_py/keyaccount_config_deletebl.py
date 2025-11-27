@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Bediener, Res_history
@@ -34,7 +36,10 @@ def keyaccount_config_deletebl(selected_guest:int, user_init:string):
 
         return {"temp-list": temp_list_data}
 
-    queasy = get_cache (Queasy, {"key": [(eq, 212)],"number3": [(eq, selected_guest)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 212)],"number3": [(eq, selected_guest)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 212) &
+             (Queasy.number3 == selected_guest)).with_for_update().first()  
 
     if queasy:
         num1 = queasy.number1
@@ -64,7 +69,7 @@ def keyaccount_config_deletebl(selected_guest:int, user_init:string):
             pass
 
     for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 212) & (Queasy.number1 == num1)).order_by(Queasy._recid).all():
+             (Queasy.key == 212) & (Queasy.number1 == num1)).order_by(Queasy._recid).with_for_update().all():
         nr = nr + 1
         queasy.number2 = nr
 
