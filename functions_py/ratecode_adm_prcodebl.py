@@ -1,11 +1,14 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Queasy, Guest, Guest_pr, Bediener, Res_history, Waehrung
 
-def ratecode_adm_prcodebl(curr_select:string, prcode:string, bezeich:string, segmentcode:string, minstay:int, maxstay:int, minadvance:int, maxadvance:int, frdate:date, todate:date, user_init:string, foreign_rate:bool, local_flag:bool, drate_flag:bool, gastnr:int, local_nr:int, foreign_nr:int):
+def ratecode_adm_prcodebl(curr_select:string, prcode:string, bezeich:string, segmentcode:string, minstay:int, maxstay:int, minadvance:int, maxadvance:int, frdate:date, 
+                          todate:date, user_init:string, foreign_rate:bool, local_flag:bool, drate_flag:bool, gastnr:int, local_nr:int, foreign_nr:int):
 
     prepare_cache ([Guest, Guest_pr, Bediener, Res_history, Waehrung])
 
@@ -18,6 +21,10 @@ def ratecode_adm_prcodebl(curr_select:string, prcode:string, bezeich:string, seg
     tb1_data, Tb1 = create_model_like(Queasy, {"waehrungsnr":int, "wabkurz":string})
 
     db_session = local_storage.db_session
+    curr_select = curr_select.strip()
+    prcode = prcode.strip()
+    bezeich = bezeich.strip()
+    segmentcode = segmentcode.strip()
 
     def generate_output():
         nonlocal tb1_data, ct, queasy, guest, guest_pr, bediener, res_history, waehrung
@@ -94,7 +101,10 @@ def ratecode_adm_prcodebl(curr_select:string, prcode:string, bezeich:string, seg
             pass
     else:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, prcode)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, prcode)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 2) & (Queasy.char1 == prcode)).with_for_update().first()
+
         queasy.char2 = bezeich
         queasy.logi1 = local_flag
         queasy.number2 = minstay

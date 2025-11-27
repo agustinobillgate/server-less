@@ -1,6 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 30/10/2025
+# Rd, 27/11/2025, with_for_update added
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -137,7 +138,10 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
 
             return
 
-        prtable = get_cache (Prtable, {"prcode": [(eq, prcode)],"marknr": [(eq, market_no)]})
+        # prtable = get_cache (Prtable, {"prcode": [(eq, prcode)],"marknr": [(eq, market_no)]})
+        prtable = db_session.query(Prtable).filter(
+                 (Prtable.prcode == prcode) &
+                 (Prtable.marknr == market_no)).with_for_update().first()
 
         if not prtable:
             prtable = Prtable()
@@ -183,7 +187,10 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
         for queasy in db_session.query(Queasy).filter(
                  (Queasy.key == 2) & not_ (Queasy.logi2) & (num_entries(Queasy.char3, ";") > 2) & (entry(1, Queasy.char3, ";") == (prcode))).order_by(Queasy._recid).all():
 
-            prtable = get_cache (Prtable, {"prcode": [(eq, queasy.char1)],"marknr": [(eq, market_no)]})
+            # prtable = get_cache (Prtable, {"prcode": [(eq, queasy.char1)],"marknr": [(eq, market_no)]})
+            prtable = db_session.query(Prtable).filter(
+                     (Prtable.prcode == queasy.char1) &
+                     (Prtable.marknr == market_no)).with_for_update().first()
 
             if not prtable:
                 prtable = Prtable()
@@ -226,7 +233,11 @@ def ratecode_adm_update_listbl(pvilanguage:int, select_mode:int, prcode:string, 
 
             if wbuff:
 
-                queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, prcode)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 2)],"char1": [(eq, prcode)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 2) &
+                         (Queasy.char1 == prcode)).with_for_update().first()
+                
                 queasy.number1 = wbuff.waehrungsnr
 
 
