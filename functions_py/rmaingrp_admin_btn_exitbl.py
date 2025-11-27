@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Wgrpgen
@@ -48,7 +50,9 @@ def rmaingrp_admin_btn_exitbl(wgrpgen_list_data:[Wgrpgen_list], case_type:int):
 
     elif case_type == 2:
 
-        wgrpgen = get_cache (Wgrpgen, {"eknr": [(eq, wgrpgen_list.eknr)]})
+        # wgrpgen = get_cache (Wgrpgen, {"eknr": [(eq, wgrpgen_list.eknr)]})
+        wgrpgen = db_session.query(Wgrpgen).filter(
+                 (Wgrpgen.eknr == wgrpgen_list.eknr)).with_for_update().first()
 
         if wgrpgen:
             pass

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Akthdr
@@ -36,7 +38,9 @@ def write_akthdrbl(case_type:int, t_akthdr1_data:[T_akthdr1]):
         pass
     elif case_type == 2:
 
-        akthdr = get_cache (Akthdr, {"aktnr": [(eq, t_akthdr1.aktnr)]})
+        # akthdr = get_cache (Akthdr, {"aktnr": [(eq, t_akthdr1.aktnr)]})
+        akthdr = db_session.query(Akthdr).filter(
+                 (Akthdr.aktnr == t_akthdr1.aktnr)).with_for_update().first()
 
         if akthdr:
             buffer_copy(t_akthdr1, akthdr)

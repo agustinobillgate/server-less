@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_lager
@@ -49,7 +51,9 @@ def storage_admin_btn_exitbl(case_type:int, l_list_data:[L_list]):
 
     elif case_type == 2:
 
-        l_lager = get_cache (L_lager, {"lager_nr": [(eq, l_list.lager_nr)]})
+        # l_lager = get_cache (L_lager, {"lager_nr": [(eq, l_list.lager_nr)]})
+        l_lager = db_session.query(L_lager).filter(
+                 (L_lager.lager_nr == l_list.lager_nr)).with_for_update().first()
         l_lager.bezeich = l_list.bezeich
         l_lager.betriebsnr = l_list.betriebsnr
         pass

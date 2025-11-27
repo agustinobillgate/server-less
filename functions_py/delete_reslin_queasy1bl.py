@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -14,6 +16,7 @@ def delete_reslin_queasy1bl(case_type:int, int1:int, char1:string, date1:date):
     reslin_queasy = res_line = None
 
     db_session = local_storage.db_session
+    char1 = char1.strip()
 
     def generate_output():
         nonlocal success_flag, user_init, reslin_queasy, res_line
@@ -65,7 +68,11 @@ def delete_reslin_queasy1bl(case_type:int, int1:int, char1:string, date1:date):
 
         if reslin_queasy:
 
-            res_line = get_cache (Res_line, {"resnr": [(eq, reslin_queasy.resnr)],"reslinnr": [(eq, reslin_queasy.reslinnr)]})
+            # res_line = get_cache (Res_line, {"resnr": [(eq, reslin_queasy.resnr)],"reslinnr": [(eq, reslin_queasy.reslinnr)]})
+            res_line = db_session.query(Res_line).filter(
+                     (Res_line.resnr == reslin_queasy.resnr) &
+                     (Res_line.reslinnr == reslin_queasy.reslinnr)).with_for_update().first()
+            
             res_changes()
             db_session.delete(reslin_queasy)
             pass

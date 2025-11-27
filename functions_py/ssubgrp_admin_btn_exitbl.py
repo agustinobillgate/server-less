@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#using conversion tools version: 1.0.0.117
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_untergrup, Queasy
@@ -44,7 +47,10 @@ def ssubgrp_admin_btn_exitbl(l_list_data:[L_list], case_type:int, fibukonto:stri
         else:
             l_untergrup.betriebsnr = 0
 
-        queasy = get_cache (Queasy, {"key": [(eq, 29)],"number2": [(eq, l_untergrup.zwkum)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 29)],"number2": [(eq, l_untergrup.zwkum)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 29) &
+                 (Queasy.number2 == l_untergrup.zwkum)).with_for_update().first()
 
         if main_nr > 0:
 
@@ -66,7 +72,9 @@ def ssubgrp_admin_btn_exitbl(l_list_data:[L_list], case_type:int, fibukonto:stri
 
     elif case_type == 2:
 
-        l_untergrup = get_cache (L_untergrup, {"zwkum": [(eq, l_list.zwkum)]})
+        # l_untergrup = get_cache (L_untergrup, {"zwkum": [(eq, l_list.zwkum)]})
+        l_untergrup = db_session.query(L_untergrup).filter(
+                 (L_untergrup.zwkum == l_list.zwkum)).with_for_update().first()
         pass
         l_untergrup.bezeich = l_list.bezeich
         l_untergrup.fibukonto = fibukonto
@@ -76,7 +84,10 @@ def ssubgrp_admin_btn_exitbl(l_list_data:[L_list], case_type:int, fibukonto:stri
         else:
             l_untergrup.betriebsnr = 0
 
-        queasy = get_cache (Queasy, {"key": [(eq, 29)],"number2": [(eq, l_untergrup.zwkum)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 29)],"number2": [(eq, l_untergrup.zwkum)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 29) &
+                 (Queasy.number2 == l_untergrup.zwkum)).with_for_update().first()
 
         if main_nr > 0:
 

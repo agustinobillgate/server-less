@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Sourccod
@@ -55,7 +57,9 @@ def restype_admin_btn_exitbl(p_list_data:[P_list], case_type:int, active_flag:bo
 
     elif case_type == 2:
 
-        sourccod = get_cache (Sourccod, {"source_code": [(eq, p_list.source_code)]})
+        # sourccod = get_cache (Sourccod, {"source_code": [(eq, p_list.source_code)]})
+        sourccod = db_session.query(Sourccod).filter(
+                 (Sourccod.source_code == p_list.source_code)).with_for_update().first()
 
         if sourccod:
             fill_new_sourccod()

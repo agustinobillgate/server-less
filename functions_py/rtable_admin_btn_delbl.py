@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Tisch, H_bill
@@ -17,7 +19,10 @@ def rtable_admin_btn_delbl(dept:int, t_tischnr:int):
         return {"flag": flag}
 
 
-    tisch = get_cache (Tisch, {"departement": [(eq, dept)],"tischnr": [(eq, t_tischnr)]})
+    # tisch = get_cache (Tisch, {"departement": [(eq, dept)],"tischnr": [(eq, t_tischnr)]})
+    tisch = db_session.query(Tisch).filter(
+             (Tisch.departement == dept) &
+             (Tisch.tischnr == t_tischnr)).with_for_update().first()
 
     h_bill = get_cache (H_bill, {"departement": [(eq, dept)],"tischnr": [(eq, t_tischnr)]})
 
