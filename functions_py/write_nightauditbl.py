@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Nightaudit
@@ -38,7 +40,9 @@ def write_nightauditbl(case_type:int, t_nightaudit_data:[T_nightaudit]):
         success_flag = True
     elif case_type == 2:
 
-        nightaudit = get_cache (Nightaudit, {"_recid": [(eq, t_nightaudit.n_recid)]})
+        # nightaudit = get_cache (Nightaudit, {"_recid": [(eq, t_nightaudit.n_recid)]})
+        nightaudit = db_session.query(Nightaudit).filter(
+                 (Nightaudit._recid == t_nightaudit.n_recid)).with_for_update().first()
 
         if nightaudit:
             buffer_copy(t_nightaudit, nightaudit)

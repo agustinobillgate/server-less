@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Tisch
@@ -41,7 +43,10 @@ def write_tischbl(i_case:int, inp_dept:int, inp_tisch:int, t_tisch_data:[T_tisch
                 buffer_copy(t_tisch, tisch)
     elif i_case == 2:
 
-        tisch = get_cache (Tisch, {"departement": [(eq, inp_dept)],"tischnr": [(eq, inp_tisch)]})
+        # tisch = get_cache (Tisch, {"departement": [(eq, inp_dept)],"tischnr": [(eq, inp_tisch)]})
+        tisch = db_session.query(Tisch).filter(
+                 (Tisch.departement == inp_dept) &
+                 (Tisch.tischnr == inp_tisch)).with_for_update().first()
 
         if tisch:
             pass
@@ -49,7 +54,10 @@ def write_tischbl(i_case:int, inp_dept:int, inp_tisch:int, t_tisch_data:[T_tisch
             pass
     elif i_case == 3:
 
-        tisch = get_cache (Tisch, {"departement": [(eq, inp_dept)],"tischnr": [(eq, inp_tisch)]})
+        # tisch = get_cache (Tisch, {"departement": [(eq, inp_dept)],"tischnr": [(eq, inp_tisch)]})
+        tisch = db_session.query(Tisch).filter(
+                 (Tisch.departement == inp_dept) &
+                 (Tisch.tischnr == inp_tisch)).with_for_update().first()
 
         if tisch:
             pass

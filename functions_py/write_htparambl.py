@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Htparam, Nation
@@ -45,7 +47,9 @@ def write_htparambl(case_type:int, t_htparam_data:[T_htparam]):
 
         if htparam:
 
-            htbuff = get_cache (Htparam, {"_recid": [(eq, htparam._recid)]})
+            # htbuff = get_cache (Htparam, {"_recid": [(eq, htparam._recid)]})
+            htbuff = db_session.query(Htparam).filter(
+                     (Htparam._recid == htparam._recid)).with_for_update().first
             buffer_copy(t_htparam, htbuff)
             pass
             pass
@@ -56,7 +60,9 @@ def write_htparambl(case_type:int, t_htparam_data:[T_htparam]):
 
         if htparam:
 
-            htbuff = get_cache (Htparam, {"_recid": [(eq, htparam._recid)]})
+            # htbuff = get_cache (Htparam, {"_recid": [(eq, htparam._recid)]})
+            htbuff = db_session.query(Htparam).filter(
+                     (Htparam._recid == htparam._recid)).with_for_update().first()
             htbuff.fdate = t_htparam.fdate
 
 
@@ -86,7 +92,9 @@ def write_htparambl(case_type:int, t_htparam_data:[T_htparam]):
                         nation = get_cache (Nation, {"natcode": [(eq, prev_natcode)]})
                         while None != nation:
 
-                            natbuff = get_cache (Nation, {"_recid": [(eq, nation._recid)]})
+                            # natbuff = get_cache (Nation, {"_recid": [(eq, nation._recid)]})
+                            natbuff = db_session.query(Nation).filter(
+                                     (Nation._recid == nation._recid)).with_for_update().first()
                             natbuff.natcode = new_natcode
 
 
@@ -122,7 +130,9 @@ def write_htparambl(case_type:int, t_htparam_data:[T_htparam]):
 
         for t_htparam in query(t_htparam_data):
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, t_htparam.paramnr)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, t_htparam.paramnr)]})
+            htparam = db_session.query(Htparam).filter(
+                     (Htparam.paramnr == t_htparam.paramnr)).with_for_update().first()
             buffer_copy(t_htparam, htparam)
             pass
         success_flag = True

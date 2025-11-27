@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Sourccod
@@ -38,15 +40,19 @@ def write_sourccodbl(case_type:int, t_sourccod_data:[T_sourccod]):
         success_flag = True
     elif case_type == 2:
 
-        sourccod = get_cache (Sourccod, {"source_code": [(eq, t_sourccod.source_code)]})
+        # sourccod = get_cache (Sourccod, {"source_code": [(eq, t_sourccod.source_code)]})
+        sourccod = db_session.query(Sourccod).filter(
+                 (Sourccod.source_code == t_sourccod.source_code)).with_for_update().first()
 
-        if Sourccod:
+        if sourccod:
             buffer_copy(t_sourccod, sourccod)
             pass
             success_flag = True
     elif case_type == 3:
 
-        sourccod = get_cache (Sourccod, {"source_code": [(eq, t_sourccod.source_code)]})
+        # sourccod = get_cache (Sourccod, {"source_code": [(eq, t_sourccod.source_code)]})
+        sourccod = db_session.query(Sourccod).filter(
+                 (Sourccod.source_code == t_sourccod.source_code)).with_for_update().first()
 
         if Sourccod:
             db_session.delete(sourccod)

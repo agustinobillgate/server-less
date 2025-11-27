@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Segment
@@ -38,7 +40,9 @@ def write_segmentbl(case_type:int, t_segment_data:[T_segment]):
         success_flag = True
     elif case_type == 2:
 
-        segment = get_cache (Segment, {"segmentcode": [(eq, t_segment.segmentcode)]})
+        # segment = get_cache (Segment, {"segmentcode": [(eq, t_segment.segmentcode)]})
+        segment = db_session.query(Segment).filter(
+                 (Segment.segmentcode == t_segment.segmentcode)).with_for_update().first()
 
         if segment:
             buffer_copy(t_segment, segment)

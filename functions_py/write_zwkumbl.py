@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Zwkum
@@ -38,7 +40,9 @@ def write_zwkumbl(case_type:int, t_zwkum_data:[T_zwkum]):
         success_flag = True
     elif case_type == 2:
 
-        zwkum = get_cache (Zwkum, {"zknr": [(eq, t_zwkum.zknr)],"departement": [(eq, t_zwkum.departement)]})
+        # zwkum = get_cache (Zwkum, {"zknr": [(eq, t_zwkum.zknr)],"departement": [(eq, t_zwkum.departement)]})
+        zwkum = db_session.query(Zwkum).filter(
+                 (Zwkum.zknr == t_zwkum.zknr) & (Zwkum.departement == t_zwkum.departement)).with_for_update().first()   
 
         if zwkum:
             buffer_copy(t_zwkum, zwkum)
@@ -46,7 +50,9 @@ def write_zwkumbl(case_type:int, t_zwkum_data:[T_zwkum]):
             success_flag = True
     elif case_type == 3:
 
-        zwkum = get_cache (Zwkum, {"zknr": [(eq, t_zwkum.zknr)],"departement": [(eq, t_zwkum.departement)]})
+        # zwkum = get_cache (Zwkum, {"zknr": [(eq, t_zwkum.zknr)],"departement": [(eq, t_zwkum.departement)]})
+        zwkum = db_session.query(Zwkum).filter(
+                 (Zwkum.zknr == t_zwkum.zknr) & (Zwkum.departement == t_zwkum.departement)).with_for_update().first()
 
         if zwkum:
             db_session.delete(zwkum)

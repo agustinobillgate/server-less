@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -38,7 +40,9 @@ def write_queasy1bl(case_type:int, t_queasy_data:[T_queasy]):
 
     if case_type == 1:
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, t_queasy.rec_id)]})
+        # queasy = get_cache (Queasy, {"_recid": [(eq, t_queasy.rec_id)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.rec_id == t_queasy.rec_id)).with_for_update().first()    
 
         if queasy:
             queasy.deci1 =  to_decimal(t_queasy.deci1)
@@ -54,7 +58,9 @@ def write_queasy1bl(case_type:int, t_queasy_data:[T_queasy]):
         for t_queasy in query(t_queasy_data):
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == t_queasy.key) & (Queasy.number1 == t_queasy.number1) & (Queasy.number2 == t_queasy.number2) & (Queasy.char1 == t_queasy.char1) & ((Queasy.deci1 != t_queasy.deci1) | (Queasy.deci2 != t_queasy.deci2))).first()
+                     (Queasy.key == t_queasy.key) & (Queasy.number1 == t_queasy.number1) & 
+                     (Queasy.number2 == t_queasy.number2) & (Queasy.char1 == t_queasy.char1) & 
+                     ((Queasy.deci1 != t_queasy.deci1) | (Queasy.deci2 != t_queasy.deci2))).with_for_update().first()
 
             if queasy:
                 pass

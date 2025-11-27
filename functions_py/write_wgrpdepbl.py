@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added, skip
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Wgrpdep
@@ -49,7 +51,10 @@ def write_wgrpdepbl(case_type:int, t_wgrpdep_data:[T_wgrpdep]):
         success_flag = True
     elif case_type == 2:
 
-        wgrpdep = get_cache (Wgrpdep, {"zknr": [(eq, t_wgrpdep.zknr)],"departement": [(eq, t_wgrpdep.departement)]})
+        # wgrpdep = get_cache (Wgrpdep, {"zknr": [(eq, t_wgrpdep.zknr)],"departement": [(eq, t_wgrpdep.departement)]})
+        wgrpdep = db_session.query(Wgrpdep).filter(
+                 (Wgrpdep.zknr == t_wgrpdep.zknr) &
+                 (Wgrpdep.departement == t_wgrpdep.departement)).with_for_update().first()
 
         if wgrpdep:
             buffer_copy(t_wgrpdep, wgrpdep)
@@ -58,7 +63,10 @@ def write_wgrpdepbl(case_type:int, t_wgrpdep_data:[T_wgrpdep]):
             success_flag = True
     elif case_type == 3:
 
-        wgrpdep = get_cache (Wgrpdep, {"zknr": [(eq, t_wgrpdep.zknr)],"departement": [(eq, t_wgrpdep.departement)]})
+        # wgrpdep = get_cache (Wgrpdep, {"zknr": [(eq, t_wgrpdep.zknr)],"departement": [(eq, t_wgrpdep.departement)]})
+        wgrpdep = db_session.query(Wgrpdep).filter(
+                 (Wgrpdep.zknr == t_wgrpdep.zknr) &
+                 (Wgrpdep.departement == t_wgrpdep.departement)).with_for_update().first()
 
         if wgrpdep:
             db_session.delete(wgrpdep)

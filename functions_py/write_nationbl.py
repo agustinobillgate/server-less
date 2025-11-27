@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Nation
@@ -37,8 +39,11 @@ def write_nationbl(case_type:int, t_nation_data:[T_nation]):
         success_flag = True
     elif case_type == 2:
 
-        nation = get_cache (Nation, {"kurzbez": [(eq, t_nation.kurzbez)],"untergruppe": [(eq, t_nation.untergruppe)],"natcode": [(eq, t_nation.natcode)]})
-
+        # nation = get_cache (Nation, {"kurzbez": [(eq, t_nation.kurzbez)],"untergruppe": [(eq, t_nation.untergruppe)],"natcode": [(eq, t_nation.natcode)]})
+        nation = db_session.query(Nation).filter(
+                 (Nation.kurzbez == t_nation.kurzbez) &
+                 (Nation.untergruppe == t_nation.untergruppe) &
+                 (Nation.natcode == t_nation.natcode)).with_for_update().first()
         if nation:
             buffer_copy(t_nation, nation)
             success_flag = True

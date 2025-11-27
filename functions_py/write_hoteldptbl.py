@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Hoteldpt
@@ -40,7 +42,9 @@ def write_hoteldptbl(case_type:int, t_hoteldpt_data:[T_hoteldpt]):
 
     elif case_type == 2:
 
-        hoteldpt = get_cache (Hoteldpt, {"num": [(eq, t_hoteldpt.num)]})
+        # hoteldpt = get_cache (Hoteldpt, {"num": [(eq, t_hoteldpt.num)]})
+        hoteldpt = db_session.query(Hoteldpt).filter(
+                 (Hoteldpt.num == t_hoteldpt.num)).with_for_update().first()
 
         if hoteldpt:
             buffer_copy(t_hoteldpt, hoteldpt)
