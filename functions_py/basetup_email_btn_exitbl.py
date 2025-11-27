@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -49,7 +51,9 @@ def basetup_email_btn_exitbl(email_list_data:[Email_list], icase:int, recid_quea
         fill_new_email_setup()
     else:
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, recid_queasy)]})
+        # queasy = get_cache (Queasy, {"_recid": [(eq, recid_queasy)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy._recid == recid_queasy)).with_for_update().first()
         queasy.char1 = email_list.char1
         queasy.char2 = email_list.char2
         pass

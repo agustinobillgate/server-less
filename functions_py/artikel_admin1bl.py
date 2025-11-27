@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Argt_line, Umsatz, Artikel
@@ -32,7 +34,9 @@ def artikel_admin1bl(pvilanguage:int, artno:int, deptno:int, rec_id:int):
 
         return generate_output()
 
-    artikel = get_cache (Artikel, {"_recid": [(eq, rec_id)]})
+    # artikel = get_cache (Artikel, {"_recid": [(eq, rec_id)]})
+    artikel = db_session.query(Artikel).filter(
+             (Artikel._recid == rec_id)).with_for_update().first()
     db_session.delete(artikel)
 
     return generate_output()

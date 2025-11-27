@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Akt_code
@@ -21,6 +23,7 @@ def akt_rivaladminbl(pvilanguage:int, case_type:int, t_akt_code_data:[T_akt_code
 
 
     db_session = local_storage.db_session
+    bezeich = bezeich.strip()
 
     def generate_output():
         nonlocal msg_str, success_flag, lvcarea, akt_code
@@ -80,7 +83,11 @@ def akt_rivaladminbl(pvilanguage:int, case_type:int, t_akt_code_data:[T_akt_code
 
     elif case_type == 2:
 
-        akt_code = get_cache (Akt_code, {"aktiongrup": [(eq, aktiongrup)],"aktionscode": [(eq, aktionscode)],"bezeich": [(eq, bezeich)]})
+        # akt_code = get_cache (Akt_code, {"aktiongrup": [(eq, aktiongrup)],"aktionscode": [(eq, aktionscode)],"bezeich": [(eq, bezeich)]})
+        akt_code = db_session.query(Akt_code).filter(
+                 (Akt_code.aktiongrup == aktiongrup) &
+                 (Akt_code.aktionscode == aktionscode) &
+                 (Akt_code.bezeich == bezeich)).with_for_update().first()
 
         if akt_code:
             fill_akt_code()

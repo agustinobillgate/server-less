@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Zimmer, Zimkateg, Bediener, Res_history, Res_line, Queasy, Ratecode
@@ -23,6 +25,11 @@ def add_room_admin_1bl(pvilanguage:int, case_type:int, zimmer_list_data:[Zimmer_
     dynarate_list_data, Dynarate_list = create_model("Dynarate_list", {"prcode":string, "to_room":int})
 
     db_session = local_storage.db_session
+    rm_feature = rm_feature.strip()
+    curr_mode = curr_mode.strip()
+    rmno = rmno.strip()
+    rmcatbez = rmcatbez.strip()
+    user_init = user_init.strip()
 
     def generate_output():
         nonlocal msg_str, t_zimmer_data, dynarate_list_data, lvcarea, sleeping, zimmer, zimkateg, bediener, res_history, res_line, queasy, ratecode
@@ -76,7 +83,9 @@ def add_room_admin_1bl(pvilanguage:int, case_type:int, zimmer_list_data:[Zimmer_
 
         if curr_mode.lower()  == ("chg").lower()  and zimmer.setup != zimmer_list.setup and zimmer.setup != 0:
 
-            res_line = get_cache (Res_line, {"active_flag": [(eq, 1)],"zinr": [(eq, zimmer.zinr)]})
+            # res_line = get_cache (Res_line, {"active_flag": [(eq, 1)],"zinr": [(eq, zimmer.zinr)]})
+            res_line = db_session.query(Res_line).filter(
+                     (Res_line.active_flag == 1) & (Res_line.zinr == zimmer.zinr)).with_for_update().first()
             while None != res_line:
                 pass
                 res_line.setup = zimmer_list.setup
@@ -84,9 +93,11 @@ def add_room_admin_1bl(pvilanguage:int, case_type:int, zimmer_list_data:[Zimmer_
 
                 curr_recid = res_line._recid
                 res_line = db_session.query(Res_line).filter(
-                         (Res_line.active_flag == 1) & (Res_line.zinr == zimmer.zinr) & (Res_line._recid > curr_recid)).first()
+                         (Res_line.active_flag == 1) & (Res_line.zinr == zimmer.zinr) & (Res_line._recid > curr_recid)).with_for_update().first()
 
-            res_line = get_cache (Res_line, {"active_flag": [(eq, 0)],"zinr": [(eq, zimmer.zinr)]})
+            # res_line = get_cache (Res_line, {"active_flag": [(eq, 0)],"zinr": [(eq, zimmer.zinr)]})
+            res_line = db_session.query(Res_line).filter(
+                     (Res_line.active_flag == 0) & (Res_line.zinr == zimmer.zinr)).with_for_update().first()
             while None != res_line:
                 pass
                 res_line.setup = zimmer_list.setup
@@ -94,7 +105,7 @@ def add_room_admin_1bl(pvilanguage:int, case_type:int, zimmer_list_data:[Zimmer_
 
                 curr_recid = res_line._recid
                 res_line = db_session.query(Res_line).filter(
-                         (Res_line.active_flag == 0) & (Res_line.zinr == zimmer.zinr) & (Res_line._recid > curr_recid)).first()
+                         (Res_line.active_flag == 0) & (Res_line.zinr == zimmer.zinr) & (Res_line._recid > curr_recid)).with_for_update().first()
         zimmer.setup = zimmer_list.setup
 
         if curr_mode.lower()  == ("chg").lower()  and sleeping != zimmer_list.sleeping:
@@ -197,7 +208,9 @@ def add_room_admin_1bl(pvilanguage:int, case_type:int, zimmer_list_data:[Zimmer_
         queasy = get_cache (Queasy, {"key": [(eq, 171)],"date1": [(ge, get_current_date())],"number1": [(eq, zikatnr)]})
         while None != queasy and queasy.logi1 == False and queasy.logi2 == False :
 
-            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+            # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+            qsy = db_session.query(Queasy).filter(
+                     (Queasy._recid == queasy._recid)).with_for_update().first
 
             if qsy:
                 qsy.logi2 = True
@@ -217,8 +230,6 @@ def add_room_admin_1bl(pvilanguage:int, case_type:int, zimmer_list_data:[Zimmer_
         res_history.zeit = get_current_time_in_seconds()
         res_history.aenderung = "RoomNo: " + zimmer.zinr
         res_history.action = "Log Availability"
-
-
         pass
         pass
 
@@ -241,7 +252,9 @@ def add_room_admin_1bl(pvilanguage:int, case_type:int, zimmer_list_data:[Zimmer_
         update_queasy()
     else:
 
-        zimmer = get_cache (Zimmer, {"zinr": [(eq, rmno)]})
+        # zimmer = get_cache (Zimmer, {"zinr": [(eq, rmno)]})
+        zimmer = db_session.query(Zimmer).filter(
+                 (Zimmer.zinr == rmno)).with_for_update().first()
         sleeping = zimmer.sleeping
         fill_zimmer()
     dynarate_list_data.clear()

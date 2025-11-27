@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Tisch, Queasy
@@ -52,12 +54,21 @@ def rtable_admin_btn_exit_webbl(t_list_data:[T_list], case_type:int):
 
     elif case_type == 2:
 
-        tisch = get_cache (Tisch, {"departement": [(eq, t_list.departement)],"tischnr": [(eq, t_list.tischnr)]})
+        # tisch = get_cache (Tisch, {"departement": [(eq, t_list.departement)],"tischnr": [(eq, t_list.tischnr)]})
+        tisch = db_session.query(Tisch).filter(
+                 (Tisch.departement == t_list.departement) &
+                 (Tisch.tischnr == t_list.tischnr)).with_for_update().first()
 
         if tisch:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, tisch.departement)],"number2": [(eq, tisch.tischnr)],"betriebsnr": [(eq, 0)],"deci3": [(eq, tisch.betriebsnr),(ne, t_list.betriebsnr)]})
-
+            # queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, tisch.departement)],"number2": [(eq, tisch.tischnr)],"betriebsnr": [(eq, 0)],"deci3": [(eq, tisch.betriebsnr),(ne, t_list.betriebsnr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 31) &
+                     (Queasy.number1 == tisch.departement) &
+                     (Queasy.number2 == tisch.tischnr) &
+                     (Queasy.betriebsnr == 0) &
+                     (Queasy.deci3 != tisch.betriebsnr) &
+                     (Queasy.deci3 != t_list.betriebsnr)).with_for_update().first()
             if queasy:
                 pass
                 db_session.delete(queasy)

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Res_line, Queasy
@@ -28,7 +30,11 @@ def bill_instruct_btn_delbl(pvilanguage:int, number1:int, logi1:bool):
         return generate_output()
     else:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, number1)],"logi1": [(eq, logi1)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, number1)],"logi1": [(eq, logi1)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 9) &
+                 (Queasy.number1 == number1) &
+                 (Queasy.logi1 == logi1)).with_for_update().first()
 
         if queasy:
             db_session.delete(queasy)

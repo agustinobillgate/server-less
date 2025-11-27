@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Zimkateg, Queasy
@@ -39,7 +41,10 @@ def write_zimkateg_webbl(case_type:int, t_zimkateg_data:[T_zimkateg]):
         buffer_copy(t_zimkateg, zimkateg)
         pass
 
-        queasy = get_cache (Queasy, {"key": [(eq, 325)],"number1": [(eq, t_zimkateg.zikatnr)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 325)],"number1": [(eq, t_zimkateg.zikatnr)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 325) &
+                 (Queasy.number1 == t_zimkateg.zikatnr)).with_for_update().first()
 
         if not queasy:
             queasy = Queasy()
@@ -71,7 +76,10 @@ def write_zimkateg_webbl(case_type:int, t_zimkateg_data:[T_zimkateg]):
             buffer_copy(t_zimkateg, zimkateg)
             pass
 
-            queasy = get_cache (Queasy, {"key": [(eq, 325)],"number1": [(eq, t_zimkateg.zikatnr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 325)],"number1": [(eq, t_zimkateg.zikatnr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 325) &
+                     (Queasy.number1 == t_zimkateg.zikatnr)).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()
