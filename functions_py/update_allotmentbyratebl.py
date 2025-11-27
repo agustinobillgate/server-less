@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -44,6 +46,8 @@ def update_allotmentbyratebl(currcode:string, rmtype:string, curr_month:int, cur
     allot3_data = allot_list_data
 
     db_session = local_storage.db_session
+    currcode = currcode.strip()
+    rmtype = rmtype.strip()
 
     def generate_output():
         nonlocal allot_list_data, cat_flag, do_it, occall, occ, ooo, anzahl, i, i_typ, fdate, tdate, start_date, end_date, datum, rline_origcode, iftask, mestoken, mesvalue, queasy, zimkateg, res_line, zimmer, outorder
@@ -278,7 +282,12 @@ def update_allotmentbyratebl(currcode:string, rmtype:string, curr_month:int, cur
                 ooo[get_day(datum) - 1] = ooo[get_day(datum) - 1] + 1
     for datum in date_range(fdate,tdate) :
 
-        queasy = get_cache (Queasy, {"key": [(eq, 171)],"char1": [(eq, currcode)],"number1": [(eq, i_typ)],"date1": [(eq, datum)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 171)],"char1": [(eq, currcode)],"number1": [(eq, i_typ)],"date1": [(eq, datum)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 171) &
+                 (Queasy.char1 == currcode) &
+                 (Queasy.number1 == i_typ) &
+                 (Queasy.date1 == datum)).with_for_update().first()
 
         if queasy:
             allot2.allotment[get_day(datum) - 1] = queasy.number3

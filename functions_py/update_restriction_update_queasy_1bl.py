@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -31,9 +33,10 @@ def update_restriction_update_queasy_1bl(from_date:date, to_date:date, inp_str:s
     Buffqsy = create_buffer("Buffqsy",Queasy)
     Qsy160 = create_buffer("Qsy160",Queasy)
     Checkqsy = create_buffer("Checkqsy",Queasy)
-
-
     db_session = local_storage.db_session
+    inp_str = inp_str.strip()
+    rmtype = rmtype.strip()
+    ota = ota.strip()
 
     def generate_output():
         nonlocal i, cat_flag, datum, ci_date, otanr, roomno, rcode, user_init, stat, str, progavail, queasy, htparam, zimkateg, guest_pr, bediener, res_history
@@ -210,8 +213,14 @@ def update_restriction_update_queasy_1bl(from_date:date, to_date:date, inp_str:s
             pass
             pass
 
-            qsy = get_cache (Queasy, {"key": [(eq, 175)],"char1": [(eq, rate_code)],"number1": [(eq, roomno)],"number3": [(eq, otanr)],"date1": [(eq, datum)],"char2": [(eq, stat)]})
-
+            # qsy = get_cache (Queasy, {"key": [(eq, 175)],"char1": [(eq, rate_code)],"number1": [(eq, roomno)],"number3": [(eq, otanr)],"date1": [(eq, datum)],"char2": [(eq, stat)]})
+            qsy = db_session.query(Queasy).filter(
+                     (Queasy.key == 175) &
+                     (Queasy.char1 == rate_code) &
+                     (Queasy.number1 == roomno) &
+                     (Queasy.number3 == otanr) &
+                     (Queasy.date1 == datum) &
+                     (Queasy.char2 == stat)).with_for_update().first()
             if qsy and qsy.number2 != flag:
                 pass
                 qsy.number2 = flag
@@ -312,7 +321,13 @@ def update_restriction_update_queasy_1bl(from_date:date, to_date:date, inp_str:s
         roomno = rmstr2int (rmtype)
         for datum in date_range(from_date,to_date) :
 
-            queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode)],"date1": [(eq, datum)],"number1": [(eq, roomno)],"number3": [(eq, otanr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode)],"date1": [(eq, datum)],"number1": [(eq, roomno)],"number3": [(eq, otanr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 174) &
+                     (Queasy.char1 == rcode) &
+                     (Queasy.date1 == datum) &
+                     (Queasy.number1 == roomno) &
+                     (Queasy.number3 == otanr)).with_for_update().first()
 
             if not queasy:
                 create_new_queasy(rcode, roomno)
@@ -321,13 +336,20 @@ def update_restriction_update_queasy_1bl(from_date:date, to_date:date, inp_str:s
 
             if ota.lower()  == ("*").lower() :
 
-                queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode)],"date1": [(eq, datum)],"number1": [(eq, roomno)],"number3": [(ne, 0)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode)],"date1": [(eq, datum)],"number1": [(eq, roomno)],"number3": [(ne, 0)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 174) &
+                         (Queasy.char1 == rcode) &
+                         (Queasy.date1 == datum) &
+                         (Queasy.number1 == roomno) &
+                         (Queasy.number3 != 0)).with_for_update().first()
                 while None != queasy:
                     update_queasy(rcode, roomno)
 
                     curr_recid = queasy._recid
                     queasy = db_session.query(Queasy).filter(
-                             (Queasy.key == 174) & (Queasy.char1 == (rcode).lower()) & (Queasy.date1 == datum) & (Queasy.number1 == roomno) & (Queasy.number3 != 0) & (Queasy._recid > curr_recid)).first()
+                             (Queasy.key == 174) & (Queasy.char1 == (rcode).lower()) & (Queasy.date1 == datum) & (Queasy.number1 == roomno) & 
+                             (Queasy.number3 != 0) & (Queasy._recid > curr_recid)).with_for_update().first()
 
     elif rmtype.lower()  == ("*").lower()  and rcode.lower()  != ("*").lower() :
 
@@ -335,8 +357,13 @@ def update_restriction_update_queasy_1bl(from_date:date, to_date:date, inp_str:s
             roomno = rmstr2int (room_list.bezeich)
             for datum in date_range(from_date,to_date) :
 
-                queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode)],"number1": [(eq, roomno)],"date1": [(eq, datum)],"number3": [(eq, otanr)]})
-
+                # queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode)],"number1": [(eq, roomno)],"date1": [(eq, datum)],"number3": [(eq, otanr)]})
+                queasy = db_session.query(Queasy).filter(
+                            (Queasy.key == 174) &
+                            (Queasy.char1 == rcode) &
+                            (Queasy.number1 == roomno) &
+                            (Queasy.date1 == datum) &
+                            (Queasy.number3 == otanr)).with_for_update().first()
                 if not queasy:
                     create_new_queasy(rcode, roomno)
 
@@ -345,13 +372,20 @@ def update_restriction_update_queasy_1bl(from_date:date, to_date:date, inp_str:s
 
                 if ota.lower()  == ("*").lower() :
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode)],"number1": [(eq, roomno)],"date1": [(eq, datum)],"number3": [(ne, 0)]})
+                    # queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode)],"number1": [(eq, roomno)],"date1": [(eq, datum)],"number3": [(ne, 0)]})
+                    queasy = db_session.query(Queasy).filter(
+                             (Queasy.key == 174) &
+                             (Queasy.char1 == rcode) &
+                             (Queasy.number1 == roomno) &
+                             (Queasy.date1 == datum) &
+                             (Queasy.number3 != 0)).with_for_update().first()
                     while None != queasy:
                         update_queasy(rcode, roomno)
 
                         curr_recid = queasy._recid
                         queasy = db_session.query(Queasy).filter(
-                                 (Queasy.key == 174) & (Queasy.char1 == (rcode).lower()) & (Queasy.number1 == roomno) & (Queasy.date1 == datum) & (Queasy.number3 != 0) & (Queasy._recid > curr_recid)).first()
+                                 (Queasy.key == 174) & (Queasy.char1 == (rcode).lower()) & (Queasy.number1 == roomno) & 
+                                 (Queasy.date1 == datum) & (Queasy.number3 != 0) & (Queasy._recid > curr_recid)).with_for_update().first()
 
     elif rmtype.lower()  != ("*").lower()  and rcode.lower()  == ("*").lower() :
         roomno = rmstr2int (rmtype)
@@ -359,8 +393,13 @@ def update_restriction_update_queasy_1bl(from_date:date, to_date:date, inp_str:s
         for rcode_list in query(rcode_list_data):
             for datum in date_range(from_date,to_date) :
 
-                queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode_list.bezeich)],"number1": [(eq, roomno)],"date1": [(eq, datum)],"number3": [(eq, otanr)]})
-
+                # queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode_list.bezeich)],"number1": [(eq, roomno)],"date1": [(eq, datum)],"number3": [(eq, otanr)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 174) &
+                         (Queasy.char1 == rcode_list.bezeich) &
+                         (Queasy.number1 == roomno) &
+                         (Queasy.date1 == datum) &
+                         (Queasy.number3 == otanr)).with_for_update().first()
                 if not queasy:
                     create_new_queasy(rcode_list.bezeich, roomno)
 
@@ -369,13 +408,20 @@ def update_restriction_update_queasy_1bl(from_date:date, to_date:date, inp_str:s
 
                 if ota.lower()  == ("*").lower() :
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode_list.bezeich)],"number1": [(eq, roomno)],"date1": [(eq, datum)],"number3": [(ne, 0)]})
+                    # queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode_list.bezeich)],"number1": [(eq, roomno)],"date1": [(eq, datum)],"number3": [(ne, 0)]})
+                    queasy = db_session.query(Queasy).filter(
+                             (Queasy.key == 174) &
+                             (Queasy.char1 == rcode_list.bezeich) &
+                             (Queasy.number1 == roomno) &
+                             (Queasy.date1 == datum) &
+                             (Queasy.number3 != 0)).with_for_update().first()
                     while None != queasy:
                         update_queasy(rcode_list.bezeich, roomno)
 
                         curr_recid = queasy._recid
                         queasy = db_session.query(Queasy).filter(
-                                 (Queasy.key == 174) & (Queasy.char1 == rcode_list.bezeich) & (Queasy.number1 == roomno) & (Queasy.date1 == datum) & (Queasy.number3 != 0) & (Queasy._recid > curr_recid)).first()
+                                 (Queasy.key == 174) & (Queasy.char1 == rcode_list.bezeich) & (Queasy.number1 == roomno) & 
+                                (Queasy.date1 == datum) & (Queasy.number3 != 0) & (Queasy._recid > curr_recid)).with_for_update().first()
 
     elif rmtype.lower()  == ("*").lower()  and rcode.lower()  == ("*").lower() :
 
@@ -385,8 +431,13 @@ def update_restriction_update_queasy_1bl(from_date:date, to_date:date, inp_str:s
                 for datum in date_range(from_date,to_date) :
                     roomno = rmstr2int (room_list.bezeich)
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode_list.bezeich)],"number1": [(eq, roomno)],"date1": [(eq, datum)],"number3": [(eq, otanr)]})
-
+                    # queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode_list.bezeich)],"number1": [(eq, roomno)],"date1": [(eq, datum)],"number3": [(eq, otanr)]})
+                    queasy = db_session.query(Queasy).filter(
+                             (Queasy.key == 174) &
+                             (Queasy.char1 == rcode_list.bezeich) &
+                             (Queasy.number1 == roomno) &
+                             (Queasy.date1 == datum) &
+                             (Queasy.number3 == otanr)).with_for_update().first()
                     if not queasy:
                         create_new_queasy(rcode_list.bezeich, roomno)
 
@@ -395,13 +446,20 @@ def update_restriction_update_queasy_1bl(from_date:date, to_date:date, inp_str:s
 
                     if ota.lower()  == ("*").lower() :
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode_list.bezeich)],"number1": [(eq, roomno)],"date1": [(eq, datum)],"number3": [(ne, 0)]})
+                        # queasy = get_cache (Queasy, {"key": [(eq, 174)],"char1": [(eq, rcode_list.bezeich)],"number1": [(eq, roomno)],"date1": [(eq, datum)],"number3": [(ne, 0)]})
+                        queasy = db_session.query(Queasy).filter(
+                                 (Queasy.key == 174) &
+                                 (Queasy.char1 == rcode_list.bezeich) &
+                                 (Queasy.number1 == roomno) &
+                                 (Queasy.date1 == datum) &
+                                 (Queasy.number3 != 0)).with_for_update().first()
                         while None != queasy:
                             update_queasy(rcode_list.bezeich, roomno)
 
                             curr_recid = queasy._recid
                             queasy = db_session.query(Queasy).filter(
-                                     (Queasy.key == 174) & (Queasy.char1 == rcode_list.bezeich) & (Queasy.number1 == roomno) & (Queasy.date1 == datum) & (Queasy.number3 != 0) & (Queasy._recid > curr_recid)).first()
+                                     (Queasy.key == 174) & (Queasy.char1 == rcode_list.bezeich) & (Queasy.number1 == roomno) & 
+                                     (Queasy.date1 == datum) & (Queasy.number3 != 0) & (Queasy._recid > curr_recid)).with_for_update().first()
 
     for qsy160 in db_session.query(Qsy160).filter(
              (Qsy160.key == 160)).order_by(Qsy160._recid).all():
