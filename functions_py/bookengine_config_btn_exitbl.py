@@ -1,10 +1,14 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Bediener, Res_history
 
-def bookengine_config_btn_exitbl(user_init:string, bookengid:int, autostart:bool, period:int, delay:int, hotelcode:string, username:string, password:string, liveflag:bool, defcurr:string, pushrateflag:bool, pullbookflag:bool, pushavailflag:bool, workpath:string, progavail:string):
+def bookengine_config_btn_exitbl(user_init:string, bookengid:int, autostart:bool, period:int, delay:int, 
+                                 hotelcode:string, username:string, password:string, liveflag:bool, defcurr:string, 
+                                 pushrateflag:bool, pullbookflag:bool, pushavailflag:bool, workpath:string, progavail:string):
 
     prepare_cache ([Queasy, Bediener, Res_history])
 
@@ -21,8 +25,13 @@ def bookengine_config_btn_exitbl(user_init:string, bookengid:int, autostart:bool
     Nameqsy = create_buffer("Nameqsy",Queasy)
     Bqueasy = create_buffer("Bqueasy",Queasy)
 
-
     db_session = local_storage.db_session
+    hotelcode = hotelcode.strip()
+    username = username.strip()
+    password = password.strip()
+    defcurr = defcurr.strip()
+    workpath = workpath.strip()
+    progavail = progavail.strip()
 
     def generate_output():
         nonlocal i, str, ct, be_name, queasy, bediener, res_history
@@ -266,7 +275,10 @@ def bookengine_config_btn_exitbl(user_init:string, bookengid:int, autostart:bool
     be_name = nameqsy.char1 + "|Config"
     t_list_data.clear()
 
-    queasy = get_cache (Queasy, {"key": [(eq, 160)],"number1": [(eq, bookengid)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 160)],"number1": [(eq, bookengid)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 160) &
+             (Queasy.number1 == bookengid)).with_for_update().first()
 
     if queasy:
         t_list = T_list()
@@ -318,7 +330,10 @@ def bookengine_config_btn_exitbl(user_init:string, bookengid:int, autostart:bool
         if queasy.char1.lower()  != (ct).lower() :
             create_logdetails()
 
-            bqueasy = get_cache (Queasy, {"key": [(eq, 167)],"number1": [(eq, bookengid)]})
+            # bqueasy = get_cache (Queasy, {"key": [(eq, 167)],"number1": [(eq, bookengid)]})
+            bqueasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 167) &
+                     (Queasy.number1 == bookengid)).with_for_update().first()
 
             if bqueasy:
                 pass

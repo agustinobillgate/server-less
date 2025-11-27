@@ -6,6 +6,8 @@
 # di sisi UI, prepare data ini dipakai untuk default value field yg huruf besar.
 # jadi disini manual edit menggunakan key yg dipakai UI
 #--------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#--------------------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -54,7 +56,7 @@ def bookengine_ratecodepull_btn_exit_1bl(t_push_list_data:[T_push_list], bookeng
         outlist.char1 = queasy.char1
 
         qsy = db_session.query(Qsy).filter(
-                 (Qsy._recid == queasy._recid)).first()
+                 (Qsy._recid == queasy._recid)).with_for_update().first()
 
         if qsy:
             db_session.delete(qsy)
