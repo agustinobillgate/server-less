@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Nation
@@ -17,10 +19,11 @@ def officer_admin_btn_delartbl(rec_id:int):
         return {"err_code": err_code}
 
 
-    queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+    # queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy._recid == rec_id)).with_for_update().first()
 
     if queasy:
-
         nation = get_cache (Nation, {"untergruppe": [(eq, queasy.number3)]})
 
         if nation:

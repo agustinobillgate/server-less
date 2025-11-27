@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Nation, Prmarket, Guest, Htparam
@@ -13,6 +15,9 @@ def nation_admin_check1bl(pvilanguage:int, rec_id:int, kurzbez:string, nationnr:
     nation = prmarket = guest = htparam = None
 
     db_session = local_storage.db_session
+    kurzbez = kurzbez.strip()
+    natbez = natbez.strip()
+    marksegm = marksegm.strip()
 
     def generate_output():
         nonlocal msg_str, lvcarea, nation, prmarket, guest, htparam
@@ -24,7 +29,6 @@ def nation_admin_check1bl(pvilanguage:int, rec_id:int, kurzbez:string, nationnr:
 
         nonlocal msg_str, lvcarea, nation, prmarket, guest, htparam
         nonlocal pvilanguage, rec_id, kurzbez, nationnr, natbez, untergruppe, hauptgruppe, language, marksegm
-
 
         nation.nationnr = nationnr
         nation.kurzbez = kurzbez
@@ -53,7 +57,9 @@ def nation_admin_check1bl(pvilanguage:int, rec_id:int, kurzbez:string, nationnr:
         while None != guest:
             curr_gastnr = guest.gastnr
 
-            gbuff = get_cache (Guest, {"_recid": [(eq, guest._recid)]})
+            # gbuff = get_cache (Guest, {"_recid": [(eq, guest._recid)]})
+            gbuff = db_session.query(Guest).filter(
+                     (Guest._recid == guest._recid)).with_for_update().first()
 
             if guest.nation1 == nation.kurzbez:
                 gbuff.nation1 = kurzbez
@@ -67,7 +73,9 @@ def nation_admin_check1bl(pvilanguage:int, rec_id:int, kurzbez:string, nationnr:
             guest = db_session.query(Guest).filter(
                      ((Guest.gastnr > curr_gastnr)) & (((Guest.nation1 == nation.kurzbez)) | ((Guest.land == nation.kurzbez))) & (Guest._recid > curr_recid)).first()
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 153)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 153)]})
+        htparam = db_session.query(Htparam).filter(
+                 (Htparam.paramnr == 153)).with_for_update().first()
 
         if htparam.fchar == nation.kurzbez:
             pass
@@ -76,7 +84,9 @@ def nation_admin_check1bl(pvilanguage:int, rec_id:int, kurzbez:string, nationnr:
 
             pass
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 276)]})
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, 276)]})
+        htparam = db_session.query(Htparam).filter(
+                 (Htparam.paramnr == 276)).with_for_update().first()
 
         if htparam.fchar == nation.kurzbez:
             pass
@@ -102,7 +112,9 @@ def nation_admin_check1bl(pvilanguage:int, rec_id:int, kurzbez:string, nationnr:
 
     if msg_str == "":
 
-        nation = get_cache (Nation, {"_recid": [(eq, rec_id)]})
+        # nation = get_cache (Nation, {"_recid": [(eq, rec_id)]})
+        nation = db_session.query(Nation).filter(
+                 (Nation._recid == rec_id)).with_for_update().first()
 
         if nation.kurzbez.lower()  != (kurzbez).lower() :
             update_nationcode()

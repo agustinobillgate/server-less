@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Zwkum, Artikel, Kellne1, Kellner, Hoteldpt
@@ -136,7 +138,10 @@ def rwaiter_admin_copy_waiterbl(r_kellner:int, dept2:int, dept:int, crart2:int):
                     buffer_copy(t_zwkum, zwkum)
                 str_desc = ""
 
-        waiter2 = get_cache (Kellner, {"departement": [(eq, dept2)],"kumsatz_nr": [(eq, kellner.kumsatz_nr)]})
+        # waiter2 = get_cache (Kellner, {"departement": [(eq, dept2)],"kumsatz_nr": [(eq, kellner.kumsatz_nr)]})
+        waiter2 = db_session.query(Waiter2).filter(
+                 (Waiter2.departement == dept2) &
+                 (Waiter2.kumsatz_nr == kellner.kumsatz_nr)).with_for_update().first()
 
         if waiter2:
             pass

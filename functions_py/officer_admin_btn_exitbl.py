@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, H_artikel
@@ -19,6 +21,7 @@ def officer_admin_btn_exitbl(s_list_data:[S_list], curr_select:string, rec_id:in
     t_queasy_data, T_queasy = create_model_like(Queasy, {"rec_id":int})
 
     db_session = local_storage.db_session
+    curr_select = curr_select.strip()
 
     def generate_output():
         nonlocal err_code, t_queasy_data, queasy, h_artikel
@@ -82,7 +85,10 @@ def officer_admin_btn_exitbl(s_list_data:[S_list], curr_select:string, rec_id:in
             pass
         else:
 
-            queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+            # queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy._recid == rec_id)).with_for_update().first()
+            
             queasy.char1 = s_list.char1
             queasy.char2 = s_list.char2
             queasy.char3 = h_artikel.bezeich + "&" + s_list.char4 + "&"

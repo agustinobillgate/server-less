@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bediener, Guestbook, Res_history
@@ -19,6 +21,8 @@ def operation_image_webbl(vkey:string, case_type:int, user_init:string, image_nu
     bediener = guestbook = res_history = None
 
     db_session = local_storage.db_session
+    vkey = vkey.strip()
+    char1 = char1.strip()
 
     def generate_output():
         nonlocal result_message, pointer, info_str, pic_number, aend_str, img_str, img_num1, img_num2, bediener, guestbook, res_history
@@ -104,7 +108,10 @@ def operation_image_webbl(vkey:string, case_type:int, user_init:string, image_nu
 
             return
 
-        guestbook = get_cache (Guestbook, {"gastnr": [(eq, pic_number)],"reserve_int[0]": [(eq, image_number)]})
+        # guestbook = get_cache (Guestbook, {"gastnr": [(eq, pic_number)],"reserve_int[0]": [(eq, image_number)]})
+        guestbook = db_session.query(Guestbook).filter(
+                 (Guestbook.gastnr == pic_number) &
+                 (Guestbook.reserve_int[0] == image_number)).with_for_update().first()
 
         if not guestbook:
             guestbook = Guestbook()
@@ -260,7 +267,10 @@ def operation_image_webbl(vkey:string, case_type:int, user_init:string, image_nu
 
             return
 
-        guestbook = get_cache (Guestbook, {"gastnr": [(eq, pic_number)],"reserve_int[0]": [(eq, image_number)]})
+        # guestbook = get_cache (Guestbook, {"gastnr": [(eq, pic_number)],"reserve_int[0]": [(eq, image_number)]})
+        guestbook = db_session.query(Guestbook).filter(
+                 (Guestbook.gastnr == pic_number) &
+                 (Guestbook.reserve_int[0] == image_number)).with_for_update().first()
 
         if not guestbook:
             result_message = "2 - Image Not exist!"

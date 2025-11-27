@@ -2,6 +2,7 @@
 #-----------------------------------------
 # Rd 4/8/2025
 # if available, bezeichnung
+# Rd, 27/11/2025, with_for_update added
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -44,11 +45,13 @@ def nsargt_admin_btn_delbl(rec_id:int, q1_list_argtnr:int):
         return generate_output()
 
     for argt_line in db_session.query(Argt_line).filter(
-             (Argt_line.argtnr == q1_list_argtnr)).order_by(Argt_line._recid).all():
+             (Argt_line.argtnr == q1_list_argtnr)).order_by(Argt_line._recid).with_for_update().all():
         db_session.delete(argt_line)
     pass
 
-    arrangement = get_cache (Arrangement, {"_recid": [(eq, rec_id)]})
+    # arrangement = get_cache (Arrangement, {"_recid": [(eq, rec_id)]})
+    arrangement = db_session.query(Arrangement).filter(
+             (Arrangement._recid == rec_id)).with_for_update().first()
     # Rd 4/8/2025
     # if available
     if arrangement:

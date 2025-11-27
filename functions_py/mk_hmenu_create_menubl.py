@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_menu, H_artikel
@@ -52,7 +54,7 @@ def mk_hmenu_create_menubl(hmenu_list_data:[Hmenu_list], menu_list_data:[Menu_li
         if h_art and h_art.betriebsnr != 0:
 
             for h_menu in db_session.query(H_menu).filter(
-                     (H_menu.departement == dept) & (H_menu.nr == h_art.betriebsnr)).order_by(H_menu._recid).all():
+                     (H_menu.departement == dept) & (H_menu.nr == h_art.betriebsnr)).order_by(H_menu._recid).with_for_update().all():
                 db_session.delete(h_menu)
 
 
