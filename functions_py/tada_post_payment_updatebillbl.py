@@ -124,7 +124,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
             artikel1 = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
 
-            umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+            # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+            umsatz = db_session.query(Umsatz).filter(
+                (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
             if not umsatz:
                 umsatz = Umsatz()
@@ -158,7 +160,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
         artikel1 = get_cache (Artikel, {"artnr": [(eq, arrangement.artnr_logis)],"departement": [(eq, arrangement.intervall)]})
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -252,7 +256,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
                 session_parameter = searchbill.char3
                 break
 
-        paramqsy = get_cache (Queasy, {"key": [(eq, 230)],"char1": [(eq, session_parameter)]})
+        # paramqsy = get_cache (Queasy, {"key": [(eq, 230)],"char1": [(eq, session_parameter)]})
+        paramqsy = db_session.query(Queasy).filter(
+            (Queasy.key == 230) & (Queasy.char1 == session_parameter)).with_for_update().first()
 
         if paramqsy:
             paramqsy.betriebsnr = get_rechnr
@@ -260,7 +266,10 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
             if dynamic_qr:
 
                 pickup_table = db_session.query(Pickup_table).filter(
-                             (Pickup_table.key == 225) & (Pickup_table.char1 == ("taken-table").lower()) & (Pickup_table.number1 == curr_dept) & (Pickup_table.logi1) & (Pickup_table.logi2) & (Pickup_table.number2 == paramqsy.number2) & (entry(0, Pickup_table.char3, "|") == (session_parameter).lower())).first()
+                             (Pickup_table.key == 225) & (Pickup_table.char1 == ("taken-table").lower()) & 
+                             (Pickup_table.number1 == curr_dept) & (Pickup_table.logi1) & 
+                             (Pickup_table.logi2) & (Pickup_table.number2 == paramqsy.number2) & 
+                             (entry(0, Pickup_table.char3, "|") == (session_parameter).lower())).with_for_update().first()
 
                 if pickup_table:
                     pickup_table.char3 = entry(0, pickup_table.char3, "|", session_parameter + "T" + replace_str(to_string(get_current_date()) , "/", "") + replace_str(to_string(get_current_time_in_seconds(), "HH:MM") , ":", ""))
@@ -268,7 +277,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
                     pass
 
-            orderbill = get_cache (Queasy, {"key": [(eq, 225)],"char1": [(eq, "orderbill")],"char3": [(eq, session_parameter)]})
+            # orderbill = get_cache (Queasy, {"key": [(eq, 225)],"char1": [(eq, "orderbill")],"char3": [(eq, session_parameter)]})
+            orderbill = db_session.query(Queasy).filter(
+                (Queasy.key == 225) & (Queasy.char1 == ("orderbill").lower()) & (Queasy.char3 == session_parameter)).with_for_update().first()
 
             if orderbill:
                 orderbill.deci1 =  to_decimal(get_amount)
@@ -304,7 +315,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
                              (Orderbilline.key == 225) & (Orderbilline.char1 == ("orderbill-line").lower()) & (entry(3, Orderbilline.char2, "|") == (session_parameter).lower())).order_by(Orderbilline._recid).all():
                     orderbilline.char2 = entry(0, orderbilline.char2, "|") + "|" + entry(1, orderbilline.char2, "|") + "|" + entry(2, orderbilline.char2, "|") + "|" + session_parameter + "T" + replace_str(to_string(get_current_date()) , "/", "") + replace_str(to_string(get_current_time_in_seconds(), "HH:MM") , ":", "")
 
-            qpayment_gateway = get_cache (Queasy, {"key": [(eq, 223)],"char3": [(eq, session_parameter)],"betriebsnr": [(eq, get_rechnr)]})
+            # qpayment_gateway = get_cache (Queasy, {"key": [(eq, 223)],"char3": [(eq, session_parameter)],"betriebsnr": [(eq, get_rechnr)]})
+            qpayment_gateway = db_session.query(Queasy).filter(
+                (Queasy.key == 223) & (Queasy.char3 == session_parameter) & (Queasy.betriebsnr == get_rechnr)).with_for_update().first()
 
             if qpayment_gateway:
                 qpayment_gateway.betriebsnr = 0
@@ -331,7 +344,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
         if queasy:
             recid_q33 = queasy.number2
 
-            buffq33 = get_cache (Queasy, {"_recid": [(eq, recid_q33)]})
+            # buffq33 = get_cache (Queasy, {"_recid": [(eq, recid_q33)]})
+            buffq33 = db_session.query(Queasy).filter(
+                (Queasy._recid == recid_q33)).with_for_update().first()
 
             if buffq33:
                 pass
@@ -344,7 +359,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
     if rec_id != 0:
 
-        h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+        # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+        h_bill = db_session.query(H_bill).filter(
+            (H_bill._recid == rec_id)).with_for_update().first()
 
     h_artikel = get_cache (H_artikel, {"_recid": [(eq, rec_id_h_artikel)]})
 
@@ -484,7 +501,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
         h_bill.bilname = gname
         h_bill.belegung = pax
 
-        queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, curr_dept)],"number2": [(eq, tischnr)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, curr_dept)],"number2": [(eq, tischnr)]})
+        queasy = db_session.query(Queasy).filter(
+            (Queasy.key == 31) & (Queasy.number1 == curr_dept) & (Queasy.number2 == tischnr)).with_for_update().first()
 
         if queasy:
             queasy.number3 = get_current_time_in_seconds()
@@ -562,7 +581,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
     if billart != 0:
 
-        h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, billart)],"departement": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+        # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, billart)],"departement": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+        h_umsatz = db_session.query(H_umsatz).filter(
+            (H_umsatz.artnr == billart) & (H_umsatz.departement == curr_dept) & (H_umsatz.datum == bill_date)).with_for_update().first()
 
         if h_umsatz:
             pass
@@ -603,7 +624,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
         if mc_str != " ":
 
-            queasy = get_cache (Queasy, {"key": [(eq, 197)],"char1": [(eq, mc_str)],"date1": [(eq, bill_date)],"number1": [(eq, billart)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 197)],"char1": [(eq, mc_str)],"date1": [(eq, bill_date)],"number1": [(eq, billart)]})
+            queasy = db_session.query(Queasy).filter(
+                (Queasy.key == 197) & (Queasy.char1 == mc_str) & (Queasy.date1 == bill_date) & (Queasy.number1 == billart)).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()
@@ -723,7 +746,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
     if h_artart == 0:
         fl_code3 = 1
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == h_artikel.artnrfront) & (Umsatz.departement == curr_dept) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if umsatz:
             pass
@@ -746,7 +771,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
     elif h_artart == 11 or h_artart == 12:
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == h_artikel.artnrfront) & (Umsatz.departement == curr_dept) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if umsatz:
             pass
@@ -763,7 +790,9 @@ def tada_post_payment_updatebillbl(pvilanguage:int, rec_id:int, rec_id_h_artikel
 
     elif h_artart == 6:
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == h_artikel.artnrfront) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if umsatz:
             pass

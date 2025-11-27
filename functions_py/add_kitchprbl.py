@@ -88,7 +88,9 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
         else:
             get_printer_number()
 
-            queasy = get_cache (Queasy, {"key": [(eq, 208)],"number1": [(eq, buf_h_artikel.endkum)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 208)],"number1": [(eq, buf_h_artikel.endkum)]})
+            queasy = db_session.query(Queasy).filter(
+                (Queasy.key == 208) & (Queasy.number1 == buf_h_artikel.endkum) ).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()
@@ -133,7 +135,9 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
             t_queasy.char3 = t_queasy.char3 + translateExtended ("Posted by:", lvcarea, "") + " " + bediener.username + chr_unicode(10)
         else:
 
-            kellner = get_cache (Kellner, {"kellner_nr": [(eq, h_bill.kellner_nr)],"departement": [(eq, h_bill.departement)]})
+            # kellner = get_cache (Kellner, {"kellner_nr": [(eq, h_bill.kellner_nr)],"departement": [(eq, h_bill.departement)]})
+            kellner = db_session.query(Kellner).filter(
+                (Kellner.kellner_nr == h_bill.kellner_nr) & (Kellner.departement == h_bill.departement) ).with_for_update().first()
 
             if kellner:
                 t_queasy.char3 = t_queasy.char3 + translateExtended ("Waiter:", lvcarea, "") + " " + kellner.kellnername + chr_unicode(10)
@@ -511,7 +515,9 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
                     write_article()
                     cut_it()
 
-            hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
+            # hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
+            hbline = db_session.query(H_bill_line).filter(
+                H_bill_line._recid == h_bill_line._recid ).with_for_update().first()
 
             if buf_h_artikel.bondruckernr[0] != 0:
 
@@ -565,7 +571,9 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
                     write_article()
                     cut_it()
 
-            hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
+            # hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
+            hbline = db_session.query(H_bill_line).filter(
+                H_bill_line._recid == h_bill_line._recid ).with_for_update().first()
 
             if buf_h_artikel.bondruckernr[0] != 0:
 
@@ -619,7 +627,9 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
                     write_article()
                     cut_it()
 
-            hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
+            # hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
+            hbline = db_session.query(H_bill_line).filter(
+                H_bill_line._recid == h_bill_line._recid ).with_for_update().first()
 
             if buf_h_artikel.bondruckernr[0] != 0:
 

@@ -64,7 +64,7 @@ def leasing_update_queasybl(casetype: int, nr: int, gastnr: int, gastnrmember: i
     elif casetype == 2:
         # queasy = get_cache(
         #     Queasy, {"key": [(eq, 329)], "number3": [(eq, nr)]})
-        queasy = db_session.query(Queasy).with_for_update().filter(
+        queasy = db_session.query(Queasy).filter(
             Queasy.key == 329,
             Queasy.number3 == nr
         ).with_for_update().first() 
@@ -93,7 +93,7 @@ def leasing_update_queasybl(casetype: int, nr: int, gastnr: int, gastnrmember: i
         # queasy = get_cache(
         #     Queasy, {"key": [(eq, 329)], "number3": [(eq, nr)]})
 
-        queasy = db_session.query(Queasy).with_for_update().filter(
+        queasy = db_session.query(Queasy).filter(
             Queasy.key == 329,
             Queasy.number3 == nr
         ).with_for_update().first() 

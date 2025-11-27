@@ -70,8 +70,8 @@ def hubspot_configbl(case_type:int, hubspot_param_data:[Hubspot_param]):
         for hubspot_param in query(hubspot_param_data):
 
             # queasy = get_cache (Queasy, {"key": [(eq, 319)],"number1": [(eq, hubspot_param.nr)]})
-            queasy = db_session.query(Queasy).with_for_update().filter(
-                (Queasy.key == 319) & (Queasy.number1 == hubspot_param.nr)).first()
+            queasy = db_session.query(Queasy).filter(
+                (Queasy.key == 319) & (Queasy.number1 == hubspot_param.nr)).with_for_update().first()
 
             if queasy:
                 pass

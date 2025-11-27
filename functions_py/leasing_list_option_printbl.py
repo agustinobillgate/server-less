@@ -40,7 +40,7 @@ def leasing_list_option_printbl(resnr:int, tlist_data:Tlist):
 
     # queasy = get_cache (
     #     Queasy, {"key": [(eq, 346)],"number1": [(eq, resnr)]})
-    queasy = db_session.query(Queasy).with_for_update().filter(
+    queasy = db_session.query(Queasy).filter(
         Queasy.key == 346,
         Queasy.number1 == resnr
     ).with_for_update().first()
