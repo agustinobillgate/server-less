@@ -3,6 +3,8 @@
 # Rd, 12/11/2025
 # CM, update dari Yunarco
 #------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal

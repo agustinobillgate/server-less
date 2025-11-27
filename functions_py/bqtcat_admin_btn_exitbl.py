@@ -1,12 +1,14 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
 
 queasy_list_data, Queasy_list = create_model_like(Queasy)
 
-def bqtbeo_admin_btn_exitbl(queasy_list_data:[Queasy_list], icase:int, recid_queasy:int):
+def bqtcat_admin_btn_exitbl(queasy_list_data:[Queasy_list], icase:int, recid_queasy:int):
 
     prepare_cache ([Queasy])
 
@@ -34,8 +36,8 @@ def bqtbeo_admin_btn_exitbl(queasy_list_data:[Queasy_list], icase:int, recid_que
         nonlocal queasy_list
 
 
-        queasy.key = 148
-        queasy.number1 = queasy_list.number1
+        queasy.key = 150
+        queasy.char1 = queasy_list.char1
         queasy.char3 = queasy_list.char3
 
 
@@ -48,7 +50,9 @@ def bqtbeo_admin_btn_exitbl(queasy_list_data:[Queasy_list], icase:int, recid_que
         fill_new_queasy()
     else:
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, recid_queasy)]})
+        # queasy = get_cache (Queasy, {"_recid": [(eq, recid_queasy)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy._recid == recid_queasy)).with_for_update().first()
         queasy.char3 = queasy_list.char3
         pass
 

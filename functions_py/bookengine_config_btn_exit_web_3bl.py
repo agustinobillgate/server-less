@@ -3,6 +3,7 @@
 #------------------------------------------
 # Rd, 12/11/2025
 # tambah strip payload,
+# Rd, 27/11/2025, with_for_update added
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -311,7 +312,10 @@ def bookengine_config_btn_exit_web_3bl(bookengid:int, autostart:bool, period:int
         be_name = nameqsy.char1 + "|Config"
     t_list_data.clear()
 
-    queasy = get_cache (Queasy, {"key": [(eq, 160)],"number1": [(eq, bookengid)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 160)],"number1": [(eq, bookengid)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 160) &
+             (Queasy.number1 == bookengid)).with_for_update().first()
 
     if queasy:
         t_list = T_list()

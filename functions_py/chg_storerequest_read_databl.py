@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -29,6 +31,8 @@ def chg_storerequest_read_databl(t_lschein:string, t_datum:date, t_amount:Decima
 
 
     db_session = local_storage.db_session
+    lscheinnr = lscheinnr.strip()
+    t_lschein = t_lschein.strip()
 
     def generate_output():
         nonlocal curr_lager, deptno, transfered, out_type, to_stock, deptname, lager_bezeich, lager_bez1, curr_pos, op_list_data, l_op, bediener, parameters, l_lager, l_artikel, l_bestand, gl_acct
