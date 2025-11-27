@@ -79,10 +79,10 @@ def splitbill_updatebillbl(pvilanguage:int, j:int, recid_curr:int, recid_j:int, 
         Bline =  create_buffer("Bline",Bill_line)
         Gbuff =  create_buffer("Gbuff",Guest)
 
-        billi = get_cache (Bill, {"_recid": [(eq, recid_curr)]})
+        billi = db_session.query(Billi).filter(Billi._recid == recid_curr).with_for_update().first()
         rechnr = billi.rechnr
 
-        billj = get_cache (Bill, {"_recid": [(eq, recid_j)]})
+        billj = db_session.query(Billj).filter(Billj._recid == recid_j).with_for_update().first()
 
         if billj.rechnr == 0:
             # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
@@ -92,7 +92,7 @@ def splitbill_updatebillbl(pvilanguage:int, j:int, recid_curr:int, recid_j:int, 
             
             counters.counter = counters.counter + 1
             billj.rechnr = counters.counter
-            pass
+            
             replace_it = True
         else:
 
@@ -105,7 +105,8 @@ def splitbill_updatebillbl(pvilanguage:int, j:int, recid_curr:int, recid_j:int, 
 
         for spbill_list in query(spbill_list_data, filters=(lambda spbill_list: spbill_list.selected)):
 
-            bill_line = get_cache (Bill_line, {"_recid": [(eq, spbill_list.bl_recid)],"rechnr": [(eq, rechnr)]})
+            bill_line = db_session.query(Bill_line).filter(
+                (Bill_line._recid == spbill_list.bl_recid) & (Bill_line.rechnr == rechnr)).with_for_update().first()
 
             if bill_line:
 
@@ -118,7 +119,9 @@ def splitbill_updatebillbl(pvilanguage:int, j:int, recid_curr:int, recid_j:int, 
 
         for spbill_list in query(spbill_list_data, filters=(lambda spbill_list: spbill_list.selected)):
 
-            bill_line = get_cache (Bill_line, {"_recid": [(eq, spbill_list.bl_recid)],"rechnr": [(eq, rechnr)]})
+            bill_line = db_session.query(Bill_line).filter(
+                (Bill_line._recid == spbill_list.bl_recid) & (Bill_line.rechnr == rechnr)).with_for_update().first()
+            
             do_it = (None != bill_line)
 
             if do_it and billj.resnr > 0 and billj.reslinnr > 0 and bill_line.typ > 0 and bill_line.typ != billi.resnr and bill_line.typ != billj.resnr and (billi.gastnr != billj.gastnr):
@@ -174,18 +177,22 @@ def splitbill_updatebillbl(pvilanguage:int, j:int, recid_curr:int, recid_j:int, 
 
                 if art1 and (art1.artart == 2 or art1.artart == 7):
 
-                    debitor = get_cache (Debitor, {"artnr": [(eq, art1.artnr)],"rechnr": [(eq, billi.rechnr)],"rgdatum": [(eq, bill_line.bill_datum)],"saldo": [(eq, - bill_line.betrag)],"counter": [(eq, 0)]})
+                    debitor = db_session.query(Debitor).filter(
+                        (Debitor.artnr == art1.artnr) & 
+                        (Debitor.rechnr == billi.rechnr) & 
+                        (Debitor.rgdatum == bill_line.bill_datum) & 
+                        (Debitor.saldo == - bill_line.betrag) & 
+                        (Debitor.counter == 0)).first()
 
                     if debitor:
 
                         gbuff = get_cache (Guest, {"gastnr": [(eq, billj.gastnr)]})
-                        pass
+                        
+                        db_session.refresh(debitor, with_for_update=True)
+
                         debitor.rechnr = billj.rechnr
                         debitor.gastnr = billj.gastnr
                         debitor.name = gbuff.name
-
-
-                        pass
 
                 bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 

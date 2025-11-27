@@ -12,9 +12,6 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-
-from models import Paramtext, Queasy
-
 from functions.prepare_mn_startbl import prepare_mn_startbl
 from functions.mn_chg_sysdatesbl import mn_chg_sysdatesbl
 from functions.na_startbl import na_startbl
@@ -45,7 +42,11 @@ from functions.mn_del_nitehistbl import mn_del_nitehistbl
 from functions.mn_del_old_baresbl import mn_del_old_baresbl
 from functions.mn_update_logfile_recordsbl import mn_update_logfile_recordsbl
 from functions.mn_del_oldbl import mn_del_oldbl
+from functions.mn_del_lockrecord_queasybl import mn_del_lockrecord_queasybl
+from functions.mn_add_notused_htparambl import mn_add_notused_htparambl
 from functions.mn_club_softwarebl import mn_club_softwarebl
+
+from models import Paramtext, Queasy
 print("starting na_start_web2bl,1")
 
 def na_run_program(function_name:string, input_data=()):
@@ -82,6 +83,7 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
     paramtext = queasy = None
 
     na_list = t_nightaudit = None
+
     na_list_data, Na_list = create_model("Na_list", {"reihenfolge":int, "flag":int, "anz":int, "bezeich":string})
     t_nightaudit_data, T_nightaudit = create_model("T_nightaudit", {"bezeichnung":string, "hogarest":int, "reihenfolge":int, "programm":string, "abschlussart":bool})
 
@@ -123,6 +125,7 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
 
         nonlocal printer_nr, stop_it, arrival_guest, msg_str, mess_str, crm_license, banquet_license, na_date1, na_time1, na_name1, mnstart_flag, store_flag, billdate, na_date, na_time, na_name, lic_nr, paramtext, queasy
         nonlocal language_code, htparam_recid, user_init, ans_arrguest
+
 
         nonlocal na_list, t_nightaudit
         nonlocal na_list_data, t_nightaudit_data
@@ -523,15 +526,19 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
 
         nonlocal printer_nr, success_flag, mn_stopped, stop_it, arrival_guest, msg_str, mess_str, crm_license, banquet_license, na_date1, na_time1, na_name1, mnstart_flag, store_flag, billdate, na_date, na_time, na_name, lic_nr, paramtext, queasy
         nonlocal language_code, htparam_recid, user_init, ans_arrguest
+
+
         nonlocal na_list, t_nightaudit
         nonlocal na_list_data, t_nightaudit_data
         # print(f"cqueasy called with bezeich: {bezeich}, str_process: {str_process}")
         # queasy = get_cache (Queasy, {"key": [(eq, 232)],"char2": [(eq, bezeich)],"date1": [(eq, get_current_date())]})
         queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 232) & (Queasy.char2 == bezeich) & (Queasy.date1 == date.today())).first()
+            (Queasy.key == 232) &
+            (Queasy.char2 == bezeich) &
+            (Queasy.date1 == date.today())
+        ).with_for_update().first()
 
         if not queasy:
-            # print(f"Creating new queasy record for bezeich: {bezeich}")
             queasy = Queasy()
             db_session.add(queasy)
 
@@ -541,17 +548,8 @@ def na_start_web2bl(language_code:int, htparam_recid:int, user_init:string, ans_
             queasy.char3 = str_process
             queasy.date1 = get_current_date()
             queasy.number1 = get_current_time_in_seconds()
-
-
         else:
-            # print(f"Updating existing queasy record for bezeich: {bezeich}")
-            pass
             queasy.char3 = str_process
-
-            pass
-            pass
-
-
 
     # paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
     paramtext = db_session.query(Paramtext).filter(
