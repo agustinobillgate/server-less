@@ -3,6 +3,12 @@
 # Rd, 14/8/2025
 # if available bqueasy
 #------------------------------------------
+
+# ==========================================
+# Rulita, 26-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -92,7 +98,7 @@ def rmcat_segment_create_output_webbl():
         rmcat_segm_list.segm_code = to_int(entry(22, queasy.char2 , "|"))
 
         bqueasy = db_session.query(Bqueasy).filter(
-                 (Bqueasy._recid == queasy._recid)).first()
+                 (Bqueasy._recid == queasy._recid)).with_for_update().first()
         # Rd 14/8/2025
         if bqueasy:
             db_session.delete(bqueasy)

@@ -2,6 +2,12 @@
 #---------------------------------------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #---------------------------------------------------------------------
+
+# ==========================================
+# Rulita, 26-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -123,7 +129,8 @@ def globalreservebl(case_type:int, k_list_data:[K_list], rmcat:string, gastnr:in
         n:int = 1
         last_code = k_list.kontcode
 
-        kontline = get_cache (Kontline, {"kontignr": [(eq, k_list.kontignr)],"gastnr": [(eq, gastnr)]})
+        # kontline = get_cache (Kontline, {"kontignr": [(eq, k_list.kontignr)],"gastnr": [(eq, gastnr)]})
+        kontline = db_session.query(Kontline).filter(Kontline.kontignr == k_list.kontignr, Kontline.gastnr == gastnr).with_for_update().first()
 
         if kontline:
             kontline.betriebsnr = 1

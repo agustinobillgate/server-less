@@ -3,6 +3,12 @@
 # Rd, 14/8/2025
 # if available bqueasy
 #------------------------------------------
+
+# ==========================================
+# Rulita, 26-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -152,7 +158,7 @@ def pj_inhouse4_create_output_webbl(idflag:string, inhouse_guest_list_data:[Inho
         inhouse_guest_list.flag_guest = to_int(entry(66, queasy.char2, "|"))
 
         bqueasy = db_session.query(Bqueasy).filter(
-                 (Bqueasy._recid == queasy._recid)).first()
+                 (Bqueasy._recid == queasy._recid)).with_for_update().first()
         # Rd 14/8/2025
         if bqueasy:
             db_session.delete(bqueasy)
@@ -178,11 +184,12 @@ def pj_inhouse4_create_output_webbl(idflag:string, inhouse_guest_list_data:[Inho
             doneflag = True
 
     tqueasy = db_session.query(Tqueasy).filter(
-             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Inhouse List").lower()) & (Tqueasy.number1 == 0) & (Tqueasy.number2 == to_int(idflag))).first()
+             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Inhouse List").lower()) & (Tqueasy.number1 == 0) & (Tqueasy.number2 == to_int(idflag))).with_for_update().first()
 
     if tqueasy:
         pass
         db_session.delete(tqueasy)
+        db_session.refresh(tqueasy,with_for_update=True)
         pass
 
     return generate_output()

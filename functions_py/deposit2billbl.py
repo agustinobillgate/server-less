@@ -2,6 +2,12 @@
 #---------------------------------------------------
 # Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
 #---------------------------------------------------
+
+# ==========================================
+# Rulita, 26-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -79,7 +85,9 @@ def deposit2billbl(resno:int, reslinno:int):
 
         Mbill =  create_buffer("Mbill",Bill)
 
-        mbill = get_cache (Bill, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, 0)]})
+        # mbill = get_cache (Bill, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, 0)]})
+        mbill = db_session.query(Bill).filter(
+                 (Bill.resnr == res_line.resnr) & (Bill.reslinnr == 0)).with_for_update().first()
         mbill.gesamtumsatz =  to_decimal(mbill.gesamtumsatz) + to_decimal(deposit)
         mbill.rgdruck = 0
         mbill.datum = bill_date
@@ -267,7 +275,9 @@ def deposit2billbl(resno:int, reslinno:int):
         billjournal.bezeich = billjournal.bezeich + " [" + art1.bezeich + "]"
     pass
 
-    umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+    # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+    umsatz = db_session.query(Umsatz).filter(
+             (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
     if not umsatz:
         umsatz = Umsatz()

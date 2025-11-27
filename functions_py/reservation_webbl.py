@@ -8,11 +8,17 @@
                     - changed string to str
                     - fix string.lower() 
 """
+
+# ==========================================
+# Rulita, 26-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 # from functions.htpdate import htpdate
-from functions_py.htpdate import htpdate
+from functions.htpdate import htpdate
 from models import Res_line, Queasy, Htparam, Reservation, Bill, Bill_line, Zimkateg, Guest, Kontline
 
 
@@ -171,8 +177,8 @@ def reservation_webbl(case_type: int, gastno: int, resno: int):
         for res_line in db_session.query(Res_line).filter(
                 (Res_line.resnr == resno) & (Res_line.gastnr == gastno) & (Res_line.active_flag <= 1) & (Res_line.resstatus != 12) & (Res_line.resstatus != 99)).order_by(Res_line._recid).all():
 
-            guest = get_cache(
-                Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+            # guest = get_cache(Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+            guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).with_for_update().first()
 
             if guest.erste_res == None:
                 guest.erste_res = ci_date
