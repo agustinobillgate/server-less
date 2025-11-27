@@ -1,12 +1,15 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Arrangement, Argt_line, Artikel
 
 p_list_data, P_list = create_model_like(Arrangement)
 
-def nsargt_admin_btn_gobl(p_list_data:[P_list], q1_recid:int, q2_recid:int, curr_select:string, argt_artnr:int, argt_dept:int, q1_list_argtnr:int, argt_price:Decimal, argt_proz:Decimal, comments:string):
+def nsargt_admin_btn_gobl(p_list_data:[P_list], q1_recid:int, q2_recid:int, 
+                          curr_select:string, argt_artnr:int, argt_dept:int, q1_list_argtnr:int, argt_price:Decimal, argt_proz:Decimal, comments:string):
 
     prepare_cache ([Arrangement, Argt_line, Artikel])
 
@@ -18,14 +21,14 @@ def nsargt_admin_btn_gobl(p_list_data:[P_list], q1_recid:int, q2_recid:int, curr
 
     Argtline = create_buffer("Argtline",Argt_line)
 
-
     db_session = local_storage.db_session
+    curr_select = curr_select.strip()
+    comments = comments.strip()
 
     def generate_output():
         nonlocal err, artikel_bezeich, arrangement, argt_line, artikel
         nonlocal q1_recid, q2_recid, curr_select, argt_artnr, argt_dept, q1_list_argtnr, argt_price, argt_proz, comments
         nonlocal argtline
-
 
         nonlocal p_list, argtline
 
@@ -37,7 +40,6 @@ def nsargt_admin_btn_gobl(p_list_data:[P_list], q1_recid:int, q2_recid:int, curr
         nonlocal q1_recid, q2_recid, curr_select, argt_artnr, argt_dept, q1_list_argtnr, argt_price, argt_proz, comments
         nonlocal argtline
 
-
         nonlocal p_list, argtline
 
 
@@ -45,7 +47,6 @@ def nsargt_admin_btn_gobl(p_list_data:[P_list], q1_recid:int, q2_recid:int, curr
         argt_line.argt_artnr = argt_artnr
         argt_line.departement = argt_dept
         argt_line.betrag =  to_decimal(argt_price)
-
 
         argt_line.vt_percnt =  to_decimal(argt_proz)
 
@@ -103,7 +104,9 @@ def nsargt_admin_btn_gobl(p_list_data:[P_list], q1_recid:int, q2_recid:int, curr
 
     elif curr_select.lower()  == ("chg2").lower() :
 
-        argt_line = get_cache (Argt_line, {"_recid": [(eq, q2_recid)]})
+        # argt_line = get_cache (Argt_line, {"_recid": [(eq, q2_recid)]})
+        argt_line = db_session.query(Argt_line).filter(
+                 (Argt_line._recid == q2_recid)).with_for_update().first()
 
         artikel = get_cache (Artikel, {"artnr": [(eq, argt_artnr)],"artart": [(eq, 0)],"departement": [(eq, argt_dept)]})
 
@@ -133,7 +136,9 @@ def nsargt_admin_btn_gobl(p_list_data:[P_list], q1_recid:int, q2_recid:int, curr
 
     elif curr_select.lower()  == ("chg").lower() :
 
-        arrangement = get_cache (Arrangement, {"_recid": [(eq, q1_recid)]})
+        # arrangement = get_cache (Arrangement, {"_recid": [(eq, q1_recid)]})
+        arrangement = db_session.query(Arrangement).filter(
+                 (Arrangement._recid == q1_recid)).with_for_update().first()
 
         if arrangement:
             pass
