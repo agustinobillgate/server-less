@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ==========================================
+# Rulita, 26-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -86,7 +91,9 @@ def guest_remark_webbl(g_list_data:[G_list], t_guest_remark_data:[T_guest_remark
 
             if g_list:
 
-                queasy = get_cache (Queasy, {"key": [(eq, g_list.key)],"number1": [(eq, g_list.number1)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, g_list.key)],"number1": [(eq, g_list.number1)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == g_list.key) & (Queasy.number1 == g_list.number1)).with_for_update().first()
 
                 if queasy:
                     pass
@@ -94,7 +101,7 @@ def guest_remark_webbl(g_list_data:[G_list], t_guest_remark_data:[T_guest_remark
                     queasy.char3 = g_list.char3
                     queasy.logi1 = g_list.logi1
 
-
+                    db_session.refresh(queasy,with_for_update=True)
                     pass
                     pass
                     output_list.success_flag = True
@@ -105,11 +112,14 @@ def guest_remark_webbl(g_list_data:[G_list], t_guest_remark_data:[T_guest_remark
 
             if g_list:
 
-                queasy = get_cache (Queasy, {"key": [(eq, 154)],"number1": [(eq, g_list.number1)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 154)],"number1": [(eq, g_list.number1)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 154) & (Queasy.number1 == g_list.number1)).with_for_update().first()
 
                 if queasy:
                     pass
                     db_session.delete(queasy)
+                    db_session.refresh(queasy,with_for_update=True)
                     pass
                     output_list.success_flag = True
 
@@ -163,7 +173,8 @@ def guest_remark_webbl(g_list_data:[G_list], t_guest_remark_data:[T_guest_remark
 
         if t_guest_remark:
 
-            guest_remark = get_cache (Guest_remark, {"_recid": [(eq, t_guest_remark.g_recid)]})
+            # guest_remark = get_cache (Guest_remark, {"_recid": [(eq, t_guest_remark.g_recid)]})
+            guest_remark = db_session.query(Guest_remark).filter(Guest_remark._recid == t_guest_remark.g_recid).with_for_update().first()
 
             if guest_remark:
                 pass
@@ -174,7 +185,7 @@ def guest_remark_webbl(g_list_data:[G_list], t_guest_remark_data:[T_guest_remark
                 guest_remark.bemerkung = t_guest_remark.bemerkung
                 guest_remark.display_flag = t_guest_remark.display_flag
 
-
+                db_session.refresh(guest_remark,with_for_update=True)
                 pass
                 pass
                 output_list.success_flag = True
@@ -199,11 +210,13 @@ def guest_remark_webbl(g_list_data:[G_list], t_guest_remark_data:[T_guest_remark
 
     elif payload_list.mode == 7:
 
-        guest_remark = get_cache (Guest_remark, {"_recid": [(eq, payload_list.g_recid)]})
+        # guest_remark = get_cache (Guest_remark, {"_recid": [(eq, payload_list.g_recid)]})
+        guest_remark = db_session.query(Guest_remark).filter(Guest_remark._recid == payload_list.g_recid).with_for_update().first()
 
         if guest_remark:
             pass
             db_session.delete(guest_remark)
+            db_session.refresh(guest_remark,with_for_update=True)
             pass
             output_list.success_flag = True
 

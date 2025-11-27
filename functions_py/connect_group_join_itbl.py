@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ==========================================
+# Rulita, 26-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Res_line, Bediener, Reservation, Res_history
@@ -44,7 +49,8 @@ def connect_group_join_itbl(resno:int, selected_resnr:int, user_init:string, res
         for res_line in db_session.query(Res_line).filter(
                      (Res_line.resnr == selected_resnr) & (Res_line.l_zuordnung[inc_value(4)] == 0)).order_by(Res_line._recid).all():
 
-            rline = get_cache (Res_line, {"_recid": [(eq, res_line._recid)]})
+            # rline = get_cache (Res_line, {"_recid": [(eq, res_line._recid)]})
+            rline = db_session.query(Res_line).filter(Res_line._recid == res_line._recid).with_for_update().first()
             rline.l_zuordnung[4] = selected_resnr
 
 
@@ -52,7 +58,8 @@ def connect_group_join_itbl(resno:int, selected_resnr:int, user_init:string, res
 
         mbuff = get_cache (Reservation, {"resnr": [(eq, selected_resnr)]})
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        reservation = db_session.query(Reservation).filter(Reservation.resnr == resno).with_for_update().first()
         reservation.grpflag = mbuff.grpflag
         reservation.groupname = mbuff.groupname
         reservation.verstat = mbuff.verstat
@@ -62,7 +69,8 @@ def connect_group_join_itbl(resno:int, selected_resnr:int, user_init:string, res
 
         for res_list in query(res_list_data, filters=(lambda res_list:(res_list.prev_join != res_list.join_flag) or (res_list.prev_mbill != res_list.mbill_flag))):
 
-            res_line = get_cache (Res_line, {"resnr": [(eq, res_list.resnr)],"reslinnr": [(eq, res_list.reslinnr)]})
+            # res_line = get_cache (Res_line, {"resnr": [(eq, res_list.resnr)],"reslinnr": [(eq, res_list.reslinnr)]})
+            res_line = db_session.query(Res_line).filter((Res_line.resnr == res_list.resnr) & (Res_line.kontakt_nr == res_list.reslinnr)).with_for_update().first()
 
             if res_list.join_flag:
                 res_line.l_zuordnung[4] = selected_resnr
@@ -107,7 +115,8 @@ def connect_group_join_itbl(resno:int, selected_resnr:int, user_init:string, res
             for res_line in db_session.query(Res_line).filter(
                          (Res_line.resnr == res_list.resnr) & (Res_line.kontakt_nr == res_list.reslinnr) & (Res_line.l_zuordnung[inc_value(2)] == 1)).order_by(Res_line._recid).all():
 
-                rline = get_cache (Res_line, {"_recid": [(eq, res_line._recid)]})
+                # rline = get_cache (Res_line, {"_recid": [(eq, res_line._recid)]})
+                rline = db_session.query(Res_line).filter(Res_line._recid == res_line._recid).with_for_update().first()
 
                 if res_list.join_flag:
                     rline.l_zuordnung[4] = selected_resnr

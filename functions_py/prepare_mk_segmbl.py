@@ -53,6 +53,8 @@ def prepare_mk_segmbl(gastnr:int):
     # for segment in db_session.query(Segment).filter(
     #          (Segment.vip_level == 0) & (num_entries(Segment.bezeich, "$$0") == 1)).order_by(Segment._recid).all():
     for segment in db_session.query(Segment).filter(Segment.vip_level == 0).order_by(Segment._recid).all():
+        print("num_entries(segment.bezeich, '$$0') : " + to_string(num_entries(segment.bezeich, "$$0")))
+        
         if (num_entries(segment.bezeich, "$$0") == 1):
             hsegm_list = Hsegm_list()
             hsegm_list_data.append(hsegm_list)

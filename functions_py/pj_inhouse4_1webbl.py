@@ -5,6 +5,11 @@
 # 
 #-----------------------------------------
 
+# ==========================================
+# Rulita, 26-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -1253,21 +1258,24 @@ def pj_inhouse4_1webbl(sorttype:int, from_date:date, to_date:date, froom:string,
                     to_string(sum_list.dinner) + "|" +\
                     to_string(sum_list.other)
 
-    bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "inhouse list")],"number2": [(eq, to_int(idflag))]})
+    # bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "inhouse list")],"number2": [(eq, to_int(idflag))]})
+    bqueasy = db_session.query(Queasy).filter(Queasy.key == 285, Queasy.char1 == "inhouse list", Queasy.number2 == to_int(idflag)).with_for_update().first()
 
     if bqueasy:
         pass
         bqueasy.number1 = 0
-
+        db_session.refresh(bqueasy, with_for_update=True)
 
         pass
         pass
 
-    bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "inhouse list sum")],"number2": [(eq, to_int(idflag))]})
+    # bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "inhouse list sum")],"number2": [(eq, to_int(idflag))]})
+    bqueasy = db_session.query(Queasy).filter(Queasy.key == 285, Queasy.char1 == "inhouse list sum", Queasy.number2 == to_int(idflag)).with_for_update().first()
 
     if bqueasy:
         pass
         bqueasy.number1 = 0
+        db_session.refresh(bqueasy, with_for_update=True)
 
 
         pass
