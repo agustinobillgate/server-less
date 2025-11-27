@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill, Kellner, Kellne1
@@ -23,13 +25,17 @@ def rwaiter_admin_btn_delartbl(dept:int, r_kellner:int, r_kellne1:int, t_kellner
         flag = 1
     else:
 
-        kellner = get_cache (Kellner, {"_recid": [(eq, r_kellner)]})
+        # kellner = get_cache (Kellner, {"_recid": [(eq, r_kellner)]})
+        kellner = db_session.query(Kellner).filter(
+                 (Kellner._recid == r_kellner)).with_for_update().first()
 
         if kellner:
             pass
             db_session.delete(kellner)
 
-        kellne1 = get_cache (Kellne1, {"_recid": [(eq, r_kellne1)]})
+        # kellne1 = get_cache (Kellne1, {"_recid": [(eq, r_kellne1)]})
+        kellne1 = db_session.query(Kellne1).filter(
+                 (Kellne1._recid == r_kellne1)).with_for_update().first()
 
         if kellne1:
             pass

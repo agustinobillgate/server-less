@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------
 # Rd, 3/8/2025
-
+# Rd, 27/11/2025, with_for_update added
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -37,7 +37,9 @@ def tbplan_setup_save_table_location_webbl(case_type:int, t_queasy_data:[T_queas
 
     if case_type == 1:
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, t_queasy.rec_id)]})
+        # queasy = get_cache (Queasy, {"_recid": [(eq, t_queasy.rec_id)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.rec_id == t_queasy.rec_id)).first()
 
         if t_queasy:
             buffer_copy(t_queasy, queasy)
@@ -49,13 +51,14 @@ def tbplan_setup_save_table_location_webbl(case_type:int, t_queasy_data:[T_queas
         while None != t_queasy:
 
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == t_queasy.key) & (Queasy.number1 == t_queasy.number1) & (Queasy.number2 == t_queasy.number2) & ((Queasy.deci1 != t_queasy.deci1) | (Queasy.deci2 != t_queasy.deci2)) & (Queasy.deci3 == t_queasy.deci3) & (Queasy.betriebsnr == 0)).first()
+                     (Queasy.key == t_queasy.key) & (Queasy.number1 == t_queasy.number1) & 
+                     (Queasy.number2 == t_queasy.number2) & ((Queasy.deci1 != t_queasy.deci1) | (Queasy.deci2 != t_queasy.deci2)) & 
+                     (Queasy.deci3 == t_queasy.deci3) & (Queasy.betriebsnr == 0)).with_for_update().first()
 
             if queasy:
                 pass
                 queasy.deci1 =  to_decimal(t_queasy.deci1)
                 queasy.deci2 =  to_decimal(t_queasy.deci2)
-
 
                 pass
                 pass
