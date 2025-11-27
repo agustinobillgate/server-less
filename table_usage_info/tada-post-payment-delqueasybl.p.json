@@ -1,0 +1,18 @@
+{
+    "H_bill": {
+        "read": [
+            "departement",
+            "rechnr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [],
+        "write": []
+    },
+    "H_queasy": {
+        "read": [],
+        "write": []
+    }
+}

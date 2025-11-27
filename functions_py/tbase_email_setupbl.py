@@ -7,7 +7,9 @@
     ISSUE:  - fix python indentation
             - add type ignore to avoid warning
 """ 
-
+#-----------------------------------------
+# Rd, 26/11/2025, with_for_update
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -38,9 +40,13 @@ def tbase_email_setupbl(email_setup_data:Email_setup):
     email_setup = query(email_setup_data, first=True)  # type: ignore email_setup_data masih belum terisi
 
     if email_setup:
-        queasy = get_cache (Queasy, {
-            "key": [(eq, 369)],
-            "char1": [(eq, "tbase-email")]})
+        # queasy = get_cache (Queasy, {
+        #     "key": [(eq, 369)],
+        #     "char1": [(eq, "tbase-email")]})
+        queasy = db_session.query(Queasy).filter(
+            Queasy.key == 369,
+            Queasy.char1 == "tbase-email"
+        ).with_for_update().first()
 
         if not queasy:
             queasy = Queasy()

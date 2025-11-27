@@ -8,7 +8,9 @@
             - add type ignore to avoid warning
             - deleted ' pass '
 """ 
-
+#-------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -41,11 +43,16 @@ def tbase_mapping_subgroup_fbarticlebl(sgroup_list_data:Sgroup_list):
         return {}
 
     for sgroup_list in query(sgroup_list_data):  # type: ignore sgroup_list_data
-        queasy = get_cache (Queasy, {
-            "key": [(eq, 369)],
-            "char1": [(eq, "subgroup-fb")],
-            "number2": [(eq, sgroup_list.vhp_nr)]})
-
+        # queasy = get_cache (Queasy, {
+        #     "key": [(eq, 369)],
+        #     "char1": [(eq, "subgroup-fb")],
+        #     "number2": [(eq, sgroup_list.vhp_nr)]})
+        queasy = db_session.query(Queasy).filter(
+            Queasy.key == 369,
+            Queasy.char1 == "subgroup-fb",
+            Queasy.number2 == sgroup_list.vhp_nr
+        ).with_for_update().first()
+        
         if not queasy:
             queasy = Queasy()
 

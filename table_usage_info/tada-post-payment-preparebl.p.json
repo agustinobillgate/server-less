@@ -1,0 +1,59 @@
+{
+    "Guest": {
+        "read": [],
+        "write": []
+    },
+    "Printer": {
+        "read": [],
+        "write": []
+    },
+    "Htparam": {
+        "read": [
+            "flogical",
+            "fchar",
+            "finteger",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [],
+        "write": []
+    },
+    "Waehrung": {
+        "read": [
+            "ankauf",
+            "einheit",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Hoteldpt": {
+        "read": [
+            "depart",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Kellner": {
+        "read": [
+            "kellner_nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "H_bill": {
+        "read": [
+            "kellner_nr",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Bediener": {
+        "read": [
+            "permissions",
+            "_recid"
+        ],
+        "write": []
+    }
+}
