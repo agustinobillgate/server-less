@@ -8,6 +8,13 @@
 # property -> propertynr
 # OthersFlag -> othersFlag
 # output table tidak sama
+
+# =========================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# - Comment procedure create_copy1 not used 
+# =========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date

@@ -4,6 +4,12 @@
 # gitlab: 
 # if available
 #-----------------------------------------
+
+# ==================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# ==================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Eg_property
@@ -20,7 +26,9 @@ def eg_property_btn_delartbl(case_type:int, nr:int):
         return {}
 
 
-    eg_property = get_cache (Eg_property, {"nr": [(eq, nr)]})
+    # eg_property = get_cache (Eg_property, {"nr": [(eq, nr)]})
+    eg_property = db_session.query(Eg_property).filter(
+             (Eg_property.nr == nr)).with_for_update().first()
 
     if case_type == 1:
         # Rd 30/7/2025
@@ -37,4 +45,5 @@ def eg_property_btn_delartbl(case_type:int, nr:int):
         if eg_property:
             db_session.delete(eg_property)
 
+    db_session.refresh(eg_property,with_for_update=True)
     return generate_output()
