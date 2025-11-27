@@ -79,20 +79,12 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                             bl_saldo =  to_decimal(bl_saldo) + to_decimal(bill_line.betrag)
 
                         if bill.zinr != res_line.zinr:
-
-                            bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+                            bbuff = db_session.query(Bbuff).filter(Bbuff._recid == bill._recid).with_for_update().first()
                             bbuff.zinr = res_line.zinr
 
-
-                            pass
-                            pass
-
                         if bl_saldo != bill.saldo:
-
-                            tbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+                            tbuff = db_session.query(Tbuff).filter(Tbuff._recid == bill._recid).with_for_update().first()
                             tbuff.saldo =  to_decimal(bl_saldo)
-                            pass
-                            pass
 
 
             if trim(zinr) == "":
@@ -253,20 +245,12 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                                 bl_saldo =  to_decimal(bl_saldo) + to_decimal(bill_line.betrag)
 
                             if bill.zinr != res_line.zinr:
-
-                                bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+                                bbuff = db_session.query(Bbuff).filter(Bbuff._recid == bill._recid).with_for_update().first()
                                 bbuff.zinr = res_line.zinr
 
-
-                                pass
-                                pass
-
                             if bl_saldo != bill.saldo:
-
-                                bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+                                bbuff = db_session.query(Bbuff).filter(Bbuff._recid == bill._recid).with_for_update().first()
                                 bbuff.saldo =  to_decimal(bl_saldo)
-                                pass
-                                pass
 
 
                 bill_obj_list = {}
@@ -349,7 +333,6 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                     # else:
                     #     bill_obj_list[bill._recid] = True
 
-
                     assign_it()
 
         elif sorttype == 4:
@@ -359,7 +342,7 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
 
                 for bill in db_session.query(Bill).filter(
                          (Bill.resnr == rline.resnr) & (Bill.parent_nr == rline.reslinnr) & (Bill.flag == 1)).order_by(Bill.billnr).all():
-                         
+                    
                     assign_it()
 
 
@@ -386,11 +369,9 @@ def bil_selectbl(pvilanguage:int, sorttype:int, zinr:string, bil_int:int, curr_g
                      (Bill_line.rechnr == bill.rechnr) & (Bill_line._recid > curr_recid)).first()
 
         if bl_saldo != bill.saldo:
-
-            tbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+            tbuff = db_session.query(Tbuff).filter(Tbuff._recid == bill._recid).with_for_update().first()
             tbuff.saldo =  to_decimal(bl_saldo)
-            pass
-            pass
+
         b1_list = B1_list()
         b1_list_data.append(b1_list)
 
