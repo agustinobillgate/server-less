@@ -3,6 +3,7 @@
 # ==========================================
 # Rulita, 09-10-2025
 # Tiket ID : 8CF423 | Recompile Program
+# Rd, 28/11/2025, with_for_update added
 # ==========================================
 
 from functions.additional_functions import *
@@ -56,7 +57,9 @@ def rmcat_admin_setup_wizardbl(input_param_data:[Input_param]):
 
         else:
 
-            zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, input_param.zikatnr)]})
+            # zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, input_param.zikatnr)]})
+            zimkateg = db_session.query(Zimkateg).filter(
+                     (Zimkateg.zikatnr == input_param.zikatnr)).with_for_update().first()
 
             if zimkateg:
                 output_param = Output_param()

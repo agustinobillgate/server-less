@@ -42,7 +42,7 @@ def manual_ar_write_debitorbl(case_type:int, t_debitor_data:[T_debitor]):
 
     elif case_type == 2:
 
-        debitor = db_session.query(Debitor).with_for_update().filter(Debitor._recid == t_debitor.tb_recid).first()  
+        debitor = db_session.query(Debitor).filter(Debitor._recid == t_debitor.tb_recid).with_for_update().first()  
 
         if debitor:
             debitor.vesrcod = t_debitor.vesrcod

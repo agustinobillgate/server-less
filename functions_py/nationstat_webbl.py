@@ -4,6 +4,7 @@
 # gitlab: 111/979
 # error konversi, # mtd_totrm = 0 mtd_act == 0 ytd_act == 0 ytd_totrm == 0
 # Requery, pisahkan Nation dulu
+# Rd, 28/11/2025, with_for_update added, skipped, temp table
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -31,6 +32,8 @@ def nationstat_webbl(printer_nr:int, call_from:int, txt_file:string, from_month:
     total_per_day_data, Total_per_day = create_model("Total_per_day", {"date_day":int, "total_nat":int})
 
     db_session = local_storage.db_session
+    txt_file = txt_file.strip()
+    from_month = from_month.strip()
 
     def generate_output():
         nonlocal room_list_data, tot_all, from_date, to_date, ci_date, curr_day, diff_one, ok, i, htparam, nation, nationstat

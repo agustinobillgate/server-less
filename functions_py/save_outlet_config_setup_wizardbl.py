@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.load_hoteldptbl import load_hoteldptbl
@@ -163,7 +165,8 @@ def save_outlet_config_setup_wizardbl(input_list_data:[Input_list]):
 
         Servtax =  create_buffer("Servtax",Htparam)
 
-        hoteldpt = get_cache (Hoteldpt, {"num": [(eq, num)]})
+        # hoteldpt = get_cache (Hoteldpt, {"num": [(eq, num)]})
+        hoteldpt = db_session.query(Hoteldpt).filter(Hoteldpt.num == num).with_for_update().first()
 
         if not hoteldpt:
             hoteldpt = Hoteldpt()
@@ -189,7 +192,8 @@ def save_outlet_config_setup_wizardbl(input_list_data:[Input_list]):
 
             if servtax.fdecimal == servcode and get_index(servtax.bezeichnung, "Service Code") > 0:
 
-                htparam = get_cache (Htparam, {"_recid": [(eq, servtax._recid)]})
+                # htparam = get_cache (Htparam, {"_recid": [(eq, servtax._recid)]})
+                htparam = db_session.query(Htparam).filter(Htparam._recid == servtax._recid).with_for_update().first()
                 break
 
         if htparam:
@@ -200,7 +204,11 @@ def save_outlet_config_setup_wizardbl(input_list_data:[Input_list]):
             pass
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(ge, 1),(le, 16)],"fdecimal": [(ne, servcode)],"bezeichnung": [(eq, service_codename)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(ge, 1),(le, 16)],"fdecimal": [(ne, servcode)],"bezeichnung": [(eq, service_codename)]})
+            htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr >= 1) & (Htparam.paramnr <= 16) &
+                (Htparam.fdecimal != to_decimal(servcode)) &
+                (Htparam.bezeichnung == service_codename)).with_for_update().first()
 
             if htparam:
                 pass
@@ -208,7 +216,10 @@ def save_outlet_config_setup_wizardbl(input_list_data:[Input_list]):
                 pass
             else:
 
-                htparam = get_cache (Htparam, {"paramnr": [(ge, 1),(le, 16)],"fdecimal": [(eq, 0)]})
+                # htparam = get_cache (Htparam, {"paramnr": [(ge, 1),(le, 16)],"fdecimal": [(eq, 0)]})
+                htparam = db_session.query(Htparam).filter(
+                    (Htparam.paramnr >= 1) & (Htparam.paramnr <= 16) &
+                    (Htparam.fdecimal == to_decimal(0))).with_for_update().first()
 
                 if htparam:
                     pass
@@ -229,7 +240,8 @@ def save_outlet_config_setup_wizardbl(input_list_data:[Input_list]):
 
             if servtax.fdecimal == taxcode and get_index(servtax.bezeichnung, "V.A.T. POS") > 0:
 
-                htparam = get_cache (Htparam, {"_recid": [(eq, servtax._recid)]})
+                # htparam = get_cache (Htparam, {"_recid": [(eq, servtax._recid)]})
+                htparam = db_session.query(Htparam).filter(Htparam._recid == servtax._recid).with_for_update().first()
                 break
 
         if htparam:
@@ -240,7 +252,11 @@ def save_outlet_config_setup_wizardbl(input_list_data:[Input_list]):
             pass
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(ge, 1),(le, 16)],"fdecimal": [(ne, taxcode)],"bezeichnung": [(eq, tax_codename)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(ge, 1),(le, 16)],"fdecimal": [(ne, taxcode)],"bezeichnung": [(eq, tax_codename)]})
+            htparam = db_session.query(Htparam).filter(
+                (Htparam.paramnr >= 1) & (Htparam.paramnr <= 16) &
+                (Htparam.fdecimal != to_decimal(taxcode)) &
+                (Htparam.bezeichnung == tax_codename)).with_for_update().first()
 
             if htparam:
                 pass
@@ -248,7 +264,10 @@ def save_outlet_config_setup_wizardbl(input_list_data:[Input_list]):
                 pass
             else:
 
-                htparam = get_cache (Htparam, {"paramnr": [(ge, 1),(le, 16)],"fdecimal": [(eq, 0)]})
+                # htparam = get_cache (Htparam, {"paramnr": [(ge, 1),(le, 16)],"fdecimal": [(eq, 0)]})
+                htparam = db_session.query(Htparam).filter(
+                    (Htparam.paramnr >= 1) & (Htparam.paramnr <= 16) &
+                    (Htparam.fdecimal == to_decimal(0))).with_for_update().first()  
 
                 if htparam:
                     pass
@@ -259,7 +278,7 @@ def save_outlet_config_setup_wizardbl(input_list_data:[Input_list]):
                     pass
 
         for artikel in db_session.query(Artikel).filter(
-                 (Artikel.artart == 0) & (Artikel.departement == hoteldpt.num)).order_by(Artikel._recid).all():
+                 (Artikel.artart == 0) & (Artikel.departement == hoteldpt.num)).order_by(Artikel._recid).with_for_update().all():
             artikel.mwst_code = htparam.paramnr
         pass
 
@@ -316,121 +335,111 @@ def save_outlet_config_setup_wizardbl(input_list_data:[Input_list]):
 
         if hoteldpt:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 900)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 900)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 900).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 900)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 900)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 900).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
 
         hoteldpt = get_cache (Hoteldpt, {"departtyp": [(eq, 3)]})
 
         if hoteldpt:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 1081)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 1081)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1081).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 1081)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 1081)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1081).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
 
         hoteldpt = get_cache (Hoteldpt, {"departtyp": [(eq, 2)]})
 
         if hoteldpt:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 570)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 570)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 570).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 949)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 949)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 949).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 570)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 570)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 570).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 949)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 949)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 949).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
 
         hoteldpt = get_cache (Hoteldpt, {"departtyp": [(eq, 5)]})
 
         if hoteldpt:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 1082)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 1082)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1082).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 1082)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 1082)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1082).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
 
 
     def check_dept_limit():
@@ -464,8 +473,15 @@ def save_outlet_config_setup_wizardbl(input_list_data:[Input_list]):
 
         if prv_num != 0 and prv_num != pos_num:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 357)],"number1": [(eq, 2)],"number2": [(eq, prv_num)],"deci1": [(eq, 2.1)],"char1": [(eq, "outlet administration")],"char2": [(eq, "outlet setup")],"logi1": [(eq, True)]})
-
+            # queasy = get_cache (Queasy, {"key": [(eq, 357)],"number1": [(eq, 2)],"number2": [(eq, prv_num)],"deci1": [(eq, 2.1)],"char1": [(eq, "outlet administration")],"char2": [(eq, "outlet setup")],"logi1": [(eq, True)]})
+            queasy = db_session.query(Queasy).filter(
+                (Queasy.key == 357) &
+                (Queasy.number1 == 2) &
+                (Queasy.number2 == prv_num) &
+                (Queasy.deci1 == to_decimal(2.1)) &
+                (Queasy.char1 == "outlet administration") &
+                (Queasy.char2 == "outlet setup") &
+                (Queasy.logi1 == True)).with_for_update().first()
             if queasy:
                 pass
                 queasy.number2 = pos_num
@@ -483,8 +499,8 @@ def save_outlet_config_setup_wizardbl(input_list_data:[Input_list]):
                 queasy.number1 = 2
                 queasy.number2 = pos_num
                 queasy.deci1 =  to_decimal(2.1)
-                queasy.char1 = "OUTLET ADMINISTRATION"
-                queasy.char2 = "OUTLET SETUP"
+                queasy.char1 = "outlet administration"
+                queasy.char2 = "outlet setup"
                 queasy.logi1 = True
 
     input_list = query(input_list_data, first=True)

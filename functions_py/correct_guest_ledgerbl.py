@@ -13,6 +13,12 @@
 # update dari fitria: 8/8/2025
 # elif last-date 
 #-------------------------------------------
+
+# =============================================
+# Rulita, 28-11-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -430,17 +436,19 @@ def correct_guest_ledgerbl(fdate:date, tdate:date):
 
             if billdate < curr_date:
 
-                uebertrag = get_cache (Uebertrag, {"datum": [(eq, billdate)]})
+                # uebertrag = get_cache (Uebertrag, {"datum": [(eq, billdate)]})
+                uebertrag = db_session.query(Uebertrag).filter(
+                         (Uebertrag.datum == billdate)).with_for_update().first()
 
                 if uebertrag:
 
                     if uebertrag.betrag != outstanding:
-                        pass
+                        # pass
                         uebertrag.betrag =  to_decimal(outstanding)
 
-
-                        pass
-                        pass
+                        db_session.refresh(uebertrag,with_for_update=True)
+                        # pass
+                        # pass
 
                 elif outstanding != 0:
                     uebertrag = Uebertrag()

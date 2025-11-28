@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.29
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 import decimal
 from models import Bk_reser, Bk_func, Bk_veran, Htparam, B_history
+from sqlalchemy.orm import flag_modified
 
 def nt_bahistory():
     rechnr:int = 0
@@ -35,7 +38,7 @@ def nt_bahistory():
         if bk_func and bk_func.datum != bk_reser.datum:
 
             fsl = db_session.query(Fsl).filter(
-                     (Fsl._recid == bk_func._recid)).first()
+                     (Fsl._recid == bk_func._recid)).with_for_update().first()
 
             if fsl:
                 fsl.datum = bk_reser.datum
@@ -163,11 +166,11 @@ def nt_bahistory():
             b_history.betriebsnr = bk_func.betriebsnr
 
         bk_reser1 = db_session.query(Bk_reser1).filter(
-                 (Bk_reser1._recid == bk_reser._recid)).first()
+                 (Bk_reser1._recid == bk_reser._recid)).with_for_update().first()
         bk_reser1.resstatus = 8
 
         fsl = db_session.query(Fsl).filter(
-                 (Fsl._recid == bk_func._recid)).first()
+                 (Fsl._recid == bk_func._recid)).with_for_update().first()
         fsl.c_resstatus[0] = "I"
         fsl.r_resstatus[0] = 8
 
@@ -177,7 +180,9 @@ def nt_bahistory():
         if not bk_reser1:
 
             mres = db_session.query(Mres).filter(
-                     (Mres._recid == bk_veran._recid)).first()
+                     (Mres._recid == bk_veran._recid)).with_for_update().first()
             mres.activeflag = 1
-
+            
+    flag_modified(fsl, "r_resstatus")
+    flag_modified(fsl, "c_resstatus")
     return generate_output()

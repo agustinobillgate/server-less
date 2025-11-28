@@ -35,7 +35,10 @@ def telop1_webbl(sorttype:int, room:string, fdate1:date, fdate2:date, ci_date:da
     Gmember = create_buffer("Gmember",Guest)
 
     # Rulita, fixing input param string " "
-    lname = lname.strip(" ")
+    lname = lname.strip()
+    lvoucher = lvoucher.strip()
+    lnat = lnat.strip()
+    room = room.strip()
 
     db_session = local_storage.db_session
 

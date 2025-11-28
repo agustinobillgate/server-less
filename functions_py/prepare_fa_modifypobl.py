@@ -3,6 +3,11 @@
 # Rd, 17-July-add strip()
 #-----------------------------------------
 
+# ==================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# ==================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -179,10 +184,11 @@ def prepare_fa_modifypobl(docu_nr:string):
         return generate_output()
     local_nr = waehrung.waehrungsnr
 
-    fa_ordheader = get_cache (Fa_ordheader, {"order_nr": [(eq, docu_nr)]})
+    # fa_ordheader = get_cache (Fa_ordheader, {"order_nr": [(eq, docu_nr)]})
+    fa_ordheader = db_session.query(Fa_ordheader).filter(Fa_ordheader.order_nr == docu_nr).with_for_update().first()
 
     if fa_ordheader:
-        pass
+        # pass
         t_fa_ordheader = T_fa_ordheader()
         t_fa_ordheader_data.append(t_fa_ordheader)
 
@@ -267,8 +273,8 @@ def prepare_fa_modifypobl(docu_nr:string):
             t_dept_list.name = parameters.vstring
             t_dept_list.nr = to_int(parameters.varname)
 
-
-        pass
-        pass
+        db_session.refresh(fa_ordheader,with_for_update=True)
+        # pass
+        # pass
 
     return generate_output()

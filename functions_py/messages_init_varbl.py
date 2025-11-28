@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.intevent_1 import intevent_1
@@ -34,7 +36,7 @@ def messages_init_varbl(if_flag:bool, gastnr:int, resnr:int, reslinnr:int):
 
     # res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
     res_line = db_session.query(Res_line).filter(
-             (Res_line.resnr == resnr) & (Res_line.reslinnr == reslinnr)).first()
+             (Res_line.resnr == resnr) & (Res_line.reslinnr == reslinnr)).with_for_update().first()
     nr = 0
 
     for messages in db_session.query(Messages).filter(

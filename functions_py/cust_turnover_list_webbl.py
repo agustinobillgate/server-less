@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 26/9/2025
-#
+# Rd, 28/11/2025, with_for_update added
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -10,7 +10,8 @@ from datetime import date
 from functions.cust_turnover_listbl import cust_turnover_listbl
 from models import Queasy
 
-def cust_turnover_list_webbl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, tdate:date, check_ftd:bool, currency:string, excl_other:bool, curr_sort2:int, idflag:string):
+def cust_turnover_list_webbl(cardtype:int, sort_type:int, curr_sort1:int, fdate:date, tdate:date, 
+                             check_ftd:bool, currency:string, excl_other:bool, curr_sort2:int, idflag:string):
 
     prepare_cache ([Queasy])
 
@@ -31,8 +32,9 @@ def cust_turnover_list_webbl(cardtype:int, sort_type:int, curr_sort1:int, fdate:
 
 
     db_session = local_storage.db_session
-
     currency = currency.strip()
+    idflag = idflag.strip()
+
 
     def generate_output():
         nonlocal sort1, tmp_counter, gastnr_str, sales_id_str, resno_str, reslinnr_str, queasy
@@ -132,7 +134,12 @@ def cust_turnover_list_webbl(cardtype:int, sort_type:int, curr_sort1:int, fdate:
     db_session.commit()
     
     # Process Selesai, simpan end flag
-    bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "Guest Turnover")],"char2": [(eq, idflag)]})
+    # bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "Guest Turnover")],"char2": [(eq, idflag)]})
+    bqueasy = db_session.query(Queasy).filter(
+                        (Queasy.key == 285) &
+                        (Queasy.char1 == "Guest Turnover") &
+                        (Queasy.char2 == idflag)
+                    ).with_for_update().first()
     if bqueasy:
         bqueasy.number1 = 0
 

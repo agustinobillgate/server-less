@@ -1,0 +1,40 @@
+#using conversion tools version: 1.0.0.117
+
+# ==================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# ==================================
+
+from functions.additional_functions import *
+from decimal import Decimal
+from models import Fa_kateg, Fa_artikel
+
+def fa_kategadmin_btn_delartbl(rec_id:int):
+    do_it = True
+    fa_kateg = fa_artikel = None
+
+    db_session = local_storage.db_session
+
+    def generate_output():
+        nonlocal do_it, fa_kateg, fa_artikel
+        nonlocal rec_id
+
+        return {"do_it": do_it}
+
+
+    # fa_kateg = get_cache (Fa_kateg, {"_recid": [(eq, rec_id)]})
+    fa_kateg = db_session.query(Fa_kateg).filter(Fa_kateg._recid == rec_id).with_for_update().first()
+
+    if fa_kateg:
+
+        fa_artikel = get_cache (Fa_artikel, {"katnr": [(eq, fa_kateg.katnr)]})
+
+        if fa_artikel:
+            do_it = False
+        else:
+            # pass
+            db_session.delete(fa_kateg)
+            # pass
+            db_session.refresh(fa_kateg,with_for_update=True)
+
+    return generate_output()

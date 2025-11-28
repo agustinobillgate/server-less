@@ -3,6 +3,12 @@
 # Rd, 14/8/2025
 # if available bqueasy
 #------------------------------------------
+
+# ==================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# ==================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy

@@ -3,6 +3,12 @@
 # Rd, 28/7/2025
 #
 #-----------------------------------------
+
+# =============================================
+# Rulita, 28-11-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gc_pi
@@ -22,7 +28,9 @@ def gc_pilist_btndelbl(docu_nr:string, user_init:string):
         return {}
 
 
-    gc_pi = get_cache (Gc_pi, {"docu_nr": [(eq, docu_nr)]})\
+    # gc_pi = get_cache (Gc_pi, {"docu_nr": [(eq, docu_nr)]})
+    gc_pi = db_session.query(Gc_pi).filter(
+             (Gc_pi.docu_nr == docu_nr)).with_for_update().first()
     
     # Rd, 28/7/2025
     # if availbale
