@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Rmbudget
+
 
 def room_budget_new_budgetbl(fdate:date, tdate:date, anzahl:int, logis:Decimal, occrm:Decimal, betrag:Decimal, user_init:string, zimkateg_zikatnr:int):
 
@@ -26,7 +29,10 @@ def room_budget_new_budgetbl(fdate:date, tdate:date, anzahl:int, logis:Decimal, 
             anzahl = occrm
             logis =  to_decimal(betrag)
 
-        rmbudget = get_cache (Rmbudget, {"datum": [(eq, datum)],"zikatnr": [(eq, zimkateg_zikatnr)]})
+        # rmbudget = get_cache (Rmbudget, {"datum": [(eq, datum)],"zikatnr": [(eq, zimkateg_zikatnr)]})
+        rmbudget = db_session.query(Rmbudget).filter(
+                        (Rmbudget.datum == datum) &
+                        (Rmbudget.zikatnr == zimkateg_zikatnr)).with_for_update().first()
 
         if not rmbudget:
             rmbudget = Rmbudget()

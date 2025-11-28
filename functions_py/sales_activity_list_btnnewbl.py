@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import B_storno, Bk_reser, Bk_veran
+from sqlalchemy.orm import flag_modified
 
 def sales_activity_list_btnnewbl(resnr:int, add_str:string, user_init:string, counter_reason:int):
 
@@ -17,6 +20,7 @@ def sales_activity_list_btnnewbl(resnr:int, add_str:string, user_init:string, co
     t_b_storno_data, T_b_storno = create_model_like(B_storno)
 
     db_session = local_storage.db_session
+    add_str = add_str.strip()
 
     def generate_output():
         nonlocal output_list_data, b_storno, bk_reser, bk_veran
@@ -52,7 +56,8 @@ def sales_activity_list_btnnewbl(resnr:int, add_str:string, user_init:string, co
 
                 counter_reason = i
 
-    b_storno = get_cache (B_storno, {"bankettnr": [(eq, resnr)]})
+    # b_storno = get_cache (B_storno, {"bankettnr": [(eq, resnr)]})
+    b_storno = db_session.query(B_storno).filter(B_storno.bankettnr == resnr).with_for_update().first()
 
     if not b_storno:
 
@@ -69,5 +74,6 @@ def sales_activity_list_btnnewbl(resnr:int, add_str:string, user_init:string, co
     b_storno.grund[17] = add_str.upper() + " " + to_string(get_current_date(), "99/99/99") + "-" + to_string(get_current_time_in_seconds(), "hh:mm:ss") + " (" + user_init + ")"
     pass
     create_outlist()
+    flag_modified(b_storno, "grund")
 
     return generate_output()

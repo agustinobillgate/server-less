@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, skipped
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -10,6 +12,7 @@ def update_bookengine_configbl(task:int, becode:int, flag:bool, inp_str:string):
     queasy = None
 
     db_session = local_storage.db_session
+    inp_str = inp_str.strip()
 
     def generate_output():
         nonlocal i, str, queasy

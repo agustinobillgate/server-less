@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import B_storno
+from sqlalchemy.orm import flag_modified
 
 output_list_data, Output_list = create_model("Output_list", {"outnr":int, "act_str":string})
 
@@ -62,14 +65,17 @@ def sales_activity_list_btndelbl(resnr:int, counter_reason:int, outnr:int, outpu
 
         for output_list in query(output_list_data):
 
-            b_storno = get_cache (B_storno, {"bankettnr": [(eq, resnr)],"outnr": [(eq, outnr)]})
-            pass
+            # b_storno = get_cache (B_storno, {"bankettnr": [(eq, resnr)],"outnr": [(eq, outnr)]})
+            b_storno = db_session.query(B_storno).filter(
+                        (B_storno.bankettnr == resnr) &
+                        (B_storno.outnr == outnr)).with_for_update().first()
 
             if output_list.outnr < 18:
                 for i in range((output_list.outnr + 1),18 + 1) :
                     b_storno.grund[i - 1 - 1] = b_storno.grund[i - 1]
             b_storno.grund[counter_reason - 1] = ""
             create_outlist()
+        flag_modified(b_storno, "grund")
 
     reorg_outlist()
 

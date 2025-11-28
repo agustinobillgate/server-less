@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.update_bookengine_configbl import update_bookengine_configbl
@@ -54,13 +56,13 @@ def update_prcodebl(gastnr:int, q2_list_data:[Q2_list]):
                 if new_contrate:
 
                     for ratecode in db_session.query(Ratecode).filter(
-                             (Ratecode.code == guest_pr.code)).order_by(Ratecode._recid).all():
+                             (Ratecode.code == guest_pr.code)).order_by(Ratecode._recid).with_for_update().all():
                         db_session.delete(ratecode)
 
                 else:
 
                     for pricecod in db_session.query(Pricecod).filter(
-                             (Pricecod.code == guest_pr.code)).order_by(Pricecod._recid).all():
+                             (Pricecod.code == guest_pr.code)).order_by(Pricecod._recid).with_for_update().all():
                         db_session.delete(pricecod)
 
 
@@ -69,7 +71,7 @@ def update_prcodebl(gastnr:int, q2_list_data:[Q2_list]):
             if queasy:
 
                 qsy = db_session.query(Qsy).filter(
-                         (Qsy.key == 161) & (entry(0, Qsy.char1, ";") == guest_pr.code)).first()
+                         (Qsy.key == 161) & (entry(0, Qsy.char1, ";") == guest_pr.code)).with_for_update().first()
                 while None != qsy:
                     pass
                     db_session.delete(qsy)
@@ -80,7 +82,7 @@ def update_prcodebl(gastnr:int, q2_list_data:[Q2_list]):
                              (Qsy.key == 161) & (entry(0, Qsy.char1, ";") == guest_pr.code) & (Qsy._recid > curr_recid)).first()
 
                 qsy = db_session.query(Qsy).filter(
-                         (Qsy.key == 170) & (Qsy.char1 == guest_pr.code)).first()
+                         (Qsy.key == 170) & (Qsy.char1 == guest_pr.code)).with_for_update().first()
                 while None != qsy:
                     pass
                     db_session.delete(qsy)
@@ -91,7 +93,7 @@ def update_prcodebl(gastnr:int, q2_list_data:[Q2_list]):
                              (Qsy.key == 170) & (Qsy.char1 == guest_pr.code) & (Qsy._recid > curr_recid)).first()
 
                 qsy = db_session.query(Qsy).filter(
-                         (Qsy.key == 171) & (Qsy.char1 == guest_pr.code)).first()
+                         (Qsy.key == 171) & (Qsy.char1 == guest_pr.code)).with_for_update().first()
                 while None != qsy:
                     pass
                     db_session.delete(qsy)
@@ -102,7 +104,7 @@ def update_prcodebl(gastnr:int, q2_list_data:[Q2_list]):
                              (Qsy.key == 171) & (Qsy.char1 == guest_pr.code) & (Qsy._recid > curr_recid)).first()
 
             g_pr = db_session.query(G_pr).filter(
-                     (G_pr._recid == guest_pr._recid)).first()
+                     (G_pr._recid == guest_pr._recid)).with_for_update().first()
             db_session.delete(g_pr)
             pass
 

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Res_line, Guest_pr, Queasy
@@ -59,7 +61,7 @@ def chg_prcodebl(gastnr:int):
             if not matches(res_line.zimmer_wunsch,r"*$CODE$*"):
 
                 rline = db_session.query(Rline).filter(
-                         (Rline._recid == res_line._recid)).first()
+                         (Rline._recid == res_line._recid)).with_for_update().first()
                 rline.zimmer_wunsch = rline.zimmer_wunsch + "$CODE$" + guest_pr.code + ";"
                 pass
                 pass
