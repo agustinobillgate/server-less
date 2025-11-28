@@ -1,6 +1,6 @@
 #using conversion tools version: 1.0.0.117
 #---------------------------------------------------------------------
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+# Rd, 24/11/2025, Update last counter d
 #---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -92,7 +92,9 @@ def select_artikel_check_unpostedbl(veran_nr:int, veran_seite:int, sub_group:int
 
         pass
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                 (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -147,7 +149,9 @@ def select_artikel_check_unpostedbl(veran_nr:int, veran_seite:int, sub_group:int
 
             return generate_output()
 
-    bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, veran_nr)]})
+    # bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, veran_nr)]})
+    bk_veran = db_session.query(Bk_veran).filter(
+             (Bk_veran.veran_nr == veran_nr)).with_for_update().first()
 
     if bk_veran.rechnr == 0:
 
@@ -176,7 +180,9 @@ def select_artikel_check_unpostedbl(veran_nr:int, veran_seite:int, sub_group:int
         pass
     else:
 
-        bill = get_cache (Bill, {"rechnr": [(eq, bk_veran.rechnr)]})
+        # bill = get_cache (Bill, {"rechnr": [(eq, bk_veran.rechnr)]})
+        bill = db_session.query(Bill).filter(
+                 (Bill.rechnr == bk_veran.rechnr)).with_for_update().first()
 
     bk_rart_obj_list = {}
     bk_rart = Bk_rart()
@@ -194,7 +200,8 @@ def select_artikel_check_unpostedbl(veran_nr:int, veran_seite:int, sub_group:int
         amount_foreign =  to_decimal(amount) / to_decimal(exchg_rate)
         create_bill_line(bk_rart.veran_artnr, bk_rart.anzahl, False)
 
-        rbuff = get_cache (Bk_rart, {"_recid": [(eq, bk_rart._recid)]})
+        # rbuff = get_cache (Bk_rart, {"_recid": [(eq, bk_rart._recid)]})
+        rbuff = db_session.query(Bk_rart).filter(Bk_rart._recid == bk_rart._recid).with_for_update().first()
         rbuff.fakturiert = 1
         pass
 
