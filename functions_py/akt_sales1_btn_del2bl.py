@@ -4,26 +4,22 @@
 #-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
-from models import Fa_lager
+from models import Akt_line
 
-def fa_storadmin_btn_delartbl(rec_id:int):
-    fa_lager = None
+def akt_sales1_btn_del2bl(recid_aktline:int):
+    akt_line = None
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal fa_lager
-        nonlocal rec_id
+        nonlocal akt_line
+        nonlocal recid_aktline
 
         return {}
 
 
-    # fa_lager = get_cache (Fa_lager, {"_recid": [(eq, rec_id)]})
-    fa_lager = db_session.query(Fa_lager).filter(Fa_lager._recid == rec_id).with_for_update().first()
-
-    if fa_lager:
-        pass
-        db_session.delete(fa_lager)
-        pass
+    # akt_line = get_cache (Akt_line, {"_recid": [(eq, recid_aktline)]})
+    akt_line = db_session.query(Akt_line).filter(Akt_line._recid == recid_aktline).with_for_update().first()
+    db_session.delete(akt_line)
 
     return generate_output()

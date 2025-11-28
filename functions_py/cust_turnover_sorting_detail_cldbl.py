@@ -1,8 +1,8 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------------------------
 # Manual Update: exrate variable -> eexrate, Rd 16-July-25
+# Rd, 28/11/2025, with_for_update added
 #-----------------------------------------------------------
-
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -101,6 +101,7 @@ def cust_turnover_sorting_detail_cldbl(cardtype:int, sort_type:int, fdate:date, 
 
 
     db_session = local_storage.db_session
+    currency = currency.strip()
 
     def generate_output():
         nonlocal b_list_data, bfast_art, lunch_art, dinner_art, lundin_art, service, vat, datum, end_date, net_lodg, fnet_lodg, tot_breakfast, tot_lunch, tot_dinner, tot_other, tot_rmrev, tot_vat, tot_service, curr_i, i, found, ly_fdate, ly_tdate, ci_date, pos, curr_gastnr, curr_resnr, curr_reslinnr, curr_gname, curr_gastnr2, t_logiernachte, t_argtumsatz, t_fb_umsatz, t_sonst_umsatz, t_ba_umsatz, t_gesamtumsatz, t_lyear, t_nofrm, tot_logiernachte, tot_argtumsatz, tot_fb_umsatz, tot_sonst_umsatz, tot_ba_umsatz, tot_gesamtumsatz, tot_stayno, tot_lyear, tot_nofrm, gt_logiernachte, gt_argtumsatz, gt_fb_umsatz, gt_sonst_umsatz, gt_ba_umsatz, gt_gesamtumsatz, gt_stayno, gt_lyear, gt_nofrm, curr_resnr1, curr_reslinnr1, found1, loopj, exratenr, eexrate, service2, vat2, vat22, fact1, genstat, guest, bill_line, bill, htparam, waehrung, nation, queasy, exrate, res_line, artikel, guest_queasy, h_artikel, h_bill_line, reservation, sourccod, segment, arrangement, zimmer
@@ -923,7 +924,8 @@ def cust_turnover_sorting_detail_cldbl(cardtype:int, sort_type:int, fdate:date, 
                 bill_line = get_cache (Bill_line, {"departement": [(eq, 0)],"artnr": [(eq, arrangement.argt_artikelnr)],"bill_datum": [(eq, ci_date)],"massnr": [(eq, res_line.resnr)],"billin_nr": [(eq, res_line.reslinnr)]})
                 do_it = None != bill_line
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+            zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == res_line.zinr).with_for_update().first()
 
             if do_it and zimmer:
 

@@ -42,7 +42,7 @@ def gl_linkar_updatebl(pvilanguage:int, remains:Decimal, credits:[Decimal], debi
 
         nonlocal g_list
 
-        counters = db_session.query(Counters).with_for_update().filter(Counters.counter_no == 25).with_for_update().first()
+        counters = db_session.query(Counters).filter(Counters.counter_no == 25).with_for_update().first()
 
         if not counters:
             counters = Counters()
