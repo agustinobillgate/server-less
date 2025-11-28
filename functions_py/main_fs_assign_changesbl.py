@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_reser, Bk_func, Bk_rart, Bk_veran
+from sqlalchemy.orm import flag_modified
 
 def main_fs_assign_changesbl(resnr:int, resline:int, rsvsort:int, user_init:string, fsl_segmentcode:int, fsl_in_sales:string, fsl_in_conv:string, fsl_cutoff:date):
 
@@ -18,8 +21,10 @@ def main_fs_assign_changesbl(resnr:int, resline:int, rsvsort:int, user_init:stri
 
     Bkreser = create_buffer("Bkreser",Bk_reser)
 
-
     db_session = local_storage.db_session
+    fsl_in_sales = fsl_in_sales.strip()
+    fsl_in_conv = fsl_in_conv.strip()
+    fsl_cutoff = fsl_cutoff.strip()
 
     def generate_output():
         nonlocal fsl_geschenk, fsl_vkontrolliert, fsl_personen, total_depo, bk_reser, bk_func, bk_rart, bk_veran
@@ -44,7 +49,10 @@ def main_fs_assign_changesbl(resnr:int, resline:int, rsvsort:int, user_init:stri
         Bk_f =  create_buffer("Bk_f",Bk_func)
         total_depo =  to_decimal("0")
 
-        bk_func = get_cache (Bk_func, {"veran_nr": [(eq, resnr)],"veran_seite": [(eq, resline)]})
+        # bk_func = get_cache (Bk_func, {"veran_nr": [(eq, resnr)],"veran_seite": [(eq, resline)]})
+        bk_func = db_session.query(Bk_func).filter(
+                 (Bk_func.veran_nr == resnr) &
+                 (Bk_func.veran_seite == resline)).with_for_update().first()
 
         if bk_func:
             pass
@@ -72,14 +80,20 @@ def main_fs_assign_changesbl(resnr:int, resline:int, rsvsort:int, user_init:stri
             fsl_vkontrolliert = bk_func.vkontrolliert
             fsl_personen = bk_func.personen
 
-            bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, bk_func.veran_nr)]})
+            # bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, bk_func.veran_nr)]})
+            bk_veran = db_session.query(Bk_veran).filter(
+                     (Bk_veran.veran_nr == bk_func.veran_nr)).with_for_update().first()
 
             if bk_veran:
                 bk_veran.segmentcode = fsl_segmentcode
                 bk_veran.payment_userinit[8] = fsl_in_sales
                 bk_veran.payment_userinit[8] = bk_veran.payment_userinit[8] + chr_unicode(2) + fsl_in_conv
+                flag_modified(bk_veran, "payment_userinit")
+                flag_modified(bk_veran, "segmentcode")
 
-            bk_reser = get_cache (Bk_reser, {"veran_nr": [(eq, bk_veran.veran_nr)]})
+            # bk_reser = get_cache (Bk_reser, {"veran_nr": [(eq, bk_veran.veran_nr)]})
+            bk_reser = db_session.query(Bk_reser).filter(
+                     (Bk_reser.veran_nr == bk_veran.veran_nr)).with_for_update().first()
 
             if bk_reser:
                 bk_reser.limitdate = fsl_cutoff

@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_func, Bk_reser, Bk_rart
+from sqlalchemy.orm import flag_modified
 
 fsl_data, Fsl = create_model_like(Bk_func, {"deposit":Decimal, "limit_date":date, "deposit_payment":[Decimal,9], "payment_date":[date,9], "total_paid":Decimal, "payment_userinit":[string,9], "betriebsnr2":int, "cutoff":date, "raum":string, "grund":[string,18], "in_sales":string, "in_conv":string})
 
@@ -33,7 +36,10 @@ def main_fs_proc_mi_otherbl(fsl_data:[Fsl], oresnr:int, oresline:int, rsvsort:in
 
     fsl = query(fsl_data, first=True)
 
-    bkfunc = get_cache (Bk_func, {"veran_nr": [(eq, oresnr)],"veran_seite": [(eq, oresline)]})
+    # bkfunc = get_cache (Bk_func, {"veran_nr": [(eq, oresnr)],"veran_seite": [(eq, oresline)]})
+    bkfunc = db_session.query(Bkfunc).filter(
+             (Bkfunc.veran_nr == oresnr) &
+             (Bkfunc.veran_seite == oresline)).with_for_update().first()
 
     if bkfunc:
         pass
@@ -94,5 +100,11 @@ def main_fs_proc_mi_otherbl(fsl_data:[Fsl], oresnr:int, oresline:int, rsvsort:in
 
 
             total_depo =  to_decimal(total_depo) + to_decimal(bk_rart.preis)
-
+    flag_modified(bkfunc, "ape__getraenke")
+    flag_modified(bkfunc, "rpreis")
+    flag_modified(bkfunc, "kartentext")
+    flag_modified(bkfunc, "sonstiges")
+    flag_modified(bkfunc, "f_menu")
+    flag_modified(bkfunc, "weine")
+    flag_modified(bkfunc, "menue")
     return generate_output()

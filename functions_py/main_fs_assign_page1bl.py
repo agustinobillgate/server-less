@@ -2,7 +2,9 @@
 #-----------------------------------------
 # Rd 25/7/2025
 # gitlab: 614
+# Rd, 28/11/2025, with_for_update added
 #-----------------------------------------
+from sqlalchemy.orm import flag_modified
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -12,7 +14,9 @@ bkf_data, Bkf = create_model("Bkf", {"veran_nr":int, "veran_seite":int, "zweck":
 fsl_data, Fsl = create_model_like(Bk_func, {"deposit":Decimal, "limit_date":date, "deposit_payment":[Decimal,9], "payment_date":[date,9], "total_paid":Decimal, "payment_userinit":[string,9], "betriebsnr2":int, "cutoff":date, "raum":string, "grund":[string,18], "in_sales":string, "in_conv":string})
 glist_data, Glist = create_model("Glist", {"gastnr":int, "karteityp":int, "name":string, "telefon":string, "land":string, "plz":string, "wohnort":string, "adresse1":string, "adresse2":string, "adresse3":string, "namekontakt":string, "von_datum":date, "bis_datum":date, "von_zeit":string, "bis_zeit":string, "rstatus":int, "fax":string, "firmen_nr":int})
 
-def main_fs_assign_page1bl(bkf_data:[Bkf], fsl_data:[Fsl], resnr:int, resline:int, bill_gastnr:int, en_gastnr:int, bkf_veran_nr:int, q3_list_veran_nr:int, q3_list_veran_seite:int, rsvsort:int, user_init:string, glist_data:[Glist]):
+def main_fs_assign_page1bl(bkf_data:[Bkf], fsl_data:[Fsl], resnr:int, resline:int, bill_gastnr:int, 
+                           en_gastnr:int, bkf_veran_nr:int, q3_list_veran_nr:int, q3_list_veran_seite:int, 
+                           rsvsort:int, user_init:string, glist_data:[Glist]):
 
     prepare_cache ([Bk_veran, Guest, Bill, Akt_kont, Bk_raum, Bk_rart])
 
@@ -84,7 +88,9 @@ def main_fs_assign_page1bl(bkf_data:[Bkf], fsl_data:[Fsl], resnr:int, resline:in
             bk_veran.payment_userinit[8] = fsl.in_sales
             bk_veran.payment_userinit[8] = bk_veran.payment_userinit[8] + chr_unicode(2) + fsl.in_conv
 
-        bk_reser = get_cache (Bk_reser, {"veran_nr": [(eq, bk_veran.veran_nr)]})
+        # bk_reser = get_cache (Bk_reser, {"veran_nr": [(eq, bk_veran.veran_nr)]})
+        bk_reser = db_session.query(Bkreser).filter(
+                 (Bkreser.veran_nr == bk_veran.veran_nr)).with_for_update().first()
 
         if bk_reser:
             bk_reser.limitdate = fsl.cutoff
@@ -95,7 +101,9 @@ def main_fs_assign_page1bl(bkf_data:[Bkf], fsl_data:[Fsl], resnr:int, resline:in
 
     if bill_gastnr != 0:
 
-        bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, bkf_veran_nr)]})
+        # bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, bkf_veran_nr)]})
+        bk_veran = db_session.query(Bk_veran).filter(
+                 (Bk_veran.veran_nr == bkf_veran_nr)).with_for_update().first()
         bk_veran.gastnrver = bill_gastnr
         pass
 
@@ -103,14 +111,18 @@ def main_fs_assign_page1bl(bkf_data:[Bkf], fsl_data:[Fsl], resnr:int, resline:in
 
             guest = get_cache (Guest, {"gastnr": [(eq, bk_veran.gastnrver)]})
 
-            bill = get_cache (Bill, {"rechnr": [(eq, bk_veran.rechnr)]})
+            # bill = get_cache (Bill, {"rechnr": [(eq, bk_veran.rechnr)]})
+            bill = db_session.query(Bill).filter(
+                     (Bill.rechnr == bk_veran.rechnr)).with_for_update().first()
             bill.gastnr = bk_veran.gastnrver
             bill.name = guest.name + ", " + guest.vorname1 + guest.anredefirma
             pass
 
     if en_gastnr != 0:
 
-        bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, bkf_veran_nr)]})
+        # bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, bkf_veran_nr)]})
+        bk_veran = db_session.query(Bk_veran).filter(
+                 (Bk_veran.veran_nr == bkf_veran_nr)).with_for_update().first()
         bk_veran.gastnr = en_gastnr
         pass
 
@@ -150,10 +162,10 @@ def main_fs_assign_page1bl(bkf_data:[Bkf], fsl_data:[Fsl], resnr:int, resline:in
     for bkf in query(bkf_data):
 
         bkfc = db_session.query(Bkfc).filter(
-                 (Bkfc.veran_nr == bkf.veran_nr) & (Bkfc.veran_seite == bkf.veran_seite)).first()
+                 (Bkfc.veran_nr == bkf.veran_nr) & (Bkfc.veran_seite == bkf.veran_seite)).with_for_update().first()
 
         bk_reser1 = db_session.query(Bk_reser1).filter(
-                 (Bk_reser1.veran_nr == bkf.veran_nr) & (Bk_reser1.veran_resnr == bkf.veran_seite)).first()
+                 (Bk_reser1.veran_nr == bkf.veran_nr) & (Bk_reser1.veran_resnr == bkf.veran_seite)).with_for_update().first()
         flag1 = None != bkfc
         flag2 = None != bk_reser1
 
@@ -217,8 +229,26 @@ def main_fs_assign_page1bl(bkf_data:[Bkf], fsl_data:[Fsl], resnr:int, resline:in
             fsl.rpersonen[0] = bkf.rpersonen[0]
             pass
             pass
+        flag_modified(bkfc, "v_kontaktperson")
+        flag_modified(bkfc, "veranstalteranschrift")
+        flag_modified(bkfc, "technik")
+        flag_modified(bkfc, "rechnungsanschrift")
+        flag_modified(bkfc, "kontaktperson")
+        flag_modified(bkfc, "c_resstatus")
+        flag_modified(bkfc, "r_resstatus")
+        flag_modified(bkfc, "raeume")
+        flag_modified(bkfc, "rpreis")
+        flag_modified(bkfc, "rpersonen")
+        flag_modified(bkfc, "personen")
+        flag_modified(bkfc, "tischform")
+        flag_modified(bkfc, "zweck")
+        flag_modified(bkfc, "adurch")
+        flag_modified(bkfc, "raumbezeichnung")
 
-        bk_raum = get_cache (Bk_raum, {"raum": [(eq, bkf.raeume[0])],"bezeich": [(eq, bkf.bezeich)]})
+        # bk_raum = get_cache (Bk_raum, {"raum": [(eq, bkf.raeume[0])],"bezeich": [(eq, bkf.bezeich)]})
+        bk_raum = db_session.query(Bk_raum).filter(
+                 (Bk_raum.raum == bkf.raeume[0]) &
+                 (Bk_raum.bezeich == bkf.bezeich)).with_for_update().first()
 
         if bk_raum:
             pass
@@ -227,14 +257,22 @@ def main_fs_assign_page1bl(bkf_data:[Bkf], fsl_data:[Fsl], resnr:int, resline:in
 
             pass
 
-            queasy = get_cache (Queasy, {"key": [(eq, 210)],"number1": [(eq, bkf.veran_nr)],"number2": [(eq, bkf.veran_seite)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 210)],"number1": [(eq, bkf.veran_nr)],"number2": [(eq, bkf.veran_seite)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 210) &
+                     (Queasy.number1 == bkf.veran_nr) &
+                     (Queasy.number2 == bkf.veran_seite)).with_for_update().first
 
             if queasy:
                 db_session.delete(queasy)
                 pass
         else:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 210)],"number1": [(eq, bkf.veran_nr)],"number2": [(eq, bkf.veran_seite)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 210)],"number1": [(eq, bkf.veran_nr)],"number2": [(eq, bkf.veran_seite)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 210) &
+                     (Queasy.number1 == bkf.veran_nr) &
+                     (Queasy.number2 == bkf.veran_seite)).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()

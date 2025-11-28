@@ -1,12 +1,16 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_func, Bk_reser, Bk_rart, Bk_veran
+from sqlalchemy.orm import flag_modified
 
 fsl_data, Fsl = create_model_like(Bk_func, {"deposit":Decimal, "limit_date":date, "deposit_payment":[Decimal,9], "payment_date":[date,9], "total_paid":Decimal, "payment_userinit":[string,9], "betriebsnr2":int, "cutoff":date, "raum":string, "grund":[string,18], "in_sales":string, "in_conv":string})
 
-def main_fs_mi_allbl(fsl_data:[Fsl], resnr:int, resline:int, q3_list_veran_nr:int, q3_list_veran_seite:int, rsvsort:int, user_init:string):
+def main_fs_mi_allbl(fsl_data:[Fsl], resnr:int, resline:int, q3_list_veran_nr:int, 
+                     q3_list_veran_seite:int, rsvsort:int, user_init:string):
 
     prepare_cache ([Bk_func, Bk_reser, Bk_rart, Bk_veran])
 
@@ -18,15 +22,12 @@ def main_fs_mi_allbl(fsl_data:[Fsl], resnr:int, resline:int, q3_list_veran_nr:in
     Bkfunc = create_buffer("Bkfunc",Bk_func)
     Bkreser = create_buffer("Bkreser",Bk_reser)
 
-
     db_session = local_storage.db_session
 
     def generate_output():
         nonlocal total_depo, bk_func, bk_reser, bk_rart, bk_veran
         nonlocal resnr, resline, q3_list_veran_nr, q3_list_veran_seite, rsvsort, user_init
         nonlocal bkfunc, bkreser
-
-
         nonlocal fsl, bkfunc, bkreser
 
         return {"total_depo": total_depo}
@@ -83,7 +84,9 @@ def main_fs_mi_allbl(fsl_data:[Fsl], resnr:int, resline:int, q3_list_veran_nr:in
 
     fsl = query(fsl_data, first=True)
 
-    bk_func = get_cache (Bk_func, {"veran_nr": [(eq, resnr)],"veran_seite": [(eq, resline)]})
+    # bk_func = get_cache (Bk_func, {"veran_nr": [(eq, resnr)],"veran_seite": [(eq, resline)]})
+    bk_func = db_session.query(Bk_func).filter(
+             (Bk_func.veran_nr == resnr) & (Bk_func.veran_seite == resline)).with_for_update().first()
 
     for bkfunc in db_session.query(Bkfunc).filter(
              (Bkfunc.veran_nr == fsl.veran_nr) & (Bkfunc.veran_seite != fsl.veran_seite)).order_by(Bkfunc._recid).all():
@@ -106,5 +109,10 @@ def main_fs_mi_allbl(fsl_data:[Fsl], resnr:int, resline:int, q3_list_veran_nr:in
         bkfunc.sonstiges[2] = fsl.sonstiges[2]
         bkfunc.sonstiges[3] = fsl.sonstiges[3]
     assign_changes()
+    flag_modified(bk_func, "ape__getraenke")
+    flag_modified(bk_func, "rpreis")
+    flag_modified(bk_func, "rpersonen")
+    flag_modified(bk_func, "kartentext")
+    flag_modified(bk_func, "sonstiges")
 
     return generate_output()

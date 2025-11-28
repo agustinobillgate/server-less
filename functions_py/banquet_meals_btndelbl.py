@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_func
+from sqlalchemy.orm import flag_modified
 
 meal_list_data, Meal_list = create_model("Meal_list", {"nr":int, "meals":string, "times":string, "venue":string, "pax":int, "setup":string})
 
@@ -41,7 +44,10 @@ def banquet_meals_btndelbl(resnr:int, reslinno:int, meal_list_data:[Meal_list]):
                 to_string(meal_list.pax) + ";" +\
                 to_string(meal_list.setup)
 
-    bk_func = get_cache (Bk_func, {"veran_nr": [(eq, resnr)],"veran_seite": [(eq, reslinno)]})
+    # bk_func = get_cache (Bk_func, {"veran_nr": [(eq, resnr)],"veran_seite": [(eq, reslinno)]})
+    bk_func = db_session.query(Bk_func).filter(
+             (Bk_func.veran_nr == resnr) &
+             (Bk_func.veran_seite == reslinno)).with_for_update().first()
 
     if bk_func:
 
@@ -58,7 +64,8 @@ def banquet_meals_btndelbl(resnr:int, reslinno:int, meal_list_data:[Meal_list]):
         else:
             bk_func.f_menu[0] = bk_func.f_menu[0] + "$" + str1
 
-
+    flag_modified(bk_func, "f_menu")
+    
     for tokcounter in range(1,num_entries(str, "|")  + 1) :
         mestoken = entry(tokcounter - 1, str, "|")
         meal_list = Meal_list()

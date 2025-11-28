@@ -1,32 +1,33 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Bk_veran, Artikel, Umsatz, Billjournal, Bediener, Guest, Debitor
 
-def ba_depopay_btn_gobl(curr_i:int, veran_nr:int, user_init:string, payment:Decimal, artnr:int, foreign_payment:Decimal, depoart:int, depobezeich:string):
+def ba_deporefund_btn_gobl(veran_nr:int, user_init:string, payment:Decimal, artnr:int, foreign_payment:Decimal, depoart:int, depobezeich:string):
 
     prepare_cache ([Htparam, Bk_veran, Artikel, Umsatz, Billjournal, Bediener, Guest, Debitor])
 
-    deposit_payment = to_decimal("0.0")
-    payment_date = None
-    balance = to_decimal("0.0")
     bill_date:date = None
+    balance:Decimal = to_decimal("0.0")
     htparam = bk_veran = artikel = umsatz = billjournal = bediener = guest = debitor = None
 
     db_session = local_storage.db_session
+    depobezeich = depobezeich.strip()
 
     def generate_output():
-        nonlocal deposit_payment, payment_date, balance, bill_date, htparam, bk_veran, artikel, umsatz, billjournal, bediener, guest, debitor
-        nonlocal curr_i, veran_nr, user_init, payment, artnr, foreign_payment, depoart, depobezeich
+        nonlocal bill_date, balance, htparam, bk_veran, artikel, umsatz, billjournal, bediener, guest, debitor
+        nonlocal veran_nr, user_init, payment, artnr, foreign_payment, depoart, depobezeich
 
-        return {"deposit_payment": deposit_payment, "payment_date": payment_date, "balance": balance}
+        return {}
 
-    def deposit_payment(curr_counter:int):
+    def deposit_refund():
 
-        nonlocal deposit_payment, payment_date, balance, htparam, bk_veran, artikel, umsatz, billjournal, bediener, guest, debitor
-        nonlocal curr_i, veran_nr, user_init, payment, artnr, foreign_payment, depoart, depobezeich
+        nonlocal balance, htparam, bk_veran, artikel, umsatz, billjournal, bediener, guest, debitor
+        nonlocal veran_nr, user_init, payment, artnr, foreign_payment, depoart, depobezeich
 
         bill_date:date = None
         i:int = 0
@@ -34,36 +35,42 @@ def ba_depopay_btn_gobl(curr_i:int, veran_nr:int, user_init:string, payment:Deci
         htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
         bill_date = htparam.fdate
 
-        bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, veran_nr)]})
-        pass
-        bk_veran.deposit_payment[curr_counter - 1] = - payment
-        bk_veran.payment_date[curr_counter - 1] = bill_date
-        bk_veran.payment_userinit[curr_counter - 1] = user_init
-        bk_veran.total_paid =  to_decimal("0")
+        # bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, veran_nr)]})
+        bk_veran = db_session.query(Bk_veran).filter(
+                 (Bk_veran.veran_nr == veran_nr)).with_for_update().first()
+
+        if bk_veran:
+            pass
+            bk_veran.deposit_payment[8] = bk_veran.deposit_payment[8] - payment
+            bk_veran.payment_date[8] = bill_date
+            bk_veran.payment_userinit[8] = user_init
+            bk_veran.total_paid =  to_decimal("0")
 
 
-        for i in range(1,9 + 1) :
-            bk_veran.total_paid =  to_decimal(bk_veran.total_paid) + to_decimal(bk_veran.deposit_payment[i - 1])
-        pass
-        balance =  to_decimal(bk_veran.deposit) - to_decimal(bk_veran.total_paid)
-        deposit_payment =  to_decimal(bk_veran.deposit_payment[curr_counter - 1])
-        payment_date = bk_veran.payment_date[curr_counter - timedelta(days=1)]
+            for i in range(1,9 + 1) :
+                bk_veran.total_paid =  to_decimal(bk_veran.total_paid) + to_decimal(bk_veran.deposit_payment[i - 1])
+            pass
+            balance =  to_decimal(bk_veran.deposit) - to_decimal(bk_veran.total_paid)
 
 
-        create_journal(bill_date)
+            create_journal(bill_date)
 
 
     def create_journal(bill_date:date):
 
-        nonlocal deposit_payment, payment_date, balance, htparam, bk_veran, artikel, umsatz, billjournal, bediener, guest, debitor
-        nonlocal curr_i, veran_nr, user_init, payment, artnr, foreign_payment, depoart, depobezeich
+        nonlocal balance, htparam, bk_veran, artikel, umsatz, billjournal, bediener, guest, debitor
+        nonlocal veran_nr, user_init, payment, artnr, foreign_payment, depoart, depobezeich
 
         artikel = get_cache (Artikel, {"artnr": [(eq, artnr)]})
 
         if artikel.artart == 2 or artikel.artart == 7:
             inv_ar(bill_date)
 
-        umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, artikel.artnr)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, artikel.artnr)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                 (Umsatz.departement == 0) &
+                 (Umsatz.artnr == artikel.artnr) &
+                 (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -84,7 +91,7 @@ def ba_depopay_btn_gobl(curr_i:int, veran_nr:int, user_init:string, payment:Deci
         billjournal.artnr = artikel.artnr
         billjournal.anzahl = 1
         billjournal.fremdwaehrng =  to_decimal(foreign_payment)
-        billjournal.bezeich = artikel.bezeich + " *BQT" + to_string(bk_veran.veran_nr)
+        billjournal.bezeich = artikel.bezeich + " *BQT" + to_string(veran_nr)
         billjournal.epreis =  to_decimal("0")
         billjournal.zeit = get_current_time_in_seconds()
         billjournal.userinit = user_init
@@ -96,21 +103,23 @@ def ba_depopay_btn_gobl(curr_i:int, veran_nr:int, user_init:string, payment:Deci
             billjournal.betrag =  to_decimal(payment)
         pass
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, depoart)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                 (Umsatz.artnr == depoart) &
+                 (Umsatz.departement == artikel.departement) &
+                 (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
             db_session.add(umsatz)
 
-            umsatz.departement = 0
-            umsatz.artnr = depoart
+            umsatz.departement = artikel.departement
+            umsatz.artnr = artikel.artnr
             umsatz.datum = bill_date
 
 
         umsatz.betrag =  to_decimal(umsatz.betrag) - to_decimal(payment)
         umsatz.anzahl = umsatz.anzahl + 1
-
-
         billjournal = Billjournal()
         db_session.add(billjournal)
 
@@ -120,7 +129,7 @@ def ba_depopay_btn_gobl(curr_i:int, veran_nr:int, user_init:string, payment:Deci
         billjournal.anzahl = 1
         billjournal.fremdwaehrng =  - to_decimal(foreign_payment)
         billjournal.betrag =  - to_decimal(payment)
-        billjournal.bezeich = depobezeich + " *BQT" + to_string(bk_veran.veran_nr)
+        billjournal.bezeich = depobezeich + " *BQT" + to_string(veran_nr)
         billjournal.epreis =  to_decimal("0")
         billjournal.zeit = get_current_time_in_seconds()
         billjournal.userinit = user_init
@@ -132,8 +141,8 @@ def ba_depopay_btn_gobl(curr_i:int, veran_nr:int, user_init:string, payment:Deci
 
     def inv_ar(bill_date:date):
 
-        nonlocal deposit_payment, payment_date, balance, htparam, bk_veran, artikel, umsatz, billjournal, bediener, guest, debitor
-        nonlocal curr_i, veran_nr, user_init, payment, artnr, foreign_payment, depoart, depobezeich
+        nonlocal balance, htparam, bk_veran, artikel, umsatz, billjournal, bediener, guest, debitor
+        nonlocal veran_nr, user_init, payment, artnr, foreign_payment, depoart, depobezeich
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 997)]})
 
@@ -158,11 +167,11 @@ def ba_depopay_btn_gobl(curr_i:int, veran_nr:int, user_init:string, payment:Deci
         debitor.transzeit = get_current_time_in_seconds()
         debitor.rgdatum = bill_date
         debitor.bediener_nr = bediener.nr
-        debitor.vesrcod = "Banquet Deposit payment"
+        debitor.vesrcod = "Banquet Deposit Refund"
         debitor.name = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
         pass
 
 
-    deposit_payment(curr_i)
+    deposit_refund()
 
     return generate_output()

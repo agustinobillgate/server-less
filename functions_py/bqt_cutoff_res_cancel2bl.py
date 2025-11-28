@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.ba_cancreslinebl import ba_cancreslinebl
 from models import Bk_veran, Bk_reser, B_storno
+from sqlalchemy.orm import flag_modified
 
 def bqt_cutoff_res_cancel2bl(recid_bk_reser:int, o_resnr:int, cancel_str:string, user_init:string):
 
@@ -12,6 +15,7 @@ def bqt_cutoff_res_cancel2bl(recid_bk_reser:int, o_resnr:int, cancel_str:string,
     bk_veran = bk_reser = b_storno = None
 
     db_session = local_storage.db_session
+    cancel_str = cancel_str.strip()
 
     def generate_output():
         nonlocal bk_veran, bk_reser, b_storno
@@ -32,7 +36,10 @@ def bqt_cutoff_res_cancel2bl(recid_bk_reser:int, o_resnr:int, cancel_str:string,
 
         return generate_output()
 
-    b_storno = get_cache (B_storno, {"bankettnr": [(eq, bk_reser.veran_nr)],"breslinnr": [(eq, bk_reser.veran_resnr)]})
+    # b_storno = get_cache (B_storno, {"bankettnr": [(eq, bk_reser.veran_nr)],"breslinnr": [(eq, bk_reser.veran_resnr)]})
+    b_storno = db_session.query(B_storno).filter(
+             (B_storno.bankettnr == bk_reser.veran_nr) &
+             (B_storno.breslinnr == bk_reser.veran_resnr)).with_for_update().first()
 
     if not b_storno:
         b_storno = B_storno()
@@ -49,7 +56,7 @@ def bqt_cutoff_res_cancel2bl(recid_bk_reser:int, o_resnr:int, cancel_str:string,
 
 
     b_storno.usercode = user_init
-    pass
+    flag_modified(b_storno, "grund")
     pass
     get_output(ba_cancreslinebl(bk_reser.veran_nr, bk_reser.veran_resnr))
 

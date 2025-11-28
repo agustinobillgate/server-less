@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_func
+from sqlalchemy.orm import flag_modified
 
 t_kartentext_data, T_kartentext = create_model("T_kartentext", {"kartentext":string, "curr_i":int})
 t_sonstiges_data, T_sonstiges = create_model("T_sonstiges", {"sonstiges":string, "curr_i":int})
@@ -35,7 +38,10 @@ def main_fs_assign_page3bl(t_kartentext_data:[T_kartentext], t_sonstiges_data:[T
     for t_sonstiges in query(t_sonstiges_data):
         sonstiges[t_sonstiges.curr_i - 1] = t_sonstiges.sonstiges
 
-    bk_func = get_cache (Bk_func, {"veran_nr": [(eq, resnr)],"veran_seite": [(eq, resline)]})
+    # bk_func = get_cache (Bk_func, {"veran_nr": [(eq, resnr)],"veran_seite": [(eq, resline)]})
+    bk_func = db_session.query(Bk_func).filter(
+             (Bk_func.veran_nr == resnr) &
+             (Bk_func.veran_seite == resline)).with_for_update().first()
 
     if bk_func:
         pass
@@ -52,7 +58,8 @@ def main_fs_assign_page3bl(t_kartentext_data:[T_kartentext], t_sonstiges_data:[T
         bk_func.sonstiges[2] = sonstiges[2]
         bk_func.sonstiges[3] = sonstiges[3]
 
-
+        flag_modified(bk_func, "kartentext")
+        flag_modified(bk_func, "sonstiges")
         pass
 
     return generate_output()
