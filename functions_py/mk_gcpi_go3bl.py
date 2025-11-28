@@ -33,7 +33,9 @@ def mk_gcpi_go3bl(pvilanguage:int, docu_nr:string, pbuff_postdate:date, journalt
         nonlocal lvcarea, gc_pi, counters, gl_jouhdr, gl_journal
         nonlocal pvilanguage, docu_nr, pbuff_postdate, journaltype, giro_tempacct, user_init
 
-        gc_pi = get_cache (Gc_pi, {"docu_nr": [(eq, docu_nr)]})
+        # gc_pi = get_cache (Gc_pi, {"docu_nr": [(eq, docu_nr)]})
+        gc_pi = db_session.query(Gc_pi).filter(
+                 (Gc_pi.docu_nr == docu_nr)).with_for_update().first()
         gc_pi.postdate = pbuff_postdate
 
         # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})

@@ -1,8 +1,4 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd, 28/7/2025
-#
-#-----------------------------------------
 
 # =============================================
 # Rulita, 28-11-2025
@@ -13,7 +9,7 @@ from functions.additional_functions import *
 from decimal import Decimal
 from models import Gc_pi
 
-def gc_pilist_btndelbl(docu_nr:string, user_init:string):
+def print_gcpi_chg_statbl(docu_nr:string, flag:int):
 
     prepare_cache ([Gc_pi])
 
@@ -23,7 +19,7 @@ def gc_pilist_btndelbl(docu_nr:string, user_init:string):
 
     def generate_output():
         nonlocal gc_pi
-        nonlocal docu_nr, user_init
+        nonlocal docu_nr, flag
 
         return {}
 
@@ -31,16 +27,18 @@ def gc_pilist_btndelbl(docu_nr:string, user_init:string):
     # gc_pi = get_cache (Gc_pi, {"docu_nr": [(eq, docu_nr)]})
     gc_pi = db_session.query(Gc_pi).filter(
              (Gc_pi.docu_nr == docu_nr)).with_for_update().first()
-    
-    # Rd, 28/7/2025
-    # if availbale
+
     if gc_pi:
-        gc_pi.pi_status = 9
-        gc_pi.canceldate = get_current_date()
-        gc_pi.cancelid = user_init
-        gc_pi.cancelzeit = get_current_time_in_seconds()
+        # pass
 
+        if flag == 1:
+            gc_pi.printed1 = True
 
-    pass
+        elif flag == 2:
+            gc_pi.printed1a = True
+
+        db_session.refresh(gc_pi,with_for_update=True)
+        # pass
+        # pass
 
     return generate_output()
