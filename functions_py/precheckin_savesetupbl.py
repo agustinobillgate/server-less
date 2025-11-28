@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, remark area
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -23,15 +25,17 @@ def precheckin_savesetupbl(pci_setup_data:[Pci_setup]):
     def generate_output():
         nonlocal mess_str, queasy
         nonlocal bqueasy
-
-
         nonlocal pci_setup, bqueasy
 
         return {"mess_str": mess_str}
 
     for pci_setup in query(pci_setup_data, sort_by=[("number1",False)]):
 
-        queasy = get_cache (Queasy, {"key": [(eq, 216)],"number1": [(eq, pci_setup.number1)],"number2": [(eq, pci_setup.number2)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 216)],"number1": [(eq, pci_setup.number1)],"number2": [(eq, pci_setup.number2)]})
+        queasy = db_session.query(Queasy).filter(
+            (Queasy.key == 216) &
+            (Queasy.number1 == pci_setup.number1) &
+            (Queasy.number2 == pci_setup.number2)).with_for_update().first()
 
         if pci_setup.number1 == 1:
             queasy.logi1 = pci_setup.setupflag
@@ -53,7 +57,11 @@ def precheckin_savesetupbl(pci_setup_data:[Pci_setup]):
                 queasy.logi1 = pci_setup.setupflag
                 queasy.char3 = pci_setup.setupvalue
 
-                bqueasy = get_cache (Queasy, {"key": [(eq, 216)],"number1": [(eq, 4)],"number2": [(eq, 1)]})
+                # bqueasy = get_cache (Queasy, {"key": [(eq, 216)],"number1": [(eq, 4)],"number2": [(eq, 1)]})
+                bqueasy = db_session.query(Queasy).filter(
+                                        (Queasy.key == 216) &
+                                        (Queasy.number1 == 4) &
+                                        (Queasy.number2 == 1)).with_for_update().first()
                 bqueasy.logi1 = False
 
 
@@ -61,7 +69,11 @@ def precheckin_savesetupbl(pci_setup_data:[Pci_setup]):
                 queasy.logi1 = pci_setup.setupflag
                 queasy.char3 = pci_setup.setupvalue
 
-                bqueasy = get_cache (Queasy, {"key": [(eq, 216)],"number1": [(eq, 4)],"number2": [(eq, 99)]})
+                # bqueasy = get_cache (Queasy, {"key": [(eq, 216)],"number1": [(eq, 4)],"number2": [(eq, 99)]})
+                bqueasy = db_session.query(Queasy).filter(
+                                        (Queasy.key == 216) &
+                                        (Queasy.number1 == 4) &
+                                        (Queasy.number2 == 99)).with_for_update().first()
                 bqueasy.logi1 = False
 
 
@@ -71,7 +83,11 @@ def precheckin_savesetupbl(pci_setup_data:[Pci_setup]):
                 queasy.logi1 = pci_setup.setupflag
                 queasy.char3 = pci_setup.setupvalue
 
-                bqueasy = get_cache (Queasy, {"key": [(eq, 216)],"number1": [(eq, 5)],"number2": [(eq, 1)]})
+                # bqueasy = get_cache (Queasy, {"key": [(eq, 216)],"number1": [(eq, 5)],"number2": [(eq, 1)]})
+                bqueasy = db_session.query(Queasy).filter(
+                                        (Queasy.key == 216) &
+                                        (Queasy.number1 == 5) &
+                                        (Queasy.number2 == 1)).with_for_update().first()
                 bqueasy.logi1 = False
 
 
@@ -79,7 +95,11 @@ def precheckin_savesetupbl(pci_setup_data:[Pci_setup]):
                 queasy.logi1 = pci_setup.setupflag
                 queasy.char3 = pci_setup.setupvalue
 
-                bqueasy = get_cache (Queasy, {"key": [(eq, 216)],"number1": [(eq, 5)],"number2": [(eq, 99)]})
+                # bqueasy = get_cache (Queasy, {"key": [(eq, 216)],"number1": [(eq, 5)],"number2": [(eq, 99)]})
+                bqueasy = db_session.query(Queasy).filter(
+                                        (Queasy.key == 216) &
+                                        (Queasy.number1 == 5) &
+                                        (Queasy.number2 == 99)).with_for_update().first()
                 bqueasy.logi1 = False
 
 

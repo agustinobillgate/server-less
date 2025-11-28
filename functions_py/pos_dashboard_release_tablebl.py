@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, remark area
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -32,7 +34,6 @@ def pos_dashboard_release_tablebl(release_table_data:[Release_table], dynamic_qr
     Q_orderbill_line = create_buffer("Q_orderbill_line",Queasy)
     Q_search_orderbill_line = create_buffer("Q_search_orderbill_line",Queasy)
 
-
     db_session = local_storage.db_session
 
     def generate_output():
@@ -54,7 +55,12 @@ def pos_dashboard_release_tablebl(release_table_data:[Release_table], dynamic_qr
 
         nonlocal release_table, buff_orderbill, pickup_table, q_orderbill, q_searchbill, q_orderbill_line, q_search_orderbill_line
 
-        queasy = get_cache (Queasy, {"key": [(eq, 230)],"number1": [(eq, dept_no)],"number2": [(eq, table_no)],"char1": [(eq, session_params)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 230)],"number1": [(eq, dept_no)],"number2": [(eq, table_no)],"char1": [(eq, session_params)]})
+        queasy = db_session.query(Queasy).filter(
+                                (Queasy.key == 230) &
+                                (Queasy.number1 == dept_no) &
+                                (Queasy.number2 == table_no) &
+                                (Queasy.char1 == session_params)).with_for_update().first()
 
         if queasy:
 
@@ -72,7 +78,10 @@ def pos_dashboard_release_tablebl(release_table_data:[Release_table], dynamic_qr
             if q_orderbill:
 
                 for q_orderbill in db_session.query(Q_orderbill).filter(
-                         (Q_orderbill.key == 225) & (Q_orderbill.char1 == ("orderbill").lower()) & (Q_orderbill.number1 == dept_no) & (Q_orderbill.number2 == table_no) & (Q_orderbill.logi1) & (Q_orderbill.logi3) & (Q_orderbill.char3 == (session_params).lower()) & (num_entries(Q_orderbill.char2, "|") <= 7)).order_by(Q_orderbill._recid).all():
+                         (Q_orderbill.key == 225) & (Q_orderbill.char1 == ("orderbill").lower()) & 
+                         (Q_orderbill.number1 == dept_no) & (Q_orderbill.number2 == table_no) & (Q_orderbill.logi1) & 
+                         (Q_orderbill.logi3) & (Q_orderbill.char3 == (session_params).lower()) & 
+                         (num_entries(Q_orderbill.char2, "|") <= 7)).order_by(Q_orderbill._recid).with_for_update().all():
                     q_orderbill.logi1 = False
                     q_orderbill.char3 = q_orderbill.char3 + "T" +\
                             replace_str(to_string(get_current_date()) , "/", "") +\
@@ -80,7 +89,9 @@ def pos_dashboard_release_tablebl(release_table_data:[Release_table], dynamic_qr
                             ";" + "1-GLFT"
 
             pickup_table = db_session.query(Pickup_table).filter(
-                     (Pickup_table.key == 225) & (Pickup_table.char1 == ("taken-table").lower()) & (Pickup_table.number1 == dept_no) & (Pickup_table.number2 == table_no) & (Pickup_table.logi1) & (Pickup_table.logi2) & (entry(0, Pickup_table.char3, "|") == (session_params).lower())).first()
+                     (Pickup_table.key == 225) & (Pickup_table.char1 == ("taken-table").lower()) & (Pickup_table.number1 == dept_no) & 
+                     (Pickup_table.number2 == table_no) & (Pickup_table.logi1) & (Pickup_table.logi2) & 
+                     (entry(0, Pickup_table.char3, "|") == (session_params).lower())).with_for_update().first()
 
             if pickup_table:
                 pickup_table.char3 = entry(0, pickup_table.char3, "|", session_params + "T" +\

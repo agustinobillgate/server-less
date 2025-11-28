@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, remark area
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.pos_dashboard_post_menubl import pos_dashboard_post_menubl
@@ -7,7 +9,9 @@ from models import Queasy, H_bill, H_artikel, H_bill_line, Tisch, Res_line
 
 menu_list_data, Menu_list = create_model("Menu_list", {"nr":int, "rec_id":int, "art_number":int, "art_description":string, "art_qty":int, "art_price":Decimal, "special_request":string})
 
-def selforder_post_itembl(outlet_number:int, table_nr:int, room_number:string, guest_name:string, pax:int, guest_number:int, res_number:int, resline_number:int, order_datetime:datetime, active_order:bool, session_parameter:string, menu_list_data:[Menu_list]):
+def selforder_post_itembl(outlet_number:int, table_nr:int, room_number:string, guest_name:string, pax:int, 
+                          guest_number:int, res_number:int, resline_number:int, order_datetime:datetime, 
+                          active_order:bool, session_parameter:string, menu_list_data:[Menu_list]):
 
     prepare_cache ([Queasy, H_bill, Tisch, Res_line])
 
@@ -49,8 +53,11 @@ def selforder_post_itembl(outlet_number:int, table_nr:int, room_number:string, g
     Sosqsy = create_buffer("Sosqsy",Queasy)
     H_order = create_buffer("H_order",Queasy)
 
-
     db_session = local_storage.db_session
+    room_number = room_number.strip()
+    guest_name = guest_name.strip()
+    session_parameter = session_parameter.strip()
+
 
     def generate_output():
         nonlocal mess_result, orderbill_number, orderbill_line_number, direct_post, count_i, alpha_flag, room_no, rm_no, str1, dynamic_qr, room_serviceflag, pay_flag, found_menu, sclose_time, eclose_time, scurr_time, ecurr_time, curr_time, time_str, shour, sminute, ehour, eminute, recid_hbill, found_soldout, queasy, h_bill, h_artikel, h_bill_line, tisch, res_line
@@ -260,7 +267,9 @@ def selforder_post_itembl(outlet_number:int, table_nr:int, room_number:string, g
 
     for menu_list in query(menu_list_data):
 
-        queasy = get_cache (Queasy, {"key": [(eq, 222)],"number1": [(eq, 2)],"number2": [(eq, menu_list.art_number)],"number3": [(eq, outlet_number)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 222)],"number1": [(eq, 2)],"number2": [(eq, menu_list.art_number)],"number3": [(eq, outlet_number)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 222) & (Queasy.number1 == 2) & (Queasy.number2 == menu_list.art_number) & (Queasy.number3 == outlet_number)).with_for_update().first()
 
         if queasy:
 
@@ -290,12 +299,13 @@ def selforder_post_itembl(outlet_number:int, table_nr:int, room_number:string, g
         if recid_hbill != 0:
             break
 
-    q_orderbill = get_cache (Queasy, {"key": [(eq, 225)],"char1": [(eq, "orderbill")],"number1": [(eq, outlet_number)],"number2": [(eq, table_nr)],"number3": [(eq, 0)],"char3": [(eq, session_parameter)],"betriebsnr": [(eq, recid_hbill)]})
-
+    # q_orderbill = get_cache (Queasy, {"key": [(eq, 225)],"char1": [(eq, "orderbill")],"number1": [(eq, outlet_number)],
+    #                                   "number2": [(eq, table_nr)],"number3": [(eq, 0)],"char3": [(eq, session_parameter)],"betriebsnr": [(eq, recid_hbill)]})
+    q_orderbill = db_session.query(Q_orderbill).filter(
+             (Q_orderbill.key == 225) & (Q_orderbill.char1 == ("orderbill").lower()) & (Q_orderbill.number1 == outlet_number) & (Q_orderbill.number2 == table_nr) &
+               (Q_orderbill.number3 == 0) & (Q_orderbill.char3 == session_parameter) & (Q_orderbill.betriebsnr == recid_hbill)).with_for_update().first()  
     if q_orderbill:
-        pass
         db_session.delete(q_orderbill)
-        pass
 
     if room_serviceflag:
 

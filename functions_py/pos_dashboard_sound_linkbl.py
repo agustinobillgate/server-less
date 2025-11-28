@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, remark area
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -20,7 +22,11 @@ def pos_dashboard_sound_linkbl(sound_link:string):
         return {"v_success": v_success}
 
 
-    queasy = get_cache (Queasy, {"key": [(eq, 299)],"number1": [(eq, 1)],"char1": [(eq, "selforder-sound")]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 299)],"number1": [(eq, 1)],"char1": [(eq, "selforder-sound")]})
+    queasy = db_session.query(Queasy).filter(
+        (Queasy.key == 299) &
+        (Queasy.number1 == 1) &
+        (Queasy.char1 == "SelfOrder-Sound")).with_for_update().first()
 
     if not queasy:
         queasy = Queasy()

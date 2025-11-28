@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, remark area
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Archieve, Res_line
@@ -15,6 +17,7 @@ def selfcheckin_store_signaturebl(res_no:int, resline_no:int, guest_number:int, 
     archieve = res_line = None
 
     db_session = local_storage.db_session
+    sign_data = sign_data.strip()
 
     def generate_output():
         nonlocal mess_result, sys_date, image_data, bb, archieve, res_line
@@ -55,7 +58,13 @@ def selfcheckin_store_signaturebl(res_no:int, resline_no:int, guest_number:int, 
 
         return generate_output()
 
-    archieve = get_cache (Archieve, {"key": [(eq, "send-sign-rc")],"num1": [(eq, res_no)],"num2": [(eq, resline_no)],"num3": [(eq, guest_number)]})
+    # archieve = get_cache (Archieve, {"key": [(eq, "send-sign-rc")],"num1": [(eq, res_no)],"num2": [(eq, resline_no)],"num3": [(eq, guest_number)]})
+    archieve = db_session.query(Archieve).filter(
+                    (Archieve.key == "send-sign-rc") &
+                    (Archieve.num1 == res_no) &
+                    (Archieve.num2 == resline_no) &
+                    (Archieve.num3 == guest_number)
+                ).with_for_update().first()
 
     if archieve:
         db_session.delete(archieve)

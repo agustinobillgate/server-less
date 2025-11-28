@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, remark area
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -93,9 +95,9 @@ def selforder_viewordered_itembl(user_init:string, dept:int, table_no:int, sessi
     Sosqsy = create_buffer("Sosqsy",Queasy)
     Q_takentable = create_buffer("Q_takentable",Queasy)
 
-
     db_session = local_storage.db_session
-
+    session_parameter = session_parameter.strip()
+    
     def generate_output():
         nonlocal mess_result, user_name, dept_name, guest_name, pax, room, total_tax, total_service, total_price, total_payment, grand_total, sessionexpired, hold_payment, bill_number, payment_method, ordered_item_data, mess_str, i_str, mess_token, mess_keyword, mess_value, orderdatetime, gname, order_i, serv_perc, mwst_perc, fact, mmwst1, mwst, h_service, h_mwst, incl_service, incl_mwst, gst_logic, serv_disc, vat_disc, f_discart, amount, price_decimal, tax, serv, service, vat, vat2, fact_scvat, serv_vat, tax_vat, ct, l_deci, tot_amount, bill_date110, bill_date, service_taxable, sesion_id, servtax_use_foart, dynamic_qr, room_serviceflag, rm_no, str1, count_i, alpha_flag, found_bill, billno, do_it, queasy, htparam, bediener, hoteldpt, tisch, h_artikel, h_bill, h_bill_line, artikel
         nonlocal user_init, dept, table_no, session_parameter

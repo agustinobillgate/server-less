@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, remark area
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Hoteldpt, Queasy, Artikel, H_artikel
@@ -19,11 +21,12 @@ def mapping_pglistbl(case_type:int, load_type:int, pg_number:int, pg_name:string
     t_hoteldpt_data, T_hoteldpt = create_model_like(Hoteldpt)
 
     db_session = local_storage.db_session
+    pg_name = pg_name.strip()
+    art_name = art_name.strip()
 
     def generate_output():
         nonlocal payment_gateway_list_data, vhp_payment_list_data, hoteldpt, queasy, artikel, h_artikel
         nonlocal case_type, load_type, pg_number, pg_name, art_dept, art_name
-
 
         nonlocal payment_gateway_list, vhp_payment_list, t_hoteldpt
         nonlocal payment_gateway_list_data, vhp_payment_list_data, t_hoteldpt_data
@@ -34,7 +37,6 @@ def mapping_pglistbl(case_type:int, load_type:int, pg_number:int, pg_name:string
 
         nonlocal payment_gateway_list_data, vhp_payment_list_data, hoteldpt, queasy, artikel, h_artikel
         nonlocal case_type, load_type, pg_number, pg_name, art_dept, art_name
-
 
         nonlocal payment_gateway_list, vhp_payment_list, t_hoteldpt
         nonlocal payment_gateway_list_data, vhp_payment_list_data, t_hoteldpt_data
@@ -671,7 +673,7 @@ def mapping_pglistbl(case_type:int, load_type:int, pg_number:int, pg_name:string
             else:
 
                 for queasy in db_session.query(Queasy).filter(
-                         (Queasy.key == 224) & (Queasy.number1 == pg_number)).order_by(Queasy._recid).all():
+                         (Queasy.key == 224) & (Queasy.number1 == pg_number)).order_by(Queasy._recid).with_for_update().all():
                     db_session.delete(queasy)
                 create_queasy()
 

@@ -1,5 +1,8 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, remark area
+# skip -> script OE
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -9,7 +12,9 @@ from sqlalchemy import func
 from functions.res_checkin2bl import res_checkin2bl
 from models import Res_line, Guest, Queasy, Artikel, Waehrung, Guestbook, Zimmer, Paramtext
 
-def mobileweb_res_checkin(rsv_number:int, rsvline_number:int, user_init:string, new_roomno:string, purposeofstay:string, email:string, guest_phnumber:string, guest_nation:string, guest_country:string, guest_region:string, vehicle_number:string, preauth_string:string, base64image:string):
+def mobileweb_res_checkin(rsv_number:int, rsvline_number:int, user_init:string, new_roomno:string, 
+                          purposeofstay:string, email:string, guest_phnumber:string, guest_nation:string, 
+                          guest_country:string, guest_region:string, vehicle_number:string, preauth_string:string, base64image:string):
 
     prepare_cache ([Res_line, Guest, Queasy, Artikel, Waehrung, Guestbook, Zimmer, Paramtext])
 
@@ -123,6 +128,18 @@ def mobileweb_res_checkin(rsv_number:int, rsvline_number:int, user_init:string, 
 
 
     db_session = local_storage.db_session
+    new_roomno = new_roomno.strip()
+    purposeofstay = purposeofstay.strip()
+    email = email.strip()
+    guest_phnumber = guest_phnumber.strip()
+    guest_nation = guest_nation.strip()
+    guest_country = guest_country.strip()
+    guest_region = guest_region.strip()
+    vehicle_number = vehicle_number.strip()
+    preauth_string = preauth_string.strip()
+    base64image = base64image.strip()
+
+
 
     def generate_output():
         nonlocal checked_in, new_resstatus, result_message, self_ci, can_checkin, msg_str, msg_str1, msg_str2, msg_str3, msg_str4, msg_answer, ask_deposit, keycard_flag, mcard_flag, err_number1, err_number2, err_number3, err_number4, q_143, fill_gcfemail, gast_gastnr, flag_report, warn_flag, silenzio, pofstay, pointer, tmp_zwunsch, bankname, noref, resultmsg, ccnumber, amount, transdat, transid_merchant, mestoken, meskeyword, mesvalue, loop_i, payment_string, payment_type, found_flag, do_it, do_payment, doku_paymentdatetime, doku_purchasecurrency, doku_liability, doku_paymentchannel, doku_amount, doku_paymentcode, doku_mcn, doku_words, doku_resultmsg, doku_verifyid, doku_transidmerchant, doku_bank, doku_statustype, doku_approvalcode, doku_edustatus, doku_threedsecurestatus, doku_verifyscore, doku_currency, doku_responsecode, doku_chname, doku_brand, doku_verifystatus, doku_sessionid, doku_paymenttype, qris_dpmallid, qris_transid, qris_amount, qris_resultmsg, qris_transdatetime, qris_clientid, qris_transidmerchant, qris_responsecode, vhp_artno, vhp_artdep, pg_artstring, pg_artname, pg_artno, bill_date, voucher_str, inv_nr, deposit_art, errorflag, deposit_pay, deposit_exrate, mail_resno, mail_reslinno, mail_transidmerchant, mail_datetimetrans, mail_paymentdesc, mail_totalamount, post_amount, paymentcode, check_payment_exist, check_pay_str, res_line, guest, queasy, artikel, waehrung, guestbook, zimmer, paramtext
