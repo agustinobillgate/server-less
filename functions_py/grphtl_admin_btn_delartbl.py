@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import History, Queasy
@@ -11,8 +13,6 @@ def grphtl_admin_btn_delartbl(rec_id:int, htlname_number:int):
     hist = None
 
     Hist = create_buffer("Hist",History)
-
-
     db_session = local_storage.db_session
 
     def generate_output():
@@ -26,7 +26,8 @@ def grphtl_admin_btn_delartbl(rec_id:int, htlname_number:int):
         return {"err_flag": err_flag}
 
 
-    queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+    # queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+    queasy = db_session.query(Queasy).filter(Queasy._recid == rec_id).with_for_update().first()
 
     hist = db_session.query(Hist).filter(
              (Hist.guestnrcom == htlname_number)).first()

@@ -2,6 +2,7 @@
 #----------------------------------------
 # Rd 3/8/2025
 # if not availble -> return
+# Rd, 28/11/2025, with_for_update added
 #----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -20,7 +21,8 @@ def akt_custlist_btn_delbl(a_gastnr:int, rec_id:int):
         return {"err": err}
 
 
-    akt_cust = get_cache (Akt_cust, {"_recid": [(eq, rec_id)]})
+    # akt_cust = get_cache (Akt_cust, {"_recid": [(eq, rec_id)]})
+    akt_cust = db_session.query(Akt_cust).filter(Akt_cust._recid == rec_id).with_for_update().first()
 
     akthdr = get_cache (Akthdr, {"gastnr": [(eq, a_gastnr)]})
 

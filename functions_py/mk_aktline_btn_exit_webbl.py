@@ -56,7 +56,8 @@ def mk_aktline_btn_exit_webbl(akt_line1_data:[Akt_line1], prior:string, case_typ
 
     akt_line1 = query(akt_line1_data, first=True)
 
-    counters = get_cache (Counters, {"counter_no": [(eq, 27)]})
+    # counters = get_cache (Counters, {"counter_no": [(eq, 27)]})
+    counters = db_session.query(Counters).filter(Counters.counter_no == 27).with_for_update().first()
 
     if not counters:
         counters = Counters()
@@ -64,15 +65,10 @@ def mk_aktline_btn_exit_webbl(akt_line1_data:[Akt_line1], prior:string, case_typ
 
         counters.counter_no = 27
         counters.counter_bez = "Counter for sales activity-line"
-    # counters.counter = counters.counter + 1
+    counters.counter = counters.counter + 1
     
-    last_count, error_lock = get_output(next_counter_for_update(27))
-
-    # akt_line1.linenr = counters.counter
-    # curr_counter = counters.counter
-    # pass
-    akt_line1.linenr = last_count
-    curr_counter = last_count
+    akt_line1.linenr = counters.counter
+    curr_counter = counters.counter
     
     init_prior()
     akt_line = Akt_line()

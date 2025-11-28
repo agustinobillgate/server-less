@@ -2,6 +2,7 @@
 #-----------------------------------------
 # Rd 4/8/2025
 # if available
+# Rd, 28/11/2025, with_for_update added
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -20,7 +21,8 @@ def fa_subgrpadmin_btn_delartbl(rec_id:int):
         return {"do_it": do_it}
 
 
-    fa_grup = get_cache (Fa_grup, {"_recid": [(eq, rec_id)]})
+    # fa_grup = get_cache (Fa_grup, {"_recid": [(eq, rec_id)]})
+    fa_grup = db_session.query(Fa_grup).filter(Fa_grup._recid == rec_id).with_for_update().first()
     # Rd 4/8/2025
     # if available
     if fa_grup is None:
