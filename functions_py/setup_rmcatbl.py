@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Zimkateg, Ratecode, Zimmer
@@ -63,7 +65,7 @@ def setup_rmcatbl(i_case:int, t_queasy_data:[T_queasy], t_bezeich:[string], t_co
                     return
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 152)).order_by(Queasy.number1.desc()).yield_per(100):
+                 (Queasy.key == 152)).order_by(Queasy.number1.desc()).all():
             curr_categ = queasy.number1 + 1
             break
         queasy = Queasy()
@@ -136,7 +138,8 @@ def setup_rmcatbl(i_case:int, t_queasy_data:[T_queasy], t_bezeich:[string], t_co
                     return
 
         ratecode_obj_list = {}
-        for ratecode, zimkateg in db_session.query(Ratecode, Zimkateg).join(Zimkateg,(Zimkateg.zikatnr == Ratecode.zikatnr) & (Zimkateg.typ == t_queasy.number1)).order_by(Ratecode.code).all():
+        for ratecode, zimkateg in db_session.query(Ratecode, Zimkateg).join(Zimkateg,(Zimkateg.zikatnr == Ratecode.zikatnr) & 
+                                                                            (Zimkateg.typ == t_queasy.number1)).order_by(Ratecode.code).all():
             if ratecode_obj_list.get(ratecode._recid):
                 continue
             else:
@@ -180,8 +183,10 @@ def setup_rmcatbl(i_case:int, t_queasy_data:[T_queasy], t_bezeich:[string], t_co
 
                     return
 
-        queasy = get_cache (Queasy, {"key": [(eq, 152)],"number1": [(eq, t_queasy.number1)]})
-
+        # queasy = get_cache (Queasy, {"key": [(eq, 152)],"number1": [(eq, t_queasy.number1)]})
+        queasy = db_session.query(Queasy).filter(
+                    (Queasy.key == 152) & (Queasy.number1 == t_queasy.number1)).with_for_update().first()
+        
         if queasy:
             buffer_copy(t_queasy, queasy)
             pass
@@ -190,7 +195,7 @@ def setup_rmcatbl(i_case:int, t_queasy_data:[T_queasy], t_bezeich:[string], t_co
         while None != zimkateg:
 
             zbuff = db_session.query(Zbuff).filter(
-                         (Zbuff._recid == zimkateg._recid)).first()
+                         (Zbuff._recid == zimkateg._recid)).with_for_update().first()
             db_session.delete(zbuff)
             pass
 
@@ -242,7 +247,7 @@ def setup_rmcatbl(i_case:int, t_queasy_data:[T_queasy], t_bezeich:[string], t_co
         Zbuff =  create_buffer("Zbuff",Zimkateg)
 
         queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 152) & ((Queasy.char1 == t_queasy.char1)) | ((Queasy.char3 == t_queasy.char3))).first()
+                 (Queasy.key == 152) & ((Queasy.char1 == t_queasy.char1)) | ((Queasy.char3 == t_queasy.char3))).with_for_update().first()
 
         if not queasy:
 
@@ -287,7 +292,7 @@ def setup_rmcatbl(i_case:int, t_queasy_data:[T_queasy], t_bezeich:[string], t_co
         while None != zimkateg:
 
             zbuff = db_session.query(Zbuff).filter(
-                         (Zbuff._recid == zimkateg._recid)).first()
+                         (Zbuff._recid == zimkateg._recid)).with_for_update().first()
             db_session.delete(zbuff)
             pass
 

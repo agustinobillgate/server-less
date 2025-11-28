@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -91,7 +93,8 @@ def prepare_main0_1(pvilanguage:int):
 
             return generate_inner_output()
 
-        paramtext = get_cache (Paramtext, {"txtnr": [(eq, 976)]})
+        # paramtext = get_cache (Paramtext, {"txtnr": [(eq, 976)]})
+        paramtext = db_session.query(Paramtext).filter(Paramtext.txtnr == 976).with_for_update().first()
 
         if not paramtext:
             paramtext = Paramtext()
@@ -100,9 +103,6 @@ def prepare_main0_1(pvilanguage:int):
             paramtext.txtnr = 976
             paramtext.ptexte = to_string(htparam.fdate, "99/99/9999")
             paramtext.notes = htparam.fchar
-
-
-            pass
         else:
 
             if paramtext.notes != htparam.fchar:
@@ -130,7 +130,8 @@ def prepare_main0_1(pvilanguage:int):
 
                 if fint1 != htparam.finteger:
 
-                    htp = get_cache (Htparam, {"paramnr": [(eq, htparam.paramnr)]})
+                    # htp = get_cache (Htparam, {"paramnr": [(eq, htparam.paramnr)]})
+                    htp = db_session.query(Htparam).filter(Htparam.paramnr == htparam.paramnr).with_for_update().first()
                     htp.finteger = fint1
                     pass
 
@@ -142,7 +143,8 @@ def prepare_main0_1(pvilanguage:int):
 
                 if fdate1 != htparam.fdate:
 
-                    htp = get_cache (Htparam, {"paramnr": [(eq, htparam.paramnr)]})
+                    # htp = get_cache (Htparam, {"paramnr": [(eq, htparam.paramnr)]})
+                    htp = db_session.query(Htparam).filter(Htparam.paramnr == htparam.paramnr).with_for_update().first()
 
                     if fdate1 == None:
                         htp.fdate = None
@@ -157,7 +159,8 @@ def prepare_main0_1(pvilanguage:int):
 
                 if flogic1 != htparam.flogical and flogic1 == False:
 
-                    htp = get_cache (Htparam, {"paramnr": [(eq, htparam.paramnr)]})
+                    # htp = get_cache (Htparam, {"paramnr": [(eq, htparam.paramnr)]})
+                    htp = db_session.query(Htparam).filter(Htparam.paramnr == htparam.paramnr).with_for_update().first()
                     htp.flogical = flogic1
                     pass
 
