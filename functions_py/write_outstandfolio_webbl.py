@@ -5,6 +5,11 @@
 # validate rechnr
 #-----------------------------------------
 
+# =============================================
+# Rulita, 28-11-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -69,15 +74,18 @@ def write_outstandfolio_webbl(payload_list_data:[Payload_list]):
 
                     if buff_queasy:
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 350)],"number1": [(eq, bill.rechnr)]})
+                        # queasy = get_cache (Queasy, {"key": [(eq, 350)],"number1": [(eq, bill.rechnr)]})
+                        queasy = db_session.query(Queasy).filter(
+                            (Queasy.key == 350) &
+                            (Queasy.number1 == bill.rechnr)).with_for_update().first()
 
                         if queasy:
-                            pass
+                            # pass
                             queasy.char1 = buff_queasy.char1
+                            db_session.refresh(queasy,with_for_update=True)
 
-
-                            pass
-                            pass
+                            # pass
+                            # pass
                         else:
                             queasy = Queasy()
                             db_session.add(queasy)
@@ -93,15 +101,18 @@ def write_outstandfolio_webbl(payload_list_data:[Payload_list]):
 
                     if buff_queasy:
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 350)],"number1": [(eq, bill.rechnr)]})
+                        # queasy = get_cache (Queasy, {"key": [(eq, 350)],"number1": [(eq, bill.rechnr)]})
+                        queasy = db_session.query(Queasy).filter(
+                            (Queasy.key == 350) &
+                            (Queasy.number1 == bill.rechnr)).with_for_update().first()
 
                         if queasy:
-                            pass
+                            # pass
                             queasy.char1 = buff_queasy.char1
+                            db_session.refresh(queasy,with_for_update=True)
 
-
-                            pass
-                            pass
+                            # pass
+                            # pass
                         else:
                             queasy = Queasy()
                             db_session.add(queasy)
@@ -118,15 +129,18 @@ def write_outstandfolio_webbl(payload_list_data:[Payload_list]):
 
                     if buff_queasy:
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 350)],"number1": [(eq, bill.rechnr)]})
+                        # queasy = get_cache (Queasy, {"key": [(eq, 350)],"number1": [(eq, bill.rechnr)]})
+                        queasy = db_session.query(Queasy).filter(
+                            (Queasy.key == 350) &
+                            (Queasy.number1 == bill.rechnr)).with_for_update().first()
 
                         if queasy:
-                            pass
+                            # pass
                             queasy.char1 = buff_queasy.char1
 
-
-                            pass
-                            pass
+                            db_session.refresh(queasy,with_for_update=True)
+                            # pass
+                            # pass
                         else:
                             queasy = Queasy()
                             db_session.add(queasy)
@@ -145,7 +159,9 @@ def write_outstandfolio_webbl(payload_list_data:[Payload_list]):
                 
                
 
-                bill = get_cache (Bill, {"rechnr": [(eq, rechnr)],"flag": [(eq, 0)],"saldo": [(ne, 0)]})
+                # bill = get_cache (Bill, {"rechnr": [(eq, rechnr)],"flag": [(eq, 0)],"saldo": [(ne, 0)]})
+                bill = db_session.query(Bill).filter(
+                         (Bill.rechnr == rechnr) & (Bill.flag == 0) & (Bill.saldo != 0)).with_for_update().first()
 
                 if bill:
 
@@ -167,14 +183,15 @@ def write_outstandfolio_webbl(payload_list_data:[Payload_list]):
                         pass
                         bill.vesrdepot = payload_list.input_remark
 
-
+                        db_session.refresh(bill,with_for_update=True)
                         pass
-                        pass
+                        # pass
 
             elif payload_list.bill_type.lower()  == ("M").lower() :
                
-                bill = get_cache (Bill, {"rechnr": [(eq, rechnr)],"flag": [(eq, 0)],"saldo": [(ne, 0)]})
-
+                # bill = get_cache (Bill, {"rechnr": [(eq, rechnr)],"flag": [(eq, 0)],"saldo": [(ne, 0)]})
+                bill = db_session.query(Bill).filter(
+                         (Bill.rechnr == rechnr) & (Bill.flag == 0) & (Bill.saldo != 0)).with_for_update().first()
                 if bill:
 
                     if bill.vesrdepot != payload_list.input_remark:
@@ -195,12 +212,14 @@ def write_outstandfolio_webbl(payload_list_data:[Payload_list]):
                         pass
                         bill.vesrdepot = payload_list.input_remark
 
-
-                        pass
-                        pass
+                        db_session.refresh(bill,with_for_update=True)
+                        # pass
+                        # pass
             else:
 
-                bill = get_cache (Bill, {"rechnr": [(eq, rechnr)],"flag": [(eq, 0)],"saldo": [(ne, 0)]})
+                # bill = get_cache (Bill, {"rechnr": [(eq, rechnr)],"flag": [(eq, 0)],"saldo": [(ne, 0)]})
+                bill = db_session.query(Bill).filter(
+                         (Bill.rechnr == rechnr) & (Bill.flag == 0) & (Bill.saldo != 0)).with_for_update().first()
 
                 if bill:
 
@@ -222,15 +241,18 @@ def write_outstandfolio_webbl(payload_list_data:[Payload_list]):
                         pass
                         bill.vesrdepot = payload_list.input_remark
 
-
-                        pass
-                        pass
+                        db_session.refresh(bill,with_for_update=True)
+                        # pass
+                        # pass
 
         if payload_list.rechnr_due_date != None:
 
             if payload_list.bill_type.lower()  == ("NS").lower() :
 
-                queasy = get_cache (Queasy, {"key": [(eq, 350)],"number1": [(eq, payload_list.rechnr_due_date)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 350)],"number1": [(eq, payload_list.rechnr_due_date)]})
+                queasy = db_session.query(Queasy).filter(
+                    (Queasy.key == 350) &
+                    (Queasy.number1 == payload_list.rechnr_due_date)).with_for_update().first()
 
                 if not queasy:
                     queasy = Queasy()
@@ -246,13 +268,16 @@ def write_outstandfolio_webbl(payload_list_data:[Payload_list]):
                     pass
                     queasy.date1 = payload_list.due_date
 
-
-                    pass
-                    pass
+                    db_session.refresh(queasy,with_for_update=True)
+                    # pass  
+                    # pass
 
             elif payload_list.bill_type.lower()  == ("M").lower() :
 
-                queasy = get_cache (Queasy, {"key": [(eq, 350)],"number1": [(eq, payload_list.rechnr_due_date)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 350)],"number1": [(eq, payload_list.rechnr_due_date)]})
+                queasy = db_session.query(Queasy).filter(
+                    (Queasy.key == 350) &
+                    (Queasy.number1 == payload_list.rechnr_due_date)).with_for_update().first()
 
                 if not queasy:
                     queasy = Queasy()
@@ -267,13 +292,15 @@ def write_outstandfolio_webbl(payload_list_data:[Payload_list]):
                 else:
                     pass
                     queasy.date1 = payload_list.due_date
-
-
-                    pass
-                    pass
+                    db_session.refresh(queasy,with_for_update=True)
+                    # pass
+                    # pass
             else:
 
-                queasy = get_cache (Queasy, {"key": [(eq, 350)],"number1": [(eq, payload_list.rechnr_due_date)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 350)],"number1": [(eq, payload_list.rechnr_due_date)]})
+                queasy = db_session.query(Queasy).filter(
+                    (Queasy.key == 350) &
+                    (Queasy.number1 == payload_list.rechnr_due_date)).with_for_update().first()
 
                 if not queasy:
                     queasy = Queasy()
@@ -287,9 +314,7 @@ def write_outstandfolio_webbl(payload_list_data:[Payload_list]):
                 else:
                     pass
                     queasy.date1 = payload_list.due_date
-
-
-                    pass
-                    pass
+                    db_session.refresh(queasy,with_for_update=True) 
+                    # pass
 
     return generate_output()
