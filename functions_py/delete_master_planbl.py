@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
-from models import Bediener, Res_history
+from models import Bediener, Res_history, Bk_master
+from sqlalchemy.orm import flag_modified
 
 def delete_master_planbl(resnr:int, user_init:string):
 
@@ -22,13 +25,13 @@ def delete_master_planbl(resnr:int, user_init:string):
 
 
     bk_master = db_session.query(Bk_master).filter(
-             (Bk_master.resnr == resnr)).first()
+             (Bk_master.resnr == resnr)).with_for_update().first()
 
     if bk_master:
         blockid = bk_master.block_id
         bk_master.cancel_flag[0] = True
 
-
+        flag_modified(bk_master, "cancel_flag")
         pass
         successflag = True
     else:

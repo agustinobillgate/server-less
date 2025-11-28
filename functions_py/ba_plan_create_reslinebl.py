@@ -1,11 +1,15 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Guest, Counters, Bk_reser, Bk_raum, Akt_kont, Bk_func, Bk_veran
+from sqlalchemy.orm import flag_modified
 
-def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bkl_ttime:int, bkl_raum:string, bkl_datum:date, bkl_tdatum:date, bediener_nr:int, ba_dept:int, curr_resstatus:int, user_init:string):
+def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bkl_ttime:int, 
+                             bkl_raum:string, bkl_datum:date, bkl_tdatum:date, bediener_nr:int, ba_dept:int, curr_resstatus:int, user_init:string):
 
     prepare_cache ([Htparam, Guest, Counters, Bk_reser, Bk_raum, Akt_kont, Bk_func, Bk_veran])
 
@@ -29,6 +33,7 @@ def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bk
     t_bk_reser1_data, T_bk_reser1 = create_model("T_bk_reser1", {"veran_nr":int, "resstatus":int, "datum":date, "bis_datum":date, "raum":string, "von_zeit":string, "bis_zeit":string, "veran_resnr":int})
 
     db_session = local_storage.db_session
+    bkl_raum = bkl_raum.strip()
 
     def generate_output():
         nonlocal guest_name, reslinnr, main_exist, t_bk_reser1_data, name_contact, telefon_contact, email_contact, ftime, ttime, v_zeit, b_zeit, week_list, ci_date, htparam, guest, counters, bk_reser, bk_raum, akt_kont, bk_func, bk_veran
@@ -80,7 +85,9 @@ def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bk
 
     if curr_resnr == 0:
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 16)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 16)]})
+        counters = db_session.query(Counters).filter(
+                 (Counters.counter_no == 16)).with_for_update().first()
 
         if counters:
             pass
@@ -132,7 +139,9 @@ def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bk
 
     pass
 
-    bk_raum = get_cache (Bk_raum, {"raum": [(eq, bkl_raum)]})
+    # bk_raum = get_cache (Bk_raum, {"raum": [(eq, bkl_raum)]})
+    bk_raum = db_session.query(Bk_raum).filter(
+             (Bk_raum.raum == bkl_raum)).with_for_update().first()
 
     akt_kont = get_cache (Akt_kont, {"gastnr": [(eq, guest_gastnr)]})
 
@@ -198,7 +207,17 @@ def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bk
     elif curr_resstatus == 3:
         bk_func.c_resstatus[0] = "W"
 
-    bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, bk_reser.veran_nr)]})
+    flag_modified(bk_func, "c_resstatus")
+    flag_modified(bk_func, "resnr")
+    flag_modified(bk_func, "r_resstatus")
+    flag_modified(bk_func, "uhrzeiten")
+    flag_modified(bk_func, "veranstalteranschrift")
+    flag_modified(bk_func, "kontaktperson")
+    flag_modified(bk_func, "nadkarte")
+
+    # bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, bk_reser.veran_nr)]})
+    bk_veran = db_session.query(Bk_veran).filter(
+             (Bk_veran.veran_nr == bk_reser.veran_nr)).with_for_update().first()
 
     if not bk_veran:
         bk_veran = Bk_veran()
@@ -236,5 +255,6 @@ def ba_plan_create_reslinebl(curr_resnr:int, guest_gastnr:int, bkl_ftime:int, bk
     t_bk_reser1.von_zeit = v_zeit
     t_bk_reser1.bis_zeit = b_zeit
     t_bk_reser1.veran_resnr = reslinnr
-
+    flag_modified(bk_veran, "payment_userinit")
+    
     return generate_output()

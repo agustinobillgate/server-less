@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bk_reser, Bk_veran, Htparam, Bill, Bk_func, B_history
+from sqlalchemy.orm import flag_modified
 
 def ba_plan_res_checkout2bl(mainres_recid:int, t_resnr:int, t_reslinnr:int, user_init:string):
 
@@ -91,11 +94,13 @@ def ba_plan_res_checkout2bl(mainres_recid:int, t_resnr:int, t_reslinnr:int, user
 
     if resline:
 
-        mainres = get_cache (Bk_veran, {"_recid": [(eq, mainres_recid)]})
+        # mainres = get_cache (Bk_veran, {"_recid": [(eq, mainres_recid)]})
+        mainres = db_session.query(Mainres).filter(Mainres._recid == mainres_recid).with_for_update().first()
 
         if mainres:
 
-            bill = get_cache (Bill, {"rechnr": [(eq, mainres.rechnr)]})
+            # bill = get_cache (Bill, {"rechnr": [(eq, mainres.rechnr)]})
+            bill = db_session.query(Bill).filter(Bill.rechnr == mainres.rechnr).with_for_update().first()
 
             if bill:
                 pass
@@ -103,7 +108,7 @@ def ba_plan_res_checkout2bl(mainres_recid:int, t_resnr:int, t_reslinnr:int, user
                 pass
 
                 bk_resline = db_session.query(Bk_resline).filter(
-                             (Bk_resline.veran_nr == resline.veran_nr) & (Bk_resline.resstatus == 1)).first()
+                             (Bk_resline.veran_nr == resline.veran_nr) & (Bk_resline.resstatus == 1)).with_for_update().first()
                 while None != bk_resline:
                     pass
                     bk_resline.resstatus = 8
@@ -111,9 +116,11 @@ def ba_plan_res_checkout2bl(mainres_recid:int, t_resnr:int, t_reslinnr:int, user
 
                     curr_recid = bk_resline._recid
                     bk_resline = db_session.query(Bk_resline).filter(
-                                 (Bk_resline.veran_nr == resline.veran_nr) & (Bk_resline.resstatus == 1) & (Bk_resline._recid > curr_recid)).first()
+                                 (Bk_resline.veran_nr == resline.veran_nr) & (Bk_resline.resstatus == 1) & (Bk_resline._recid > curr_recid)).with_for_update().first()
 
-                bk_func = get_cache (Bk_func, {"veran_nr": [(eq, resline.veran_nr)],"resstatus": [(eq, 1)]})
+                # bk_func = get_cache (Bk_func, {"veran_nr": [(eq, resline.veran_nr)],"resstatus": [(eq, 1)]})
+                bk_func = db_session.query(Bk_func).filter(
+                             (Bk_func.veran_nr == resline.veran_nr) & (Bk_func.resstatus == 1)).with_for_update().first()
                 while None != bk_func:
                     create_bahistory()
                     pass
@@ -126,7 +133,9 @@ def ba_plan_res_checkout2bl(mainres_recid:int, t_resnr:int, t_reslinnr:int, user
 
                     curr_recid = bk_func._recid
                     bk_func = db_session.query(Bk_func).filter(
-                                 (Bk_func.veran_nr == resline.veran_nr) & (Bk_func.resstatus == 1) & (Bk_func._recid > curr_recid)).first()
+                                 (Bk_func.veran_nr == resline.veran_nr) & (Bk_func.resstatus == 1) & (Bk_func._recid > curr_recid)).with_for_update().first()
+                flag_modified(bk_func, "c_resstatus")
+                flag_modified(bk_func, "r_resstatus")
 
                 if mainres.rechnr > 0:
                     pass

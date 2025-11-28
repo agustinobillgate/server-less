@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_veran
@@ -27,7 +29,9 @@ def main_fs_fsl_depositbl(fsl_veran_nr:int, fsl_deposit:Decimal):
 
     buf_bkveran_data.clear()
 
-    bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, fsl_veran_nr)]})
+    # bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, fsl_veran_nr)]})
+    bk_veran = db_session.query(Bk_veran).filter(
+             (Bk_veran.veran_nr == fsl_veran_nr)).with_for_update().first()
 
     if bk_veran:
         pass

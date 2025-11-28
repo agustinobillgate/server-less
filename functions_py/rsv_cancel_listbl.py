@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.ba_cancreslinebl import ba_cancreslinebl
 from models import Bk_veran, Bk_reser, Guest, Bk_raum, B_storno
+from sqlalchemy.orm import flag_modified
 
 def rsv_cancel_listbl(bqt_resnr:int, bqt_reslinnr:int, user_init:string):
 
@@ -50,7 +53,10 @@ def rsv_cancel_listbl(bqt_resnr:int, bqt_reslinnr:int, user_init:string):
 
         bk_raum = get_cache (Bk_raum, {"raum": [(eq, bk_reser.raum)]})
 
-        b_storno = get_cache (B_storno, {"bankettnr": [(eq, bk_reser.veran_nr)],"breslinnr": [(eq, bk_reser.veran_resnr)]})
+        # b_storno = get_cache (B_storno, {"bankettnr": [(eq, bk_reser.veran_nr)],"breslinnr": [(eq, bk_reser.veran_resnr)]})
+        b_storno = db_session.query(B_storno).filter(
+                 (B_storno.bankettnr == bk_reser.veran_nr) &
+                 (B_storno.breslinnr == bk_reser.veran_resnr)).with_for_update().first()
 
         if not b_storno:
             b_storno = B_storno()
@@ -67,6 +73,8 @@ def rsv_cancel_listbl(bqt_resnr:int, bqt_reslinnr:int, user_init:string):
 
 
         b_storno.usercode = user_init
+        flag_modified(b_storno, "grund")
+        
         get_output(ba_cancreslinebl(bk_reser.veran_nr, bk_reser.veran_resnr))
 
     return generate_output()

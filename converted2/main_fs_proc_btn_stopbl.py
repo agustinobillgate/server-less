@@ -1,11 +1,8 @@
 #using conversion tools version: 1.0.0.119
-#-------------------------------------------------------
-# Rd, 28/11/2025, with_for_update added
-#-------------------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_func, B_storno
-from sqlalchemy.orm import flag_modified
 
 fsl_data, Fsl = create_model_like(Bk_func, {"deposit":Decimal, "limit_date":date, "deposit_payment":[Decimal,9], "payment_date":[date,9], "total_paid":Decimal, "payment_userinit":[string,9], "betriebsnr2":int, "cutoff":date, "raum":string, "grund":[string,18], "in_sales":string, "in_conv":string})
 
@@ -21,7 +18,6 @@ def main_fs_proc_btn_stopbl(fsl_data:[Fsl], resnr:int, resline:int, curr_gastnr:
     bstorno_data, Bstorno = create_model_like(B_storno)
 
     db_session = local_storage.db_session
-    curr_amd = curr_amd.strip()
 
     def generate_output():
         nonlocal bstorno_data, bk_func, b_storno
@@ -37,10 +33,7 @@ def main_fs_proc_btn_stopbl(fsl_data:[Fsl], resnr:int, resline:int, curr_gastnr:
 
     fsl = query(fsl_data, first=True)
 
-    # bk_func = get_cache (Bk_func, {"veran_nr": [(eq, resnr)],"veran_seite": [(eq, resline)]})
-    bk_func = db_session.query(Bk_func).filter(
-             (Bk_func.veran_nr == resnr) &
-             (Bk_func.veran_seite == resline)).with_for_update().first()
+    bk_func = get_cache (Bk_func, {"veran_nr": [(eq, resnr)],"veran_seite": [(eq, resline)]})
     pass
     bk_func.ape__getraenke[0] = fsl.ape__getraenke[0]
     bk_func.ape__getraenke[1] = fsl.ape__getraenke[1]
@@ -59,17 +52,11 @@ def main_fs_proc_btn_stopbl(fsl_data:[Fsl], resnr:int, resline:int, curr_gastnr:
     bk_func.auf__datum = fsl.auf__datum
     bk_func.vgeschrieben = fsl.vgeschrieben
     bk_func.geschenk = fsl.geschenk
-    flag_modified(bk_func, "ape__getraenke")
-    flag_modified(bk_func, "rpreis")
-    flag_modified(bk_func, "rpersonen")
-    flag_modified(bk_func, "nadkarte")  
+
 
     pass
 
-    # b_storno = get_cache (B_storno, {"bankettnr": [(eq, resnr)],"breslinnr": [(eq, resline)]})
-    b_storno = db_session.query(B_storno).filter(
-             (B_storno.bankettnr == resnr) &
-             (B_storno.breslinnr == resline)).with_for_update().first()
+    b_storno = get_cache (B_storno, {"bankettnr": [(eq, resnr)],"breslinnr": [(eq, resline)]})
 
     if not b_storno:
         b_storno = B_storno()
@@ -175,8 +162,6 @@ def main_fs_proc_btn_stopbl(fsl_data:[Fsl], resnr:int, resline:int, curr_gastnr:
             elif b_storno.grund[9] != "":
                 b_storno.grund[9] = fsl.grund[9]
                 b_storno.usercode = b_storno.usercode + "10:" + user_init + ":" + to_string(get_current_date()) + ":" + to_string(get_current_time_in_seconds()) + ":" + "Change Amandement 10" + ";"
-    flag_modified(b_storno, "grund")
-    flag_modified(b_storno, "usercode")
 
     for b_storno in db_session.query(B_storno).filter(
              (B_storno.bankettnr == resnr) & (B_storno.breslinnr == resline) & (B_storno.gastnr == curr_gastnr)).order_by(B_storno._recid).all():

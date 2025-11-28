@@ -1,9 +1,0 @@
-{
-    "H_bill": {
-        "read": [
-            "rgdruck",
-            "_recid"
-        ],
-        "write": []
-    }
-}
