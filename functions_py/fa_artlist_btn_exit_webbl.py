@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ==================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# ==================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -40,7 +45,9 @@ def fa_artlist_btn_exit_webbl(flag:int, mathis_nr:int, spec:string, locate:strin
         avail_counter:bool = False
         last_counter:int = 0
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 17)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 17)]})
+        counters = db_session.query(Counters).filter(
+                 (Counters.counter_no == 17)).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -131,7 +138,9 @@ def fa_artlist_btn_exit_webbl(flag:int, mathis_nr:int, spec:string, locate:strin
         next_mon:int = 0
         next_yr:int = 0
 
-        mathis = get_cache (Mathis, {"nr": [(eq, mathis_nr)]})
+        # mathis = get_cache (Mathis, {"nr": [(eq, mathis_nr)]})
+        mathis = db_session.query(Mathis).filter(
+                 (Mathis.nr == mathis_nr)).with_for_update().first()
 
         if mathis:
             pass
@@ -151,9 +160,12 @@ def fa_artlist_btn_exit_webbl(flag:int, mathis_nr:int, spec:string, locate:strin
                 mathis.flag = 2
             else:
                 mathis.flag = 1
-            pass
+            # pass
+            db_session.refresh(mathis,with_for_update=True)
 
-            fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, mathis_nr)]})
+            # fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, mathis_nr)]})
+            fa_artikel = db_session.query(Fa_artikel).filter(
+                     (Fa_artikel.nr == mathis_nr)).with_for_update().first()
 
             if fa_artikel:
                 pass
@@ -201,7 +213,8 @@ def fa_artlist_btn_exit_webbl(flag:int, mathis_nr:int, spec:string, locate:strin
                     queasy.date1 = fa_art.start_date
 
 
-                pass
+                # pass
+                db_session.refresh(fa_artikel,with_for_update=True)
 
                 if curr_location != mathis.location:
                     mhis_line = Mhis_line()

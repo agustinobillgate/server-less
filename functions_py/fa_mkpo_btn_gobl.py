@@ -11,9 +11,9 @@ from decimal import Decimal
 from datetime import date
 from models import Fa_order, Waehrung, Fa_ordheader, Htparam, Fa_counter
 
-tfa_order_data, Tfa_order = create_model_like(Fa_order, {"nr_budget":int})
+tfa_order_data, Tfa_order = create_model_like(Fa_order)
 
-def fa_mkpo_btn_go_webbl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:string, local_nr:int, order_nr:string, pr_nr:string, order_date:date, order_type:string, order_name:string, comments:string, supplier_nr:int, dept_nr:int, credit_term:int, paymentdate:date, expected_delivery:date, user_init:string, billdate:date, t_amount:Decimal, appr_1:bool, answer:bool):
+def fa_mkpo_btn_gobl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:string, local_nr:int, order_nr:string, pr_nr:string, order_date:date, order_type:string, order_name:string, comments:string, supplier_nr:int, dept_nr:int, credit_term:int, paymentdate:date, expected_delivery:date, user_init:string, billdate:date, t_amount:Decimal, appr_1:bool, answer:bool):
 
     prepare_cache ([Fa_order, Waehrung, Fa_ordheader, Htparam, Fa_counter])
 
@@ -87,7 +87,11 @@ def fa_mkpo_btn_go_webbl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:strin
 
                 # fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 0)],"yy": [(eq, yy)],"mm": [(eq, mm)],"dd": [(eq, dd)],"docu_type": [(eq, 0)]})
                 fa_counter = db_session.query(Fa_counter).filter(
-                         (Fa_counter.count_type == 0) & (Fa_counter.yy == yy) & (Fa_counter.mm == mm) & (Fa_counter.dd == dd) & (Fa_counter.docu_type == 0)).with_for_update().first()
+                    (Fa_counter.count_type == 0) &
+                    (Fa_counter.yy == yy) &
+                    (Fa_counter.mm == mm) &
+                    (Fa_counter.dd == dd) &
+                    (Fa_counter.docu_type == 0)).with_for_update().first()
 
                 if not fa_counter:
                     fa_counter = Fa_counter()
@@ -106,9 +110,11 @@ def fa_mkpo_btn_go_webbl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:strin
                 docu_nr = s + to_string(dd, "99") + to_string(i, "999")
             else:
 
-                # fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 1)],"yy": [(eq, yy)],"mm": [(eq, mm)],"docu_type": [(eq, 0)]})
                 fa_counter = db_session.query(Fa_counter).filter(
-                         (Fa_counter.count_type == 1) & (Fa_counter.yy == yy) & (Fa_counter.mm == mm) & (Fa_counter.docu_type == 0)).with_for_update().first()
+                    (Fa_counter.count_type == 1) &
+                    (Fa_counter.yy == yy) &
+                    (Fa_counter.mm == mm) &
+                    (Fa_counter.docu_type == 0)).with_for_update().first()
 
                 if not fa_counter:
                     fa_counter = Fa_counter()
@@ -157,7 +163,11 @@ def fa_mkpo_btn_go_webbl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:strin
 
                 # fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 0)],"yy": [(eq, yy)],"mm": [(eq, mm)],"dd": [(eq, dd)],"docu_type": [(eq, 0)]})
                 fa_counter = db_session.query(Fa_counter).filter(
-                         (Fa_counter.count_type == 0) & (Fa_counter.yy == yy) & (Fa_counter.mm == mm) & (Fa_counter.dd == dd) & (Fa_counter.docu_type == 0)).with_for_update().first()
+                    (Fa_counter.count_type == 0) &
+                    (Fa_counter.yy == yy) &
+                    (Fa_counter.mm == mm) &
+                    (Fa_counter.dd == dd) &
+                    (Fa_counter.docu_type == 0)).with_for_update().first()
 
                 if not fa_counter:
                     fa_counter = Fa_counter()
@@ -174,13 +184,17 @@ def fa_mkpo_btn_go_webbl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:strin
                 else:
                     # pass
                     fa_counter.counters = fa_counter.counters + 1
+
                     db_session.refresh(fa_counter,with_for_update=True)
                     # pass
             else:
 
                 # fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 1)],"yy": [(eq, yy)],"mm": [(eq, mm)],"docu_type": [(eq, 0)]})
                 fa_counter = db_session.query(Fa_counter).filter(
-                         (Fa_counter.count_type == 1) & (Fa_counter.yy == yy) & (Fa_counter.mm == mm) & (Fa_counter.docu_type == 0)).with_for_update().first()
+                    (Fa_counter.count_type == 1) &
+                    (Fa_counter.yy == yy) &
+                    (Fa_counter.mm == mm) &
+                    (Fa_counter.docu_type == 0)).with_for_update().first()
 
                 if not fa_counter:
                     fa_counter = Fa_counter()
@@ -197,8 +211,9 @@ def fa_mkpo_btn_go_webbl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:strin
                 else:
                     # pass
                     fa_counter.counters = fa_counter.counters + 1
-                    # pass
+
                     db_session.refresh(fa_counter,with_for_update=True)
+                    # pass
 
 
     tfa_order = query(tfa_order_data, first=True)
@@ -259,25 +274,24 @@ def fa_mkpo_btn_go_webbl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:strin
         db_session.add(fa_order)
 
         fa_order.order_nr = order_nr
-        fa_order.fa_nr = tfa_order.fa_nr
-        fa_order.order_qty = tfa_order.order_qty
-        fa_order.order_price =  to_decimal(tfa_order.order_price)
-        fa_order.discount1 =  to_decimal(tfa_order.discount1)
-        fa_order.discount2 =  to_decimal(tfa_order.discount2)
-        fa_order.vat =  to_decimal(tfa_order.vat)
-        fa_order.order_amount =  to_decimal(tfa_order.order_amount)
-        fa_order.fa_remarks = tfa_order.fa_remarks
-        fa_order.create_by = tfa_order.create_by
-        fa_order.create_date = tfa_order.create_date
-        fa_order.create_time = tfa_order.create_time
-        fa_order.statflag = tfa_order.statflag
+        fa_order.fa_nr = tfa_order.Fa_Nr
+        fa_order.order_qty = tfa_order.Order_Qty
+        fa_order.order_price =  to_decimal(tfa_order.Order_Price)
+        fa_order.discount1 =  to_decimal(tfa_order.Discount1)
+        fa_order.discount2 =  to_decimal(tfa_order.Discount2)
+        fa_order.vat =  to_decimal(tfa_order.VAT)
+        fa_order.order_amount =  to_decimal(tfa_order.Order_Amount)
+        fa_order.fa_remarks = tfa_order.Fa_remarks
+        fa_order.create_by = tfa_order.Create_By
+        fa_order.create_date = tfa_order.Create_Date
+        fa_order.create_time = tfa_order.Create_Time
+        fa_order.statflag = tfa_order.statFlag
         fa_order.fa_pos = repos
         fa_order.op_art = tfa_order.op_art
         fa_order.activeflag = 0
         fa_order.create_by = user_init
         fa_order.create_date = billdate
         fa_order.create_time = get_current_time_in_seconds()
-        fa_order.activereason = to_string(tfa_order.nr_budget)
 
 
         tfa_order_data.remove(tfa_order)
