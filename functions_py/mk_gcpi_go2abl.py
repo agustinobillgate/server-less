@@ -2,6 +2,12 @@
 #---------------------------------------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #---------------------------------------------------------------------
+
+# =============================================
+# Rulita, 28-11-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -20,7 +26,7 @@ def mk_gcpi_go2abl(pvilanguage:int, journaltype:int, pbuff_betrag:Decimal, pbuff
 
     inv_list = None
 
-    db_session = local_storage.
+    db_session = local_storage.db_session
     ret_acctno = ret_acctno.strip()
     user_init = user_init.strip()
     docu_nr = docu_nr.strip()
