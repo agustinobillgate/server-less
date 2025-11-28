@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -7,7 +9,10 @@ from functions.check_rpaymentbl import check_rpaymentbl
 from functions.ts_splitbill_update_billbl import ts_splitbill_update_billbl
 from models import H_bill_line, Guest, H_bill, H_artikel, Queasy
 
-def ts_splitbill_btn_transfer_paytype1bl(pvilanguage:int, rec_id_h_bill:int, dept:int, guestnr:int, paid:Decimal, price_decimal:int, transdate:date, change_str:string, tischnr:int, add_zeit:int, curr_select:int, hoga_card:string, cancel_str:string, curr_waiter:int, amount_foreign:Decimal, curr_room:string, user_init:string, cc_comment:string):
+def ts_splitbill_btn_transfer_paytype1bl(pvilanguage:int, rec_id_h_bill:int, dept:int, guestnr:int, paid:Decimal,
+                                          price_decimal:int, transdate:date, change_str:string, tischnr:int, add_zeit:int, 
+                                          curr_select:int, hoga_card:string, cancel_str:string, curr_waiter:int, amount_foreign:Decimal, 
+                                          curr_room:string, user_init:string, cc_comment:string):
 
     prepare_cache ([H_bill, H_artikel])
 
@@ -27,9 +32,12 @@ def ts_splitbill_btn_transfer_paytype1bl(pvilanguage:int, rec_id_h_bill:int, dep
     t_h_bill_line_data, T_h_bill_line = create_model_like(H_bill_line, {"rec_id":int})
 
     Bill_guest = create_buffer("Bill_guest",Guest)
-
-
     db_session = local_storage.db_session
+    hoga_card = hoga_card.strip()
+    cancel_str = cancel_str.strip()
+    change_str = change_str.strip()
+    curr_room = curr_room.strip()
+    cc_comment = cc_comment.strip()
 
     def generate_output():
         nonlocal billart, qty, description, amount, price, bill_date, fl_code, msg_str, t_h_bill_line_data, h_bill_line, guest, h_bill, h_artikel, queasy
@@ -53,7 +61,8 @@ def ts_splitbill_btn_transfer_paytype1bl(pvilanguage:int, rec_id_h_bill:int, dep
         nonlocal t_h_bill_line_data
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & (Queasy.number2 >= 0) & (Queasy.deci2 >= 0)).order_by(Queasy._recid).all():
+                 (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) &
+                   (Queasy.number2 >= 0) & (Queasy.deci2 >= 0)).order_by(Queasy._recid).with_for_update().all():
             db_session.delete(queasy)
         pass
 

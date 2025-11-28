@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -84,17 +86,36 @@ def ts_splitbill_btn_transfer_paytype5bl(curr_select:int, rec_id_h_bill:int, p_a
                 h_mwst =  to_decimal("0")
                 amount =  to_decimal("0")
 
-                h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, h_art.artnr)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, h_art.artnr)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                h_umsatz = db_session.query(H_umsatz).filter(
+                         (H_umsatz.artnr == h_art.artnr) &
+                         (H_umsatz.departement == h_art.departement) &
+                         (H_umsatz.datum == h_bline.bill_datum)).with_for_update().first()
+                
                 h_umsatz.betrag =  to_decimal(h_umsatz.betrag) - to_decimal(h_bline.betrag)
                 h_umsatz.anzahl = h_umsatz.anzahl - h_bline.anzahl
                 pass
 
-                umsatz = get_cache (Umsatz, {"artnr": [(eq, h_art.artnrfront)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                # umsatz = get_cache (Umsatz, {"artnr": [(eq, h_art.artnrfront)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                umsatz = db_session.query(Umsatz).filter(
+                         (Umsatz.artnr == h_art.artnrfront) &
+                         (Umsatz.departement == h_art.departement) &
+                         (Umsatz.datum == h_bline.bill_datum)).with_for_update().first()
+                
                 umsatz.betrag =  to_decimal(umsatz.betrag) - to_decimal(h_bline.betrag)
                 umsatz.anzahl = umsatz.anzahl - h_bline.anzahl
                 pass
 
-                h_journal = get_cache (H_journal, {"bill_datum": [(eq, h_bline.bill_datum)],"zeit": [(eq, h_bline.zeit)],"sysdate": [(eq, h_bline.sysdate)],"artnr": [(eq, h_bline.artnr)],"departement": [(eq, h_bline.departement)]})
+                # h_journal = get_cache (H_journal, {"bill_datum": [(eq, h_bline.bill_datum)],"zeit": [(eq, h_bline.zeit)],
+                #                                    "sysdate": [(eq, h_bline.sysdate)],"artnr": [(eq, h_bline.artnr)],"departement": [(eq, h_bline.departement)]})
+                
+                h_journal = db_session.query(H_journal).filter(
+                         (H_journal.bill_datum == h_bline.bill_datum) &
+                         (H_journal.zeit == h_bline.zeit) &
+                         (H_journal.sysdate == h_bline.sysdate) &
+                         (H_journal.artnr == h_bline.artnr) &
+                         (H_journal.departement == h_bline.departement)).with_for_update().first()
+                
                 h_journal.betrag =  to_decimal(h_bline.betrag)
                 pass
                 pass
@@ -167,7 +188,10 @@ def ts_splitbill_btn_transfer_paytype5bl(curr_select:int, rec_id_h_bill:int, p_a
 
                 if gl_acct:
 
-                    gl_cost = get_cache (Gl_cost, {"fibukonto": [(eq, gl_acct.fibukonto)],"datum": [(eq, bill_date)]})
+                    # gl_cost = get_cache (Gl_cost, {"fibukonto": [(eq, gl_acct.fibukonto)],"datum": [(eq, bill_date)]})
+                    gl_cost = db_session.query(Gl_cost).filter(
+                             (Gl_cost.fibukonto == gl_acct.fibukonto) &
+                             (Gl_cost.datum == bill_date)).with_for_update().first()
 
                     if not gl_cost:
                         gl_cost = Gl_cost()
@@ -189,7 +213,10 @@ def ts_splitbill_btn_transfer_paytype5bl(curr_select:int, rec_id_h_bill:int, p_a
 
                 if gl_acct:
 
-                    gl_cost = get_cache (Gl_cost, {"fibukonto": [(eq, gl_acct.fibukonto)],"datum": [(eq, bill_date)]})
+                    # gl_cost = get_cache (Gl_cost, {"fibukonto": [(eq, gl_acct.fibukonto)],"datum": [(eq, bill_date)]})
+                    gl_cost = db_session.query(Gl_cost).filter(
+                             (Gl_cost.fibukonto == gl_acct.fibukonto) &
+                             (Gl_cost.datum == bill_date)).with_for_update().first()
 
                     if not gl_cost:
                         gl_cost = Gl_cost()
@@ -217,7 +244,8 @@ def ts_splitbill_btn_transfer_paytype5bl(curr_select:int, rec_id_h_bill:int, p_a
         nonlocal t_h_bill_line_data
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & (Queasy.number2 >= 0) & (Queasy.deci2 >= 0)).order_by(Queasy._recid).all():
+                 (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & 
+                 (Queasy.number2 >= 0) & (Queasy.deci2 >= 0)).order_by(Queasy._recid).with_for_update().all():
             db_session.delete(queasy)
         pass
 
