@@ -2,6 +2,12 @@
 #----------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #----------------------------------------
+
+# =============================================
+# Rulita, 28-11-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -119,20 +125,21 @@ def fa_upgrade_btn_gobl(g_list_data:[G_list], p_nr:int, nr:int, amt:Decimal, use
         Fa_art =  create_buffer("Fa_art",Fa_artikel)
         Mhis =  create_buffer("Mhis",Mathis)
 
-        fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, p_nr)]})
+        # fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, p_nr)]})
+        fa_artikel = db_session.query(Fa_artikel).filter(
+                 (Fa_artikel.nr == p_nr)).with_for_update().first()
 
         if fa_artikel:
             qty =  to_decimal(fa_artikel.anzahl)
             orig_bookval =  to_decimal(fa_artikel.book_wert)
 
-
-            pass
+            # pass
             fa_artikel.posted = True
             fa_artikel.warenwert =  to_decimal(fa_artikel.warenwert) + to_decimal(amt)
             fa_artikel.book_wert =  to_decimal(fa_artikel.book_wert) + to_decimal(amt)
 
-
-            pass
+            # pass
+            db_session.refresh(fa_artikel,with_for_update=True)
 
             mhis = get_cache (Mathis, {"nr": [(eq, p_nr)]})
 

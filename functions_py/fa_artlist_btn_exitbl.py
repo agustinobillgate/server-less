@@ -2,6 +2,12 @@
 #---------------------------------------------------
 # Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
 #---------------------------------------------------
+
+# ==================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# ==================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Mathis, Fa_artikel, Counters, Mhis_line
@@ -126,7 +132,9 @@ def fa_artlist_btn_exitbl(flag:int, mathis_nr:int, spec:string, locate:string, p
 
         nonlocal m_list, fa_art
 
-        mathis = get_cache (Mathis, {"nr": [(eq, mathis_nr)]})
+        # mathis = get_cache (Mathis, {"nr": [(eq, mathis_nr)]})
+        mathis = db_session.query(Mathis).filter(
+                 (Mathis.nr == mathis_nr)).with_for_update().first()
         mathis.datum = m_list.datum
         mathis.name = m_list.name
         mathis.supplier = m_list.supplier
@@ -145,7 +153,9 @@ def fa_artlist_btn_exitbl(flag:int, mathis_nr:int, spec:string, locate:string, p
             mathis.flag = 1
         pass
 
-        fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, mathis_nr)]})
+        # fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, mathis_nr)]})
+        fa_artikel = db_session.query(Fa_artikel).filter(
+                 (Fa_artikel.nr == mathis_nr)).with_for_update().first()
         fa_artikel.lief_nr = fa_art.lief_nr
         fa_artikel.gnr = fa_art.gnr
         fa_artikel.subgrp = fa_art.subgrp

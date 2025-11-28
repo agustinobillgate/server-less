@@ -2,6 +2,12 @@
 #----------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #----------------------------------------
+
+# ==================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# ==================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -140,11 +146,10 @@ def fa_move_move_itbl(location_str:string, qty:int, user_init:string, artnr:int)
             pass
 
             if fa_artikel.anzahl == qty:
-                pass
+                # pass
                 mathis.location = location_str
-
-
-                pass
+                db_session.refresh(mathis,with_for_update=True)
+                # pass
             else:
 
                 # counters = get_cache (Counters, {"counter_no": [(eq, 17)]})
@@ -192,13 +197,16 @@ def fa_move_move_itbl(location_str:string, qty:int, user_init:string, artnr:int)
                 fa_artikel.changed = get_current_date()
 
 
-                pass
+                # pass
+                db_session.refresh(fa_artikel,with_for_update=True)
 
-    mathis = get_cache (Mathis, {"nr": [(eq, artnr)]})
+#     mathis = get_cache (Mathis, {"nr": [(eq, artnr)]})
+        mathis = db_session.query(Mathis).filter(Mathis.nr == artnr).with_for_update().first()
 
     if mathis:
 
-        fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, artnr)]})
+        # fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, artnr)]})
+        fa_artikel = db_session.query(Fa_artikel).filter(Fa_artikel.nr == artnr).with_for_update().first()
 
         if fa_artikel:
             move_it()

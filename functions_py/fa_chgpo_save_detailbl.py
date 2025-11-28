@@ -1,36 +1,31 @@
 #using conversion tools version: 1.0.0.117
 
-# ============================================================
+# ==================================
 # Rulita, 27-11-2025
 # - Added with_for_update all query 
-# - Fixing issue return generate_output() not correct position
-# ============================================================
+# ==================================
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from models import Fa_order, Fa_ordheader, Queasy
+from models import Fa_order, Fa_ordheader
 
-s_order_data, S_order = create_model_like(Fa_order, {"nr_budget":int})
+s_order_data, S_order = create_model_like(Fa_order)
 
-def fa_chgpo_save_detail_webbl(s_order_data:[S_order], order_nr:string, credit_term:int, curr:int, dept_nr:int, 
-                               order_date:date, supplier_nr:int, expected_delivery:date, order_type:string, 
-                               order_name:string, comments:string, user_init:string, 
-                               billdate:date, appr_1:bool):
+def fa_chgpo_save_detailbl(s_order_data:[S_order], order_nr:string, credit_term:int, curr:int, dept_nr:int, order_date:date, supplier_nr:int, expected_delivery:date, order_type:string, order_name:string, comments:string, user_init:string, billdate:date, appr_1:bool):
 
     prepare_cache ([Fa_ordheader])
 
     pos:int = 0
     total_order:Decimal = to_decimal("0.0")
-    pr_nr:string = ""
-    fa_order = fa_ordheader = queasy = None
+    fa_order = fa_ordheader = None
 
     s_order = None
 
     db_session = local_storage.db_session
 
     def generate_output():
-        nonlocal pos, total_order, pr_nr, fa_order, fa_ordheader, queasy
+        nonlocal pos, total_order, fa_order, fa_ordheader
         nonlocal order_nr, credit_term, curr, dept_nr, order_date, supplier_nr, expected_delivery, order_type, order_name, comments, user_init, billdate, appr_1
 
 
@@ -56,10 +51,6 @@ def fa_chgpo_save_detail_webbl(s_order_data:[S_order], order_nr:string, credit_t
         fa_ordheader.modified_by = user_init
         fa_ordheader.modified_date = billdate
         fa_ordheader.modified_time = get_current_time_in_seconds()
-        pr_nr = fa_ordheader.pr_nr
-    else:
-        # Rulita, 27-11-2025 | Fixing issue return generate_output() not correct position
-        # return generate_output()
 
         if fa_ordheader.approved_1 == False and appr_1 :
             fa_ordheader.approved_1 = appr_1
@@ -86,10 +77,6 @@ def fa_chgpo_save_detail_webbl(s_order_data:[S_order], order_nr:string, credit_t
              (Fa_order.order_nr == (order_nr).lower())).order_by(Fa_order._recid).all():
         db_session.delete(fa_order)
 
-    for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 315) & (Queasy.char1 == (order_nr).lower()) & (Queasy.char2 == (pr_nr).lower())).order_by(Queasy._recid).all():
-        db_session.delete(queasy)
-
     for s_order in query(s_order_data):
         pos = pos + 1
         total_order =  to_decimal(total_order) + to_decimal(s_order.order_amount)
@@ -110,11 +97,7 @@ def fa_chgpo_save_detail_webbl(s_order_data:[S_order], order_nr:string, credit_t
         fa_order.op_art = 2
         fa_order.last_id = user_init
 
-        # if s_order.ActiveReason != "" and s_order.ActiveReason != None:
-        if s_order.activereason not in ("", None):
-            fa_order.activereason = s_order.activereason
-        else:
-            fa_order.activereason = to_string(s_order.nr_budget)
+
     fa_ordheader.total_amount =  to_decimal(total_order)
 
     return generate_output()

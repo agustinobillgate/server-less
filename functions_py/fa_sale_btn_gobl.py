@@ -2,6 +2,12 @@
 #----------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #----------------------------------------
+
+# =============================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -108,15 +114,18 @@ def fa_sale_btn_gobl(g_list_data:[G_list], amt:Decimal, nr:int, datum:date, refn
         if remains == 0.01 or remains == - 0.01:
             remains =  to_decimal("0")
 
-        gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, journal_nr)]})
+        # gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, journal_nr)]})
+        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+                 (Gl_jouhdr.jnr == journal_nr)).with_for_update().first()
 
         if gl_jouhdr:
-            pass
+            # pass
             gl_jouhdr.credit =  to_decimal(credits)
             gl_jouhdr.debit =  to_decimal(debits)
             gl_jouhdr.remain =  to_decimal(remains)
-            pass
-            pass
+            # pass
+            # pass
+            db_session.refresh(gl_jouhdr,with_for_update=True)
 
 
     def update_fix_asset():
@@ -130,7 +139,9 @@ def fa_sale_btn_gobl(g_list_data:[G_list], amt:Decimal, nr:int, datum:date, refn
 
         orig_bookval:Decimal = to_decimal("0.0")
 
-        fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, nr)]})
+        # fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, nr)]})
+        fa_artikel = db_session.query(Fa_artikel).filter(
+                 (Fa_artikel.nr == nr)).with_for_update().first()
 
         if fa_artikel:
             sold_out = (fa_artikel.anzahl == qty)
@@ -147,7 +158,8 @@ def fa_sale_btn_gobl(g_list_data:[G_list], amt:Decimal, nr:int, datum:date, refn
                 fa_artikel.depn_wert =  to_decimal(fa_artikel.depn_wert) - to_decimal(depn_wert)
                 fa_artikel.book_wert =  to_decimal(fa_artikel.book_wert) - to_decimal(book_wert)
             fa_artikel.did = user_init
-            pass
+            # pass
+            db_session.refresh(fa_artikel,with_for_update=True)
             mhis_line = Mhis_line()
             db_session.add(mhis_line)
 
