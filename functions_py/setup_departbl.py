@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Hoteldpt, Htparam, Umsatz
@@ -68,7 +70,7 @@ def setup_departbl(icase:int, depart_list_data:[Depart_list]):
             while True:
 
                 htlbuff = db_session.query(Htlbuff).filter(
-                         (Htlbuff.num == dept_code)).first()
+                         (Htlbuff.num == dept_code))..first()
 
                 if not htlbuff:
                     hoteldpt.num = dept_code
@@ -81,7 +83,8 @@ def setup_departbl(icase:int, depart_list_data:[Depart_list]):
 
         if depart_list:
 
-            hoteldpt = get_cache (Hoteldpt, {"num": [(eq, depart_list.num)]})
+            # hoteldpt = get_cache (Hoteldpt, {"num": [(eq, depart_list.num)]})
+            hoteldpt = db_session.query(Hoteldpt).filter(Hoteldpt.num == depart_list.num).with_for_update().first()
 
             if not hoteldpt:
                 hoteldpt = Hoteldpt()
@@ -96,128 +99,127 @@ def setup_departbl(icase:int, depart_list_data:[Depart_list]):
 
 
                 adjust_hoteldpt_num()
-                pass
-                pass
+                
 
         hoteldpt = get_cache (Hoteldpt, {"departtyp": [(eq, 4)]})
 
         if hoteldpt:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 900)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 900)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 900).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
+                
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 900)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 900)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 900).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
+                
 
         hoteldpt = get_cache (Hoteldpt, {"departtyp": [(eq, 3)]})
 
         if hoteldpt:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 1081)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 1081)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1081).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
+                
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 1081)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 1081)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1081).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
+                
 
         hoteldpt = get_cache (Hoteldpt, {"departtyp": [(eq, 2)]})
 
         if hoteldpt:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 570)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 570)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 570).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
+                
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 949)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 949)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 949).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
+                
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 570)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 570)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 570).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
+                
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 949)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 949)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 949).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
+                
 
         hoteldpt = get_cache (Hoteldpt, {"departtyp": [(eq, 5)]})
 
         if hoteldpt:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 1082)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 1082)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1082).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
+                
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 1082)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 1082)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1082).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
+                
 
         for hoteldpt in db_session.query(Hoteldpt).order_by(Hoteldpt._recid).all():
             dept_list = Dept_list()
@@ -238,7 +240,8 @@ def setup_departbl(icase:int, depart_list_data:[Depart_list]):
 
                 return generate_output()
 
-            hoteldpt = get_cache (Hoteldpt, {"num": [(eq, depart_list.num)]})
+            # hoteldpt = get_cache (Hoteldpt, {"num": [(eq, depart_list.num)]})
+            hoteldpt = db_session.query(Hoteldpt).filter(Hoteldpt.num == depart_list.num).with_for_update().first()
 
             if hoteldpt:
                 pass
@@ -249,121 +252,121 @@ def setup_departbl(icase:int, depart_list_data:[Depart_list]):
 
         if hoteldpt:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 900)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 900)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 900).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
+                
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 900)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 900)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 900).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
+                
 
         hoteldpt = get_cache (Hoteldpt, {"departtyp": [(eq, 3)]})
 
         if hoteldpt:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 1081)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 1081)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1081).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
+                
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 1081)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 1081)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1081).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
+                
 
         hoteldpt = get_cache (Hoteldpt, {"departtyp": [(eq, 2)]})
 
         if hoteldpt:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 570)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 570)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 570).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
+                
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 949)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 949)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 949).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
+                
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 570)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 570)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 570).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
+                
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 949)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 949)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 949).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
+                
 
         hoteldpt = get_cache (Hoteldpt, {"departtyp": [(eq, 5)]})
 
         if hoteldpt:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 1082)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 1082)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1082).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = hoteldpt.num
 
 
-                pass
-                pass
+                
         else:
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 1082)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 1082)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1082).with_for_update().first()
 
             if htparam:
                 pass
                 htparam.finteger = 0
 
 
-                pass
-                pass
+                
 
         for hoteldpt in db_session.query(Hoteldpt).order_by(Hoteldpt._recid).all():
             dept_list = Dept_list()

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -54,14 +56,16 @@ def prepare2_main0(pvilanguage:int):
 
             htp2 = get_cache (Htparam, {"paramnr": [(eq, 724)]})
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 110).with_for_update().first()
 
             if htparam.fdate != get_current_date():
                 pass
                 htparam.fdate = get_current_date()
                 pass
 
-            htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+            # htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
+            htparam = db_session.query(Htparam).filter(Htparam.paramnr == 87).with_for_update().first()
 
             if htparam.fdate != get_current_date():
                 pass
@@ -90,7 +94,8 @@ def prepare2_main0(pvilanguage:int):
 
             elif (htparam.fdate - notice_day) <= get_current_date():
 
-                htp1 = get_cache (Htparam, {"paramnr": [(eq, 1072)]})
+                # htp1 = get_cache (Htparam, {"paramnr": [(eq, 1072)]})
+                htp1 = db_session.query(Htparam).filter(Htparam.paramnr == 1072).with_for_update().first()
                 htp1.finteger = 1072
 
 
@@ -113,10 +118,10 @@ def prepare2_main0(pvilanguage:int):
 
             if htparam.flogical or (htp1.finteger == 1072):
 
-                htparam = get_cache (Htparam, {"paramnr": [(eq, 996)]})
+                # htparam = get_cache (Htparam, {"paramnr": [(eq, 996)]})
+                htparam = db_session.query(Htparam).filter(Htparam.paramnr == 996).with_for_update().first()
                 htparam.fchar = ""
-                pass
-                pass
+                
                 htp1.finteger = 1027
 
 

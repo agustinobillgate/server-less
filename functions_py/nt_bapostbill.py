@@ -11,8 +11,6 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bk_rart, Htparam, Waehrung, Bk_reser, Bk_veran, Guest, Counters, Bill, Bk_func, Artikel, Bill_line, Umsatz, Billjournal
-from functions.next_counter_for_update import next_counter_for_update
-
 
 def nt_bapostbill():
 
@@ -43,8 +41,6 @@ def nt_bapostbill():
 
 
     db_session = local_storage.db_session
-    last_count = 0
-    error_lock = ""
 
 
     def generate_output():
@@ -121,7 +117,9 @@ def nt_bapostbill():
 
             pass
 
-            umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+            # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+            umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
             if not umsatz:
                 umsatz = Umsatz()
@@ -186,12 +184,16 @@ def nt_bapostbill():
             exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
 
     for bk_reser in db_session.query(Bk_reser).filter(
-                 (Bk_reser.datum == bill_date) & (Bk_reser.von_zeit >= ("00:00").lower()) & (Bk_reser.resstatus == 1) & (Bk_reser.fakturiert == 0)).order_by(Bk_reser.veran_nr).all():
+                 (Bk_reser.datum == bill_date) & 
+                 (Bk_reser.von_zeit >= ("00:00").lower()) & 
+                 (Bk_reser.resstatus == 1) & 
+                 (Bk_reser.fakturiert == 0)).order_by(Bk_reser.veran_nr).with_for_update().all():
 
         if curr_resnr != bk_reser.veran_nr:
             curr_resnr = bk_reser.veran_nr
 
-            bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, curr_resnr)]})
+            # bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, curr_resnr)]})
+            bk_veran = db_session.query(Bk_veran).filter(Bk_veran.veran_nr == curr_resnr).with_for_update().first()
 
             guest = get_cache (Guest, {"gastnr": [(eq, bk_veran.gastnrver)]})
             deposit_amount =  to_decimal("0")
@@ -201,9 +203,9 @@ def nt_bapostbill():
             if bk_veran.rechnr == 0:
 
                 # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                # counters.counter = counters.counter + 1
+                counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+                counters.counter = counters.counter + 1
                 
-                last_count, error_lock = get_output(next_counter_for_update(3))
 
                 pass
                 bill = Bill()
@@ -215,8 +217,7 @@ def nt_bapostbill():
                         " " + guest.vorname1
                 bill.reslinnr = 1
                 bill.rgdruck = 1
-                # bill.rechnr = counters.counter
-                bill.rechnr = last_count
+                bill.rechnr = counters.counter
                 
                 bill.flag = 0
 
@@ -258,7 +259,8 @@ def nt_bapostbill():
                 amount_foreign =  to_decimal(amount) / to_decimal(exchg_rate)
                 create_bill_line(bk_rart.veran_artnr, bk_rart.anzahl, False)
 
-                rbuff = get_cache (Bk_rart, {"_recid": [(eq, bk_rart._recid)]})
+                # rbuff = get_cache (Bk_rart, {"_recid": [(eq, bk_rart._recid)]})
+                rbuff = db_session.query(Bk_rart).filter(Bk_rart._recid == bk_rart._recid).with_for_update().first()
                 rbuff.fakturiert = 1
                 pass
         pass
