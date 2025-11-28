@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.pr_sphbill1_cldbl import pr_sphbill1_cldbl
@@ -208,8 +210,8 @@ def printsplit_hbill_getsection_webbl(pvilanguage:int, user_init:string, print_a
                 print_list.str = ""
             outlet_split_bill.foot_note3 = trim(print_list.str)
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, hbrecid)]})
-    pass
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, hbrecid)]})
+    h_bill = db_session.query(H_bill).filter(H_bill._recid == hbrecid).with_for_update().first()
     h_bill.rgdruck = 1
     pass
     msg_str = "0-Success"

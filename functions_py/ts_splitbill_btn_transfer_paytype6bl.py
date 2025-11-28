@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -70,17 +72,31 @@ def ts_splitbill_btn_transfer_paytype6bl(rec_id_h_bill:int, curr_select:int, p_a
             else:
                 h_bline_obj_list[h_bline._recid] = True
 
-            h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, h_art.artnr)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+            # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, h_art.artnr)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+            h_umsatz = db_session.query(H_umsatz).filter(
+                     (H_umsatz.artnr == h_art.artnr) &
+                     (H_umsatz.departement == h_art.departement) &
+                     (H_umsatz.datum == h_bline.bill_datum)).with_for_update().first()
+            
             h_umsatz.betrag =  to_decimal(h_umsatz.betrag) - to_decimal(h_bline.betrag)
             h_umsatz.anzahl = h_umsatz.anzahl - h_bline.anzahl
             pass
 
             umsatz = get_cache (Umsatz, {"artnr": [(eq, h_art.artnrfront)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+            umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == h_art.artnrfront) &
+                     (Umsatz.departement == h_art.departement) &
+                     (Umsatz.datum == h_bline.bill_datum)).with_for_update().first()
+            
             umsatz.betrag =  to_decimal(umsatz.betrag) - to_decimal(h_bline.betrag)
             umsatz.anzahl = umsatz.anzahl - h_bline.anzahl
             pass
 
-            umsatz = get_cache (Umsatz, {"artnr": [(eq, kellner1.kumsatz_nr)],"departement": [(eq, h_bline.departement)],"datum": [(eq, h_bline.bill_datum)]})
+            # umsatz = get_cache (Umsatz, {"artnr": [(eq, kellner1.kumsatz_nr)],"departement": [(eq, h_bline.departement)],"datum": [(eq, h_bline.bill_datum)]})
+            umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == kellner1.kumsatz_nr) &
+                     (Umsatz.departement == h_bline.departement) &
+                     (Umsatz.datum == h_bline.bill_datum)).with_for_update().first()
             umsatz.betrag =  to_decimal(umsatz.betrag) - to_decimal(h_bline.betrag)
             umsatz.anzahl = umsatz.anzahl - h_bline.anzahl
             pass
@@ -107,7 +123,8 @@ def ts_splitbill_btn_transfer_paytype6bl(rec_id_h_bill:int, curr_select:int, p_a
         nonlocal t_h_bill_line_data
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & (Queasy.number2 >= 0) & (Queasy.deci2 >= 0)).order_by(Queasy._recid).all():
+                 (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & 
+                 (Queasy.number2 >= 0) & (Queasy.deci2 >= 0)).order_by(Queasy._recid).with_for_update().all():
             db_session.delete(queasy)
         pass
 

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill, Queasy
@@ -16,6 +18,7 @@ def ts_splitbill_get_update_guestbl(v_key:int, hbill_recid:int, curr_select:int,
     h_bill = queasy = None
 
     db_session = local_storage.db_session
+    guest_name = guest_name.strip()
 
     def generate_output():
         nonlocal success_flag, gname, bill_no, dept_no, main_guest, h_bill, queasy
@@ -35,7 +38,12 @@ def ts_splitbill_get_update_guestbl(v_key:int, hbill_recid:int, curr_select:int,
 
     if v_key == 1:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 286)],"number1": [(eq, bill_no)],"number2": [(eq, dept_no)],"number3": [(eq, curr_select)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 286)],"number1": [(eq, bill_no)],"number2": [(eq, dept_no)],"number3": [(eq, curr_select)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 286) &
+                 (Queasy.number1 == bill_no) &
+                 (Queasy.number2 == dept_no) &
+                 (Queasy.number3 == curr_select)).with_for_update().first()
 
         if not queasy:
 
@@ -73,7 +81,12 @@ def ts_splitbill_get_update_guestbl(v_key:int, hbill_recid:int, curr_select:int,
 
     elif v_key == 3:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 286)],"number1": [(eq, bill_no)],"number2": [(eq, dept_no)],"number3": [(eq, curr_select)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 286)],"number1": [(eq, bill_no)],"number2": [(eq, dept_no)],"number3": [(eq, curr_select)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 286) &
+                 (Queasy.number1 == bill_no) &
+                 (Queasy.number2 == dept_no) &
+                 (Queasy.number3 == curr_select)).with_for_update().first()
 
         if queasy:
             pass

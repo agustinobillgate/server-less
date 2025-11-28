@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -44,7 +46,8 @@ def ts_splitbill_update_billbl(rec_id_h_bill:int, rec_id_h_artikel:int, h_artart
 
         closed:bool = False
 
-        h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id_h_bill)]})
+        # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id_h_bill)]})
+        h_bill = db_session.query(H_bill).filter(H_bill._recid == rec_id_h_bill).with_for_update().first()
 
         if h_bill:
             pass
@@ -91,7 +94,12 @@ def ts_splitbill_update_billbl(rec_id_h_bill:int, rec_id_h_artikel:int, h_artart
 
             if billart != 0:
 
-                h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, billart)],"departement": [(eq, h_bill.departement)],"datum": [(eq, bill_date)]})
+                # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, billart)],"departement": [(eq, h_bill.departement)],"datum": [(eq, bill_date)]})
+                h_umsatz = db_session.query(H_umsatz).filter(
+                                (H_umsatz.artnr == billart) &
+                                (H_umsatz.departement == h_bill.departement) &
+                                (H_umsatz.datum == bill_date)
+                            ).with_for_update().first()
 
                 if not h_umsatz:
                     h_umsatz = H_umsatz()
@@ -129,7 +137,12 @@ def ts_splitbill_update_billbl(rec_id_h_bill:int, rec_id_h_artikel:int, h_artart
 
             if h_artart == 6:
 
-                umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+                # umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                                (Umsatz.artnr == h_artikel.artnrfront) &
+                                (Umsatz.departement == 0) &
+                                (Umsatz.datum == bill_date)
+                            ).with_for_update().first()
 
                 if umsatz:
                     pass
@@ -162,13 +175,14 @@ def ts_splitbill_update_billbl(rec_id_h_bill:int, rec_id_h_artikel:int, h_artart
             if curr_select > 0:
 
                 for h_bill_line in db_session.query(H_bill_line).filter(
-                         (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.waehrungsnr == curr_select) & (H_bill_line.departement == dept)).order_by(H_bill_line._recid).all():
+                         (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.waehrungsnr == curr_select) & 
+                         (H_bill_line.departement == dept)).order_by(H_bill_line._recid).with_for_update().all():
                     h_bill_line.paid_flag = 1
                 pass
             else:
 
                 for h_bill_line in db_session.query(H_bill_line).filter(
-                         (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == dept)).order_by(H_bill_line._recid).all():
+                         (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == dept)).order_by(H_bill_line._recid).with_for_update().all():
                     h_bill_line.paid_flag = 1
                 pass
 
@@ -275,7 +289,12 @@ def ts_splitbill_update_billbl(rec_id_h_bill:int, rec_id_h_artikel:int, h_artart
                 debitor.vesrdep =  - to_decimal(saldo_foreign)
             pass
 
-        umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, curr_art)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, curr_art)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                 (Umsatz.departement == 0) &
+                 (Umsatz.artnr == curr_art) &
+                 (Umsatz.datum == bill_date)
+            ).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()

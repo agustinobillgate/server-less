@@ -1,6 +1,6 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+# Rd, 24/11/2025, Update last counter 
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -9,7 +9,7 @@ from functions.rest_addgastinfo import rest_addgastinfo
 from functions.ts_splitbill_update_billbl import ts_splitbill_update_billbl
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from models import H_bill_line, Kellner, H_bill, Bill, H_artikel, Counters, Htparam, Artikel, Bill_line, Billjournal, H_journal, Queasy
-from functions.next_counter_for_update import next_counter_for_update
+from sqlalchemy.orm import flag_modified
 
 def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr_select:int, multi_vat:bool, balance:Decimal, 
                                            pay_type:int, transdate:date, price_decimal:int, exchg_rate:Decimal, foreign_rate:bool, 
@@ -40,8 +40,6 @@ def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr
     Kellner1 = create_buffer("Kellner1",Kellner)
 
     db_session = local_storage.db_session
-    last_count = 0
-    error_lock:string = ""
     change_str = change_str.strip()
     hoga_card = hoga_card.strip()
     cancel_str = cancel_str.strip()
@@ -97,15 +95,15 @@ def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr
 
             artikel = get_cache (Artikel, {"artnr": [(eq, kellner1.kcredit_nr)],"departement": [(eq, 0)]})
 
-            bill = get_cache (Bill, {"_recid": [(eq, bilrecid)]})
+            # bill = get_cache (Bill, {"_recid": [(eq, bilrecid)]})
+            bill = db_session.query(Bill).filter(Bill._recid == bilrecid).with_for_update().first()
 
             if bill.rechnr == 0:
 
                 # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                # counters.counter = counters.counter + 1
-                # bill.rechnr = counters.counter
-                last_count, error_lock = get_output(next_counter_for_update(3))
-                bill.rechnr = last_count
+                counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+                counters.counter = counters.counter + 1
+                bill.rechnr = counters.counter
 
                 pass
             update_bill_umsatz()
@@ -228,6 +226,7 @@ def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr
                 pass
             pass
             amount =  - to_decimal(amount)
+        flag_modified(bill, "mwst")
 
 
     def create_vat_list():
@@ -598,7 +597,8 @@ def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr
         nonlocal vat_list_data, t_h_bill_line_data
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & (Queasy.number2 >= 0) & (Queasy.deci2 >= 0)).order_by(Queasy._recid).all():
+                 (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & 
+                 (Queasy.number2 >= 0) & (Queasy.deci2 >= 0)).order_by(Queasy._recid).with_for_update().all():
             db_session.delete(queasy)
         pass
 
@@ -630,11 +630,9 @@ def ts_splitbill_btn_transfer_paytypegt1bl(rec_id_h_bill:int, bilrecid:int, curr
     if bill.rechnr == 0:
 
         # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-        # counters.counter = counters.counter + 1
-        # pass
-        # bill.rechnr = counters.counter
-        last_count, error_lock = get_output(next_counter_for_update(3))
-        bill.rechnr = last_count
+        counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+        counters.counter = counters.counter + 1
+        bill.rechnr = counters.counter
         
         pass
 
