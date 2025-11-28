@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Telephone
@@ -13,6 +15,10 @@ def read_telephonebl(case_type:int, int1:int, int2:int, char1:string, char2:stri
     t_telephone_data, T_telephone = create_model_like(Telephone)
 
     db_session = local_storage.db_session
+    char1 = char1.strip()
+    char2 = char2.strip()
+    char3 = char3.strip()
+    char4 = char4.strip()
 
     def generate_output():
         nonlocal t_telephone_data, telephone

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.intevent_1 import intevent_1
@@ -27,7 +29,9 @@ def messages_btn_messbl(t_messages_resnr:int, t_messages_reslinnr:int, rec_id:in
         messages.betriebsnr = 1
         pass
 
-    res_line = get_cache (Res_line, {"resnr": [(eq, t_messages_resnr)],"reslinnr": [(eq, t_messages_reslinnr)]})
+    # res_line = get_cache (Res_line, {"resnr": [(eq, t_messages_resnr)],"reslinnr": [(eq, t_messages_reslinnr)]})
+    res_line = db_session.query(Res_line).filter(
+             (Res_line.resnr == t_messages_resnr) & (Res_line.reslinnr == t_messages_reslinnr)).with_for_update().first()
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 310)]})
 

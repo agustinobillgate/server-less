@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Telephone
@@ -31,7 +33,9 @@ def write_telephonebl(case_type:int, int1:int, t_telephone_data:[T_telephone]):
 
     if case_type == 1:
 
-        telephone = get_cache (Telephone, {"_recid": [(eq, int1)]})
+        # telephone = get_cache (Telephone, {"_recid": [(eq, int1)]})
+        telephone = db_session.query(Telephone).filter(
+                 (Telephone._recid == int1)).with_for_update().first()
 
         if telephone:
             buffer_copy(t_telephone, telephone)

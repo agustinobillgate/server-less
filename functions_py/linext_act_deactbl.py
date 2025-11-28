@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.intevent_1 import intevent_1
@@ -49,7 +51,7 @@ def linext_act_deactbl(case_type:int, sameresno:bool, resnr:int, reslinnr:int):
         while None != interface:
 
             intbuff = db_session.query(Intbuff).filter(
-                         (Intbuff._recid == interface._recid)).first()
+                         (Intbuff._recid == interface._recid)).with_for_update().first()
             db_session.delete(intbuff)
             pass
 
@@ -77,7 +79,9 @@ def linext_act_deactbl(case_type:int, sameresno:bool, resnr:int, reslinnr:int):
 
             return
 
-        interface = get_cache (Interface, {"key": [(eq, 2)],"zinr": [(eq, res_line.zinr)],"decfield": [(le, 3)]})
+        # interface = get_cache (Interface, {"key": [(eq, 2)],"zinr": [(eq, res_line.zinr)],"decfield": [(le, 3)]})
+        interface = db_session.query(Interface).filter(
+                 (Interface.key == 2) & (Interface.zinr == res_line.zinr) & (Interface.decfield <= 3)).with_for_update().first()
         while None != interface:
             pass
             db_session.delete(interface)
@@ -92,7 +96,9 @@ def linext_act_deactbl(case_type:int, sameresno:bool, resnr:int, reslinnr:int):
             for rbuff in db_session.query(Rbuff).filter(
                      (Rbuff.resnr == res_line.resnr) & (Rbuff.active_flag == 1) & (Rbuff.resstatus == 6) & (Rbuff.zinr != res_line.zinr)).order_by(Rbuff._recid).all():
 
-                interface = get_cache (Interface, {"key": [(eq, 2)],"zinr": [(eq, rbuff.zinr)],"decfield": [(le, 3)]})
+                # interface = get_cache (Interface, {"key": [(eq, 2)],"zinr": [(eq, rbuff.zinr)],"decfield": [(le, 3)]})
+                interface = db_session.query(Interface).filter(
+                         (Interface.key == 2) & (Interface.zinr == rbuff.zinr) & (Interface.decfield <= 3)).with_for_update().first()
                 while None != interface:
                     pass
                     db_session.delete(interface)

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -13,6 +15,10 @@ def update_rmextbl(froom:string, troom:string, curr_zinr:string, gname:string, c
     zimmer = interface = res_line = None
 
     db_session = local_storage.db_session
+    froom = froom.strip()
+    troom = troom.strip()
+    curr_zinr = curr_zinr.strip()
+    gname = gname.strip()
 
     def generate_output():
         nonlocal zimmer, interface, res_line
@@ -24,7 +30,9 @@ def update_rmextbl(froom:string, troom:string, curr_zinr:string, gname:string, c
     for zimmer in db_session.query(Zimmer).filter(
              (Zimmer.zinr >= (froom).lower()) & (Zimmer.zinr <= (troom).lower())).order_by((Zimmer.zinr)).all():
 
-        interface = get_cache (Interface, {"key": [(eq, 2)],"zinr": [(eq, zimmer.zinr)],"decfield": [(le, 3)]})
+        # interface = get_cache (Interface, {"key": [(eq, 2)],"zinr": [(eq, zimmer.zinr)],"decfield": [(le, 3)]})
+        interface = db_session.query(Interface).filter(
+                 (Interface.key == 2) & (Interface.zinr == zimmer.zinr) & (Interface.decfield <= 3)).with_for_update().first()
         while None != interface:
             pass
             db_session.delete(interface)

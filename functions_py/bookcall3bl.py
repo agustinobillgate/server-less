@@ -1,12 +1,11 @@
 #using conversion tools version: 1.0.0.119
 #---------------------------------------------------
-# Rd, 24/11/2025 , Update last counter dengan next_counter_for_update
+# Rd, 24/11/2025 , Update last counter 
 #---------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bill, Htparam, Artikel, Waehrung, Counters, Bill_line, Umsatz, Billjournal
-from functions.next_counter_for_update import next_counter_for_update
 
 def bookcall3bl(pvilanguage:int, bil_recid:int, calldate:date, calltime:int, destination:string, 
                 duration:int, rufnummer:string, amount:Decimal, user_init:string):
@@ -36,8 +35,6 @@ def bookcall3bl(pvilanguage:int, bil_recid:int, calldate:date, calltime:int, des
     Bill1 = create_buffer("Bill1",Bill)
 
     db_session = local_storage.db_session
-    last_count:int = 0
-    error_lock:string = ""
     destination = destination.strip()
     rufnummer = rufnummer.strip()
 
@@ -103,7 +100,8 @@ def bookcall3bl(pvilanguage:int, bil_recid:int, calldate:date, calltime:int, des
             if artikel:
                 artnr = htparam.finteger
 
-    bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+    # bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+    bill = db_session.query(Bill).filter(Bill._recid == bil_recid).with_for_update().first()
 
     if not bill:
 
@@ -164,10 +162,9 @@ def bookcall3bl(pvilanguage:int, bil_recid:int, calldate:date, calltime:int, des
     if bill.rechnr == 0:
 
         # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-        # counters.counter = counters.counter + 1
-        # bill.rechnr = counters.counter
-        last_count, error_lock = get_output(next_counter_for_update(3))
-        bill.rechnr = last_count
+        counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+        counters.counter = counters.counter + 1
+        bill.rechnr = counters.counter
         
         pass
     bill_line = Bill_line()
@@ -195,7 +192,11 @@ def bookcall3bl(pvilanguage:int, bil_recid:int, calldate:date, calltime:int, des
 
     pass
 
-    umsatz = get_cache (Umsatz, {"artnr": [(eq, artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+    # umsatz = get_cache (Umsatz, {"artnr": [(eq, artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+    umsatz = db_session.query(Umsatz).filter(
+                (Umsatz.artnr == artnr) &
+                (Umsatz.departement == 0) &
+                (Umsatz.datum == bill_date)).with_for_update().first()
 
     if not umsatz:
         umsatz = Umsatz()
@@ -206,7 +207,7 @@ def bookcall3bl(pvilanguage:int, bil_recid:int, calldate:date, calltime:int, des
         umsatz.departement = 0
     umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(amount)
     umsatz.anzahl = umsatz.anzahl + 1
-    pass
+    
     billjournal = Billjournal()
     db_session.add(billjournal)
 
@@ -223,9 +224,6 @@ def bookcall3bl(pvilanguage:int, bil_recid:int, calldate:date, calltime:int, des
     billjournal.userinit = user_init
     billjournal.bill_datum = bill_date
 
-
-    pass
-    pass
     rechno = bill.rechnr
     success = True
 
