@@ -49,19 +49,24 @@ def fa_stin_btn_gobl(op_list_data, billdate:date, user_init:string, lscheinnr:st
         next_mon:int = 0
         next_yr:int = 0
 
-        mathis = get_cache (Mathis, {"nr": [(eq, s_artnr)]})
+        # mathis = get_cache (Mathis, {"nr": [(eq, s_artnr)]})
+        mathis = db_session.query(Mathis).filter(
+                 (Mathis.nr == s_artnr)).with_for_update().first()
 
         if mathis:
-            pass
+            # pass
             mathis.price =  to_decimal(price)
             mathis.supplier = l_lieferant.firma
             mathis.datum = billdate
-            pass
+            # pass
+            db_session.refresh(mathis,with_for_update=True)
 
-            fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, s_artnr)]})
-
+            # fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, s_artnr)]})
+            fa_artikel = db_session.query(Fa_artikel).filter(
+                     (Fa_artikel.nr == s_artnr)).with_for_update().first()
+            
             if fa_artikel:
-                pass
+                # pass
                 fa_artikel.lief_nr = l_lieferant.lief_nr
                 fa_artikel.posted = True
                 fa_artikel.anzahl = qty
@@ -117,8 +122,10 @@ def fa_stin_btn_gobl(op_list_data, billdate:date, user_init:string, lscheinnr:st
                             next_yr = next_yr + 1
                         next_date = date_mdy(next_mon, 1, next_yr) - timedelta(days=1)
                         fa_artikel.next_depn = next_date
-                pass
-                pass
+                # pass
+                # pass
+                db_session.refresh(fa_artikel,with_for_update=True)
+                
             fa_op = Fa_op()
             db_session.add(fa_op)
 
