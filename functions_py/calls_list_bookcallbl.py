@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.bookcall2bl import bookcall2bl
@@ -23,7 +25,8 @@ def calls_list_bookcallbl(pvilanguage:int, s_recid:int, bill_recid:int, room_no:
         return {"success": success, "rechnr": rechnr}
 
 
-    calls = get_cache (Calls, {"_recid": [(eq, s_recid)]})
+    # calls = get_cache (Calls, {"_recid": [(eq, s_recid)]})
+    calls = db_session.query(Calls).filter(Calls._recid == s_recid).with_for_update().first()
 
     if not calls:
 

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.intevent_1 import intevent_1
@@ -34,7 +36,9 @@ def arl_list_incognitobl(t_resnr:int, t_reslinnr:int, user_init:string):
 
     res_line = get_cache (Res_line, {"resnr": [(eq, t_resnr)],"reslinnr": [(eq, t_reslinnr)]})
 
-    resline = get_cache (Res_line, {"_recid": [(eq, res_line._recid)]})
+    # resline = get_cache (Res_line, {"_recid": [(eq, res_line._recid)]})
+    resline = db_session.query(Resline).filter(Resline._recid == res_line._recid).with_for_update().first()
+
     resline.pseudofix = not resline.pseudofix
 
     if trim(resline.changed_id) != "":
@@ -65,7 +69,5 @@ def arl_list_incognitobl(t_resnr:int, t_reslinnr:int, user_init:string):
 
 
     reslin_queasy.char3 = to_string(res_line.ankunft) + ";" + to_string(res_line.ankunft) + ";" + to_string(res_line.abreise) + ";" + to_string(res_line.abreise) + ";" + to_string(res_line.zimmeranz) + ";" + to_string(res_line.zimmeranz) + ";" + to_string(res_line.erwachs) + ";" + to_string(res_line.erwachs) + ";" + to_string(res_line.kind1) + ";" + to_string(res_line.kind1) + ";" + to_string(res_line.gratis) + ";" + to_string(res_line.gratis) + ";" + to_string(res_line.zikatnr) + ";" + to_string(res_line.zikatnr) + ";" + to_string(res_line.zinr, "x(6)") + ";" + to_string(res_line.zinr, "x(6)") + ";" + to_string(res_line.arrangement) + ";" + to_string(res_line.arrangement) + ";" + to_string(res_line.zipreis) + ";" + to_string(res_line.zipreis) + ";" + to_string(cid) + ";" + to_string(user_init) + ";" + to_string(" ") + ";" + to_string(get_current_date()) + ";" + to_string(res_line.name) + ";" + to_string(s, "x(16)") + ";" + to_string(" ") + ";" + to_string(" ") + ";"
-    pass
-    pass
 
     return generate_output()

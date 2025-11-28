@@ -1,11 +1,14 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bill, Res_line, Bill_line
 
-def read_bill1bl(case_type:int, billno:int, resno:int, reslinno:int, actflag:int, roomno:string, datum1:date, datum2:date, saldo1:Decimal, saldo2:Decimal):
+def read_bill1bl(case_type:int, billno:int, resno:int, reslinno:int, actflag:int, 
+                 roomno:string, datum1:date, datum2:date, saldo1:Decimal, saldo2:Decimal):
 
     prepare_cache ([Bill, Res_line, Bill_line])
 
@@ -21,8 +24,8 @@ def read_bill1bl(case_type:int, billno:int, resno:int, reslinno:int, actflag:int
     Bbuff = create_buffer("Bbuff",Bill)
     Tbuff = create_buffer("Tbuff",Bill)
 
-
     db_session = local_storage.db_session
+    roomno = roomno.strip()
 
     def generate_output():
         nonlocal t_bill_data, bl_saldo, bill, res_line, bill_line
@@ -40,8 +43,6 @@ def read_bill1bl(case_type:int, billno:int, resno:int, reslinno:int, actflag:int
         nonlocal t_bill_data, bl_saldo, bill, res_line, bill_line
         nonlocal case_type, billno, resno, reslinno, actflag, roomno, datum1, datum2, saldo1, saldo2
         nonlocal rline, bbuff, tbuff
-
-
         nonlocal t_bill, rline, bbuff, tbuff
         nonlocal t_bill_data
 
@@ -131,7 +132,9 @@ def read_bill1bl(case_type:int, billno:int, resno:int, reslinno:int, actflag:int
 
                     if bill.zinr != res_line.zinr:
 
-                        bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+                        # bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+                        bbuff = db_session.query(Bill).filter(
+                                 (Bill._recid == bill._recid)).with_for_update().first()
                         bbuff.zinr = res_line.zinr
 
 
