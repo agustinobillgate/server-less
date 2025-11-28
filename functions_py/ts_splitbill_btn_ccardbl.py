@@ -1,12 +1,16 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.ts_splitbill_update_billbl import ts_splitbill_update_billbl
 from models import H_bill_line, Guest, H_bill, Htparam, H_artikel, Queasy
 
-def ts_splitbill_btn_ccardbl(rec_id_h_bill:int, billart:int, balance:Decimal, paid:Decimal, price_decimal:int, dept:int, transdate:date, change_str:string, price:Decimal, add_zeit:int, curr_select:int, hoga_card:string, cancel_str:string, curr_waiter:int, amount_foreign:Decimal, curr_room:string, user_init:string, cc_comment:string, guestnr:int):
+def ts_splitbill_btn_ccardbl(rec_id_h_bill:int, billart:int, balance:Decimal, paid:Decimal, price_decimal:int, dept:int, 
+                             transdate:date, change_str:string, price:Decimal, add_zeit:int, curr_select:int, hoga_card:string, 
+                             cancel_str:string, curr_waiter:int, amount_foreign:Decimal, curr_room:string, user_init:string, cc_comment:string, guestnr:int):
 
     prepare_cache ([H_bill, Htparam, H_artikel])
 
@@ -24,8 +28,12 @@ def ts_splitbill_btn_ccardbl(rec_id_h_bill:int, billart:int, balance:Decimal, pa
 
     Bill_guest = create_buffer("Bill_guest",Guest)
 
-
     db_session = local_storage.db_session
+    hoga_card = hoga_card.strip()
+    cancel_str = cancel_str.strip()
+    change_str = change_str.strip()
+    curr_room = curr_room.strip()
+    cc_comment = cc_comment.strip()
 
     def generate_output():
         nonlocal qty, description, amount, fl_code, bill_date, t_h_bill_line_data, h_bill_line, guest, h_bill, htparam, h_artikel, queasy
@@ -49,7 +57,8 @@ def ts_splitbill_btn_ccardbl(rec_id_h_bill:int, billart:int, balance:Decimal, pa
         nonlocal t_h_bill_line_data
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & (Queasy.number2 >= 0) & (Queasy.deci2 >= 0)).order_by(Queasy._recid).all():
+                 (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & 
+                 (Queasy.number2 >= 0) & (Queasy.deci2 >= 0)).order_by(Queasy._recid).with_for_update().all():
             db_session.delete(queasy)
         pass
 
