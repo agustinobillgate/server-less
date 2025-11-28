@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -127,7 +129,9 @@ def ts_mkres_btn_exit_2bl(pvilanguage:int, moved_tisch:int, s_recid:int, curr_de
         done = True
     else:
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, s_recid)]})
+        # queasy = get_cache (Queasy, {"_recid": [(eq, s_recid)]})
+        queasy = db_session.query(Queasy).filter(Queasy._recid == s_recid).with_for_update().first()
+
         queasy.number2 = moved_tisch
         queasy.number3 = pax
         queasy.date3 = get_current_date()

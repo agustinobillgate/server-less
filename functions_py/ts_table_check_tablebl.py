@@ -1,11 +1,15 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.ts_table_check_creditlimitbl import ts_table_check_creditlimitbl
 from models import H_bill, Kellner, Tisch, Res_line, Queasy, Htparam, Zimmer
 
-def ts_table_check_tablebl(curr_tisch:int, mc_pos1:int, mc_pos2:int, curr_room:string, room:string, pax:int, gname:string, pvilanguage:int, tischnr:int, dept:int, curr_waiter:int, curr_cursor:string, resrecid:int, hostnr:int):
+def ts_table_check_tablebl(curr_tisch:int, mc_pos1:int, mc_pos2:int, curr_room:string, room:string, 
+                           pax:int, gname:string, pvilanguage:int, tischnr:int, dept:int, 
+                           curr_waiter:int, curr_cursor:string, resrecid:int, hostnr:int):
 
     prepare_cache ([H_bill, Tisch, Res_line, Queasy])
 
@@ -32,8 +36,11 @@ def ts_table_check_tablebl(curr_tisch:int, mc_pos1:int, mc_pos2:int, curr_room:s
 
     Buff_hbill = create_buffer("Buff_hbill",H_bill)
 
-
     db_session = local_storage.db_session
+    curr_room = curr_room.strip()
+    room = room.strip()
+    gname = gname.strip()
+    curr_cursor = curr_cursor.strip()
 
     def generate_output():
         nonlocal klimit, ksaldo, remark, table_ok, person, rmno, bname, resnr1, reslinnr1, hoga_resnr, hoga_reslinnr, msg_str, curr_gname, err_code, msg_str2, check_flag, lvcarea, h_bill, kellner, tisch, res_line, queasy, htparam, zimmer
@@ -50,7 +57,6 @@ def ts_table_check_tablebl(curr_tisch:int, mc_pos1:int, mc_pos2:int, curr_room:s
         nonlocal klimit, ksaldo, remark, table_ok, person, rmno, bname, resnr1, reslinnr1, hoga_resnr, hoga_reslinnr, msg_str, curr_gname, err_code, msg_str2, check_flag, lvcarea, h_bill, kellner, tisch, res_line, queasy, htparam, zimmer
         nonlocal curr_tisch, mc_pos1, mc_pos2, curr_room, room, pax, gname, pvilanguage, tischnr, dept, curr_waiter, curr_cursor, resrecid, hostnr
         nonlocal buff_hbill
-
 
         nonlocal buff_hbill
 
@@ -277,7 +283,11 @@ def ts_table_check_tablebl(curr_tisch:int, mc_pos1:int, mc_pos2:int, curr_room:s
     if curr_room.lower()  != (room).lower() :
         return_room()
 
-    h_bill = get_cache (H_bill, {"tischnr": [(eq, tischnr)],"departement": [(eq, dept)],"flag": [(eq, 0)]})
+    # h_bill = get_cache (H_bill, {"tischnr": [(eq, tischnr)],"departement": [(eq, dept)],"flag": [(eq, 0)]})
+    h_bill = db_session.query(H_bill).filter(
+             (H_bill.tischnr == tischnr) &
+             (H_bill.departement == dept) &
+             (H_bill.flag == 0)).with_for_update().first()
 
     if h_bill:
         pass

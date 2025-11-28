@@ -2,6 +2,7 @@
 #----------------------------------------
 # Rd 3/8/2025
 # if not availble -> return
+# Rd, 28/11/2025, with_for_update added
 #----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -35,7 +36,9 @@ def ts_splitbill_select_rmenubl(rec_id_h_bill_line:int, rec_id:int, curr_select:
         return {"max_rapos": max_rapos, "temp": temp_data, "Rhbline": rhbline_data}
 
 
-    h_bill_line = get_cache (H_bill_line, {"_recid": [(eq, rec_id_h_bill_line)]})
+    # h_bill_line = get_cache (H_bill_line, {"_recid": [(eq, rec_id_h_bill_line)]})
+    h_bill_line = db_session.query(H_bill_line).filter(
+             (H_bill_line._recid == rec_id_h_bill_line)).with_for_update().first()
     # Rd 3/8/2025
     # if not avail return
     if h_bill_line is None:

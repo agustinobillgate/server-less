@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill
@@ -11,6 +13,8 @@ def ts_tbplan_update_hbill_webbl(rec_id:int, hostnr:int, pax:int, gname:string, 
     h_bill = None
 
     db_session = local_storage.db_session
+    gname = gname.strip()
+
 
     def generate_output():
         nonlocal h_bill
@@ -22,7 +26,9 @@ def ts_tbplan_update_hbill_webbl(rec_id:int, hostnr:int, pax:int, gname:string, 
     if gname == None:
         gname = ""
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    h_bill = db_session.query(H_bill).filter(
+             (H_bill._recid == rec_id)).with_for_update().first()
 
     if h_bill:
 

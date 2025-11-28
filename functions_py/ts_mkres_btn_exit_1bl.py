@@ -1,11 +1,15 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Queasy
 
-def ts_mkres_btn_exit_1bl(pvilanguage:int, moved_tisch:int, s_recid:int, curr_dept:int, curr_date:date, von_zeit:string, bis_zeit:string, pax:int, telefon:string, gname:string, user_init:string, comments:string, selected_gastnr:int, depo_amount:Decimal, ns_billno:int):
+def ts_mkres_btn_exit_1bl(pvilanguage:int, moved_tisch:int, s_recid:int, curr_dept:int, curr_date:date, 
+                          von_zeit:string, bis_zeit:string, pax:int, telefon:string, gname:string, 
+                          user_init:string, comments:string, selected_gastnr:int, depo_amount:Decimal, ns_billno:int):
 
     prepare_cache ([Queasy])
 
@@ -17,9 +21,14 @@ def ts_mkres_btn_exit_1bl(pvilanguage:int, moved_tisch:int, s_recid:int, curr_de
     qsy = None
 
     Qsy = create_buffer("Qsy",Queasy)
-
-
     db_session = local_storage.db_session
+    von_zeit = von_zeit.strip()
+    bis_zeit = bis_zeit.strip()
+    telefon = telefon.strip()
+    gname = gname.strip()
+    user_init = user_init.strip()
+    comments = comments.strip()
+    
 
     def generate_output():
         nonlocal msg_str, done, lvcarea, queasy
