@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, remark area
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -11,7 +13,9 @@ segm1_list_data, Segm1_list = create_model("Segm1_list", {"selected":bool, "segm
 argt_list_data, Argt_list = create_model("Argt_list", {"selected":bool, "argtnr":int, "argt":string, "bezeich":string})
 zikat_list_data, Zikat_list = create_model("Zikat_list", {"selected":bool, "zikatnr":int, "kurzbez":string, "bezeich":string})
 
-def precheckin_generator_loaddata_1bl(show_rate:bool, last_sort:int, lresnr:int, long_stay:int, ci_date:date, grpflag:bool, room:string, lname:string, sorttype:int, fdate1:date, fdate2:date, fdate:date, segm1_list_data:[Segm1_list], argt_list_data:[Argt_list], zikat_list_data:[Zikat_list]):
+def precheckin_generator_loaddata_1bl(show_rate:bool, last_sort:int, lresnr:int, long_stay:int, ci_date:date, 
+                                      grpflag:bool, room:string, lname:string, sorttype:int, fdate1:date, fdate2:date, 
+                                      fdate:date, segm1_list_data:[Segm1_list], argt_list_data:[Argt_list], zikat_list_data:[Zikat_list]):
 
     prepare_cache ([Guest, Paramtext, Htparam, Queasy, Waehrung, Reservation, Zimkateg, Kontline, Reslin_queasy, Zimmer])
 
@@ -62,8 +66,9 @@ def precheckin_generator_loaddata_1bl(show_rate:bool, last_sort:int, lresnr:int,
     Gbuff = create_buffer("Gbuff",Guest)
     Gmember = create_buffer("Gmember",Guest)
 
-
     db_session = local_storage.db_session
+    room = room.strip()
+    lname = lname.strip()
 
     def generate_output():
         nonlocal rmlen, mail_eng, mail_oth, hotel_name, hotel_telp, hotel_mail, arl_list_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, done_flag, curr_resnr, curr_resline, today_str, reserve_str, created_time, do_it, loop_i, comment_str, all_inclusive, res_mode, checkin_flag, stay, en_hotelencrip, oth_hotelencrip, cpersonalkey, rkey, mmemptrout, precheckinurl, hotelcode, hotelcode_ok, guest, paramtext, htparam, res_line, queasy, waehrung, reservation, zimkateg, master, messages, kontline, gentable, mc_guest, reslin_queasy, zimmer
@@ -109,7 +114,7 @@ def precheckin_generator_loaddata_1bl(show_rate:bool, last_sort:int, lresnr:int,
             guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
 
             rline = db_session.query(Rline).filter(
-                         (Rline._recid == res_line._recid)).first()
+                         (Rline._recid == res_line._recid)).with_for_update().first()
 
             if rline:
                 rline.resname = guest.name

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, remark area
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, H_bill
@@ -145,8 +147,17 @@ def pos_dashboard_postedorder_list_webbl(input_list_data:[Input_list]):
 
             if qbill_line:
 
-                b_queasy = get_cache (Queasy, {"key": [(eq, 225)],"number1": [(eq, input_list.dept)],"char1": [(eq, "orderbill")],"betriebsnr": [(eq, queasy.betriebsnr)],"number3": [(eq, queasy.number3)],"number2": [(eq, queasy.number2)],"char3": [(eq, queasy.char3)]})
-
+                # b_queasy = get_cache (Queasy, {"key": [(eq, 225)],"number1": [(eq, input_list.dept)],"char1": [(eq, "orderbill")],
+                #                                "betriebsnr": [(eq, queasy.betriebsnr)],"number3": [(eq, queasy.number3)],
+                #                                "number2": [(eq, queasy.number2)],"char3": [(eq, queasy.char3)]})
+                b_queasy = db_session.query(B_queasy).filter(
+                         (B_queasy.key == 225) & (B_queasy.number1 == input_list.dept) &
+                         (B_queasy.char1 == ("orderbill").lower()) &
+                         (B_queasy.betriebsnr == queasy.betriebsnr) &
+                         (B_queasy.number3 == queasy.number3) &
+                         (B_queasy.number2 == queasy.number2) &
+                         (B_queasy.char3 == queasy.char3)).with_for_update().first()
+                
                 if b_queasy:
                     b_queasy.logi3 = True
                     order_list.posted = True
@@ -163,7 +174,8 @@ def pos_dashboard_postedorder_list_webbl(input_list_data:[Input_list]):
 
             curr_recid = queasy._recid
             queasy = db_session.query(Queasy).filter(
-                     (Queasy.key == 225) & (Queasy.number1 == input_list.dept) & (Queasy.logi1) & (Queasy.char1 == ("orderbill").lower()) & (Queasy.logi3) & (Queasy._recid > curr_recid)).first()
+                     (Queasy.key == 225) & (Queasy.number1 == input_list.dept) & (Queasy.logi1) & 
+                     (Queasy.char1 == ("orderbill").lower()) & (Queasy.logi3) & (Queasy._recid > curr_recid)).first()
 
         for orderhdr in query(orderhdr_data, filters=(lambda orderhdr: orderhdr.billrecid != 0)):
 

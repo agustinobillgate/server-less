@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -18,8 +20,10 @@ def selforder_session_payment_gatewaybl(session_parameter:string, trans_id_merch
 
     Bqsy = create_buffer("Bqsy",Queasy)
 
-
     db_session = local_storage.db_session
+    session_parameter = session_parameter.strip()
+    payment_channel = payment_channel.strip()
+    trans_id_merchant = trans_id_merchant.strip()
 
     def generate_output():
         nonlocal trans_status, result_message, paymentmethod, paymentcode, queasy
@@ -90,7 +94,9 @@ def selforder_session_payment_gatewaybl(session_parameter:string, trans_id_merch
         return generate_output()
     trans_status = "PENDING"
 
-    queasy = get_cache (Queasy, {"key": [(eq, 223)],"number1": [(eq, outletno)],"char3": [(eq, session_parameter)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 223)],"number1": [(eq, outletno)],"char3": [(eq, session_parameter)]})
+    queasy = db_session.query(Queasy).filter(
+        (Queasy.key == 223) & (Queasy.number1 == outletno) & (Queasy.char3 == session_parameter)).with_for_update().first()
 
     if queasy:
         pass
@@ -105,7 +111,9 @@ def selforder_session_payment_gatewaybl(session_parameter:string, trans_id_merch
         pass
     else:
 
-        bqsy = get_cache (Queasy, {"key": [(eq, 223)],"number1": [(eq, outletno)],"betriebsnr": [(eq, to_int(session_parameter))]})
+        # bqsy = get_cache (Queasy, {"key": [(eq, 223)],"number1": [(eq, outletno)],"betriebsnr": [(eq, to_int(session_parameter))]})
+        bqsy = db_session.query(Queasy).filter(
+            (Queasy.key == 223) & (Queasy.number1 == outletno) & (Queasy.betriebsnr == to_int(session_parameter))).with_for_update().first()
 
         if bqsy:
             pass

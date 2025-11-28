@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, remark area
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -27,6 +29,8 @@ def selforder_post_payment_gatewaybl(outletno:int, billno:int, paymentstring:str
     queasy = None
 
     db_session = local_storage.db_session
+    paymentstring = paymentstring.strip()
+    session_parameter = session_parameter.strip()
 
     def generate_output():
         nonlocal result_message, mestoken, meskeyword, mesvalue, loop_i, payment_type, found_flag, do_it, paymentcode, bankname, noref, resultmsg, ccnumber, amount, transdat, transid_merchant, queasy
@@ -86,7 +90,11 @@ def selforder_post_payment_gatewaybl(outletno:int, billno:int, paymentstring:str
 
         if do_it:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 223)],"number1": [(eq, outletno)],"char3": [(eq, session_parameter)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 223)],"number1": [(eq, outletno)],"char3": [(eq, session_parameter)]})
+            queasy = db_session.query(Queasy).filter(
+                (Queasy.key == 223) &
+                (Queasy.number1 == outletno) &
+                (Queasy.char3 == session_parameter)).with_for_update().first()
 
             if queasy:
                 queasy.char1 = resultmsg

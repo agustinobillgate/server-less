@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, remark area
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -12,6 +14,7 @@ def write_selforder_subgrup_adminbl(dept:int, subgrup_no:int, subgrup:string, ma
     queasy = None
 
     db_session = local_storage.db_session
+    subgrup = subgrup.strip()
 
     def generate_output():
         nonlocal success_flag, queasy
@@ -20,7 +23,11 @@ def write_selforder_subgrup_adminbl(dept:int, subgrup_no:int, subgrup:string, ma
         return {"success_flag": success_flag}
 
 
-    queasy = get_cache (Queasy, {"key": [(eq, 229)],"number1": [(eq, subgrup_no)],"number2": [(eq, dept)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 229)],"number1": [(eq, subgrup_no)],"number2": [(eq, dept)]})
+    queasy = db_session.query(Queasy).filter(
+        (Queasy.key == 229) &
+        (Queasy.number1 == subgrup_no) &
+        (Queasy.number2 == dept)).with_for_update().first()
 
     if not queasy:
         queasy = Queasy()

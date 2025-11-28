@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added, remark area
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Guest, Guestbook
+from sqlalchemy.orm import flag_modified
 
 def mobileweb_save_idcardbl(inp_resnr:int, inp_reslinnr:int, guestno:int, imagedata:string, userinit:string):
 
@@ -14,6 +17,8 @@ def mobileweb_save_idcardbl(inp_resnr:int, inp_reslinnr:int, guestno:int, imaged
     guest = guestbook = None
 
     db_session = local_storage.db_session
+    imagedata = imagedata.strip()
+    userinit = userinit.strip()
 
     def generate_output():
         nonlocal result_message, pointer, info_str, guest, guestbook
@@ -55,7 +60,8 @@ def mobileweb_save_idcardbl(inp_resnr:int, inp_reslinnr:int, guestno:int, imaged
 
         return generate_output()
 
-    guestbook = get_cache (Guestbook, {"gastnr": [(eq, guest.gastnr)]})
+    # guestbook = get_cache (Guestbook, {"gastnr": [(eq, guest.gastnr)]})
+    guestbook = db_session.query(Guestbook).filter(Guestbook.gastnr == guest.gastnr).with_for_update().first()
 
     if not guestbook:
         guestbook = Guestbook()
@@ -83,5 +89,6 @@ def mobileweb_save_idcardbl(inp_resnr:int, inp_reslinnr:int, guestno:int, imaged
     pass
     pass
     result_message = "0 - Save Image Success"
+    flag_modified(guestbook, "imagefile")
 
     return generate_output()
