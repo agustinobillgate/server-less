@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.print_hbilllnl_cldbl import print_hbilllnl_cldbl
@@ -334,10 +336,9 @@ def print_hbill_webbl(pvilanguage:int, user_init:string, print_all:bool, printnr
             t_print_line.foot_note2 = entry(1, foot_note, ";")
             t_print_line.foot_note3 = entry(2, foot_note, ";")
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, hbrecid)]})
-    pass
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, hbrecid)]})
+    h_bill = db_session.query(H_bill).filter(
+             (H_bill._recid == hbrecid)).with_for_update().first()
     h_bill.rgdruck = 1
-    pass
-    pass
 
     return generate_output()

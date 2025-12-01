@@ -2,6 +2,7 @@
 #----------------------------------------
 # Rd 3/8/2025
 # if not availble -> return
+# Rd, 01/12/2025, with_for_update added
 #----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -52,7 +53,7 @@ def ts_restinv_btn_transfer_paytypegt1_2bl(rec_id:int, do_it:bool, transdate:dat
         Tbuff =  create_buffer("Tbuff",Tisch)
 
         tbuff = db_session.query(Tbuff).filter(
-                     (Tbuff.tischnr == h_bill.tischnr) & (Tbuff.departement == h_bill.departement)).first()
+                     (Tbuff.tischnr == h_bill.tischnr) & (Tbuff.departement == h_bill.departement)).with_for_update().first()
 
         if tbuff and tbuff.roomcharge and tbuff.kellner_nr != 0:
             pass
@@ -85,7 +86,9 @@ def ts_restinv_btn_transfer_paytypegt1_2bl(rec_id:int, do_it:bool, transdate:dat
             if htparam.flogical and bill_date < get_current_date():
                 bill_date = bill_date + timedelta(days=1)
 
-        h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, 0)],"departement": [(eq, curr_dept)],"betriebsnr": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+        # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, 0)],"departement": [(eq, curr_dept)],"betriebsnr": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+        h_umsatz = db_session.query(H_umsatz).filter(
+                     (H_umsatz.artnr == 0) & (H_umsatz.departement == curr_dept) & (H_umsatz.betriebsnr == curr_dept) & (H_umsatz.datum == bill_date)).with_for_update().first()
 
         if not h_umsatz:
             h_umsatz = H_umsatz()
@@ -144,7 +147,9 @@ def ts_restinv_btn_transfer_paytypegt1_2bl(rec_id:int, do_it:bool, transdate:dat
         nonlocal t_h_bill
         nonlocal t_h_bill_data
 
-        queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, h_bill.departement)],"number2": [(eq, h_bill.tischnr)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, h_bill.departement)],"number2": [(eq, h_bill.tischnr)]})
+        queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 31) & (Queasy.number1 == h_bill.departement) & (Queasy.number2 == h_bill.tischnr)).with_for_update().first()
 
         if queasy:
             pass
@@ -152,11 +157,10 @@ def ts_restinv_btn_transfer_paytypegt1_2bl(rec_id:int, do_it:bool, transdate:dat
             queasy.date1 = None
 
 
-            pass
-            pass
 
-
-    h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    h_bill = db_session.query(H_bill).filter(
+                 (H_bill._recid == rec_id)).with_for_update().first()
     # Rd 3/8/2025
     # if not avail return
     if h_bill is None:

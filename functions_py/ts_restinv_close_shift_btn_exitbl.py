@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -7,7 +9,8 @@ from models import H_bill_line, H_journal, H_bill, Bediener, Res_history
 
 shift_list_data, Shift_list = create_model("Shift_list", {"rechnr":int, "tischnr":int, "selectflag":bool, "bstr":string})
 
-def ts_restinv_close_shift_btn_exitbl(pvilanguage:int, shift_list_data:[Shift_list], all_user:bool, curr_dept:int, billdate:date, kellner_kellner_nr:int, shift:int, user_init:string):
+def ts_restinv_close_shift_btn_exitbl(pvilanguage:int, shift_list_data:[Shift_list], all_user:bool, 
+                                      curr_dept:int, billdate:date, kellner_kellner_nr:int, shift:int, user_init:string):
 
     prepare_cache ([H_bill_line, H_journal, Bediener, Res_history])
 
@@ -78,10 +81,11 @@ def ts_restinv_close_shift_btn_exitbl(pvilanguage:int, shift_list_data:[Shift_li
                 h_bill_line = get_cache (H_bill_line, {"rechnr": [(eq, h_bill.rechnr)],"bill_datum": [(eq, billdate)],"departement": [(eq, curr_dept)],"zeit": [(ge, 0)],"betriebsnr": [(eq, 0)]})
                 while None != h_bill_line:
 
-                    hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
+                    # hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
+                    hbline = db_session.query(H_bill_line).filter(
+                             (H_bill_line._recid == h_bill_line._recid)).with_for_update().first()
                     hbline.betriebsnr = shift
-                    pass
-                    pass
+
 
                     curr_recid = h_bill_line._recid
                     h_bill_line = db_session.query(H_bill_line).filter(
@@ -99,9 +103,6 @@ def ts_restinv_close_shift_btn_exitbl(pvilanguage:int, shift_list_data:[Shift_li
         res_history.aenderung = "Close shift(ALL)"
         res_history.action = "POS Cashier"
 
-
-        pass
-        pass
         flag = 1
     else:
 

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+# ----------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_artikel, Htparam
@@ -21,6 +23,7 @@ def ts_restinv_pay_cash5bl(multi_cash:bool, cash_artno:int, cash_foreign:bool, p
     t_h_artikel_data, T_h_artikel = create_model_like(H_artikel, {"rec_id":int})
 
     db_session = local_storage.db_session
+    voucher_nr = voucher_nr.strip()
 
     def generate_output():
         nonlocal billart, qty, description, p_88, t_h_artikel_data, local_curr_code, h_artikel, htparam

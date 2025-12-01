@@ -4,6 +4,7 @@
 # Rulita, 15/08/2025
 # Added bill_saldo recalculate saldo 
 # ticket: 4B5043
+# Rd, 01/12/2025, with_for_update added
 #--------------------------------------------
 
 from functions.additional_functions import *
@@ -38,7 +39,9 @@ def ts_restinv_run_help_check_billbl(case_type:int, tischnr:int, curr_dept:int):
 
     if case_type == 1:
 
-        h_bill = get_cache (H_bill, {"tischnr": [(eq, tischnr)],"departement": [(eq, curr_dept)],"flag": [(eq, 0)]})
+        # h_bill = get_cache (H_bill, {"tischnr": [(eq, tischnr)],"departement": [(eq, curr_dept)],"flag": [(eq, 0)]})
+        h_bill = db_session.query(H_bill).filter(
+                 (H_bill.tischnr == tischnr) & (H_bill.departement == curr_dept) & (H_bill.flag == 0)).with_for_update().first()
 
         # Rulita 4B5043, 15/08/2025
         if h_bill:

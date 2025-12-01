@@ -2,6 +2,7 @@
 #----------------------------------------
 # Rd 3/8/2025
 # if not availble -> return
+# Rd, 01/12/2025, with_for_update added
 #----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -9,7 +10,8 @@ from datetime import date
 from functions.rest_addgastinfo import rest_addgastinfo
 from models import H_artikel, H_bill, Tisch, Htparam, H_umsatz, Artikel, H_bill_line, Queasy
 
-def ts_restinv_btn_ccard2bl(billart:int, rec_id:int, curr_dept:int, balance:Decimal, paid:Decimal, balance_foreign:Decimal, exchg_rate:Decimal, full_paid:bool, transdate:date, disc_art1:int, disc_art2:int, disc_art3:int, kellner_kellner_nr:int):
+def ts_restinv_btn_ccard2bl(billart:int, rec_id:int, curr_dept:int, balance:Decimal, paid:Decimal, balance_foreign:Decimal, 
+                            exchg_rate:Decimal, full_paid:bool, transdate:date, disc_art1:int, disc_art2:int, disc_art3:int, kellner_kellner_nr:int):
 
     prepare_cache ([Htparam, H_umsatz, Artikel, H_bill_line, Queasy])
 
@@ -58,7 +60,7 @@ def ts_restinv_btn_ccard2bl(billart:int, rec_id:int, curr_dept:int, balance:Deci
         Tbuff =  create_buffer("Tbuff",Tisch)
 
         tbuff = db_session.query(Tbuff).filter(
-                     (Tbuff.tischnr == h_bill.tischnr) & (Tbuff.departement == h_bill.departement)).first()
+                     (Tbuff.tischnr == h_bill.tischnr) & (Tbuff.departement == h_bill.departement)).with_for_update().first()
 
         if tbuff and tbuff.roomcharge and tbuff.kellner_nr != 0:
             pass
@@ -91,7 +93,9 @@ def ts_restinv_btn_ccard2bl(billart:int, rec_id:int, curr_dept:int, balance:Deci
             if htparam.flogical and bill_date < get_current_date():
                 bill_date = bill_date + timedelta(days=1)
 
-        h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, 0)],"departement": [(eq, curr_dept)],"betriebsnr": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+        # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, 0)],"departement": [(eq, curr_dept)],"betriebsnr": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+        h_umsatz = db_session.query(H_umsatz).filter(
+                     (H_umsatz.artnr == 0) & (H_umsatz.departement == curr_dept) & (H_umsatz.betriebsnr == curr_dept) & (H_umsatz.datum == bill_date)).with_for_update().first()
 
         if not h_umsatz:
             h_umsatz = H_umsatz()
@@ -137,8 +141,7 @@ def ts_restinv_btn_ccard2bl(billart:int, rec_id:int, curr_dept:int, balance:Deci
                 b_pax = h_bill.belegung
         h_umsatz.betrag =  to_decimal(h_umsatz.betrag) + to_decimal(f_pax)
         h_umsatz.nettobetrag =  to_decimal(h_umsatz.nettobetrag) + to_decimal(b_pax)
-        pass
-        pass
+
 
 
     def release_tbplan():
@@ -150,7 +153,9 @@ def ts_restinv_btn_ccard2bl(billart:int, rec_id:int, curr_dept:int, balance:Deci
         nonlocal t_h_artikel, t_h_bill
         nonlocal t_h_artikel_data, t_h_bill_data
 
-        queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, h_bill.departement)],"number2": [(eq, h_bill.tischnr)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, h_bill.departement)],"number2": [(eq, h_bill.tischnr)]})
+        queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 31) & (Queasy.number1 == h_bill.departement) & (Queasy.number2 == h_bill.tischnr)).with_for_update().first()
 
         if queasy:
             pass
@@ -158,10 +163,10 @@ def ts_restinv_btn_ccard2bl(billart:int, rec_id:int, curr_dept:int, balance:Deci
             queasy.date1 = None
 
 
-            pass
-            pass
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    h_bill = db_session.query(H_bill).filter(
+                 (H_bill._recid == rec_id)).with_for_update().first()
     # Rd 3/8/2025
     # if not avail return
     if h_bill is None:

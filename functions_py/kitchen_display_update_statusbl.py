@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -30,13 +32,13 @@ def kitchen_display_update_statusbl(qhead_recid:int, status_nr:int):
         return {"ok_flag": ok_flag}
 
 
-    q_kds_head = get_cache (Queasy, {"_recid": [(eq, qhead_recid)]})
+    # q_kds_head = get_cache (Queasy, {"_recid": [(eq, qhead_recid)]})
+    q_kds_head = db_session.query(Queasy).filter(
+                 (Queasy._recid == qhead_recid)).with_for_update().first()
 
     if q_kds_head:
         pass
         q_kds_head.deci2 =  to_decimal(status_nr)
-        pass
-        pass
 
         for q_kds_line in db_session.query(Q_kds_line).filter(
                  (Q_kds_line.key == 255) & (Q_kds_line.deci2 == qhead_recid)).order_by(Q_kds_line._recid).all():
