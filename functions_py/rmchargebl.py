@@ -21,6 +21,12 @@
 # ============================
 # Rd, 24/11/2025, update last_count for counter update
 # ============================
+
+# =============================================
+# Rulita, 01-12-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -572,17 +578,22 @@ def rmchargebl():
         for res_line in db_session.query(Res_line).filter(
                  (Res_line.active_flag == 1) & (Res_line.zinr != "") & (Res_line.ankunft <= bill_date) & (Res_line.resstatus != 12) & (Res_line.resstatus != 8) & (Res_line.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line.zinr).all():
 
-            bill = get_cache (Bill, {"zinr": [(eq, res_line.zinr)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"flag": [(eq, 0)]})
+            # bill = get_cache (Bill, {"zinr": [(eq, res_line.zinr)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"flag": [(eq, 0)]})
+            bill = db_session.query(Bill).filter(
+                     (Bill.zinr == res_line.zinr) & (Bill.resnr == res_line.resnr) & (Bill.reslinnr == res_line.reslinnr) & (Bill.flag == 0)).with_for_update().first()
 
             if not bill:
 
-                bill = get_cache (Bill, {"zinr": [(eq, res_line.zinr)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"flag": [(eq, 1)]})
+                # bill = get_cache (Bill, {"zinr": [(eq, res_line.zinr)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"flag": [(eq, 1)]})
+                bill = db_session.query(Bill).filter(
+                         (Bill.zinr == res_line.zinr) & (Bill.resnr == res_line.resnr) & (Bill.reslinnr == res_line.reslinnr) & (Bill.flag == 1)).with_for_update().first()
             do_it = None != bill
 
             if bill:
-                pass
+                # pass
                 bill.flag = 0
-                pass
+                # pass
+                db_session.refresh(bill,with_for_update=True)
             else:
 
                 guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
@@ -954,7 +965,10 @@ def rmchargebl():
                 bill1 = get_cache (Bill, {"zinr": [(eq, res_line.zinr)],"gastnr": [(eq, res_line.gastnrpay)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"billtyp": [(eq, 0)],"billnr": [(eq, 1)],"flag": [(eq, 0)]})
                 bil_recid = get_output(create_newbillbl(res_line.resnr, res_line.reslinnr, bill1.parent_nr, billno))
 
-                bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+                # bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+                bill = db_session.query(Bill).filter((Bill._recid == bil_recid)).with_for_update().first()
+            # pass
+
             bill.argtumsatz =  to_decimal(bill.argtumsatz) + to_decimal(amount)
             bill.gesamtumsatz =  to_decimal(bill.gesamtumsatz) + to_decimal(amount)
             bill.rgdruck = 0
@@ -1052,7 +1066,9 @@ def rmchargebl():
                 bill1 = get_cache (Bill, {"zinr": [(eq, res_line.zinr)],"gastnr": [(eq, res_line.gastnrpay)],"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"billtyp": [(eq, 0)],"billnr": [(eq, 1)],"flag": [(eq, 0)]})
                 bil_recid = get_output(create_newbillbl(res_line.resnr, res_line.reslinnr, bill1.parent_nr, billno))
 
-                bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+                # bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+                bill = db_session.query(Bill).filter((Bill._recid == bil_recid)).with_for_update().first()
+
             bill.argtumsatz =  to_decimal(bill.argtumsatz) + to_decimal(amount)
             bill.gesamtumsatz =  to_decimal(bill.gesamtumsatz) + to_decimal(amount)
             bill.rgdruck = 0
@@ -1391,7 +1407,9 @@ def rmchargebl():
 
             pass
 
-            umsatz = get_cache (Umsatz, {"artnr": [(eq, billart)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+            # umsatz = get_cache (Umsatz, {"artnr": [(eq, billart)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+            umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == billart) & (Umsatz.departement == artikel.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
             if not umsatz:
                 umsatz = Umsatz()
@@ -1496,7 +1514,9 @@ def rmchargebl():
 
                 artikel1 = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
 
-                umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+                # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                         (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -1530,7 +1550,9 @@ def rmchargebl():
 
         artikel1 = get_cache (Artikel, {"artnr": [(eq, arrangement.artnr_logis)],"departement": [(eq, 0)]})
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                 (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -1602,7 +1624,9 @@ def rmchargebl():
 
                 pass
 
-                umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+                # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                         (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -1675,7 +1699,9 @@ def rmchargebl():
 
                 pass
 
-                umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+                # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                         (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -1781,7 +1807,9 @@ def rmchargebl():
 
                 artikel1 = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
 
-                umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+                # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                         (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -1816,7 +1844,9 @@ def rmchargebl():
 
         artikel1 = get_cache (Artikel, {"artnr": [(eq, arrangement.artnr_logis)],"departement": [(eq, 0)]})
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                 (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -1885,7 +1915,9 @@ def rmchargebl():
 
                 pass
 
-                umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+                # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                         (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -1961,7 +1993,9 @@ def rmchargebl():
 
                 pass
 
-                umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+                # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                         (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()

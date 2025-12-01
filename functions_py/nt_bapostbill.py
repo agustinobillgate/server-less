@@ -7,6 +7,11 @@
 # Rd, 24/11/2025, update last_count for counter update
 # ============================
 
+# =============================================
+# Rulita, 01-12-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -121,7 +126,9 @@ def nt_bapostbill():
 
             pass
 
-            umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+            # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+            umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
             if not umsatz:
                 umsatz = Umsatz()
@@ -191,7 +198,9 @@ def nt_bapostbill():
         if curr_resnr != bk_reser.veran_nr:
             curr_resnr = bk_reser.veran_nr
 
-            bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, curr_resnr)]})
+            # bk_veran = get_cache (Bk_veran, {"veran_nr": [(eq, curr_resnr)]})
+            bk_veran = db_session.query(Bk_veran).filter(
+                     (Bk_veran.veran_nr == curr_resnr)).with_for_update().first()
 
             guest = get_cache (Guest, {"gastnr": [(eq, bk_veran.gastnrver)]})
             deposit_amount =  to_decimal("0")
@@ -224,7 +233,9 @@ def nt_bapostbill():
                 bk_veran.rechnr = bill.rechnr
             else:
 
-                bill = get_cache (Bill, {"rechnr": [(eq, bk_veran.rechnr)]})
+                # bill = get_cache (Bill, {"rechnr": [(eq, bk_veran.rechnr)]})
+                bill = db_session.query(Bill).filter(
+                         (Bill.rechnr == bk_veran.rechnr)).with_for_update().first()
 
             if deposit_amount != 0 and bk_veran.last_paid_date == None:
 

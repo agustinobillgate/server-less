@@ -4,6 +4,11 @@
 # 
 #------------------------------------------
 
+# =============================================
+# Rulita, 28-11-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -69,29 +74,29 @@ def check_pguestbl(pvilanguage:int):
                 c_list.resstatus = 15
 
         res_line = db_session.query(Res_line).filter(
-                 (Res_line.zinr == "") & ((Res_line.resstatus == 6) | (Res_line.resstatus == 13))).first()
+                 (Res_line.zinr == "") & ((Res_line.resstatus == 6) | (Res_line.resstatus == 13))).with_for_update().first()
         while None != res_line:
             msg_str = msg_str + "&W" + translateExtended ("Mal Reservation found! ResNo:", lvcarea, "") + " " + to_string(res_line.resnr) + chr_unicode(10) + translateExtended ("Guest Name:", lvcarea, "") + " " + res_line.name + chr_unicode(10) + translateExtended ("Status inhouse but RmNo not assigend; set back to GUARANTEED.", lvcarea, "")
             pass
             res_line.resstatus = 1
             res_line.active_flag = 0
 
-
-            pass
+            db_session.refresh(res_line,with_for_update=True)
+            # pass
 
             curr_recid = res_line._recid
             res_line = db_session.query(Res_line).filter(
                      (Res_line.zinr == "") & ((Res_line.resstatus == 6) | (Res_line.resstatus == 13)) & (Res_line._recid > curr_recid)).first()
 
         res_line = db_session.query(Res_line).filter(
-                 (Res_line.zinr != "") & (((Res_line.resstatus == 6) & (Res_line.active_flag == 0)) | ((Res_line.resstatus == 1) & (Res_line.active_flag == 1)))).first()
+                 (Res_line.zinr != "") & (((Res_line.resstatus == 6) & (Res_line.active_flag == 0)) | ((Res_line.resstatus == 1) & (Res_line.active_flag == 1)))).with_for_update().first()
         while None != res_line:
             pass
             res_line.resstatus = 6
             res_line.active_flag = 1
 
-
-            pass
+            db_session.refresh(res_line,with_for_update=True)
+            # pass
 
             curr_recid = res_line._recid
             res_line = db_session.query(Res_line).filter(
