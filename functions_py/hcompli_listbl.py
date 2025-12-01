@@ -1,11 +1,14 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import H_artikel, Htparam, Hoteldpt, H_compli, H_bill, H_journal, Artikel, H_cost, Queasy, Exrate, H_bill_line
 
-def hcompli_listbl(pvilanguage:int, gname:string, sorttype:int, from_dept:int, to_dept:int, from_date:date, to_date:date, double_currency:bool, exchg_rate:Decimal, billdate:date, mi_detail1:bool, sm_disp1:bool, foreign_nr:int, artnr:int):
+def hcompli_listbl(pvilanguage:int, gname:string, sorttype:int, from_dept:int, to_dept:int, from_date:date, to_date:date, double_currency:bool, 
+                   exchg_rate:Decimal, billdate:date, mi_detail1:bool, sm_disp1:bool, foreign_nr:int, artnr:int):
 
     prepare_cache ([H_artikel, Htparam, Hoteldpt, H_compli, H_bill, Artikel, H_cost, Queasy, Exrate, H_bill_line])
 
@@ -25,12 +28,12 @@ def hcompli_listbl(pvilanguage:int, gname:string, sorttype:int, from_dept:int, t
     c2_list_data = c1_list_data
 
     db_session = local_storage.db_session
+    gname = gname.strip()
 
     def generate_output():
         nonlocal c_list_data, it_exist, curr_name, guestname, lvcarea, h_artikel, htparam, hoteldpt, h_compli, h_bill, h_journal, artikel, h_cost, queasy, exrate, h_bill_line
         nonlocal pvilanguage, gname, sorttype, from_dept, to_dept, from_date, to_date, double_currency, exchg_rate, billdate, mi_detail1, sm_disp1, foreign_nr, artnr
         nonlocal c2_list
-
 
         nonlocal c_list, c1_list, c2_list, s_list, s_list
         nonlocal c_list_data, c1_list_data
@@ -1164,23 +1167,23 @@ def hcompli_listbl(pvilanguage:int, gname:string, sorttype:int, from_dept:int, t
 
         if (guestname).lower()  != "" and (guestname).lower()  != None and curr_name.lower()  != (guestname).lower() :
 
-            h_bill = get_cache (H_bill, {"rechnr": [(eq, c_list.rechnr)],"departement": [(eq, c_list.dept)]})
+            # h_bill = get_cache (H_bill, {"rechnr": [(eq, c_list.rechnr)],"departement": [(eq, c_list.dept)]})
+            h_bill = db_session.query(H_bill).filter(
+                     (H_bill.rechnr == c_list.rechnr) & (H_bill.departement == c_list.dept)).with_for_update().first()
 
             if h_bill:
-                pass
                 h_bill.bilname = guestname
-                pass
 
-                h_journal = get_cache (H_journal, {"bill_datum": [(eq, c_list.datum)],"departement": [(eq, c_list.dept)],"segmentcode": [(eq, c_list.p_artnr)],"rechnr": [(eq, c_list.rechnr)],"zeit": [(ge, 0)]})
+                # h_journal = get_cache (H_journal, {"bill_datum": [(eq, c_list.datum)],"departement": [(eq, c_list.dept)],"segmentcode": [(eq, c_list.p_artnr)],"rechnr": [(eq, c_list.rechnr)],"zeit": [(ge, 0)]})
+                h_journal = db_session.query(H_journal).filter(
+                         (H_journal.bill_datum == c_list.datum) & (H_journal.departement == c_list.dept) & (H_journal.segmentcode == c_list.p_artnr) & (H_journal.rechnr == c_list.rechnr) & (H_journal.zeit >= 0)).with_for_update().first()
                 while None != h_journal:
-                    pass
                     h_journal.aendertext = guestname
-                    pass
 
                     curr_recid = h_journal._recid
                     h_journal = db_session.query(H_journal).filter(
-                             (H_journal.bill_datum == c_list.datum) & (H_journal.departement == c_list.dept) & (H_journal.segmentcode == c_list.p_artnr) & (H_journal.rechnr == c_list.rechnr) & (H_journal.zeit >= 0) & (H_journal._recid > curr_recid)).first()
-
+                             (H_journal.bill_datum == c_list.datum) & (H_journal.departement == c_list.dept) & (H_journal.segmentcode == c_list.p_artnr) & 
+                             (H_journal.rechnr == c_list.rechnr) & (H_journal.zeit >= 0) & (H_journal._recid > curr_recid)).with_for_update().first()
 
     journal_list()
 
