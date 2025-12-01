@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Tisch, H_bill
@@ -61,7 +63,9 @@ def ts_restinv_open_stand_tablebl(curr_dept:int, curr_waiter:int):
             if not hbuff:
                 tischno = tbuff.tischnr
 
-                tbuff1 = get_cache (Tisch, {"_recid": [(eq, tbuff._recid)]})
+                # tbuff1 = get_cache (Tisch, {"_recid": [(eq, tbuff._recid)]})
+                tbuff1 = db_session.query(Tbuff1).filter(
+                         (Tbuff1._recid == tbuff._recid)).with_for_update().first()
                 tbuff1.kellner_nr = curr_waiter
 
 

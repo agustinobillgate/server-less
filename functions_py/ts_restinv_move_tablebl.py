@@ -5,6 +5,7 @@
 #----------------------------------------
 # Rulita, 17-10-2025
 # modify program update tiketID : 6526C2
+# Rd, 01/12/2025, with_for_update added
 #----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -71,9 +72,13 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
         Hbline =  create_buffer("Hbline",H_bill_line)
         new_rechnr = h_bill.rechnr
 
-        queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, curr_dept)],"number2": [(eq, curr_tischnr)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, curr_dept)],"number2": [(eq, curr_tischnr)]})
+        queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 31) & (Queasy.number1 == curr_dept) & (Queasy.number2 == curr_tischnr)).with_for_update().first()
 
-        qbuff = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, curr_dept)],"number2": [(eq, tischnr)]})
+        # qbuff = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, curr_dept)],"number2": [(eq, tischnr)]})
+        qbuff = db_session.query(Queasy).filter(
+                     (Queasy.key == 31) & (Queasy.number1 == curr_dept) & (Queasy.number2 == tischnr)).with_for_update().first()
 
         if qbuff and qbuff.date1 == None:
             pass
@@ -130,14 +135,14 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
             queasy.date1 = None
 
 
-            pass
-            pass
-
         for h_bill_line in db_session.query(H_bill_line).filter(
                      (H_bill_line.rechnr == rechnr) & (H_bill_line.departement == curr_dept)).order_by(H_bill_line._recid).all():
 
             for h_mjourn in db_session.query(H_mjourn).filter(
-                         (H_mjourn.departement == h_bill_line.departement) & (H_mjourn.h_artnr == h_bill_line.artnr) & (H_mjourn.rechnr == h_bill_line.rechnr) & (H_mjourn.bill_datum == h_bill_line.bill_datum) & (H_mjourn.sysdate == h_bill_line.sysdate) & (H_mjourn.zeit == h_bill_line.zeit) & (num_entries(H_mjourn.request, "|") > 1) & (to_int(entry(0, H_mjourn.request, "|")) == to_int(h_bill_line._recid))).order_by(H_mjourn._recid).all():
+                         (H_mjourn.departement == h_bill_line.departement) & (H_mjourn.h_artnr == h_bill_line.artnr) & 
+                         (H_mjourn.rechnr == h_bill_line.rechnr) & (H_mjourn.bill_datum == h_bill_line.bill_datum) & 
+                         (H_mjourn.sysdate == h_bill_line.sysdate) & (H_mjourn.zeit == h_bill_line.zeit) & 
+                         (num_entries(H_mjourn.request, "|") > 1) & (to_int(entry(0, H_mjourn.request, "|")) == to_int(h_bill_line._recid))).order_by(H_mjourn._recid).with_for_update().all():
                 h_mjourn.rechnr = new_rechnr
                 h_mjourn.tischnr = tischnr
                 h_mjourn.kellner_nr = curr_waiter
@@ -145,7 +150,9 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
 
             pass
 
-            hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
+            # hbline = get_cache (H_bill_line, {"_recid": [(eq, h_bill_line._recid)]})
+            hbline = db_session.query(H_bill_line).filter(
+                (H_bill_line._recid == h_bill_line._recid)).with_for_update().first()
             pass
             bill_date = h_bill_line.bill_datum
             hbline.tischnr = tischnr
@@ -153,11 +160,8 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
             hbline.waehrungsnr = 0
 
 
-            pass
-            pass
-
         for h_journal in db_session.query(H_journal).filter(
-                     (H_journal.rechnr == rechnr) & (H_journal.departement == curr_dept) & (H_journal.bill_datum == bill_date)).order_by(H_journal._recid).all():
+                     (H_journal.rechnr == rechnr) & (H_journal.departement == curr_dept) & (H_journal.bill_datum == bill_date)).order_by(H_journal._recid).with_for_update().all():
             h_journal.tischnr = tischnr
             h_journal.rechnr = new_rechnr
 
@@ -314,7 +318,11 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
 
             return
 
-        selforder_session = get_cache (Queasy, {"key": [(eq, 230)],"number1": [(eq, curr_dept)],"number2": [(eq, curr_tischnr)],"char1": [(eq, sessionid_one)],"logi1": [(eq, False)]})
+        # selforder_session = get_cache (Queasy, {"key": [(eq, 230)],"number1": [(eq, curr_dept)],"number2": [(eq, curr_tischnr)],"char1": [(eq, sessionid_one)],"logi1": [(eq, False)]})
+        selforder_session = db_session.query(Selforder_session).filter(
+                        (Selforder_session.key == 230) & (Selforder_session.number1 == curr_dept) & 
+                        (Selforder_session.number2 == curr_tischnr) & (Selforder_session.char1 == sessionid_one) & 
+                        (Selforder_session.logi1 == False)).with_for_update().first()
 
         if selforder_session:
 
@@ -332,7 +340,9 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
                     if validate_rechnr != 0:
                         break
 
-                b_orderbill = get_cache (Queasy, {"_recid": [(eq, orderbill._recid)]})
+                # b_orderbill = get_cache (Queasy, {"_recid": [(eq, orderbill._recid)]})
+                b_orderbill = db_session.query(B_orderbill).filter(
+                    (B_orderbill._recid == orderbill._recid)).with_for_update().first()
 
                 if b_orderbill:
                     pass
@@ -344,11 +354,13 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
                         b_orderbill.char2 = entry(1, b_orderbill.char2, "|", "NM=GuestTable" + to_string(tischnr))
                     else:
                         b_orderbill.char2 = entry(1, b_orderbill.char2, "|", "NM=" + guest_name)
-                    pass
-                    pass
+                    
 
             for orderbill_line in db_session.query(Orderbill_line).filter(
-                         (Orderbill_line.key == 225) & (Orderbill_line.char1 == ("orderbill-line").lower()) & (Orderbill_line.number2 == curr_tischnr) & (entry(0, Orderbill_line.char2, "|") == to_string(curr_dept)) & (entry(3, Orderbill_line.char2, "|") == sessionid_one) & (Orderbill_line.logi2) & (Orderbill_line.logi3)).order_by(Orderbill_line._recid).all():
+                         (Orderbill_line.key == 225) & (Orderbill_line.char1 == ("orderbill-line").lower()) & 
+                         (Orderbill_line.number2 == curr_tischnr) & (entry(0, Orderbill_line.char2, "|") == to_string(curr_dept)) & 
+                         (entry(3, Orderbill_line.char2, "|") == sessionid_one) & (Orderbill_line.logi2) & 
+                         (Orderbill_line.logi3)).order_by(Orderbill_line._recid).with_for_update().all():
 
                 b_orderbill_line = get_cache (Queasy, {"_recid": [(eq, orderbill_line._recid)]})
 
@@ -360,8 +372,6 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
                     b_orderbill_line.char2 = entry(3, b_orderbill_line.char2, "|", sessionid_two)
 
 
-                    pass
-                    pass
 
             if dynamic_qr:
                 pass
@@ -374,8 +384,7 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
                 if pickup_table:
                     pass
                     pickup_table.char3 = entry(0, pickup_table.char3, "|", sessionid_one + "T" + replace_str(to_string(get_current_date()) , "/", "") + replace_str(to_string(get_current_time_in_seconds(), "HH:MM") , ":", ""))
-                    pass
-                    pass
+                    
 
             paygateway_session = get_cache (Queasy, {"key": [(eq, 223)],"number1": [(eq, curr_dept)],"char3": [(eq, sessionid_one)],"betriebsnr": [(eq, rechnr)]})
 
@@ -388,11 +397,9 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
                     pass
                     b_pg_session.betriebsnr = bill_no
                     pass
-                    pass
-                pass
+                    
                 paygateway_session.betriebsnr = 0
-                pass
-                pass
+                
             pass
 
 
@@ -455,8 +462,11 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
 
         if not dynamic_qr:
 
-            pickup_table = get_cache (Queasy, {"key": [(eq, 225)],"char1": [(eq, "taken-table")],"logi1": [(eq, True)],"logi2": [(eq, False)],"number1": [(eq, curr_dept)],"number2": [(eq, curr_tischnr)]})
-
+            # pickup_table = get_cache (Queasy, {"key": [(eq, 225)],"char1": [(eq, "taken-table")],"logi1": [(eq, True)],"logi2": [(eq, False)],"number1": [(eq, curr_dept)],"number2": [(eq, curr_tischnr)]})
+            pickup_table = db_session.query(Pickup_table).filter(
+                         (Pickup_table.key == 225) & (Pickup_table.char1 == ("taken-table").lower()) & 
+                         (Pickup_table.logi1) & (Pickup_table.logi2) & (Pickup_table.number1 == curr_dept) & 
+                         (Pickup_table.number2 == curr_tischnr)).with_for_update().first()   
             if pickup_table:
                 sessionid_one = entry(0, pickup_table.char3, "|")
 
@@ -489,7 +499,9 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
                     if guest_name != "":
                         return
 
-        h_bill = get_cache (H_bill, {"_recid": [(eq, bilrecid)]})
+        # h_bill = get_cache (H_bill, {"_recid": [(eq, bilrecid)]})
+        h_bill = db_session.query(H_bill).filter(
+            (H_bill._recid == bilrecid)).with_for_update().first()
 
         if h_bill:
 
@@ -504,8 +516,11 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
 
             return
 
-        selforder_session = get_cache (Queasy, {"key": [(eq, 230)],"number1": [(eq, curr_dept)],"number2": [(eq, curr_tischnr)],"char1": [(eq, sessionid_one)],"logi1": [(eq, False)]})
-
+        # selforder_session = get_cache (Queasy, {"key": [(eq, 230)],"number1": [(eq, curr_dept)],"number2": [(eq, curr_tischnr)],"char1": [(eq, sessionid_one)],"logi1": [(eq, False)]})
+        selforder_session = db_session.query(Selforder_session).filter(
+                        (Selforder_session.key == 230) & (Selforder_session.number1 == curr_dept) & 
+                        (Selforder_session.number2 == curr_tischnr) & (Selforder_session.char1 == sessionid_one) & 
+                        (Selforder_session.logi1 == False)).with_for_update().first()
         if selforder_session:
 
             buff_hbill = get_cache (H_bill, {"_recid": [(eq, bilrecid)]})
@@ -534,7 +549,11 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
                         break
 
                 for orderbill_line in db_session.query(Orderbill_line).filter(
-                             (Orderbill_line.key == 225) & (Orderbill_line.char1 == ("orderbill-line").lower()) & (Orderbill_line.number1 == orderbill.number3) & (Orderbill_line.number2 == curr_tischnr) & (entry(0, Orderbill_line.char2, "|") == to_string(curr_dept)) & (entry(3, Orderbill_line.char2, "|") == sessionid_one) & (Orderbill_line.logi2) & (Orderbill_line.logi3)).order_by(Orderbill_line._recid).all():
+                             (Orderbill_line.key == 225) & (Orderbill_line.char1 == ("orderbill-line").lower()) & 
+                             (Orderbill_line.number1 == orderbill.number3) & (Orderbill_line.number2 == curr_tischnr) & 
+                             (entry(0, Orderbill_line.char2, "|") == to_string(curr_dept)) & 
+                             (entry(3, Orderbill_line.char2, "|") == sessionid_one) & (Orderbill_line.logi2) & 
+                             (Orderbill_line.logi3)).order_by(Orderbill_line._recid).with_for_update().all():
 
                     b_orderbill_line = get_cache (Queasy, {"_recid": [(eq, orderbill_line._recid)]})
 
@@ -545,10 +564,6 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
                         b_orderbill_line.char2 = entry(0, b_orderbill_line.char2, "|", to_string(curr_dept))
                         b_orderbill_line.char2 = entry(1, b_orderbill_line.char2, "|", to_string(tischnr))
                         b_orderbill_line.char2 = entry(3, b_orderbill_line.char2, "|", sessionid_two)
-
-
-                        pass
-                        pass
 
                 b_orderbill = get_cache (Queasy, {"_recid": [(eq, orderbill._recid)]})
 
@@ -567,8 +582,7 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
                         b_orderbill.char2 = entry(1, b_orderbill.char2, "|", "NM=GuestTable" + to_string(tischnr))
                     else:
                         b_orderbill.char2 = entry(1, b_orderbill.char2, "|", "NM=" + guest_name)
-                    pass
-                    pass
+                    
 
             if dynamic_qr:
                 pass
@@ -576,21 +590,25 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
                 pass
 
                 pickup_table = db_session.query(Pickup_table).filter(
-                             (Pickup_table.key == 225) & (Pickup_table.char1 == ("taken-table").lower()) & (Pickup_table.logi1) & (Pickup_table.logi2) & (Pickup_table.number1 == curr_dept) & (Pickup_table.number2 == curr_tischnr) & (entry(0, Pickup_table.char3, "|") == sessionid_one)).first()
+                             (Pickup_table.key == 225) & (Pickup_table.char1 == ("taken-table").lower()) & 
+                             (Pickup_table.logi1) & (Pickup_table.logi2) & (Pickup_table.number1 == curr_dept) & 
+                             (Pickup_table.number2 == curr_tischnr) & (entry(0, Pickup_table.char3, "|") == sessionid_one)).with_for_update().first()
 
                 if pickup_table:
                     pass
                     pickup_table.char3 = entry(0, pickup_table.char3, "|", sessionid_one + "T" + replace_str(to_string(get_current_date()) , "/", "") + replace_str(to_string(get_current_time_in_seconds(), "HH:MM") , ":", ""))
-                    pass
-                    pass
+                    
 
-            paygateway_session = get_cache (Queasy, {"key": [(eq, 223)],"number1": [(eq, curr_dept)],"char3": [(eq, sessionid_one)],"betriebsnr": [(eq, old_billno)]})
+            # paygateway_session = get_cache (Queasy, {"key": [(eq, 223)],"number1": [(eq, curr_dept)],"char3": [(eq, sessionid_one)],"betriebsnr": [(eq, old_billno)]})
+            paygateway_session = db_session.query(Paygateway_session).filter(
+                             (Paygateway_session.key == 223) & (Paygateway_session.number1 == curr_dept) & 
+                             (Paygateway_session.char3 == sessionid_one) & 
+                             (Paygateway_session.betriebsnr == old_billno)).with_for_update().first
 
             if paygateway_session:
                 pass
                 paygateway_session.betriebsnr = 0
-                pass
-                pass
+                
             pass
 
 
@@ -644,11 +662,15 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
             else:
                 curr_recid = rec_id
 
-            buffq251 = get_cache (Queasy, {"key": [(eq, 251)],"number1": [(eq, curr_recid)]})
+            # buffq251 = get_cache (Queasy, {"key": [(eq, 251)],"number1": [(eq, curr_recid)]})
+            buffq251 = db_session.query(Buffq251).filter(
+                (Buffq251.key == 251) & (Buffq251.number1 == curr_recid)).with_for_update().first()
 
             if buffq251:
 
-                buffq33 = get_cache (Queasy, {"_recid": [(eq, buffq251.number2)]})
+                # buffq33 = get_cache (Queasy, {"_recid": [(eq, buffq251.number2)]})
+                buffq33 = db_session.query(Buffq33).filter(
+                    (Buffq33._recid == buffq251.number2)).with_for_update().first()
 
                 if buffq33:
                     pass
@@ -656,13 +678,11 @@ def ts_restinv_move_tablebl(pax:int, curr_tischnr:int, rec_id:int, curr_dept:int
 
                     if num_entries(buffq33.char3, ";") <= 3:
                         buffq33.char3 = buffq33.char3 + "Move Table From " + to_string(curr_tischnr) + " to " + to_string(tischnr) + " - UserID " + to_string(curr_waiter)
-                    pass
-                    pass
+                    
 
                 if bilrecid != 0:
                     pass
                     buffq251.number1 = curr_recid
-                    pass
-                    pass
+                    
 
     return generate_output()

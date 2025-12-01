@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+# ----------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill, Queasy, H_queasy
@@ -36,13 +38,14 @@ def ts_restinv_del_queasybl(p_list_data:[P_list], rec_id:int, use_h_queasy:bool)
         if not use_h_queasy:
 
             for queasy in db_session.query(Queasy).filter(
-                     (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & (Queasy.number2 >= 0) & (Queasy.deci2 >= 0)).order_by(Queasy._recid).all():
+                     (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & 
+                     (Queasy.number2 >= 0) & (Queasy.deci2 >= 0)).order_by(Queasy._recid).with_for_update().all():
                 db_session.delete(queasy)
             pass
         else:
 
             for h_queasy in db_session.query(H_queasy).filter(
-                     (H_queasy.number1 == (h_bill.departement + h_bill.rechnr * 100))).order_by(H_queasy._recid).all():
+                     (H_queasy.number1 == (h_bill.departement + h_bill.rechnr * 100))).order_by(H_queasy._recid).with_for_update().all():
                 db_session.delete(h_queasy)
             pass
 

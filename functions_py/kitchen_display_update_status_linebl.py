@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -58,7 +60,10 @@ def kitchen_display_update_status_linebl(line_recid:int, status_nr:int):
         elif status_nr == 3:
             save_time3 = to_string(get_current_datetime(), "99/99/9999 HH:MM:SS")
 
-        queasy = get_cache (Queasy, {"key": [(eq, 302)],"betriebsnr": [(eq, line_recid)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 302)],"betriebsnr": [(eq, line_recid)]})
+        queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 302) &
+                     (Queasy.betriebsnr == line_recid)).with_for_update().first()
 
         if not queasy:
             queasy = Queasy()

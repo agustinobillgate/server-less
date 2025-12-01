@@ -1,6 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #---------------------------------------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+# Rd, 01/12/2025, with_for_update added
 #---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -43,7 +44,9 @@ def ts_restinv_btn_transfer_paytypegt1bl(bilrecid:int, h_bill_recid:int, balance
 
         return generate_output()
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, h_bill_recid)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, h_bill_recid)]})
+    h_bill = db_session.query(H_bill).filter(
+                 (H_bill._recid == h_bill_recid)).with_for_update().first()
 
     if not h_bill:
 
@@ -61,8 +64,6 @@ def ts_restinv_btn_transfer_paytypegt1bl(bilrecid:int, h_bill_recid:int, balance
         counters = db_session.query(Counters).filter(
                      (Counters.counter_no == 3)).with_for_update().first()
         counters.counter = counters.counter + 1
-        pass
-        pass
         bill.rechnr = counters.counter
         pass
 

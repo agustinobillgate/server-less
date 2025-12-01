@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.print_hbill1_cldbl import print_hbill1_cldbl
@@ -193,10 +195,10 @@ def print_hbill_getpartial_webbl(pvilanguage:int, user_init:string, print_all:bo
         elif print_list.str_pos == 20:
             outlet_print_list.foot_note1 = trim(print_list.str)
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, hbrecid)]})
-    pass
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, hbrecid)]})
+    h_bill = db_session.query(H_bill).filter(
+                 (H_bill._recid == hbrecid)).with_for_update().first()
     h_bill.rgdruck = 1
-    pass
     msg_str = "0-Success"
 
     return generate_output()

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -40,7 +42,10 @@ def ts_resplan_del_resbl(curr_dept:int, curr_date:date, rec_id:int, user_init:st
         qsy = None
         Qsy =  create_buffer("Qsy",Queasy)
 
-        qsy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+        # qsy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+        qsy = db_session.query(Queasy).filter(
+                 (Queasy._recid == rec_id)).with_for_update().first()
+        
         qsy.logi3 = False
         qsy.date3 = get_current_date()
         qsy.deci3 =  to_decimal(get_current_time_in_seconds)()
@@ -48,8 +53,6 @@ def ts_resplan_del_resbl(curr_dept:int, curr_date:date, rec_id:int, user_init:st
         qsy.betriebsnr = 2
 
 
-        pass
-        pass
 
     del_res()
 

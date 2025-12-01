@@ -2,6 +2,7 @@
 #----------------------------------------
 # Rd 3/8/2025
 # if not availble -> return
+# Rd, 01/12/2025, with_for_update added
 #----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -42,15 +43,12 @@ def ts_restinv_pay_cash7bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
         Tbuff =  create_buffer("Tbuff",Tisch)
 
         tbuff = db_session.query(Tbuff).filter(
-                     (Tbuff.tischnr == h_bill.tischnr) & (Tbuff.departement == h_bill.departement)).first()
+                     (Tbuff.tischnr == h_bill.tischnr) & (Tbuff.departement == h_bill.departement)).with_for_update().first()
 
         if tbuff and tbuff.roomcharge and tbuff.kellner_nr != 0:
             pass
             tbuff.kellner_nr = 0
 
-
-            pass
-            pass
         release_tbplan()
 
         if h_bill.resnr > 0:
@@ -80,7 +78,9 @@ def ts_restinv_pay_cash7bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
             if htparam.flogical and bill_date < get_current_date():
                 bill_date = bill_date + timedelta(days=1)
 
-        h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, 0)],"departement": [(eq, curr_dept)],"betriebsnr": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+        # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, 0)],"departement": [(eq, curr_dept)],"betriebsnr": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+        h_umsatz = db_session.query(H_umsatz).filter(
+                     (H_umsatz.artnr == 0) & (H_umsatz.departement == curr_dept) & (H_umsatz.betriebsnr == curr_dept) & (H_umsatz.datum == bill_date)).with_for_update().first()
 
         if not h_umsatz:
             h_umsatz = H_umsatz()
@@ -126,9 +126,6 @@ def ts_restinv_pay_cash7bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
                 b_pax = h_bill.belegung
         h_umsatz.betrag =  to_decimal(h_umsatz.betrag) + to_decimal(f_pax)
         h_umsatz.nettobetrag =  to_decimal(h_umsatz.nettobetrag) + to_decimal(b_pax)
-        pass
-        pass
-        pass
 
 
     def release_tbplan():
@@ -136,16 +133,14 @@ def ts_restinv_pay_cash7bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
         nonlocal bill_date, get_rechnr, get_amount, active_deposit, recid_hbill, htparam, h_bill, interface, h_bill_line, h_artikel, queasy, tisch, h_umsatz, artikel
         nonlocal rec_id, transdate, curr_dept, disc_art1, disc_art2, disc_art3, kellner_kellner_nr
 
-        queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, h_bill.departement)],"number2": [(eq, h_bill.tischnr)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, h_bill.departement)],"number2": [(eq, h_bill.tischnr)]})
+        queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 31) & (Queasy.number1 == h_bill.departement) & (Queasy.number2 == h_bill.tischnr)).with_for_update().first()
 
         if queasy:
             pass
             queasy.number3 = 0
             queasy.date1 = None
-
-
-            pass
-            pass
 
 
     def update_selforder():
@@ -204,7 +199,9 @@ def ts_restinv_pay_cash7bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
                 session_parameter = searchbill.char3
                 break
 
-        paramqsy = get_cache (Queasy, {"key": [(eq, 230)],"char1": [(eq, session_parameter)]})
+        # paramqsy = get_cache (Queasy, {"key": [(eq, 230)],"char1": [(eq, session_parameter)]})
+        paramqsy = db_session.query(Paramqsy).filter(
+                     (Paramqsy.key == 230) & (Paramqsy.char1 == session_parameter)).with_for_update().first()
 
         if paramqsy:
             pass
@@ -213,17 +210,19 @@ def ts_restinv_pay_cash7bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
             if dynamic_qr:
 
                 pickup_table = db_session.query(Pickup_table).filter(
-                             (Pickup_table.key == 225) & (Pickup_table.char1 == ("taken-table").lower()) & (Pickup_table.number1 == curr_dept) & (Pickup_table.logi1) & (Pickup_table.logi2) & (Pickup_table.number2 == paramqsy.number2) & (entry(0, Pickup_table.char3, "|") == (session_parameter).lower())).first()
+                             (Pickup_table.key == 225) & (Pickup_table.char1 == ("taken-table").lower()) & (Pickup_table.number1 == curr_dept) & 
+                             (Pickup_table.logi1) & (Pickup_table.logi2) & (Pickup_table.number2 == paramqsy.number2) & 
+                             (entry(0, Pickup_table.char3, "|") == (session_parameter).lower())).with_for_update().first()
 
                 if pickup_table:
                     pass
                     pickup_table.char3 = entry(0, pickup_table.char3, "|", session_parameter + "T" + replace_str(to_string(get_current_date()) , "/", "") + replace_str(to_string(get_current_time_in_seconds(), "HH:MM") , ":", ""))
 
 
-                    pass
-                    pass
-
-            orderbill = get_cache (Queasy, {"key": [(eq, 225)],"char1": [(eq, "orderbill")],"char3": [(eq, session_parameter)],"logi1": [(eq, True)],"logi3": [(eq, True)]})
+            # orderbill = get_cache (Queasy, {"key": [(eq, 225)],"char1": [(eq, "orderbill")],"char3": [(eq, session_parameter)],"logi1": [(eq, True)],"logi3": [(eq, True)]})
+            orderbill = db_session.query(Orderbill).filter(
+                         (Orderbill.key == 225) & (Orderbill.char1 == ("orderbill").lower()) & (Orderbill.char3 == (session_parameter).lower()) & 
+                         (Orderbill.logi1) & (Orderbill.logi3)).with_for_update().first()
 
             if orderbill:
                 pass
@@ -268,7 +267,8 @@ def ts_restinv_pay_cash7bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
                     queasy.logi1 = True
 
                 orderbilline = db_session.query(Orderbilline).filter(
-                             (Orderbilline.key == 225) & (Orderbilline.char1 == ("orderbill-line").lower()) & (entry(3, Orderbilline.char2, "|") == (session_parameter).lower())).first()
+                             (Orderbilline.key == 225) & (Orderbilline.char1 == ("orderbill-line").lower()) & 
+                             (entry(3, Orderbilline.char2, "|") == (session_parameter).lower())).with_for_update().first()
                 while None != orderbilline:
                     pass
 
@@ -283,17 +283,17 @@ def ts_restinv_pay_cash7bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
 
                     curr_recid = orderbilline._recid
                     orderbilline = db_session.query(Orderbilline).filter(
-                                 (Orderbilline.key == 225) & (Orderbilline.char1 == ("orderbill-line").lower()) & (entry(3, Orderbilline.char2, "|") == (session_parameter).lower()) & (Orderbilline._recid > curr_recid)).first()
+                                 (Orderbilline.key == 225) & (Orderbilline.char1 == ("orderbill-line").lower()) & 
+                                 (entry(3, Orderbilline.char2, "|") == (session_parameter).lower()) & (Orderbilline._recid > curr_recid)).with_for_update().first()
 
-            qpayment_gateway = get_cache (Queasy, {"key": [(eq, 223)],"char3": [(eq, session_parameter)],"betriebsnr": [(eq, get_rechnr)]})
+            # qpayment_gateway = get_cache (Queasy, {"key": [(eq, 223)],"char3": [(eq, session_parameter)],"betriebsnr": [(eq, get_rechnr)]})
+            qpayment_gateway = db_session.query(Qpayment_gateway).filter(
+                         (Qpayment_gateway.key == 223) & (Qpayment_gateway.char3 == session_parameter) & (Qpayment_gateway.betriebsnr == get_rechnr)).with_for_update().first()
 
             if qpayment_gateway:
                 pass
                 qpayment_gateway.betriebsnr = 0
-                pass
-                pass
-            pass
-            pass
+
 
 
     def remove_rsv_table():
@@ -310,7 +310,9 @@ def ts_restinv_pay_cash7bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
         if queasy:
             recid_q33 = queasy.number2
 
-            buffq33 = get_cache (Queasy, {"_recid": [(eq, recid_q33)]})
+            # buffq33 = get_cache (Queasy, {"_recid": [(eq, recid_q33)]})
+            buffq33 = db_session.query(Buffq33).filter(
+                         (Buffq33._recid == recid_q33)).with_for_update().first()
 
             if buffq33:
                 pass
@@ -325,7 +327,10 @@ def ts_restinv_pay_cash7bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
     if htparam:
         active_deposit = htparam.flogical
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    h_bill = db_session.query(H_bill).filter(
+                 (H_bill._recid == rec_id)).with_for_update().first()
+    
     # Rd 3/8/2025
     # if not avail return
     if h_bill is None:
@@ -351,9 +356,7 @@ def ts_restinv_pay_cash7bl(rec_id:int, transdate:date, curr_dept:int, disc_art1:
     interface.reslinnr = h_bill.reslinnr
 
 
-    pass
-    pass
-    pass
+
     get_rechnr = h_bill.rechnr
 
     for h_bill_line in db_session.query(H_bill_line).filter(
