@@ -1,11 +1,14 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpint import htpint
 from sqlalchemy import func
 from models import L_order, L_orderhdr, Htparam, Waehrung, L_lieferant, Parameters, Queasy, L_artikel
+from sqlalchemy.orm import flag_modified
 
 def prepare_mk_ins_po_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr:int, po_type:int, potype:int, bediener_username:string, ordername_screen_value:string, crterm:int):
 
@@ -45,6 +48,11 @@ def prepare_mk_ins_po_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dep
     art_supp_data, Art_supp = create_model("Art_supp", {"rec_id":int, "artnr":int, "bezeich":string, "ek_aktuell":Decimal, "ek_letzter":Decimal, "traubensort":string, "lief_einheit":Decimal, "lief_nr1":int, "lief_nr2":int, "lief_nr3":int, "jahrgang":int, "alkoholgrad":Decimal})
 
     db_session = local_storage.db_session
+    docu_nr = docu_nr.strip()
+    bediener_username = bediener_username.strip()
+    ordername_screen_value = ordername_screen_value.strip()
+
+    
 
     def generate_output():
         nonlocal local_nr, billdate, zeroprice_flag, deptname, supplier, curr_liefnr, p_222, p_234, p_266, pos, t_amount, currency_add_first, currency_screen_value, msg_str, p_1093, p_464, p_220, globaldisc, t_waehrung_data, t_l_order_data, t_l_orderhdr_data, t_parameters_data, art_supp_data, l_order, l_orderhdr, htparam, waehrung, l_lieferant, parameters, queasy, l_artikel
@@ -155,7 +163,9 @@ def prepare_mk_ins_po_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dep
 
     if po_type == 1:
 
-        l_orderhdr = get_cache (L_orderhdr, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, docu_nr)]})
+        # l_orderhdr = get_cache (L_orderhdr, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, docu_nr)]})
+        l_orderhdr = db_session.query(L_orderhdr).filter(
+                 (L_orderhdr.lief_nr == lief_nr) & (L_orderhdr.docu_nr == docu_nr)).with_for_update().first()
 
         if not l_orderhdr:
             l_orderhdr = L_orderhdr()
@@ -174,6 +184,8 @@ def prepare_mk_ins_po_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dep
         l_orderhdr.angebot_lief[1] = crterm
         l_orderhdr.angebot_lief[2] = local_nr
         l_orderhdr.gedruckt = None
+        flag_modified(l_orderhdr, "angebot_lief")
+        flag_modified(l_orderhdr, "lief_fax")
 
         if potype == 2:
             l_orderhdr.betriebsnr = 1

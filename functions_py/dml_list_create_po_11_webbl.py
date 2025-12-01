@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_orderhdr, L_lieferant, L_order, L_artikel, Dml_art, Reslin_queasy, Dml_artdep
+from sqlalchemy.orm import flag_modified
 
 s_list_data, S_list = create_model("S_list", {"s_flag":string, "selected":bool, "artnr":int, "bezeich":string, "qty":Decimal, "qty0":Decimal, "price":Decimal, "qty2":Decimal})
 c_list_data, C_list = create_model("C_list", {"zwkum":int, "grp":string, "artnr":int, "bezeich":string, "qty":Decimal, "a_qty":Decimal, "price":Decimal, "l_price":Decimal, "unit":string, "content":Decimal, "amount":Decimal, "deliver":Decimal, "dept":int, "supplier":string, "id":string, "cid":string, "price1":Decimal, "qty1":Decimal, "lief_nr":int, "approved":bool, "remark":string, "soh":Decimal, "dml_nr":string, "qty2":Decimal})
@@ -38,7 +41,6 @@ def dml_list_create_po_11_webbl(s_list_data:[S_list], c_list_data:[C_list], l_or
 
         nonlocal t_l_orderhdr_data, docu_nr, t_qty, counter, l_orderhdr, l_lieferant, l_order, l_artikel, dml_art, reslin_queasy, dml_artdep
         nonlocal l_orderhdr_recid, l_lieferant_recid, lief_nr, currdate, selected_date, bediener_username, crterm, local_nr, curr_dept, dunit_price, dml_hdr_remark
-
 
         nonlocal t_l_orderhdr, s_list, c_list, s1_list, c1_list
         nonlocal t_l_orderhdr_data
@@ -212,7 +214,9 @@ def dml_list_create_po_11_webbl(s_list_data:[S_list], c_list_data:[C_list], l_or
                                 pass
 
 
-    l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, l_orderhdr_recid)]})
+    # l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, l_orderhdr_recid)]})
+    l_orderhdr = db_session.query(L_orderhdr).filter(
+             (L_orderhdr._recid == l_orderhdr_recid)).with_for_update().first()
 
     l_lieferant = get_cache (L_lieferant, {"_recid": [(eq, l_lieferant_recid)]})
 

@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Htparam, L_orderhdr, L_order, Waehrung, L_lieferant, Gl_department, Printer, Briefzei, L_artikel, Printcod, Queasy, Parameters
+from sqlalchemy.orm import flag_modified
 
 def pchase_parserbl(briefnr:int, printnr:int, docu_nr:string):
 
@@ -57,6 +60,7 @@ def pchase_parserbl(briefnr:int, printnr:int, docu_nr:string):
     header_list_data, Header_list = create_model("Header_list", {"texte":string})
 
     db_session = local_storage.db_session
+    docu_nr = docu_nr.strip()
 
     def generate_output():
         nonlocal outfile, printer_pglen, err_code, output_list_data, f_page, foot_text1, foot_char2, foreign_currency, currloop, betrag, saldo, bl_balance, tot_qty, pos_bez, bez_len, remark_len, pos_ord, ord_len, remain_bez, disc2_flag, pr, f_lmargin, headloop, blloop, lmargin, nskip, ntab, n, curr_pos, curr_line, curr_page, buttom_line, keychar, price_decimal, globaldisc, long_digit, htparam, l_orderhdr, l_order, waehrung, l_lieferant, gl_department, printer, briefzei, l_artikel, printcod, queasy, parameters
@@ -752,7 +756,9 @@ def pchase_parserbl(briefnr:int, printnr:int, docu_nr:string):
 
                 else:
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 240)],"char1": [(eq, l_order.docu_nr)]})
+                    # queasy = get_cache (Queasy, {"key": [(eq, 240)],"char1": [(eq, l_order.docu_nr)]})
+                    queasy = db_session.query(Queasy).filter(
+                             (Queasy.key == 240) & (Queasy.char1 == (l_order.docu_nr).lower())).with_for_update().first()
 
                     if not queasy:
                         docu_str = docu_str
@@ -1592,9 +1598,10 @@ def pchase_parserbl(briefnr:int, printnr:int, docu_nr:string):
         if headloop == 1:
             headloop = 2
 
-    l_order = get_cache (L_order, {"lief_nr": [(eq, l_orderhdr.lief_nr)],"docu_nr": [(eq, docu_nr)],"pos": [(eq, 0)]})
+    # l_order = get_cache (L_order, {"lief_nr": [(eq, l_orderhdr.lief_nr)],"docu_nr": [(eq, docu_nr)],"pos": [(eq, 0)]})
+    l_order = db_session.query(L_order).filter(
+             (L_order.lief_nr == l_orderhdr.lief_nr) & (L_order.docu_nr == docu_nr) & (L_order.pos == 0)).with_for_update().first()
     l_order.gedruckt = get_current_date()
     l_order.zeit = get_current_time_in_seconds()
-    pass
 
     return generate_output()

@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_order, L_orderhdr, Bediener, Res_history
+from sqlalchemy.orm import flag_modified
 
 t_l_orderhdr_data, T_l_orderhdr = create_model_like(L_orderhdr, {"rec_id":int})
 s_order_data, S_order = create_model_like(L_order, {"rec_id":int, "lief_einheit":Decimal})
@@ -20,6 +23,8 @@ def chg_po_btn_gobl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order], di
     s_order = disc_list = t_l_orderhdr = None
 
     db_session = local_storage.db_session
+    pr = pr.strip()
+    tp_bediener_username = tp_bediener_username.strip()
 
     def generate_output():
         nonlocal remark, globaldisc, logstring, l_order, l_orderhdr, bediener, res_history
@@ -49,13 +54,12 @@ def chg_po_btn_gobl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order], di
         res_history.aenderung = aend_str
 
 
-        pass
-        pass
-
 
     t_l_orderhdr = query(t_l_orderhdr_data, first=True)
 
-    l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, t_l_orderhdr.rec_id)]})
+    # l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, t_l_orderhdr.rec_id)]})
+    l_orderhdr = db_session.query(L_orderhdr).filter(
+             (L_orderhdr._recid == t_l_orderhdr.rec_id)).with_for_update().first()
     remark = entry(0, t_l_orderhdr.lief_fax[2], chr_unicode(2))
 
     if num_entries(t_l_orderhdr.lief_fax[2], chr_unicode(2)) > 1:
@@ -93,11 +97,16 @@ def chg_po_btn_gobl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order], di
     l_orderhdr.lief_fax[1] = t_l_orderhdr.lief_fax[1]
     l_orderhdr.lief_fax[2] = remark
     l_orderhdr.gedruckt = t_l_orderhdr.gedruckt
+    flag_modified(l_orderhdr, "angebot_lief")
+    flag_modified(l_orderhdr, "lief_fax")
 
 
     pass
 
-    l_order = get_cache (L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)],"pos": [(eq, 0)]})
+    # l_order = get_cache (L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)],"pos": [(eq, 0)]})
+    l_order = db_session.query(L_order).filter(
+             (L_order.docu_nr == l_orderhdr.docu_nr) &
+             (L_order.pos == 0)).with_for_update().first()  
 
     if l_order.lief_nr != lief_nr:
         logstring = "[CHG LORDER]DOC NO: " + t_l_orderhdr.docu_nr + " Supplier Number Changed From: " + to_string(l_order.lief_nr) + " To: " + to_string(lief_nr)
@@ -114,6 +123,7 @@ def chg_po_btn_gobl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order], di
     l_order.lief_nr = lief_nr
     l_order.lief_fax[0] = pr
     l_order.warenwert =  to_decimal(globaldisc)
+    flag_modified(l_order, "lief_fax")
 
 
     pass
@@ -122,7 +132,9 @@ def chg_po_btn_gobl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order], di
 
         disc_list = query(disc_list_data, filters=(lambda disc_list: disc_list.l_recid == s_order.rec_id), first=True)
 
-        l_order = get_cache (L_order, {"_recid": [(eq, s_order.rec_id)]})
+        # l_order = get_cache (L_order, {"_recid": [(eq, s_order.rec_id)]})
+        l_order = db_session.query(L_order).filter(
+                 (L_order._recid == s_order.rec_id)).with_for_update().first()
 
         if l_order.lief_nr != lief_nr:
             logstring = "[CHG LORDER]DOC NO: " + l_order.docu_nr + " Article No: " + to_string(s_order.artnr) + " Supplier Number Changed From: " + to_string(l_order.lief_nr) + " To: " + to_string(lief_nr)
@@ -169,8 +181,7 @@ def chg_po_btn_gobl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order], di
         l_order.quality = s_order.quality
         l_order.warenwert =  to_decimal(s_order.warenwert)
         l_order.stornogrund = s_order.stornogrund
+        flag_modified(l_order, "lief_fax")
 
-
-        pass
 
     return generate_output()
