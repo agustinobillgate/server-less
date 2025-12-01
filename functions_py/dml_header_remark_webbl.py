@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# =============================================
+# Rulita, 01-12-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -53,18 +58,19 @@ def dml_header_remark_webbl(payload_list_data:[Payload_list]):
         if dml_no == "":
             dml_no = "D" + to_string(dept_no, "99") + substring(datum, 6, 2) + substring(datum, 0, 2) + substring(datum, 3, 2) + to_string(1, "999")
 
-        queasy = get_cache (Queasy, {"key": [(eq, 342)],"char1": [(eq, dml_no)],"number1": [(eq, dept_no)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 342)],"char1": [(eq, dml_no)],"number1": [(eq, dept_no)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 342) & (Queasy.char1 == dml_no) & (Queasy.number1 == dept_no)).with_for_update().first()
 
         if queasy:
-            pass
+            # pass
             queasy.char1 = dml_no
             queasy.number1 = dept_no
             queasy.date1 = datum_date
             queasy.char2 = remark
-
-
-            pass
-            pass
+            # pass
+            # pass
+            db_session.refresh(queasy, with_for_update=True)
             response_list.success_flag = True
         else:
             queasy = Queasy()
