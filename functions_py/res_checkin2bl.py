@@ -17,7 +17,7 @@ from functions.post_dayuse import post_dayuse
 from functions.intevent_1 import intevent_1
 from functions.mk_mcoupon import mk_mcoupon
 from models import Res_line, Guest, Bill, Queasy, Htparam, Outorder, Reservation, Resplan, Waehrung, Master, Counters, Bediener, Bill_line, Artikel, Billjournal, Umsatz, Res_history, Reslin_queasy, Exrate, Messages, Zimkateg, Zimmer, Zimplan, resplan, zimkateg
-from sqlalchemy.orm import flag_modified
+from sqlalchemy.orm.attributes import flag_modified
 
 
 def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: string, silenzio: bool):
@@ -504,7 +504,7 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
 
                 # rbuff = get_cache(Resplan, {"_recid": [(eq, resplan._recid)]})
                 rbuff = db_session.query(Rbuff).filter(
-                    (Rbuff._recid == resplan._recid)).with_for_update().first
+                    (Rbuff._recid == resplan._recid)).with_for_update().first()
                 # Rd, 21/7/25
                 # add if rbuff
                 if rbuff:
