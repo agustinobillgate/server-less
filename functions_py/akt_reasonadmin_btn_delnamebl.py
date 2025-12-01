@@ -3,6 +3,8 @@
 # Rd 4/8/2025
 # if available, bezeichnung
 #-----------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Akt_code, Akthdr
@@ -20,7 +22,9 @@ def akt_reasonadmin_btn_delnamebl(rec_id:int):
         return {"err": err}
 
 
-    akt_code = get_cache (Akt_code, {"_recid": [(eq, rec_id)]})
+    # akt_code = get_cache (Akt_code, {"_recid": [(eq, rec_id)]})
+    akt_code = db_session.query(Akt_code).filter(
+             (Akt_code._recid == rec_id)).with_for_update().first()
     # Rd 4/8/2025
     # if available,
     if akt_code is None:

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.119
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -52,7 +54,7 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
         epoch_millisecond:int = 0
         human_date:datetime = None
         dtz1 = get_current_datetime()
-        dtz2 = 1970_01_01T00:00:00.000
+        dtz2 = "1970_01_01T00:00:00.000"
         epoch_millisecond = get_interval(dtz1, dtz2, "milliseconds")
         human_date = add_interval(dtz2, epoch_millisecond, "milliseconds")
         time_stamp_str = to_string(human_date)

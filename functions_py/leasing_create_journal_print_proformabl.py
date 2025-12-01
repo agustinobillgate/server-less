@@ -10,7 +10,7 @@
                     - fix ("string").lower()
 """
 #----------------------------------------
-# Rd, 05/11/2025
+# Rd, 26/11/2025, with_for_update
 #----------------------------------------
 
 from functions.additional_functions import *
@@ -19,7 +19,6 @@ from datetime import date
 # from functions.calc_servtaxesbl import calc_servtaxesbl
 from functions_py.calc_servtaxesbl import calc_servtaxesbl
 from models import Artikel, Htparam, Queasy, Res_line, Arrangement, Reslin_queasy, Bill, Counters, Reservation, Guest, Bediener, Bill_line, Debitor, Billjournal, Umsatz, Gl_jouhdr, Gl_journal
-from functions.next_counter_for_update import next_counter_for_update
 
 
 def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_init: str):
@@ -102,21 +101,21 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
 
         # counters = get_cache(
         #     Counters, {"counter_no": [(eq, 3)]})
+        counters = db_session.query(Counters).filter(
+            Counters.counter_no == 3).with_for_update().first()
+        if not counters:
+            counters = Counters()
 
-        # if not counters:
-        #     counters = Counters()
-
-        #     counters.counter_no = 3
-        #     counters.counter_bez = "counter for Bill No"
+            counters.counter_no = 3
+            counters.counter_bez = "counter for Bill No"
             
-        #     db_session.add(counters)
+            db_session.add(counters)
             
 
-        # counters.counter = counters.counter + 1
-        # billnr = counters.counter
+        counters.counter = counters.counter + 1
+        billnr = counters.counter
 
-        last_count, error_lock = get_output(next_counter_for_update(3))
-        billnr = last_count
+
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
@@ -266,9 +265,10 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
 
         db_session.add(billjournal)
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == ar_ledger) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
         if not umsatz:
             umsatz = Umsatz()
 
@@ -301,8 +301,10 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
         
         db_session.add(billjournal)
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, divered_rental)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, divered_rental)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == divered_rental) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -387,16 +389,15 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
 
         # counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
 
-        # if not counters:
-        #     counters = Counters()
+        if not counters:
+            counters = Counters()
 
-        #     counters.counter_no = 25
-        #     counters.counter_bez = "G/L Transaction Journal"
+            counters.counter_no = 25
+            counters.counter_bez = "G/L Transaction Journal"
 
-        #     db_session.add(counters)
+            db_session.add(counters)
 
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = get_output(next_counter_for_update(25))
+        counters.counter = counters.counter + 1
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
@@ -410,8 +411,7 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
-        # gl_jouhdr.jnr = counters.counter
-        gl_jouhdr.jnr = last_count
+        gl_jouhdr.jnr = counters.counter
 
         gl_jouhdr.refno = to_string(
             queasy.number1) + "-" + to_string(bill_date)
@@ -482,17 +482,17 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
 
         # counters = get_cache(
         #     Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(
+            Counters.counter_no == 25).with_for_update().first()
+        if not counters:
+            counters = Counters()
 
-        # if not counters:
-        #     counters = Counters()
-
-        #     counters.counter_no = 25
-        #     counters.counter_bez = "G/L Transaction Journal"
+            counters.counter_no = 25
+            counters.counter_bez = "G/L Transaction Journal"
             
-        #     db_session.add(counters)
+            db_session.add(counters)
             
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = get_output(next_counter_for_update(25))
+        counters.counter = counters.counter + 1
 
 
         res_line = get_cache(
@@ -507,8 +507,7 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
-        # gl_jouhdr.jnr = counters.counter
-        gl_jouhdr.jnr = last_count
+        gl_jouhdr.jnr = counters.counter
 
         # gl_jouhdr.refno = "CANCEL-" + \
         #     to_string(queasy.number1) + "-" + to_string(bill_date)
@@ -735,8 +734,10 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
         vat_acctno = artikel.fibukonto
     periode_list_data.clear()
 
-    queasy = get_cache(
-        Queasy, {"key": [(eq, 329)], "_recid": [(eq, qrecid)]})
+    # queasy = get_cache(
+    #     Queasy, {"key": [(eq, 329)], "_recid": [(eq, qrecid)]})
+    queasy = db_session.query(Queasy).filter(
+        (Queasy.key == 329) & (Queasy._recid == qrecid)).with_for_update().first()
 
     if queasy:
         calc_periode()
@@ -792,18 +793,18 @@ def leasing_create_journal_print_proformabl(qrecid: int, pinvoice_no: str, user_
 
             else:
                 # counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+                counters = db_session.query(Counters).filter(
+                    Counters.counter_no == 3).with_for_update().first()
 
-                # if not counters:
-                #     counters = Counters()
-                #     db_session.add(counters)
+                if not counters:
+                    counters = Counters()
+                    db_session.add(counters)
 
-                #     counters.counter_no = 3
-                #     counters.counter_bez = "counter for Bill No"
+                    counters.counter_no = 3
+                    counters.counter_bez = "counter for Bill No"
 
-                # counters.counter = counters.counter + 1
-                # rechnr = counters.counter
-                last_count, error_lock = get_output(next_counter_for_update(3))
-                rechnr = last_count
+                counters.counter = counters.counter + 1
+                rechnr = counters.counter
                 
 
             create_bill()

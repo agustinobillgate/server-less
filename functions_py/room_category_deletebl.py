@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Zimkateg, Queasy
@@ -28,7 +30,10 @@ def room_category_deletebl(pvilanguage:int, number1:int):
         msg_str = msg_str + chr_unicode(2) + translateExtended ("Room Type exists, deleting not possible:", lvcarea, "") + " " + zimkateg.kurzbez
     else:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 152)],"number1": [(eq, number1)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 152)],"number1": [(eq, number1)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 152) &
+                 (Queasy.number1 == number1)).with_for_update().first()
 
         if queasy:
             pass

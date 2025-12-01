@@ -3,6 +3,7 @@
 # ==========================================
 # Rulita, 10-10-2025
 # Tiket ID : 8CF423 | Recompile Program
+# Rd, 28/11/2025, with_for_update added
 # ==========================================
 
 from functions.additional_functions import *
@@ -115,7 +116,9 @@ def outlet_tbplan_admin_setup_wizardbl(input_list_data:[Input_list], t_list_data
                     increment_x = increment_x + 1
                     init_x =  to_decimal(init_x) + to_decimal(90.00)
 
-                queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, tisch.departement)],"number2": [(eq, tisch.tischnr)],"betriebsnr": [(eq, 0)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, tisch.departement)],"number2": [(eq, tisch.tischnr)],"betriebsnr": [(eq, 0)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 31) & (Queasy.number1 == tisch.departement) & (Queasy.number2 == tisch.tischnr) & (Queasy.betriebsnr == 0)).with_for_update().first()
 
                 if queasy:
                     pass
@@ -228,11 +231,15 @@ def outlet_tbplan_admin_setup_wizardbl(input_list_data:[Input_list], t_list_data
 
                 return
 
-            tisch = get_cache (Tisch, {"_recid": [(eq, t_list.tisch_recid)]})
+            # tisch = get_cache (Tisch, {"_recid": [(eq, t_list.tisch_recid)]})
+            tisch = db_session.query(Tisch).filter(
+                     (Tisch._recid == t_list.tisch_recid)).with_for_update().first()
 
             if tisch:
 
-                queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, tisch.departement)],"number2": [(eq, tisch.tischnr)],"betriebsnr": [(eq, 0)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, tisch.departement)],"number2": [(eq, tisch.tischnr)],"betriebsnr": [(eq, 0)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 31) & (Queasy.number1 == tisch.departement) & (Queasy.number2 == tisch.tischnr) & (Queasy.betriebsnr == 0)).with_for_update().first()
 
                 if queasy:
                     pass
@@ -285,11 +292,15 @@ def outlet_tbplan_admin_setup_wizardbl(input_list_data:[Input_list], t_list_data
 
         for t_list in query(t_list_data, filters=(lambda t_list: t_list.isSelected)):
 
-            tisch = get_cache (Tisch, {"_recid": [(eq, t_list.tisch_recid)]})
+            # tisch = get_cache (Tisch, {"_recid": [(eq, t_list.tisch_recid)]})
+            tisch = db_session.query(Tisch).filter(
+                     (Tisch._recid == t_list.tisch_recid)).with_for_update().first()
 
             if tisch:
 
-                queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, tisch.departement)],"number2": [(eq, tisch.tischnr)],"betriebsnr": [(eq, 0)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, tisch.departement)],"number2": [(eq, tisch.tischnr)],"betriebsnr": [(eq, 0)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 31) & (Queasy.number1 == tisch.departement) & (Queasy.number2 == tisch.tischnr) & (Queasy.betriebsnr == 0)).with_for_update().first()
 
                 if queasy:
                     pass
@@ -363,18 +374,15 @@ def outlet_tbplan_admin_setup_wizardbl(input_list_data:[Input_list], t_list_data
 
             if tisch:
 
-                queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, tisch.departement)],"number2": [(eq, tisch.tischnr)],"betriebsnr": [(eq, 0)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, tisch.departement)],"number2": [(eq, tisch.tischnr)],"betriebsnr": [(eq, 0)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 31) & (Queasy.number1 == tisch.departement) & (Queasy.number2 == tisch.tischnr) & (Queasy.betriebsnr == 0)).with_for_update().first()
 
                 if queasy:
                     pass
                     queasy.deci1 =  to_decimal(t_list.x_coordinate)
                     queasy.deci2 =  to_decimal(t_list.y_coordinate)
 
-
-                    pass
-                    pass
-                pass
-                pass
         output_list.msg_str = "Table Position Saved"
         output_list.success_flag = True
 

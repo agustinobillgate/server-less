@@ -3,6 +3,7 @@
 # Rd 24/7/2025
 # gitlab: 853
 # add sprachcode if "" -> None
+# Rd, 27/11/2025, with_for_update added
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -26,11 +27,11 @@ def rwaiter_admin_btn_exitbl(t_list_data:[T_list], case_type:int, dept:int, curr
     q1_list_data, Q1_list = create_model("Q1_list", {"kellner_nr":int, "kellnername":string, "kumsatz_nr":int, "kumsatz_nr1":int, "kcredit_nr":int, "kzahl_nr":int, "kzahl_nr1":int, "masterkey":bool, "sprachcode":int, "r_kellner":int, "r_kellne1":int})
 
     db_session = local_storage.db_session
+    curr_mode = curr_mode.strip()
 
     def generate_output():
         nonlocal q1_list_data, t_kellner_data, kellner, kellne1
         nonlocal case_type, dept, curr_mode, kzahl_nr1, kumsatz_nr1, r_kellner, r_kellne1
-
 
         nonlocal t_kellner, q1_list, t_list
         nonlocal t_kellner_data, q1_list_data
@@ -86,7 +87,9 @@ def rwaiter_admin_btn_exitbl(t_list_data:[T_list], case_type:int, dept:int, curr
 
     elif case_type == 2:
 
-        kellner = get_cache (Kellner, {"_recid": [(eq, r_kellner)]})
+        # kellner = get_cache (Kellner, {"_recid": [(eq, r_kellner)]})
+        kellner = db_session.query(Kellner).filter(
+             (Kellner._recid == r_kellner)).with_for_update().first()
 
         kellne1 = get_cache (Kellne1, {"_recid": [(eq, r_kellne1)]})
 

@@ -16,6 +16,7 @@ def gl_acct_admin_if_foundbl(fibukonto:string):
     gl_acct = None
 
     db_session = local_storage.db_session
+    fibukonto = fibukonto.strip()
 
     def generate_output():
         nonlocal success_flag, i, gl_acct

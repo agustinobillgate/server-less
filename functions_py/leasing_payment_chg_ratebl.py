@@ -5,6 +5,9 @@
         _remark_:   - fix python indentation
                     - using f"string"
 """
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -21,6 +24,7 @@ def leasing_payment_chg_ratebl(bill_no: int, resnr: int, reslinnr: int, artikel_
     htparam = bill = queasy = artikel = debitor = bediener = res_line = guest = bill_line = billjournal = umsatz = None
 
     db_session = local_storage.db_session
+    remark = remark.strip()
 
     def generate_output():
         nonlocal err_msg, bill_date, ar_ledger, htparam, bill, queasy, artikel, debitor, bediener, res_line, guest, bill_line, billjournal, umsatz
@@ -104,8 +108,10 @@ def leasing_payment_chg_ratebl(bill_no: int, resnr: int, reslinnr: int, artikel_
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -140,9 +146,10 @@ def leasing_payment_chg_ratebl(bill_no: int, resnr: int, reslinnr: int, artikel_
                 billjournal.userinit = user_init
                 billjournal.bill_datum = bill_date
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
-
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
                 if not umsatz:
                     umsatz = Umsatz()
 
@@ -178,8 +185,10 @@ def leasing_payment_chg_ratebl(bill_no: int, resnr: int, reslinnr: int, artikel_
 
                     db_session.add(billjournal)
 
-                    umsatz = get_cache(
-                        Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                    # umsatz = get_cache(
+                    #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                    umsatz = db_session.query(Umsatz).filter(
+                        (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                     if not umsatz:
                         umsatz = Umsatz()
@@ -215,8 +224,10 @@ def leasing_payment_chg_ratebl(bill_no: int, resnr: int, reslinnr: int, artikel_
 
                     db_session.add(billjournal)
 
-                    umsatz = get_cache(
-                        Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                    # umsatz = get_cache(
+                    #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                    umsatz = db_session.query(Umsatz).filter(
+                        (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                     if not umsatz:
                         umsatz = Umsatz()

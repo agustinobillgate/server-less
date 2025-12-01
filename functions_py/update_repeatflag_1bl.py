@@ -3,6 +3,8 @@
 # Rd, 12/11/2025
 # CM
 #---------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -19,7 +21,10 @@ def update_repeatflag_1bl(bookengid:int):
 
         return {}
 
-    queasy = get_cache (Queasy, {"key": [(eq, 167)],"number1": [(eq, bookengid)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 167)],"number1": [(eq, bookengid)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 167) &
+             (Queasy.number1 == bookengid)).with_for_update().first()
 
     if queasy:
         queasy.date1 = get_current_date()

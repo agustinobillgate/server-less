@@ -3,11 +3,13 @@
 # Andika 04/08/2025
 # gitlab: -
 # remarks: -
+# Rd, 01/12/2025, with_for_update added
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_orderhdr, Bediener, L_order, L_artikel, Dml_art, Reslin_queasy, Dml_artdep
+from sqlalchemy.orm import flag_modified
 
 c_list_data, C_list = create_model("C_list", {"zwkum":int, "grp":string, "artnr":int, "bezeich":string, "qty":Decimal, "a_qty":Decimal, "price":Decimal, "l_price":Decimal, "unit":string, "content":Decimal, "amount":Decimal, "deliver":Decimal, "dept":int, "supplier":string, "id":string, "cid":string, "price1":Decimal, "qty1":Decimal, "lief_nr":int, "approved":bool, "remark":string, "soh":Decimal, "dml_nr":string, "qty2":Decimal})
 s_list_data, S_list = create_model("S_list", {"s_flag":string, "selected":bool, "artnr":int, "bezeich":string, "qty":Decimal, "qty0":Decimal, "price":Decimal, "qty2":Decimal})
@@ -27,6 +29,7 @@ def dml_list_create_pr_11_webbl(c_list_data:[C_list], s_list_data:[S_list], curr
     t_l_orderhdr_data, T_l_orderhdr = create_model_like(L_orderhdr, {"rec_id":int})
 
     db_session = local_storage.db_session
+    dml_hdr_remark = dml_hdr_remark.strip()
 
     def generate_output():
         nonlocal t_l_orderhdr_data, docu_nr, t_qty, counter, l_orderhdr, bediener, l_order, l_artikel, dml_art, reslin_queasy, dml_artdep
@@ -59,7 +62,7 @@ def dml_list_create_pr_11_webbl(c_list_data:[C_list], s_list_data:[S_list], curr
         l_orderhdr.lief_fax[0] = bediener.username
         l_orderhdr.lief_fax[2] = dml_hdr_remark
         l_orderhdr.txtnr = curr_dept
-
+        flag_modified(l_orderhdr, "lief_fax")
 
         pass
         l_order = L_order()
@@ -72,7 +75,10 @@ def dml_list_create_pr_11_webbl(c_list_data:[C_list], s_list_data:[S_list], curr
 
         for s1_list in query(s1_list_data, filters=(lambda s1_list: s1_list.selected)):
 
-            l_artikel = get_cache (L_artikel, {"artnr": [(eq, s1_list.artnr)]})
+            # l_artikel = get_cache (L_artikel, {"artnr": [(eq, s1_list.artnr)]})
+            l_artikel = db_session.query(L_artikel).filter(
+                     (L_artikel.artnr == s1_list.artnr)).with_for_update().first()
+            
             pos = pos + 1
             l_order = L_order()
             db_session.add(l_order)
@@ -90,7 +96,8 @@ def dml_list_create_pr_11_webbl(c_list_data:[C_list], s_list_data:[S_list], curr
             l_order.flag = True
             l_order.warenwert =  to_decimal(s1_list.qty) * to_decimal(s1_list.price)
             l_order.quality = to_string(0, "99.99 ") + to_string(0, "99.99") + to_string(0, " 99.99")
-
+            flag_modified(l_order, "lief_fax")
+            
             c1_list = query(c1_list_data, filters=(lambda c1_list: c1_list.artnr == s1_list.artnr), first=True)
             l_order.besteller = c1_list.remark
 

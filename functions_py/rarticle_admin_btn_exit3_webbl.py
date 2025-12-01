@@ -4,7 +4,8 @@
 # Rulita, 15-10-2025 
 # Tiket ID : 6526C2 | New compile program
 # =======================================
-
+# Rd, 27/11/2025, with_for_update added
+# =======================================
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_artikel, Queasy, Bediener, Res_history
@@ -26,8 +27,10 @@ def rarticle_admin_btn_exit3_webbl(h_list_data:[H_list], case_type:int, fract_fl
 
     Buff_hart = create_buffer("Buff_hart",H_artikel)
 
-
     db_session = local_storage.db_session
+    bezeich2 = bezeich2.strip()
+    barcode = barcode.strip()
+    user_init = user_init.strip()
 
     def generate_output():
         nonlocal t_output_list_data, v_log, v_log2, h_artikel, queasy, bediener, res_history
@@ -148,8 +151,13 @@ def rarticle_admin_btn_exit3_webbl(h_list_data:[H_list], case_type:int, fract_fl
         tmp_h_list_bondruckerner = [h_list.bondruckernr[0], h_list.bondruckernr[1], h_list.bondruckernr[2], to_int(ask_voucher)]
         h_list.bondruckernr = tmp_h_list_bondruckerner
 
-        queasy = get_cache (Queasy, {"key": [(eq, 361)],"number2": [(eq, h_list.departement)],"number1": [(eq, h_list.artnr)],"char1": [(eq, "fixed-sub-menu")],"number3": [(eq, h_list.betriebsnr)]})
-
+        # queasy = get_cache (Queasy, {"key": [(eq, 361)],"number2": [(eq, h_list.departement)],"number1": [(eq, h_list.artnr)],"char1": [(eq, "fixed-sub-menu")],"number3": [(eq, h_list.betriebsnr)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 361) &
+                 (Queasy.number1 == h_list.artnr) &
+                 (Queasy.number2 == h_list.departement) &
+                 (Queasy.number3 == h_list.betriebsnr) &
+                 (Queasy.char1 == "Fixed-Sub-Menu")).with_for_update().first()
         if queasy:
             pass
             queasy.logi1 = h_list.isincluded
@@ -172,13 +180,21 @@ def rarticle_admin_btn_exit3_webbl(h_list_data:[H_list], case_type:int, fract_fl
 
         if bezeich2 == "":
 
-            queasy = get_cache (Queasy, {"key": [(eq, 38)],"number1": [(eq, h_list.departement)],"number2": [(eq, h_list.artnr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 38)],"number1": [(eq, h_list.departement)],"number2": [(eq, h_list.artnr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 38) &
+                     (Queasy.number1 == h_list.departement) &
+                     (Queasy.number2 == h_list.artnr)).with_for_update().first()
 
             if queasy:
                 db_session.delete(queasy)
         else:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 38)],"number1": [(eq, h_list.departement)],"number2": [(eq, h_list.artnr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 38)],"number1": [(eq, h_list.departement)],"number2": [(eq, h_list.artnr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 38) &
+                     (Queasy.number1 == h_list.departement) &
+                     (Queasy.number2 == h_list.artnr)).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()
@@ -194,7 +210,11 @@ def rarticle_admin_btn_exit3_webbl(h_list_data:[H_list], case_type:int, fract_fl
 
             pass
 
-        queasy = get_cache (Queasy, {"key": [(eq, 200)],"number1": [(eq, h_list.departement)],"number2": [(eq, h_list.artnr)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 200)],"number1": [(eq, h_list.departement)],"number2": [(eq, h_list.artnr)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 200) &
+                 (Queasy.number1 == h_list.departement) &
+                 (Queasy.number2 == h_list.artnr)).with_for_update().first()    
 
         if not queasy:
             queasy = Queasy()
@@ -213,7 +233,12 @@ def rarticle_admin_btn_exit3_webbl(h_list_data:[H_list], case_type:int, fract_fl
 
         pass
 
-        queasy = get_cache (Queasy, {"key": [(eq, 222)],"number1": [(eq, 2)],"number2": [(eq, h_list.artnr)],"number3": [(eq, h_list.departement)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 222)],"number1": [(eq, 2)],"number2": [(eq, h_list.artnr)],"number3": [(eq, h_list.departement)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 222) &
+                 (Queasy.number1 == 2) &
+                 (Queasy.number2 == h_list.artnr) &
+                 (Queasy.number3 == h_list.departement)).with_for_update().first()
 
         if not queasy:
             queasy = Queasy()
@@ -256,7 +281,10 @@ def rarticle_admin_btn_exit3_webbl(h_list_data:[H_list], case_type:int, fract_fl
 
     elif case_type == 2:
 
-        h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_list.artnr)],"departement": [(eq, h_list.departement)]})
+        # h_artikel = get_cache (H_artikel, {"artnr": [(eq, h_list.artnr)],"departement": [(eq, h_list.departement)]})
+        h_artikel = db_session.query(H_artikel).filter(
+                 (H_artikel.artnr == h_list.artnr) &
+                 (H_artikel.departement == h_list.departement)).with_for_update().first()
 
         if h_artikel:
             fill_artikel()

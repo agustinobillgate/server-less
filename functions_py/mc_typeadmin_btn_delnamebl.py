@@ -2,6 +2,7 @@
 #-----------------------------------------
 # Rd 4/8/2025
 # if available
+# Rd, 27/11/2025, with_for_update added
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -23,7 +24,9 @@ def mc_typeadmin_btn_delnamebl(nr:int, rec_id:int):
              (Mc_disc.nr == nr)).order_by(Mc_disc._recid).all():
         db_session.delete(mc_disc)
 
-    mc_types = get_cache (Mc_types, {"_recid": [(eq, rec_id)]})
+    # mc_types = get_cache (Mc_types, {"_recid": [(eq, rec_id)]})
+    mc_types = db_session.query(Mc_types).filter(
+             (Mc_types._recid == rec_id)).with_for_update().first()
     # Rd 4/8/2025
     # if available
     if mc_types:

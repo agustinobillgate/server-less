@@ -1,11 +1,14 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Queasy
 
-def ts_mkres_btn_exitbl(pvilanguage:int, moved_tisch:int, s_recid:int, curr_dept:int, curr_date:date, von_zeit:string, bis_zeit:string, pax:int, telefon:string, gname:string, user_init:string, comments:string):
+def ts_mkres_btn_exitbl(pvilanguage:int, moved_tisch:int, s_recid:int, curr_dept:int, curr_date:date, von_zeit:string, 
+                        bis_zeit:string, pax:int, telefon:string, gname:string, user_init:string, comments:string):
 
     prepare_cache ([Queasy])
 
@@ -20,6 +23,12 @@ def ts_mkres_btn_exitbl(pvilanguage:int, moved_tisch:int, s_recid:int, curr_dept
 
 
     db_session = local_storage.db_session
+    von_zeit = von_zeit.strip()
+    bis_zeit = bis_zeit.strip()
+    telefon = telefon.strip()
+    gname = gname.strip()
+    user_init = user_init.strip()
+    comments = comments.strip()
 
     def generate_output():
         nonlocal msg_str, done, lvcarea, queasy
@@ -96,7 +105,9 @@ def ts_mkres_btn_exitbl(pvilanguage:int, moved_tisch:int, s_recid:int, curr_dept
         done = True
     else:
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, s_recid)]})
+        # queasy = get_cache (Queasy, {"_recid": [(eq, s_recid)]})
+        queasy = db_session.query(Queasy).filter(
+                     (Queasy._recid == s_recid)).with_for_update().first()
         queasy.number2 = moved_tisch
         queasy.number3 = pax
         queasy.date3 = get_current_date()

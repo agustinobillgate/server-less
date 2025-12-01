@@ -3,6 +3,7 @@
 # Rd 24/7/2025
 # gitlab: 354
 # add table name brief_list
+# Rd, 28/11/2025, with_for_update added
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -300,7 +301,7 @@ def fo_load_macro_webbl(briefnr:int, excel_list_data:[Excel_list]):
         while None != parameters:
 
             parambuff = db_session.query(Parambuff).filter(
-                         (Parambuff._recid == parameters._recid)).first()
+                         (Parambuff._recid == parameters._recid)).with_for_update().first()
             db_session.delete(parambuff)
 
             curr_recid = parameters._recid

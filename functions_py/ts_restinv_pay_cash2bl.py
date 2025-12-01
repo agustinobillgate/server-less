@@ -3,6 +3,7 @@
 # Rd 3/8/2025
 # if available h_bill
 # if not availble -> return
+# Rd, 01/12/2025, with_for_update added
 #----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal

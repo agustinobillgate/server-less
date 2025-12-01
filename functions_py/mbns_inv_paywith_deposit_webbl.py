@@ -1,7 +1,4 @@
 #using conversion tools version: 1.0.0.117
-#---------------------------------------------------------------------
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
-#---------------------------------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -9,12 +6,9 @@ from datetime import date
 from functions.htplogic import htplogic
 from functions.read_bill2bl import read_bill2bl
 from models import Bill_line, Bill, Res_line, Artikel, Htparam, Waehrung, Counters, Umsatz, Billjournal
-from functions.next_counter_for_update import next_counter_for_update
+from sqlalchemy.orm.attributes import flag_modified
 
-def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t_bill_rechnr:int, bill_line_departement:int, 
-                                   transdate:date, billart:int, qty:int, price:Decimal, amount:Decimal, amount_foreign:Decimal, 
-                                   description:string, voucher_nr:string, cancel_str:string, user_init:string, rechnr:int, 
-                                   balance:Decimal, balance_foreign:Decimal):
+def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t_bill_rechnr:int, bill_line_departement:int, transdate:date, billart:int, qty:int, price:Decimal, amount:Decimal, amount_foreign:Decimal, description:string, voucher_nr:string, cancel_str:string, user_init:string, rechnr:int, balance:Decimal, balance_foreign:Decimal):
 
     prepare_cache ([Bill, Artikel, Htparam, Waehrung, Counters, Umsatz, Billjournal])
 
@@ -56,13 +50,8 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
     Buf_artikel = create_buffer("Buf_artikel",Artikel)
     Buf_bill_line = create_buffer("Buf_bill_line",Bill_line)
 
+
     db_session = local_storage.db_session
-    last_count = 0
-    error_lock:string = ""
-    description = description.strip()
-    voucher_nr = voucher_nr.strip()
-    cancel_str = cancel_str.strip()
-    user_init = user_init.strip()
 
     def generate_output():
         nonlocal error_desc, success_flag, t_bill_data, t_bill_line_data, lvcarea, master_str, master_rechnr, master_flag, str1, bline_dept, gname, bil_recid, telbill_flag, babill_flag, depoart, depobez, p_253, gastnrmember, price_decimal, double_currency, foreign_rate, exchg_rate, currzeit, bill_date, curr_room, skip_it, bill_line, bill, res_line, artikel, htparam, waehrung, counters, umsatz, billjournal
@@ -80,6 +69,7 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
         nonlocal error_desc, success_flag, t_bill_data, t_bill_line_data, lvcarea, master_str, master_rechnr, master_flag, str1, bline_dept, gname, bil_recid, telbill_flag, babill_flag, depoart, depobez, p_253, gastnrmember, price_decimal, double_currency, foreign_rate, exchg_rate, currzeit, bill_date, curr_room, skip_it, bill_line, bill, res_line, artikel, htparam, waehrung, counters, umsatz, billjournal
         nonlocal pvilanguage, bil_flag, b_recid, t_bill_rechnr, bill_line_departement, transdate, billart, qty, price, amount, amount_foreign, description, voucher_nr, cancel_str, user_init, rechnr, balance, balance_foreign
         nonlocal resline, buf_artikel, buf_bill_line
+
 
         nonlocal t_bill_line, t_blinebuff, t_bill, resline, buf_artikel, buf_bill_line
         nonlocal t_bill_line_data, t_blinebuff_data, t_bill_data
@@ -99,14 +89,15 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
         if amount_foreign == None:
             amount_foreign =  to_decimal("0")
 
-        bill = get_cache (Bill, {"_recid": [(eq, b_recid)]})
+        bill = db_session.query(Bill).filter(Bill._recid == b_recid).first()
 
         if bill.flag == 1 and bil_flag == 0:
-            error_desc = translateExtended ("The Bill was closed / guest checked out", lvcarea, "") + chr_unicode(10) + translateExtended ("Bill entry is no longer possible!", lvcarea, "")
+            error_desc = translateExtended("The Bill was closed / guest checked out", lvcarea, "") + chr_unicode(10) + translateExtended("Bill entry is no longer possible!", lvcarea, "")
             success_flag = False
-
             return
-        pass
+        
+        db_session.refresh(bill, with_for_update=True)
+        
         curr_room = bill.zinr
         gastnrmember = bill.gastnr
 
@@ -115,24 +106,23 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
 
         if bill.datum < bill_date or bill.datum == None:
             bill.datum = bill_date
-        bill.saldo =  to_decimal(bill.saldo) + to_decimal(amount)
+            
+        bill.saldo = to_decimal(bill.saldo) + to_decimal(amount)
 
         if double_currency or foreign_rate:
             bill.mwst[98] = bill.mwst[98] + amount_foreign
+            flag_modified(bill, "mwst")
 
         if bill.rechnr == 0:
-
-            # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-            # counters.counter = counters.counter + 1
-            # bill.rechnr = counters.counter
-            last_count, error_lock = get_output(next_counter_for_update(3))
-            bill.rechnr = last_count
+            counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+            
+            counters.counter = counters.counter + 1
+            bill.rechnr = counters.counter
             
             if transdate != None:
                 bill.datum = transdate
-            pass
+                
         rechnr = bill.rechnr
-
 
         bill_line = Bill_line()
         db_session.add(bill_line)
@@ -143,8 +133,8 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
         bill_line.zinr = curr_room
         bill_line.artnr = depoart
         bill_line.anzahl = 1
-        bill_line.betrag =  to_decimal(amount)
-        bill_line.fremdwbetrag =  to_decimal(amount_foreign)
+        bill_line.betrag = to_decimal(amount)
+        bill_line.fremdwbetrag = to_decimal(amount_foreign)
         bill_line.bezeich = depobez
         bill_line.departement = artikel.departement
         bill_line.zeit = get_current_time_in_seconds()
@@ -153,7 +143,7 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
 
         if voucher_nr != "":
             bill_line.bezeich = bill_line.bezeich + "/" + voucher_nr
-        pass
+            
         t_bill_line = T_bill_line()
         t_bill_line_data.append(t_bill_line)
 
@@ -161,7 +151,11 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
         t_bill_line.artart = artikel.artart
         t_bill_line.bl_recid = to_int(bill_line._recid)
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, depoart)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            Umsatz.artnr == depoart,
+            Umsatz.departement == artikel.departement,
+            Umsatz.datum == bill_date
+        ).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -171,12 +165,10 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
             umsatz.datum = bill_date
             umsatz.departement = artikel.departement
 
-
-        umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(amount)
+        umsatz.betrag = to_decimal(umsatz.betrag) + to_decimal(amount)
         umsatz.anzahl = umsatz.anzahl + 1
 
 
-        pass
         billjournal = Billjournal()
         db_session.add(billjournal)
 
@@ -184,11 +176,11 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
         billjournal.zinr = curr_room
         billjournal.artnr = depoart
         billjournal.anzahl = 1
-        billjournal.fremdwaehrng =  to_decimal(amount_foreign)
-        billjournal.betrag =  to_decimal(amount)
+        billjournal.fremdwaehrng = to_decimal(amount_foreign)
+        billjournal.betrag = to_decimal(amount)
         billjournal.bezeich = depobez
         billjournal.departement = artikel.departement
-        billjournal.epreis =  to_decimal(price)
+        billjournal.epreis = to_decimal(price)
         billjournal.zeit = get_current_time_in_seconds()
         billjournal.stornogrund = cancel_str
         billjournal.userinit = user_init
@@ -196,12 +188,12 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
 
         if voucher_nr != "":
             billjournal.bezeich = billjournal.bezeich + "/" + voucher_nr
-        pass
-        balance =  to_decimal(bill.saldo)
+            
+        balance = to_decimal(bill.saldo)
 
         if double_currency or foreign_rate:
-            balance_foreign =  to_decimal(bill.mwst[98])
-        pass
+            balance_foreign = to_decimal(bill.mwst[98])
+            flag_modified(bill, "mwst")
 
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1068)]})
@@ -215,6 +207,7 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
             success_flag = False
 
             return generate_output()
+        
         depoart = artikel.artnr
         depobez = artikel.bezeich
 
@@ -244,6 +237,7 @@ def mbns_inv_paywith_deposit_webbl(pvilanguage:int, bil_flag:int, b_recid:int, t
 
         if waehrung:
             exchg_rate =  to_decimal(waehrung.ankauf) / to_decimal(waehrung.einheit)
+            
     currzeit = get_current_time_in_seconds()
     master_flag = False
 

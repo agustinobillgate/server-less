@@ -2,12 +2,14 @@
 #-----------------------------------------
 # Rd 4/8/2025
 # if available
+# Rd, 01/12/2025, with_for_update added
 #-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bediener, L_orderhdr, L_order
+from sqlalchemy.orm import flag_modified
 
 s_list_data, S_list = create_model("S_list", {"selected":bool, "flag":bool, "loeschflag":int, "approved":bool, "rejected":bool, "s_recid":int, "docu_nr":string, "po_nr":string, "deptnr":int, "str0":string, "bestelldatum":string, "lieferdatum":string, "pos":int, "artnr":int, "bezeich":string, "qty":Decimal, "str3":string, "dunit":string, "lief_einheit":Decimal, "str4":string, "userinit":string, "pchase_nr":string, "pchase_date":date, "app_rej":string, "rej_reason":string, "cid":string, "cdate":date, "instruct":string, "konto":string, "supno":int, "currno":int, "duprice":Decimal, "du_price1":Decimal, "du_price2":Decimal, "du_price3":Decimal, "anzahl":int, "txtnr":int, "suppn1":string, "supp1":int, "suppn2":string, "supp2":int, "suppn3":string, "supp3":int, "supps":string, "einzelpreis":Decimal, "amount":Decimal, "stornogrund":string, "besteller":string, "lief_fax2":string, "last_pdate":date, "last_pprice":Decimal, "zeit":int, "min_bestand":Decimal, "max_bestand":Decimal, "del_reason":string, "desc_coa":string, "lief_fax3":string, "masseinheit":string, "lief_fax_2":string, "ek_letzter":Decimal, "supplier":string, "vk_preis":Decimal, "a_firma":string, "last_pbook":Decimal}, {"pos": 999999})
 
@@ -55,12 +57,16 @@ def pr_list_btn_del_1bl(s_list_data:[S_list], s_list_artnr:int, billdate:date, u
 
         pass
         pass
-
+    flag_modified(l_orderhdr, "lief_fax")
     if s_list_artnr == 0:
         docu_nr = s_list.docu_nr
 
-        l_order = get_cache (L_order, {"lief_nr": [(eq, 0)],"pos": [(eq, 0)],"artnr": [(eq, 0)],"docu_nr": [(eq, docu_nr)]})
-
+        # l_order = get_cache (L_order, {"lief_nr": [(eq, 0)],"pos": [(eq, 0)],"artnr": [(eq, 0)],"docu_nr": [(eq, docu_nr)]})
+        l_order = db_session.query(L_order).filter(
+                     (L_order.lief_nr == 0) &
+                     (L_order.pos == 0) &
+                     (L_order.artnr == 0) &
+                     (L_order.docu_nr == docu_nr)).with_for_update().first()
         if not l_order:
             l_order = L_order()
             if l_order:
@@ -72,7 +78,7 @@ def pr_list_btn_del_1bl(s_list_data:[S_list], s_list_artnr:int, billdate:date, u
         l_order.loeschflag = 2
         l_order.lieferdatum_eff = billdate
         l_order.angebot_lief[2] = bediener.nr
-
+        flag_modified(l_order, "lief_fax")
 
         pass
 
@@ -80,13 +86,15 @@ def pr_list_btn_del_1bl(s_list_data:[S_list], s_list_artnr:int, billdate:date, u
 
             if s1_list.artnr > 0:
 
-                l_order = get_cache (L_order, {"_recid": [(eq, s1_list.s_recid)]})
+                # l_order = get_cache (L_order, {"_recid": [(eq, s1_list.s_recid)]})
+                l_order = db_session.query(L_order).filter(
+                             (L_order._recid == s1_list.s_recid)).with_for_update().first()
                 # Rd 4/8/2025
                 if l_order:
                     l_order.loeschflag = 2
                     l_order.lieferdatum_eff = billdate
                     l_order.angebot_lief[2] = bediener.nr
-
+                    flag_modified(l_order, "lief_fax")
 
                 pass
             s1_list.loeschflag = 2
@@ -98,13 +106,15 @@ def pr_list_btn_del_1bl(s_list_data:[S_list], s_list_artnr:int, billdate:date, u
         docu_nr = s_list.docu_nr
         s_list.loeschflag = 2
 
-        l_order = get_cache (L_order, {"_recid": [(eq, s_list.s_recid)]})
+        # l_order = get_cache (L_order, {"_recid": [(eq, s_list.s_recid)]})
+        l_order = db_session.query(L_order).filter(
+                     (L_order._recid == s_list.s_recid)).with_for_update().first()
         # Rd 4/8/2025
         if l_order:
             l_order.loeschflag = 2
             l_order.lieferdatum_eff = billdate
             l_order.angebot_lief[2] = bediener.nr
-
+            flag_modified(l_order, "lief_fax")
 
         pass
 
@@ -112,13 +122,19 @@ def pr_list_btn_del_1bl(s_list_data:[S_list], s_list_artnr:int, billdate:date, u
 
         if not s1_list:
 
-            l_order = get_cache (L_order, {"lief_nr": [(eq, 0)],"pos": [(eq, 0)],"artnr": [(eq, 0)],"docu_nr": [(eq, docu_nr)]})
+            # l_order = get_cache (L_order, {"lief_nr": [(eq, 0)],"pos": [(eq, 0)],"artnr": [(eq, 0)],"docu_nr": [(eq, docu_nr)]})
+            l_order = db_session.query(L_order).filter(
+                         (L_order.lief_nr == 0) &
+                         (L_order.pos == 0) &
+                         (L_order.artnr == 0) &
+                         (L_order.docu_nr == docu_nr)).with_for_update().first()
             l_order.loeschflag = 2
             l_order.lieferdatum_eff = billdate
             l_order.angebot_lief[2] = bediener.nr
 
 
             pass
+            flag_modified(l_order, "lief_fax")
 
             return generate_output()
         else:

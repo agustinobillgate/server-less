@@ -1,6 +1,6 @@
 #using conversion tools version: 1.0.0.117
 #---------------------------------------------------------------------
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+# Rd, 24/11/2025, Update last counter
 #---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -131,7 +131,11 @@ def ts_restdeposit_pay_btn_exitbl(pvilanguage:int, s_recid:int, selected_gastnr:
 
         pass
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, depoart)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, depoart)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                 (  Umsatz.departement == 0) &
+                 (Umsatz.artnr == depoart) &
+                 (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -180,7 +184,11 @@ def ts_restdeposit_pay_btn_exitbl(pvilanguage:int, s_recid:int, selected_gastnr:
         billjournal.bezeich = artikel.bezeich + "[" + translateExtended ("Restaurant Deposit", lvcarea, "") + " #" + to_string(dept_no) + to_string(table_no) + time_rsv_table + "]" + voucher_str
         pass
 
-        umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, artikel.artnr)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, artikel.artnr)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                 (  Umsatz.departement == 0) &
+                 (Umsatz.artnr == artikel.artnr) &
+                 (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()

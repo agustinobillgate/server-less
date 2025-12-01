@@ -27,6 +27,9 @@ def glacct_admin_btn_exitbl(g_list_data:[G_list], case_type:int, comments:string
     b1_list_data, B1_list = create_model_like(Gl_acct, {"main_bezeich":string, "kurzbez":string, "dept_bezeich":string, "fstype_bezeich":string})
 
     db_session = local_storage.db_session
+    map_acct = map_acct.strip()
+    prev_fibukonto = prev_fibukonto.strip()
+    tax_code = tax_code.strip()
 
     def generate_output():
         nonlocal from_acct, found, success_flag, b1_list_data, gl_acct, gl_main, gl_fstype, gl_department

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Wgrpdep
@@ -56,7 +58,10 @@ def rsubgrp_admin_btn_exitbl(wgrpdep_list_data:[Wgrpdep_list], case_type:int, de
 
     elif case_type == 2:
 
-        wgrpdep = get_cache (Wgrpdep, {"departement": [(eq, wgrpdep_list.departement)],"zknr": [(eq, wgrpdep_list.zknr)]})
+        # wgrpdep = get_cache (Wgrpdep, {"departement": [(eq, wgrpdep_list.departement)],"zknr": [(eq, wgrpdep_list.zknr)]})
+        wgrpdep = db_session.query(Wgrpdep).filter(
+                 (Wgrpdep.departement == wgrpdep_list.departement) &
+                 (Wgrpdep.zknr == wgrpdep_list.zknr)).with_for_update().first()
 
         if wgrpdep:
             pass

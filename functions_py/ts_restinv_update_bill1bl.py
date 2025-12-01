@@ -1,6 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #---------------------------------------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+# Rd, 01/12/2025, with_for_update added
 #---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -8,7 +9,10 @@ from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from models import H_bill, Bill, Htparam, Artikel, Counters, Bill_line, Billjournal, H_bill_line, H_artikel, Queasy, H_journal
 
-def ts_restinv_update_bill1bl(rec_id_h_bill:int, transdate:date, double_currency:bool, exchg_rate:Decimal, kellner1_kcredit_nr:int, bilrecid:int, foreign_rate:bool, user_init:string, gname:string, hoga_resnr:int, hoga_reslinnr:int, price_decimal:int, amount:Decimal, amount_foreign:Decimal):
+def ts_restinv_update_bill1bl(rec_id_h_bill:int, transdate:date, double_currency:bool, 
+                              exchg_rate:Decimal, kellner1_kcredit_nr:int, bilrecid:int, 
+                              foreign_rate:bool, user_init:string, gname:string, hoga_resnr:int, 
+                              hoga_reslinnr:int, price_decimal:int, amount:Decimal, amount_foreign:Decimal):
 
     prepare_cache ([Bill, Htparam, Artikel, Counters, Bill_line, Billjournal, H_bill_line, Queasy, H_journal])
 
@@ -32,6 +36,7 @@ def ts_restinv_update_bill1bl(rec_id_h_bill:int, transdate:date, double_currency
     vat_list_data, Vat_list = create_model("Vat_list", {"vatproz":Decimal, "vatamt":Decimal, "netto":Decimal, "betrag":Decimal, "fbetrag":Decimal})
 
     db_session = local_storage.db_session
+    gname = gname.strip()
 
     def generate_output():
         nonlocal bill_date, billart, qty, description, cancel_str, t_h_bill_data, vat_amount, multi_vat, get_rechnr, get_amount, curr_dept, active_deposit, h_bill, bill, htparam, artikel, counters, bill_line, billjournal, h_bill_line, h_artikel, queasy, h_journal
@@ -486,7 +491,9 @@ def ts_restinv_update_bill1bl(rec_id_h_bill:int, transdate:date, double_currency
                 session_parameter = searchbill.char3
                 break
 
-        paramqsy = get_cache (Queasy, {"key": [(eq, 230)],"char1": [(eq, session_parameter)]})
+        # paramqsy = get_cache (Queasy, {"key": [(eq, 230)],"char1": [(eq, session_parameter)]})
+        paramqsy = db_session.query(Paramqsy).filter(
+                     (Paramqsy.key == 230) & (Paramqsy.char1 == (session_parameter).lower())).with_for_update().first()
 
         if paramqsy:
             paramqsy.betriebsnr = get_rechnr
@@ -502,8 +509,9 @@ def ts_restinv_update_bill1bl(rec_id_h_bill:int, transdate:date, double_currency
 
                     pass
 
-            orderbill = get_cache (Queasy, {"key": [(eq, 225)],"char1": [(eq, "orderbill")],"char3": [(eq, session_parameter)],"logi1": [(eq, True)],"logi3": [(eq, True)]})
-
+            # orderbill = get_cache (Queasy, {"key": [(eq, 225)],"char1": [(eq, "orderbill")],"char3": [(eq, session_parameter)],"logi1": [(eq, True)],"logi3": [(eq, True)]})
+            orderbill = db_session.query(Orderbill).filter(
+                         (Orderbill.key == 225) & (Orderbill.char1 == ("orderbill").lower()) & (Orderbill.char3 == (session_parameter).lower()) & (Orderbill.logi1) & (Orderbill.logi3)).with_for_update().first()
             if orderbill:
                 orderbill.deci1 =  to_decimal(get_amount)
                 orderbill.logi2 = False
@@ -535,7 +543,8 @@ def ts_restinv_update_bill1bl(rec_id_h_bill:int, transdate:date, double_currency
                     queasy.logi1 = True
 
                 for orderbilline in db_session.query(Orderbilline).filter(
-                             (Orderbilline.key == 225) & (Orderbilline.char1 == ("orderbill-line").lower()) & (entry(3, Orderbilline.char2, "|") == (session_parameter).lower())).order_by(Orderbilline._recid).all():
+                             (Orderbilline.key == 225) & (Orderbilline.char1 == ("orderbill-line").lower()) & 
+                             (entry(3, Orderbilline.char2, "|") == (session_parameter).lower())).order_by(Orderbilline._recid).with_for_update().all():
 
                     if orderbilline.logi2 and orderbilline.logi3:
                         orderbilline.char2 = entry(0, orderbilline.char2, "|") + "|" + entry(1, orderbilline.char2, "|") + "|" + entry(2, orderbilline.char2, "|") + "|" + session_parameter + "T" + replace_str(to_string(get_current_date()) , "/", "") + replace_str(to_string(get_current_time_in_seconds(), "HH:MM") , ":", "")
@@ -544,7 +553,9 @@ def ts_restinv_update_bill1bl(rec_id_h_bill:int, transdate:date, double_currency
                         if num_entries(orderbilline.char3, "|") > 8 and entry(8, orderbilline.char3, "|") != "":
                             orderbilline.char2 = entry(0, orderbilline.char2, "|") + "|" + entry(1, orderbilline.char2, "|") + "|" + entry(2, orderbilline.char2, "|") + "|" + session_parameter + "T" + replace_str(to_string(get_current_date()) , "/", "") + replace_str(to_string(get_current_time_in_seconds(), "HH:MM") , ":", "")
 
-            qpayment_gateway = get_cache (Queasy, {"key": [(eq, 223)],"char3": [(eq, session_parameter)],"betriebsnr": [(eq, get_rechnr)]})
+            # qpayment_gateway = get_cache (Queasy, {"key": [(eq, 223)],"char3": [(eq, session_parameter)],"betriebsnr": [(eq, get_rechnr)]})
+            qpayment_gateway = db_session.query(Qpayment_gateway).filter(
+                         (Qpayment_gateway.key == 223) & (Qpayment_gateway.char3 == (session_parameter).lower()) & (Qpayment_gateway.betriebsnr == get_rechnr)).with_for_update().first()
 
             if qpayment_gateway:
                 qpayment_gateway.betriebsnr = 0
@@ -570,8 +581,9 @@ def ts_restinv_update_bill1bl(rec_id_h_bill:int, transdate:date, double_currency
         if queasy:
             recid_q33 = queasy.number2
 
-            buffq33 = get_cache (Queasy, {"_recid": [(eq, recid_q33)]})
-
+            # buffq33 = get_cache (Queasy, {"_recid": [(eq, recid_q33)]})
+            buffq33 = db_session.query(Buffq33).filter(
+                         (Buffq33._recid == recid_q33)).with_for_update().first
             if buffq33:
                 pass
                 buffq33.betriebsnr = 1
@@ -580,7 +592,9 @@ def ts_restinv_update_bill1bl(rec_id_h_bill:int, transdate:date, double_currency
                 pass
                 pass
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id_h_bill)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id_h_bill)]})
+    h_bill = db_session.query(H_bill).filter(
+                 (H_bill._recid == rec_id_h_bill)).with_for_update().first()
 
     if not h_bill:
 

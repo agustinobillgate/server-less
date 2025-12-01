@@ -4,7 +4,8 @@
 # Rulita, 17-10-2025 
 # Tiket ID : 6526C2 | New compile program
 # =======================================
-# Rd, 24/11/2025, update last_count for counter update
+# Rd, 24/11/2025, update last_count
+# Rd, 01/12/2025, with_for_update added
 # =======================================
 
 from functions.additional_functions import *
@@ -14,7 +15,6 @@ from functions.ts_restinv_update_bill1bl import ts_restinv_update_bill1bl
 from functions.ts_restinv_update_bill_1bl import ts_restinv_update_bill_1bl
 from functions.ts_restinv_btn_transfer_paytypegt1_2bl import ts_restinv_btn_transfer_paytypegt1_2bl
 from models import H_bill, Kellner, Bill, Counters, Res_line
-from functions.next_counter_for_update import next_counter_for_update
 
 t_submenu_list_data, T_submenu_list = create_model("T_submenu_list", {"menurecid":int, "zeit":int, "nr":int, "artnr":int, "bezeich":string, "anzahl":int, "zknr":int, "request":string})
 
@@ -70,8 +70,6 @@ def ts_restinv_transfer_to_guestbill_webbl(pvilanguage:int, rec_id:int, curr_dep
     t_kellner_data, T_kellner = create_model_like(Kellner)
 
     db_session = local_storage.db_session
-    last_count = 0
-    error_lock = ""
     deptname = deptname.strip()
     curr_room = curr_room.strip()
     user_init = user_init.strip()
@@ -88,7 +86,9 @@ def ts_restinv_transfer_to_guestbill_webbl(pvilanguage:int, rec_id:int, curr_dep
 
         return {"bill_date": bill_date, "cancel_flag": cancel_flag, "mwst": mwst, "mwst_foreign": mwst_foreign, "rechnr": rechnr, "bcol": bcol, "p_88": p_88, "closed": closed, "avail_bill": avail_bill, "billno_str": billno_str, "cancel_str": cancel_str, "error_message": error_message, "t-h-bill": t_h_bill_data, "t-kellner": t_kellner_data}
 
-    bill = get_cache (Bill, {"_recid": [(eq, bilrecid)]})
+    # bill = get_cache (Bill, {"_recid": [(eq, bilrecid)]})
+    bill = db_session.query(Bill).filter(
+                 (Bill._recid == bilrecid)).with_for_update().first()
 
     if not bill:
         error_message = "Record ID guest bill not found."
@@ -144,15 +144,10 @@ def ts_restinv_transfer_to_guestbill_webbl(pvilanguage:int, rec_id:int, curr_dep
     if bill.rechnr == 0:
 
         # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-        # counters.counter = counters.counter + 1
-        # pass
-        # pass
-        # bill.rechnr = counters.counter
-
-        last_count, error_lock = get_output(next_counter_for_update(3))
-        bill.rechnr = last_count
-        
-        pass
+        counters = db_session.query(Counters).filter(
+                     (Counters.counter_no == 3)).with_for_update().first()
+        counters.counter = counters.counter + 1
+        bill.rechnr = counters.counter
 
     if pay_type == 2:
         description = "RmNo " + bill.zinr + " *" + to_string(bill.rechnr)

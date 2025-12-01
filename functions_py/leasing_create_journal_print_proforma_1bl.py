@@ -10,7 +10,7 @@
                     - fix ("string").lower()
 """
 #-------------------------------------------
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+# Rd, 24/11/2025, Update last counter
 #-------------------------------------------
 
 from functions.additional_functions import *
@@ -160,19 +160,19 @@ def leasing_create_journal_print_proforma_1bl(qrecid: int, pinvoice_no: str, use
 
         # counters = get_cache(
         #     Counters, {"counter_no": [(eq, 3)]})
+        counters = db_session.query(Counters).filter(
+            Counters.counter_no == 3).with_for_update().first()
 
-        # if not counters:
-        #     counters = Counters()
+        if not counters:
+            counters = Counters()
 
-        #     counters.counter_no = 3
-        #     counters.counter_bez = "Counter for Bill No"
+            counters.counter_no = 3
+            counters.counter_bez = "Counter for Bill No"
 
-        #     db_session.add(counters)
+            db_session.add(counters)
 
-        # counters.counter = counters.counter + 1
-        # billnr = counters.counter
-        last_count, error_lock = get_output(next_counter_for_update(3))
-        billnr = last_count
+        counters.counter = counters.counter + 1
+        billnr = counters.counter
 
 
         res_line = get_cache(
@@ -325,8 +325,10 @@ def leasing_create_journal_print_proforma_1bl(qrecid: int, pinvoice_no: str, use
 
         db_session.add(billjournal)
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == ar_ledger) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -360,9 +362,10 @@ def leasing_create_journal_print_proforma_1bl(qrecid: int, pinvoice_no: str, use
 
         db_session.add(billjournal)
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, divered_rental)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, divered_rental)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == divered_rental) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
         if not umsatz:
             umsatz = Umsatz()
 
@@ -448,15 +451,15 @@ def leasing_create_journal_print_proforma_1bl(qrecid: int, pinvoice_no: str, use
                 cancel_journal()
 
         # counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(
+            Counters.counter_no == 25).with_for_update().first()
+        if not counters:
+            counters = Counters()
+            db_session.add(counters)
 
-        # if not counters:
-        #     counters = Counters()
-        #     db_session.add(counters)
-
-        #     counters.counter_no = 25
-        #     counters.counter_bez = "G/L Transaction Journal"
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = get_output(next_counter_for_update(25))
+            counters.counter_no = 25
+            counters.counter_bez = "G/L Transaction Journal"
+        counters.counter = counters.counter + 1
 
 
         res_line = get_cache(
@@ -471,8 +474,7 @@ def leasing_create_journal_print_proforma_1bl(qrecid: int, pinvoice_no: str, use
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
-        # gl_jouhdr.jnr = counters.counter
-        gl_jouhdr.jnr = last_count
+        gl_jouhdr.jnr = counters.counter
 
         gl_jouhdr.refno = to_string(queasy.number1) + "-" + to_string(bill_date)
         gl_jouhdr.datum = bill_date
@@ -541,15 +543,16 @@ def leasing_create_journal_print_proforma_1bl(qrecid: int, pinvoice_no: str, use
         gname = ""
 
         # counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(
+            Counters.counter_no == 25).with_for_update().first()
 
-        # if not counters:
-        #     counters = Counters()
-        #     db_session.add(counters)
+        if not counters:
+            counters = Counters()
+            db_session.add(counters)
 
-        #     counters.counter_no = 25
-        #     counters.counter_bez = "G/L Transaction Journal"
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = get_output(next_counter_for_update(25))
+            counters.counter_no = 25
+            counters.counter_bez = "G/L Transaction Journal"
+        counters.counter = counters.counter + 1
 
 
         res_line = get_cache(
@@ -564,8 +567,7 @@ def leasing_create_journal_print_proforma_1bl(qrecid: int, pinvoice_no: str, use
 
         gl_jouhdr = Gl_jouhdr()
 
-        # gl_jouhdr.jnr = counters.counter
-        gl_jouhdr.jnr = last_count
+        gl_jouhdr.jnr = counters.counter
 
         # gl_jouhdr.refno = "CANCEL-" + \
         #     to_string(queasy.number1) + "-" + to_string(bill_date)
@@ -798,9 +800,10 @@ def leasing_create_journal_print_proforma_1bl(qrecid: int, pinvoice_no: str, use
     tot_tax = to_decimal("0")
     tot_amount = to_decimal("0")
 
-    queasy = get_cache(
-        Queasy, {"key": [(eq, 329)], "_recid": [(eq, qrecid)]})
-
+    # queasy = get_cache(
+    #     Queasy, {"key": [(eq, 329)], "_recid": [(eq, qrecid)]})
+    queasy = db_session.query(Queasy).filter(
+        (Queasy.key == 329) & (Queasy._recid == qrecid)).with_for_update().first()
     if queasy:
         calc_periode()
 
@@ -882,18 +885,18 @@ def leasing_create_journal_print_proforma_1bl(qrecid: int, pinvoice_no: str, use
                 else:
                     # counters = get_cache(
                     #     Counters, {"counter_no": [(eq, 3)]})
+                    counters = db_session.query(Counters).filter(
+                        Counters.counter_no == 3).with_for_update().first()
 
-                    # if not counters:
-                    #     counters = Counters()
-                    #     db_session.add(counters)
+                    if not counters:
+                        counters = Counters()
+                        db_session.add(counters)
 
-                    #     counters.counter_no = 3
-                    #     counters.counter_bez = "Counter for Bill No"
+                        counters.counter_no = 3
+                        counters.counter_bez = "Counter for Bill No"
 
-                    # counters.counter = counters.counter + 1
-                    # rechnr = counters.counter
-                    last_count, error_lock = get_output(next_counter_for_update(3))
-                    rechnr = last_count
+                    counters.counter = counters.counter + 1
+                    rechnr = counters.counter
 
 
                 create_bill()
@@ -973,19 +976,19 @@ def leasing_create_journal_print_proforma_1bl(qrecid: int, pinvoice_no: str, use
                 else:
                     # counters = get_cache(
                     #     Counters, {"counter_no": [(eq, 3)]})
+                    counters = db_session.query(Counters).filter(
+                        Counters.counter_no == 3).with_for_update().first()
 
-                    # if not counters:
-                    #     counters = Counters()
+                    if not counters:
+                        counters = Counters()
 
-                    #     counters.counter_no = 3
-                    #     counters.counter_bez = "counter for Bill No"
+                        counters.counter_no = 3
+                        counters.counter_bez = "counter for Bill No"
 
-                    #     db_session.add(counters)
+                        db_session.add(counters)
 
-                    # counters.counter = counters.counter + 1
-                    # rechnr = counters.counter
-                    last_count, error_lock = get_output(next_counter_for_update(3))
-                    rechnr = last_count
+                    counters.counter = counters.counter + 1
+                    rechnr = counters.counter
                     
 
                 create_bill()

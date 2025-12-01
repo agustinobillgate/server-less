@@ -75,63 +75,53 @@ def cancel_cobl(pvilanguage:int, inp_resnr:int, inp_reslinnr:int, co_date:date, 
         Zbuff =  create_buffer("Zbuff",Zimkateg)
         Qsy =  create_buffer("Qsy",Queasy)
 
-        zimmer = get_cache (Zimmer, {"zinr": [(eq, zinr)]})
+        zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == zinr).first()
 
         res_line1 = db_session.query(Res_line1).filter(
                  ((Res_line1.resnr != inp_resnr) & (Res_line1.reslinnr != inp_reslinnr)) & (Res_line1.zinr == (zinr).lower()) & ((Res_line1.resstatus == 6) | (Res_line1.resstatus == 13))).first()
 
         if not res_line1:
-            pass
+            db_session.refresh(zimmer, with_for_update=True)
             zimmer.zistatus = 4
             zimmer.bediener_nr_stat = 0
 
             if res_line.abreise == ci_date:
                 zimmer.zistatus = 3
-            pass
 
         if res_line1:
             res_line.resstatus = 13
         else:
             res_line.resstatus = 6
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+        reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
 
         if reservation.activeflag == 1:
-            pass
+            db_session.refresh(reservation, with_for_update=True)
             reservation.activeflag = 0
-            pass
 
         if not res_line1:
-
-            master = get_cache (Master, {"resnr": [(eq, resnr)]})
+            master = db_session.query(Master).filter(Master.resnr == resnr).with_for_update().first()
 
             if master:
                 master.active = True
-                pass
                 msg_int = 1
 
                 bill1 = db_session.query(Bill1).filter(
                          (Bill1.resnr == resnr) & (Bill1.reslinnr == 0)).first()
 
                 if bill1:
-
                     if bill1.flag == 1:
-                        pass
+                        db_session.refresh(bill1, with_for_update=True)
                         bill1.flag = 0
-                        pass
 
                     if bill1.rechnr != 0:
-
-                        guest = get_cache (Guest, {"gastnr": [(eq, bill1.gastnr)]})
+                        guest = db_session.query(Guest).filter(Guest.gastnr == bill1.gastnr).with_for_update().first()
                         guest.logisumsatz =  to_decimal(guest.logisumsatz) - to_decimal(bill1.logisumsatz)
                         guest.argtumsatz =  to_decimal(guest.argtumsatz) - to_decimal(bill1.argtumsatz)
                         guest.f_b_umsatz =  to_decimal(guest.f_b_umsatz) - to_decimal(bill1.f_b_umsatz)
                         guest.sonst_umsatz =  to_decimal(guest.sonst_umsatz) - to_decimal(bill1.sonst_umsatz)
                         guest.gesamtumsatz =  to_decimal(guest.gesamtumsatz) - to_decimal(bill1.gesamtumsatz)
 
-
-                        pass
-                        pass
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 307)]})
 
@@ -140,6 +130,7 @@ def cancel_cobl(pvilanguage:int, inp_resnr:int, inp_reslinnr:int, co_date:date, 
 
         if priscilla_active:
             get_output(intevent_1(9, res_line.zinr, "Priscilla", res_line.resnr, res_line.reslinnr))
+            
         tmp_date = res_line.abreise - timedelta(days=1)
 
         if res_line.resstatus == 6:
@@ -155,7 +146,7 @@ def cancel_cobl(pvilanguage:int, inp_resnr:int, inp_reslinnr:int, co_date:date, 
                     zimplan.zinr = zinr
 
         for resplan in db_session.query(Resplan).filter(
-                 (Resplan.datum >= co_date) & (Resplan.datum < res_line.abreise) & (Resplan.zikatnr == zimmer.zikatnr)).order_by(Resplan._recid).all():
+                 (Resplan.datum >= co_date) & (Resplan.datum < res_line.abreise) & (Resplan.zikatnr == zimmer.zikatnr)).with_for_update().order_by(Resplan._recid).all():
             resplan.anzzim[res_line.resstatus - 1] = resplan.anzzim[res_line.resstatus - 1] + 1
             pass
 
@@ -208,7 +199,7 @@ def cancel_cobl(pvilanguage:int, inp_resnr:int, inp_reslinnr:int, co_date:date, 
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Qsy).filter(Qsy._recid == queasy._recid).with_for_update().first()
 
                     if qsy:
                         qsy.logi2 = True
@@ -221,12 +212,13 @@ def cancel_cobl(pvilanguage:int, inp_resnr:int, inp_reslinnr:int, co_date:date, 
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        qsy = db_session.query(Qsy).filter(Qsy._recid == queasy._recid).with_for_update().first()
 
                         if qsy:
                             qsy.logi2 = True
                             pass
                             pass
+
             res_history = Res_history()
             db_session.add(res_history)
 
@@ -247,7 +239,7 @@ def cancel_cobl(pvilanguage:int, inp_resnr:int, inp_reslinnr:int, co_date:date, 
                  (Bill1.resnr == resnr) & (Bill1.parent_nr == reslinnr) & (Bill1.flag == 1) & (Bill1.zinr == (zinr).lower())).order_by(Bill1._recid).all():
             tot_umsatz =  to_decimal(tot_umsatz) + to_decimal(bill1.gesamtumsatz)
 
-        guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+        guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).with_for_update().first()
 
         for bill1 in db_session.query(Bill1).filter(
                  (Bill1.resnr == resnr) & (Bill1.parent_nr == reslinnr) & (Bill1.flag == 1) & (Bill1.zinr == (zinr).lower())).order_by(Bill1._recid).all():
@@ -263,7 +255,7 @@ def cancel_cobl(pvilanguage:int, inp_resnr:int, inp_reslinnr:int, co_date:date, 
         pass
 
         bill2 = db_session.query(Bill2).filter(
-                 (Bill2.resnr == res_line.resnr) & (Bill2.reslinnr == res_line.reslinnr)).first()
+                 (Bill2.resnr == res_line.resnr) & (Bill2.reslinnr == res_line.reslinnr)).with_for_update().first()
         bill2.flag = 0
         bill2.datum = co_date
 
@@ -275,7 +267,7 @@ def cancel_cobl(pvilanguage:int, inp_resnr:int, inp_reslinnr:int, co_date:date, 
         res_line.changed_id = user_init
         res_line.active_flag = 1
 
-        guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+        guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).with_for_update().first()
 
         if guest.zimmeranz > 0:
             guest.zimmeranz = guest.zimmeranz - 1
@@ -288,7 +280,7 @@ def cancel_cobl(pvilanguage:int, inp_resnr:int, inp_reslinnr:int, co_date:date, 
         if res_line.gastnrmember != res_line.gastnrpay:
             get_min_reslinnr()
 
-            guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+            guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrpay).with_for_update().first()
 
             if guest.zimmeranz > 0:
                 guest.zimmeranz = guest.zimmeranz - 1
@@ -324,16 +316,18 @@ def cancel_cobl(pvilanguage:int, inp_resnr:int, inp_reslinnr:int, co_date:date, 
                  (Resline.resnr == resnr) & (Resline.active_flag == 1) & (Resline.resstatus != 12)).order_by(Resline._recid).all():
             min_reslinnr = min_reslinnr + 1
 
-    bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
+    bediener = db_session.query(Bediener).filter(Bediener.userinit == user_init).first()
+
     ci_date = get_output(htpdate(87))
 
-    res_line = get_cache (Res_line, {"resnr": [(eq, inp_resnr)],"reslinnr": [(eq, inp_reslinnr)]})
+    res_line = db_session.query(Res_line).filter(Res_line.resnr == inp_resnr, Res_line.reslinnr == inp_reslinnr).with_for_update().first()
 
-    zimkateg = get_cache (Zimkateg, {"zikatnr": [(eq, res_line.zikatnr)]})
+    zimkateg = db_session.query(Zimkateg).filter(Zimkateg.zikatnr == res_line.zikatnr).first()
 
-    guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+    guest = db_session.query(Guest).filter(Guest.gastnr == res_line.gastnrmember).first()
 
-    reservation = get_cache (Reservation, {"resnr": [(eq, res_line.resnr)]})
+    reservation = db_session.query(Reservation).filter(Reservation.resnr == res_line.resnr).first()
+
     ankunft = res_line.ankunft
     departure = res_line.ankunft + timedelta(days=res_line.anztage)
     res_line.abreise = departure
@@ -341,9 +335,10 @@ def cancel_cobl(pvilanguage:int, inp_resnr:int, inp_reslinnr:int, co_date:date, 
     reslinnr = res_line.reslinnr
     zinr = res_line.zinr
     guest_recheckin()
-    pass
 
-    buf_rline = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+
+   
+    buf_rline = db_session.query(Res_line).filter(Res_line.resnr == resnr, Res_line.reslinnr == reslinnr).first()
 
     if buf_rline:
         reslin_queasy = Reslin_queasy()

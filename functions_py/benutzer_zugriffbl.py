@@ -2,6 +2,7 @@
 #-----------------------------------------
 # Rd, 3/8/2025
 # if bediener
+# Rd, 27/11/2025, with_for_update added
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -14,6 +15,8 @@ def benutzer_zugriffbl(ch:string, nr:int, username:string, permissions:string, r
     res_history = bediener = None
 
     db_session = local_storage.db_session
+    ch = ch.strip()
+    permissions = permissions.strip()
 
     def generate_output():
         nonlocal res_history, bediener
@@ -35,7 +38,9 @@ def benutzer_zugriffbl(ch:string, nr:int, username:string, permissions:string, r
     pass
     pass
 
-    bediener = get_cache (Bediener, {"_recid": [(eq, rec_id)]})
+    # bediener = get_cache (Bediener, {"_recid": [(eq, rec_id)]})
+    bediener = db_session.query(Bediener).filter(
+             (Bediener._recid == rec_id)).with_for_update().first()
     if bediener:
         bediener.permissions = ch
     pass

@@ -2,12 +2,14 @@
 #-----------------------------------------
 # Rd, 2/8/2025
 # if available
+# Rd, 01/12/2025, with_for_update added
 #-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bediener, L_orderhdr, L_order
+from sqlalchemy.orm import flag_modified
 
 s_list_data, S_list = create_model("S_list", {"selected":bool, "flag":bool, "loeschflag":int, "approved":bool, "rejected":bool, "s_recid":int, "docu_nr":string, "po_nr":string, "deptnr":int, "str0":string, "bestelldatum":string, "lieferdatum":string, "pos":int, "artnr":int, "bezeich":string, "qty":Decimal, "str3":string, "dunit":string, "lief_einheit":Decimal, "str4":string, "userinit":string, "pchase_nr":string, "pchase_date":date, "app_rej":string, "rej_reason":string, "cid":string, "cdate":date, "instruct":string, "konto":string, "supno":int, "currno":int, "duprice":Decimal, "du_price1":Decimal, "du_price2":Decimal, "du_price3":Decimal, "anzahl":int, "txtnr":int, "suppn1":string, "supp1":int, "suppn2":string, "supp2":int, "suppn3":string, "supp3":int, "supps":string, "einzelpreis":Decimal, "amount":Decimal, "stornogrund":string, "besteller":string, "lief_fax2":string, "last_pdate":date, "last_pprice":Decimal, "zeit":int, "min_bestand":Decimal, "max_bestand":Decimal, "del_reason":string, "desc_coa":string, "lief_fax3":string, "masseinheit":string, "lief_fax_2":string, "ek_letzter":Decimal, "supplier":string, "vk_preis":Decimal, "a_firma":string, "last_pbook":Decimal}, {"pos": 999999})
 
@@ -20,6 +22,7 @@ def pr_list_update_slist_1bl(s_list_data:[S_list], lief_nr:int, po_nr:string, bi
     s_list = s_list1 = None
 
     db_session = local_storage.db_session
+    po_nr = po_nr.strip()
 
     def generate_output():
         nonlocal bediener, l_orderhdr, l_order
@@ -34,8 +37,6 @@ def pr_list_update_slist_1bl(s_list_data:[S_list], lief_nr:int, po_nr:string, bi
 
         nonlocal bediener, l_orderhdr, l_order
         nonlocal lief_nr, po_nr, billdate, user_init
-
-
         nonlocal s_list, s_list1
 
         curr_pr:string = ""
@@ -47,7 +48,12 @@ def pr_list_update_slist_1bl(s_list_data:[S_list], lief_nr:int, po_nr:string, bi
 
             l_orderhdr = get_cache (L_orderhdr, {"docu_nr": [(eq, po_nr)]})
 
-            l_order = get_cache (L_order, {"artnr": [(eq, s_list.artnr)],"lief_nr": [(eq, lief_nr)],"op_art": [(eq, 2)],"docu_nr": [(eq, po_nr)]})
+            # l_order = get_cache (L_order, {"artnr": [(eq, s_list.artnr)],"lief_nr": [(eq, lief_nr)],"op_art": [(eq, 2)],"docu_nr": [(eq, po_nr)]})
+            l_order = db_session.query(L_order).filter(
+                      (L_order.artnr == s_list.artnr) &
+                      (L_order.lief_nr == lief_nr) &
+                      (L_order.op_art == 2) &
+                      (L_order.docu_nr == po_nr)).with_for_update().first()
 
             if l_order:
                 s_list.po_nr = l_order.docu_nr
@@ -81,7 +87,10 @@ def pr_list_update_slist_1bl(s_list_data:[S_list], lief_nr:int, po_nr:string, bi
                 if curr_pr != s_list.docu_nr:
                     curr_pr = s_list.docu_nr
 
-                    l_order = get_cache (L_order, {"docu_nr": [(eq, curr_pr)],"pos": [(eq, 0)]})
+                    # l_order = get_cache (L_order, {"docu_nr": [(eq, curr_pr)],"pos": [(eq, 0)]})
+                    l_order = db_session.query(L_order).filter(
+                              (L_order.docu_nr == curr_pr) &
+                              (L_order.pos == 0)).with_for_update().first()
                     # Rd, 2/8/2025
                     # if available
                     # l_order.loeschflag = 1
@@ -96,6 +105,7 @@ def pr_list_update_slist_1bl(s_list_data:[S_list], lief_nr:int, po_nr:string, bi
                     if s_list1:
                         s_list1.loeschflag = 1
         curr_pr = ""
+        flag_modified(s_list, "selected")
 
         for s_list in query(s_list_data, filters=(lambda s_list: s_list.selected and s_list.artnr > 0), sort_by=[("docu_nr",False)]):
 
@@ -106,7 +116,10 @@ def pr_list_update_slist_1bl(s_list_data:[S_list], lief_nr:int, po_nr:string, bi
 
                 if not l_order:
 
-                    l_order = get_cache (L_order, {"docu_nr": [(eq, curr_pr)],"pos": [(eq, 0)]})
+                    # l_order = get_cache (L_order, {"docu_nr": [(eq, curr_pr)],"pos": [(eq, 0)]})
+                    l_order = db_session.query(L_order).filter(
+                              (L_order.docu_nr == curr_pr) &
+                              (L_order.pos == 0)).with_for_update().first()
                     # Rd 2/8/2025
                     if l_order:
                         l_order.loeschflag = 1
@@ -126,7 +139,7 @@ def pr_list_update_slist_1bl(s_list_data:[S_list], lief_nr:int, po_nr:string, bi
 
             s_list.selected = False
             s_list.loeschflag = 1
-
+        flag_modified(l_order, "angebot_lief")
 
     bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
     update_slist()

@@ -7,13 +7,15 @@
 # from Resline.kontakt_nr == reslinnr
 # to Resline.kontakt_nr == Resline.reslinnr
 # ============================================================
-
+# Rd, 26/11/2025, with_for_update
+# ============================================================
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpdate import htpdate
 from functions.intevent_1 import intevent_1
 from models import Reservation, Res_line, Reslin_queasy, Zinrstat, Master, Bediener, Res_history, Guest, History, Resplan, Zimkateg, Queasy
+from sqlalchemy.orm import flag_modified
 
 def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, deposit_flag:bool):
 
@@ -77,7 +79,9 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
             if zinrstat:
 
-                zinrbuff = get_cache (Zinrstat, {"_recid": [(eq, zinrstat._recid)]})
+                # zinrbuff = get_cache (Zinrstat, {"_recid": [(eq, zinrstat._recid)]})
+                zinrbuff = db_session.query(Zinrstat).filter(Zinrstat._recid == zinrstat._recid).with_for_update().first()
+
                 zinrbuff.zimmeranz = zinrbuff.zimmeranz - res_line.zimmeranz
                 zinrbuff.personen = zinrbuff.personen -\
                         res_line.zimmeranz * res_line.erwachs
@@ -95,7 +99,9 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
                     if zinrstat:
 
-                        zinrbuff = get_cache (Zinrstat, {"_recid": [(eq, zinrstat._recid)]})
+                        # zinrbuff = get_cache (Zinrstat, {"_recid": [(eq, zinrstat._recid)]})
+                        zinrbuff = db_session.query(Zinrstat).filter(Zinrstat._recid == zinrstat._recid).with_for_update().first()
+
                         zinrbuff.zimmeranz = zinrbuff.zimmeranz - rbuff.zimmeranz
                         zinrbuff.personen = zinrbuff.personen -\
                                 rbuff.zimmeranz * rbuff.erwachs
@@ -135,7 +141,7 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
         pass
 
         for resline in db_session.query(Resline).filter(
-                     (Resline.resnr == res_line.resnr) & (Resline.l_zuordnung[inc_value(2)] == 1) & (Resline.kontakt_nr == res_line.reslinnr)).order_by(Resline._recid).all():
+                     (Resline.resnr == res_line.resnr) & (Resline.l_zuordnung[inc_value(2)] == 1) & (Resline.kontakt_nr == res_line.reslinnr)).order_by(Resline._recid).with_for_update().all():
             curr_ress = resline.resstatus
             resline.active_flag = 0
             resline.resstatus = 11
@@ -161,7 +167,8 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
                 if priscilla_active:
                     get_output(intevent_1(12, rbuff.zinr, "Priscilla", rbuff.resnr, rbuff.reslinnr))
 
-                rline = get_cache (Res_line, {"_recid": [(eq, rbuff._recid)]})
+                # rline = get_cache (Res_line, {"_recid": [(eq, rbuff._recid)]})
+                rline = db_session.query(Res_line).filter(Res_line._recid == rbuff._recid).with_for_update().first()
 
                 if (rline.erwachs + rline.kind1 + rline.kind2) > 0:
 
@@ -197,7 +204,7 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
                 pass
 
                 for resline in db_session.query(Resline).filter(
-                             (Resline.resnr == rbuff.resnr) & (Resline.l_zuordnung[inc_value(2)] == 1) & (Resline.kontakt_nr == rbuff.reslinnr)).order_by(Resline._recid).all():
+                             (Resline.resnr == rbuff.resnr) & (Resline.l_zuordnung[inc_value(2)] == 1) & (Resline.kontakt_nr == rbuff.reslinnr)).order_by(Resline._recid).with_for_update().all():
                     curr_ress = resline.resstatus
 
                     if priscilla_active:
@@ -239,7 +246,8 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
         if master:
 
-            mbuff = get_cache (Master, {"_recid": [(eq, master._recid)]})
+            # mbuff = get_cache (Master, {"_recid": [(eq, master._recid)]})
+            mbuff = db_session.query(Master).filter(Master._recid == master._recid).with_for_update().first()
             mbuff.active = True
             pass
             pass
@@ -323,11 +331,13 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
             elif resplan:
 
-                buffplan = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                # buffplan = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                buffplan = db_session.query(Resplan).filter(Resplan._recid == resplan._recid).with_for_update().first()
                 buffplan.anzzim[i - 1] = buffplan.anzzim[i - 1] + rline.zimmeranz
                 pass
                 pass
-
+        flag_modified(buffplan, "anzzim")
+        flag_modified(resplan, "anzzim")
 
     def update_queasy():
 
@@ -385,7 +395,8 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
             if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                 if qsy:
                     qsy.logi2 = True
@@ -398,7 +409,8 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                     if qsy:
                         qsy.logi2 = True
@@ -572,7 +584,8 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
         if master:
 
-            mbuff = get_cache (Master, {"_recid": [(eq, master._recid)]})
+            # mbuff = get_cache (Master, {"_recid": [(eq, master._recid)]})
+            mbuff = db_session.query(Master).filter(Master._recid == master._recid).with_for_update().first()
             mbuff.resnr = new_resno
             mbuff.active = True
 
@@ -676,7 +689,8 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
             if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                 if qsy:
                     qsy.logi2 = True
@@ -689,7 +703,8 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                     if qsy:
                         qsy.logi2 = True
@@ -707,7 +722,8 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
 
             break
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        reservation = db_session.query(Reservation).filter(Reservation.resnr == resno).with_for_update().first()
 
         if reservation:
             t_reservation = Reservation()
@@ -728,7 +744,9 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
             buffer_copy(res_line, t_resline,except_fields=["res_line.resnr"])
             t_resline.resnr = new_resno
 
-        bresline = get_cache (Res_line, {"resnr": [(eq, new_resno)]})
+        # bresline = get_cache (Res_line, {"resnr": [(eq, new_resno)]})
+        bresline = db_session.query(Res_line).filter(
+                     (Res_line.resnr == new_resno) & (Res_line.reslinnr == reslinno)).with_for_update().first()
 
         if bresline:
 
@@ -774,12 +792,16 @@ def reactivate1_1bl(resno:int, reslinno:int, user_init:string, all_flag:bool, de
                 pass
     else:
 
-        res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslinno)]})
+        # res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslinno)]})
+        res_line = db_session.query(Res_line).filter(
+                     (Res_line.resnr == resno) & (Res_line.reslinnr == reslinno)).with_for_update().first()
 
         if priscilla_active:
             get_output(intevent_1(12, res_line.zinr, "Priscilla", res_line.resnr, res_line.reslinnr))
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, resno)]})
+        reservation = db_session.query(Reservation).filter(
+                     (Reservation.resnr == resno)).with_for_update().first()
         update_resline()
         update_queasy()
 

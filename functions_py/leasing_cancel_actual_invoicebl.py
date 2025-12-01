@@ -9,14 +9,14 @@
                     - use f"string"
 """
 #------------------------------------------
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+# Rd, 24/11/2025, Update last counter
 #------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Reslin_queasy, Artikel, Queasy, Htparam, Bediener, Res_history, Res_line, Counters, Reservation, Guest, Bill, Bill_line, Debitor, Billjournal, Umsatz
-from functions.next_counter_for_update import next_counter_for_update
+
 
 
 def leasing_cancel_actual_invoicebl(qrecid: int, user_init: str):
@@ -116,9 +116,10 @@ def leasing_cancel_actual_invoicebl(qrecid: int, user_init: str):
                 to_string("NO", "x(3)") + ";" +\
                 to_string("NO", "x(3)") + ";"
 
-        pqueasy = get_cache(
-            Queasy, {"key": [(eq, 375)], "number1": [(eq, 2)], "number2": [(eq, queasy.number1)], "number3": [(eq, queasy.number2)]})
-
+        # pqueasy = get_cache(
+            # Queasy, {"key": [(eq, 375)], "number1": [(eq, 2)], "number2": [(eq, queasy.number1)], "number3": [(eq, queasy.number2)]})
+        pqueasy = db_session.query(Queasy).filter(
+            (Queasy.key == 375) & (Queasy.number1 == 2) & (Queasy.number2 == queasy.number1) & (Queasy.number3 == queasy.number2)).with_for_update().first()
         if not pqueasy:
             pqueasy = Queasy()
 
@@ -150,19 +151,18 @@ def leasing_cancel_actual_invoicebl(qrecid: int, user_init: str):
         billnr: int = 0
 
         # counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
 
-        # if not counters:
-        #     counters = Counters()
+        if not counters:
+            counters = Counters()
 
-        #     counters.counter_no = 3
-        #     counters.counter_bez = "Counter for Bill No"
+            counters.counter_no = 3
+            counters.counter_bez = "Counter for Bill No"
 
-        #     db_session.add(counters)
+            db_session.add(counters)
             
-        # counters.counter = counters.counter + 1
-        # billnr = counters.counter
-        last_count, error_lock = get_output(next_counter_for_update(3))
-        billnr = last_count
+        counters.counter = counters.counter + 1
+        billnr = counters.counter
         
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
@@ -301,9 +301,10 @@ def leasing_cancel_actual_invoicebl(qrecid: int, user_init: str):
 
         db_session.add(billjournal)
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == ar_ledger) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
         if not umsatz:
             umsatz = Umsatz()
 
@@ -337,9 +338,11 @@ def leasing_cancel_actual_invoicebl(qrecid: int, user_init: str):
 
         db_session.add(billjournal)
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, divered_rental)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, divered_rental)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == divered_rental) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
+        
         if not umsatz:
             umsatz = Umsatz()
 

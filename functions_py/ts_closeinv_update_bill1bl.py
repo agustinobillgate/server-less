@@ -1,14 +1,18 @@
 #using conversion tools version: 1.0.0.117
 #---------------------------------------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+# Rd, 01/12/2025, with_for_update added
 #---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from models import H_bill, Kellner, Htparam, Artikel, Bill, Counters, Bill_line, Billjournal, H_bill_line, H_artikel, H_journal
+from sqlalchemy.orm import flag_modified
 
-def ts_closeinv_update_bill1bl(amount:Decimal, amount_foreign:Decimal, rec_kellner:int, rec_h_bill:int, double_currency:bool, exchg_rate:Decimal, bilrecid:int, value_sign:int, user_init:string, bill_date:date, curr_select:int, price_decimal:int):
+def ts_closeinv_update_bill1bl(amount:Decimal, amount_foreign:Decimal, rec_kellner:int, rec_h_bill:int, double_currency:bool, 
+                               exchg_rate:Decimal, bilrecid:int, value_sign:int, user_init:string, bill_date:date, 
+                               curr_select:int, price_decimal:int):
 
     prepare_cache ([Kellner, Htparam, Artikel, Bill, Counters, Bill_line, Billjournal, H_journal])
 
@@ -424,7 +428,9 @@ def ts_closeinv_update_bill1bl(amount:Decimal, amount_foreign:Decimal, rec_kelln
         else:
             description = "*" + to_string(h_bill.rechnr)
 
-        bill = get_cache (Bill, {"_recid": [(eq, bilrecid)]})
+        # bill = get_cache (Bill, {"_recid": [(eq, bilrecid)]})
+        bill = db_session.query(Bill).filter(
+                     (Bill._recid == bilrecid)).with_for_update().first()
 
         if bill.rechnr == 0:
             # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
@@ -440,7 +446,8 @@ def ts_closeinv_update_bill1bl(amount:Decimal, amount_foreign:Decimal, rec_kelln
             bill.mwst[98] = bill.mwst[98] + amount_foreign
         bill.rgdruck = 0
         vat_amount = cal_vat_amount()
-
+        flag_modified(bill, "mwst")
+        
         if multi_vat:
             create_vat_list(value_sign)
 
@@ -538,9 +545,6 @@ def ts_closeinv_update_bill1bl(amount:Decimal, amount_foreign:Decimal, rec_kelln
         cancel_str = ""
     pass
     h_bill.flag = 1
-    pass
-    pass
-    pass
     t_h_bill = T_h_bill()
     t_h_bill_data.append(t_h_bill)
 

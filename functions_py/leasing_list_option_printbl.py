@@ -5,6 +5,9 @@
         _remark_:   - fix python indentation
                     - convert only
 """
+#--------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#--------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -35,9 +38,12 @@ def leasing_list_option_printbl(resnr:int, tlist_data:Tlist):
 
         return {}
 
-    queasy = get_cache (
-        Queasy, {"key": [(eq, 346)],"number1": [(eq, resnr)]})
-
+    # queasy = get_cache (
+    #     Queasy, {"key": [(eq, 346)],"number1": [(eq, resnr)]})
+    queasy = db_session.query(Queasy).filter(
+        Queasy.key == 346,
+        Queasy.number1 == resnr
+    ).with_for_update().first()
     if not queasy:
         queasy = Queasy()
 

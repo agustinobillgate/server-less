@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 14/8/2025
 # if available bqueasy
+# Rd, 27/11/2025, with_for_update added
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -22,6 +23,7 @@ def ratecode_adm_delete_prcode_1bl(icase:int, pvilanguage:int, prcode:string, us
 
 
     db_session = local_storage.db_session
+    prcode = prcode.strip()
 
     def generate_output():
         nonlocal msg_str, error_flag, lvcarea, queasy, ratecode, guest_pr, guest, prtable, bediener, res_history
@@ -55,7 +57,9 @@ def ratecode_adm_delete_prcode_1bl(icase:int, pvilanguage:int, prcode:string, us
 
         if guest_pr:
 
-            guest = get_cache (Guest, {"gastnr": [(eq, guest_pr.gastnr)]})
+            # guest = get_cache (Guest, {"gastnr": [(eq, guest_pr.gastnr)]})
+            guest = db_session.query(Guest).filter(
+                Guest.gastnr == guest_pr.gastnr).with_for_update().first()
 
             if guest and guest.karteityp == 9:
                 pass
@@ -65,12 +69,12 @@ def ratecode_adm_delete_prcode_1bl(icase:int, pvilanguage:int, prcode:string, us
         if queasy.char1 != "":
 
             for prtable in db_session.query(Prtable).filter(
-                     (Prtable.prcode == queasy.char1)).order_by(Prtable._recid).all():
+                     (Prtable.prcode == queasy.char1)).order_by(Prtable._recid).with_for_update().all():
                 db_session.delete(prtable)
 
 
         bqueasy = db_session.query(Bqueasy).filter(
-                 (Bqueasy.key == 289) & (Bqueasy.char1 == queasy.char1)).first()
+                 (Bqueasy.key == 289) & (Bqueasy.char1 == queasy.char1)).with_for_update().first()
 
         if bqueasy:
             pass

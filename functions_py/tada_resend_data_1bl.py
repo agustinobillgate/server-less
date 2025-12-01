@@ -3,6 +3,7 @@
 # ===========================================
 # Rulita, 15-10-2025
 # Tiket ID : 523BB6 | New Compile program IF 
+# Rd, 26/11/2025, with_for_update
 # ===========================================
 
 from functions.additional_functions import *
@@ -36,7 +37,10 @@ def tada_resend_data_1bl(case_type:int, date_value:date, rec_id:int):
 
     if case_type == 1:
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+        # queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+        queasy = db_session.query(Queasy).filter(
+            Queasy._recid == rec_id
+        ).with_for_update().first()
 
         if queasy:
             pass

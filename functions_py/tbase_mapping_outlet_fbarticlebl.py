@@ -8,7 +8,9 @@
             - add type ignore to avoid warning
             - deleted ' pass '
 """ 
-
+#-------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -39,10 +41,16 @@ def tbase_mapping_outlet_fbarticlebl(outlet_list_data:Outlet_list):
         return {}
 
     for outlet_list in query(outlet_list_data):  # type: ignore outlet_list_data
-        queasy = get_cache (Queasy, {
-            "key": [(eq, 369)],
-            "char1": [(eq, "outlet-fb")],
-            "number2": [(eq, outlet_list.vhp_nr)]})
+        # queasy = get_cache (Queasy, {
+        #     "key": [(eq, 369)],
+        #     "char1": [(eq, "outlet-fb")],
+        #     "number2": [(eq, outlet_list.vhp_nr)]})
+
+        queasy = db_session.query(Queasy).filter(
+            Queasy.key == 369,
+            Queasy.char1 == "outlet-fb",
+            Queasy.number2 == outlet_list.vhp_nr
+        ).with_for_update().first()
 
         if not queasy:
             queasy = Queasy()

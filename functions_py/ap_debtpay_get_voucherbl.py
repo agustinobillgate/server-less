@@ -1,9 +1,10 @@
-#using conversion tools version: 1.0.0.117
-#----------------------------------------
-# Rd, 1/8/2025
-# if available l_kredit
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
-#----------------------------------------
+# using conversion tools version: 1.0.0.119
+"""_yusufwijasena_28/11/2025
+
+        issue:  - cannot generate AP Payment Voucher Number
+                - changed counters.counter to last_count
+"""
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -11,16 +12,44 @@ from models import Res_history, Htparam, Counters, L_kredit, Queasy
 from functions.next_counter_for_update import next_counter_for_update
 
 
+age_list_data, Age_list = create_model(
+    "Age_list",
+    {
+        "selected": bool,
+        "ap_recid": int,
+        "counter": int,
+        "docu_nr": str,
+        "rechnr": int,
+        "lief_nr": int,
+        "lscheinnr": str,
+        "supplier": str,
+        "rgdatum": date,
+        "rabatt": Decimal,
+        "rabattbetrag": Decimal,
+        "ziel": date,
+        "netto": Decimal,
+        "user_init": str,
+        "debt": Decimal,
+        "credit": Decimal,
+        "bemerk": str,
+        "tot_debt": Decimal,
+        "rec_id": int,
+        "resname": str,
+        "comments": str,
+        "fibukonto": str,
+        "t_bezeich": str,
+        "debt2": Decimal,
+        "recv_date": date
+    })
 
-age_list_data, Age_list = create_model("Age_list", {"selected":bool, "ap_recid":int, "counter":int, "docu_nr":string, "rechnr":int, "lief_nr":int, "lscheinnr":string, "supplier":string, "rgdatum":date, "rabatt":Decimal, "rabattbetrag":Decimal, "ziel":date, "netto":Decimal, "user_init":string, "debt":Decimal, "credit":Decimal, "bemerk":string, "tot_debt":Decimal, "rec_id":int, "resname":string, "comments":string, "fibukonto":string, "t_bezeich":string, "debt2":Decimal, "recv_date":date})
 
-def ap_debtpay_get_voucherbl(age_list_data:[Age_list], pvilanguage:int):
+def ap_debtpay_get_voucherbl(age_list_data: [Age_list], pvilanguage: int):
 
-    prepare_cache ([Htparam, Counters, L_kredit, Queasy])
+    prepare_cache([Htparam, Counters, L_kredit, Queasy])
 
     msg_str = ""
-    lvcarea:string = "ap-debtpay"
-    p_786:string = ""
+    lvcarea: str = "ap-debtpay"
+    p_786 = ""
     res_history = htparam = counters = l_kredit = queasy = None
 
     age_list = abuff = t_reshist = None
@@ -28,24 +57,24 @@ def ap_debtpay_get_voucherbl(age_list_data:[Age_list], pvilanguage:int):
     Abuff = Age_list
     abuff_data = age_list_data
 
-    T_reshist = create_buffer("T_reshist",Res_history)
-
+    T_reshist = create_buffer("T_reshist", Res_history)
 
     db_session = local_storage.db_session
     last_count = 0
-    error_lock:string = ""
+    error_lock = ""
 
     def generate_output():
         nonlocal msg_str, lvcarea, p_786, res_history, htparam, counters, l_kredit, queasy
         nonlocal pvilanguage
         nonlocal abuff, t_reshist
-
-
         nonlocal age_list, abuff, t_reshist
 
-        return {"age-list": age_list_data, "msg_str": msg_str}
+        return {
+            "age-list": age_list_data,
+            "msg_str": msg_str
+        }
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 786)]})
+    htparam = get_cache(Htparam, {"paramnr": [(eq, 786)]})
 
     if htparam:
         p_786 = htparam.fchar
@@ -59,25 +88,23 @@ def ap_debtpay_get_voucherbl(age_list_data:[Age_list], pvilanguage:int):
     #     counters.counter_no = 40
     #     counters.counter_bez = "Counter for AP Payment Voucher No."
 
-
     # counters.counter = counters.counter + 1
 
     last_count, error_lock = get_output(next_counter_for_update(40))
 
     pass
-    msg_str = msg_str + chr_unicode(2) + translateExtended ("DONE. A/P Payment Voucher Number", lvcarea, "") + " = " + to_string(counters.counter, "9999999")
+    # msg_str = msg_str + chr_unicode(2) + translateExtended ("DONE. A/P Payment Voucher Number", lvcarea, "") + " = " + to_string(counters.counter, "9999999")
+    msg_str = f"{msg_str}{chr_unicode(2)}{translateExtended('DONE. A/P Payment Voucher Number', lvcarea, '')} = {to_string(last_count, '9999999')}"  # yusufwijasena: changed counters.counter to last_count
 
     for abuff in query(abuff_data, filters=(lambda abuff: abuff.selected)):
         # abuff.rechnr = counters.counter
         abuff.rechnr = last_count
 
-        l_kredit = get_cache (L_kredit, {"_recid": [(eq, abuff.ap_recid)]})
-        # Rd, 1/8/2025
+        l_kredit = db_session.query(L_kredit).filter(
+            L_kredit._recid == abuff.ap_recid).with_for_update().first()
         if l_kredit:
             # l_kredit.rechnr = counters.counter
             l_kredit.rechnr = last_count
-
-        pass
 
     if trim(p_786) != "":
         queasy = Queasy()

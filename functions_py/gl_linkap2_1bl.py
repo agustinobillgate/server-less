@@ -1,7 +1,5 @@
-#using conversion tools version: 1.0.0.117
-#---------------------------------------------------------------------
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
-#---------------------------------------------------------------------
+#using conversion tools version: 1.0.0.119
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -49,7 +47,7 @@ def gl_linkap2_1bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:Dec
 
         msg_str = ""
 
-        gl_jouhdr = get_cache (Gl_jouhdr, {"refno": [(eq, c_refno)]})
+        gl_jouhdr = db_session.query(Gl_jouhdr).filter(Gl_jouhdr.refno == c_refno).first()
 
         if gl_jouhdr:
             msg_str = "Refno " + c_refno + " Already Exists: " + to_string(gl_jouhdr.datum) + " " + gl_jouhdr.bezeich
@@ -79,7 +77,7 @@ def gl_linkap2_1bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:Dec
             counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
         # counters.counter = counters.counter + 1
         last_count, error_lock = get_output(next_counter_for_update(25))
-
+            
         pass
         # gl_jouhdr.jnr = counters.counter  
         gl_jouhdr.jnr = last_count
@@ -118,24 +116,23 @@ def gl_linkap2_1bl(pvilanguage:int, remains:Decimal, credits:Decimal, debits:Dec
 
         if remains == 0.01 or remains == - 0.01:
             remains =  to_decimal("0")
-        pass
+        
+        db_session.refresh(gl_jouhdr, with_for_update=True)
+
         gl_jouhdr.credit =  to_decimal(credits)
         gl_jouhdr.debit =  to_decimal(debits)
         gl_jouhdr.remain =  to_decimal(remains)
 
 
-        pass
-        pass
-
         htparam = get_cache (Htparam, {"paramnr": [(eq, 1118)]})
         htparam.fdate = to_date
-        pass
+   
 
     verify_refno()
 
     if hdr_found :
-
         return generate_output()
+    
     create_header()
     create_journals()
 

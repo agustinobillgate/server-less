@@ -5,7 +5,6 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Counters
-from functions.next_counter_for_update import next_counter_for_update
 
 def read_countersbl(case_type:int, counterno:int):
     t_counters_data = []
@@ -31,7 +30,8 @@ def read_countersbl(case_type:int, counterno:int):
 
     if case_type == 1:
 
-        counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == counterno).first()
 
         if counters:
             t_counters = T_counters()
@@ -41,12 +41,8 @@ def read_countersbl(case_type:int, counterno:int):
     elif case_type == 2:
 
         # counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = get_output(next_counter_for_update(counterno))
-        counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
-
-
-        pass
+        counters = db_session.query(Counters).filter(Counters.counter_no == counterno).with_for_update().first()
+        counters.counter = counters.counter + 1
         t_counters = T_counters()
         t_counters_data.append(t_counters)
 

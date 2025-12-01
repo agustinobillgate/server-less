@@ -4,6 +4,7 @@
 # gitlab: 313
 # add if available
 # Rd 15/8/2025, erwach -> erwachs
+# Rd, 27/11/2025, with_for_update added
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -11,13 +12,16 @@ from datetime import date
 from functions.link_ratecodebl import link_ratecodebl
 from functions.calc_servvat import calc_servvat
 from models import Ratecode, Queasy, Htparam, Zimkateg, Bediener, Res_history, Guest_pr, Guest, Arrangement, Artikel, Waehrung
+from sqlalchemy.orm import flag_modified
 
 early_discount_data, Early_discount = create_model("Early_discount", {"disc_rate":Decimal, "min_days":int, "min_stay":int, "max_occ":int, "from_date":date, "to_date":date})
 kickback_discount_data, Kickback_discount = create_model("Kickback_discount", {"disc_rate":Decimal, "max_days":int, "min_stay":int, "max_occ":int})
 stay_pay_data, Stay_pay = create_model("Stay_pay", {"f_date":date, "t_date":date, "stay":int, "pay":int})
 p_list_data, P_list = create_model_like(Ratecode, {"s_recid":int})
 
-def ratecode_adm_fill_ratecodebl(user_init:string, prcode:string, market_nr:int, zikatnr:int, argtnr:int, book_room:int, comp_room:int, max_room:int, early_discount_data:[Early_discount], kickback_discount_data:[Kickback_discount], stay_pay_data:[Stay_pay], p_list_data:[P_list]):
+def ratecode_adm_fill_ratecodebl(user_init:string, prcode:string, market_nr:int, zikatnr:int, argtnr:int, book_room:int, 
+                                 comp_room:int, max_room:int, early_discount_data:[Early_discount], kickback_discount_data:[Kickback_discount], 
+                                 stay_pay_data:[Stay_pay], p_list_data:[P_list]):
 
     prepare_cache ([Queasy, Htparam, Zimkateg, Bediener, Res_history, Guest_pr, Guest, Arrangement, Artikel, Waehrung])
 
@@ -53,8 +57,8 @@ def ratecode_adm_fill_ratecodebl(user_init:string, prcode:string, market_nr:int,
     Q_curr = create_buffer("Q_curr",Queasy)
     Tb3_buff = create_buffer("Tb3_buff",Ratecode)
 
-
     db_session = local_storage.db_session
+    prcode = prcode.strip()
 
     def generate_output():
         nonlocal ci_date, round_betrag, round_method, length_round, parent_code, adjust_value, in_percent, chg_allot, iftask, mestoken, mesvalue, tokcounter, cat_flag, bef_start, bef_end, bef_pax, bef_rate, tax_included, ratecode, queasy, htparam, zimkateg, bediener, res_history, guest_pr, guest, arrangement, artikel, waehrung
@@ -74,7 +78,6 @@ def ratecode_adm_fill_ratecodebl(user_init:string, prcode:string, market_nr:int,
         nonlocal user_init, prcode, market_nr, zikatnr, argtnr, book_room, comp_room, max_room
         nonlocal qsy, rbuff, q_curr, tb3_buff
 
-
         nonlocal p_list, early_discount, kickback_discount, stay_pay, child_list, child_ratecode, q_list, r_list, qsy, rbuff, q_curr, tb3_buff
         nonlocal child_list_data, child_ratecode_data, q_list_data, r_list_data
 
@@ -92,7 +95,6 @@ def ratecode_adm_fill_ratecodebl(user_init:string, prcode:string, market_nr:int,
         nonlocal user_init, prcode, market_nr, zikatnr, argtnr, book_room, comp_room, max_room
         nonlocal qsy, rbuff, q_curr, tb3_buff
 
-
         nonlocal p_list, early_discount, kickback_discount, stay_pay, child_list, child_ratecode, q_list, r_list, qsy, rbuff, q_curr, tb3_buff
         nonlocal child_list_data, child_ratecode_data, q_list_data, r_list_data
 
@@ -106,7 +108,9 @@ def ratecode_adm_fill_ratecodebl(user_init:string, prcode:string, market_nr:int,
 
         if p_list.s_recid != 0:
 
-            ratecode = get_cache (Ratecode, {"_recid": [(eq, p_list.s_recid)]})
+            # ratecode = get_cache (Ratecode, {"_recid": [(eq, p_list.s_recid)]})
+            ratecode = db_session.query(Ratecode).filter(
+                Ratecode._recid == p_list.s_recid).with_for_update().first()
 
             if ratecode:
                 bef_start = ratecode.startperiode
@@ -248,7 +252,12 @@ def ratecode_adm_fill_ratecodebl(user_init:string, prcode:string, market_nr:int,
             adjust_value = to_decimal(substring(entry(2, queasy.char3, ";") , 1)) / 100
 
             for ratecode in db_session.query(Ratecode).filter(
-                     (Ratecode.marknr == tb3_buff.marknr) & (Ratecode.code == child_list.child_code) & (Ratecode.argtnr == tb3_buff.argtnr) & (Ratecode.zikatnr == tb3_buff.zikatnr) & (Ratecode.erwachs == tb3_buff.erwachs) & (Ratecode.kind1 == tb3_buff.kind1) & (Ratecode.kind2 == tb3_buff.kind2) & (Ratecode.wday == tb3_buff.wday) & not_ (Ratecode.endperiode < tb3_buff.startperiode) & not_ (Ratecode.startperiode > tb3_buff.endperiode)).order_by(Ratecode._recid).all():
+                     (Ratecode.marknr == tb3_buff.marknr) & (Ratecode.code == child_list.child_code) & 
+                     (Ratecode.argtnr == tb3_buff.argtnr) & (Ratecode.zikatnr == tb3_buff.zikatnr) & 
+                     (Ratecode.erwachs == tb3_buff.erwachs) & (Ratecode.kind1 == tb3_buff.kind1) & 
+                     (Ratecode.kind2 == tb3_buff.kind2) & (Ratecode.wday == tb3_buff.wday) & 
+                     not_ (Ratecode.endperiode < tb3_buff.startperiode) & 
+                     not_ (Ratecode.startperiode > tb3_buff.endperiode)).order_by(Ratecode._recid).with_for_update().all():
 
                 if ratecode.startperiode < tb3_buff.startperiode:
 
@@ -501,7 +510,9 @@ def ratecode_adm_fill_ratecodebl(user_init:string, prcode:string, market_nr:int,
 
                         if qsy and qsy.deci1 != p_list.zipreis and qsy.logi1 == False and qsy.logi2 == False:
 
-                            bqueasy = get_cache (Queasy, {"_recid": [(eq, qsy._recid)]})
+                            # bqueasy = get_cache (Queasy, {"_recid": [(eq, qsy._recid)]})
+                            bqueasy = db_session.query(Queasy).filter(
+                                Queasy._recid == qsy._recid).with_for_update().first()
 
                             if bqueasy:
                                 bqueasy.logi2 = True

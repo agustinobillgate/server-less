@@ -1,8 +1,11 @@
 #using conversion tools version: 1.0.0.119
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_order, L_orderhdr, Queasy, Bediener, Res_history
+from sqlalchemy.orm import flag_modified
 
 t_l_orderhdr_data, T_l_orderhdr = create_model_like(L_orderhdr, {"rec_id":int})
 s_order_data, S_order = create_model_like(L_order, {"rec_id":int, "lief_einheit":Decimal, "addvat_no":int, "addvat_value":Decimal, "disc":Decimal, "disc2":Decimal, "vat":Decimal, "disc_val":Decimal, "disc2_val":Decimal, "vat_val":Decimal})
@@ -20,6 +23,8 @@ def chg_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order]
     s_order = disc_list = t_l_orderhdr = None
 
     db_session = local_storage.db_session
+    pr = pr.strip()
+    tp_bediener_username = tp_bediener_username.strip()
 
     def generate_output():
         nonlocal remark, globaldisc, logstring, l_order, l_orderhdr, queasy, bediener, res_history
@@ -57,7 +62,9 @@ def chg_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order]
 
     if t_l_orderhdr:
 
-        l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, t_l_orderhdr.rec_id)]})
+        # l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, t_l_orderhdr.rec_id)]})
+        l_orderhdr = db_session.query(L_orderhdr).filter(
+             (L_orderhdr._recid == t_l_orderhdr.rec_id)).with_for_update().first()
 
         if l_orderhdr:
             remark = entry(0, t_l_orderhdr.lief_fax[2], chr_unicode(2))
@@ -97,11 +104,16 @@ def chg_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order]
             l_orderhdr.lief_fax[1] = t_l_orderhdr.lief_fax[1]
             l_orderhdr.lief_fax[2] = remark
             l_orderhdr.gedruckt = t_l_orderhdr.gedruckt
+            flag_modified(l_orderhdr, "angebot_lief")
+            flag_modified(l_orderhdr, "lief_fax")
 
 
             pass
 
-            l_order = get_cache (L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)],"pos": [(eq, 0)]})
+            # l_order = get_cache (L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)],"pos": [(eq, 0)]})
+            l_order = db_session.query(L_order).filter(
+                 (L_order.docu_nr == l_orderhdr.docu_nr) &
+                 (L_order.pos == 0)).with_for_update().first()  
 
             if l_order.lief_nr != lief_nr:
                 logstring = "[CHG LORDER]DOC NO: " + t_l_orderhdr.docu_nr + " Supplier Number Changed From: " + to_string(l_order.lief_nr) + " To: " + to_string(lief_nr)
@@ -117,7 +129,7 @@ def chg_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order]
             l_order.lief_nr = lief_nr
             l_order.lief_fax[0] = pr
             l_order.warenwert =  to_decimal(globaldisc)
-
+            flag_modified(l_order, "lief_fax")
 
             pass
             pass
@@ -126,7 +138,9 @@ def chg_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order]
 
         disc_list = query(disc_list_data, filters=(lambda disc_list: disc_list.l_recid == s_order.rec_id), first=True)
 
-        l_order = get_cache (L_order, {"_recid": [(eq, s_order.rec_id)]})
+        # l_order = get_cache (L_order, {"_recid": [(eq, s_order.rec_id)]})
+        l_order = db_session.query(L_order).filter(
+             (L_order._recid == s_order.rec_id)).with_for_update().first()
 
         if l_order:
             pass
@@ -175,23 +189,22 @@ def chg_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], s_order_data:[S_order]
             l_order.besteller = s_order.besteller
             l_order.warenwert =  to_decimal(s_order.warenwert)
             l_order.stornogrund = s_order.stornogrund
+            flag_modified(l_order, "lief_fax")
 
             if disc_list:
                 l_order.quality = to_string(disc_list.disc, "99.99 ") + to_string(disc_list.vat, "99.99") + to_string(disc_list.disc2, " 99.99") + to_string(disc_list.disc_val, " >>,>>>,>>>,>>9.99") + to_string(disc_list.disc2_val, " >>,>>>,>>>,>>9.99") + to_string(disc_list.vat_val, " >>,>>>,>>>,>>9.99") + to_string(disc_list.price0, " >>,>>>,>>>,>>9.99") + to_string(disc_list.brutto, " >>,>>>,>>>,>>9.99")
             else:
                 l_order.quality = to_string(s_order.disc, "99.99 ") + to_string(s_order.vat, "99.99") + to_string(s_order.disc2, " 99.99") + to_string(s_order.disc_val, " >>,>>>,>>>,>>9.99") + to_string(s_order.disc2_val, " >>,>>>,>>>,>>9.99") + to_string(s_order.vat_val, " >>,>>>,>>>,>>9.99")
 
-            queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_order.docu_nr)],"number1": [(eq, l_order.artnr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, l_order.docu_nr)],"number1": [(eq, l_order.artnr)]})
+            queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 304) &
+                 (Queasy.char1 == l_order.docu_nr) &
+                 (Queasy.number1 == l_order.artnr)).with_for_update().first()
 
             if queasy:
                 pass
                 queasy.number2 = s_order.addvat_no
                 queasy.deci1 =  to_decimal(s_order.addvat_value)
-
-
-                pass
-                pass
-            pass
-            pass
 
     return generate_output()

@@ -5,7 +5,9 @@
 # Issue :
 # - Recompile, up program to server 
 # =======================================
-
+# =======================================
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+# =======================================
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -148,7 +150,11 @@ def additional_custom_programbl(prog_name:string, prog_title:string, prog_descri
 
     elif case_type == 2:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 268)],"number1": [(eq, prog_number)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 268)],"number1": [(eq, prog_number)]})
+        queasy = db_session.query(Queasy).filter(
+            (Queasy.key == 268) &
+            (Queasy.number1 == prog_number)
+        ).with_for_update().first()
 
         if not queasy:
             mess_result = "Program Not Available"
@@ -165,7 +171,11 @@ def additional_custom_programbl(prog_name:string, prog_title:string, prog_descri
 
     elif case_type == 3:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 268)],"number1": [(eq, prog_number)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 268)],"number1": [(eq, prog_number)]})
+        queasy = db_session.query(Queasy).filter(
+            (Queasy.key == 268) &
+            (Queasy.number1 == prog_number)
+        ).with_for_update().first()
 
         if not queasy:
             mess_result = "Program Not Available"
