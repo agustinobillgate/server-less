@@ -1,15 +1,19 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from sqlalchemy import func
 from models import L_orderhdr, L_order, L_artikel, Waehrung, Htparam
+from sqlalchemy.orm import flag_modified
 
 t_l_orderhdr_data, T_l_orderhdr = create_model_like(L_orderhdr, {"rec_id":int})
 t_l_order_data, T_l_order = create_model_like(L_order, {"rec_id":int, "a_bezeich":string, "price0":Decimal, "brutto":Decimal, "disc":Decimal, "disc2":Decimal, "vat":Decimal, "disc_val":Decimal, "disc2_val":Decimal, "vat_val":Decimal})
 
-def mk_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_order], docu_nr:string, lief_nr:int, billdate:date, create_new:bool, pr:string, globaldisc:Decimal, currency_screen_value:string):
+def mk_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_order], docu_nr:string, lief_nr:int, billdate:date, 
+                       create_new:bool, pr:string, globaldisc:Decimal, currency_screen_value:string):
 
     prepare_cache ([L_orderhdr, L_order, L_artikel, Waehrung, Htparam])
 
@@ -23,9 +27,10 @@ def mk_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_ord
     Hdrbuff = create_buffer("Hdrbuff",L_orderhdr)
     L_od = create_buffer("L_od",L_order)
     L_art1 = create_buffer("L_art1",L_artikel)
-
-
     db_session = local_storage.db_session
+    docu_nr = docu_nr.strip()
+    pr = pr.strip()
+    currency_screen_value = currency_screen_value.strip()
 
     def generate_output():
         nonlocal fl_code, avail_hdrbuff, new_docu_nr, l_orderhdr, l_order, l_artikel, waehrung, htparam
@@ -83,7 +88,9 @@ def mk_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_ord
 
     t_l_orderhdr = query(t_l_orderhdr_data, first=True)
 
-    l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, t_l_orderhdr.rec_id)]})
+    # l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, t_l_orderhdr.rec_id)]})
+    l_orderhdr = db_session.query(L_orderhdr).filter(
+             (L_orderhdr._recid == t_l_orderhdr.rec_id)).with_for_update().first()
     buffer_copy(t_l_orderhdr, l_orderhdr)
 
     waehrung = get_cache (Waehrung, {"wabkurz": [(eq, currency_screen_value)]})
@@ -124,7 +131,9 @@ def mk_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_ord
 
         l_art1 = get_cache (L_artikel, {"artnr": [(eq, t_l_order.artnr)]})
 
-        l_order = get_cache (L_order, {"_recid": [(eq, t_l_order.rec_id)]})
+        # l_order = get_cache (L_order, {"_recid": [(eq, t_l_order.rec_id)]})
+        l_order = db_session.query(L_order).filter(
+                 (L_order._recid == t_l_order.rec_id)).with_for_update().first()
 
         if l_order:
             l_order.quality = to_string(t_l_order.disc, "99.99 ") +\
@@ -169,13 +178,15 @@ def mk_po_btn_go_webbl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_ord
         l_od.lief_fax[0] = pr
         l_od.betriebsnr = 2
 
-    l_od = get_cache (L_order, {"docu_nr": [(eq, docu_nr)],"pos": [(eq, 0)],"op_art": [(eq, 2)]})
+    # l_od = get_cache (L_order, {"docu_nr": [(eq, docu_nr)],"pos": [(eq, 0)],"op_art": [(eq, 2)]})
+    l_od = db_session.query(L_order).filter(
+            (L_order.docu_nr == docu_nr) & (L_order.pos == 0) & (L_order.op_art == 2)).with_for_update().first()
 
     if l_od:
         l_od.warenwert =  to_decimal(globaldisc)
         l_od.lief_nr = lief_nr
         l_od.lief_fax[0] = pr
-
+        flag_modified(l_od, "lief_fax")
 
         pass
 

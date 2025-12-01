@@ -1,15 +1,20 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from sqlalchemy import func
 from models import L_orderhdr, L_order, L_artikel, Waehrung, Queasy, Htparam
+from sqlalchemy.orm import flag_modified
 
 t_l_orderhdr_data, T_l_orderhdr = create_model_like(L_orderhdr, {"rec_id":int})
 t_l_order_data, T_l_order = create_model_like(L_order, {"rec_id":int, "a_bezeich":string, "price0":Decimal, "brutto":Decimal, "disc":Decimal, "disc2":Decimal, "vat":Decimal, "disc_val":Decimal, "disc2_val":Decimal, "vat_val":Decimal, "addvat_no":int, "addvat_value":Decimal})
 
-def mk_po_btn_go1_web_1bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_order], docu_nr:string, lief_nr:int, billdate:date, create_new:bool, pr:string, globaldisc:Decimal, currency_screen_value:string, zeroprice_flag:bool):
+def mk_po_btn_go1_web_1bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_order], docu_nr:string, 
+                          lief_nr:int, billdate:date, create_new:bool, pr:string, globaldisc:Decimal, 
+                          currency_screen_value:string, zeroprice_flag:bool):
 
     prepare_cache ([L_orderhdr, L_order, L_artikel, Waehrung, Queasy, Htparam])
 
@@ -26,6 +31,9 @@ def mk_po_btn_go1_web_1bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
 
 
     db_session = local_storage.db_session
+    docu_nr = docu_nr.strip()
+    pr = pr.strip()
+    currency_screen_value = currency_screen_value.strip()
 
     def generate_output():
         nonlocal fl_code, avail_hdrbuff, new_docu_nr, l_orderhdr, l_order, l_artikel, waehrung, queasy, htparam
@@ -90,13 +98,13 @@ def mk_po_btn_go1_web_1bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
     t_l_orderhdr = t_l_orderhdr_data[0]
     l_orderhdr = db_session.query(L_orderhdr)\
         .filter(L_orderhdr._recid == t_l_orderhdr.rec_id)\
-        .first()
+        .with_for_update().first()
     if not t_l_orderhdr:
         return generate_output()
 
     l_orderhdr = db_session.query(L_orderhdr)\
         .filter(L_orderhdr._recid == t_l_orderhdr.rec_id)\
-        .first()
+        .with_for_update().first()
 
     if not l_orderhdr:
         return generate_output()
@@ -155,7 +163,9 @@ def mk_po_btn_go1_web_1bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
 
         l_art1 = get_cache (L_artikel, {"artnr": [(eq, t_l_order.artnr)]})
 
-        l_order = get_cache (L_order, {"_recid": [(eq, t_l_order.rec_id)]})
+        # l_order = get_cache (L_order, {"_recid": [(eq, t_l_order.rec_id)]})
+        l_order = db_session.query(L_order).filter(
+                 (L_order._recid == t_l_order.rec_id)).with_for_update().first
 
         if l_order:
             l_order.quality = to_string(t_l_order.disc, "99.99 ") +\
@@ -173,7 +183,9 @@ def mk_po_btn_go1_web_1bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
             if not l_order.flag:
                 l_order.warenwert =  to_decimal(l_order.warenwert) * to_decimal(l_art1.lief_einheit)
 
-            queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, t_l_order.docu_nr)],"number1": [(eq, t_l_order.artnr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, t_l_order.docu_nr)],"number1": [(eq, t_l_order.artnr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 304) & (Queasy.char1 == t_l_order.docu_nr) & (Queasy.number1 == t_l_order.artnr)).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()
@@ -213,7 +225,9 @@ def mk_po_btn_go1_web_1bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
 
             l_order.betriebsnr = 0
 
-            queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, t_l_order.docu_nr)],"number1": [(eq, t_l_order.artnr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 304)],"char1": [(eq, t_l_order.docu_nr)],"number1": [(eq, t_l_order.artnr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 304) & (Queasy.char1 == t_l_order.docu_nr) & (Queasy.number1 == t_l_order.artnr)).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()
@@ -240,13 +254,15 @@ def mk_po_btn_go1_web_1bl(t_l_orderhdr_data:[T_l_orderhdr], t_l_order_data:[T_l_
         l_od.lief_fax[0] = pr
         l_od.betriebsnr = 2
 
-    l_od = get_cache (L_order, {"docu_nr": [(eq, docu_nr)],"pos": [(eq, 0)],"op_art": [(eq, 2)]})
+    # l_od = get_cache (L_order, {"docu_nr": [(eq, docu_nr)],"pos": [(eq, 0)],"op_art": [(eq, 2)]})
+    l_od = db_session.query(L_order).filter(
+             (L_order.docu_nr == docu_nr) & (L_order.pos == 0) & (L_order.op_art == 2)).with_for_update().first()
 
     if l_od:
         l_od.warenwert =  to_decimal(globaldisc)
         l_od.lief_nr = lief_nr
         l_od.lief_fax[0] = pr
-
+        flag_modified(l_od, "lief_fax")
 
         pass
 

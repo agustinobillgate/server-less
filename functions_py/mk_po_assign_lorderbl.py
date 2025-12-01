@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_orderhdr, L_order
@@ -16,6 +18,8 @@ def mk_po_assign_lorderbl(t_l_orderhdr_data:[T_l_orderhdr], lief_nr:int, docu_nr
     t_l_orderhdr = None
 
     db_session = local_storage.db_session
+    docu_nr = docu_nr.strip()
+    pr = pr.strip()
 
     def generate_output():
         nonlocal globaldisc, l_orderhdr, l_order
@@ -34,7 +38,9 @@ def mk_po_assign_lorderbl(t_l_orderhdr_data:[T_l_orderhdr], lief_nr:int, docu_nr
 
         nonlocal t_l_orderhdr
 
-        l_order = get_cache (L_order, {"docu_nr": [(eq, docu_nr)],"pos": [(eq, 0)],"loeschflag": [(eq, 0)],"lief_nr": [(eq, curr_liefnr)]})
+        # l_order = get_cache (L_order, {"docu_nr": [(eq, docu_nr)],"pos": [(eq, 0)],"loeschflag": [(eq, 0)],"lief_nr": [(eq, curr_liefnr)]})
+        l_order = db_session.query(L_order).filter(
+                 (L_order.docu_nr == (docu_nr).lower()) & (L_order.pos == 0) & (L_order.loeschflag == 0) & (L_order.lief_nr == curr_liefnr)).with_for_update().first()
 
         if l_order:
             l_order.lief_nr = lief_nr
@@ -42,7 +48,7 @@ def mk_po_assign_lorderbl(t_l_orderhdr_data:[T_l_orderhdr], lief_nr:int, docu_nr
             l_order.warenwert =  to_decimal(globaldisc)
 
         for l_order in db_session.query(L_order).filter(
-                 (L_order.docu_nr == (docu_nr).lower()) & (L_order.loeschflag == 0) & (L_order.lief_nr == curr_liefnr)).order_by(L_order._recid).all():
+                 (L_order.docu_nr == (docu_nr).lower()) & (L_order.loeschflag == 0) & (L_order.lief_nr == curr_liefnr)).order_by(L_order._recid).with_for_update().all():
             l_order.lief_nr = lief_nr
             l_order.betriebsnr = 0
 
@@ -53,7 +59,9 @@ def mk_po_assign_lorderbl(t_l_orderhdr_data:[T_l_orderhdr], lief_nr:int, docu_nr
 
     t_l_orderhdr = query(t_l_orderhdr_data, first=True)
 
-    l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, t_l_orderhdr.rec_id)]})
+    # l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, t_l_orderhdr.rec_id)]})
+    l_orderhdr = db_session.query(L_orderhdr).filter(
+             (L_orderhdr._recid == t_l_orderhdr.rec_id)).with_for_update().first()
 
     if num_entries(t_l_orderhdr.lief_fax[2], chr_unicode(2)) > 1:
         globaldisc =  to_decimal(to_decimal(entry(1 , t_l_orderhdr.lief_fax[2] , chr_unicode(2)))) / to_decimal("100")

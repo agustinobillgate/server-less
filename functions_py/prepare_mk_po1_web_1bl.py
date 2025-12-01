@@ -1,13 +1,18 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpint import htpint
 from sqlalchemy import func
 from models import L_order, L_orderhdr, Htparam, Waehrung, L_lieferant, Queasy, Parameters, L_artikel
+from sqlalchemy.orm import flag_modified
 
-def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr:int, po_type:int, potype:int, bediener_username:string, ordername_screen_value:string, crterm:int):
+
+def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr:int, po_type:int, potype:int, 
+                           bediener_username:string, ordername_screen_value:string, crterm:int):
 
     prepare_cache ([Htparam, Waehrung, L_lieferant, Parameters, L_artikel])
 
@@ -45,6 +50,9 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
     t_l_orderhdr_data, T_l_orderhdr = create_model_like(L_orderhdr, {"rec_id":int})
 
     db_session = local_storage.db_session
+    docu_nr = docu_nr.strip()
+    bediener_username = bediener_username.strip()
+    ordername_screen_value = ordername_screen_value.strip()
 
     def generate_output():
         nonlocal local_nr, billdate, zeroprice_flag, deptname, supplier, curr_liefnr, p_222, p_234, p_266, pos, t_amount, currency_add_first, currency_screen_value, msg_str, p_1093, p_464, p_220, docunr, avail_addvat, t_waehrung_data, t_l_order_data, t_l_orderhdr_data, t_parameters_data, lvcarea, l_order, l_orderhdr, htparam, waehrung, l_lieferant, queasy, parameters, l_artikel
@@ -88,13 +96,15 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
             pass
 
             for l_orderhdr1 in db_session.query(L_orderhdr1).filter(
-                     (get_month(L_orderhdr1.bestelldatum) == mm) & (get_year(L_orderhdr1.bestelldatum) == yy) & (L_orderhdr1.betriebsnr <= 1) & (matches(L_orderhdr1.docu_nr,"P*"))).order_by(L_orderhdr1.docu_nr.desc()).all():
+                     (get_month(L_orderhdr1.bestelldatum) == mm) & (get_year(L_orderhdr1.bestelldatum) == yy) & 
+                     (L_orderhdr1.betriebsnr <= 1) & (matches(L_orderhdr1.docu_nr,"P*"))).order_by(L_orderhdr1.docu_nr.desc()).with_for_update().all():
                 i = to_int(substring(l_orderhdr1.docu_nr, 5, 5))
                 i = i + 1
                 docunr = s + to_string(i, "99999")
 
                 l_orderhdr2 = db_session.query(L_orderhdr2).filter(
-                         (get_month(L_orderhdr2.bestelldatum) == mm) & (get_year(L_orderhdr2.bestelldatum) == yy) & (L_orderhdr2.betriebsnr <= 1) & (L_orderhdr2.docu_nr == (docunr).lower())).first()
+                         (get_month(L_orderhdr2.bestelldatum) == mm) & (get_year(L_orderhdr2.bestelldatum) == yy) & 
+                         (L_orderhdr2.betriebsnr <= 1) & (L_orderhdr2.docu_nr == (docunr).lower())).with_for_update().first()
 
                 if l_orderhdr2:
                     i = to_int(substring(l_orderhdr2.docu_nr, 5, 5))
@@ -115,7 +125,7 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
             docunr = s + to_string(i, "999")
 
             l_orderhdr2 = db_session.query(L_orderhdr2).filter(
-                     (L_orderhdr2.docu_nr == (docunr).lower())).first()
+                     (L_orderhdr2.docu_nr == (docunr).lower())).with_for_update().first()
 
             if l_orderhdr2:
                 i = to_int(substring(l_orderhdr2.docu_nr, 7, 3))
@@ -195,7 +205,9 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
 
     if po_type == 1:
 
-        l_orderhdr = get_cache (L_orderhdr, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, docunr)]})
+        # l_orderhdr = get_cache (L_orderhdr, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, docunr)]})
+        l_orderhdr = db_session.query(L_orderhdr).filter(
+                 (L_orderhdr.lief_nr == lief_nr) & (L_orderhdr.docu_nr == (docunr).lower())).with_for_update().first()
 
         if not l_orderhdr:
             l_orderhdr = L_orderhdr()
@@ -277,7 +289,7 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
             t_amount =  to_decimal(t_amount) + to_decimal(l_order.warenwert)
 
     for parameters in db_session.query(Parameters).filter(
-             (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Name").lower())).order_by(Parameters._recid).all():
+             (Parameters.progname == ("CostCenter").lower()) & (Parameters.section == ("Name").lower())).order_by(Parameters._recid).with_for_update().all():
         t_parameters = T_parameters()
         t_parameters_data.append(t_parameters)
 
