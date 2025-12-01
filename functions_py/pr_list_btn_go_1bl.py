@@ -1,10 +1,14 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from sqlalchemy import func
 from models import L_order, L_orderhdr, Bediener, L_artikel, Gl_acct, L_lieferant
+from sqlalchemy.orm import flag_modified
+
 
 s_list_data, S_list = create_model("S_list", {"selected":bool, "flag":bool, "loeschflag":int, "approved":bool, "rejected":bool, "s_recid":int, "docu_nr":string, "po_nr":string, "deptnr":int, "str0":string, "bestelldatum":string, "lieferdatum":string, "pos":int, "artnr":int, "bezeich":string, "qty":Decimal, "str3":string, "dunit":string, "lief_einheit":Decimal, "str4":string, "userinit":string, "pchase_nr":string, "pchase_date":date, "app_rej":string, "rej_reason":string, "cid":string, "cdate":date, "instruct":string, "konto":string, "supno":int, "currno":int, "duprice":Decimal, "du_price1":Decimal, "du_price2":Decimal, "du_price3":Decimal, "anzahl":int, "txtnr":int, "suppn1":string, "supp1":int, "suppn2":string, "supp2":int, "suppn3":string, "supp3":int, "supps":string, "einzelpreis":Decimal, "amount":Decimal, "stornogrund":string, "besteller":string, "lief_fax2":string, "last_pdate":date, "last_pprice":Decimal, "zeit":int, "min_bestand":Decimal, "max_bestand":Decimal, "del_reason":string, "desc_coa":string, "lief_fax3":string, "masseinheit":string, "lief_fax_2":string, "ek_letzter":Decimal, "supplier":string, "vk_preis":Decimal, "a_firma":string, "last_pbook":Decimal}, {"pos": 999999})
 
@@ -25,15 +29,14 @@ def pr_list_btn_go_1bl(po_nr:string, pr_nr:string, curr_dept:int, lief_nr:int, p
     L_odhdr = create_buffer("L_odhdr",L_orderhdr)
     Bod = create_buffer("Bod",L_order)
 
-
     db_session = local_storage.db_session
+    po_nr = po_nr.strip()
+    pr_nr = pr_nr.strip()
 
     def generate_output():
         nonlocal curr_pos, temp_nr, l_order, l_orderhdr, bediener, l_artikel, gl_acct, l_lieferant
         nonlocal po_nr, pr_nr, curr_dept, lief_nr, po_type, billdate, user_init
         nonlocal s_list1, l_od1, l_odhdr, bod
-
-
         nonlocal s_list, s_list1, l_od1, l_odhdr, bod
 
         return {"po_nr": po_nr, "pr_nr": pr_nr, "curr_dept": curr_dept, "lief_nr": lief_nr, "s-list": s_list_data}
@@ -43,8 +46,6 @@ def pr_list_btn_go_1bl(po_nr:string, pr_nr:string, curr_dept:int, lief_nr:int, p
         nonlocal curr_pos, temp_nr, l_order, l_orderhdr, bediener, l_artikel, gl_acct, l_lieferant
         nonlocal po_nr, pr_nr, curr_dept, po_type, billdate, user_init
         nonlocal s_list1, l_od1, l_odhdr, bod
-
-
         nonlocal s_list, s_list1, l_od1, l_odhdr, bod
 
         docu_nr = ""
@@ -121,15 +122,19 @@ def pr_list_btn_go_1bl(po_nr:string, pr_nr:string, curr_dept:int, lief_nr:int, p
 
                 if po_type == 1:
 
-                    bod = get_cache (L_order, {"docu_nr": [(eq, po_nr)],"pos": [(eq, 0)],"bestelldatum": [(eq, billdate)],"lief_nr": [(eq, lief_nr)],"op_art": [(eq, 2)],"betriebsnr": [(eq, 2)]})
-
+                    # bod = get_cache (L_order, {"docu_nr": [(eq, po_nr)],"pos": [(eq, 0)],"bestelldatum": [(eq, billdate)],"lief_nr": [(eq, lief_nr)],"op_art": [(eq, 2)],"betriebsnr": [(eq, 2)]})
+                    bod = db_session.query(L_order).filter(
+                             (L_order.docu_nr == po_nr) &
+                             (L_order.pos == 0) &
+                             (L_order.bestelldatum == billdate) &
+                             (L_order.lief_nr == lief_nr) &
+                             (L_order.op_art == 2) &
+                             (L_order.betriebsnr == 2)).with_for_update().first()
                     if bod:
                         pass
                         bod.lief_fax[0] = pr_nr
 
-
-                        pass
-                        pass
+            flag_modified(bod, "lief_fax")
 
         l_artikel = get_cache (L_artikel, {"artnr": [(eq, s_list1.artnr)]})
 
@@ -142,8 +147,13 @@ def pr_list_btn_go_1bl(po_nr:string, pr_nr:string, curr_dept:int, lief_nr:int, p
             if l_odhdr:
                 curr_dept = l_odhdr.angebot_lief[0]
 
-        l_order = get_cache (L_order, {"artnr": [(eq, s_list1.artnr)],"op_art": [(eq, 2)],"bestelldatum": [(eq, billdate)],"docu_nr": [(eq, po_nr)],"stornogrund": [(eq, s_list1.konto)]})
-
+        # l_order = get_cache (L_order, {"artnr": [(eq, s_list1.artnr)],"op_art": [(eq, 2)],"bestelldatum": [(eq, billdate)],"docu_nr": [(eq, po_nr)],"stornogrund": [(eq, s_list1.konto)]})
+        l_order = db_session.query(L_order).filter(
+                 (L_order.artnr == s_list1.artnr) &
+                 (L_order.op_art == 2) &
+                 (L_order.bestelldatum == billdate) &
+                 (L_order.docu_nr == po_nr) &
+                 (L_order.stornogrund == s_list1.konto)).with_for_update().first()
         if l_order:
             pass
             l_order.anzahl =  to_decimal(l_order.anzahl) + to_decimal(s_list1.qty)
@@ -183,6 +193,6 @@ def pr_list_btn_go_1bl(po_nr:string, pr_nr:string, curr_dept:int, lief_nr:int, p
                 s_list1.desc_coa = gl_acct.bezeich
 
 
-            pass
+            flag_modified(l_order, "lief_fax")
 
     return generate_output()

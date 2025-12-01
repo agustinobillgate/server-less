@@ -1,58 +1,38 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
-from functions.upload_imagesetupbl import upload_imagesetupbl
-from functions.delete_imagesetupbl import delete_imagesetupbl
 from models import L_quote
+from sqlalchemy.orm import flag_modified
 
-t_quote_data, T_quote = create_model("T_quote", {"artnr":int, "lief_nr":int, "supname":string, "artname":string, "devunit":string, "content":Decimal, "unitprice":Decimal, "curr":string, "from_date":date, "to_date":date, "remark":string, "filname":string, "activeflag":bool, "docu_nr":string, "minqty":Decimal, "delivday":int, "disc":Decimal, "avl":bool}, {"avl": True})
-t_quote1_data, T_quote1 = create_model("T_quote1", {"artnr":int, "lief_nr":int, "supname":string, "artname":string, "devunit":string, "content":Decimal, "unitprice":Decimal, "curr":string, "from_date":date, "to_date":date, "remark":string, "filname":string, "activeflag":bool, "docu_nr":string, "minqty":Decimal, "delivday":int, "disc":Decimal, "avl":bool}, {"avl": True})
+t_quote_data, T_quote = create_model("T_quote", {"artnr":int, "lief_nr":int, "supname":string, "artname":string, "devunit":string, "content":Decimal, "unitprice":Decimal, "curr":string, "from_date":date, "to_date":date, "remark":string, "filname":string, "activeflag":bool, "docu_nr":string, "minqty":Decimal, "delivday":int, "disc":Decimal, "avl":bool}, {"activeflag": True, "avl": True})
+t_quote1_data, T_quote1 = create_model_like(T_quote)
 
-def quote_list_btn_go_webbl(pvilanguage:int, curr_type:string, user_init:string, base64image:string, t_quote_data:[T_quote], t_quote1_data:[T_quote1]):
+def quote_list_btn_gobl(pvilanguage:int, curr_type:string, user_init:string, t_quote_data:[T_quote], t_quote1_data:[T_quote1]):
 
     prepare_cache ([L_quote])
 
-    result_message = ""
     msg_str = ""
     lvcarea:string = "quote-list"
-    quote_recid:int = 0
     l_quote = None
 
     t_quote = t_quote1 = b_lquote = None
 
     B_lquote = create_buffer("B_lquote",L_quote)
 
-
     db_session = local_storage.db_session
+    curr_type = curr_type.strip()
 
     def generate_output():
-        nonlocal result_message, msg_str, lvcarea, quote_recid, l_quote
-        nonlocal pvilanguage, curr_type, user_init, base64image, t_quote1_data
+        nonlocal msg_str, lvcarea, l_quote
+        nonlocal pvilanguage, curr_type, user_init, t_quote1_data
         nonlocal b_lquote
-
-
         nonlocal t_quote, t_quote1, b_lquote
 
-        return {"result_message": result_message, "msg_str": msg_str}
+        return {"msg_str": msg_str}
 
-    def save_attachment(v_mode:int, quote_recid:int):
-
-        nonlocal result_message, msg_str, lvcarea, l_quote
-        nonlocal pvilanguage, curr_type, user_init, base64image, t_quote1_data
-        nonlocal b_lquote
-
-
-        nonlocal t_quote, t_quote1, b_lquote
-
-        if v_mode == 1:
-
-            if base64image != "":
-                result_message = get_output(upload_imagesetupbl(12, base64image, user_init, quote_recid))
-        else:
-
-            if quote_recid != 0:
-                result_message, base64image = get_output(delete_imagesetupbl(12, quote_recid))
 
     t_quote = query(t_quote_data, first=True)
 
@@ -62,8 +42,6 @@ def quote_list_btn_go_webbl(pvilanguage:int, curr_type:string, user_init:string,
 
         if l_quote and l_quote.reserve_int[4] <= 1:
             msg_str = translateExtended ("Article already exist for the same Supplier, same DocuNo and same periode.", lvcarea, "")
-
-            return generate_output()
         l_quote = L_quote()
         db_session.add(l_quote)
 
@@ -75,15 +53,16 @@ def quote_list_btn_go_webbl(pvilanguage:int, curr_type:string, user_init:string,
         l_quote.reserve_deci[0] = t_quote.minqty
         l_quote.reserve_deci[1] = t_quote.disc
         l_quote.reserve_logic[0] = not t_quote.avl
-        l_quote.reserve_int[0] = t_quote.delivday
+        l_quote.reserve_int[0] = t_quote.delivDay
 
         if t_quote.activeflag :
             l_quote.reserve_int[4] = 1
         else:
             l_quote.reserve_int[4] = 0
-        quote_recid = l_quote._recid
-        save_attachment(1, quote_recid)
-        pass
+        flag_modified(l_quote, "reserve_char")
+        flag_modified(l_quote, "reserve_deci")
+        flag_modified(l_quote, "reserve_logic")
+        flag_modified(l_quote, "reserve_int")
 
     elif curr_type.lower()  == ("chg").lower() :
 
@@ -100,8 +79,6 @@ def quote_list_btn_go_webbl(pvilanguage:int, curr_type:string, user_init:string,
 
                 if b_lquote and b_lquote.reserve_int[4] <= 1:
                     msg_str = translateExtended ("Article already exist for the same Supplier, same DocuNo and same periode.", lvcarea, "")
-
-                    return generate_output()
             pass
             buffer_copy(t_quote, l_quote)
             l_quote.chgid = user_init
@@ -111,26 +88,26 @@ def quote_list_btn_go_webbl(pvilanguage:int, curr_type:string, user_init:string,
             l_quote.reserve_deci[0] = t_quote.minqty
             l_quote.reserve_deci[1] = t_quote.disc
             l_quote.reserve_logic[0] = not t_quote.avl
-            l_quote.reserve_int[0] = t_quote.delivday
+            l_quote.reserve_int[0] = t_quote.delivDay
 
             if t_quote.activeflag :
                 l_quote.reserve_int[4] = 1
             else:
                 l_quote.reserve_int[4] = 0
-            quote_recid = l_quote._recid
-            save_attachment(1, quote_recid)
-            pass
-            pass
+            flag_modified(l_quote, "reserve_char")
+            flag_modified(l_quote, "reserve_deci")
+            flag_modified(l_quote, "reserve_logic")
+            flag_modified(l_quote, "reserve_int")
 
     elif curr_type.lower()  == ("del").lower() :
 
-        l_quote = get_cache (L_quote, {"artnr": [(eq, t_quote.artnr)],"lief_nr": [(eq, t_quote.lief_nr)],"from_date": [(eq, t_quote.from_date)],"to_date": [(eq, t_quote.to_date)]})
-
+        # l_quote = get_cache (L_quote, {"artnr": [(eq, t_quote.artnr)],"lief_nr": [(eq, t_quote.lief_nr)],"from_date": [(eq, t_quote.from_date)],"to_date": [(eq, t_quote.to_date)]})
+        l_quote = db_session.query(L_quote).filter(
+                     (L_quote.artnr == t_quote.artnr) &
+                     (L_quote.lief_nr == t_quote.lief_nr) &
+                     (L_quote.from_date == t_quote.from_date) &
+                     (L_quote.to_date == t_quote.to_date)).with_for_update().first()
         if l_quote:
-            pass
-            quote_recid = l_quote._recid
-            save_attachment(2, quote_recid)
             db_session.delete(l_quote)
-            pass
 
     return generate_output()

@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Parameters, L_artikel, Htparam, L_orderhdr
+from sqlalchemy.orm import flag_modified
 
 def prepare_pr_list_1bl():
 
@@ -72,7 +75,9 @@ def prepare_pr_list_1bl():
                 pass
             else:
 
-                lbuff = get_cache (L_orderhdr, {"_recid": [(eq, l_orderhdr._recid)]})
+                # lbuff = get_cache (L_orderhdr, {"_recid": [(eq, l_orderhdr._recid)]})
+                lbuff = db_session.query(L_orderhdr).filter(
+                          (L_orderhdr._recid == l_orderhdr._recid)).with_for_update
 
                 if lbuff:
                     approve_str = lbuff.lief_fax[1]
@@ -87,6 +92,7 @@ def prepare_pr_list_1bl():
 
 
                     pass
+        flag_modified(lbuff, "lief_fax")
 
     create_costlist()
     check_appr()
@@ -98,7 +104,7 @@ def prepare_pr_list_1bl():
 
         buffer_copy(parameters, t_parameters)
 
-    for l_artikel in db_session.query(L_artikel).order_by(L_artikel._recid).all():
+    for l_artikel in db_session.query(L_artikel).order_by(L_artikel._recid).with_for_update().all():
         t_l_artikel = T_l_artikel()
         t_l_artikel_data.append(t_l_artikel)
 
