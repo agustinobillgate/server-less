@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Mealcoup, Queasy, Bediener, Res_history
+from sqlalchemy.orm import flag_modified
 
 def bfast_card_btnokbl(resnr:int, failreadflag:bool, user_init:string, roomnr:string, consumeuse:int, mealtime:string, cidate:date, codate:date):
 
@@ -17,6 +20,8 @@ def bfast_card_btnokbl(resnr:int, failreadflag:bool, user_init:string, roomnr:st
     htparam = mealcoup = queasy = bediener = res_history = None
 
     db_session = local_storage.db_session
+    roomnr = roomnr.strip()
+    mealtime = mealtime.strip()
 
     def generate_output():
         nonlocal resultstr, p_87, num_of_day, diffcidate, i, htparam, mealcoup, queasy, bediener, res_history
@@ -38,7 +43,11 @@ def bfast_card_btnokbl(resnr:int, failreadflag:bool, user_init:string, roomnr:st
 
     if num_of_day >= 0:
 
-        mealcoup = get_cache (Mealcoup, {"resnr": [(eq, resnr)],"zinr": [(eq, roomnr)],"name": [(eq, mealtime)]})
+        # mealcoup = get_cache (Mealcoup, {"resnr": [(eq, resnr)],"zinr": [(eq, roomnr)],"name": [(eq, mealtime)]})
+        mealcoup = db_session.query(Mealcoup).filter(
+                     (Mealcoup.resnr == resnr) &
+                     (Mealcoup.zinr == roomnr) &
+                     (Mealcoup.name == mealtime)).with_for_update().first()
 
         if mealcoup:
             pass
@@ -56,10 +65,8 @@ def bfast_card_btnokbl(resnr:int, failreadflag:bool, user_init:string, roomnr:st
 
                 for i in range(1,length(mealcoup.verbrauch)  + 1) :
                     queasy.char1 = to_string(mealcoup.verbrauch[i - 1]) + ";"
+            
 
-
-            pass
-            pass
         else:
             mealcoup = Mealcoup()
             db_session.add(mealcoup)
@@ -71,7 +78,7 @@ def bfast_card_btnokbl(resnr:int, failreadflag:bool, user_init:string, roomnr:st
             mealcoup.ankunft = cidate
             mealcoup.abreise = codate
 
-
+        flag_modified(mealcoup, "verbrauch")
         resultstr = "Success"
 
         if failreadflag:
@@ -88,8 +95,6 @@ def bfast_card_btnokbl(resnr:int, failreadflag:bool, user_init:string, roomnr:st
 
 
             res_history.action = "BreakfastKey"
-            pass
-            pass
 
         return generate_output()
     resultstr = "Failed"

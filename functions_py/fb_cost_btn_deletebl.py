@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -19,7 +21,10 @@ def fb_cost_btn_deletebl(price_list_artnr:int):
         return {}
 
 
-    queasy = get_cache (Queasy, {"key": [(eq, 142)],"number1": [(eq, price_list_artnr)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 142)],"number1": [(eq, price_list_artnr)]})
+    queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 142) &
+                 (Queasy.number1 == price_list_artnr)).with_for_update().first()
 
     if queasy:
         pass

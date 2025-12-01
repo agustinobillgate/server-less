@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill, Bill
@@ -19,7 +21,10 @@ def ts_biltransferbl(rechnr:int, bil_rec_id:int, dept:int):
         return {}
 
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, bil_rec_id)],"departement": [(eq, dept)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, bil_rec_id)],"departement": [(eq, dept)]})
+    h_bill = db_session.query(H_bill).filter(
+             (H_bill._recid == bil_rec_id) &
+             (H_bill.departement == dept)).with_for_update().first()
 
     bill = get_cache (Bill, {"_recid": [(eq, rechnr)]})
 

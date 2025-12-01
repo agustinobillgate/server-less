@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -45,8 +47,8 @@ def add_reprint_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, r
     Buf_queasy = create_buffer("Buf_queasy",Queasy)
     Bqsy = create_buffer("Bqsy",Queasy)
 
-
     db_session = local_storage.db_session
+    session_parameter = session_parameter.strip()
 
     def generate_output():
         nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, recid_h_bill_line, room, gname, room_str, printer_loc, create_queasy, check_printnr, sort_subgrp_flag, sort_subgrp_prior, queasy, h_bill_line, h_bill, htparam, hoteldpt, h_artikel, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
@@ -491,7 +493,7 @@ def add_reprint_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, r
         if queasy:
 
             for buf_queasy in db_session.query(Buf_queasy).filter(
-                     (Buf_queasy.key == 233) & (matches(Buf_queasy.char3,("*" + to_string(h_bill.rechnr) + "*")))).order_by(Buf_queasy._recid).all():
+                     (Buf_queasy.key == 233) & (matches(Buf_queasy.char3,("*" + to_string(h_bill.rechnr) + "*")))).order_by(Buf_queasy._recid).with_for_update().all():
                 db_session.delete(buf_queasy)
             pass
 

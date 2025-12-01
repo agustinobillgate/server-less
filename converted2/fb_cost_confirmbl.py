@@ -7,7 +7,8 @@ from decimal import Decimal
 from datetime import date
 from models import Queasy
 
-def fb_cost_confirmbl(price_list_artnr:int, price_list_deptnr:int, price_list_date1:date, price_list_date2:date, price_list_date3:date, price_list_deci1:Decimal, price_list_deci2:Decimal, tp_bediener_username:string):
+def fb_cost_confirmbl(price_list_artnr:int, price_list_deptnr:int, price_list_date1:date, price_list_date2:date, 
+                      price_list_date3:date, price_list_deci1:Decimal, price_list_deci2:Decimal, tp_bediener_username:string):
     grid_list_data = []
     queasy = None
 
@@ -16,6 +17,7 @@ def fb_cost_confirmbl(price_list_artnr:int, price_list_deptnr:int, price_list_da
     grid_list_data, Grid_list = create_model("Grid_list", {"artnr":int, "subgroup":int, "bezeich":string, "artnrrezept":int, "unitprice":Decimal, "recipecost":Decimal, "cpercentage":Decimal, "recomcost":Decimal, "recomprice":Decimal, "next__unit__price":Decimal, "next__2nd__price":Decimal, "changeddate":date, "users":string})
 
     db_session = local_storage.db_session
+    tp_bediener_username = tp_bediener_username.strip()
 
     def generate_output():
         nonlocal grid_list_data, queasy
@@ -66,10 +68,13 @@ def fb_cost_confirmbl(price_list_artnr:int, price_list_deptnr:int, price_list_da
 
         return generate_output()
 
-    queasy = get_cache (Queasy, {"key": [(eq, 142)],"number1": [(eq, price_list_artnr)],"number2": [(eq, price_list_deptnr)],"date1": [(eq, price_list_date1)]})
-
+    # queasy = get_cache (Queasy, {"key": [(eq, 142)],"number1": [(eq, price_list_artnr)],"number2": [(eq, price_list_deptnr)],"date1": [(eq, price_list_date1)]})
+    queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 142) &
+                 (Queasy.number1 == price_list_artnr) &
+                 (Queasy.number2 == price_list_deptnr) &
+                 (Queasy.date1 == price_list_date1)).with_for_update().first()
     if queasy:
-        pass
         db_session.delete(queasy)
         pass
     fill_queasy()

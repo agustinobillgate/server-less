@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 13/8/2025
 # num-entries
+# Rd, 01/12/2025, with_for_update added
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -47,8 +48,8 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
     Buf_h_artikel = create_buffer("Buf_h_artikel",H_artikel)
     B_queasy = create_buffer("B_queasy",Queasy)
 
-
     db_session = local_storage.db_session
+    session_parameter = session_parameter.strip()
 
     def generate_output():
         nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, counter_q, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_bill_line, h_artikel, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
@@ -238,7 +239,6 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
         nonlocal error_str, lvcarea, kitchen_pr, numcat1, numcat2, k, prev_zknr, add_zeit, always_do, bline_created, print_subgrp, print_single, desclength, sort_subgrp, recid_h_bill_line, sort_subgrp_prior, counter_q, room, gname, room_str, printer_loc, create_queasy, count_k, queasy, h_bill_line, h_artikel, htparam, hoteldpt, h_bill, wgrpdep, printer, bediener, kellner, h_journal, h_mjourn, printcod
         nonlocal pvilanguage, session_parameter, dept, rechnr, billdate, user_init
         nonlocal hbline, buf_h_artikel, b_queasy
-
 
         nonlocal t_queasy, submenu_list, hbline, buf_h_artikel, b_queasy, qsy, qbuff
         nonlocal t_queasy_data, submenu_list_data
@@ -655,7 +655,5 @@ def add_kitchprbl(pvilanguage:int, session_parameter:string, dept:int, rechnr:in
         db_session.add(queasy)
 
         buffer_copy(t_queasy, queasy)
-        pass
-        pass
 
     return generate_output()
