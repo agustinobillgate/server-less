@@ -1,10 +1,13 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htplogic import htplogic
 from models import Messages, Htparam, L_orderhdr, Queasy, Bediener
+from sqlalchemy.orm import flag_modified
 
 def check_approval_pobl(user_init:string):
 
@@ -67,7 +70,9 @@ def check_approval_pobl(user_init:string):
 
                 bediener = get_cache (Bediener, {"userinit": [(eq, user_init)]})
 
-                messages = get_cache (Messages, {"zinr": [(eq, qsy_list.docu_nr)],"gastnr": [(eq, bediener.nr)]})
+                # messages = get_cache (Messages, {"zinr": [(eq, qsy_list.docu_nr)],"gastnr": [(eq, bediener.nr)]})
+                messages = db_session.query(Messages).filter(
+                         (Messages.zinr == qsy_list.docu_nr) & (Messages.gastnr == bediener.nr)).first()
 
                 if messages:
                     db_session.delete(messages)
@@ -81,12 +86,12 @@ def check_approval_pobl(user_init:string):
                  (L_orderhdr.lieferdatum >= billdate) & (L_orderhdr.betriebsnr <= 1) & (L_orderhdr._recid > curr_recid)).first()
     b = to_string(get_current_time_in_seconds(), "HH:MM:SS")
 
-    messages = db_session.query(Messages).first()
+    messages = db_session.query(Messages).with_for_update().first()
     while None != messages:
         db_session.delete(messages)
 
         curr_recid = messages._recid
-        messages = db_session.query(Messages).filter(Messages._recid > curr_recid).first()
+        messages = db_session.query(Messages).filter(Messages._recid > curr_recid).with_for_update().first()
     c = to_string(get_current_time_in_seconds(), "HH:MM:SS")
 
     if use_po_esignature:
