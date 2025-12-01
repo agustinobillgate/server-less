@@ -1,10 +1,13 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_artikel, L_order
 
-def insert_po_return_ofbl(rec_id:int, l_order_anzahl:Decimal, l_order_einzelpreis:Decimal, disc_list_disc:string, disc_list_disc2:string, disc_list_vat:Decimal, t_amount:Decimal):
+def insert_po_return_ofbl(rec_id:int, l_order_anzahl:Decimal, l_order_einzelpreis:Decimal, 
+                          disc_list_disc:string, disc_list_disc2:string, disc_list_vat:Decimal, t_amount:Decimal):
 
     prepare_cache ([L_artikel, L_order])
 
@@ -19,6 +22,8 @@ def insert_po_return_ofbl(rec_id:int, l_order_anzahl:Decimal, l_order_einzelprei
 
 
     db_session = local_storage.db_session
+    disc_list_disc = disc_list_disc.strip()
+    disc_list_disc2 = disc_list_disc2.strip()
 
     def generate_output():
         nonlocal amt, l_order_warenwert, l_order_quality, l_artikel, l_order
@@ -31,8 +36,9 @@ def insert_po_return_ofbl(rec_id:int, l_order_anzahl:Decimal, l_order_einzelprei
         return {"t_amount": t_amount, "amt": amt, "l_order_warenwert": l_order_warenwert, "l_order_quality": l_order_quality}
 
 
-    l_order = get_cache (L_order, {"_recid": [(eq, rec_id)]})
-    pass
+    # l_order = get_cache (L_order, {"_recid": [(eq, rec_id)]})
+    l_order = db_session.query(L_order).filter(
+             (L_order._recid == rec_id)).with_for_update().first()
     l_order.anzahl =  to_decimal(l_order_anzahl)
 
     if l_order.flag:

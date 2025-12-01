@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_order, L_orderhdr
+from sqlalchemy.orm import flag_modified
 
 def purchase_order_del_po_linebl(billdate:date, rec_id:int, l_orderhdr_rec_id:int, bediener_username:string):
 
@@ -13,6 +16,7 @@ def purchase_order_del_po_linebl(billdate:date, rec_id:int, l_orderhdr_rec_id:in
     l_order = l_orderhdr = None
 
     db_session = local_storage.db_session
+    bediener_username = bediener_username.strip()
 
     def generate_output():
         nonlocal del_mainpo, l_order, l_orderhdr
@@ -39,18 +43,25 @@ def purchase_order_del_po_linebl(billdate:date, rec_id:int, l_orderhdr_rec_id:in
 
         if not l_od:
 
-            l_od = get_cache (L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)],"pos": [(eq, 0)]})
+            # l_od = get_cache (L_order, {"docu_nr": [(eq, l_orderhdr.docu_nr)],"pos": [(eq, 0)]})
+            l_od = db_session.query(L_order).filter(
+                     (L_order.docu_nr == l_orderhdr.docu_nr) &
+                     (L_order.pos == 0)).with_for_update().first()
             l_od.loeschflag = 2
             l_od.lieferdatum_eff = billdate
             l_od.lief_fax[2] = bediener_username
-
+            flag_modified(l_od, "lief_fax")
 
             pass
         del_mainpo = True
 
-    l_order = get_cache (L_order, {"_recid": [(eq, rec_id)]})
+    # l_order = get_cache (L_order, {"_recid": [(eq, rec_id)]})
+    l_order = db_session.query(L_order).filter(
+             (L_order._recid == rec_id)).with_for_update().first()
 
-    l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, l_orderhdr_rec_id)]})
+    # l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, l_orderhdr_rec_id)]})
+    l_orderhdr = db_session.query(L_orderhdr).filter(
+             (L_orderhdr._recid == l_orderhdr_rec_id)).with_for_update().first()
     del_po_line()
 
     return generate_output()

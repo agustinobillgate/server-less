@@ -7,12 +7,13 @@
 # - update Dzikri: 508B79
 # - already latest
 # - fix ("string").lower()
+# Rd, 01/12/2025, with_for_update added
 # -----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Queasy, Paramtext, Htparam, L_orderhdr, L_lieferant, L_order, Parameters, Waehrung, Guestbook, L_artikel
-
+from sqlalchemy.orm import flag_modified
 
 def print_pchase_lnl_webbl(pvilanguage: int, lnldelimeter: string, docunr: string, stattype: int, curr_status: string):
     prepare_cache([Queasy, Paramtext, Htparam, L_orderhdr, L_lieferant, L_order, Parameters, Waehrung, Guestbook, L_artikel])
@@ -177,6 +178,8 @@ def print_pchase_lnl_webbl(pvilanguage: int, lnldelimeter: string, docunr: strin
     B_queasy = create_buffer("B_queasy", Queasy)
 
     db_session = local_storage.db_session
+    docunr = docunr.strip()
+    curr_status = curr_status.strip()
 
     def generate_output():
         nonlocal str3_list_data, esign_print_data, str1_data, str3_data, lvcarea, long_digit, foreign_currency, price_decimal, bill_recv, address1, address2, cp_name, telp, fax_no, bill_no, bill_date, refer, po_source, dep_date, arr_date, delivery_date, bl_descript, bl_qty, d_unit, bl_price, bl_amount, c_exrate, bl_balance, balance, remark, bank_name, account, rekening, i, globaldisc, companytitle, bl_vat, po_number, bl_amount_add_vat, htl_name, htl_adr, htl_tel, created_by, vat_code, vat1, vat2, p_app, img_id_name, img_id_date, img_id_pos, tmp_liefnr, iscreated, queasy, paramtext, htparam, l_orderhdr, l_lieferant, l_order, parameters, waehrung, guestbook, l_artikel
@@ -949,8 +952,10 @@ def print_pchase_lnl_webbl(pvilanguage: int, lnldelimeter: string, docunr: strin
         str1.htl_tel = htl_tel
 
     if tmp_liefnr is not None:
-        l_order = get_cache(L_order, {"lief_nr": [(eq, l_orderhdr.lief_nr)], "docu_nr": [
-                            (eq, docunr)], "pos": [(eq, 0)]})
+        # l_order = get_cache(L_order, {"lief_nr": [(eq, l_orderhdr.lief_nr)], "docu_nr": [
+        #                     (eq, docunr)], "pos": [(eq, 0)]})
+        l_order = db_session.query(L_order).filter(
+            (L_order.lief_nr == l_orderhdr.lief_nr) & (L_order.docu_nr == (docunr).lower()) & (L_order.pos == 0)).with_for_update().first()
         l_order.gedruckt = get_current_date()
         l_order.zeit = get_current_time_in_seconds()
 

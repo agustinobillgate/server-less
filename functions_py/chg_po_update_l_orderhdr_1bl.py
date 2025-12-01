@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -22,14 +24,12 @@ def chg_po_update_l_orderhdr_1bl(rec_id:int, user_init:string):
         return {}
 
 
-    l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, rec_id)]})
-    pass
+    # l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, rec_id)]})
+    l_orderhdr = db_session.query(L_orderhdr).filter(
+             (L_orderhdr._recid == rec_id)).with_for_update().first()
     l_orderhdr.gedruckt = get_current_date()
     gedruckt = l_orderhdr.gedruckt
     docu_nr = l_orderhdr.docu_nr
-
-
-    pass
 
     queasy = get_cache (Queasy, {"key": [(eq, 214)],"char1": [(eq, to_string(rec_id))]})
 
@@ -45,7 +45,6 @@ def chg_po_update_l_orderhdr_1bl(rec_id:int, user_init:string):
             queasy.char1 = to_string(rec_id)
             queasy.char2 = user_init
             queasy.char3 = bediener.username
-
 
             res_history = Res_history()
             db_session.add(res_history)

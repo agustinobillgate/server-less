@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -42,6 +44,8 @@ def prepare_insert_pobl(pvilanguage:int, docu_nr:string, lief_nr:int):
     t_l_order_data, T_l_order = create_model_like(L_order, {"rec_id":int})
 
     db_session = local_storage.db_session
+    docu_nr = docu_nr.strip()
+
 
     def generate_output():
         nonlocal local_nr, enforce_rflag, zeroprice_flag, potype, lieferdatum, bestellart, comments, supplier, deptnr, deptname, billdate, p_234, p_266, t_amount, pos, currency_add_first, currency_screen_value, err_flag, disc_list_data, t_l_artikel_data, t_l_orderhdr_data, t_l_order_data, lvcarea, l_orderhdr, l_order, htparam, waehrung, l_lieferant, parameters, l_artikel
@@ -125,7 +129,9 @@ def prepare_insert_pobl(pvilanguage:int, docu_nr:string, lief_nr:int):
 
     l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, lief_nr)]})
 
-    l_orderhdr = get_cache (L_orderhdr, {"docu_nr": [(eq, docu_nr)]})
+    # l_orderhdr = get_cache (L_orderhdr, {"docu_nr": [(eq, docu_nr)]})
+    l_orderhdr = db_session.query(L_orderhdr).filter(
+             (L_orderhdr.docu_nr == (docu_nr).lower())).with_for_update().first()
 
     if l_orderhdr.betriebsnr == 1:
         potype = 2
