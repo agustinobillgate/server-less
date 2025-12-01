@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill, Guest
@@ -35,9 +37,10 @@ def ts_closeinv_read_bill_guestbl(guestnr:int, rec_h_bill:int):
     bill_guest = get_cache (Guest, {"gastnr": [(eq, guestnr)]})
     rec_bill_guest = bill_guest._recid
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, rec_h_bill)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_h_bill)]})
+    h_bill = db_session.query(H_bill).filter(
+                 (H_bill._recid == rec_h_bill)).with_for_update().first()
     h_bill.bilname = bill_guest.name + ", " + bill_guest.vorname1 + " " + bill_guest.anrede1
-    pass
     t_h_bill = T_h_bill()
     t_h_bill_data.append(t_h_bill)
 

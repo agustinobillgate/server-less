@@ -1,10 +1,14 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill, Artikel, H_bill_line, H_artikel, Kellner, Htparam, H_umsatz, Umsatz, Arrangement, Argt_line, Billjournal, H_journal, H_compli
+from sqlalchemy_orm import flag_modified
 
-def ts_closeinv_adjust_complitobl(rec_h_bill:int, p_sign:int, p_artnr:int, h_artart:int, curr_dept:int, pay_type:int, double_currency:bool, exchg_rate:Decimal, price_decimal:int, user_init:string):
+def ts_closeinv_adjust_complitobl(rec_h_bill:int, p_sign:int, p_artnr:int, h_artart:int, curr_dept:int, pay_type:int, 
+                                  double_currency:bool, exchg_rate:Decimal, price_decimal:int, user_init:string):
 
     prepare_cache ([Artikel, H_artikel, Htparam, H_umsatz, Umsatz, Arrangement, Argt_line, Billjournal, H_journal, H_compli])
 
@@ -97,14 +101,18 @@ def ts_closeinv_adjust_complitobl(rec_h_bill:int, p_sign:int, p_artnr:int, h_art
                 amount =  to_decimal("0")
                 amount_foreign =  to_decimal("0")
 
-                h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, h_art.artnr)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, h_art.artnr)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                h_umsatz = db_session.query(H_umsatz).filter(
+                             (H_umsatz.artnr == h_art.artnr) & (H_umsatz.departement == h_art.departement) & (H_umsatz.datum == h_bline.bill_datum)).with_for_update().first()
 
                 if h_umsatz and pay_type == 5:
                     h_umsatz.betrag =  to_decimal(h_umsatz.betrag) - to_decimal(p_sign) * to_decimal(h_bline.betrag)
                     h_umsatz.anzahl = h_umsatz.anzahl - p_sign * h_bline.anzahl
                     pass
 
-                umsatz = get_cache (Umsatz, {"artnr": [(eq, h_art.artnrfront)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                # umsatz = get_cache (Umsatz, {"artnr": [(eq, h_art.artnrfront)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                umsatz = db_session.query(Umsatz).filter(
+                             (Umsatz.artnr == h_art.artnrfront) & (Umsatz.departement == h_art.departement) & (Umsatz.datum == h_bline.bill_datum)).with_for_update().first()
 
                 if umsatz:
                     umsatz.betrag =  to_decimal(umsatz.betrag) - to_decimal(p_sign) * to_decimal(h_bline.betrag)
@@ -136,7 +144,9 @@ def ts_closeinv_adjust_complitobl(rec_h_bill:int, p_sign:int, p_artnr:int, h_art
 
                         artikel1 = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
 
-                        umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                        # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                        umsatz = db_session.query(Umsatz).filter(
+                                     (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == h_bline.bill_datum)).with_for_update().first()
 
                         if not umsatz:
                             umsatz = Umsatz()
@@ -172,7 +182,9 @@ def ts_closeinv_adjust_complitobl(rec_h_bill:int, p_sign:int, p_artnr:int, h_art
 
                     artikel1 = get_cache (Artikel, {"artnr": [(eq, arrangement.artnr_logis)],"departement": [(eq, arrangement.intervall)]})
 
-                    umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                    # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                    umsatz = db_session.query(Umsatz).filter(
+                                 (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == h_bline.bill_datum)).with_for_update().first()
 
                     if not umsatz:
                         umsatz = Umsatz()
@@ -208,7 +220,12 @@ def ts_closeinv_adjust_complitobl(rec_h_bill:int, p_sign:int, p_artnr:int, h_art
 
                 if h_bline.artnr != f_disc and h_bline.artnr != b_disc and h_bline.artnr != o_disc:
 
-                    h_journal = get_cache (H_journal, {"bill_datum": [(eq, h_bline.bill_datum)],"zeit": [(eq, h_bline.zeit)],"sysdate": [(eq, h_bline.sysdate)],"artnr": [(eq, h_bline.artnr)],"departement": [(eq, h_bline.departement)]})
+                    # h_journal = get_cache (H_journal, {"bill_datum": [(eq, h_bline.bill_datum)],"zeit": [(eq, h_bline.zeit)],"sysdate": [(eq, h_bline.sysdate)],"artnr": [(eq, h_bline.artnr)],"departement": [(eq, h_bline.departement)]})
+                    h_journal = db_session.query(H_journal).filter(
+                                 (H_journal.bill_datum == h_bline.bill_datum) & (H_journal.zeit == h_bline.zeit) & 
+                                 (H_journal.sysdate == h_bline.sysdate) & (H_journal.artnr == h_bline.artnr) & 
+                                 (H_journal.departement == h_bline.departement)).with_for_update().first()
+                    
                     h_journal.fremdwaehrng =  to_decimal(h_bline.fremdwbetrag)
                     h_journal.betrag =  to_decimal(h_bline.betrag)
                     pass
@@ -236,9 +253,11 @@ def ts_closeinv_adjust_complitobl(rec_h_bill:int, p_sign:int, p_artnr:int, h_art
             curr_recid = h_bline._recid
             h_bline = db_session.query(H_bline).filter(
                      (H_bline.rechnr == h_bill.rechnr) & (H_bline.departement == curr_dept) & (H_bline._recid > curr_recid)).first()
+            flag_modified(h_bill, "mwst")
 
-
-    h_bill = get_cache (H_bill, {"_recid": [(eq, rec_h_bill)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_h_bill)]})
+    h_bill = db_session.query(H_bill).filter(
+             (H_bill._recid == rec_h_bill)).with_for_update().first()
     adjust_complito()
 
     h_bill = get_cache (H_bill, {"_recid": [(eq, rec_h_bill)]})

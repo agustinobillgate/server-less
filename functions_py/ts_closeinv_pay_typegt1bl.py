@@ -1,6 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #---------------------------------------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+# Rd, 01/12/2025, with_for_update added
 #---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -49,10 +50,7 @@ def ts_closeinv_pay_typegt1bl(bilrecid:int, recid_h_bill:int, balance_foreign:De
         counters = db_session.query(Counters).filter(
                      (Counters.counter_no == 3)).with_for_update().first()
         counters.counter = counters.counter + 1
-        pass
-        pass
         bill.rechnr = counters.counter
-        pass
 
     if pay_type == 2:
         description = "RmNo " + bill.zinr + " *" + to_string(bill.rechnr)
@@ -61,7 +59,9 @@ def ts_closeinv_pay_typegt1bl(bilrecid:int, recid_h_bill:int, balance_foreign:De
     elif pay_type == 3 or pay_type == 4:
         description = "Transfer" + " *" + to_string(bill.rechnr)
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, recid_h_bill)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, recid_h_bill)]})
+    h_bill = db_session.query(H_bill).filter(
+                 (H_bill._recid == recid_h_bill)).with_for_update().first()
     h_bill.bilname = bill.name
 
 
