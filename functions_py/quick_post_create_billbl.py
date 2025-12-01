@@ -91,8 +91,12 @@ def quick_post_create_billbl(s_list_data: list[S_list], pvilanguage: int, billar
                     Queasy, {"key": [(eq, 329)], "number1": [(eq, res_line.resnr)]})
 
                 if queasy:
-                    bill = get_cache(
-                        Bill, {"resnr": [(eq, res_line.resnr)], "reslinnr": [(eq, res_line.reslinnr)], "zinr": [(eq, res_line.zinr)], "billnr": [(eq, 2)]})
+
+                    bill = db_session.query(Bill).filter(
+                        (Bill.resnr == res_line.resnr) &
+                        (Bill.reslinnr == res_line.reslinnr) &
+                        (Bill.zinr == res_line.zinr) &
+                        (Bill.billnr == 2)).first()
 
                     if bill:
                         if bill.flag == 1:
@@ -121,15 +125,21 @@ def quick_post_create_billbl(s_list_data: list[S_list], pvilanguage: int, billar
                 # end ITA: Program terkait feature service apartement
             s_list_data.remove(s_list)
 
+
     def update_bill():
+
         nonlocal msg_str, msg_str2, lvcarea, res_line, queasy, bill, artikel, counters, htparam, bill_line, umsatz, billjournal, master, mast_art
         nonlocal pvilanguage, billart, curr_dept, amount, double_currency, foreign_rate, user_init, voucher_nr
+
+
         nonlocal s_list
 
-        bil_flag: int = 0
-        master_flag: bool = False
-        bill_date: date = None
-        na_running: bool = False
+        bil_flag:int = 0
+        master_flag:bool = False
+        bill_date:date = None
+        na_running:bool = False
+
+        db_session.refresh(bill, with_for_update=True)
 
         artikel = get_cache(
             Artikel, {"artnr": [(eq, billart)], "departement": [(eq, curr_dept)]})
@@ -214,11 +224,10 @@ def quick_post_create_billbl(s_list_data: list[S_list], pvilanguage: int, billar
             except ValueError:
                 dept = None
         # umsatz = get_cache (Umsatz, {"artnr": [(eq, s_list.artnr)],"departement": [(eq, s_list.dept)],"datum": [(eq, bill_date)]})
-        umsatz = get_cache(Umsatz, {
-            "artnr": [(eq, s_list.artnr)],
-            "departement": [(eq, dept)],
-            "datum": [(eq, bill_date)]
-        })
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == s_list.artnr) & 
+            (Umsatz.departement == s_list.dept) & 
+            (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()

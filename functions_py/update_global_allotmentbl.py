@@ -6,7 +6,6 @@ from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Kontline, Counters
-from functions.next_counter_for_update import next_counter_for_update
 
 allot_list_data, Allot_list = create_model("Allot_list", {"datum":date, "w_day":string, "tot_rm":int, "ooo":int, "occ":int, "avl_rm":int, "stat1":int, "stat2":int, "stat5":int, "glres":int, "avail1":int, "ovb1":int, "allot1":int, "gl_allot":int, "gl_used":int, "gl_remain":int, "allot2":int, "blank_str":string, "avail2":int, "ovb2":int, "s_avail2":int, "expired":bool})
 
@@ -49,7 +48,11 @@ def update_global_allotmentbl(user_init:string, currcode:string, allot_list_data
 
         for allot_list in query(allot_list_data, filters=(lambda allot_list: allot_list.expired == False and allot_list.allot1 != allot_list.gl_allot), sort_by=[("datum",False)]):
 
-            kontline = get_cache (Kontline, {"kontcode": [(eq, currcode)],"ankunft": [(le, allot_list.datum)],"abreise": [(ge, allot_list.datum)]})
+            # kontline = get_cache (Kontline, {"kontcode": [(eq, currcode)],"ankunft": [(le, allot_list.datum)],"abreise": [(ge, allot_list.datum)]})
+            kontline = db_session.query(Kontline).filter(
+                     (Kontline.kontcode == currcode) &
+                     (Kontline.ankunft <= allot_list.datum) &
+                     (Kontline.abreise >= allot_list.datum)).with_for_update().first()
 
             if kontline and kontline.zimmeranz != allot_list.gl_allot:
 
@@ -61,32 +64,32 @@ def update_global_allotmentbl(user_init:string, currcode:string, allot_list_data
                 else:
 
                     # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
-                    # counters.counter = counters.counter + 1
-                    last_count, error_lock = get_output(next_counter_for_update(10))
-                    pass
+                    counters = db_session.query(Counters).filter(
+                             (Counters.counter_no == 10)).with_for_update().first() 
+                    counters.counter = counters.counter + 1
+
                     kline = Kontline()
                     db_session.add(kline)
 
                     buffer_copy(kontline, kline,except_fields=["kontignr"])
                     kline.abreise = allot_list.datum - timedelta(days=1)
-                    # kline.kontignr = counters.counter
-                    kline.kontignr = last_count
+                    kline.kontignr = counters.counter
 
 
 
                     pass
 
                     # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
-                    # counters.counter = counters.counter + 1
-                    last_count, error_lock = get_output(next_counter_for_update(10))
-                    pass
+                    counters = db_session.query(Counters).filter(
+                             (Counters.counter_no == 10)).with_for_update().first()
+                    
+                    counters.counter = counters.counter + 1
                     kline = Kontline()
                     db_session.add(kline)
 
                     buffer_copy(kontline, kline,except_fields=["kontignr"])
                     kline.ankunft = allot_list.datum + timedelta(days=1)
-                    # kline.kontignr = counters.counter
-                    kline.kontignr = last_count
+                    kline.kontignr = counters.counter
                     
 
 
@@ -103,11 +106,17 @@ def update_global_allotmentbl(user_init:string, currcode:string, allot_list_data
                  (Kontline.kontcode == (currcode).lower())).order_by(Kontline.ankunft).all():
             tmp_date = kontline.abreise + timedelta(days=1)
 
-            kline = get_cache (Kontline, {"kontcode": [(eq, currcode)],"ankunft": [(eq, tmp_date)],"zimmeranz": [(eq, kontline.zimmeranz)]})
+            # kline = get_cache (Kontline, {"kontcode": [(eq, currcode)],"ankunft": [(eq, tmp_date)],"zimmeranz": [(eq, kontline.zimmeranz)]})
+            kline = db_session.query(Kontline).filter(
+                     (Kontline.kontcode == currcode) &
+                     (Kontline.ankunft == tmp_date) &
+                     (Kontline.zimmeranz == kontline.zimmeranz)).with_for_update().first()
 
             if kline:
 
-                kbuff = get_cache (Kontline, {"_recid": [(eq, kontline._recid)]})
+                # kbuff = get_cache (Kontline, {"_recid": [(eq, kontline._recid)]})
+                kbuff = db_session.query(Kontline).filter(
+                         (Kontline._recid == kontline._recid)).with_for_update().first()
 
                 if kbuff:
                     pass

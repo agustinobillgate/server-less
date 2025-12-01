@@ -8,14 +8,13 @@
                     - use f"string"
 """
 #----------------------------------------
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+# Rd, 24/11/2025, Update last counter 
 #----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Artikel, Queasy, Htparam, Reslin_queasy, Billjournal, Umsatz, Debitor, Bediener, Res_line, Guest, Counters, Gl_jouhdr, Gl_journal
-from functions.next_counter_for_update import next_counter_for_update
 
 
 def leasing_pay_depositbl(qrecid: int, pinvoice_no: str, artikel_no: int, pay_amount: Decimal, user_init: str):
@@ -56,8 +55,6 @@ def leasing_pay_depositbl(qrecid: int, pinvoice_no: str, artikel_no: int, pay_am
 
     db_session = local_storage.db_session
     pinvoice_no = pinvoice_no.strip()
-    last_count = 0
-    error_lock: str = ""
 
 
     def generate_output():
@@ -78,9 +75,12 @@ def leasing_pay_depositbl(qrecid: int, pinvoice_no: str, artikel_no: int, pay_am
         nonlocal periode_list, bart, bartikel, tqueasy
         nonlocal periode_list_data
 
-        tqueasy = get_cache(
-            Queasy, {"key": [(eq, 355)], "number1": [(eq, queasy.number1)], "number2": [(eq, queasy.number2)], "number3": [(eq, artikel_no)]})
-
+        # tqueasy = get_cache(
+        #     Queasy, {"key": [(eq, 355)], "number1": [(eq, queasy.number1)], "number2": [(eq, queasy.number2)], "number3": [(eq, artikel_no)]})
+        tqueasy = db_session.query(Queasy).filter(
+            (Queasy.key == 355) & (Queasy.number1 == queasy.number1) & 
+            (Queasy.number2 == queasy.number2) & (Queasy.number3 == artikel_no)).with_for_update().first()
+        
         if not tqueasy:
             tqueasy = Queasy()
 
@@ -277,9 +277,11 @@ def leasing_pay_depositbl(qrecid: int, pinvoice_no: str, artikel_no: int, pay_am
         if v_cicilanke != 0:
             billjournal.billin_nr = v_cicilanke
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == ar_ledger) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
+            
         if not umsatz:
             umsatz = Umsatz()
 
@@ -318,8 +320,10 @@ def leasing_pay_depositbl(qrecid: int, pinvoice_no: str, artikel_no: int, pay_am
         if v_cicilanke != 0:
             billjournal.billin_nr = v_cicilanke
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -414,23 +418,21 @@ def leasing_pay_depositbl(qrecid: int, pinvoice_no: str, artikel_no: int, pay_am
 
         # counters = get_cache(
         #     Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(
+            (Counters.counter_no == 25)).with_for_update().first()
 
-        # if not counters:
-        #     counters = Counters()
+        if not counters:
+            counters = Counters()
 
-        #     counters.counter_no = 25
-        #     counters.counter_bez = "G/L Transaction Journal"
+            counters.counter_no = 25
+            counters.counter_bez = "G/L Transaction Journal"
             
-        #     db_session.add(counters)
+            db_session.add(counters)
             
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = get_output(next_counter_for_update(25))
-
-        pass
+        counters.counter = counters.counter + 1
         gl_jouhdr = Gl_jouhdr()
 
-        # gl_jouhdr.jnr = counters.counter
-        gl_jouhdr.jnr = last_count
+        gl_jouhdr.jnr = counters.counter
         
         gl_jouhdr.refno = "Payment Deposit - " + pinvoice_no
         gl_jouhdr.datum = bill_date

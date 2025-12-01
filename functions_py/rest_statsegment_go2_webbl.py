@@ -3,6 +3,7 @@
 # ==========================================
 # Rulita, 10-10-2025
 # Tiket ID : 8CF423 | Recompile Program
+# Rd, 01/12/2025, with_for_update added
 # ==========================================
 
 from functions.additional_functions import *
@@ -435,7 +436,9 @@ def rest_statsegment_go2_webbl(input_list_data:[Input_list]):
             queasy.number1 = 1
             queasy.date1 = bill_date
 
-        bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "rest stat guest segment")],"char2": [(eq, input_list.id_flag)]})
+        # bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "rest stat guest segment")],"char2": [(eq, input_list.id_flag)]})
+        bqueasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 285) & (Queasy.char1 == "rest stat guest segment") & (Queasy.char2 == input_list.id_flag)).with_for_update().first()
 
         if bqueasy:
             pass

@@ -3,7 +3,8 @@
 # Rd 18/7/25
 # ooo tidak masuk
 #-----------------------------------------
-
+# Rd, 27/11/2025, with_for_update added
+#-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -12,7 +13,8 @@ from models import Outorder, Zimkateg, Queasy, Zimmer, Res_line, Res_history
 bline_list_data, Bline_list = create_model("Bline_list", {"zinr":string, "selected":bool, "bl_recid":int})
 om_list_data, Om_list = create_model("Om_list", {"zinr":string, "ind":int})
 
-def hk_statadmin_activate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om_list], pvilanguage:int, from_date:date, to_date:date, ci_date:date, dept:int, reason:string, service_flag:bool, user_nr:int):
+def hk_statadmin_activate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om_list], pvilanguage:int, from_date:date, 
+                                to_date:date, ci_date:date, dept:int, reason:string, service_flag:bool, user_nr:int):
 
     prepare_cache ([Outorder, Zimkateg, Queasy, Res_line, Res_history])
 
@@ -33,8 +35,8 @@ def hk_statadmin_activate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om_l
     Zbuff = create_buffer("Zbuff",Zimkateg)
     Qsy = create_buffer("Qsy",Queasy)
 
-
     db_session = local_storage.db_session
+    reason = reason.strip()
 
     def generate_output():
         nonlocal flag, msg_str, z_list_data, lvcarea, datum, cat_flag, roomnr, outorder, zimkateg, queasy, zimmer, res_line, res_history
@@ -64,9 +66,10 @@ def hk_statadmin_activate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om_l
         return generate_output()
 
     for bline_list in query(bline_list_data, filters=(lambda bline_list: bline_list.selected)):
-        print("Zinr:", bline_list.zinr)
 
-        zimmer = get_cache (Zimmer, {"zinr": [(eq, bline_list.zinr)]})
+        # zimmer = get_cache (Zimmer, {"zinr": [(eq, bline_list.zinr)]})
+        zimmer = db_session.query(Zimmer).filter(
+                 (Zimmer.zinr == bline_list.zinr)).with_for_update().first()
 
         res_line = db_session.query(Res_line).filter(
                  (Res_line.active_flag <= 1) & (((Res_line.ankunft >= from_date) & (Res_line.ankunft <= to_date)) | ((Res_line.abreise > from_date) & (Res_line.abreise <= to_date)) | ((from_date >= Res_line.ankunft) & (from_date < Res_line.abreise))) & (Res_line.zinr == bline_list.zinr)).first()
@@ -74,7 +77,6 @@ def hk_statadmin_activate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om_l
         if res_line:
             msg_str = translateExtended ("Attention: Room Number", lvcarea, "") + " " + to_string(bline_list.zinr) + chr_unicode(10) + translateExtended ("Reservation exists under ResNo", lvcarea, "") + " = " + to_string(res_line.resnr) + chr_unicode(10) + translateExtended ("Guest Name", lvcarea, "") + " = " + res_line.name + chr_unicode(10) + translateExtended ("Arrival :", lvcarea, "") + " " + to_string(res_line.ankunft) + " " + translateExtended ("Departure :", lvcarea, "") + " " + to_string(res_line.abreise)
             flag = 2
-            print("Zinr:", bline_list.zinr, msg_str)
             break
         else:
             # Rd 18/7/25
@@ -110,7 +112,9 @@ def hk_statadmin_activate_ooobl(bline_list_data:[Bline_list], om_list_data:[Om_l
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Qsy).filter(
+                             (Qsy._recid == queasy._recid)).with_for_update().first()
 
                     if qsy:
                         qsy.logi2 = True

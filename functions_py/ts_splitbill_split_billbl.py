@@ -2,6 +2,7 @@
 #----------------------------------------
 # Rd 3/8/2025
 # if not availble -> return
+# Rd, 28/11/2025, with_for_update added
 #----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -86,7 +87,7 @@ def ts_splitbill_split_billbl(rec_id:int, dept:int, price_decimal:int):
                 art_list_data.remove(art_list)
 
         for h_bill_line in db_session.query(H_bill_line).filter(
-                 (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == dept)).order_by(H_bill_line._recid).all():
+                 (H_bill_line.rechnr == h_bill.rechnr) & (H_bill_line.departement == dept)).order_by(H_bill_line._recid).with_for_update().all():
             db_session.delete(h_bill_line)
         pass
 

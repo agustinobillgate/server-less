@@ -1,11 +1,10 @@
 #using conversion tools version: 1.0.0.117
 #---------------------------------------------------------------------
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+# Rd, 24/11/2025, Update last counter d
 #---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bk_veran, Guest, Htparam, Counters, Bill
-from functions.next_counter_for_update import next_counter_for_update
 
 def main_fs_create_banquet_billbl(resnr:int):
 
@@ -44,10 +43,9 @@ def main_fs_create_banquet_billbl(resnr:int):
     gast = get_cache (Guest, {"gastnr": [(eq, bk_main.gastnrver)]})
 
     # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-    # counters.counter = counters.counter + 1
-    last_count, error_lock = get_output(next_counter_for_update(3))
-
-    pass
+    counters = db_session.query(Counters).filter(
+             (Counters.counter_no == 3)).with_for_update().first()
+    counters.counter = counters.counter + 1
     bill = Bill()
     db_session.add(bill)
 
@@ -57,8 +55,7 @@ def main_fs_create_banquet_billbl(resnr:int):
             " " + gast.vorname1
     bill.reslinnr = 1
     bill.rgdruck = 1
-    # bill.rechnr = counters.counter
-    bill.rechnr = last_count
+    bill.rechnr = counters.counter
 
     bk_main.rechnr = bill.rechnr
     pass

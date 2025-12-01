@@ -1,7 +1,8 @@
 #using conversion tools version: 1.0.0.117
 #----------------------------------------
 # Rd, 1/8/2025
-# hasil .p dan endpoint tidak sam
+# hasil .p dan endpoint tidak sama
+# Rd, 28/11/2025, with_for_update added
 #----------------------------------------
 
 from functions.additional_functions import *
@@ -25,6 +26,7 @@ def cust_turnover_output_list_webbl(idflag:string, cust_list_data:[Cust_list]):
 
 
     db_session = local_storage.db_session
+    iflag = idflag.strip()
 
     def generate_output():
         nonlocal doneflag, counter, queasy
@@ -94,7 +96,7 @@ def cust_turnover_output_list_webbl(idflag:string, cust_list_data:[Cust_list]):
         cust_list.curr_pos = to_int(entry(21, queasy.char2, "|"))
 
         bqueasy = db_session.query(Bqueasy).filter(
-                 (Bqueasy._recid == queasy._recid)).first()
+                 (Bqueasy._recid == queasy._recid)).with_for_update().first()
         # Rd 14/8/2025
         if bqueasy:
             db_session.delete(bqueasy)
@@ -116,7 +118,7 @@ def cust_turnover_output_list_webbl(idflag:string, cust_list_data:[Cust_list]):
             doneflag = True
 
     tqueasy = db_session.query(Tqueasy).filter(
-             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Guest Turnover")) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == idflag)).first()
+             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Guest Turnover")) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == idflag)).with_for_update().first()
 
     if tqueasy:
         db_session.delete(tqueasy)

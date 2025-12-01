@@ -3,6 +3,7 @@
 # Rd 3/8/2025
 # if available h_bill
 # if not availble -> return
+# Rd, 01/12/2025, with_for_update added
 #----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -121,7 +122,11 @@ def ts_disc1_btn_exitbl(rec_id:int, billart:int, dept:int, transdate:date, amoun
 
                     pass
 
-                h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, disc_list.h_artnr)],"departement": [(eq, dept)],"datum": [(eq, bill_date)]})
+                # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, disc_list.h_artnr)],"departement": [(eq, dept)],"datum": [(eq, bill_date)]})
+                h_umsatz = db_session.query(H_umsatz).filter(
+                             (H_umsatz.artnr == disc_list.h_artnr) &
+                             (H_umsatz.departement == dept) &
+                             (H_umsatz.datum == bill_date)).with_for_update().first()
 
                 if not h_umsatz:
                     h_umsatz = H_umsatz()
@@ -138,7 +143,11 @@ def ts_disc1_btn_exitbl(rec_id:int, billart:int, dept:int, transdate:date, amoun
 
                 pass
 
-                umsatz = get_cache (Umsatz, {"artnr": [(eq, disc_list.artnr)],"departement": [(eq, dept)],"datum": [(eq, bill_date)]})
+                # umsatz = get_cache (Umsatz, {"artnr": [(eq, disc_list.artnr)],"departement": [(eq, dept)],"datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                             (Umsatz.artnr == disc_list.artnr) &
+                             (Umsatz.departement == dept) &
+                             (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -256,7 +265,11 @@ def ts_disc1_btn_exitbl(rec_id:int, billart:int, dept:int, transdate:date, amoun
             else:
                 discart = h_artnrfront
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, discart)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, discart)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == discart) &
+                     (Umsatz.departement == artikel.departement) &
+                     (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -291,7 +304,11 @@ def ts_disc1_btn_exitbl(rec_id:int, billart:int, dept:int, transdate:date, amoun
 
             artikel1 = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
 
-            umsatz = get_cache (Umsatz, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)],"datum": [(eq, bill_date)]})
+            # umsatz = get_cache (Umsatz, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)],"datum": [(eq, bill_date)]})
+            umsatz = db_session.query(Umsatz).filter(
+                         (Umsatz.artnr == argt_line.argt_artnr) &
+                         (Umsatz.departement == argt_line.departement) &
+                         (Umsatz.datum == bill_date)).with_for_update().first()
 
             if not umsatz:
                 umsatz = Umsatz()
@@ -327,7 +344,11 @@ def ts_disc1_btn_exitbl(rec_id:int, billart:int, dept:int, transdate:date, amoun
 
         artikel1 = get_cache (Artikel, {"artnr": [(eq, arrangement.artnr_logis)],"departement": [(eq, arrangement.intervall)]})
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == artikel1.artnr) &
+                     (Umsatz.departement == artikel1.departement) &
+                     (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -340,8 +361,6 @@ def ts_disc1_btn_exitbl(rec_id:int, billart:int, dept:int, transdate:date, amoun
 
         umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(rest_betrag)
 
-
-        pass
         billjournal = Billjournal()
         db_session.add(billjournal)
 
@@ -476,7 +495,9 @@ def ts_disc1_btn_exitbl(rec_id:int, billart:int, dept:int, transdate:date, amoun
         return generate_inner_output()
 
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    h_bill = db_session.query(H_bill).filter(
+                 (H_bill._recid == rec_id)).with_for_update().first()
     # Rd, 3/8/2025
     # if not avail return
     if h_bill is None:

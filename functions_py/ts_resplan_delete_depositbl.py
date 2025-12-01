@@ -1,6 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #---------------------------------------------------------------------
 # Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+# Rd, 01/12/2025, with_for_update added
 #---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -154,7 +155,11 @@ def ts_resplan_delete_depositbl(curr_dept:int, curr_date:date, s_recid:int, user
 
             pass
 
-            umsatz = get_cache (Umsatz, {"artnr": [(eq, depoart)],"departement": [(eq, 0)],"datum": [(eq, curr_date)]})
+            # umsatz = get_cache (Umsatz, {"artnr": [(eq, depoart)],"departement": [(eq, 0)],"datum": [(eq, curr_date)]})
+            umsatz = db_session.query(Umsatz).filter(
+                         (Umsatz.artnr == depoart),
+                         (Umsatz.departement == 0),
+                         (Umsatz.datum == curr_date)).with_for_update().first()
 
             if not umsatz:
                 umsatz = Umsatz()
@@ -203,7 +208,9 @@ def ts_resplan_delete_depositbl(curr_dept:int, curr_date:date, s_recid:int, user
     if active_deposit:
         create_rsv_table()
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, s_recid)]})
+        # queasy = get_cache (Queasy, {"_recid": [(eq, s_recid)]})
+        queasy = db_session.query(Queasy).filter(
+                     (Queasy._recid == s_recid)).with_for_update().first()
 
         if queasy:
             pass
@@ -214,7 +221,5 @@ def ts_resplan_delete_depositbl(curr_dept:int, curr_date:date, s_recid:int, user
             queasy.betriebsnr = 2
 
 
-            pass
-            pass
 
     return generate_output()

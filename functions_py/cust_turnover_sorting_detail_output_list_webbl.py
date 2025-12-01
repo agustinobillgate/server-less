@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 14/8/2025
 # if available bqueasy
+# Rd, 28/11/2025, with_for_update added
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -20,8 +21,8 @@ def cust_turnover_sorting_detail_output_list_webbl(idflag:string, b_list_data:[B
     Pqueasy = create_buffer("Pqueasy",Queasy)
     Tqueasy = create_buffer("Tqueasy",Queasy)
 
-
     db_session = local_storage.db_session
+    idflag = idflag.strip()
 
     def generate_output():
         nonlocal doneflag, counter, queasy
@@ -70,7 +71,7 @@ def cust_turnover_sorting_detail_output_list_webbl(idflag:string, b_list_data:[B
         b_list.depart = entry(25, queasy.char2, "|")
 
         bqueasy = db_session.query(Bqueasy).filter(
-                 (Bqueasy._recid == queasy._recid)).first()
+                 (Bqueasy._recid == queasy._recid)).with_for_update().first()
         # Rd 14/8/2025
         if bqueasy:
             db_session.delete(bqueasy)
@@ -96,7 +97,7 @@ def cust_turnover_sorting_detail_output_list_webbl(idflag:string, b_list_data:[B
             doneflag = True
 
     tqueasy = db_session.query(Tqueasy).filter(
-             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Guest Turnover Detail").lower()) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == idflag)).first()
+             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Guest Turnover Detail").lower()) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == idflag)).with_for_update().first()
 
     if tqueasy:
         pass

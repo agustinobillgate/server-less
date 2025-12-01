@@ -5,7 +5,6 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Counters
-from functions.next_counter_for_update import next_counter_for_update
 
 t_counters_data, T_counters = create_model_like(Counters)
 
@@ -19,8 +18,6 @@ def write_countersbl(case_type:int, counter_no:int, t_counters_data:[T_counters]
     t_counters = None
 
     db_session = local_storage.db_session
-    last_count = 0
-    error_lock = ""
 
     def generate_output():
         nonlocal success_flag, counters
@@ -40,15 +37,16 @@ def write_countersbl(case_type:int, counter_no:int, t_counters_data:[T_counters]
     if case_type == 1:
 
         # counters = get_cache (Counters, {"counter_no": [(eq, counter_no)]})
+        counters = db_session.query(Counters).filter(
+                 (Counters.counter_no == counter_no)).with_for_update().first()
 
-        # if not counters:
-        #     counters = Counters()
-        #     db_session.add(counters)
+        if not counters:
+            counters = Counters()
+            db_session.add(counters)
 
-        #     buffer_copy(t_counters, counters)
-        #     success_flag = True
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = get_output(next_counter_for_update(counter_no))
+            buffer_copy(t_counters, counters)
+            success_flag = True
+        counters.counter = counters.counter + 1
         success_flag = True
 
     return generate_output()

@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ==========================================
+# Rulita, 26-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Guestseg, Guest, Segment
@@ -73,7 +78,10 @@ def create_gcfbl(gnat:string, gland:string, def_natcode:string, gastid:string, n
 
         pass
 
-        guestseg = get_cache (Guestseg, {"gastnr": [(eq, guest.gastnr)],"reihenfolge": [(eq, 1)]})
+        # guestseg = get_cache (Guestseg, {"gastnr": [(eq, guest.gastnr)],"reihenfolge": [(eq, 1)]})
+        guestseg = db_session.query(Gastsegm).filter(
+                 (Gastsegm.gastnr == guest.gastnr),
+                 (Gastsegm.reihenfolge == 1)).with_for_update().first()
 
         if not guestseg:
             guestseg = Guestseg()

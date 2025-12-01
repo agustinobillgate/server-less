@@ -4,6 +4,7 @@
 # Rulita, 24-10-2025
 # Issue :
 # - New Compile program
+# Rd, 28/11/2025, with_for_update added
 # =======================================
 
 from functions.additional_functions import *

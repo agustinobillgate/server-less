@@ -3,6 +3,7 @@
 # ==========================================
 # Rulita, 09-10-2025
 # Tiket ID : 8CF423 | Recompile Program
+# Rd, 28/11/2025, with_for_update added
 # ==========================================
 
 from functions.additional_functions import *
@@ -66,7 +67,9 @@ def delete_rm_view_setup_wizardbl(input_param_data:[Input_param]):
 
         if input_param.case_type == 1:
 
-            paramtext = get_cache (Paramtext, {"txtnr": [(eq, input_param.txtnr)],"sprachcode": [(eq, input_param.sprachcode)]})
+            # paramtext = get_cache (Paramtext, {"txtnr": [(eq, input_param.txtnr)],"sprachcode": [(eq, input_param.sprachcode)]})
+            paramtext = db_session.query(Paramtext).filter(
+                     (Paramtext.txtnr == input_param.txtnr) & (Paramtext.sprachcode == input_param.sprachcode)).with_for_update().first()
 
             if paramtext:
 

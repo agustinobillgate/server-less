@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#---------------------------------------------------------------------
+# Rd, 1/12/2025, Update with_for_update added
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import datetime, date
@@ -153,7 +155,7 @@ def rest_statsegment_go2_outlist_webbl(input_list_data:[Input_list]):
         out_param_list.done_flag = True
 
         for tqueasy in db_session.query(Tqueasy).filter(
-                 (Tqueasy.key == 285) & (Tqueasy.char1 == "rest stat guest segment") & (Tqueasy.char2 == input_list.id_flag)).order_by(Tqueasy._recid).all():
+                 (Tqueasy.key == 285) & (Tqueasy.char1 == "rest stat guest segment") & (Tqueasy.char2 == input_list.id_flag)).order_by(Tqueasy._recid).with_for_update().all():
             db_session.delete(tqueasy)
             pass
 
@@ -163,7 +165,7 @@ def rest_statsegment_go2_outlist_webbl(input_list_data:[Input_list]):
             if queasy.char3 == input_list.id_flag:
 
                 tqueasy = db_session.query(Tqueasy).filter(
-                         (Tqueasy._recid == queasy._recid)).first()
+                         (Tqueasy._recid == queasy._recid)).with_for_update().first()
 
                 if tqueasy:
                     db_session.delete(tqueasy)

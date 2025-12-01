@@ -3,6 +3,7 @@
 # ==========================================
 # Rulita, 10-10-2025
 # Tiket ID : 8CF423 | Recompile Program
+# Rd, 01/12/2025, with_for_update added
 # ==========================================
 
 from functions.additional_functions import *

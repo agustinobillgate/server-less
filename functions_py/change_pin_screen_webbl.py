@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.118
-
+#-------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Bediener, Res_history, Paramtext
@@ -221,7 +223,9 @@ def change_pin_screen_webbl(t_payload_list_data:[T_payload_list]):
                         c_pin_new = t_payload_list.new_pin + bediener.userinit
                         c_hashed_pin_new = sha1(c_pin_new).hexdigest()
 
-                        buf_queasy = get_cache (Queasy, {"key": [(eq, 360)],"number1": [(eq, bediener.nr)]})
+                        # buf_queasy = get_cache (Queasy, {"key": [(eq, 360)],"number1": [(eq, bediener.nr)]})
+                        buf_queasy = db_session.query(Queasy).filter(Queasy.key == 360, 
+                                                             Queasy.number1 == bediener.nr).with_for_update().first()
                         buf_queasy.char1 = c_hashed_pin_new
                         buf_queasy.char2 = c_hashed_pin
                         buf_queasy.date2 = get_current_date()

@@ -6,6 +6,7 @@
 # issue :progress -> INTEGER(NO)
 # - h_artikel.gang = to_int(0)
 # - h_artikel.bondruckernr[3] = to_int(0)
+# Rd, 28/11/2025, with_for_update added
 # ==========================================
 
 from functions.additional_functions import *
@@ -230,7 +231,9 @@ def save_rarticle_setup_wizardbl(input_list_data:[Input_list], menu_artlist_data
 
                 return
 
-            h_artikel = get_cache (H_artikel, {"_recid": [(eq, menu_artlist.rec_id)]})
+            # h_artikel = get_cache (H_artikel, {"_recid": [(eq, menu_artlist.rec_id)]})
+            h_artikel = db_session.query(H_artikel).filter(
+                     (H_artikel._recid == menu_artlist.rec_id)).with_for_update().first()
 
             if not h_artikel:
                 output_list.msg_str = "Selected artikel " + trim(menu_artlist.bezeich) + " not found, please check your input"
@@ -318,7 +321,9 @@ def save_rarticle_setup_wizardbl(input_list_data:[Input_list], menu_artlist_data
 
         for menu_artlist in query(menu_artlist_data, filters=(lambda menu_artlist: menu_artlist.rec_id > 0 and menu_artlist.isSelected)):
 
-            h_artikel = get_cache (H_artikel, {"_recid": [(eq, menu_artlist.rec_id)]})
+            # h_artikel = get_cache (H_artikel, {"_recid": [(eq, menu_artlist.rec_id)]})
+            h_artikel = db_session.query(H_artikel).filter(
+                     (H_artikel._recid == menu_artlist.rec_id)).with_for_update().first()
 
             if not h_artikel:
                 output_list.msg_str = "Selected artikel " + trim(menu_artlist.bezeich) + " not found, delete failed"

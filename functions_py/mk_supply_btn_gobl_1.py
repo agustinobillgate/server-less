@@ -1,7 +1,5 @@
-#using conversion tools version: 1.0.0.117
-#---------------------------------------------------------------------
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
-#---------------------------------------------------------------------
+#using conversion tools version: 1.0.0.119
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_lieferant, Gl_acct, Counters, Bediener, Res_history
@@ -64,14 +62,12 @@ def mk_supply_btn_gobl_1(pvilanguage:int, lname:string, zcode:string, user_init:
 
     t_l_lieferant = query(t_l_lieferant_data, first=True)
 
-    # counters = get_cache (Counters, {"counter_no": [(eq, 14)]})
     counters = db_session.query(Counters).filter(
              (Counters.counter_no == 14)).with_for_update().first()
     
     counters.counter = counters.counter + 1
     t_l_lieferant.lief_nr = counters.counter
-    pass
-    pass
+
     l_lieferant = L_lieferant()
     db_session.add(l_lieferant)
 

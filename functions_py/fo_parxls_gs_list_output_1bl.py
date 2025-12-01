@@ -7,6 +7,7 @@ from functions.prepare_fo_parxlsbl import prepare_fo_parxlsbl
 from models import Brief, Parameters, Queasy, Artikel, Wgrpdep
 
 def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user_init:string):
+
     msg_str = ""
     mess_result = "Failed to generate data"
     success_flag = False
@@ -1175,8 +1176,9 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
                 elif curr_cmd == 2029:
                     create_var1(curr_texte, True)
 
-                elif curr_cmd == 2031:
-                    create_var3(curr_texte, True)
+                # function create_var3 is not defined
+                # elif curr_cmd == 2031:
+                #     create_var3(curr_texte, True)
 
                 elif curr_cmd == 2032:
                     create_var1(curr_texte, True)
@@ -1356,21 +1358,30 @@ def fo_parxls_gs_list_output_1bl(pvilanguage:int, briefnr:int, link:string, user
     check_result()
 
     if msg_str != "":
-
-        queasy = get_cache (Queasy, {"key": [(eq, 293)],"deci1": [(eq, briefnr)],"char2": [(eq, trim(link))],"date1": [(eq, get_current_date())],"char1": [(eq, trim(user_init))]})
+        queasy = db_session.query(Queasy).filter(
+            (Queasy.key == 293) &
+            (Queasy.deci1 == briefnr) &
+            (Queasy.char2 == trim(link)) &
+            (Queasy.date1 == get_current_date()) &
+            (Queasy.char1 == trim(user_init))
+        ).with_for_update().first()
         
         if queasy:
             db_session.delete(queasy)
-            pass
 
         return generate_output()
 
-    queasy = get_cache (Queasy, {"key": [(eq, 293)],"deci1": [(eq, briefnr)],"char2": [(eq, trim(link))],"date1": [(eq, get_current_date())],"char1": [(eq, trim(user_init))]})
-
+    queasy = db_session.query(Queasy).filter(
+        (Queasy.key == 293) &
+        (Queasy.deci1 == briefnr) &
+        (Queasy.char2 == trim(link)) &
+        (Queasy.date1 == get_current_date()) &
+        (Queasy.char1 == trim(user_init))
+    ).with_for_update().first()
+    
     if queasy:
         db_session.delete(queasy)
-        pass
         mess_result = "Successfully generate data"
         success_flag = True
-
+        
     return generate_output()

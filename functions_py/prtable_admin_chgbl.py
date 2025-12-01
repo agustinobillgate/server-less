@@ -2,6 +2,7 @@
 #------------------------------------------
 # Rd, 28/10/2025
 # update roomtype, arrangement, tidak masuk
+# Rd, 27/11/2025, with_for_update added
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -20,6 +21,8 @@ def prtable_admin_chgbl(margt_list_data:[Margt_list], mrmcat_list_data:[Mrmcat_l
     margt_list = mrmcat_list = None
 
     db_session = local_storage.db_session
+    market_bezeich = market_bezeich.strip()
+    s = s.strip()
 
     def generate_output():
         nonlocal prmarket, queasy, prtable
@@ -39,7 +42,7 @@ def prtable_admin_chgbl(margt_list_data:[Margt_list], mrmcat_list_data:[Mrmcat_l
         i:int = 0
 
         # prtable = get_cache (Prtable, {"_recid": [(eq, rec_id)]})
-        prtable = db_session.query(Prtable).filter(Prtable._recid == rec_id).first()
+        prtable = db_session.query(Prtable).filter(Prtable._recid == rec_id).with_for_update().first()
 
         if prtable:
             # pass
@@ -78,7 +81,8 @@ def prtable_admin_chgbl(margt_list_data:[Margt_list], mrmcat_list_data:[Mrmcat_l
         
         db_session.commit()
 
-    prmarket = get_cache (Prmarket, {"nr": [(eq, nr)]})
+    # prmarket = get_cache (Prmarket, {"nr": [(eq, nr)]})
+    prmarket = db_session.query(Prmarket).filter(Prmarket.nr == nr).with_for_update().first()
 
     # print(margt_list_data)
     # print(mrmcat_list_data)
@@ -90,7 +94,10 @@ def prtable_admin_chgbl(margt_list_data:[Margt_list], mrmcat_list_data:[Mrmcat_l
         pass
         pass
 
-        queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, nr)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 18)],"number1": [(eq, nr)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 18) &
+                 (Queasy.number1 == nr)).with_for_update().first()
 
         if queasy:
             pass

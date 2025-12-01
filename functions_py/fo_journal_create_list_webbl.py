@@ -46,7 +46,7 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
         count = db_session.query(Queasy).filter(
             (Queasy.key == 280) &
             (Queasy.char1 == "FO Transaction") &
-            (Queasy.char2 == idflag)
+            (Queasy.char2 == (id_flag))
         ).count()
 
         if count >= 1000:
@@ -126,10 +126,8 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
                 else:
                     fo_journal_list.serv_percentage =  to_decimal("0")
 
-        bqueasy = db_session.query(Bqueasy).filter(
-                 (Bqueasy._recid == queasy._recid)).first()
+        bqueasy = db_session.query(Bqueasy).filter(Bqueasy._recid == queasy._recid).with_for_update().first()
         db_session.delete(bqueasy)
-        pass
 
     pqueasy = db_session.query(Pqueasy).filter(
              (Pqueasy.key == 280) & (Pqueasy.char1 == ("FO Transaction")) & (Pqueasy.char2 == (id_flag))).first()
@@ -154,8 +152,7 @@ def fo_journal_create_list_webbl(id_flag:string, fo_journal_list_data:[Fo_journa
              (Tqueasy.key == 285) & (Tqueasy.char1 == ("FO Transaction")) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == (id_flag))).first()
 
     if tqueasy:
-        pass
+        db_session.refresh(tqueasy, with_for_update=True)
         db_session.delete(tqueasy)
-        pass
 
     return generate_output()

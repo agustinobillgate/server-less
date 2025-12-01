@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -13,7 +15,13 @@ submenu_list_data, Submenu_list = create_model("Submenu_list", {"menurecid":int,
 menu_list_data, Menu_list = create_model("Menu_list", {"request":string, "krecid":int, "posted":bool, "nr":int, "artnr":int, "bezeich":string, "anzahl":int, "price":Decimal, "betrag":Decimal, "voucher":string}, {"anzahl": 1, "voucher": ""})
 t_h_bill_data, T_h_bill = create_model_like(H_bill, {"rec_id":int})
 
-def ts_restinv_posting_menu_webbl(case_type:int, pvilanguage:int, tischnr:int, curr_dept:int, cancel_reason:string, double_currency:bool, exchg_rate:Decimal, price_decimal:int, transdate:date, foreign_rate:bool, deptname:string, cancel_order:bool, order_taker:int, curr_waiter:int, gname:string, pax:int, kreditlimit:Decimal, change_str:string, cc_comment:string, hoga_card:string, print_to_kitchen:bool, from_acct:bool, pay_type:int, guestnr:int, transfer_zinr:string, curedept_flag:bool, curr_room:string, user_init:string, hoga_resnr:int, hoga_reslinnr:int, incl_vat:bool, get_price:int, mc_str:string, segment_code:int, tp_bediener_data:[Tp_bediener], submenu_list_data:[Submenu_list], cancel_flag:bool, menu_list_data:[Menu_list], t_h_bill_data:[T_h_bill]):
+def ts_restinv_posting_menu_webbl(case_type:int, pvilanguage:int, tischnr:int, curr_dept:int, cancel_reason:string, 
+                                  double_currency:bool, exchg_rate:Decimal, price_decimal:int, transdate:date, foreign_rate:bool, 
+                                  deptname:string, cancel_order:bool, order_taker:int, curr_waiter:int, gname:string, pax:int, kreditlimit:Decimal, 
+                                  change_str:string, cc_comment:string, hoga_card:string, print_to_kitchen:bool, from_acct:bool, pay_type:int, 
+                                  guestnr:int, transfer_zinr:string, curedept_flag:bool, curr_room:string, user_init:string, hoga_resnr:int, 
+                                  hoga_reslinnr:int, incl_vat:bool, get_price:int, mc_str:string, segment_code:int, tp_bediener_data:[Tp_bediener], 
+                                  submenu_list_data:[Submenu_list], cancel_flag:bool, menu_list_data:[Menu_list], t_h_bill_data:[T_h_bill]):
     avail_bill = False
     not_access = False
     not_access1 = False
@@ -70,6 +78,24 @@ def ts_restinv_posting_menu_webbl(case_type:int, pvilanguage:int, tischnr:int, c
     tp_bediener1_data, Tp_bediener1 = create_model_like(Bediener)
 
     db_session = local_storage.db_session
+    """
+    def ts_restinv_posting_menu_webbl(case_type:int, pvilanguage:int, tischnr:int, curr_dept:int, cancel_reason:string, 
+                                  double_currency:bool, exchg_rate:Decimal, price_decimal:int, transdate:date, foreign_rate:bool, 
+                                  deptname:string, cancel_order:bool, order_taker:int, curr_waiter:int, gname:string, pax:int, kreditlimit:Decimal, 
+                                  change_str:string, cc_comment:string, hoga_card:string, print_to_kitchen:bool, from_acct:bool, pay_type:int, 
+                                  guestnr:int, transfer_zinr:string, curedept_flag:bool, curr_room:string, user_init:string, hoga_resnr:int, 
+                                  hoga_reslinnr:int, incl_vat:bool, get_price:int, mc_str:string, segment_code:int, tp_bediener_data:[Tp_bediener], 
+                                  submenu_list_data:[Submenu_list], cancel_flag:bool, menu_list_data:[Menu_list], t_h_bill_data:[T_h_bill]):
+                                  """
+    cancel_reason = cancel_reason.strip()
+    deptname = deptname.strip()
+    gname = gname.strip()
+    change_str = change_str.strip()
+    cc_comment = cc_comment.strip()
+    hoga_card = hoga_card.strip()
+    transfer_zinr = transfer_zinr.strip()
+    curr_room = curr_room.strip()
+    mc_str = mc_str.strip()
 
     def generate_output():
         nonlocal avail_bill, not_access, not_access1, bill_date, mwst, mwst_foreign, rechnr, balance, bcol, balance_foreign, fl_code, fl_code1, fl_code2, fl_code3, fl_code4, fl_code5, p_88, closed, amount, kellner1_data, t_h_artikel_data, menurecid, add_zeit, billart, req_str, voucher_str, request_str, perm, zugriff, loopn, description, qty, price, cancel_str, amount_foreign, curr_zeit, krecid, hbill_recid, long_time, first_flag, menulist_nr, menulist_artno, menulist_bez, h_artikel, h_bill, kellner, bediener, queasy, wgrpdep
@@ -173,15 +199,14 @@ def ts_restinv_posting_menu_webbl(case_type:int, pvilanguage:int, tischnr:int, c
 
                 if t_h_bill_tmp:
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, curr_dept)],"number2": [(eq, tischnr)]})
+                    # queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, curr_dept)],"number2": [(eq, tischnr)]})
+                    queasy = db_session.query(Queasy).filter(
+                             (Queasy.key == 31) & (Queasy.number1 == curr_dept) & (Queasy.number2 == tischnr)).with_for_update().first()
 
                     if queasy:
                         queasy.number3 = get_current_time_in_seconds()
                         queasy.date1 = get_current_date()
 
-
-                        pass
-                        pass
 
     long_time = get_current_time_in_seconds()
 
@@ -339,7 +364,7 @@ def ts_restinv_posting_menu_webbl(case_type:int, pvilanguage:int, tischnr:int, c
             buffer_copy(t_h_bill_tmp, t_h_bill)
 
         for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 351) & (Queasy.number1 == curr_dept) & (Queasy.number2 == tischnr)).order_by(Queasy._recid).all():
+                 (Queasy.key == 351) & (Queasy.number1 == curr_dept) & (Queasy.number2 == tischnr)).order_by(Queasy._recid).with_for_update().all():
             db_session.delete(queasy)
         pass
 

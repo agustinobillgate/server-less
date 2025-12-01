@@ -6,6 +6,7 @@
 # - New Compile Program
 # - Fixing inden
 # - Fixing printter.emu -> printcod.emu
+# Rd, 01/12/2025, with_for_update added
 # ======================================
 
 from functions.additional_functions import *
@@ -15,7 +16,8 @@ from models import H_bill_line, H_artikel, Queasy, H_bill, Wgrpdep, Hoteldpt, Ke
 
 submenu_list_data, Submenu_list = create_model("Submenu_list", {"menurecid":int, "zeit":int, "nr":int, "artnr":int, "bezeich":string, "anzahl":int, "zknr":int, "request":string})
 
-def ts_restinv_print_orderticket_webbl(submenu_list_data:[Submenu_list], pvilanguage:int, close_it:bool, reprint_it:bool, h_bill_rechnr:int, curr_dept:int, disc_art1:int, disc_art2:int, disc_art3:int, prorder:int, desclength:int):
+def ts_restinv_print_orderticket_webbl(submenu_list_data:[Submenu_list], pvilanguage:int, close_it:bool, reprint_it:bool, 
+                                       h_bill_rechnr:int, curr_dept:int, disc_art1:int, disc_art2:int, disc_art3:int, prorder:int, desclength:int):
 
     prepare_cache ([H_bill_line, H_artikel, Queasy, H_bill, Wgrpdep, Hoteldpt, Kellner, Printcod, H_journal, H_mjourn])
 
@@ -318,7 +320,9 @@ def ts_restinv_print_orderticket_webbl(submenu_list_data:[Submenu_list], pvilang
 
                 if close_it:
 
-                    hbline = get_cache (H_bill_line, {"_recid": [(eq, hbuff._recid)]})
+                    # hbline = get_cache (H_bill_line, {"_recid": [(eq, hbuff._recid)]})
+                    hbline = db_session.query(H_bill_line).filter(
+                        (H_bill_line._recid == hbuff._recid)).with_for_update().first()
 
                     if hbline.steuercode == 0:
                         hbuff.steuercode = - prorder

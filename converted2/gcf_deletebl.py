@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.delete_guestbookbl import delete_guestbookbl
@@ -31,39 +33,41 @@ def gcf_deletebl(userinit:string, gastnr:int):
         return {}
 
 
-    guest = get_cache (Guest, {"gastnr": [(eq, gastnr)]})
+    # guest = get_cache (Guest, {"gastnr": [(eq, gastnr)]})
+    guest = db_session.query(Guest).filter(
+             (Guest.gastnr == gastnr)).with_for_update().first()
     pass
 
     for guestseg in db_session.query(Guestseg).filter(
-                 (Guestseg.gastnr == guest.gastnr)).order_by(Guestseg._recid).all():
+                 (Guestseg.gastnr == guest.gastnr)).order_by(Guestseg._recid).with_for_update().all():
         db_session.delete(guestseg)
 
     for history in db_session.query(History).filter(
-                 (History.gastnr == guest.gastnr)).order_by(History._recid).all():
+                 (History.gastnr == guest.gastnr)).order_by(History._recid).with_for_update().all():
         db_session.delete(history)
 
     for guest_pr in db_session.query(Guest_pr).filter(
-                 (Guest_pr.gastnr == guest.gastnr)).order_by(Guest_pr._recid).all():
+                 (Guest_pr.gastnr == guest.gastnr)).order_by(Guest_pr._recid).with_for_update().all():
         db_session.delete(guest_pr)
 
     for gk_notes in db_session.query(Gk_notes).filter(
-                 (Gk_notes.gastnr == guest.gastnr)).order_by(Gk_notes._recid).all():
+                 (Gk_notes.gastnr == guest.gastnr)).order_by(Gk_notes._recid).with_for_update().all():
         db_session.delete(gk_notes)
 
     for guestbud in db_session.query(Guestbud).filter(
-                 (Guestbud.gastnr == guest.gastnr)).order_by(Guestbud._recid).all():
+                 (Guestbud.gastnr == guest.gastnr)).order_by(Guestbud._recid).with_for_update().all():
         db_session.delete(guestbud)
 
     for akt_kont in db_session.query(Akt_kont).filter(
-                 (Akt_kont.gastnr == guest.gastnr)).order_by(Akt_kont._recid).all():
+                 (Akt_kont.gastnr == guest.gastnr)).order_by(Akt_kont._recid).with_for_update().all():
         db_session.delete(akt_kont)
 
     for queasy in db_session.query(Queasy).filter(
-                 (Queasy.key == 231) & (Queasy.number1 == guest.gastnr)).order_by(Queasy._recid).all():
+                 (Queasy.key == 231) & (Queasy.number1 == guest.gastnr)).order_by(Queasy._recid).with_for_update().all():
         db_session.delete(queasy)
 
     for tqueasy in db_session.query(Tqueasy).filter(
-                 (Tqueasy.key == 212) & (Tqueasy.number3 == guest.gastnr)).order_by(Tqueasy._recid).all():
+                 (Tqueasy.key == 212) & (Tqueasy.number3 == guest.gastnr)).order_by(Tqueasy._recid).with_for_update().all():
         db_session.delete(tqueasy)
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 472)]})

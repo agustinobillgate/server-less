@@ -3,7 +3,9 @@
         issue:  - cannot split item
                 - fix h_bill_line.tisch to h_bill_line.tischnr
 """
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import H_bill_line, H_journal
@@ -34,9 +36,13 @@ def ts_split_item_procbl(rec_id: int, split_qty: int, rest: Decimal, foreign_res
             "qty_sign": qty_sign
         }
 
-    h_bill_line = get_cache(H_bill_line, {"_recid": [(eq, rec_id)]})
+    # h_bill_line = get_cache(H_bill_line, {"_recid": [(eq, rec_id)]})
+    h_bill_line = db_session.query(H_bill_line).filter(
+                 (H_bill_line._recid == rec_id)).with_for_update().first()
 
-    h_journal = get_cache(H_journal, {"schankbuch": [(eq, rec_id)]})
+    # h_journal = get_cache(H_journal, {"schankbuch": [(eq, rec_id)]})
+    h_journal = db_session.query(H_journal).filter(
+                 (H_journal.schankbuch == rec_id)).with_for_update().first()
     for i in range(1, split_qty + 1):
 
         if i == split_qty:

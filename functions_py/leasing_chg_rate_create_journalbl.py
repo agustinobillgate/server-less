@@ -5,6 +5,9 @@
         _remark_:   - fix python indentation
                     - using f"string"
 """
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -68,8 +71,10 @@ def leasing_chg_rate_create_journalbl(resnr:int, reslinnr:int, user_init:str):
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache (
-                    Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+                # umsatz = get_cache (
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -107,9 +112,10 @@ def leasing_chg_rate_create_journalbl(resnr:int, reslinnr:int, user_init:str):
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
-
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
                 if not umsatz:
                     umsatz = Umsatz()
 
@@ -177,8 +183,10 @@ def leasing_chg_rate_create_journalbl(resnr:int, reslinnr:int, user_init:str):
 
                     db_session.add(billjournal)
 
-                    umsatz = get_cache (
-                        Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+                    # umsatz = get_cache (
+                    #     Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+                    umsatz = db_session.query(Umsatz).filter(
+                        (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                     if not umsatz:
                         umsatz = Umsatz()
@@ -215,9 +223,10 @@ def leasing_chg_rate_create_journalbl(resnr:int, reslinnr:int, user_init:str):
 
                     db_session.add(billjournal)
 
-                    umsatz = get_cache (
-                        Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
-
+                    # umsatz = get_cache (
+                    #     Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+                    umsatz = db_session.query(Umsatz).filter(
+                        (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
                     if not umsatz:
                         umsatz = Umsatz()
 

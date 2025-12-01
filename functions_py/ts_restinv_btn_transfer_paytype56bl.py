@@ -2,13 +2,16 @@
 #----------------------------------------
 # Rd 3/8/2025
 # if not availble -> return
+# Rd, 01/12/2025, with_for_update added
 #----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import H_artikel, H_bill, H_bill_line, Queasy, Htparam, H_umsatz, Artikel, Kellner, Kellne1, Umsatz, H_compli, Arrangement, Argt_line, Billjournal
 
-def ts_restinv_btn_transfer_paytype56bl(rec_id:int, guestnr:int, curr_dept:int, balance_foreign:Decimal, balance:Decimal, pay_type:int, transdate:date, double_currency:bool, exchg_rate:Decimal, price_decimal:int, user_init:string):
+def ts_restinv_btn_transfer_paytype56bl(rec_id:int, guestnr:int, curr_dept:int, balance_foreign:Decimal, 
+                                        balance:Decimal, pay_type:int, transdate:date, double_currency:bool, 
+                                        exchg_rate:Decimal, price_decimal:int, user_init:string):
 
     prepare_cache ([H_bill, Queasy, Htparam, H_umsatz, Artikel, Umsatz, H_compli, Arrangement, Argt_line, Billjournal])
 
@@ -99,7 +102,9 @@ def ts_restinv_btn_transfer_paytype56bl(rec_id:int, guestnr:int, curr_dept:int, 
         nonlocal t_h_artikel
         nonlocal t_h_artikel_data
 
-        queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, h_bill.departement)],"number2": [(eq, h_bill.tischnr)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, h_bill.departement)],"number2": [(eq, h_bill.tischnr)]})
+        queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 31) & (Queasy.number1 == h_bill.departement) & (Queasy.number2 == h_bill.tischnr)).with_for_update().first()
 
         if queasy:
             pass
@@ -107,8 +112,6 @@ def ts_restinv_btn_transfer_paytype56bl(rec_id:int, guestnr:int, curr_dept:int, 
             queasy.date1 = None
 
 
-            pass
-            pass
 
 
     def fill_mcoupon(dept:int, artno:int):
@@ -132,7 +135,9 @@ def ts_restinv_btn_transfer_paytype56bl(rec_id:int, guestnr:int, curr_dept:int, 
             if htparam.flogical and bill_date < get_current_date():
                 bill_date = bill_date + timedelta(days=1)
 
-        h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, artno)],"departement": [(eq, - dept)],"betriebsnr": [(eq, dept)],"datum": [(eq, bill_date)]})
+        # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, artno)],"departement": [(eq, - dept)],"betriebsnr": [(eq, dept)],"datum": [(eq, bill_date)]})
+        h_umsatz = db_session.query(H_umsatz).filter(
+                     (H_umsatz.artnr == artno) & (H_umsatz.departement == - dept) & (H_umsatz.betriebsnr == dept) & (H_umsatz.datum == bill_date)).with_for_update().first()
 
         if not h_umsatz:
             h_umsatz = H_umsatz()
@@ -145,8 +150,6 @@ def ts_restinv_btn_transfer_paytype56bl(rec_id:int, guestnr:int, curr_dept:int, 
 
 
         h_umsatz.anzahl = h_umsatz.anzahl + h_bill.belegung
-        pass
-        pass
 
 
     def adjust_complito():
@@ -224,14 +227,18 @@ def ts_restinv_btn_transfer_paytype56bl(rec_id:int, guestnr:int, curr_dept:int, 
                 if artikel.artart == 9 and artikel.artgrp != 0:
                     adjust_revbdown(h_bline.bill_datum, - h_bline.betrag, - h_bline.anzahl)
 
-                h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, h_art.artnr)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, h_art.artnr)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                h_umsatz = db_session.query(H_umsatz).filter(
+                             (H_umsatz.artnr == h_art.artnr) & (H_umsatz.departement == h_art.departement) & (H_umsatz.datum == h_bline.bill_datum)).with_for_update().first()
 
                 if h_umsatz and pay_type == 5:
                     h_umsatz.betrag =  to_decimal(h_umsatz.betrag) - to_decimal(h_bline.betrag)
                     h_umsatz.anzahl = h_umsatz.anzahl - h_bline.anzahl
                     pass
 
-                umsatz = get_cache (Umsatz, {"artnr": [(eq, h_art.artnrfront)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                # umsatz = get_cache (Umsatz, {"artnr": [(eq, h_art.artnrfront)],"departement": [(eq, h_art.departement)],"datum": [(eq, h_bline.bill_datum)]})
+                umsatz = db_session.query(Umsatz).filter(
+                             (Umsatz.artnr == h_art.artnrfront) & (Umsatz.departement == h_art.departement) & (Umsatz.datum == h_bline.bill_datum)).with_for_update().first()
 
                 if umsatz:
                     umsatz.betrag =  to_decimal(umsatz.betrag) - to_decimal(h_bline.betrag)
@@ -295,7 +302,9 @@ def ts_restinv_btn_transfer_paytype56bl(rec_id:int, guestnr:int, curr_dept:int, 
 
             artikel1 = get_cache (Artikel, {"artnr": [(eq, argt_line.argt_artnr)],"departement": [(eq, argt_line.departement)]})
 
-            umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+            # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+            umsatz = db_session.query(Umsatz).filter(
+                         (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
             if not umsatz:
                 umsatz = Umsatz()
@@ -306,7 +315,7 @@ def ts_restinv_btn_transfer_paytype56bl(rec_id:int, guestnr:int, curr_dept:int, 
                 umsatz.departement = artikel1.departement
             umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(argt_betrag)
             umsatz.anzahl = umsatz.anzahl + qty
-            pass
+            
             billjournal = Billjournal()
             db_session.add(billjournal)
 
@@ -328,8 +337,9 @@ def ts_restinv_btn_transfer_paytype56bl(rec_id:int, guestnr:int, curr_dept:int, 
 
         artikel1 = get_cache (Artikel, {"artnr": [(eq, arrangement.artnr_logis)],"departement": [(eq, arrangement.intervall)]})
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel1.artnr)],"departement": [(eq, artikel1.departement)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == artikel1.artnr) & (Umsatz.departement == artikel1.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
         if not umsatz:
             umsatz = Umsatz()
             db_session.add(umsatz)
@@ -339,7 +349,7 @@ def ts_restinv_btn_transfer_paytype56bl(rec_id:int, guestnr:int, curr_dept:int, 
             umsatz.departement = artikel1.departement
         umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(rest_betrag)
         umsatz.anzahl = umsatz.anzahl + qty
-        pass
+        
         billjournal = Billjournal()
         db_session.add(billjournal)
 
@@ -359,7 +369,9 @@ def ts_restinv_btn_transfer_paytype56bl(rec_id:int, guestnr:int, curr_dept:int, 
         pass
 
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    h_bill = db_session.query(H_bill).filter(
+                 (H_bill._recid == rec_id)).with_for_update().first()
     # Rd 3/8/2025
     # if not availble -> return
     if h_bill is None:

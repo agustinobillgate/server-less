@@ -237,6 +237,7 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
         if not res_line1:
             outorder = get_cache(
                 Outorder, {"zinr": [(eq, zimmer.zinr)], "gespstart": [(le, co_date)], "gespende": [(ge, co_date)], "betriebsnr": [(le, 1)]})
+            db_session.refresh(zimmer, with_for_update=True)
 
             if outorder:
                 zimmer.zistatus = 6
@@ -247,8 +248,12 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
                 zimmer.bediener_nr_stat = 0
 
         for bill1 in db_session.query(Bill1).filter(
-                (Bill1.resnr == resnr) & (Bill1.parent_nr == reslinnr) & (Bill1.flag == 0) & (Bill1.zinr == (zinr))).order_by(Bill1._recid).all():
-            tot_umsatz = to_decimal(tot_umsatz) + to_decimal(bill1.gesamtumsatz)
+            (Bill1.resnr == resnr) & 
+            (Bill1.parent_nr == reslinnr) &
+            (Bill1.flag == 0) & 
+            (Bill1.zinr == (zinr).lower())
+        ).order_by(Bill1._recid).all():
+            tot_umsatz =  to_decimal(tot_umsatz) + to_decimal(bill1.gesamtumsatz)
 
         if (co_date - res_line.ankunft) == 0 and tot_umsatz == 0:
             real_guest = False
@@ -275,7 +280,11 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
             get_output(intevent_1(2, zinr, "Priscilla", res_line.resnr, res_line.reslinnr))
 
         for bill1 in db_session.query(Bill1).filter(
-                (Bill1.resnr == resnr) & (Bill1.parent_nr == reslinnr) & (Bill1.flag == 0)).order_by(Bill1._recid).all():
+            (Bill1.resnr == resnr) & 
+            (Bill1.parent_nr == reslinnr) & 
+            (Bill1.flag == 0)
+        ).with_for_update().order_by(Bill1._recid).all():
+            
             bl_saldo = to_decimal("0")
 
             for bill_line in db_session.query(Bill_line).filter(
@@ -283,19 +292,29 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
                 bl_saldo = to_decimal(bl_saldo) + to_decimal(bill_line.betrag)
 
             if bl_saldo != bill1.saldo:
-                tbuff = get_cache(Bill, {"_recid": [(eq, bill1._recid)]})
+                tbuff = db_session.query(Tbuff).filter((Tbuff._recid == bill1._recid)).with_for_update().first()
+
                 tbuff.saldo = to_decimal(bl_saldo)
+
             bill1.vesrcod = user_init
             bill1.flag = 1
             bill1.datum = co_date
 
         for bill1 in db_session.query(Bill1).filter(
-                (Bill1.resnr == resnr) & (Bill1.parent_nr == reslinnr) & (Bill1.zinr == (zinr))).order_by(Bill1._recid).all():
+            (Bill1.resnr == resnr) & 
+            (Bill1.parent_nr == reslinnr) & 
+            (Bill1.zinr == (zinr))
+        ).with_for_update().order_by(Bill1._recid).all():
+
             if real_guest and resstatus != 12:
                 get_output(create_historybl(resnr, reslinnr, zinr, "checkout", user_init, ""))
 
-            res_line = get_cache(
-                Res_line, {"resnr": [(eq, bill1.resnr)], "reslinnr": [(eq, bill1.reslinnr)], "zinr": [(eq, bill1.zinr)]})
+            res_line = db_session.query(Res_line).filter(
+                        (Res_line.resnr == bill1.resnr) &
+                        (Res_line.reslinnr == bill1.reslinnr) &
+                        (Res_line.zinr == bill1.zinr)
+                     ).with_for_update().first()
+            
             res_recid = res_line._recid
             resstatus = res_line.resstatus
             ankunft = res_line.ankunft
@@ -303,6 +322,7 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
 
             if res_line.resstatus != 12:
                 res_line.resstatus = 8
+                
             res_line.abreise = co_date
             abreise_date = res_line.abreise
             res_line.abreisezeit = get_current_time_in_seconds()
@@ -320,11 +340,14 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
                 Res_line, {"resnr": [(eq, res_line.resnr)], "active_flag": [(lt, 2)]})
 
             if not res_line2:
+                db_session.refresh(reservation, with_for_update=True)
                 reservation.activeflag = 1
 
+
             if tot_umsatz != 0:
-                guest = get_cache(
-                    Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
+                guest = db_session.query(Guest).filter(
+                            (Guest.gastnr == res_line.gastnrpay)
+                         ).with_for_update().first()
                 guest.logisumsatz = to_decimal(
                     guest.logisumsatz) + to_decimal(bill1.logisumsatz)
                 guest.argtumsatz = to_decimal(
@@ -336,8 +359,10 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
                 guest.gesamtumsatz = to_decimal(
                     guest.gesamtumsatz) + to_decimal(bill1.gesamtumsatz)
 
-                guestat = get_cache(
-                    Guestat, {"gastnr": [(eq, res_line.gastnr)], "monat": [(eq, get_month(bill_date))], "jahr": [(eq, get_year(bill_date))], "betriebsnr": [(eq, 0)]})
+
+                guestat = db_session.query(Guestat).filter(
+                            (Guestat.gastnr == res_line.gastnr) & (Guestat.monat == get_month(bill_date)) & (Guestat.jahr == get_year(bill_date)) & (Guestat.betriebsnr == 0)
+                         ).with_for_update().first()
 
                 if not guestat:
                     guestat = Guestat()
@@ -374,8 +399,10 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
                             Bediener, {"userinit": [(eq, rguest.phonetik3)]})
 
                 if bediener:
-                    salestat = get_cache(
-                        Salestat, {"bediener_nr": [(eq, bediener.nr)], "jahr": [(eq, get_year(bill_date))], "monat": [(eq, get_month(bill_date))]})
+
+                    salestat = db_session.query(Salestat).filter(
+                                (Salestat.bediener_nr == bediener.nr) & (Salestat.jahr == get_year(bill_date)) & (Salestat.monat == get_month(bill_date))
+                         ).with_for_update().first()
 
                     if not salestat:
                         salestat = Salestat()
@@ -404,8 +431,11 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
                             salestat.room_nights = salestat.room_nights + 1
 
             if real_guest and res_line.resstatus != 12:
-                guest = get_cache(
-                    Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+
+                guest = db_session.query(Guest).filter(
+                            (Guest.gastnr == res_line.gastnrmember)
+                         ).with_for_update().first()
+                
                 guest.date1 = res_line.ankunft
                 guest.date2 = res_line.abreise
                 guest.zimmeranz = guest.zimmeranz + 1
@@ -420,8 +450,10 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
                 if res_line.gastnrmember != res_line.gastnr:
                     get_min_reslinnr()
 
-                    guest = get_cache(
-                        Guest, {"gastnr": [(eq, res_line.gastnr)]})
+                    guest = db_session.query(Guest).filter(
+                                (Guest.gastnr == res_line.gastnr)
+                             ).with_for_update().first()
+                    
                     guest.zimmeranz = guest.zimmeranz + 1
 
                     if min_reslinnr == 1:
@@ -459,7 +491,8 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
                 (Zimplan.datum >= co_date) &
                 (Zimplan.datum < abreise) &
                 (Zimplan.zinr == (zinr)) &
-                (Zimplan.res_recid == res_recid)).order_by(Zimplan._recid).all():
+                (Zimplan.res_recid == res_recid)
+            ).with_for_update().order_by(Zimplan._recid).all():
 
                 if res_recid1 != 0:
                     if zimplan.datum < res_line1.abreise:
@@ -469,15 +502,16 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
 
             if resstatus != 12:
                 for resplan in db_session.query(Resplan).filter(
-                        (Resplan.datum >= co_date) & (Resplan.datum < abreise) & (Resplan.zikatnr == zimmer.zikatnr)).order_by(Resplan._recid).all():
+                             (Resplan.datum >= co_date) & (Resplan.datum < abreise) & (Resplan.zikatnr == zimmer.zikatnr)).with_for_update().order_by(Resplan._recid).all():
                     resplan.anzzim[resstatus - 1] = resplan.anzzim[resstatus - 1] - 1
+
 
             resline = db_session.query(Resline).filter(
                 (Resline.resnr == resnr) & ((Resline.active_flag == 0) | (Resline.active_flag == 1)) & (Resline.resstatus != 12)).first()
 
             if not resline:
-                mealcoup = get_cache(
-                    Mealcoup, {"zinr": [(eq, zinr)], "activeflag": [(eq, True)]})
+                mealcoup = db_session.query(Mealcoup).filter(
+                            (Mealcoup.zinr == zinr) & (Mealcoup.activeflag == True)).with_for_update().first()
 
                 if mealcoup:
                     mealcoup.activeflag = False
@@ -506,7 +540,9 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
             ((Res_line1.resnr == resnr)) & ((Res_line1.reslinnr != reslinnr)) & ((Res_line1.resstatus == 6) | (Res_line1.resstatus == 13))).first()
 
         if not res_line1:
-            master = get_cache(Master, {"resnr": [(eq, resnr)]})
+
+            master = db_session.query(Master).filter(
+                        (Master.resnr == resnr)).with_for_update().first()
 
             if master:
                 master.active = False
@@ -515,7 +551,8 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
                     Bill, {"resnr": [(eq, resnr)], "reslinnr": [(eq, 0)]})
 
                 if bill1 and bill1.rechnr != 0:
-                    guest = get_cache(Guest, {"gastnr": [(eq, bill1.gastnr)]})
+                    guest = db_session.query(Guest).filter((Guest.gastnr == bill1.gastnr)).with_for_update().first()
+                    
                     guest.logisumsatz = to_decimal(
                         guest.logisumsatz) + to_decimal(bill1.logisumsatz)
                     guest.argtumsatz = to_decimal(
@@ -652,7 +689,7 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
                     Queasy, {"key": [(eq, 171)], "date1": [(eq, datum)], "number1": [(eq, roomnr)], "char1": [(eq, "")]})
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
-                    qsy = get_cache(Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Qsy).filter((Qsy._recid == queasy._recid)).with_for_update().first()
 
                     if qsy:
                         qsy.logi2 = True
@@ -662,23 +699,25 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
                         Queasy, {"key": [(eq, 171)], "date1": [(eq, datum)], "number1": [(eq, roomnr)], "char1": [(eq, origcode)]})
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
-                        qsy = get_cache(
-                            Queasy, {"_recid": [(eq, queasy._recid)]})
+                        qsy = db_session.query(Qsy).filter((Qsy._recid == queasy._recid)).with_for_update().first()
 
                         if qsy:
                             qsy.logi2 = True
 
-# start Alder: Centralized Guest
+    # start Alder: Centralized Guest
     def centralized_guest_checkout_realtime(resnr: int, reslinnr: int):
         nonlocal error_code, checked_out, early_co, goto_master, flag_report, msg_str, msg_int, min_reslinnr, pax, rechnr, rm_nite, co_date, bill_date, abreise_date, zinr, add_str, main_guest, co_ok, zugriff, answer, room_added, do_it, statusstr, unbalanced_bill, priscilla_active, centralized_flag, lvcarea, bl_saldo, res_line, bill, guest, bediener, queasy, reservation, htparam, outorder, reslin_queasy, bill_line, zimmer, guestat, akt_cust, salestat, res_history, zimplan, resplan, mealcoup, interface, master, zimkateg
         nonlocal pvilanguage, case_type, user_init, reason_str, silenzio
         nonlocal resline, mbill, rguest, rline, bline, buf_rline, bqueasy, tbuff
+
+
         nonlocal resline, mbill, rguest, rline, bline, buf_rline, bqueasy, tbuff
 
-        bqueasy = get_cache(
-            Queasy, {"key": [(eq, 373)], "number1": [(eq, resnr)], "number2": [(eq, reslinnr)]})
+        bqueasy = db_session.query(Queasy).filter(
+                    (Queasy.key == 373) & (Queasy.number1 == resnr) & (Queasy.number2 == reslinnr)).first()
 
         if bqueasy:
+            db_session.refresh(bqueasy, with_for_update=True)
             bqueasy.logi1 = True
             bqueasy.logi2 = False
 
@@ -694,11 +733,9 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
 
 # end Alder: Centralized Guest
 
-    reservation = get_cache(
-        Reservation, {"resnr": [(eq, resnr)]})
+    reservation = db_session.query(Reservation).filter(Reservation.resnr == resnr).first()
 
-    bediener = get_cache(
-        Bediener, {"userinit": [(eq, user_init)]})
+    bediener = db_session.query(Bediener).filter(Bediener.userinit == user_init).first()
 
     htparam = get_cache(
         Htparam, {"paramnr": [(eq, 87)]})
@@ -711,16 +748,16 @@ def inv_checkout_listbl(pvilanguage: int, case_type: int, resnr: int, reslinnr: 
     htparam = get_cache(
         Htparam, {"paramnr": [(eq, 974)]})
     unbalanced_bill = htparam.flogical
-# start - Alder: Centralized Guest
+    # start - Alder: Centralized Guest
     htparam = get_cache(Htparam, {"paramnr": [(eq, 1343)]})
 
     if htparam:
         if htparam.fchar != "" and htparam.fchar != None:
             if num_entries(htparam.fchar, ":") > 1:
                 centralized_flag = True
-# end - Alder: Centralized Guest
-    res_line = get_cache(
-        Res_line, {"resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
+    # end - Alder: Centralized Guest
+    res_line = db_session.query(Res_line).filter((Res_line.resnr == resnr) & (Res_line.reslinnr == reslinnr)).first()
+    
     zinr = res_line.zinr.strip()
     pax = res_line.erwachs
     main_guest = (res_line.resstatus == 6)

@@ -3,6 +3,7 @@
 # ==========================================
 # Rulita, 10-10-2025
 # Tiket ID : 8CF423 | Recompile Program
+# Rd, 28/11/2025, with_for_update added
 # ==========================================
 
 from functions.additional_functions import *
@@ -55,28 +56,32 @@ def save_hotel_info_setup_wizardbl(t_hotel_data_data:[T_hotel_data]):
     if not t_hotel_data:
         error_message = "No Data Available"
 
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 200)]})
+    # paramtext = get_cache (Paramtext, {"txtnr": [(eq, 200)]})
+    paramtext = db_session.query(Paramtext).filter(Paramtext.txtnr == 200).with_for_update().first()
 
     if paramtext:
         pass
         paramtext.ptexte = t_hotel_data.hotel_name
         pass
 
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 203)]})
+    # paramtext = get_cache (Paramtext, {"txtnr": [(eq, 203)]})
+    paramtext = db_session.query(Paramtext).filter(Paramtext.txtnr == 203).with_for_update().first()
 
     if paramtext:
         pass
         paramtext.ptexte = t_hotel_data.hotel_city
         pass
 
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 204)]})
+    # paramtext = get_cache (Paramtext, {"txtnr": [(eq, 204)]})
+    paramtext = db_session.query(Paramtext).filter(Paramtext.txtnr == 204).with_for_update().first()
 
     if paramtext:
         pass
         paramtext.ptexte = t_hotel_data.hotel_phone
         pass
 
-    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 206)]})
+    # paramtext = get_cache (Paramtext, {"txtnr": [(eq, 206)]})
+    paramtext = db_session.query(Paramtext).filter(Paramtext.txtnr == 206).with_for_update().first()
 
     if paramtext:
         pass

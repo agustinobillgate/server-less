@@ -2,6 +2,7 @@
 #----------------------------------------
 # Rd 3/8/2025
 # if not availble -> return
+# Rd, 01/12/2025, with_for_update added
 #----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -22,7 +23,9 @@ def ts_restsale_update_h_billbl(rec_id:int):
         return {}
 
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    h_bill = db_session.query(H_bill).filter(
+                 (H_bill._recid == rec_id)).with_for_update().first()
     # Rd 3/8/2025
     # if not avail return
     if h_bill is None:

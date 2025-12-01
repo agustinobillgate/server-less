@@ -2,7 +2,8 @@
 #------------------------------------------
 # Rd, 10/10/2025
 # message kosong
-#------------------------------------------
+# # Rd, 28/11/2025, with_for_update added
+# -----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.intevent_1 import intevent_1
@@ -48,7 +49,9 @@ def messages_update_reslinebl(resnr:int, reslinnr:int):
                 if res_line.active_flag == 1:
                     get_output(intevent_1(5, res_line.zinr, "Message Lamp off!", res_line.resnr, res_line.reslinnr))
 
-    res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+    # res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+    res_line = db_session.query(Res_line).filter(
+             (Res_line.resnr == resnr) & (Res_line.reslinnr == reslinnr)).with_for_update().first()
     update_resline()
 
     return generate_output()

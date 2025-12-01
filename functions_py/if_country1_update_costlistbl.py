@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Parameters
@@ -11,6 +13,9 @@ def if_country1_update_costlistbl(cost_list_rec_id:int, zone1:string, grace1:int
     parameters = None
 
     db_session = local_storage.db_session
+    zone1 = zone1.strip()
+
+
 
     def generate_output():
         nonlocal parameters
@@ -25,10 +30,10 @@ def if_country1_update_costlistbl(cost_list_rec_id:int, zone1:string, grace1:int
 
         s:string = ""
 
-        parameters = get_cache (Parameters, {"_recid": [(eq, cost_list_rec_id)]})
+        # parameters = get_cache (Parameters, {"_recid": [(eq, cost_list_rec_id)]})
         if parameters:
-            parameters.vstring = to_string(grace1) + ";" + to_string(wday1) + ";" + to_string(ftime1, "9999") + ";" + to_string(ttime1, "9999") + ";" + to_string(tdura1) + ";" + to_string(dura1) + ";" + to_string(cost1, ">>>>>>9.99") + ";" + s
-        pass
+            # parameters.vstring = to_string(grace1) + ";" + to_string(wday1) + ";" + to_string(ftime1, "9999") + ";" + to_string(ttime1, "9999") + ";" + to_string(tdura1) + ";" + to_string(dura1) + ";" + to_string(cost1, ">>>>>>9.99") + ";" + s
+            parameters.vstring = f"{grace1};{wday1};{ftime1:04};{ttime1:04};{tdura1};{dura1};{cost1:>9.2f};{s}"
 
 
     update_costlist()

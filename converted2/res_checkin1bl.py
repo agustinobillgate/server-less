@@ -49,7 +49,9 @@ def res_checkin1bl(pvilanguage:int, resnr:int, reslinnr:int, silenzio:bool):
         return {"can_checkin": can_checkin, "msg_str": msg_str, "msg_str1": msg_str1, "msg_str2": msg_str2, "msg_str3": msg_str3, "msg_str4": msg_str4, "err_number1": err_number1, "err_number2": err_number2, "err_number3": err_number3, "err_number4": err_number4, "fill_gcfemail": fill_gcfemail, "gast_gastnr": gast_gastnr, "q_143": q_143, "flag_report": flag_report, "warn_flag": warn_flag}
 
 
-    res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+    # res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+    res_line = db_session.query(Res_line).filter(
+             (Res_line.resnr == resnr) & (Res_line.reslinnr == reslinnr)).with_for_update().first()
 
     if not res_line:
 
@@ -72,8 +74,14 @@ def res_checkin1bl(pvilanguage:int, resnr:int, reslinnr:int, silenzio:bool):
 
         return generate_output()
 
-    gast = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
-
+    print("res_line.gastnrmember = " + to_string(res_line.gastnrmember))
+    
+    # gast = get_cache (Guest, {"gastnr": [(eq, res_line.gastnrmember)]})
+    gast = db_session.query(Guest).filter(
+             (Guest.gastnr == res_line.gastnrmember)).with_for_update().first()
+    
+    print("gast.karteityp = " + to_string(gast.karteityp))
+    
     if gast.karteityp != 0:
         msg_str = translateExtended ("Guest Type must be individual guest.", lvcarea, "")
 

@@ -1,8 +1,8 @@
 #using conversion tools version: 1.0.0.119
 #------------------------------------------
 # Rd, 05/11/2025
-# 
-#------------------------------------------
+# Rd, 27/11/2025, with_for_update
+#-------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -60,7 +60,8 @@ def read_bill1_webbl(case_type:int, billno:int, resno:int, reslinno:int, actflag
 
         if bl_saldo != bill.saldo:
 
-            tbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+            # tbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+            tbuff = db_session.query(Bill).filter(Bill._recid == bill._recid).with_for_update().first()
             tbuff.saldo =  to_decimal(bl_saldo)
             pass
             pass
@@ -148,7 +149,8 @@ def read_bill1_webbl(case_type:int, billno:int, resno:int, reslinno:int, actflag
 
                     if bill.zinr != res_line.zinr:
 
-                        bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+                        # bbuff = get_cache (Bill, {"_recid": [(eq, bill._recid)]})
+                        bbuff = db_session.query(Bill).filter(Bill._recid == bill._recid).with_for_update().first()
                         bbuff.zinr = res_line.zinr
 
 

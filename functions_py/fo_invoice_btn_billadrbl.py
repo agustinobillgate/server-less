@@ -125,8 +125,8 @@ def fo_invoice_btn_billadrbl(gastpay:int, bil_recid:int, user_init:string):
     guest = get_cache (Guest, {"gastnr": [(eq, gastpay)]})
 
     if bbuff:
-
-        bill = get_cache (Bill, {"_recid": [(eq, bil_recid)]})
+        bill = db_session.query(Bill).filter(Bill._recid == bil_recid).with_for_update().first()
+        
         g_address = guest.adresse1
         g_wonhort = guest.wohnort
         g_plz = guest.plz
@@ -157,12 +157,13 @@ def fo_invoice_btn_billadrbl(gastpay:int, bil_recid:int, user_init:string):
                 chr_unicode(10) + g_land
 
         if bill.resnr > 0 and bill.reslinnr > 0:
-
-            res_line = get_cache (Res_line, {"resnr": [(eq, bill.resnr)],"reslinnr": [(eq, bill.reslinnr)]})
+            res_line = db_session.query(Res_line).filter(
+                (Res_line.resnr == bill.resnr) & (Res_line.reslinnr == bill.reslinnr)
+            ).with_for_update().first()
 
             if res_line:
                 res_line.gastnrpay = guest.gastnr
-                pass
+
         fill_rescomment(False)
 
         if curr_gastnr != gastpay:
@@ -182,10 +183,6 @@ def fo_invoice_btn_billadrbl(gastpay:int, bil_recid:int, user_init:string):
                     "*** Changed to:" + chr_unicode(10) + chr_unicode(10) +\
                     guest.name + chr_unicode(10) + chr_unicode(10) +\
                     "*** Bill No: " + to_string(bill.rechnr)
-
-
-            pass
-            pass
     else:
 
         return generate_output()

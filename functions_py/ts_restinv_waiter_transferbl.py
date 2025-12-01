@@ -4,6 +4,7 @@
 # gitlab: 399
 # t-kellner1 -> t-kellner
 # update war
+# Rd, 01/12/2025, with_for_update added
 #-----------------------------------------
 
 from functions.additional_functions import *
@@ -66,11 +67,15 @@ def ts_restinv_waiter_transferbl(pvilanguage:int, table_list_data:[Table_list], 
 
         for table_list in query(table_list_data, filters=(lambda table_list: table_list.belong.lower()  == ("R").lower())):
 
-            hbill = get_cache (H_bill, {"rechnr": [(eq, table_list.rechnr)],"departement": [(eq, curr_dept)]})
+            # hbill = get_cache (H_bill, {"rechnr": [(eq, table_list.rechnr)],"departement": [(eq, curr_dept)]})
+            hbill = db_session.query(Hbill).filter(
+                         (Hbill.rechnr == table_list.rechnr) & (Hbill.departement == curr_dept)).with_for_update().first()
 
             if hbill:
 
-                hbill1 = get_cache (H_bill, {"_recid": [(eq, hbill._recid)]})
+                # hbill1 = get_cache (H_bill, {"_recid": [(eq, hbill._recid)]})
+                hbill1 = db_session.query(Hbill1).filter(
+                             (Hbill1._recid == hbill._recid)).with_for_update().first()
                 hbill1.kellner_nr = k2
 
 

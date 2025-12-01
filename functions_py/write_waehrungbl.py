@@ -46,6 +46,8 @@
 #     }
 # }
 #-------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Waehrung, Res_line, Artikel, Htparam
@@ -110,7 +112,9 @@ def write_waehrungbl(case_type:int, t_waehrung_data:[T_waehrung]):
 
             if not useflag:
 
-                htparam = get_cache (Htparam, {"paramnr": [(eq, 152)]})
+                # htparam = get_cache (Htparam, {"paramnr": [(eq, 152)]})
+                htparam = db_session.query(Htparam).filter(
+                         (Htparam.paramnr == 152)).with_for_update().first()
 
                 if htparam.fchar == waehrung.wabkurz:
                     pass

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.118
-
+#-------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bediener, Queasy, Res_history, Paramtext
@@ -343,7 +345,9 @@ def unlock_screen_webbl(t_payload_list_data:[T_payload_list]):
 
         if bediener:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 360)],"number1": [(eq, bediener.nr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 360)],"number1": [(eq, bediener.nr)]})
+            queasy = db_session.query(Queasy).filter(Queasy.key == 360, 
+                                                 Queasy.number1 == bediener.nr).with_for_update().with_for_update().first()
 
             if queasy:
                 c_pin = t_payload_list.pin + bediener.userinit
@@ -376,7 +380,9 @@ def unlock_screen_webbl(t_payload_list_data:[T_payload_list]):
 
             if decoded_passwd == t_payload_list.pin:
 
-                queasy = get_cache (Queasy, {"key": [(eq, 360)],"number1": [(eq, bediener.nr)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 360)],"number1": [(eq, bediener.nr)]})
+                queasy = db_session.query(Queasy).filter(Queasy.key == 360, 
+                                                     Queasy.number1 == bediener.nr).with_for_update().first()
 
                 if queasy:
                     disable_pin_using_password()

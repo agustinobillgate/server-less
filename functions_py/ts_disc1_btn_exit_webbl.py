@@ -12,7 +12,9 @@
                     - fix check vat_list_data is not None before vat_list_data.clear()
                     - fix check payload_list is not None before trim(payload_list.voucher_number) != ""
 """
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -69,7 +71,10 @@ menu_data, Menu_list = create_model(
     })
 
 
-def ts_disc1_btn_exit_webbl(rec_id: int, billart: int, dept: int, transdate: date, amount: Decimal, description: str, netto_betrag: Decimal, exchg_rate: Decimal, tischnr: int, curr_select: int, disc_value: Decimal, qty: int, cancel_str: str, curr_waiter: int, procent: Decimal, b_artnrfront: int, o_artnrfront: int, price_decimal: int, user_init: str, disc_list_data: Disc_list, vat_list_data: Vat_list, payload_list_data: Payload_list, menu_data: Menu_list):
+def ts_disc1_btn_exit_webbl(rec_id: int, billart: int, dept: int, transdate: date, amount: Decimal, description: str, netto_betrag: Decimal, 
+                            exchg_rate: Decimal, tischnr: int, curr_select: int, disc_value: Decimal, qty: int, cancel_str: str, curr_waiter: int, 
+                            procent: Decimal, b_artnrfront: int, o_artnrfront: int, price_decimal: int, user_init: str, disc_list_data: Disc_list, 
+                            vat_list_data: Vat_list, payload_list_data: Payload_list, menu_data: Menu_list):
 
     prepare_cache([H_bill, H_artikel, Htparam, H_bill_line, H_umsatz, Umsatz, H_journal, Artikel, Arrangement, Argt_line, Billjournal])
 
@@ -78,6 +83,8 @@ def ts_disc1_btn_exit_webbl(rec_id: int, billart: int, dept: int, transdate: dat
     menu_list = disc_list = vat_list = payload_list = None
 
     db_session = local_storage.db_session
+    description = description.strip()
+    cancel_str = cancel_str.strip()
 
     def generate_output():
         nonlocal h_bill, h_artikel, htparam, h_bill_line, h_umsatz, umsatz, h_journal, artikel, arrangement, argt_line, billjournal
@@ -203,10 +210,14 @@ def ts_disc1_btn_exit_webbl(rec_id: int, billart: int, dept: int, transdate: dat
                     h_umsatz.betrag + round(disc_list.amount, price_decimal))
                 h_umsatz.anzahl = h_umsatz.anzahl + qty
 
-                umsatz = get_cache(Umsatz, {
-                    "artnr": [(eq, disc_list.artnr)],
-                    "departement": [(eq, dept)],
-                    "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(Umsatz, {
+                #     "artnr": [(eq, disc_list.artnr)],
+                #     "departement": [(eq, dept)],
+                #     "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                             (Umsatz.artnr == disc_list.artnr) &
+                             (Umsatz.departement == dept) &
+                             (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -334,11 +345,14 @@ def ts_disc1_btn_exit_webbl(rec_id: int, billart: int, dept: int, transdate: dat
             else:
                 discart = h_artnrfront
 
-        umsatz = get_cache(Umsatz, {
-            "artnr": [(eq, discart)],
-            "departement": [(eq, artikel.departement)],
-            "datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache(Umsatz, {
+        #     "artnr": [(eq, discart)],
+        #     "departement": [(eq, artikel.departement)],
+        #     "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == discart) &
+                     (Umsatz.departement == artikel.departement) &
+                     (Umsatz.datum == bill_date)).with_for_update().first()
         if not umsatz:
             umsatz = Umsatz()
 
@@ -374,11 +388,15 @@ def ts_disc1_btn_exit_webbl(rec_id: int, billart: int, dept: int, transdate: dat
                 "artnr": [(eq, argt_line.argt_artnr)],
                 "departement": [(eq, argt_line.departement)]})
 
-            umsatz = get_cache(Umsatz, {
-                "artnr": [(eq, argt_line.argt_artnr)],
-                "departement": [(eq, argt_line.departement)],
-                "datum": [(eq, bill_date)]})
-
+            # umsatz = get_cache(Umsatz, {
+            #     "artnr": [(eq, argt_line.argt_artnr)],
+            #     "departement": [(eq, argt_line.departement)],
+            #     "datum": [(eq, bill_date)]})
+            umsatz = db_session.query(Umsatz).filter(
+                         (Umsatz.artnr == argt_line.argt_artnr) &
+                         (Umsatz.departement == argt_line.departement) &
+                         (Umsatz.datum == bill_date)).with_for_update().first()
+            
             if not umsatz:
                 umsatz = Umsatz()
 
@@ -411,11 +429,14 @@ def ts_disc1_btn_exit_webbl(rec_id: int, billart: int, dept: int, transdate: dat
             "artnr": [(eq, arrangement.artnr_logis)],
             "departement": [(eq, arrangement.intervall)]})
 
-        umsatz = get_cache(Umsatz, {
-            "artnr": [(eq, artikel1.artnr)],
-            "departement": [(eq, artikel1.departement)],
-            "datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache(Umsatz, {
+        #     "artnr": [(eq, artikel1.artnr)],
+        #     "departement": [(eq, artikel1.departement)],
+        #     "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == artikel1.artnr) &
+                     (Umsatz.departement == artikel1.departement) &
+                     (Umsatz.datum == bill_date)).with_for_update().first()
         if not umsatz:
             umsatz = Umsatz()
 
@@ -566,8 +587,8 @@ def ts_disc1_btn_exit_webbl(rec_id: int, billart: int, dept: int, transdate: dat
 
     payload_list = query(payload_list_data, first=True)
 
-    h_bill = get_cache(H_bill, {
-        "_recid": [(eq, rec_id)]})
+    # h_bill = get_cache(H_bill, { "_recid": [(eq, rec_id)]})
+    h_bill = db_session.query(H_bill).filter(H_bill._recid == rec_id).with_for_update().first()
 
     h_artikel = get_cache(H_artikel, {
         "artnr": [(eq, billart)],

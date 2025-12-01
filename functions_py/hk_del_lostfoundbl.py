@@ -3,6 +3,8 @@
 # Rd, 14/8/2025
 # if available bqueasy
 #------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy, Bediener, Res_history, Guestbook
@@ -36,7 +38,9 @@ def hk_del_lostfoundbl(userinit:string, rec_id:int):
 
     if bediener:
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+        # queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy._recid == rec_id)).with_for_update().first()
 
         if queasy:
             curr_nr = queasy.number3
@@ -63,7 +67,8 @@ def hk_del_lostfoundbl(userinit:string, rec_id:int):
     for queasy in db_session.query(Queasy).filter(
              (Queasy.key == 195) & (Queasy.char1 == ("LostAndFound;nr=" + to_string(curr_nr).lower()))).order_by(Queasy._recid).all():
 
-        guestbook = get_cache (Guestbook, {"gastnr": [(eq, queasy.number1)]})
+        # guestbook = get_cache (Guestbook, {"gastnr": [(eq, queasy.number1)]})
+        guestbook = db_session.query(Guestbook).filter(Guestbook.gastnr == queasy.number1).with_for_update().first()
 
         if guestbook:
             pass
@@ -71,7 +76,7 @@ def hk_del_lostfoundbl(userinit:string, rec_id:int):
             pass
 
         bqueasy = db_session.query(Bqueasy).filter(
-                 (Bqueasy._recid == queasy._recid)).first()
+                 (Bqueasy._recid == queasy._recid)).with_for_update().first()
         # Rd 14/8/2025
         if bqueasy:
             db_session.delete(bqueasy)

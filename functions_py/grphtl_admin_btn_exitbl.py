@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 28/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
@@ -52,8 +54,8 @@ def grphtl_admin_btn_exitbl(htlname_data:[Htlname], case_type:int, rec_id:int):
 
     elif case_type == 2:
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
-        pass
+        # queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+        queasy = db_session.query(Queasy).filter(Queasy._recid == rec_id).with_for_update().first()
         buffer_copy(htlname, queasy)
 
     return generate_output()

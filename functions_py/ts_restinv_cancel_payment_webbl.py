@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import H_bill, H_bill_line, H_artikel, Hoteldpt, Res_line, H_journal, H_umsatz, Umsatz, Artikel, Guest, Debitor, Htparam, Waehrung, Bediener, Billjournal
+from sqlalchemy.orm import flag_modified
 
 t_payload_list_data, T_payload_list = create_model("T_payload_list", {"hbill_recid":int, "hbline_recid":int, "bill_number":int, "art_number":int, "dept_number":int, "bill_date":date, "curr_waiter":int, "user_init":string, "cancel_reason":string})
 
@@ -43,8 +46,6 @@ def ts_restinv_cancel_payment_webbl(t_payload_list_data:[T_payload_list]):
     def inv_ar(curr_art:int, curr_dept:int, zinr:string, gastnr:int, gastnrmember:int, rechnr:int, saldo:Decimal, saldo_foreign:Decimal, bill_date:date, billname:string, userinit:string, voucher_nr:string):
 
         nonlocal output_response_data, t_h_bill_data, zeit, h_artart, h_artnrfront, fo_artno, guest_member, curr_room, guest_name, dept_name, h_bill, h_bill_line, h_artikel, hoteldpt, res_line, h_journal, h_umsatz, umsatz, artikel, guest, debitor, htparam, waehrung, bediener, billjournal
-
-
         nonlocal t_h_bill, b_list, t_payload_list, output_response
         nonlocal t_h_bill_data, b_list_data, output_response_data
 
@@ -94,19 +95,22 @@ def ts_restinv_cancel_payment_webbl(t_payload_list_data:[T_payload_list]):
             billname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
         debt = db_session.query(Debt).filter(
-                 (Debt.artnr == curr_art) & (Debt.rechnr == rechnr) & (Debt.opart == 0) & (Debt.betriebsnr == curr_dept) & (Debt.rgdatum == bill_date) & (Debt.counter == 0) & (Debt.saldo == saldo)).first()
+                 (Debt.artnr == curr_art) & (Debt.rechnr == rechnr) & (Debt.opart == 0) & (Debt.betriebsnr == curr_dept) & 
+                 (Debt.rgdatum == bill_date) & (Debt.counter == 0) & (Debt.saldo == saldo)).with_for_update().first()
 
         if debt:
             pass
             db_session.delete(debt)
 
-            umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, curr_art)],"datum": [(eq, bill_date)]})
+            # umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, curr_art)],"datum": [(eq, bill_date)]})
+            umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.departement == 0) & (Umsatz.artnr == curr_art) & (Umsatz.datum == bill_date)).with_for_update().first()
+            
 
             if umsatz:
                 umsatz.anzahl = umsatz.anzahl - 1
                 umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(saldo)
-                pass
-                pass
+                
             billjournal = Billjournal()
             db_session.add(billjournal)
 
@@ -163,7 +167,9 @@ def ts_restinv_cancel_payment_webbl(t_payload_list_data:[T_payload_list]):
                 debitor.bediener_nr = bediener.nr
             pass
 
-        umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, curr_art)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, curr_art)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                 (Umsatz.departement == 0) & (Umsatz.artnr == curr_art) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -173,8 +179,8 @@ def ts_restinv_cancel_payment_webbl(t_payload_list_data:[T_payload_list]):
             umsatz.datum = bill_date
         umsatz.anzahl = umsatz.anzahl + 1
         umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(saldo)
-        pass
-        pass
+
+
         billjournal = Billjournal()
         db_session.add(billjournal)
 
@@ -220,7 +226,7 @@ def ts_restinv_cancel_payment_webbl(t_payload_list_data:[T_payload_list]):
         h_artart = h_artikel.artart
         h_artnrfront = h_artikel.artnrfront
 
-    h_bill_line = get_cache (H_bill_line, {"_recid": [(eq, hbline_recid)],"rechnr": [(eq, t_payload_list.bill_number)],"departement": [(eq, t_payload_list.dept_number)]})
+    h_bill_line = get_cache (H_bill_line, {"_recid": [(eq, H_bill_line._recid)],"rechnr": [(eq, t_payload_list.bill_number)],"departement": [(eq, t_payload_list.dept_number)]})
 
     if h_bill_line:
         b_list = B_list()
@@ -247,7 +253,9 @@ def ts_restinv_cancel_payment_webbl(t_payload_list_data:[T_payload_list]):
     if hoteldpt:
         dept_name = hoteldpt.depart
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, t_payload_list.hbill_recid)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, t_payload_list.hbill_recid)]})
+    h_bill = db_session.query(H_bill).filter(
+                 (H_bill._recid == t_payload_list.hbill_recid)).with_for_update().first()
 
     if h_bill:
         pass
@@ -268,6 +276,7 @@ def ts_restinv_cancel_payment_webbl(t_payload_list_data:[T_payload_list]):
         pass
     h_bill_line = H_bill_line()
     db_session.add(h_bill_line)
+    flag_modified(h_bill, "mwst")
 
     h_bill_line.rechnr = b_list.rechnr
     h_bill_line.artnr = b_list.artnr
@@ -308,13 +317,12 @@ def ts_restinv_cancel_payment_webbl(t_payload_list_data:[T_payload_list]):
     h_journal.artnrfront = h_artnrfront
 
 
-    pass
-    pass
-
     if t_payload_list.art_number != 0:
 
-        h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, t_payload_list.art_number)],"departement": [(eq, t_payload_list.dept_number)],"datum": [(eq, t_payload_list.bill_date)]})
-
+        # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, t_payload_list.art_number)],"departement": [(eq, t_payload_list.dept_number)],"datum": [(eq, t_payload_list.bill_date)]})
+        h_umsatz = db_session.query(H_umsatz).filter(
+                 (H_umsatz.artnr == t_payload_list.art_number) & (H_umsatz.departement == t_payload_list.dept_number) & 
+                 (H_umsatz.datum == t_payload_list.bill_date)).with_for_update().first()
         if not h_umsatz:
             h_umsatz = H_umsatz()
             db_session.add(h_umsatz)
@@ -328,12 +336,12 @@ def ts_restinv_cancel_payment_webbl(t_payload_list_data:[T_payload_list]):
         h_umsatz.anzahl = h_umsatz.anzahl + b_list.anzahl
 
 
-        pass
-        pass
 
     if h_artart == 6:
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)],"datum": [(eq, t_payload_list.bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)],"datum": [(eq, t_payload_list.bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                 (Umsatz.artnr == h_artikel.artnrfront) & (Umsatz.departement == 0) & (Umsatz.datum == t_payload_list.bill_date)).with_for_update().first()
 
         if umsatz:
             pass
@@ -342,7 +350,7 @@ def ts_restinv_cancel_payment_webbl(t_payload_list_data:[T_payload_list]):
             db_session.add(umsatz)
 
             umsatz.artnr = h_artikel.artnrfront
-            umsatz.datum = bill_date
+            umsatz.datum = h_artikel.bill_date
             umsatz.departement = 0
 
 
@@ -350,8 +358,6 @@ def ts_restinv_cancel_payment_webbl(t_payload_list_data:[T_payload_list]):
         umsatz.anzahl = umsatz.anzahl + b_list.anzahl
 
 
-        pass
-        pass
 
     if h_artart == 2 or h_artart == 7:
 

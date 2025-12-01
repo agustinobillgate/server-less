@@ -31,13 +31,15 @@ def write_akt_kontbl(case_type:int, t_akt_kont_data:[T_akt_kont]):
 
             return generate_output()
 
-        akt_kont = get_cache (Akt_kont, {"gastnr": [(eq, t_akt_kont.gastnr)],"kontakt_nr": [(eq, t_akt_kont.kontakt_nr)]})
+        # akt_kont = get_cache (Akt_kont, {"gastnr": [(eq, t_akt_kont.gastnr)],"kontakt_nr": [(eq, t_akt_kont.kontakt_nr)]})
+        akt_kont = db_session.query(Akt_kont).filter((Akt_kont.gastnr == t_akt_kont.gastnr) & (Akt_kont.kontakt_nr == t_akt_kont.kontakt_nr)).with_for_udpate().first()
 
         if not akt_kont:
             akt_kont = Akt_kont()
             db_session.add(akt_kont)
-
+        
         buffer_copy(t_akt_kont, akt_kont)
+        db_session.commit()
         pass
         success_flag = True
     elif case_type == 2:
@@ -48,10 +50,12 @@ def write_akt_kontbl(case_type:int, t_akt_kont_data:[T_akt_kont]):
 
             return generate_output()
 
-        akt_kont = get_cache (Akt_kont, {"gastnr": [(eq, t_akt_kont.gastnr)],"kontakt_nr": [(eq, t_akt_kont.kontakt_nr)]})
+        # akt_kont = get_cache (Akt_kont, {"gastnr": [(eq, t_akt_kont.gastnr)],"kontakt_nr": [(eq, t_akt_kont.kontakt_nr)]})
+        akt_kont = db_session.query(Akt_kont).filter((Akt_kont.gastnr == t_akt_kont.gastnr) & (Akt_kont.kontakt_nr == t_akt_kont.kontakt_nr)).with_for_udpate().first()
 
         if akt_kont:
             db_session.delete(akt_kont)
+            db_session.commit()
             pass
             success_flag = True
     elif case_type == 3:

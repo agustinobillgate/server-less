@@ -1,8 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------
 # Rd 04/08/2025
-# gitlab: -
-# remarks: -
+# Rd, 28/11/2025, with_for_update added
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -20,7 +19,8 @@ def salesbud_btn_delbl(rec_id:int):
         return {}
 
 
-    salesbud = get_cache (Salesbud, {"_recid": [(eq, rec_id)]})
+    # salesbud = get_cache (Salesbud, {"_recid": [(eq, rec_id)]})
+    salesbud = db_session.query(Salesbud).filter(Salesbud._recid == rec_id).with_for_update().first()
     # Rd 4/8/2025
     if salesbud:
         db_session.delete(salesbud)

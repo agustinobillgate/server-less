@@ -1,7 +1,8 @@
 #using conversion tools version: 1.0.0.118
 #-----------------------------------------
 # Rd, 4/8/2025
-#-----------------------------------------
+# Rd, 26/11/2025, with_for_update
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Bediener, Queasy, Res_history, Paramtext
@@ -115,7 +116,8 @@ def check_totpbl(username:string, userotp:string, checking_flag:int):
 
     if bediener:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 341)],"char1": [(eq, bediener.username)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 341)],"char1": [(eq, bediener.username)]})
+        queasy = db_session.query(Queasy).filter(Queasy.key == 341, Queasy.char1 == bediener.username).with_for_update().first()
 
         if not queasy:
             totpok = False

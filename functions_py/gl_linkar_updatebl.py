@@ -1,7 +1,5 @@
-#using conversion tools version: 1.0.0.117
-#---------------------------------------------------------------------
-# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
-#---------------------------------------------------------------------
+#using conversion tools version: 1.0.0.119
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -10,8 +8,7 @@ from functions.next_counter_for_update import next_counter_for_update
 
 g_list_data, G_list = create_model("G_list", {"rechnr":int, "dept":int, "jnr":int, "fibukonto":string, "debit":Decimal, "credit":Decimal, "bemerk":string, "userinit":string, "sysdate":date, "zeit":int, "chginit":string, "chgdate":date, "duplicate":bool, "add_info":string, "counter":int, "acct_fibukonto":string, "bezeich":string}, {"sysdate": get_current_date(), "chgdate": None, "duplicate": True})
 
-def gl_linkar_updatebl(pvilanguage:int, remains:Decimal, credits:[Decimal], debits:[Decimal], to_date:date, 
-                       c_refno:string, c_bezeich:string, datum:date, g_list_data:[G_list]):
+def gl_linkar_updatebl(pvilanguage:int, remains:Decimal, credits:[Decimal], debits:[Decimal], to_date:date, c_refno:string, c_bezeich:string, datum:date, g_list_data:[G_list]):
 
     prepare_cache ([Counters, Gl_jouhdr, Gl_journal, Htparam])
 
@@ -45,7 +42,7 @@ def gl_linkar_updatebl(pvilanguage:int, remains:Decimal, credits:[Decimal], debi
 
         nonlocal g_list
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == 25).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -59,8 +56,6 @@ def gl_linkar_updatebl(pvilanguage:int, remains:Decimal, credits:[Decimal], debi
         # curr_counter = counters.counter
         curr_counter = last_count
 
-
-        pass
         gl_jouhdr = Gl_jouhdr()
         db_session.add(gl_jouhdr)
 
@@ -71,10 +66,6 @@ def gl_linkar_updatebl(pvilanguage:int, remains:Decimal, credits:[Decimal], debi
         gl_jouhdr.batch = True
         gl_jouhdr.jtype = 2
         new_hdr = True
-
-
-        pass
-
 
     def create_journals():
 
@@ -98,20 +89,16 @@ def gl_linkar_updatebl(pvilanguage:int, remains:Decimal, credits:[Decimal], debi
 
         if remains == 0.01 or remains == - 0.01:
             remains =  to_decimal("0")
-        pass
+        
+        db_session.refresh(gl_jouhdr, with_for_update=True)
+
         gl_jouhdr.credit =  to_decimal(credits)
         gl_jouhdr.debit =  to_decimal(debits)
         gl_jouhdr.remain =  to_decimal(remains)
 
-
-        pass
-        pass
-
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 1014)]})
+        htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1014).with_for_update().first()
         htparam.fdate = datum
 
-
-        pass
 
     create_header()
     create_journals()

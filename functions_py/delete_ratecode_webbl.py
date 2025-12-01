@@ -3,6 +3,8 @@
 # Rd, 13/8/2025
 # num_entries
 #------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -43,7 +45,9 @@ def delete_ratecode_webbl(case_type:int, recid_list_data:[Recid_list], user_init
 
         for recid_list in query(recid_list_data):
 
-            ratecode = get_cache (Ratecode, {"_recid": [(eq, recid_list.int1)]})
+            # ratecode = get_cache (Ratecode, {"_recid": [(eq, recid_list.int1)]})
+            ratecode = db_session.query(Ratecode).filter(
+                     (Ratecode._recid == recid_list.int1)).with_for_update().first
 
             if ratecode:
                 pass
@@ -93,8 +97,15 @@ def delete_ratecode_webbl(case_type:int, recid_list_data:[Recid_list], user_init
                 if (num_entries(queasy.char3, ";") > 2):
                     chcode = queasy.char1
 
-                    ratecode = get_cache (Ratecode, {"code": [(eq, queasy.char1)],"startperiode": [(eq, startperiode)],"endperiode": [(eq, endperiode)],"wday": [(eq, wday)],"erwachs": [(eq, adult)],"zikatnr": [(eq, rmcode)]})
-
+                    # ratecode = get_cache (Ratecode, {"code": [(eq, queasy.char1)],"startperiode": [(eq, startperiode)],"endperiode": [(eq, endperiode)],"wday": [(eq, wday)],"erwachs": [(eq, adult)],"zikatnr": [(eq, rmcode)]})
+                    ratecode = db_session.query(Ratecode).filter(
+                             (Ratecode.code == queasy.char1) &
+                             (Ratecode.startperiode == startperiode) &
+                             (Ratecode.endperiode == endperiode) &
+                             (Ratecode.wday == wday) &
+                             (Ratecode.erwachs == adult) &
+                             (Ratecode.zikatnr == rmcode)).with_for_update().first()
+                    
                     if ratecode:
                         pass
                         db_session.delete(ratecode)

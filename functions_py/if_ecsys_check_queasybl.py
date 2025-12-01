@@ -4,6 +4,8 @@
 # Rulita, 15-10-2025 
 # Tiket ID : 6526C2 | New compile program
 # =======================================
+# Rd, 26/11/2025, with_for_update
+#----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -19,6 +21,7 @@ def if_ecsys_check_queasybl(fr_date:date, to_date:date, userinit:string, dept:st
     queasy = None
 
     db_session = local_storage.db_session
+    dept = dept.strip()
 
     def generate_output():
         nonlocal success_flag, curr_date, queasy
@@ -31,7 +34,9 @@ def if_ecsys_check_queasybl(fr_date:date, to_date:date, userinit:string, dept:st
 
     for curr_date in date_range(fr_date,to_date) :
 
-        queasy = get_cache (Queasy, {"key": [(eq, 366)],"date1": [(eq, curr_date)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 366)],"date1": [(eq, curr_date)]})
+        queasy = db_session.query(Queasy).filter(
+            (Queasy.key == 366) & (Queasy.date1 == curr_date)).with_for_update().first()
 
         if queasy:
             pass

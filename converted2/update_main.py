@@ -1,16 +1,20 @@
+#using conversion tools version: 1.0.0.119
+
 from functions.additional_functions import *
-import decimal
+from decimal import Decimal
 import random
 from models import Paramtext, Htparam
 
-def update_main(passwd:str):
-    str:str = ""
-    lic_nr:str = ""
-    lic_date:str = ""
-    htpchar:str = ""
+def update_main(passwd:string):
+
+    prepare_cache ([Paramtext])
+
+    str:string = ""
+    lic_nr:string = ""
+    lic_date:string = ""
+    htpchar:string = ""
     found:bool = False
     paramtext = htparam = None
-
 
     db_session = local_storage.db_session
 
@@ -25,14 +29,13 @@ def update_main(passwd:str):
         nonlocal lic_date, htpchar, found, paramtext, htparam
         nonlocal passwd
 
-        htl_name:str = ""
-        htl_city:str = ""
-        lic_nr:str = ""
-        str:str = ""
+        htl_name:string = ""
+        htl_city:string = ""
+        lic_nr:string = ""
+        str:string = ""
         htl_name = ""
 
-        paramtext = db_session.query(Paramtext).filter(
-                 (Paramtext.txtnr == 240)).first()
+        paramtext = get_cache (Paramtext, {"txtnr": [(eq, 240)]})
 
         if not paramtext:
             quit
@@ -44,8 +47,7 @@ def update_main(passwd:str):
         paramtext.ptexte = str
         htl_city = ""
 
-        paramtext = db_session.query(Paramtext).filter(
-                 (Paramtext.txtnr == 242)).first()
+        paramtext = get_cache (Paramtext, {"txtnr": [(eq, 242)]})
 
         if not paramtext:
             quit
@@ -57,8 +59,7 @@ def update_main(passwd:str):
         paramtext.ptexte = str
         lic_nr = ""
 
-        paramtext = db_session.query(Paramtext).filter(
-                 (Paramtext.txtnr == 243)).first()
+        paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
 
         if not paramtext:
             quit
@@ -70,7 +71,7 @@ def update_main(passwd:str):
         paramtext.ptexte = str
 
         for htparam in db_session.query(Htparam).filter(
-                 (Htparam.paramgr == 99)).order_by(Htparam._recid).all():
+                 (Htparam.paramgruppe == 99)).order_by(Htparam._recid).all():
             htparam.fchar = ""
         encode70_htp()
 
@@ -80,15 +81,14 @@ def update_main(passwd:str):
         nonlocal str, lic_date, found, paramtext, htparam
         nonlocal passwd
 
-        lic_nr:str = ""
-        s:str = ""
+        lic_nr:string = ""
+        s:string = ""
         j:int = 0
         len_:int = 0
-        htpchar:str = ""
-        htpchar1:str = ""
+        htpchar:string = ""
+        htpchar1:string = ""
 
-        paramtext = db_session.query(Paramtext).filter(
-                 (Paramtext.txtnr == 243)).first()
+        paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
 
         if paramtext and paramtext.ptexte != "":
             lic_nr = decode70_string(paramtext.ptexte)
@@ -99,28 +99,28 @@ def update_main(passwd:str):
             htpchar = ""
 
             if htparam.feldtyp == 1:
-                htpchar = to_string(lic_nr, "x(4)") + to_string(paramnr, "9999") + to_string(finteger, "9999")
+                htpchar = to_string(lic_nr, "x(4)") + to_string(htparam.paramnr, "9999") + to_string(htparam.finteger, "9999")
 
             elif htparam.feldtyp == 3:
-                htpchar = to_string(lic_nr, "x(4)") + to_string(paramnr, "9999") + to_string(get_month(htparam.fdate) , "99") + to_string(get_day(htparam.fdate) , "99") + to_string(get_year(htparam.fdate) , "9999")
+                htpchar = to_string(lic_nr, "x(4)") + to_string(htparam.paramnr, "9999") + to_string(get_month(htparam.fdate) , "99") + to_string(get_day(htparam.fdate) , "99") + to_string(get_year(htparam.fdate) , "9999")
 
             elif htparam.feldtyp == 4:
-                htpchar = to_string(lic_nr, "x(4)") + to_string(paramnr, "9999") + to_string(htparam.flogical)
+                htpchar = to_string(lic_nr, "x(4)") + to_string(htparam.paramnr, "9999") + to_string(htparam.flogical)
             htpchar1 = encode70_string(htpchar)
+            pass
             htparam.fchar = htpchar1
+            pass
 
             curr_recid = htparam._recid
             htparam = db_session.query(Htparam).filter(
                      (Htparam.paramgruppe == 99) & ((Htparam.feldtyp == 1) | (Htparam.feldtyp == 3) | (Htparam.feldtyp == 4)) & (Htparam.fchar == "") & (Htparam._recid > curr_recid)).first()
 
-        htparam = db_session.query(Htparam).filter(
-                 (Htparam.paramnr == 976)).first()
+        htparam = get_cache (Htparam, {"paramnr": [(eq, 976)]})
 
         if not htparam:
             quit
 
-        paramtext = db_session.query(Paramtext).filter(
-                     (Paramtext.txtnr == 976)).first()
+        paramtext = get_cache (Paramtext, {"txtnr": [(eq, 976)]})
 
         if not paramtext:
             paramtext = Paramtext()
@@ -129,14 +129,16 @@ def update_main(passwd:str):
             paramtext.txtnr = 976
             paramtext.ptexte = to_string(htparam.fdate, "99/99/9999")
         paramtext.notes = htparam.fchar
+        pass
 
-    def decode70_string(in_str:str):
+
+    def decode70_string(in_str:string):
 
         nonlocal str, lic_nr, lic_date, htpchar, found, paramtext, htparam
         nonlocal passwd
 
         out_str = ""
-        s:str = ""
+        s:string = ""
         j:int = 0
         len_:int = 0
 
@@ -145,21 +147,21 @@ def update_main(passwd:str):
 
         s = in_str
         j = asc(substring(s, 0, 1)) - 70
-        len_ = len(in_str) - 1
+        len_ = length(in_str) - 1
         s = substring(in_str, 1, len_)
-        for len_ in range(1,len(s)  + 1) :
-            out_str = out_str + chr (asc(substring(s, len_ - 1, 1)) - j)
+        for len_ in range(1,length(s)  + 1) :
+            out_str = out_str + chr_unicode(asc(substring(s, len_ - 1, 1)) - j)
 
         return generate_inner_output()
 
 
-    def decode71_string(in_str:str):
+    def decode71_string(in_str:string):
 
         nonlocal str, lic_nr, lic_date, htpchar, found, paramtext, htparam
         nonlocal passwd
 
         out_str = ""
-        s:str = ""
+        s:string = ""
         j:int = 0
         len_:int = 0
 
@@ -168,84 +170,81 @@ def update_main(passwd:str):
 
         s = in_str
         j = asc(substring(s, 0, 1)) - 71
-        len_ = len(in_str) - 1
+        len_ = length(in_str) - 1
         s = substring(in_str, 1, len_)
-        for len_ in range(1,len(s)  + 1) :
-            out_str = out_str + chr (asc(substring(s, len_ - 1, 1)) - j)
+        for len_ in range(1,length(s)  + 1) :
+            out_str = out_str + chr_unicode(asc(substring(s, len_ - 1, 1)) - j)
 
         return generate_inner_output()
 
 
-    def encode70_string(in_str:str):
+    def encode70_string(in_str:string):
 
         nonlocal str, lic_nr, lic_date, htpchar, found, paramtext, htparam
         nonlocal passwd
 
         out_str = ""
-        s:str = ""
+        s:string = ""
         j:int = 0
         len_:int = 0
-        ch:str = ""
+        ch:string = ""
 
         def generate_inner_output():
             return (out_str)
 
         j = random.randint(1, 9)
-        ch = chr(asc(to_string(j)) + 23)
+        ch = chr_unicode(asc(to_string(j)) + 23)
         out_str = ch
         j = asc(ch) - 70
-        for len_ in range(1,len(in_str)  + 1) :
-            out_str = out_str + chr (asc(substring(in_str, len_ - 1, 1)) + j)
+        for len_ in range(1,length(in_str)  + 1) :
+            out_str = out_str + chr_unicode(asc(substring(in_str, len_ - 1, 1)) + j)
 
         return generate_inner_output()
 
 
-    def encode71_string(in_str:str):
+    def encode71_string(in_str:string):
 
         nonlocal str, lic_nr, lic_date, htpchar, found, paramtext, htparam
         nonlocal passwd
 
         out_str = ""
-        s:str = ""
+        s:string = ""
         j:int = 0
         len_:int = 0
-        ch:str = ""
+        ch:string = ""
 
         def generate_inner_output():
             return (out_str)
 
         j = random.randint(1, 9)
-        ch = chr(asc(to_string(j)) + 23)
+        ch = chr_unicode(asc(to_string(j)) + 23)
         out_str = ch
         j = asc(ch) - 71
-        for len_ in range(1,len(in_str)  + 1) :
-            out_str = out_str + chr (asc(substring(in_str, len_ - 1, 1)) + j)
+        for len_ in range(1,length(in_str)  + 1) :
+            out_str = out_str + chr_unicode(asc(substring(in_str, len_ - 1, 1)) + j)
 
         return generate_inner_output()
 
     if passwd.lower()  != ("Lord is watching you.").lower() :
         quit
 
-    paramtext = db_session.query(Paramtext).filter(
-             (Paramtext.txtnr == 243)).first()
+    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 243)]})
 
     if not paramtext or paramtext.ptexte == "":
         quit
     lic_nr = decode71_string(paramtext.ptexte)
 
-    paramtext = db_session.query(Paramtext).filter(
-             (Paramtext.txtnr == 976)).first()
+    paramtext = get_cache (Paramtext, {"txtnr": [(eq, 976)]})
 
     if not paramtext or paramtext.ptexte == "":
         quit
 
-    htparam = db_session.query(Htparam).filter(
-             (Htparam.paramnr == 976)).first()
+    htparam = get_cache (Htparam, {"paramnr": [(eq, 976)]})
 
     if htparam.fdate == None:
         quit
     htpchar = decode70_string(paramtext.notes)
-    htpchar = substring(htpchar, 8, len(htpchar))
+    htpchar = substring(htpchar, 8, length(htpchar))
     str = to_string(htparam.fdate, "99/99/9999")
     lic_date = substring(str, 0, 2) + substring(str, 3, 2) + substring(str, 6, 4)
 
@@ -273,7 +272,7 @@ def update_main(passwd:str):
 
         return generate_output()
     htpchar = decode71_string(paramtext.notes)
-    htpchar = substring(htpchar, 8, len(htpchar))
+    htpchar = substring(htpchar, 8, length(htpchar))
     str = to_string(htparam.fdate, "99/99/9999")
     lic_date = substring(str, 0, 2) + substring(str, 3, 2) + substring(str, 6, 4)
 

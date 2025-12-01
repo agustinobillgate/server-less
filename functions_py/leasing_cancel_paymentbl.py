@@ -226,9 +226,10 @@ def leasing_cancel_paymentbl(tlist_data: Tlist, qrecid: int, user_init: str):
         if v_cicilanke != 0:
             billjournal.billin_nr = v_cicilanke
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == ar_ledger) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
         if not umsatz:
             umsatz = Umsatz()
             db_session.add(umsatz)
@@ -265,8 +266,10 @@ def leasing_cancel_paymentbl(tlist_data: Tlist, qrecid: int, user_init: str):
         if v_cicilanke != 0:
             billjournal.billin_nr = v_cicilanke
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -292,8 +295,10 @@ def leasing_cancel_paymentbl(tlist_data: Tlist, qrecid: int, user_init: str):
         ar_ledger = htparam.finteger
 
     for tlist in query(tlist_data, filters=(lambda tlist: tlist.art_select)):
-        queasy = get_cache(
-            Queasy, {"key": [(eq, 329)], "_recid": [(eq, qrecid)]})
+        # queasy = get_cache(
+        #     Queasy, {"key": [(eq, 329)], "_recid": [(eq, qrecid)]})
+        queasy = db_session.query(Queasy).filter(
+            (Queasy.key == 329) & (Queasy._recid == qrecid)).with_for_update().first()
 
         if queasy:
             pay_amount = - to_decimal(tlist.amount)
@@ -313,9 +318,12 @@ def leasing_cancel_paymentbl(tlist_data: Tlist, qrecid: int, user_init: str):
             if queasy.deci2 == 0:
                 queasy.logi2 = False
 
-            reslin_queasy = get_cache(
-                Reslin_queasy, {"key": [(eq, "actual-invoice")], "resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)], "betriebsnr": [(eq, qrecid)], "number1": [(eq, v_cicilanke)], "logi3": [(eq, True)]})
-
+            # reslin_queasy = get_cache(
+            #     Reslin_queasy, {"key": [(eq, "actual-invoice")], "resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)], "betriebsnr": [(eq, qrecid)], "number1": [(eq, v_cicilanke)], "logi3": [(eq, True)]})
+            reslin_queasy = db_session.query(Reslin_queasy).filter(
+                (Reslin_queasy.key == "actual-invoice") & (Reslin_queasy.resnr == queasy.number1) & 
+                (Reslin_queasy.reslinnr == queasy.number2) & (Reslin_queasy.betriebsnr == qrecid) & 
+                (Reslin_queasy.number1 == v_cicilanke) & (Reslin_queasy.logi3 == True)).with_for_update().first()
             if reslin_queasy:
                 reslin_queasy.logi3 = False
                 
