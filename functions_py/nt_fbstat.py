@@ -11,6 +11,11 @@
 # - Fixing table rmTrans -> rmtrans
 # ========================================
 
+# =============================================
+# Rulita, 01-12-2025
+# Fixing procedure delete_history not convert
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -324,7 +329,9 @@ def nt_fbstat():
 
     for t_list in query(t_list_data, filters=(lambda t_list: t_list.pay != 0 or t_list.rmtrans != 0)):
 
-        h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, 0)],"departement": [(eq, t_list.dept)],"betriebsnr": [(eq, t_list.dept)],"datum": [(eq, bill_date)]})
+        # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, 0)],"departement": [(eq, t_list.dept)],"betriebsnr": [(eq, t_list.dept)],"datum": [(eq, bill_date)]})
+        h_umsatz = db_session.query(H_umsatz).filter(
+                 (H_umsatz.artnr == 0) & (H_umsatz.departement == t_list.dept) & (H_umsatz.betriebsnr == t_list.dept) & (H_umsatz.datum == bill_date)).with_for_update().first()
 
         if not h_umsatz:
             h_umsatz = H_umsatz()
@@ -335,7 +342,9 @@ def nt_fbstat():
             h_umsatz.betriebsnr = t_list.dept
             h_umsatz.datum = bill_date
 
-        fbstat = get_cache (Fbstat, {"datum": [(eq, bill_date)],"departement": [(eq, t_list.dept)]})
+        # fbstat = get_cache (Fbstat, {"datum": [(eq, bill_date)],"departement": [(eq, t_list.dept)]})
+        fbstat = db_session.query(Fbstat).filter(
+                 (Fbstat.datum == bill_date) & (Fbstat.departement == t_list.dept)).with_for_update().first()
 
         if not fbstat:
             fbstat = Fbstat()

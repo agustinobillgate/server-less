@@ -8,6 +8,11 @@
 # Issue :
 # - Fixing calculate date (genstat.res_date[1] - genstat.res_date[0]).days
 # - find first arrangement add .strip()
+
+# Rulita, 01-12-2025
+# Fixing procedure delete_history not convert
+# Added tiket Hdesk malik A80751
+# Fixing inden assign vat and service value
 # ========================================================================
 
 from functions.additional_functions import *
@@ -16,11 +21,12 @@ from datetime import date
 from functions.calc_servtaxesbl import calc_servtaxesbl
 from functions.argt_betragbl import argt_betragbl
 from sqlalchemy import func
-from models import Guest, Segment, Res_line, Htparam, Nation, Reservation, Arrangement, Zimmer, Zimkateg, Bill_line, Genstat, Reslin_queasy, Akt_cust, Bediener, Waehrung, Artikel, Argt_line, Zwkum, Fixleist, Kontline, Bill, Guestseg, Segmentstat, Nationstat, Natstat1, Sources, Landstat, Guestat1, Guestat, Zinrstat, Zkstat, H_artikel, H_bill_line
+from models import Guest, Segment, Res_line, Htparam, Nation, Reservation, Arrangement, Zimmer, Zimkateg, Bill_line, Genstat, Reslin_queasy, Akt_cust, Bediener, Waehrung, Artikel, Argt_line, Zwkum, Fixleist, Kontline, Bill, Guestseg, Segmentstat, Nationstat, Natstat1, Sources, Landstat, Guestat1, Guestat, Zinrstat, Zkstat, H_artikel, H_bill_line, H_artikel, H_bill
 
 def nt_genstat():
 
-    prepare_cache ([Segment, Res_line, Htparam, Nation, Reservation, Arrangement, Zimmer, Zimkateg, Bill_line, Genstat, Reslin_queasy, Akt_cust, Bediener, Waehrung, Artikel, Argt_line, Fixleist, Kontline, Guestseg, Segmentstat, Nationstat, Natstat1, Sources, Guestat1, Guestat, Zinrstat, Zkstat, H_artikel, H_bill_line])
+    prepare_cache ([Segment, Res_line, Htparam, Nation, Reservation, Arrangement, Zimmer, Zimkateg, Bill_line, Genstat, Reslin_queasy, Akt_cust, Bediener, Waehrung, Artikel, Argt_line, Fixleist, Kontline, Guestseg, Segmentstat, Nationstat, Natstat1, Sources, Guestat1, Guestat, Zinrstat, Zkstat, H_bill_line, H_artikel, H_bill])
+
 
     bill_date:date = None
     price_decimal:int = 0
@@ -65,12 +71,13 @@ def nt_genstat():
     service_art:Decimal = to_decimal("0.0")
     gross_argt:Decimal = to_decimal("0.0")
     net_argt:Decimal = to_decimal("0.0")
-    guest = segment = res_line = htparam = nation = reservation = arrangement = zimmer = zimkateg = bill_line = genstat = reslin_queasy = akt_cust = bediener = waehrung = artikel = argt_line = zwkum = fixleist = kontline = bill = guestseg = segmentstat = nationstat = natstat1 = sources = landstat = guestat1 = guestat = zinrstat = zkstat = h_artikel = h_bill_line = None
+    guest = segment = res_line = htparam = nation = reservation = arrangement = zimmer = zimkateg = bill_line = genstat = reslin_queasy = akt_cust = bediener = waehrung = artikel = argt_line = zwkum = fixleist = kontline = bill = guestseg = segmentstat = nationstat = natstat1 = sources = landstat = guestat1 = guestat = zinrstat = zkstat = h_artikel = h_bill_line = h_artikel = h_bill = None
 
-    t_list = argt_list = rguest = compliment = rline = mguest = dummyguest = tguest = accline = bline = None
+    t_list = argt_list = list_bill = rguest = compliment = rline = mguest = dummyguest = tguest = accline = bline = None
 
     t_list_data, T_list = create_model("T_list", {"dept":int, "rechnr":int, "billno":int, "bezeich":string, "food":Decimal, "bev":Decimal, "other":Decimal, "pay":Decimal, "rmtrans":Decimal})
     argt_list_data, Argt_list = create_model("Argt_list", {"argtnr":int, "argt_artnr":int, "departement":int, "is_charged":int, "period":int, "vt_percnt":int})
+    list_bill_data, List_bill = create_model("List_bill", {"bill_number":int})
 
     Rguest = create_buffer("Rguest",Guest)
     Compliment = create_buffer("Compliment",Segment)
@@ -212,7 +219,7 @@ def nt_genstat():
         Zkbuff =  create_buffer("Zkbuff",Zkstat)
 
         for segmentstat in db_session.query(Segmentstat).filter(
-                 (Segmentstat.datum == bill_date)).order_by(Segmentstat._recid).all():
+                 (Segmentstat.datum == bill_date)).order_by(Segmentstat._recid).with_for_update().all():
 
             segbuff = get_cache (Segmentstat, {"_recid": [(eq, segmentstat._recid)]})
             segbuff.logis =  to_decimal("0")
@@ -227,21 +234,21 @@ def nt_genstat():
             pass
 
         for nationstat in db_session.query(Nationstat).filter(
-                 (Nationstat.datum == bill_date)).order_by(Nationstat._recid).all():
+                 (Nationstat.datum == bill_date)).order_by(Nationstat._recid).with_for_update().all():
 
             natbuff = get_cache (Nationstat, {"_recid": [(eq, nationstat._recid)]})
             db_session.delete(natbuff)
             pass
 
         for natstat1 in db_session.query(Natstat1).filter(
-                 (Natstat1.datum == bill_date)).order_by(Natstat1._recid).all():
+                 (Natstat1.datum == bill_date)).order_by(Natstat1._recid).with_for_update().all():
 
             nsbuff = get_cache (Natstat1, {"_recid": [(eq, natstat1._recid)]})
             db_session.delete(nsbuff)
             pass
 
         for sources in db_session.query(Sources).filter(
-                 (Sources.datum == bill_date)).order_by(Sources._recid).all():
+                 (Sources.datum == bill_date)).order_by(Sources._recid).with_for_update().all():
 
             scbuff = get_cache (Sources, {"_recid": [(eq, sources._recid)]})
             scbuff.logis =  to_decimal("0")
@@ -253,7 +260,7 @@ def nt_genstat():
             pass
 
         for landstat in db_session.query(Landstat).filter(
-                 (Landstat.datum == bill_date)).order_by(Landstat._recid).all():
+                 (Landstat.datum == bill_date)).order_by(Landstat._recid).with_for_update().all():
 
             landbuff = db_session.query(Landbuff).filter(
                      (Landbuff._recid == landstat._recid)).first()
@@ -261,14 +268,14 @@ def nt_genstat():
             pass
 
         for guestat1 in db_session.query(Guestat1).filter(
-                 (Guestat1.datum == bill_date)).order_by(Guestat1._recid).all():
+                 (Guestat1.datum == bill_date)).order_by(Guestat1._recid).with_for_update().all():
 
             gsbuff = get_cache (Guestat1, {"_recid": [(eq, guestat1._recid)]})
             db_session.delete(gsbuff)
             pass
 
         for guestat in db_session.query(Guestat).filter(
-                 (Guestat.jahr == get_year(bill_date)) & (Guestat.monat == get_month(bill_date))).order_by(Guestat._recid).all():
+                 (Guestat.jahr == get_year(bill_date)) & (Guestat.monat == get_month(bill_date))).order_by(Guestat._recid).with_for_update().all():
 
             gubuff = get_cache (Guestat, {"_recid": [(eq, guestat._recid)]})
             db_session.delete(gubuff)
@@ -289,7 +296,7 @@ def nt_genstat():
             pass
 
         for zkstat in db_session.query(Zkstat).filter(
-                 (Zkstat.datum == bill_date)).order_by(Zkstat._recid).all():
+                 (Zkstat.datum == bill_date)).order_by(Zkstat._recid).with_for_update().all():
 
             zkbuff = get_cache (Zkstat, {"_recid": [(eq, zkstat._recid)]})
             db_session.delete(zkbuff)
@@ -302,7 +309,9 @@ def nt_genstat():
                      (Zimbuff.zikatnr == zimkateg.zikatnr) & (Zimbuff.sleeping)).order_by(Zimbuff._recid).all():
                 anz = anz + 1
 
-            zkstat = get_cache (Zkstat, {"datum": [(eq, bill_date)],"zikatnr": [(eq, zimkateg.zikatnr)]})
+            # zkstat = get_cache (Zkstat, {"datum": [(eq, bill_date)],"zikatnr": [(eq, zimkateg.zikatnr)]})
+            zkstat = db_session.query(Zkstat).filter(
+                     (Zkstat.datum == bill_date) & (Zkstat.zikatnr == zimkateg.zikatnr)).with_for_update().first()
 
             if not zkstat:
                 zkstat = Zkstat()
@@ -318,7 +327,9 @@ def nt_genstat():
         for genstat in db_session.query(Genstat).filter(
                  (Genstat.datum == bill_date) & (Genstat.zinr != "") & (Genstat.res_logic[inc_value(1)])).order_by(Genstat._recid).all():
 
-            segmentstat = get_cache (Segmentstat, {"datum": [(eq, bill_date)],"segmentcode": [(eq, genstat.segmentcode)]})
+            # segmentstat = get_cache (Segmentstat, {"datum": [(eq, bill_date)],"segmentcode": [(eq, genstat.segmentcode)]})
+            segmentstat = db_session.query(Segmentstat).filter(
+                     (Segmentstat.datum == bill_date) & (Segmentstat.segmentcode == genstat.segmentcode)).with_for_update().first()
 
             if not segmentstat:
                 segmentstat = Segmentstat()
@@ -347,7 +358,9 @@ def nt_genstat():
 
             if genstat.domestic != 0:
 
-                nationstat = get_cache (Nationstat, {"datum": [(eq, bill_date)],"nationnr": [(eq, genstat.domestic)]})
+                # nationstat = get_cache (Nationstat, {"datum": [(eq, bill_date)],"nationnr": [(eq, genstat.domestic)]})
+                nationstat = db_session.query(Nationstat).filter(
+                         (Nationstat.datum == bill_date) & (Nationstat.nationnr == genstat.domestic)).with_for_update().first()
 
                 if not nationstat:
                     nationstat = Nationstat()
@@ -375,7 +388,9 @@ def nt_genstat():
 
                 pass
 
-            nationstat = get_cache (Nationstat, {"datum": [(eq, bill_date)],"nationnr": [(eq, genstat.nationnr)]})
+            # nationstat = get_cache (Nationstat, {"datum": [(eq, bill_date)],"nationnr": [(eq, genstat.nationnr)]})
+            nationstat = db_session.query(Nationstat).filter(
+                     (Nationstat.datum == bill_date) & (Nationstat.nationnr == genstat.nationnr)).with_for_update().first()
 
             if not nationstat:
                 nationstat = Nationstat()
@@ -408,7 +423,9 @@ def nt_genstat():
             nationstat.dlogkind2 = nationstat.dlogkind2 + 1
             pass
 
-            natstat1 = get_cache (Natstat1, {"datum": [(eq, bill_date)],"nationnr": [(eq, genstat.nationnr)]})
+            # natstat1 = get_cache (Natstat1, {"datum": [(eq, bill_date)],"nationnr": [(eq, genstat.nationnr)]})
+            natstat1 = db_session.query(Natstat1).filter(
+                     (Natstat1.datum == bill_date) & (Natstat1.nationnr == genstat.nationnr)).with_for_update().first()
 
             if not natstat1:
                 natstat1 = Natstat1()
@@ -430,7 +447,9 @@ def nt_genstat():
 
             if genstat.domestic != 0:
 
-                natstat1 = get_cache (Natstat1, {"datum": [(eq, bill_date)],"nationnr": [(eq, genstat.domestic)]})
+                # natstat1 = get_cache (Natstat1, {"datum": [(eq, bill_date)],"nationnr": [(eq, genstat.domestic)]})
+                natstat1 = db_session.query(Natstat1).filter(
+                         (Natstat1.datum == bill_date) & (Natstat1.nationnr == genstat.domestic)).with_for_update().first()
 
                 if not natstat1:
                     natstat1 = Natstat1()
@@ -450,7 +469,9 @@ def nt_genstat():
                     natstat1.logis =  to_decimal(natstat1.logis) + to_decimal(genstat.logis)
                 pass
 
-            sources = get_cache (Sources, {"datum": [(eq, bill_date)],"source_code": [(eq, genstat.source)]})
+            # sources = get_cache (Sources, {"datum": [(eq, bill_date)],"source_code": [(eq, genstat.source)]})
+            sources = db_session.query(Sources).filter(
+                     (Sources.datum == bill_date) & (Sources.source_code == genstat.source)).with_for_update().first()
 
             if not sources:
                 sources = Sources()
@@ -471,7 +492,9 @@ def nt_genstat():
                 sources.logis =  to_decimal(sources.logis) + to_decimal(genstat.logis)
             pass
 
-            landstat = get_cache (Landstat, {"datum": [(eq, bill_date)],"nationnr": [(eq, genstat.resident)]})
+            # landstat = get_cache (Landstat, {"datum": [(eq, bill_date)],"nationnr": [(eq, genstat.resident)]})
+            landstat = db_session.query(Landstat).filter(
+                     (Landstat.datum == bill_date) & (Landstat.nationnr == genstat.resident)).with_for_update().first()
 
             if not landstat:
                 landstat = Landstat()
@@ -491,7 +514,9 @@ def nt_genstat():
                 landstat.logis =  to_decimal(landstat.logis) + to_decimal(genstat.logis)
             pass
 
-            guestat1 = get_cache (Guestat1, {"datum": [(eq, bill_date)],"gastnr": [(eq, genstat.gastnr)]})
+            # guestat1 = get_cache (Guestat1, {"datum": [(eq, bill_date)],"gastnr": [(eq, genstat.gastnr)]})
+            guestat1 = db_session.query(Guestat1).filter(
+                     (Guestat1.datum == bill_date) & (Guestat1.gastnr == genstat.gastnr)).with_for_update().first()
 
             if not guestat1:
                 guestat1 = Guestat1()
@@ -511,7 +536,9 @@ def nt_genstat():
                 guestat1.logis =  to_decimal(guestat1.logis) + to_decimal(genstat.logis)
             pass
 
-            zinrstat = get_cache (Zinrstat, {"datum": [(eq, bill_date)],"zinr": [(eq, genstat.zinr)]})
+            # zinrstat = get_cache (Zinrstat, {"datum": [(eq, bill_date)],"zinr": [(eq, genstat.zinr)]})
+            zinrstat = db_session.query(Zinrstat).filter(
+                     (Zinrstat.datum == bill_date) & (Zinrstat.zinr == genstat.zinr)).with_for_update().first()
 
             if not zinrstat:
                 zinrstat = Zinrstat()
@@ -549,7 +576,9 @@ def nt_genstat():
             else:
                 zinrstat.gesamtumsatz =  to_decimal(zinrstat.gesamtumsatz) + to_decimal(genstat.ratelocal)
 
-            zkstat = get_cache (Zkstat, {"zikatnr": [(eq, genstat.zikatnr)],"datum": [(eq, bill_date)]})
+            # zkstat = get_cache (Zkstat, {"zikatnr": [(eq, genstat.zikatnr)],"datum": [(eq, bill_date)]})
+            zkstat = db_session.query(Zkstat).filter(
+                     (Zkstat.zikatnr == genstat.zikatnr) & (Zkstat.datum == bill_date)).with_for_update().first()
 
             if not zkstat:
                 zkstat = Zkstat()
@@ -711,23 +740,26 @@ def nt_genstat():
 
         return generate_inner_output()
 
-
+    # Rulita, 01/12/2025
+    # Added tiket Hdesk malik A80751
     def banq_rev():
 
-        nonlocal bill_date, price_decimal, invno, purno, lodg_betrag, rate, ratelocal, service, vat, vat2, fact, vat2_art, fact_art, argt_betrag, ex_rate, exchg_rate, frate, netto, def_nation, do_it, rm_serv, rm_vat, serv_taxable, foreign_rate, new_contrate, bonus, tot_rmcharge, gastmemberno, revtype, fb_dept, bfast_art, lunch_art, dinner_art, lundin_art, post_it, fcost, ba_dept, pax, price, vat_art, service_art, gross_argt, net_argt, guest, segment, res_line, htparam, nation, reservation, arrangement, zimmer, zimkateg, bill_line, genstat, reslin_queasy, akt_cust, bediener, waehrung, artikel, argt_line, zwkum, fixleist, kontline, bill, guestseg, segmentstat, nationstat, natstat1, sources, landstat, guestat1, guestat, zinrstat, zkstat, h_artikel, h_bill_line
+        nonlocal bill_date, price_decimal, invno, purno, lodg_betrag, rate, ratelocal, service, vat, vat2, fact, vat2_art, fact_art, argt_betrag, ex_rate, exchg_rate, frate, netto, def_nation, do_it, rm_serv, rm_vat, serv_taxable, foreign_rate, new_contrate, bonus, tot_rmcharge, gastmemberno, revtype, fb_dept, bfast_art, lunch_art, dinner_art, lundin_art, post_it, fcost, ba_dept, pax, price, vat_art, service_art, gross_argt, net_argt, guest, segment, res_line, htparam, nation, reservation, arrangement, zimmer, zimkateg, bill_line, genstat, reslin_queasy, akt_cust, bediener, waehrung, artikel, argt_line, zwkum, fixleist, kontline, bill, guestseg, segmentstat, nationstat, natstat1, sources, landstat, guestat1, guestat, zinrstat, zkstat, h_bill_line, h_artikel, h_bill
         nonlocal rguest, compliment, rline, mguest, dummyguest, tguest, accline, bline
 
 
-        nonlocal t_list, argt_list, rguest, compliment, rline, mguest, dummyguest, tguest, accline, bline
-        nonlocal t_list_data, argt_list_data
+        nonlocal t_list, argt_list, list_bill, rguest, compliment, rline, mguest, dummyguest, tguest, accline, bline
+        nonlocal t_list_data, argt_list_data, list_bill_data
 
         ba_betrag:Decimal = to_decimal("0.0")
         invoice_no:int = 0
         i:int = 0
         curr_inv_no:int = 0
         t_bill_line = None
+        t_h_bill_line = None
         artlist = None
         T_bill_line =  create_buffer("T_bill_line",Bill_line)
+        T_h_bill_line =  create_buffer("T_h_bill_line",H_bill_line)
         Artlist =  create_buffer("Artlist",Artikel)
 
         t_bill_line_obj_list = {}
@@ -757,11 +789,15 @@ def nt_genstat():
                         i = 999
 
                 if curr_inv_no != invoice_no:
+                    list_bill = List_bill()
+                    list_bill_data.append(list_bill)
+
+                    list_bill.bill_number = invoice_no
 
                     h_bill_line_obj_list = {}
                     h_bill_line = H_bill_line()
                     h_artikel = H_artikel()
-                    for h_bill_line.betrag, h_bill_line._recid, h_artikel.artnrfront, h_artikel.departement, h_artikel._recid in db_session.query(H_bill_line.betrag, H_bill_line._recid, H_artikel.artnrfront, H_artikel.departement, H_artikel._recid).join(H_artikel,(H_artikel.artnr == H_bill_line.artnr) & (H_artikel.departement == ba_dept) & (H_artikel.artart == 0)).filter(
+                    for h_bill_line.betrag, h_bill_line._recid, h_bill_line.rechnr, h_bill_line.departement, h_artikel.artnrfront, h_artikel.departement, h_artikel._recid in db_session.query(H_bill_line.betrag, H_bill_line._recid, H_bill_line.rechnr, H_bill_line.departement, H_artikel.artnrfront, H_artikel.departement, H_artikel._recid).join(H_artikel,(H_artikel.artnr == H_bill_line.artnr) & (H_artikel.departement == ba_dept) & (H_artikel.artart == 0)).filter(
                              (H_bill_line.rechnr == invoice_no) & (H_bill_line.departement == ba_dept) & (H_bill_line.bill_datum == bill_date)).order_by(H_bill_line._recid).all():
                         if h_bill_line_obj_list.get(h_bill_line._recid):
                             continue
@@ -790,7 +826,9 @@ def nt_genstat():
 
             bill = get_cache (Bill, {"rechnr": [(eq, t_bill_line.rechnr)]})
 
-            genstat = get_cache (Genstat, {"datum": [(eq, bill_date)],"gastnr": [(eq, bill.gastnr)]})
+            # genstat = get_cache (Genstat, {"datum": [(eq, bill_date)],"gastnr": [(eq, bill.gastnr)]})
+            genstat = db_session.query(Genstat).filter(
+                     (Genstat.datum == bill_date) & (Genstat.gastnr == bill.gastnr)).with_for_update().first()
 
             if not genstat:
                 genstat = Genstat()
@@ -805,6 +843,108 @@ def nt_genstat():
 
 
             pass
+
+        for t_h_bill_line in db_session.query(T_h_bill_line).filter(
+                 (T_h_bill_line.rechnr > 0) & (T_h_bill_line.bill_datum == bill_date) & (T_h_bill_line.zeit >= 0) & (T_h_bill_line.departement == ba_dept)).order_by(T_h_bill_line._recid).all():
+            ba_betrag =  to_decimal("0")
+
+            list_bill = query(list_bill_data, filters=(lambda list_bill: list_bill.bill_number == t_h_bill_line.rechnr), first=True)
+
+            if not list_bill:
+
+                h_bill_line_obj_list = {}
+                h_bill_line = H_bill_line()
+                h_artikel = H_artikel()
+                for h_bill_line.betrag, h_bill_line._recid, h_bill_line.rechnr, h_bill_line.departement, h_artikel.artnrfront, h_artikel.departement, h_artikel._recid in db_session.query(H_bill_line.betrag, H_bill_line._recid, H_bill_line.rechnr, H_bill_line.departement, H_artikel.artnrfront, H_artikel.departement, H_artikel._recid).join(H_artikel,(H_artikel.artnr == H_bill_line.artnr) & (H_artikel.departement == H_bill_line.departement) & (H_artikel.artart == 0)).filter(
+                         (H_bill_line.rechnr == t_h_bill_line.rechnr) & (H_bill_line.departement == t_h_bill_line.departement)).order_by(H_bill_line._recid).all():
+                    if h_bill_line_obj_list.get(h_bill_line._recid):
+                        continue
+                    else:
+                        h_bill_line_obj_list[h_bill_line._recid] = True
+
+
+                    ba_betrag =  to_decimal(ba_betrag) + to_decimal(h_bill_line.betrag)
+
+                if ba_betrag == 0:
+                    list_bill = List_bill()
+                    list_bill_data.append(list_bill)
+
+                    list_bill.bill_number = t_h_bill_line.rechnr
+
+        t_h_bill_line_obj_list = {}
+        t_h_bill_line = H_bill_line()
+        h_artikel = H_artikel()
+        for t_h_bill_line.betrag, t_h_bill_line._recid, t_h_bill_line.rechnr, t_h_bill_line.departement, h_artikel.artnrfront, h_artikel.departement, h_artikel._recid in db_session.query(T_h_bill_line.betrag, T_h_bill_line._recid, T_h_bill_line.rechnr, T_h_bill_line.departement, H_artikel.artnrfront, H_artikel.departement, H_artikel._recid).join(H_artikel,(H_artikel.artnr == T_h_bill_line.artnr) & (H_artikel.departement == ba_dept) & (H_artikel.artart == 0)).filter(
+                 (T_h_bill_line.rechnr > 0) & (T_h_bill_line.bill_datum == bill_date) & (T_h_bill_line.zeit >= 0) & (T_h_bill_line.departement == ba_dept)).order_by(T_h_bill_line._recid).all():
+            if t_h_bill_line_obj_list.get(t_h_bill_line._recid):
+                continue
+            else:
+                t_h_bill_line_obj_list[t_h_bill_line._recid] = True
+
+            list_bill = query(list_bill_data, filters=(lambda list_bill: list_bill.bill_number == t_h_bill_line.rechnr), first=True)
+
+            if not list_bill:
+                service =  to_decimal("0")
+                vat =  to_decimal("0")
+                vat2 =  to_decimal("0")
+                fact =  to_decimal("0")
+                ba_betrag =  to_decimal("0")
+
+                artlist = get_cache (Artikel, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, h_artikel.departement)]})
+
+                if artlist:
+                    service, vat, vat2, fact = get_output(calc_servtaxesbl(1, artlist.artnr, artlist.departement, bill_date))
+                    ba_betrag =  to_decimal(ba_betrag) + to_decimal((t_h_bill_line.betrag) / to_decimal(fact) )
+
+                h_bill = get_cache (H_bill, {"rechnr": [(eq, t_h_bill_line.rechnr)],"departement": [(eq, ba_dept)]})
+
+                if h_bill:
+
+                    res_line = get_cache (Res_line, {"resnr": [(eq, h_bill.resnr)],"reslinnr": [(eq, h_bill.reslinnr)]})
+
+                    if res_line:
+
+                        # genstat = get_cache (Genstat, {"datum": [(eq, bill_date)],"gastnr": [(eq, res_line.gastnrmember)],"gastnrmember": [(eq, res_line.gastnrmember)]})
+                        genstat = db_session.query(Genstat).filter(
+                                 (Genstat.datum == bill_date) & (Genstat.gastnr == res_line.gastnrmember) & (Genstat.gastnrmember == res_line.gastnrmember)).with_for_update().first()
+
+                        if not genstat:
+                            genstat = Genstat()
+                            db_session.add(genstat)
+
+                            genstat.datum = bill_date
+                            genstat.gastnr = res_line.gastnrmember
+                            genstat.gastnrmember = res_line.gastnrmember
+
+
+                        genstat.res_deci[6] = genstat.res_deci[6] + ba_betrag
+
+
+                        pass
+                        pass
+                    else:
+
+                        if h_bill.resnr != 0:
+
+                            # genstat = get_cache (Genstat, {"datum": [(eq, bill_date)],"gastnr": [(eq, h_bill.resnr)]})
+                            genstat = db_session.query(Genstat).filter(
+                                     (Genstat.datum == bill_date) & (Genstat.gastnr == h_bill.resnr)).with_for_update().first()
+
+                            if not genstat:
+                                genstat = Genstat()
+                                db_session.add(genstat)
+
+                                genstat.datum = bill_date
+                                genstat.gastnr = h_bill.resnr
+                                genstat.gastnrmember = h_bill.resnr
+
+
+                            genstat.res_deci[6] = genstat.res_deci[6] + ba_betrag
+
+
+                            pass
+                            pass
+        list_bill_data.clear()
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
     bill_date = htparam.fdate
@@ -909,7 +1049,9 @@ def nt_genstat():
             bonus = False
             gastmemberno = res_line.gastnrmember
 
-            genstat = get_cache (Genstat, {"datum": [(eq, bill_date)],"gastnrmember": [(eq, res_line.gastnrmember)],"zinr": [(eq, res_line.zinr)]})
+            # genstat = get_cache (Genstat, {"datum": [(eq, bill_date)],"gastnrmember": [(eq, res_line.gastnrmember)],"zinr": [(eq, res_line.zinr)]})
+            genstat = db_session.query(Genstat).filter(
+                     (Genstat.datum == bill_date) & (Genstat.gastnrmember == res_line.gastnrmember) & (Genstat.zinr == res_line.zinr)).with_for_update().first()
 
             if genstat:
 
@@ -1313,11 +1455,15 @@ def nt_genstat():
 
         bill = get_cache (Bill, {"rechnr": [(eq, bill_line.rechnr)]})
 
-        genstat = get_cache (Genstat, {"datum": [(eq, bill_date)],"gastnr": [(eq, bill.gastnr)],"zinr": [(eq, bill_line.zinr)]})
+        # genstat = get_cache (Genstat, {"datum": [(eq, bill_date)],"gastnr": [(eq, bill.gastnr)],"zinr": [(eq, bill_line.zinr)]})
+        genstat = db_session.query(Genstat).filter(
+                 (Genstat.datum == bill_date) & (Genstat.gastnr == bill.gastnr) & (Genstat.zinr == bill_line.zinr)).with_for_update().first()
 
         if not genstat:
 
-            genstat = get_cache (Genstat, {"datum": [(eq, bill_date)],"gastnr": [(eq, bill.gastnr)]})
+            # genstat = get_cache (Genstat, {"datum": [(eq, bill_date)],"gastnr": [(eq, bill.gastnr)]})
+            genstat = db_session.query(Genstat).filter(
+                     (Genstat.datum == bill_date) & (Genstat.gastnr == bill.gastnr)).with_for_update().first()
 
         if not genstat:
 

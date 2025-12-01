@@ -9,6 +9,11 @@
 # - Fixing issue where closed_date eq today -1 
 # ============================================
 
+# =============================================
+# Rulita, 01-12-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -44,7 +49,7 @@ def nt_egstat():
     # Rulita, 28-10-2025
     # - Fixing issue where closed_date eq today -1 
     for req in db_session.query(Req).filter(
-             (Req.closed_date == (get_current_date() - timedelta(days=1)))).order_by(Req._recid).all():
+             (Req.closed_date == (get_current_date() - timedelta(days=1)))).order_by(Req._recid).with_for_update().all():
 
         eg_reqstat = get_cache (Eg_reqstat, {"reqfrom": [(eq, req.source)],"deptnum": [(eq, req.deptnum)],"location": [(eq, req.reserve_int)],"zinr": [(eq, req.zinr)],"category": [(eq, req.category)],"object": [(eq, req.maintask)],"objectitem": [(eq, req.propertynr)],"objecttask": [(eq, req.sub_task)],"pic": [(eq, req.assign_to)],"reqstat": [(eq, req.reqnr)],"estfinishdate": [(eq, req.ex_finishdate)],"estfinishtime": [(eq, req.ex_finishtime)],"urgency": [(eq, req.urgency)],"opendate": [(eq, req.opened_date)],"opentime": [(eq, req.opened_time)],"processdate": [(eq, req.process_date)],"processtime": [(eq, req.process_time)],"donedate": [(eq, req.done_date)],"donetime": [(eq, req.done_time)],"closedate": [(eq, req.closed_date)],"closetime": [(eq, req.closed_time)]})
 

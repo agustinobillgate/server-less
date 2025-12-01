@@ -1,0 +1,40 @@
+{
+    "Dml_art": {
+        "read": [
+            "userinit",
+            "chginit",
+            "datum",
+            "artnr",
+            "anzahl",
+            "einzelpreis",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Queasy": {
+        "read": [
+            "key",
+            "number1",
+            "number2",
+            "date1",
+            "char1",
+            "logi1",
+            "logi2",
+            "_recid"
+        ],
+        "write": []
+    },
+    "Dml_artdep": {
+        "read": [
+            "userinit",
+            "chginit",
+            "departement",
+            "datum",
+            "artnr",
+            "anzahl",
+            "einzelpreis",
+            "_recid"
+        ],
+        "write": []
+    }
+}
