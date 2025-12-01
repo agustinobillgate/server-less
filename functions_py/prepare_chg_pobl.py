@@ -1,14 +1,16 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpint import htpint
-from models import L_artikel, L_order, L_orderhdr, Waehrung, Htparam, L_lieferant, Parameters, Queasy
+from models import L_artikel, L_order, L_orderhdr, Waehrung, Htparam, L_lieferant, Parameters
 
-def prepare_chg_po_webbl(pvilanguage:int, docu_nr:string, lief_nr:int):
+def prepare_chg_pobl(pvilanguage:int, docu_nr:string, lief_nr:int):
 
-    prepare_cache ([Htparam, L_lieferant, Parameters, Queasy])
+    prepare_cache ([Htparam, L_lieferant, Parameters])
 
     local_nr = 0
     potype = 0
@@ -40,11 +42,10 @@ def prepare_chg_po_webbl(pvilanguage:int, docu_nr:string, lief_nr:int):
     t_waehrung_data = []
     t_l_order_data = []
     t_parameters_data = []
-    q245_data = []
     lvcarea:string = "chg-po"
-    l_artikel = l_order = l_orderhdr = waehrung = htparam = l_lieferant = parameters = queasy = None
+    l_artikel = l_order = l_orderhdr = waehrung = htparam = l_lieferant = parameters = None
 
-    disc_list = l_art = s_order = t_l_art = t_l_orderhdr = t_l_order = t_waehrung = t_parameters = q245 = None
+    disc_list = l_art = s_order = t_l_art = t_l_orderhdr = t_l_order = t_waehrung = t_parameters = None
 
     disc_list_data, Disc_list = create_model("Disc_list", {"l_recid":int, "price0":Decimal, "brutto":Decimal, "disc":Decimal, "disc2":Decimal, "vat":Decimal, "disc_val":Decimal, "disc2_val":Decimal, "vat_val":Decimal})
     s_order_data, S_order = create_model_like(L_order, {"rec_id":int, "lief_einheit":Decimal})
@@ -53,39 +54,47 @@ def prepare_chg_po_webbl(pvilanguage:int, docu_nr:string, lief_nr:int):
     t_l_order_data, T_l_order = create_model_like(L_order, {"rec_id":int})
     t_waehrung_data, T_waehrung = create_model_like(Waehrung)
     t_parameters_data, T_parameters = create_model("T_parameters", {"varname":string, "vstring":string})
-    q245_data, Q245 = create_model("Q245", {"key":int, "docu_nr":string, "user_init":string, "app_id":string, "app_no":int, "sign_id":int})
 
     L_art = create_buffer("L_art",L_artikel)
 
 
     db_session = local_storage.db_session
+    docu_nr = docu_nr.strip()
+    
 
     def generate_output():
-        nonlocal local_nr, potype, enforce_rflag, release_flag, prev_flag, pr, crterm, lieferdatum, bestellart, comments, supplier, curr_liefnr, deptnr, ordername, deptname, billdate, t_amount, msg_str, p_1093, p_464, p_220, p_266, p_app, t_l_art_data, s_order_data, disc_list_data, t_l_orderhdr_data, t_waehrung_data, t_l_order_data, t_parameters_data, q245_data, lvcarea, l_artikel, l_order, l_orderhdr, waehrung, htparam, l_lieferant, parameters, queasy
+        nonlocal local_nr, potype, enforce_rflag, release_flag, prev_flag, pr, crterm, lieferdatum, bestellart, comments, supplier, curr_liefnr, deptnr, ordername, deptname, billdate, t_amount, msg_str, p_1093, p_464, p_220, p_266, p_app, t_l_art_data, s_order_data, disc_list_data, t_l_orderhdr_data, t_waehrung_data, t_l_order_data, t_parameters_data, lvcarea, l_artikel, l_order, l_orderhdr, waehrung, htparam, l_lieferant, parameters
         nonlocal pvilanguage, docu_nr, lief_nr
         nonlocal l_art
 
 
-        nonlocal disc_list, l_art, s_order, t_l_art, t_l_orderhdr, t_l_order, t_waehrung, t_parameters, q245
-        nonlocal disc_list_data, s_order_data, t_l_art_data, t_l_orderhdr_data, t_l_order_data, t_waehrung_data, t_parameters_data, q245_data
+        nonlocal disc_list, l_art, s_order, t_l_art, t_l_orderhdr, t_l_order, t_waehrung, t_parameters
+        nonlocal disc_list_data, s_order_data, t_l_art_data, t_l_orderhdr_data, t_l_order_data, t_waehrung_data, t_parameters_data
 
-        return {"local_nr": local_nr, "potype": potype, "enforce_rflag": enforce_rflag, "release_flag": release_flag, "prev_flag": prev_flag, "pr": pr, "crterm": crterm, "lieferdatum": lieferdatum, "bestellart": bestellart, "comments": comments, "supplier": supplier, "curr_liefnr": curr_liefnr, "deptnr": deptnr, "ordername": ordername, "deptname": deptname, "billdate": billdate, "t_amount": t_amount, "msg_str": msg_str, "p_1093": p_1093, "p_464": p_464, "p_220": p_220, "p_266": p_266, "p_app": p_app, "t-l-art": t_l_art_data, "s-order": s_order_data, "disc-list": disc_list_data, "t-l-orderhdr": t_l_orderhdr_data, "t-waehrung": t_waehrung_data, "t-l-order": t_l_order_data, "t-parameters": t_parameters_data, "q245": q245_data}
+        return {"local_nr": local_nr, "potype": potype, "enforce_rflag": enforce_rflag, "release_flag": release_flag, "prev_flag": prev_flag, "pr": pr, "crterm": crterm, "lieferdatum": lieferdatum, "bestellart": bestellart, "comments": comments, "supplier": supplier, "curr_liefnr": curr_liefnr, "deptnr": deptnr, "ordername": ordername, "deptname": deptname, "billdate": billdate, "t_amount": t_amount, "msg_str": msg_str, "p_1093": p_1093, "p_464": p_464, "p_220": p_220, "p_266": p_266, "p_app": p_app, "t-l-art": t_l_art_data, "s-order": s_order_data, "disc-list": disc_list_data, "t-l-orderhdr": t_l_orderhdr_data, "t-waehrung": t_waehrung_data, "t-l-order": t_l_order_data, "t-parameters": t_parameters_data}
 
     def cal_tamount():
 
-        nonlocal local_nr, potype, enforce_rflag, release_flag, prev_flag, pr, crterm, lieferdatum, bestellart, comments, supplier, curr_liefnr, deptnr, ordername, deptname, billdate, t_amount, msg_str, p_1093, p_464, p_220, p_266, p_app, t_l_art_data, s_order_data, disc_list_data, t_l_orderhdr_data, t_waehrung_data, t_l_order_data, t_parameters_data, q245_data, lvcarea, l_artikel, l_order, l_orderhdr, waehrung, htparam, l_lieferant, parameters, queasy
+        nonlocal local_nr, potype, enforce_rflag, release_flag, prev_flag, pr, crterm, lieferdatum, bestellart, comments, supplier, curr_liefnr, deptnr, ordername, deptname, billdate, t_amount, msg_str, p_1093, p_464, p_220, p_266, p_app, t_l_art_data, s_order_data, disc_list_data, t_l_orderhdr_data, t_waehrung_data, t_l_order_data, t_parameters_data, lvcarea, l_artikel, l_order, l_orderhdr, waehrung, htparam, l_lieferant, parameters
         nonlocal pvilanguage, docu_nr, lief_nr
         nonlocal l_art
 
 
-        nonlocal disc_list, l_art, s_order, t_l_art, t_l_orderhdr, t_l_order, t_waehrung, t_parameters, q245
-        nonlocal disc_list_data, s_order_data, t_l_art_data, t_l_orderhdr_data, t_l_order_data, t_waehrung_data, t_parameters_data, q245_data
+        nonlocal disc_list, l_art, s_order, t_l_art, t_l_orderhdr, t_l_order, t_waehrung, t_parameters
+        nonlocal disc_list_data, s_order_data, t_l_art_data, t_l_orderhdr_data, t_l_order_data, t_waehrung_data, t_parameters_data
 
 
         t_amount =  to_decimal("0")
 
-        for l_order in db_session.query(L_order).filter(
-                 (L_order.docu_nr == (docu_nr).lower()) & (L_order.loeschflag == 0)).order_by(L_order._recid).all():
+        l_order_obj_list = {}
+        for l_order, l_art in db_session.query(L_order, L_art).join(L_art,(L_art.artnr == L_order.artnr)).filter(
+                 (L_order.docu_nr == (docu_nr).lower()) & (L_order.pos > 0) & (L_order.loeschflag == 0)).order_by(L_order._recid).all():
+            if l_order_obj_list.get(l_order._recid):
+                continue
+            else:
+                l_order_obj_list[l_order._recid] = True
+
+
             t_amount =  to_decimal(t_amount) + to_decimal(l_order.warenwert)
             s_order = S_order()
             s_order_data.append(s_order)
@@ -107,9 +116,7 @@ def prepare_chg_po_webbl(pvilanguage:int, docu_nr:string, lief_nr:int):
             s_order.rec_id = l_order._recid
 
             l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_order.artnr)]})
-
-            if l_artikel:
-                s_order.lief_einheit =  to_decimal(l_artikel.lief_einheit)
+            s_order.lief_einheit =  to_decimal(l_artikel.lief_einheit)
 
 
             disc_list = Disc_list()
@@ -128,15 +135,12 @@ def prepare_chg_po_webbl(pvilanguage:int, docu_nr:string, lief_nr:int):
 
 
             disc_list.brutto = ( to_decimal(s_order.warenwert) + to_decimal(disc_list.disc_val) + to_decimal(disc_list.disc2_val)) - to_decimal(disc_list.vat_val)
-            disc_list.price0 = to_decimal(round(disc_list.brutto / s_order.anzahl , 0))
-
+            disc_list.price0 =  to_decimal(disc_list.brutto) / to_decimal(s_order.anzahl)
 
     p_266 = get_output(htpint(266))
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 71)]})
-
-    if htparam.paramgruppe == 21:
-        p_app = htparam.flogical
+    p_app = htparam.flogical
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 152)]})
 
@@ -165,7 +169,7 @@ def prepare_chg_po_webbl(pvilanguage:int, docu_nr:string, lief_nr:int):
     release_flag = (l_orderhdr.gedruckt != None)
     prev_flag = release_flag
 
-    l_order = get_cache (L_order, {"docu_nr": [(eq, docu_nr)],"artnr": [(ne, 0)],"lief_nr": [(eq, lief_nr)],"pos": [(eq, 0)]})
+    l_order = get_cache (L_order, {"docu_nr": [(eq, docu_nr)],"lief_nr": [(eq, lief_nr)],"pos": [(eq, 0)]})
     pr = l_order.lief_fax[0]
     crterm = l_orderhdr.angebot_lief[1]
     lieferdatum = l_orderhdr.lieferdatum
@@ -227,17 +231,5 @@ def prepare_chg_po_webbl(pvilanguage:int, docu_nr:string, lief_nr:int):
     p_1093 = get_output(htpint(1093))
     p_464 = get_output(htpint(464))
     p_220 = get_output(htpint(220))
-
-    for queasy in db_session.query(Queasy).filter(
-             (Queasy.key == 245) & (Queasy.char1 == (docu_nr).lower())).order_by(Queasy.number1).all():
-        q245 = Q245()
-        q245_data.append(q245)
-
-        q245.key = queasy.key
-        q245.docu_nr = queasy.char1
-        q245.user_init = queasy.char2
-        q245.app_id = queasy.char3
-        q245.app_no = queasy.number1
-        q245.sign_id = queasy.number2
 
     return generate_output()
