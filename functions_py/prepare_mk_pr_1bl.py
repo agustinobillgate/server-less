@@ -1,9 +1,12 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_orderhdr, L_order, Htparam, L_artikel, L_bestand, Parameters, Dml_art
+from sqlalchemy.orm import flag_modified
 
 def prepare_mk_pr_1bl(docu_nr:string, tp_bediener_user_group:int, tp_bediener_username:string, dml_flag:bool, dml_grp:int, dml_datum:date, cost_acct:string):
 
@@ -31,6 +34,9 @@ def prepare_mk_pr_1bl(docu_nr:string, tp_bediener_user_group:int, tp_bediener_us
     set_cache(L_bestand, (L_bestand.lager_nr == 0),[["artnr", "lager_nr"]], True,[],[])
 
     db_session = local_storage.db_session
+    docu_nr = docu_nr.strip()
+    tp_bediener_username = tp_bediener_username.strip()
+    cost_acct = cost_acct.strip()
 
     def generate_output():
         nonlocal billdate, eng_dept, pos, dml_created, p_370, t_l_orderhdr_data, s_list_data, t_l_artikel_data, t_parameters_data, l_orderhdr, l_order, htparam, l_artikel, l_bestand, parameters, dml_art
@@ -91,7 +97,7 @@ def prepare_mk_pr_1bl(docu_nr:string, tp_bediener_user_group:int, tp_bediener_us
             dml_art = Dml_art()
             l_artikel = L_artikel()
             for dml_art.anzahl, dml_art.datum, dml_art._recid, l_artikel.artnr, l_artikel.traubensorte, l_artikel.lief_einheit, l_artikel._recid, l_artikel.bezeich, l_artikel.betriebsnr, l_artikel.jahrgang, l_artikel.inhalt, l_artikel.masseinheit, l_artikel.zwkum in db_session.query(Dml_art.anzahl, Dml_art.datum, Dml_art._recid, L_artikel.artnr, L_artikel.traubensorte, L_artikel.lief_einheit, L_artikel._recid, L_artikel.bezeich, L_artikel.betriebsnr, L_artikel.jahrgang, L_artikel.inhalt, L_artikel.masseinheit, L_artikel.zwkum).join(L_artikel,(L_artikel.artnr == Dml_art.artnr)).filter(
-                     (Dml_art.datum == dml_datum) & (Dml_art.anzahl != 0)).order_by(L_artikel.bezeich).all():
+                     (Dml_art.datum == dml_datum) & (Dml_art.anzahl != 0)).order_by(L_artikel.bezeich).with_for_update().all():
                 if dml_art_obj_list.get(dml_art._recid):
                     continue
                 else:
@@ -124,7 +130,7 @@ def prepare_mk_pr_1bl(docu_nr:string, tp_bediener_user_group:int, tp_bediener_us
             dml_art = Dml_art()
             l_artikel = L_artikel()
             for dml_art.anzahl, dml_art.datum, dml_art._recid, l_artikel.artnr, l_artikel.traubensorte, l_artikel.lief_einheit, l_artikel._recid, l_artikel.bezeich, l_artikel.betriebsnr, l_artikel.jahrgang, l_artikel.inhalt, l_artikel.masseinheit, l_artikel.zwkum in db_session.query(Dml_art.anzahl, Dml_art.datum, Dml_art._recid, L_artikel.artnr, L_artikel.traubensorte, L_artikel.lief_einheit, L_artikel._recid, L_artikel.bezeich, L_artikel.betriebsnr, L_artikel.jahrgang, L_artikel.inhalt, L_artikel.masseinheit, L_artikel.zwkum).join(L_artikel,(L_artikel.artnr == Dml_art.artnr) & (L_artikel.zwkum == dml_grp)).filter(
-                     (Dml_art.datum == dml_datum)).order_by(L_artikel.bezeich).all():
+                     (Dml_art.datum == dml_datum)).order_by(L_artikel.bezeich).with_for_update().all():
                 if dml_art_obj_list.get(dml_art._recid):
                     continue
                 else:

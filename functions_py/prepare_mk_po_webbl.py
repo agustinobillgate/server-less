@@ -1,13 +1,17 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.htpint import htpint
 from sqlalchemy import func
-from models import L_order, L_orderhdr, Htparam, Waehrung, L_lieferant, Queasy, Parameters, L_artikel
+from models import L_order, L_orderhdr, Htparam, Waehrung, L_lieferant, Parameters, L_artikel
+from sqlalchemy.orm import flag_modified
 
-def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr:int, po_type:int, potype:int, bediener_username:string, ordername_screen_value:string, crterm:int):
+def prepare_mk_po_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr:int, po_type:int, potype:int, 
+                        bediener_username:string, ordername_screen_value:string, crterm:int):
 
     prepare_cache ([Htparam, Waehrung, L_lieferant, Parameters, L_artikel])
 
@@ -28,56 +32,50 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
     p_1093 = 0
     p_464 = 0
     p_220 = 0
-    docunr = ""
-    avail_addvat = False
     t_waehrung_data = []
     t_l_order_data = []
     t_l_orderhdr_data = []
     t_parameters_data = []
     lvcarea:string = "mk-po"
-    l_order = l_orderhdr = htparam = waehrung = l_lieferant = queasy = parameters = l_artikel = None
+    l_order = l_orderhdr = htparam = waehrung = l_lieferant = parameters = l_artikel = None
 
     t_parameters = t_waehrung = t_l_order = t_l_orderhdr = None
 
     t_parameters_data, T_parameters = create_model("T_parameters", {"varname":string, "vstring":string})
-    t_waehrung_data, T_waehrung = create_model("T_waehrung", {"wabkurz":string, "waehrungsnr":int})
+    t_waehrung_data, T_waehrung = create_model("T_waehrung", {"wabkurz":string})
     t_l_order_data, T_l_order = create_model_like(L_order, {"rec_id":int, "a_bezeich":string, "price0":Decimal, "brutto":Decimal, "disc":Decimal, "disc2":Decimal, "vat":Decimal, "disc_val":Decimal, "disc2_val":Decimal, "vat_val":Decimal})
     t_l_orderhdr_data, T_l_orderhdr = create_model_like(L_orderhdr, {"rec_id":int})
 
     db_session = local_storage.db_session
+    docu_nr = docu_nr.strip()
+    bediener_username = bediener_username.strip()
+    ordername_screen_value = ordername_screen_value.strip()
 
     def generate_output():
-        nonlocal local_nr, billdate, zeroprice_flag, deptname, supplier, curr_liefnr, p_222, p_234, p_266, pos, t_amount, currency_add_first, currency_screen_value, msg_str, p_1093, p_464, p_220, docunr, avail_addvat, t_waehrung_data, t_l_order_data, t_l_orderhdr_data, t_parameters_data, lvcarea, l_order, l_orderhdr, htparam, waehrung, l_lieferant, queasy, parameters, l_artikel
+        nonlocal local_nr, billdate, zeroprice_flag, deptname, supplier, curr_liefnr, p_222, p_234, p_266, pos, t_amount, currency_add_first, currency_screen_value, msg_str, p_1093, p_464, p_220, t_waehrung_data, t_l_order_data, t_l_orderhdr_data, t_parameters_data, lvcarea, l_order, l_orderhdr, htparam, waehrung, l_lieferant, parameters, l_artikel
         nonlocal docu_nr, pvilanguage, lief_nr, pr_deptnr, po_type, potype, bediener_username, ordername_screen_value, crterm
 
 
         nonlocal t_parameters, t_waehrung, t_l_order, t_l_orderhdr
         nonlocal t_parameters_data, t_waehrung_data, t_l_order_data, t_l_orderhdr_data
 
-        return {"local_nr": local_nr, "billdate": billdate, "zeroprice_flag": zeroprice_flag, "deptname": deptname, "supplier": supplier, "curr_liefnr": curr_liefnr, "p_222": p_222, "p_234": p_234, "p_266": p_266, "pos": pos, "t_amount": t_amount, "currency_add_first": currency_add_first, "currency_screen_value": currency_screen_value, "msg_str": msg_str, "p_1093": p_1093, "p_464": p_464, "p_220": p_220, "docunr": docunr, "avail_addvat": avail_addvat, "t-waehrung": t_waehrung_data, "t-l-order": t_l_order_data, "t-l-orderhdr": t_l_orderhdr_data, "t-parameters": t_parameters_data}
+        return {"docu_nr": docu_nr, "local_nr": local_nr, "billdate": billdate, "zeroprice_flag": zeroprice_flag, "deptname": deptname, "supplier": supplier, "curr_liefnr": curr_liefnr, "p_222": p_222, "p_234": p_234, "p_266": p_266, "pos": pos, "t_amount": t_amount, "currency_add_first": currency_add_first, "currency_screen_value": currency_screen_value, "msg_str": msg_str, "p_1093": p_1093, "p_464": p_464, "p_220": p_220, "t-waehrung": t_waehrung_data, "t-l-order": t_l_order_data, "t-l-orderhdr": t_l_orderhdr_data, "t-parameters": t_parameters_data}
 
     def new_po_number():
 
-        nonlocal local_nr, billdate, zeroprice_flag, deptname, supplier, curr_liefnr, p_222, p_234, p_266, pos, t_amount, currency_add_first, currency_screen_value, msg_str, p_1093, p_464, p_220, docunr, avail_addvat, t_waehrung_data, t_l_order_data, t_l_orderhdr_data, t_parameters_data, lvcarea, l_order, l_orderhdr, htparam, waehrung, l_lieferant, queasy, parameters, l_artikel
+        nonlocal local_nr, billdate, zeroprice_flag, deptname, supplier, curr_liefnr, p_222, p_234, p_266, pos, t_amount, currency_add_first, currency_screen_value, msg_str, p_1093, p_464, p_220, t_waehrung_data, t_l_order_data, t_l_orderhdr_data, t_parameters_data, lvcarea, l_order, l_orderhdr, htparam, waehrung, l_lieferant, parameters, l_artikel
         nonlocal docu_nr, pvilanguage, lief_nr, pr_deptnr, po_type, potype, bediener_username, ordername_screen_value, crterm
 
 
         nonlocal t_parameters, t_waehrung, t_l_order, t_l_orderhdr
         nonlocal t_parameters_data, t_waehrung_data, t_l_order_data, t_l_orderhdr_data
 
-        docunr = ""
         l_orderhdr1 = None
-        l_orderhdr2 = None
         s:string = ""
         i:int = 1
         mm:int = 0
         yy:int = 0
-
-        def generate_inner_output():
-            return (docunr)
-
         L_orderhdr1 =  create_buffer("L_orderhdr1",L_orderhdr)
-        L_orderhdr2 =  create_buffer("L_orderhdr2",L_orderhdr)
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 973)]})
 
@@ -85,52 +83,32 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
             mm = get_month(billdate)
             yy = get_year(billdate)
             s = "P" + substring(to_string(get_year(billdate)) , 2, 2) + to_string(get_month(billdate) , "99")
-            pass
 
             for l_orderhdr1 in db_session.query(L_orderhdr1).filter(
                      (get_month(L_orderhdr1.bestelldatum) == mm) & (get_year(L_orderhdr1.bestelldatum) == yy) & (L_orderhdr1.betriebsnr <= 1) & (matches(L_orderhdr1.docu_nr,"P*"))).order_by(L_orderhdr1.docu_nr.desc()).all():
                 i = to_int(substring(l_orderhdr1.docu_nr, 5, 5))
                 i = i + 1
-                docunr = s + to_string(i, "99999")
+                docu_nr = s + to_string(i, "99999")
 
-                l_orderhdr2 = db_session.query(L_orderhdr2).filter(
-                         (get_month(L_orderhdr2.bestelldatum) == mm) & (get_year(L_orderhdr2.bestelldatum) == yy) & (L_orderhdr2.betriebsnr <= 1) & (L_orderhdr2.docu_nr == (docunr).lower())).first()
+                return
+            docu_nr = s + to_string(i, "99999")
 
-                if l_orderhdr2:
-                    i = to_int(substring(l_orderhdr2.docu_nr, 5, 5))
-                    i = i + 1
-                    docunr = s + to_string(i, "99999")
-
-                return generate_inner_output()
-            docunr = s + to_string(i, "99999")
-
-            return generate_inner_output()
+            return
         s = "P" + substring(to_string(get_year(billdate)) , 2, 2) + to_string(get_month(billdate) , "99") + to_string(get_day(billdate) , "99")
-        pass
 
         for l_orderhdr1 in db_session.query(L_orderhdr1).filter(
                  (L_orderhdr1.bestelldatum == billdate) & (L_orderhdr1.betriebsnr <= 1) & (matches(L_orderhdr1.docu_nr,"P*"))).order_by(L_orderhdr1.docu_nr.desc()).all():
             i = to_int(substring(l_orderhdr1.docu_nr, 7, 3))
             i = i + 1
-            docunr = s + to_string(i, "999")
+            docu_nr = s + to_string(i, "999")
 
-            l_orderhdr2 = db_session.query(L_orderhdr2).filter(
-                     (L_orderhdr2.docu_nr == (docunr).lower())).first()
-
-            if l_orderhdr2:
-                i = to_int(substring(l_orderhdr2.docu_nr, 7, 3))
-                i = i + 1
-                docunr = s + to_string(i, "999")
-
-            return generate_inner_output()
-        docunr = s + to_string(i, "999")
-
-        return generate_inner_output()
+            return
+        docu_nr = s + to_string(i, "999")
 
 
     def currency_list():
 
-        nonlocal local_nr, billdate, zeroprice_flag, deptname, supplier, curr_liefnr, p_222, p_234, p_266, pos, t_amount, currency_add_first, currency_screen_value, msg_str, p_1093, p_464, p_220, docunr, avail_addvat, t_waehrung_data, t_l_order_data, t_l_orderhdr_data, t_parameters_data, lvcarea, l_order, l_orderhdr, htparam, waehrung, l_lieferant, queasy, parameters, l_artikel
+        nonlocal local_nr, billdate, zeroprice_flag, deptname, supplier, curr_liefnr, p_222, p_234, p_266, pos, t_amount, currency_add_first, currency_screen_value, msg_str, p_1093, p_464, p_220, t_waehrung_data, t_l_order_data, t_l_orderhdr_data, t_parameters_data, lvcarea, l_order, l_orderhdr, htparam, waehrung, l_lieferant, parameters, l_artikel
         nonlocal docu_nr, pvilanguage, lief_nr, pr_deptnr, po_type, potype, bediener_username, ordername_screen_value, crterm
 
 
@@ -147,7 +125,6 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
             t_waehrung_data.append(t_waehrung)
 
             t_waehrung.wabkurz = waehrung.wabkurz
-            t_waehrung.waehrungsnr = waehrung.waehrungsnr
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 152)]})
 
@@ -166,17 +143,13 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
         htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
         billdate = htparam.fdate
     else:
-
-        htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
-        billdate = htparam.fdate
+        billdate = get_current_date()
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 776)]})
     zeroprice_flag = htparam.flogical
 
     if docu_nr == "":
-        docunr = new_po_number()
-    else:
-        docunr = docu_nr
+        new_po_number()
     currency_list()
 
     l_lieferant = get_cache (L_lieferant, {"lief_nr": [(eq, lief_nr)]})
@@ -184,25 +157,18 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
     p_464 = get_output(htpint(464))
     p_220 = get_output(htpint(220))
 
-    queasy = get_cache (Queasy, {"key": [(eq, 303)]})
-
-    if queasy:
-        avail_addvat = True
-
-
-    else:
-        avail_addvat = False
-
     if po_type == 1:
 
-        l_orderhdr = get_cache (L_orderhdr, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, docunr)]})
+        # l_orderhdr = get_cache (L_orderhdr, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, docu_nr)]})
+        l_orderhdr = db_session.query(L_orderhdr).filter(
+                     (L_orderhdr.lief_nr == lief_nr) & (L_orderhdr.docu_nr == docu_nr)).with_for_update().first()
 
         if not l_orderhdr:
             l_orderhdr = L_orderhdr()
             db_session.add(l_orderhdr)
 
             l_orderhdr.lief_nr = lief_nr
-            l_orderhdr.docu_nr = docunr
+            l_orderhdr.docu_nr = docu_nr
 
 
         l_orderhdr.angebot_lief[0] = pr_deptnr
@@ -214,7 +180,8 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
         l_orderhdr.angebot_lief[1] = crterm
         l_orderhdr.angebot_lief[2] = local_nr
         l_orderhdr.gedruckt = None
-
+        flag_modified(l_orderhdr, "angebot_lief")
+        flag_modified(l_orderhdr, "lief_fax")
         if potype == 2:
             l_orderhdr.betriebsnr = 1
 
@@ -226,9 +193,10 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
         if parameters:
             deptname = parameters.vstring
         pass
-        pass
 
-    l_orderhdr = get_cache (L_orderhdr, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, docunr)]})
+    # l_orderhdr = get_cache (L_orderhdr, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, docu_nr)]})
+    l_orderhdr = db_session.query(L_orderhdr).filter(
+                 (L_orderhdr.lief_nr == lief_nr) & (L_orderhdr.docu_nr == docu_nr)).with_for_update().first()
     t_l_orderhdr = T_l_orderhdr()
     t_l_orderhdr_data.append(t_l_orderhdr)
 
@@ -251,7 +219,7 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
     t_amount =  to_decimal("0")
 
     for l_order in db_session.query(L_order).filter(
-             (L_order.docu_nr == (docunr).lower()) & (L_order.pos > 0)).order_by(L_order._recid).all():
+             (L_order.docu_nr == (docu_nr).lower()) & (L_order.pos > 0) & (L_order.loeschflag == 0)).order_by(L_order._recid).all():
         t_l_order = T_l_order()
         t_l_order_data.append(t_l_order)
 
@@ -261,7 +229,7 @@ def prepare_mk_po1_web_1bl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_dept
         l_artikel = get_cache (L_artikel, {"artnr": [(eq, l_order.artnr)]})
         t_l_order.a_bezeich = l_artikel.bezeich
 
-        if l_order.lief_nr == lief_nr and l_order.loeschflag == 0 and docunr != "":
+        if l_order.lief_nr == lief_nr and l_order.loeschflag == 0 and docu_nr != "":
             pos = pos + 1
 
             if length(l_order.quality) >= 5:

@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------
 # Rd, 28/7/2025
-#
+# Rd, 01/12/2025, with_for_update added
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -9,8 +9,10 @@ from datetime import date
 from functions.htpint import htpint
 from sqlalchemy import func
 from models import L_order, L_orderhdr, Htparam, Waehrung, L_lieferant, Parameters, L_artikel
+from sqlalchemy.orm import flag_modified
 
-def prepare_mk_po1_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr:int, po_type:int, potype:int, bediener_username:string, ordername_screen_value:string, crterm:int):
+def prepare_mk_po1_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr:int, po_type:int, potype:int, 
+                         bediener_username:string, ordername_screen_value:string, crterm:int):
 
     prepare_cache ([Htparam, Waehrung, L_lieferant, Parameters, L_artikel])
 
@@ -47,6 +49,9 @@ def prepare_mk_po1_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr
     t_l_orderhdr_data, T_l_orderhdr = create_model_like(L_orderhdr, {"rec_id":int})
 
     db_session = local_storage.db_session
+    docu_nr = docu_nr.strip()
+    bediener_username = bediener_username.strip()
+    ordername_screen_value = ordername_screen_value.strip()
 
     def generate_output():
         nonlocal local_nr, billdate, zeroprice_flag, deptname, supplier, curr_liefnr, p_222, p_234, p_266, pos, t_amount, currency_add_first, currency_screen_value, msg_str, p_1093, p_464, p_220, docunr, t_waehrung_data, t_l_order_data, t_l_orderhdr_data, t_parameters_data, lvcarea, l_order, l_orderhdr, htparam, waehrung, l_lieferant, parameters, l_artikel
@@ -101,7 +106,8 @@ def prepare_mk_po1_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr
                 docunr = s + to_string(i, "99999")
 
                 l_orderhdr2 = db_session.query(L_orderhdr2).filter(
-                         (get_month(L_orderhdr2.bestelldatum) == mm) & (get_year(L_orderhdr2.bestelldatum) == yy) & (L_orderhdr2.betriebsnr <= 1) & (L_orderhdr2.docu_nr == (docunr).lower())).first()
+                         (get_month(L_orderhdr2.bestelldatum) == mm) & (get_year(L_orderhdr2.bestelldatum) == yy) & 
+                         (L_orderhdr2.betriebsnr <= 1) & (L_orderhdr2.docu_nr == (docunr).lower())).first()
 
                 if l_orderhdr2:
                     i = to_int(substring(l_orderhdr2.docu_nr, 5, 5))
@@ -193,7 +199,9 @@ def prepare_mk_po1_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr
 
     if po_type == 1:
 
-        l_orderhdr = get_cache (L_orderhdr, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, docunr)]})
+        # l_orderhdr = get_cache (L_orderhdr, {"lief_nr": [(eq, lief_nr)],"docu_nr": [(eq, docunr)]})
+        l_orderhdr = db_session.query(L_orderhdr).filter(
+                 (L_orderhdr.lief_nr == lief_nr) & (L_orderhdr.docu_nr == (docunr).lower())).with_for_update().first()
 
         if not l_orderhdr:
             l_orderhdr = L_orderhdr()
@@ -212,6 +220,8 @@ def prepare_mk_po1_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr
         l_orderhdr.angebot_lief[1] = crterm
         l_orderhdr.angebot_lief[2] = local_nr
         l_orderhdr.gedruckt = None
+        flag_modified(l_orderhdr, "angebot_lief")
+        flag_modified(l_orderhdr, "lief_fax")
 
         if potype == 2:
             l_orderhdr.betriebsnr = 1
@@ -235,7 +245,6 @@ def prepare_mk_po1_webbl(docu_nr:string, pvilanguage:int, lief_nr:int, pr_deptnr
 
     buffer_copy(l_orderhdr, t_l_orderhdr)
     t_l_orderhdr.rec_id = l_orderhdr._recid
-
 
     supplier = l_lieferant.firma + " - " + l_lieferant.wohnort
     curr_liefnr = lief_nr

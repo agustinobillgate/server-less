@@ -1,14 +1,18 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import L_order, L_lieferant, L_orderhdr, Queasy, Bediener, Res_history
+from sqlalchemy.orm import flag_modified
 
 s_list_data, S_list = create_model_like(L_order, {"curr":string, "exrate":Decimal, "s_recid":int, "amount":Decimal, "supp1":int, "supp2":int, "supp3":int, "suppn1":string, "suppn2":string, "suppn3":string, "supps":string, "du_price1":Decimal, "du_price2":Decimal, "du_price3":Decimal, "curr1":string, "curr2":string, "curr3":string, "fdate1":date, "fdate2":date, "fdate3":date, "tdate1":date, "tdate2":date, "tdate3":date, "desc_coa":string, "last_pprice":Decimal, "avg_pprice":Decimal, "lprice":Decimal, "lief_fax2":string, "ek_letzter":Decimal, "lief_einheit":int, "supplier":string, "lief_fax_2":string, "vk_preis":Decimal, "soh":Decimal, "last_pdate":date, "a_firma":string, "last_pbook":Decimal, "avg_cons":Decimal})
 approved_data, Approved = create_model("Approved", {"nr":int, "flag":bool, "usrid":string, "app_date":date, "app_time":string})
 
-def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec_id:int, deptnr:int, comments_screen_value:string, rej_id:string, lieferdatum:date, rej_flag:bool, user_init:string):
+def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec_id:int, deptnr:int, comments_screen_value:string, 
+                             rej_id:string, lieferdatum:date, rej_flag:bool, user_init:string):
 
     prepare_cache ([L_lieferant, Queasy, Bediener, Res_history])
 
@@ -38,6 +42,8 @@ def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec
     sbuff_data = s_list_data
 
     db_session = local_storage.db_session
+    comments_screen_value = comments_screen_value.strip()
+    rej_id = rej_id.strip()
 
     def generate_output():
         nonlocal sfdate1, sfdate2, sfdate3, stdate1, stdate2, stdate3, app_id, i, app_str, str, count_app, j, logstring, l_order, l_lieferant, l_orderhdr, queasy, bediener, res_history
@@ -78,7 +84,9 @@ def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec
             pass
 
 
-    l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, rec_id)]})
+    # l_orderhdr = get_cache (L_orderhdr, {"_recid": [(eq, rec_id)]})
+    l_orderhdr = db_session.query(L_orderhdr).filter(
+                 (L_orderhdr._recid == rec_id)).with_for_update().first()
 
     if l_orderhdr:
         pass
@@ -130,7 +138,7 @@ def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec
 
 
             str = str + app_str + ";"
-
+        
         if rej_id == None:
             rej_id = " "
 
@@ -259,10 +267,13 @@ def chg_pr_save_s_list_webbl(s_list_data:[S_list], approved_data:[Approved], rec
         if rej_flag :
 
             for l_order in db_session.query(L_order).filter(
-                     (L_order.lief_nr == 0) & (L_order.docu_nr == l_orderhdr.docu_nr)).order_by(L_order._recid).all():
+                     (L_order.lief_nr == 0) & (L_order.docu_nr == l_orderhdr.docu_nr)).order_by(L_order._recid).with_for_update().all():
                 l_order.loeschflag = 1
 
         pass
         pass
+        flag_modified(l_orderhdr, "lief_fax")
+        flag_modified(l_orderhdr, "angebot_lief")
+
 
     return generate_output()
