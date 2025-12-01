@@ -1,8 +1,5 @@
 #using conversion tools version: 1.0.0.117
-#-------------------------------------------------------
-# Rd, 01/12/2025, with_for_update added
-#-------------------------------------------------------
-from functions.additional_functions import *
+
 from decimal import Decimal
 from functions.upload_imagesetupbl import upload_imagesetupbl
 from functions.delete_imagesetupbl import delete_imagesetupbl

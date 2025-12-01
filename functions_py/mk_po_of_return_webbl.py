@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_order, L_artikel
@@ -29,15 +31,15 @@ def mk_po_of_return_webbl(t_amount:Decimal, t_l_order_data:[T_l_order], disc_lis
         nonlocal t_l_order_quality, t_l_order_einzelpreis, t_l_order_warenwert, disc_list_brutto, amt, l_order, l_artikel
         nonlocal t_amount
         nonlocal l_art1
-
-
         nonlocal disc_list, t_l_order, l_art1
 
         return {"t_amount": t_amount, "t_l_order_quality": t_l_order_quality, "t_l_order_einzelpreis": t_l_order_einzelpreis, "t_l_order_warenwert": t_l_order_warenwert, "disc_list_brutto": disc_list_brutto}
 
 
-    l_order = get_cache (L_order, {"_recid": [(eq, t_l_order.rec_id)]})
-    pass
+    # l_order = get_cache (L_order, {"_recid": [(eq, t_l_order.rec_id)]})
+    l_order = db_session.query(L_order).filter(
+                 (L_order._recid == t_l_order.rec_id)).with_for_update().first()
+    
     l_order.quality = to_string(disc_list.disc, "99.99 ") + to_string(disc_list.vat, "99.99") + to_string(disc_list.disc2, " 99.99") + to_string(disc_list.disc_val, " >,>>>,>>>,>>9.999") + to_string(disc_list.disc2_val, " >,>>>,>>>,>>9.999") + to_string(disc_list.vat_val, " >,>>>,>>>,>>9.999")
     amt =  to_decimal(l_order.warenwert)
 

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_artikel
@@ -19,9 +21,9 @@ def mk_po_upd_l_artikelbl(rec_id:int):
         return {}
 
 
-    l_artikel = get_cache (L_artikel, {"_recid": [(eq, rec_id)]})
-    pass
+    # l_artikel = get_cache (L_artikel, {"_recid": [(eq, rec_id)]})
+    l_artikel = db_session.query(L_artikel).filter(
+                 (L_artikel._recid == rec_id)).with_for_update().first()
     l_artikel.lief_einheit =  to_decimal("1")
-    pass
 
     return generate_output()
