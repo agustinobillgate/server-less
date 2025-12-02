@@ -5,6 +5,11 @@
 # ticket: 1957FB
 #--------------------------------------------
 
+# ==========================================
+# Rulita, 25-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -79,10 +84,10 @@ def arl_list_cancelcibl(recid_resline:int, user_init:string, t_ankunft:date):
             fl_error = 2
 
             return generate_output()
+        
     billnumber = ""
-
     for bill in db_session.query(Bill).filter(
-             (Bill.resnr == res_line.resnr) & (Bill.parent_nr == res_line.reslinnr)).order_by(Bill._recid).all():
+             (Bill.resnr == res_line.resnr) & (Bill.parent_nr == res_line.reslinnr)).order_by(Bill._recid).with_for_update().all():
 
         if bill.rechnr == 0:
             db_session.delete(bill)
@@ -91,6 +96,8 @@ def arl_list_cancelcibl(recid_resline:int, user_init:string, t_ankunft:date):
             bill.flag = 1
             fl_error = 3
             billnumber = billnumber + ";" + to_string(bill.rechnr)
+    
+        db_session.refresh(bill, with_for_update=True)
 
     for buff_resline in db_session.query(Buff_resline).filter(
              (Buff_resline.resnr == res_number) & (Buff_resline.resstatus == 6)).order_by(Buff_resline._recid).all():
@@ -107,21 +114,20 @@ def arl_list_cancelcibl(recid_resline:int, user_init:string, t_ankunft:date):
 
     elif count_i == 0:
 
-        mbill = get_cache (Bill, {"resnr": [(eq, res_number)],"reslinnr": [(eq, 0)],"saldo": [(eq, 0)],"zinr": [(eq, "")],"flag": [(eq, 0)]})
+        # mbill = get_cache (Bill, {"resnr": [(eq, res_number)],"reslinnr": [(eq, 0)],"saldo": [(eq, 0)],"zinr": [(eq, "")],"flag": [(eq, 0)]})
+        mbill = db_session.query(Bill).filter((Bill.resnr == res_number) & (Bill.reslinnr == 0) & (Bill.saldo == 0) & (Bill.zinr == "") & (Bill.flag == 0)).with_for_update().first()
 
         if mbill:
-            pass
+            
             mbill.flag = 1
             fl_error = 3
             billnumber = billnumber + ";" + to_string(mbill.rechnr)
-
-
-            pass
-            pass
         else:
             fl_error = 1
-
             return generate_output()
+        
+        db_session.refresh(mbill, with_for_update=True)
+
     reslin_queasy = Reslin_queasy()
     db_session.add(reslin_queasy)
 
@@ -179,10 +185,11 @@ def arl_list_cancelcibl(recid_resline:int, user_init:string, t_ankunft:date):
     get_output(intevent_1(2, res_line.zinr, "Deactivate!;PABX", res_line.resnr, res_line.reslinnr))
 
     for resplan in db_session.query(Resplan).filter(
-             (Resplan.zikatnr == res_line.zikatnr) & (Resplan.datum >= res_line.ankunft) & (Resplan.datum < res_line.abreise)).order_by(Resplan._recid).all():
+             (Resplan.zikatnr == res_line.zikatnr) & (Resplan.datum >= res_line.ankunft) & (Resplan.datum < res_line.abreise)).order_by(Resplan._recid).with_for_update().all():
         resplan.anzzim[res_line.resstatus - 1] = resplan.anzzim[res_line.resstatus - 1] - 1
         resplan.anzzim[0] = resplan.anzzim[0] + 1
         pass
+        db_session.refresh(resplan, with_for_update=True)
 
     resline = get_cache (Res_line, {"active_flag": [(eq, 1)],"zinr": [(eq, res_line.zinr)],"reslinnr": [(ne, res_line.reslinnr)]})
 
@@ -196,8 +203,9 @@ def arl_list_cancelcibl(recid_resline:int, user_init:string, t_ankunft:date):
             pass
 
         for zimplan in db_session.query(Zimplan).filter(
-                 (Zimplan.zinr == res_line.zinr) & (Zimplan.gastnrmember == res_line.gastnrmember) & (Zimplan.datum >= res_line.ankunft) & (Zimplan.datum <= (res_line.abreise - timedelta(days=1)))).order_by(Zimplan._recid).all():
+                 (Zimplan.zinr == res_line.zinr) & (Zimplan.gastnrmember == res_line.gastnrmember) & (Zimplan.datum >= res_line.ankunft) & (Zimplan.datum <= (res_line.abreise - timedelta(days=1)))).order_by(Zimplan._recid).with_for_update().all():
             db_session.delete(zimplan)
+            db_session.refresh(zimplan, with_for_update=True)
             pass
 
     resline = get_cache (Res_line, {"_recid": [(eq, res_line._recid)]})
@@ -208,7 +216,6 @@ def arl_list_cancelcibl(recid_resline:int, user_init:string, t_ankunft:date):
     resline.resstatus = orig_status
     resline.ankzeit = 0
     resline.active_flag = 0
-
 
     pass
 
@@ -228,7 +235,8 @@ def arl_list_cancelcibl(recid_resline:int, user_init:string, t_ankunft:date):
 
     if count_i == 0:
 
-        mbill = get_cache (Bill, {"resnr": [(eq, res_number)],"reslinnr": [(eq, 0)],"saldo": [(eq, 0)],"zinr": [(eq, "")],"flag": [(eq, 0)]})
+        # mbill = get_cache (Bill, {"resnr": [(eq, res_number)],"reslinnr": [(eq, 0)],"saldo": [(eq, 0)],"zinr": [(eq, "")],"flag": [(eq, 0)]})
+        mbill = db_session.query(Bill).filter((Bill.resnr == res_number) & (Bill.reslinnr == 0) & (Bill.saldo == 0) & (Bill.zinr == "") & (Bill.flag == 0)).with_for_update().first()
 
         if mbill:
             pass
@@ -239,6 +247,7 @@ def arl_list_cancelcibl(recid_resline:int, user_init:string, t_ankunft:date):
 
             pass
             pass
+        db_session.refresh(mbill, with_for_update=True)
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 341)]})
 

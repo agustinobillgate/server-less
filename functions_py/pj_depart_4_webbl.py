@@ -3,7 +3,8 @@
 # Rd, 4/9/2025
 # format tanggal yyyy-mm-dd -> dd/mm/yy
 #------------------------------------------
-
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date

@@ -1,6 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 27/10/2025
+# Rd, 25/11/2025, check with_for_update
 #--------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -19,8 +20,6 @@ def write_guestbl(case_type:int, t_guest_data:[T_guest]):
     def generate_output():
         nonlocal success_flag, guest
         nonlocal case_type
-
-
         nonlocal t_guest
 
         return {"success_flag": success_flag}
@@ -31,7 +30,8 @@ def write_guestbl(case_type:int, t_guest_data:[T_guest]):
     if case_type == 1:
 
         # guest = get_cache (Guest, {"gastnr": [(eq, t_guest.gastnr)]})
-        guest = db_session.query(Guest).filter(Guest.gastnr == t_guest.gastnr).first()
+        # guest = db_session.query(Guest).filter(Guest.gastnr == t_guest.gastnr).first()
+        guest = db_session.query(Guest).filter(Guest.gastnr == t_guest.gastnr).with_for_update().first()
 
         if guest:
             buffer_copy(t_guest, guest)
@@ -47,7 +47,9 @@ def write_guestbl(case_type:int, t_guest_data:[T_guest]):
         success_flag = True
     elif case_type == 3:
 
-        guest = get_cache (Guest, {"gastnr": [(eq, t_guest.gastnr)]})
+        # guest = get_cache (Guest, {"gastnr": [(eq, t_guest.gastnr)]})
+        # guest = db_session.query(Guest).filter(Guest.gastnr == t_guest.gastnr).first()
+        guest = db_session.query(Guest).filter(Guest.gastnr == t_guest.gastnr).with_for_update().first()
 
         if guest:
             db_session.delete(guest)

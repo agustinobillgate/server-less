@@ -5,11 +5,15 @@
 # - Fixing tabel name depoArt to depoart
 # - Fixing error nonetype gbuff
 # ========================================
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#-----------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Htparam, Res_line, Zimplan, Zinrstat, Guest, Reservation, Artikel, Counters, Bill, Bill_line, Billjournal, Umsatz, Waehrung, Exrate
+from functions.next_counter_for_update import next_counter_for_update
+
 
 def mn_noshowbl(pvilanguage:int):
 
@@ -26,6 +30,9 @@ def mn_noshowbl(pvilanguage:int):
     reslist_data, Reslist = create_model("Reslist", {"resnr":int})
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock = ""
+    
 
     def generate_output():
         nonlocal i, msg_str, lvcarea, ci_date, htparam, res_line, zimplan, zinrstat, guest, reservation, artikel, counters, bill, bill_line, billjournal, umsatz, waehrung, exrate
@@ -203,9 +210,10 @@ def mn_noshowbl(pvilanguage:int):
         pass
         deposit, deposit_foreign = calculate_deposit_amount(bill_date)
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+        counters = db_session.query(Counters).filter(
+                 (Counters.counter_no == 3)).with_for_update().first()
         counters.counter = counters.counter + 1
-        pass
 
         gbuff = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
         bill = Bill()
@@ -213,6 +221,7 @@ def mn_noshowbl(pvilanguage:int):
 
         bill.gastnr = reservation.gastnr
         bill.rechnr = counters.counter
+        
         bill.datum = bill_date
         bill.billtyp = 0
         
@@ -279,7 +288,9 @@ def mn_noshowbl(pvilanguage:int):
 
         # Rulita, 11-11-2025 
         # Fixing tabel name depoArt to depoart
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, depoart.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, depoart.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == depoart.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()

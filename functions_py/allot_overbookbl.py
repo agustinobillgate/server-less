@@ -1,4 +1,11 @@
 #using conversion tools version: 1.0.0.117
+#------------------------------------------
+# Rd, 24/11/2025
+# Update last counter dengan next_counter_for_update
+#------------------------------------------
+
+from functions.next_counter_for_update import next_counter_for_update
+
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -38,6 +45,8 @@ def allot_overbookbl(pvilanguage:int, res_mode:string, curr_resnr:int, curr_resl
 
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal error_flag, msg_str, lvcarea, cutoff_date, changed, ci_date, overbook, datum, error_code, qty1, answer, res_overbook, overmax, overanz, overdate, incl_allot, zimkateg_overbook, kontline, bediener, htparam, zimkateg, res_line, queasy, counters
@@ -428,14 +437,18 @@ def allot_overbookbl(pvilanguage:int, res_mode:string, curr_resnr:int, curr_resl
             if s_list1.qty != anz:
                 changed = True
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
+                # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
+                counters = db_session.query(Counters).filter(Counters.counter_no == 10).with_for_update().first()
                 counters.counter = counters.counter + 1
+ 
                 pass
                 kline = Kontline()
                 db_session.add(kline)
 
                 kline.betriebsnr = to_int(kontignr < 0)
+                
                 kline.kontignr = counters.counter
+
                 kline.gastnr = kontline.gastnr
                 kline.useridanlage = ""
                 kline.kontcode = kontline.kontcode

@@ -143,7 +143,8 @@ def nt_shiftcover_1():
         for temp in query(temp_data):
             for curr_i in range(1,4 + 1) :
 
-                h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, 0)],"departement": [(eq, temp.dept)],"epreis": [(eq, curr_i)],"datum": [(eq, billdate)]})
+                # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, 0)],"departement": [(eq, temp.dept)],"epreis": [(eq, curr_i)],"datum": [(eq, billdate)]})
+                h_umsatz = db_session.query(H_umsatz).filter((H_umsatz.artnr == 0) & (H_umsatz.departement == temp.dept) & (H_umsatz.epreis == to_decimal(curr_i)) & (H_umsatz.datum == billdate)).with_for_update().first()
 
                 if not h_umsatz:
                     h_umsatz = H_umsatz()

@@ -5,6 +5,9 @@
         _remark_:   - fix python indentation
                     - using f"string"
 """
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -24,6 +27,7 @@ def leasing_pay_security_depositbl(qrecid: int, artikel_no: int, deposit: Decima
     Bqueasy = create_buffer("Bqueasy", Queasy)
 
     db_session = local_storage.db_session
+    voucher_str = voucher_str.strip()
 
     def generate_output():
         nonlocal success_flag, bill_date, art_security, queasy, htparam, artikel, res_line, bediener, debitor, umsatz, billjournal
@@ -76,8 +80,10 @@ def leasing_pay_security_depositbl(qrecid: int, artikel_no: int, deposit: Decima
                         debitor.vesrcod = debitor.vesrcod + "; " + voucher_str
                     pass
 
-                umsatz = get_cache(
-                    Umsatz, {"departement": [(eq, 0)], "artnr": [(eq, artikel.artnr)], "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(
+                #     Umsatz, {"departement": [(eq, 0)], "artnr": [(eq, artikel.artnr)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.departement == 0) & (Umsatz.artnr == artikel.artnr) & (Umsatz.datum == bill_date)).with_for_update().first
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -112,7 +118,9 @@ def leasing_pay_security_depositbl(qrecid: int, artikel_no: int, deposit: Decima
                     Artikel, {"artnr": [(eq, art_security)], "departement": [(eq, 0)]})
 
                 if bartikel:
-                    umsatz = get_cache(Umsatz, {"artnr": [(eq, bartikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                    # umsatz = get_cache(Umsatz, {"artnr": [(eq, bartikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                    umsatz = db_session.query(Umsatz).filter(
+                        (Umsatz.artnr == bartikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                     if not umsatz:
                         umsatz = Umsatz()
@@ -160,8 +168,10 @@ def leasing_pay_security_depositbl(qrecid: int, artikel_no: int, deposit: Decima
         Queasy, {"key": [(eq, 329)], "_recid": [(eq, qrecid)]})
 
     if queasy:
-        bqueasy = get_cache(
-            Queasy, {"key": [(eq, 349)], "number1": [(eq, queasy.number1)], "number2": [(eq, queasy.number2)]})
+        # bqueasy = get_cache(
+        #     Queasy, {"key": [(eq, 349)], "number1": [(eq, queasy.number1)], "number2": [(eq, queasy.number2)]})
+        bqueasy = db_session.query(Queasy).filter(
+            (Queasy.key == 349) & (Queasy.number1 == queasy.number1) & (Queasy.number2 == queasy.number2)).with_for_update().first()
 
         if not bqueasy:
             bqueasy = Queasy()

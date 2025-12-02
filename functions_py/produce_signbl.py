@@ -1,9 +1,8 @@
-#using conversion tools version: 1.0.0.117
-#-----------------------------------------
-# Rd 21/7/2025
-# Gitlab: 442
-# char -> char
-#-----------------------------------------
+#using conversion tools version: 1.0.0.119
+#-------------------------------------------
+# Rd, 26/11/2025, .CHAR -> .char
+# Rd, 26/11/2025, with_for_update
+#-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from functions.checkin_gdprbl import checkin_gdprbl
@@ -71,8 +70,6 @@ def produce_signbl(pvilanguage:int, resno:int, reslino:int, gastno:int):
 
     archieve = get_cache (Archieve, {"key": [(eq, "send-sign-rc")],"num1": [(eq, resno)],"num2": [(eq, reslino)],"num3": [(eq, gastno)]})
 
-    # Rd 22/7/2025
-    # CHAR -> char
     if archieve and archieve.char[1] != "":
         image_data = archieve.char[1]
 
@@ -106,7 +103,7 @@ def produce_signbl(pvilanguage:int, resno:int, reslino:int, gastno:int):
         for anz in range(1,num_entries(res_line.zimmer_wunsch, ";") - 1 + 1) :
             temp_zimmerwusch = entry(anz - 1, res_line.zimmer_wunsch, ";")
 
-            if substring(temp_zimmerwusch, 0, 8) == ("segm_pur").lower() :
+            if substring(temp_zimmerwusch, 0, 8) == ("segm_pur") :
                 print_rc_list.purpose_stay = substring(temp_zimmerwusch, 8)
 
                 queasy = get_cache (Queasy, {"key": [(eq, 143)],"number1": [(eq, to_int(print_rc_list.purpose_stay))]})
@@ -115,7 +112,7 @@ def produce_signbl(pvilanguage:int, resno:int, reslino:int, gastno:int):
                     print_rc_list.purpose_stay = queasy.char3
                 break
 
-        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code.strip()))]})
+        queasy = get_cache (Queasy, {"key": [(eq, 9)],"number1": [(eq, to_int(res_line.code))]})
 
         if queasy and queasy.char1 != "":
             print_rc_list.bill_instruct = queasy.char1
@@ -221,7 +218,7 @@ def produce_signbl(pvilanguage:int, resno:int, reslino:int, gastno:int):
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 346)]})
 
-        if htparam and htparam.bezeichnung.lower()  != ("Not Used").lower() :
+        if htparam and htparam.bezeichnung  != ("Not Used") :
             gdpractivated = htparam.flogical
         else:
             gdpractivated = False
@@ -230,10 +227,10 @@ def produce_signbl(pvilanguage:int, resno:int, reslino:int, gastno:int):
             for i in range(1,num_entries(zimmerwunsch, ";") - 1 + 1) :
                 str = entry(i - 1, zimmerwunsch, ";")
 
-                if substring(str, 0, 4) == ("GDPR").lower() :
+                if substring(str, 0, 4) == ("GDPR") :
                     strgdpr = substring(str, 4)
 
-            if strgdpr.lower()  == ("YES").lower() :
+            if strgdpr  == ("YES") :
                 gdpr_flag = True
             else:
                 gdpr_flag = False
@@ -248,7 +245,9 @@ def produce_signbl(pvilanguage:int, resno:int, reslino:int, gastno:int):
             if gdpr_flag :
                 euro_flag = True
 
-                res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslino)],"gastnrmember": [(eq, gastno)]})
+                # res_line = get_cache (Res_line, {"resnr": [(eq, resno)],"reslinnr": [(eq, reslino)],"gastnrmember": [(eq, gastno)]})
+                res_line = db_session.query(Res_line).filter(Res_line.resnr == resno, 
+                                                             Res_line.reslinnr == reslino, Res_line.gastnrmember == gastno).with_for_update().first()
 
                 if res_line:
 
@@ -259,7 +258,7 @@ def produce_signbl(pvilanguage:int, resno:int, reslino:int, gastno:int):
 
         htparam = get_cache (Htparam, {"paramnr": [(eq, 477)]})
 
-        if htparam and htparam.bezeichnung.lower()  != ("Not Used").lower() :
+        if htparam and htparam.bezeichnung  != ("Not Used") :
             newsactivated = htparam.flogical
         else:
             newsactivated = False
@@ -268,18 +267,18 @@ def produce_signbl(pvilanguage:int, resno:int, reslino:int, gastno:int):
             for i in range(1,num_entries(zimmerwunsch, ";") - 1 + 1) :
                 str = entry(i - 1, zimmerwunsch, ";")
 
-                if substring(str, 0, 9) == ("MARKETING").lower() :
+                if substring(str, 0, 9) == ("MARKETING") :
                     strmark = substring(str, 9)
 
-                if substring(str, 0, 10) == ("NEWSLETTER").lower() :
+                if substring(str, 0, 10) == ("NEWSLETTER") :
                     strnews = substring(str, 10)
 
-            if strmark.lower()  == ("YES").lower() :
+            if strmark  == ("YES") :
                 marketing_flag = True
             else:
                 marketing_flag = False
 
-            if strnews.lower()  == ("YES").lower() :
+            if strnews  == ("YES") :
                 newsletter_flag = True
             else:
                 newsletter_flag = False

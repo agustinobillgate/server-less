@@ -4,6 +4,11 @@
 # Ticket:4ED7C7
 #------------------------------------------
 
+# ==========================================
+# Rulita, 25-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -1060,58 +1065,58 @@ def arl_list_run_mi_invoice_22bl(resnr:int, curr_resnr:int, arl_list_reslinnr:in
                             t_list.vat =  to_decimal(netto) * to_decimal((vat1) + to_decimal(vat3) )
 
 
-            else:
+        else:
 
-                billjournal_obj_list = {}
-                billjournal = Billjournal()
-                artikel = Artikel()
-                for billjournal.bezeich, billjournal.betrag, billjournal.bill_datum, billjournal._recid, artikel.bezeich, artikel.artnr, artikel.departement, artikel.epreis, artikel.artart, artikel._recid in db_session.query(Billjournal.bezeich, Billjournal.betrag, Billjournal.bill_datum, Billjournal._recid, Artikel.bezeich, Artikel.artnr, Artikel.departement, Artikel.epreis, Artikel.artart, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement)).filter(
-                         (Billjournal.rechnr == 0) & (Billjournal.anzahl != 0) & (matches(Billjournal.bezeich,"*Deposit #*"))).order_by(Billjournal._recid).all():
-                    if billjournal_obj_list.get(billjournal._recid):
-                        continue
-                    else:
-                        billjournal_obj_list[billjournal._recid] = True
-
-
-                    t_char = entry(1, billjournal.bezeich, "#")
-                    t_resnr = to_int(entry(0, t_char, "]"))
-
-                    if t_resnr == resnr:
-                        serv1 =  to_decimal("0")
-                        vat1 =  to_decimal("0")
-                        vat3 =  to_decimal("0")
-                        fact1 =  to_decimal("0")
-
-                        res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
-                        t_list = T_list()
-                        t_list_data.append(t_list)
-
-                        curr_no = curr_no + 1
-                        t_list.nr = curr_no
-                        t_list.betrag =  to_decimal(billjournal.betrag)
-                        t_list.bezeich = billjournal.bezeich
-                        t_list.date1 = billjournal.bill_datum
-                        t_list.ankunft = res_line.ankunft
-                        t_list.abreise = res_line.abreise
+            billjournal_obj_list = {}
+            billjournal = Billjournal()
+            artikel = Artikel()
+            for billjournal.bezeich, billjournal.betrag, billjournal.bill_datum, billjournal._recid, artikel.bezeich, artikel.artnr, artikel.departement, artikel.epreis, artikel.artart, artikel._recid in db_session.query(Billjournal.bezeich, Billjournal.betrag, Billjournal.bill_datum, Billjournal._recid, Artikel.bezeich, Artikel.artnr, Artikel.departement, Artikel.epreis, Artikel.artart, Artikel._recid).join(Artikel,(Artikel.artnr == Billjournal.artnr) & (Artikel.departement == Billjournal.departement)).filter(
+                        (Billjournal.rechnr == 0) & (Billjournal.anzahl != 0) & (matches(Billjournal.bezeich,"*Deposit #*"))).order_by(Billjournal._recid).all():
+                if billjournal_obj_list.get(billjournal._recid):
+                    continue
+                else:
+                    billjournal_obj_list[billjournal._recid] = True
 
 
-                        serv1, vat1, vat3, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, billjournal.bill_datum))
-                        netto =  to_decimal(billjournal.betrag) / to_decimal(fact1)
-                        t_list.vat =  to_decimal(netto) * to_decimal((vat1) + to_decimal(vat3) )
+                t_char = entry(1, billjournal.bezeich, "#")
+                t_resnr = to_int(entry(0, t_char, "]"))
+
+                if t_resnr == resnr:
+                    serv1 =  to_decimal("0")
+                    vat1 =  to_decimal("0")
+                    vat3 =  to_decimal("0")
+                    fact1 =  to_decimal("0")
+
+                    res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
+                    t_list = T_list()
+                    t_list_data.append(t_list)
+
+                    curr_no = curr_no + 1
+                    t_list.nr = curr_no
+                    t_list.betrag =  to_decimal(billjournal.betrag)
+                    t_list.bezeich = billjournal.bezeich
+                    t_list.date1 = billjournal.bill_datum
+                    t_list.ankunft = res_line.ankunft
+                    t_list.abreise = res_line.abreise
 
 
-                        t_list.depo_billjour = True
-                        t_list.resno_billjour = t_resnr
+                    serv1, vat1, vat3, fact1 = get_output(calc_servtaxesbl(1, artikel.artnr, artikel.departement, billjournal.bill_datum))
+                    netto =  to_decimal(billjournal.betrag) / to_decimal(fact1)
+                    t_list.vat =  to_decimal(netto) * to_decimal((vat1) + to_decimal(vat3) )
 
-                for t_list in query(t_list_data, filters=(lambda t_list: t_list.depo_billjour)):
 
-                    billjournal = db_session.query(Billjournal).filter(
-                             (Billjournal.billjou_ref == t_list.resno_billjour) & (matches(Billjournal.bezeich,"*Refund #*"))).first()
+                    t_list.depo_billjour = True
+                    t_list.resno_billjour = t_resnr
 
-                    if billjournal:
+            for t_list in query(t_list_data, filters=(lambda t_list: t_list.depo_billjour)):
 
-                        if (t_list.betrag + billjournal.betrag) == 0:
-                            t_list_data.remove(t_list)
+                billjournal = db_session.query(Billjournal).filter(
+                            (Billjournal.billjou_ref == t_list.resno_billjour) & (matches(Billjournal.bezeich,"*Refund #*"))).first()
+
+                if billjournal:
+
+                    if (t_list.betrag + billjournal.betrag) == 0:
+                        t_list_data.remove(t_list)
 
         res_line = get_cache (Res_line, {"resnr": [(eq, resnr)],"reslinnr": [(eq, reslinnr)]})
 

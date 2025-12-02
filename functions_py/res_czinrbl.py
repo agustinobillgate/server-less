@@ -4,7 +4,8 @@
 # Rulita, 03-11-2025 | 36D1D2
 # - New compile program 
 # =============================
-
+# Rd, 26/11/2025, with_for_update
+#------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -350,7 +351,9 @@ def res_czinrbl(pvilanguage:int, ankunft:date, abreise:date, sharer:bool, resnr:
     if error_code == 0:
         rmcat = zimkateg.kurzbez
 
-    queasy = get_cache (Queasy, {"key": [(eq, 359)],"number3": [(eq, 1)],"number1": [(eq, resnr)],"number2": [(eq, reslinnr)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 359)],"number3": [(eq, 1)],"number1": [(eq, resnr)],"number2": [(eq, reslinnr)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy.key == 359) & (Queasy.number3 == 1) & (Queasy.number1 == resnr) & (Queasy.number2 == reslinnr)).with_for_update().first()
 
     if queasy:
         db_session.delete(queasy)

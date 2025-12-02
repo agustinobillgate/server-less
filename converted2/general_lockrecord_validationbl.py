@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.119
-
+#--------------------------------------------
+# Rd, 26/11/2025, with_for_update
+#--------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -52,7 +54,7 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
         epoch_millisecond:int = 0
         human_date:datetime = None
         dtz1 = get_current_datetime()
-        dtz2 = 1970_01_01T00:00:00.000
+        dtz2 = "1970_01_01T00:00:00.000"
         epoch_millisecond = get_interval(dtz1, dtz2, "milliseconds")
         human_date = add_interval(dtz2, epoch_millisecond, "milliseconds")
         time_stamp_str = to_string(human_date)
@@ -80,7 +82,8 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
     if t_input_list.v_mode == 1:
 
         queasy_359 = db_session.query(Queasy_359).filter(
-                 (Queasy_359.key == 359) & (Queasy_359.number1 == t_input_list.res_number) & (Queasy_359.number2 == t_input_list.reslin_number) & (Queasy_359.number3 == 1)).first()
+                 (Queasy_359.key == 359) & (Queasy_359.number1 == t_input_list.res_number) & 
+                 (Queasy_359.number2 == t_input_list.reslin_number) & (Queasy_359.number3 == 1)).with_for_update().first()
 
         if queasy_359:
             db_session.delete(queasy_359)
@@ -95,7 +98,7 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
             queasy.key = 359
             queasy.char1 = t_input_list.curr_room
             queasy.char2 = t_input_list.user_initial
-            queasy.char3 = getTimestampWithMs()
+            queasy.char3 = gettimestampwithms()
             queasy.number1 = t_input_list.res_number
             queasy.number2 = t_input_list.reslin_number
             queasy.number3 = 1
@@ -108,7 +111,10 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
 
     elif t_input_list.v_mode == 2:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 359)],"number3": [(eq, 1)],"number1": [(eq, t_input_list.res_number)],"number2": [(eq, t_input_list.reslin_number)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 359)],"number3": [(eq, 1)],"number1": [(eq, t_input_list.res_number)],"number2": [(eq, t_input_list.reslin_number)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 359) & (Queasy.number1 == t_input_list.res_number) & 
+                 (Queasy.number2 == t_input_list.reslin_number) & (Queasy.number3 == 1)).with_for_update().first()
 
         if queasy:
             db_session.delete(queasy)
@@ -126,7 +132,10 @@ def general_lockrecord_validationbl(t_input_list_data:[T_input_list]):
             else:
                 res_line_obj_list[res_line._recid] = True
 
-            queasy = get_cache (Queasy, {"key": [(eq, 359)],"number3": [(eq, 1)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 359)],"number3": [(eq, 1)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)]})
+            queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 359) & (Queasy.number1 == res_line.resnr) & 
+                 (Queasy.number2 == res_line.reslinnr) & (Queasy.number3 == 1)).with_for_update().first()
 
             if queasy:
                 db_session.delete(queasy)

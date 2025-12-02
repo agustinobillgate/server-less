@@ -6,15 +6,19 @@
 # Rulita, 17-10-2025
 # modify program update tiketID : 6526C2
 #----------------------------------------
+# Rd, 24/11/2025, Update last counter 
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import H_bill, Htparam, Counters, Hoteldpt, H_bill_line, H_mjourn, H_journal, Queasy
 
+
 temp_data, Temp = create_model("Temp", {"pos":int, "bezeich":string, "artnr":int})
 rhbline_data, Rhbline = create_model("Rhbline", {"nr":int, "rid":int})
 
-def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:int, bilrecid:int, new_waiter:int, rec_id:int, curr_waiter:int, dept:int, tischnr:int):
+def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:int, bilrecid:int, 
+                              new_waiter:int, rec_id:int, curr_waiter:int, dept:int, tischnr:int):
 
     prepare_cache ([H_bill, Htparam, Counters, Hoteldpt, H_bill_line, H_mjourn, H_journal, Queasy])
 
@@ -23,6 +27,7 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
     temp = rhbline = None
 
     db_session = local_storage.db_session
+
 
     def generate_output():
         nonlocal h_bill, htparam, counters, hoteldpt, h_bill_line, h_mjourn, h_journal, queasy
@@ -76,14 +81,17 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
 
         if bilrecid != 0:
 
-            hbill = get_cache (H_bill, {"_recid": [(eq, bilrecid)]})
+            # hbill = get_cache (H_bill, {"_recid": [(eq, bilrecid)]})
+            h_bill = db_session.query(Hbill).filter(Hbill._recid == bilrecid).with_for_update().first()
+
             # Rd 3/8/2025
             # if not avail return
             if h_bill is None:
                 return
         else:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, (100 + dept))]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, (100 + dept))]})
+            counters = db_session.query(Counters).filter(Counters.counter_no == (100 + dept)).with_for_update().first()
 
             if counters:
                 pass
@@ -96,6 +104,7 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
                 counters.counter_no = 100 + dept
                 counters.counter_bez = "Outlet Invoice: " + hoteldpt.depart
             counters.counter = counters.counter + 1
+
             pass
             hbill = H_bill()
             db_session.add(hbill)
@@ -103,7 +112,10 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
             hbill.tischnr = tableno
             hbill.departement = dept
             hbill.kellner_nr = curr_waiter
+            
             hbill.rechnr = counters.counter
+
+
             hbill.belegung = 1
 
 
@@ -115,10 +127,15 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
 
             rhbline = query(rhbline_data, filters=(lambda rhbline: rhbline.Rhbline.nr == temp.pos), first=True)
 
-            h_bill_line = get_cache (H_bill_line, {"_recid": [(eq, rhbline.rid)]})
+            # h_bill_line = get_cache (H_bill_line, {"_recid": [(eq, rhbline.rid)]})
+            h_bill_line = db_session.query(H_bill_line).filter(H_bill_line._recid == rhbline.rid).with_for_update().first()
 
             for h_mjourn in db_session.query(H_mjourn).filter(
-                     (H_mjourn.departement == h_bill_line.departement) & (H_mjourn.h_artnr == h_bill_line.artnr) & (H_mjourn.rechnr == h_bill_line.rechnr) & (H_mjourn.bill_datum == h_bill_line.bill_datum) & (H_mjourn.sysdate == h_bill_line.sysdate) & (H_mjourn.zeit == h_bill_line.zeit) & (num_entries(H_mjourn.request, "|") > 1) & (to_int(entry(0, H_mjourn.request, "|")) == to_int(h_bill_line._recid))).order_by(H_mjourn._recid).all():
+                     (H_mjourn.departement == h_bill_line.departement) & (H_mjourn.h_artnr == h_bill_line.artnr) & 
+                     (H_mjourn.rechnr == h_bill_line.rechnr) & (H_mjourn.bill_datum == h_bill_line.bill_datum) & 
+                     (H_mjourn.sysdate == h_bill_line.sysdate) & (H_mjourn.zeit == h_bill_line.zeit) & 
+                     (num_entries(H_mjourn.request, "|") > 1) & 
+                     (to_int(entry(0, H_mjourn.request, "|")) == to_int(h_bill_line._recid))).order_by(H_mjourn._recid).with_for_update().all():
                 h_mjourn.rechnr = hbill.rechnr
                 h_mjourn.tischnr = tableno
                 h_mjourn.kellner_nr = new_waiter
@@ -131,14 +148,21 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
             if h_bill_line.artnr == f_discart:
 
                 for h_journal in db_session.query(H_journal).filter(
-                         (H_journal.bill_datum == h_bill_line.bill_datum) & (H_journal.departement == h_bill_line.departement) & (H_journal.rechnr == h_bill_line.rechnr) & ((H_journal.artnr == f_discart) | (H_journal.artnr == b_discart) | (H_journal.artnr == b2_discart) | (H_journal.artnr == o_discart)) & (H_journal.zeit == h_bill_line.zeit)).order_by(H_journal._recid).all():
+                         (H_journal.bill_datum == h_bill_line.bill_datum) & (H_journal.departement == h_bill_line.departement) & 
+                         (H_journal.rechnr == h_bill_line.rechnr) & ((H_journal.artnr == f_discart) | (H_journal.artnr == b_discart) | 
+                                                                     (H_journal.artnr == b2_discart) | (H_journal.artnr == o_discart)) & 
+                                                                     (H_journal.zeit == h_bill_line.zeit)).order_by(H_journal._recid).with_for_update().all():
                     h_journal.tischnr = tableno
                     h_journal.rechnr = hbill.rechnr
 
             else:
 
-                h_journal = get_cache (H_journal, {"bill_datum": [(eq, h_bill_line.bill_datum)],"departement": [(eq, h_bill_line.departement)],"rechnr": [(eq, h_bill_line.rechnr)],"artnr": [(eq, h_bill_line.artnr)],"zeit": [(eq, h_bill_line.zeit)]})
-
+                # h_journal = get_cache (H_journal, {"bill_datum": [(eq, h_bill_line.bill_datum)],"departement": [(eq, h_bill_line.departement)],
+                #                       "rechnr": [(eq, h_bill_line.rechnr)],"artnr": [(eq, h_bill_line.artnr)],"zeit": [(eq, h_bill_line.zeit)]})
+                h_journal = db_session.query(H_journal).filter(
+                         (H_journal.bill_datum == h_bill_line.bill_datum) & (H_journal.departement == h_bill_line.departement) & 
+                         (H_journal.rechnr == h_bill_line.rechnr) & (H_journal.artnr == h_bill_line.artnr) & 
+                         (H_journal.zeit == h_bill_line.zeit)).with_for_update().first
                 if h_journal:
                     h_journal.tischnr = tableno
                     h_journal.rechnr = hbill.rechnr
@@ -194,7 +218,11 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
 
         pass
 
-        queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, dept)],"number2": [(eq, tableno)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 31)],"number1": [(eq, dept)],"number2": [(eq, tableno)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 31) &
+                 (Queasy.number1 == dept) &
+                 (Queasy.number2 == tableno)).with_for_update().first()
 
         if queasy and queasy.date1 == None:
             pass
@@ -203,17 +231,11 @@ def ts_splitbill_move_tablebl(temp_data:[Temp], rhbline_data:[Rhbline], tableno:
                 queasy.number3 = get_current_time_in_seconds()
                 queasy.date1 = get_current_date()
 
-
-            pass
-            pass
-        pass
-        pass
-        pass
-        pass
         temp_data.clear()
         rhbline_data.clear()
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_id)]})
+    h_bill = db_session.query(H_bill).filter(H_bill._recid == rec_id).with_for_update().first()
     # Rd 3/8/2025
     # if  availble 
     if h_bill:

@@ -6,7 +6,11 @@
 #   (func.length(func.trim(Reservation.groupname)) >= igrpname))\
 #   (func.length(func.trim(Reservation.groupname)) >= igrpname)
 #------------------------------------------
-#using conversion tools version: 1.0.0.117
+
+# ==========================================
+# Rulita, 25-11-2025
+# - Added with_for_update all query 
+# ==========================================
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -124,14 +128,12 @@ def arl_list_disp_arlist5_webbl(t_payload_list_data:[T_payload_list], show_rate:
             guest = get_cache (Guest, {"gastnr": [(eq, res_line.gastnr)]})
 
             rline = db_session.query(Rline).filter(
-                         (Rline._recid == res_line._recid)).first()
+                         (Rline._recid == res_line._recid)).with_for_update().first()
 
             # Rd 18/11/2025,
             # tambah if available guest
             if rline and guest:
                 rline.resname = guest.name
-
-
                 pass
                 pass
 

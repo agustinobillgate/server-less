@@ -1,7 +1,7 @@
 #using conversion tools version: 1.0.0.117
 #------------------------------------------
 # Rd, 05/11/2025
-# 
+# Rd, 24/11/2025 - modified to use next_counter_for_update to avoid
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -9,6 +9,7 @@ from decimal import Decimal
 from sqlalchemy import func
 from datetime import date
 from models import Bill, Res_line, Guest, Htparam, Queasy, Reslin_queasy, Reservation, Zimmer, Waehrung, Master, Counters, Guestseg
+from functions.next_counter_for_update import next_counter_for_update   
 
 def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipflag:bool):
 
@@ -57,6 +58,8 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
     db_session = local_storage.db_session
     room = room.strip()
+    last_count = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal abreise, resname, res_exrate, zimmer_bezeich, kreditlimit, master_str, master_rechnr, bill_anzahl, queasy_char1, disp_warning, flag_report, guest_taxcode, repeat_charge, t_res_line_data, t_bill_data, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, ci_date, g_address, g_wonhort, g_plz, g_land, bill, res_line, guest, htparam, queasy, reslin_queasy, reservation, zimmer, waehrung, master, counters, guestseg
@@ -263,17 +266,14 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
 
         if not mbill:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
             counters.counter = counters.counter + 1
-            pass
             mbill = Bill()
             db_session.add(mbill)
 
             mbill.rechnr = counters.counter
-            pass
-            pass
             master.rechnr = mbill.rechnr
-            pass
 
         if mbill:
             master_str = "Master Bill"

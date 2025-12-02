@@ -3,6 +3,7 @@
 # Rd 23/7/2025
 # gitlab: 
 # change while -> foreach -> konversi
+# Rd, 27/11/2025, with_for_update added
 #-----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
@@ -100,7 +101,7 @@ def prepare_benutzer_adminbl():
             pass
 
             usrbuff = db_session.query(Usrbuff).filter(
-                     (Usrbuff.nr == usr_list.nr)).first()
+                     (Usrbuff.nr == usr_list.nr)).with_for_update().first()
 
             if usrbuff:
                 usrbuff.usercode = usr_code

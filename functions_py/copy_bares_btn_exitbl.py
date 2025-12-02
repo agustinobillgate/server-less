@@ -1,11 +1,13 @@
 #using conversion tools version: 1.0.0.117
 #-------------------------------------------
 # Rd 22/7/2025
+# Rd, 24/11/2025, Update last counter 
 #-------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bediener, Bk_veran, Bk_reser, Bk_func, Bk_raum, Counters
+from sqlalchemy.orm import flag_modified
 
 s_list_data, S_list = create_model("S_list", {"datum":date, "ftime":string, "ttime":string, "raum":string, "wday":string, "raum1":string, "resstatus":int})
 
@@ -57,7 +59,9 @@ def copy_bares_btn_exitbl(s_list_data:[S_list], resnr:int, reslinnr:int, res_fla
                 reslin_nr = get_reslinnr()
             else:
 
-                counters = get_cache (Counters, {"counter_no": [(eq, 16)]})
+                # counters = get_cache (Counters, {"counter_no": [(eq, 16)]})
+                counters = db_session.query(Counters).filter(
+                         (Counters.counter_no == 16)).with_for_update().first()
 
                 if not counters:
                     counters = Counters()
@@ -68,9 +72,6 @@ def copy_bares_btn_exitbl(s_list_data:[S_list], resnr:int, reslinnr:int, res_fla
 
 
                 counters.counter = counters.counter + 1
-
-
-                pass
                 curr_resnr = counters.counter
                 bk_main = Bk_veran()
                 db_session.add(bk_main)
@@ -129,7 +130,10 @@ def copy_bares_btn_exitbl(s_list_data:[S_list], resnr:int, reslinnr:int, res_fla
 
 
             pass
-            pass
+        flag_modified(bk_func1, "resnr")
+        flag_modified(bk_func1, "c_resstatus")
+        flag_modified(bk_func1, "r_resstatus")
+        flag_modified(bk_func1, "raeume")
 
 
     def get_reslinnr():

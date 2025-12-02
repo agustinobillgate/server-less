@@ -9,6 +9,10 @@
                     - fix closing on timedelta(days=1)
                     - fix ("string").lower()
 """
+#----------------------------------------
+# Rd, 24/11/2025, Update last counter 
+#----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -79,6 +83,8 @@ def leasing_create_journal_reminder_actual_invoicebl(qrecid: int, pinvoice_no: s
     Rqueasy = create_buffer("Rqueasy", Reslin_queasy)
 
     db_session = local_storage.db_session
+    pinvoice_no = pinvoice_no.strip()
+
 
     def generate_output():
         nonlocal success_flag, log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, rechnr, tot_periode, v_cicilanke, v_percount, v_start, v_end, prev_tax, prev_serv, prev_amount_debit, prev_amount_credit, month_str1, month_str2, artikel, queasy, reslin_queasy, htparam, res_line, arrangement, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz
@@ -147,8 +153,10 @@ def leasing_create_journal_reminder_actual_invoicebl(qrecid: int, pinvoice_no: s
         nonlocal periode_list_data
 
         billnr: int = 0
-        counters = get_cache(
-            Counters, {"counter_no": [(eq, 3)]})
+        # counters = get_cache(
+        #     Counters, {"counter_no": [(eq, 3)]})
+        counters = db_session.query(Counters).filter(
+            Counters.counter_no == 3).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -161,6 +169,7 @@ def leasing_create_journal_reminder_actual_invoicebl(qrecid: int, pinvoice_no: s
         counters.counter = counters.counter + 1
         billnr = counters.counter
 
+    
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
 
@@ -296,9 +305,13 @@ def leasing_create_journal_reminder_actual_invoicebl(qrecid: int, pinvoice_no: s
 
         db_session.add(billjournal)
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            Umsatz.artnr == ar_ledger,
+            Umsatz.departement == 0,
+            Umsatz.datum == bill_date
+        ).with_for_update().first()
         if not umsatz:
             umsatz = Umsatz()
 
@@ -331,8 +344,13 @@ def leasing_create_journal_reminder_actual_invoicebl(qrecid: int, pinvoice_no: s
 
         db_session.add(billjournal)
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, divered_rental)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, divered_rental)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            Umsatz.artnr == divered_rental,
+            Umsatz.departement == 0,
+            Umsatz.datum == bill_date
+        ).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()

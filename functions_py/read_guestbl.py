@@ -3,6 +3,8 @@
 # Rd, 22/8/2025
 # validate fname, gname is ? -> ""
 #------------------------------------------
+# Rd, 26/11/2025, with_for_update, tidak ada exclusive lock
+#-------------------------------------------
 from functions.additional_functions import *
 from sqlalchemy import func, or_
 from decimal import Decimal

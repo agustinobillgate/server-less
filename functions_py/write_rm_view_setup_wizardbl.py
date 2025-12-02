@@ -3,6 +3,7 @@
 # =======================================
 # Rulita, 09-10-2025
 # Tiket ID : 8CF423 | Recompile program
+# Rd, 28/11/2025, with_for_update added
 # =======================================
 
 from functions.additional_functions import *
@@ -82,7 +83,9 @@ def write_rm_view_setup_wizardbl(t_paramtext_data:[T_paramtext]):
 
             return generate_output()
 
-        paramtext = get_cache (Paramtext, {"txtnr": [(eq, t_paramtext.txtnr)],"sprachcode": [(eq, t_paramtext.sprachcode)]})
+        # paramtext = get_cache (Paramtext, {"txtnr": [(eq, t_paramtext.txtnr)],"sprachcode": [(eq, t_paramtext.sprachcode)]})
+        paramtext = db_session.query(Paramtext).filter(
+                 (Paramtext.txtnr == t_paramtext.txtnr) & (Paramtext.sprachcode == t_paramtext.sprachcode)).with_for_update().first()
 
         if paramtext:
             paramtext.ptexte = t_paramtext.ptexte

@@ -2,10 +2,12 @@
 #------------------------------------------
 # Rd, 14/8/2025
 # if available bqueasy
+# Rd, 25/11/2025, with_for_update
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Queasy
+from sqlalchemy import func
 
 output_list_data, Output_list = create_model("Output_list", {"str":string, "refno":string})
 
@@ -45,19 +47,22 @@ def gl_jouref_create_output_webbl(idflag:string, output_list_data:[Output_list])
         output_list.str = entry(0, queasy.char2, "|")
         output_list.refno = entry(1, queasy.char2, "|")
 
-        bqueasy = db_session.query(Bqueasy).filter(
-                 (Bqueasy._recid == queasy._recid)).first()
+        # bqueasy = db_session.query(Bqueasy).filter(
+        #          (Bqueasy._recid == queasy._recid)).first()
         # Rd 14/8/2025
+        bqueasy = db_session.query(Bqueasy).filter(
+                 (Bqueasy._recid == queasy._recid)).with_for_update().first()
+
         if bqueasy:
             db_session.delete(bqueasy)
         pass
 
         curr_recid = queasy._recid
         queasy = db_session.query(Queasy).filter(
-                 (Queasy.key == 280) & (Queasy.char1 == ("Journalist by voucher").lower()) & (Queasy.char3 == idflag) & (Queasy._recid > curr_recid)).first()
+                 (Queasy.key == 280) & (func.lower(Queasy.char1) == "journalist by voucher") & (Queasy.char3 == idflag) & (Queasy._recid > curr_recid)).first()
 
     pqueasy = db_session.query(Pqueasy).filter(
-             (Pqueasy.key == 280) & (Pqueasy.char1 == ("Journalist by voucher").lower()) & (Pqueasy.char3 == idflag)).first()
+             (Pqueasy.key == 280) & (func.lower(Pqueasy.char1) == "journalist by voucher") & (Pqueasy.char3 == idflag)).first()
 
     if pqueasy:
         doneflag = False
@@ -66,7 +71,7 @@ def gl_jouref_create_output_webbl(idflag:string, output_list_data:[Output_list])
     else:
 
         tqueasy = db_session.query(Tqueasy).filter(
-                 (Tqueasy.key == 285) & (Tqueasy.char1 == ("Journalist by voucher").lower()) & (Tqueasy.number1 == 1) & (Tqueasy.char2 == idflag)).first()
+                 (Tqueasy.key == 285) & (func.lower(Tqueasy.char1) == "journalist by voucher") & (Tqueasy.number1 == 1) & (Tqueasy.char2 == idflag)).first()
 
         if tqueasy:
             doneflag = False
@@ -75,9 +80,10 @@ def gl_jouref_create_output_webbl(idflag:string, output_list_data:[Output_list])
         else:
             doneflag = True
 
+    # tqueasy = db_session.query(Tqueasy).filter(
+    #          (Tqueasy.key == 285) & (func.lower(Tqueasy.char1) == "journalist by voucher") & (Tqueasy.number1 == 0) & (Tqueasy.char2 == idflag)).first()
     tqueasy = db_session.query(Tqueasy).filter(
-             (Tqueasy.key == 285) & (Tqueasy.char1 == ("Journalist by voucher").lower()) & (Tqueasy.number1 == 0) & (Tqueasy.char2 == idflag)).first()
-
+             (Tqueasy.key == 285) & (func.lower(Tqueasy.char1) == "journalist by voucher") & (Tqueasy.number1 == 1) & (Tqueasy.char2 == idflag)).with_for_update().first()
     if tqueasy:
         pass
         db_session.delete(tqueasy)

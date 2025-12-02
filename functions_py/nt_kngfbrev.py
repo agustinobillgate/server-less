@@ -8,6 +8,11 @@
 # - Fixing issue where s_list.hb_buff.zeit
 # ============================
 
+# ==================================
+# Rulita, 01-12-2025
+# - Added with_for_update all query 
+# ==================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -260,7 +265,9 @@ def nt_kngfbrev():
 
                 if shift_art != 0:
 
-                    umsatz = get_cache (Umsatz, {"artnr": [(eq, hart_buff.artnrfront)],"departement": [(eq, hart_buff.departement)],"datum": [(eq, hb_buff.bill_datum)]})
+                    # umsatz = get_cache (Umsatz, {"artnr": [(eq, hart_buff.artnrfront)],"departement": [(eq, hart_buff.departement)],"datum": [(eq, hb_buff.bill_datum)]})
+                    umsatz = db_session.query(Umsatz).filter(
+                             (Umsatz.artnr == hart_buff.artnrfront) & (Umsatz.departement == hart_buff.departement) & (Umsatz.datum == hb_buff.bill_datum)).with_for_update().first()
 
                     if umsatz:
                         umsatz.anzahl = umsatz.anzahl - hb_buff.anzahl

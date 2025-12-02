@@ -1,0 +1,88 @@
+#using conversion tools version: 1.0.0.117
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
+from functions.additional_functions import *
+from decimal import Decimal
+from models import Bediener, Queasy
+
+t_bediener_data, T_bediener = create_model_like(Bediener)
+t_queasy_data, T_queasy = create_model_like(Queasy)
+
+def benutzer_adminbl(case_type:int, mphone:string, email:string, pager:string, t_bediener_data:[T_bediener], t_queasy_data:[T_queasy]):
+
+    prepare_cache ([Queasy])
+
+    bediener = queasy = None
+
+    t_bediener = t_queasy = None
+
+    db_session = local_storage.db_session
+    mphone = mphone.strip()
+    email = email.strip()
+    pager = pager.strip()   
+
+    def generate_output():
+        nonlocal bediener, queasy
+        nonlocal case_type, mphone, email, pager
+
+
+        nonlocal t_bediener, t_queasy
+
+        return {}
+
+
+    if case_type == 1:
+
+        t_bediener = query(t_bediener_data, first=True)
+
+        if t_bediener:
+            bediener = Bediener()
+            db_session.add(bediener)
+
+            buffer_copy(t_bediener, bediener)
+
+        t_queasy = query(t_queasy_data, first=True)
+
+        if t_queasy:
+            queasy = Queasy()
+            db_session.add(queasy)
+
+            buffer_copy(t_queasy, queasy)
+    else:
+
+        t_bediener = query(t_bediener_data, first=True)
+
+        if t_bediener:
+
+            # bediener = get_cache (Bediener, {"nr": [(eq, t_bediener.nr)]})
+            bediener = db_session.query(Bediener).filter(
+                     (Bediener.nr == t_bediener.nr)).with_for_update().first()
+
+            if bediener:
+                buffer_copy(t_bediener, bediener)
+                pass
+
+        # queasy = get_cache (Queasy, {"key": [(eq, 134)],"number1": [(eq, t_bediener.nr)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 134) &
+                 (Queasy.number1 == t_bediener.nr)).with_for_update().first()
+
+        if not queasy:
+            queasy = Queasy()
+            db_session.add(queasy)
+
+            queasy.key = 134
+
+
+        else:
+            pass
+        queasy.number1 = t_bediener.nr
+        queasy.char1 = mphone
+        queasy.char2 = email
+        queasy.char3 = pager
+
+
+        pass
+
+    return generate_output()

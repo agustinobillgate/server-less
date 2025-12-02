@@ -8,6 +8,9 @@
                     - fix closing bracket position
                     - fix string.lower()
 """
+#------------------------------------------
+# Rd, 25/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -721,8 +724,9 @@ def chk_btn_go_res_rmrate_web1bl(pvilanguage: int, curr_select: str, max_rate: D
                 breslin.number1 = get_current_time_in_seconds()
                 breslin.char3 = ""
 
-        res_line = get_cache(
-            Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+        # res_line = get_cache(
+        #     Res_line, {"resnr": [(eq, reslin_queasy.resnr)], "reslinnr": [(eq, reslin_queasy.reslinnr)]})
+        res_line = db_session.query(Res_line).filter(Res_line.resnr == reslin_queasy.resnr, Res_line.reslinnr == reslin_queasy.reslinnr).with_for_update().first()
         res_changes_chg()
         
         reslin_queasy.key = "arrangement"

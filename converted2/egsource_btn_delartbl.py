@@ -29,7 +29,9 @@ def egsource_btn_delartbl(source_number1:int, rec_id:int):
         return {"err_code": err_code}
 
 
-    queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+    # queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy._recid == rec_id)).with_for_update().first()
 
     egreq = get_cache (Eg_request, {"source": [(eq, source_number1)]})
 
@@ -37,7 +39,8 @@ def egsource_btn_delartbl(source_number1:int, rec_id:int):
         err_code = 1
 
         return generate_output()
-    pass
+    # pass
     db_session.delete(queasy)
+    db_session.refresh(queasy,with_for_update=True)
 
     return generate_output()

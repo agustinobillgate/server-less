@@ -5,6 +5,9 @@
         _remark_:   - fix python indentation
                     - only convert
 """
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -59,8 +62,12 @@ def leasing_update_queasybl(casetype: int, nr: int, gastnr: int, gastnrmember: i
         db_session.add(queasy)
 
     elif casetype == 2:
-        queasy = get_cache(
-            Queasy, {"key": [(eq, 329)], "number3": [(eq, nr)]})
+        # queasy = get_cache(
+        #     Queasy, {"key": [(eq, 329)], "number3": [(eq, nr)]})
+        queasy = db_session.query(Queasy).filter(
+            Queasy.key == 329,
+            Queasy.number3 == nr
+        ).with_for_update().first() 
 
         if not queasy:
             queasy = Queasy()
@@ -83,8 +90,13 @@ def leasing_update_queasybl(casetype: int, nr: int, gastnr: int, gastnrmember: i
             queasy.deci1 = to_decimal(amount)
 
     elif casetype == 3:
-        queasy = get_cache(
-            Queasy, {"key": [(eq, 329)], "number3": [(eq, nr)]})
+        # queasy = get_cache(
+        #     Queasy, {"key": [(eq, 329)], "number3": [(eq, nr)]})
+
+        queasy = db_session.query(Queasy).filter(
+            Queasy.key == 329,
+            Queasy.number3 == nr
+        ).with_for_update().first() 
 
         if queasy:
             db_session.delete(queasy)

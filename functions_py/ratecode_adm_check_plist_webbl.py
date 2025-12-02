@@ -40,14 +40,10 @@ def ratecode_adm_check_plist_webbl(pvilanguage:int, curr_select:string, prcode:s
 
         nonlocal msg_str, child_error, error_msg, lvcarea, curr_i, mesval, error_flag, err_result, ratecode
         nonlocal pvilanguage, curr_select, prcode, market, prlist_zikatnr, prlist_argtnr, market_nr, tb3_srecid
-
-
         nonlocal p_list
-
 
         for curr_i in range(1,num_entries(p_list.wday_str, ",")  + 1) :
             mesval = trim(entry(curr_i - 1, p_list.wday_str, ","))
-
             if mesval != "":
 
                 if asc(mesval) < 48 or asc(mesval) > 55:

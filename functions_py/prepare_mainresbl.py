@@ -3,6 +3,17 @@
 # Rd, 13/8/2025
 # num_entries
 #------------------------------------------
+
+# ==================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# ==================================
+
+# ==================================
+# Rulita, 01/12/2025
+# Fixing error cannot create res wig
+# ==================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -73,7 +84,8 @@ def prepare_mainresbl(res_mode:string, user_init:string, origcode:string, gastnr
         htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
         ci_date = htparam.fdate
 
-        reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
+        # reservation = get_cache (Reservation, {"resnr": [(eq, resnr)]})
+        reservation = db_session.query(Reservation).filter(Reservation.resnr == resnr).with_for_update().first()
 
         if not reservation:
 
@@ -261,7 +273,10 @@ def prepare_mainresbl(res_mode:string, user_init:string, origcode:string, gastnr
 
 
         pass
-
+        
+        # Rulita, 01/12/2025
+        # Fixing error cannot create res wig
+        db_session.refresh(reservation,with_for_update=True)
 
     f_mainres = F_mainres()
     f_mainres_data.append(f_mainres)

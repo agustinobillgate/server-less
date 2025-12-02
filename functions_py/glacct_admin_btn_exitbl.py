@@ -1,10 +1,11 @@
 #using conversion tools version: 1.0.0.117
 
-# =======================================
+# ===================================================================
 # Rulita, 16-10-2025 
 # Tiket ID : 6526C2 | New compile program
-# =======================================
-
+# ===================================================================
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#--------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Gl_acct, Gl_main, Gl_fstype, Gl_department
@@ -26,6 +27,9 @@ def glacct_admin_btn_exitbl(g_list_data:[G_list], case_type:int, comments:string
     b1_list_data, B1_list = create_model_like(Gl_acct, {"main_bezeich":string, "kurzbez":string, "dept_bezeich":string, "fstype_bezeich":string})
 
     db_session = local_storage.db_session
+    map_acct = map_acct.strip()
+    prev_fibukonto = prev_fibukonto.strip()
+    tax_code = tax_code.strip()
 
     def generate_output():
         nonlocal from_acct, found, success_flag, b1_list_data, gl_acct, gl_main, gl_fstype, gl_department
@@ -161,8 +165,10 @@ def glacct_admin_btn_exitbl(g_list_data:[G_list], case_type:int, comments:string
         from_acct = g_list.fibukonto
 
     elif case_type == 2:
-
-        gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, prev_fibukonto)]})
+        # Rd, 24/11/2025, get gl_acct dengan for update
+        # gl_acct = get_cache (Gl_acct, {"fibukonto": [(eq, prev_fibukonto)]})
+        gl_acct = db_session.query(Gl_acct).filter(
+                     (Gl_acct.fibukonto == prev_fibukonto)).with_for_update().first()
         fill_gl_acct()
         create_b1_list()
 

@@ -4,6 +4,8 @@
 # Rulita, 17-10-2025 
 # Tiket ID : 6526C2 | New compile program
 # =======================================
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal

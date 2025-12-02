@@ -2613,13 +2613,13 @@ def pr_sphbill1_cldbl(pvilanguage:int, hbrecid:int, printnr:int, use_h_queasy:bo
         if printnr >= 0:
             if not use_h_queasy:
                 queasy = db_session.query(Queasy).filter(
-                         (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & (Queasy.number2 == 0) & (Queasy.deci2 == billnr)).first()
+                         (Queasy.key == 4) & (Queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & (Queasy.number2 == 0) & (Queasy.deci2 == billnr)).with_for_update().first()
                 queasy.number3 = printed_line
                 queasy.deci1 =  to_decimal(tot_amount)
 
             else:
                 h_queasy = db_session.query(H_queasy).filter(
-                         (H_queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & (H_queasy.number2 == 0) & (H_queasy.billno == billnr)).first()
+                         (H_queasy.number1 == (h_bill.departement + h_bill.rechnr * 100)) & (H_queasy.number2 == 0) & (H_queasy.billno == billnr)).with_for_update().first()
 
                 if h_queasy:
                     h_queasy.number3 = printed_line

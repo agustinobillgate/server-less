@@ -7,6 +7,11 @@
 # - Chg query H_artikel from get_cache to dbsession first 
 # =======================================================
 
+# ==============================================
+# Rulita, 01-12-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -127,7 +132,9 @@ def nt_hcost():
 
                         if l_artikel:
 
-                            h_artcost = get_cache (H_artcost, {"artnr": [(eq, l_artikel.artnr)]})
+                            # h_artcost = get_cache (H_artcost, {"artnr": [(eq, l_artikel.artnr)]})
+                            h_artcost = db_session.query(H_artcost).filter(
+                                     (H_artcost.artnr == l_artikel.artnr)).with_for_update().first()
 
                             if not h_artcost:
                                 h_artcost = H_artcost()
@@ -179,7 +186,9 @@ def nt_hcost():
                 else:
                     cost =  to_decimal(cost) + to_decimal(qty) * to_decimal(l_artikel.ek_aktuell) / to_decimal((1) - to_decimal(h_rezlin.lostfact) / to_decimal(100))
 
-                h_artcost = get_cache (H_artcost, {"artnr": [(eq, l_artikel.artnr)]})
+                # h_artcost = get_cache (H_artcost, {"artnr": [(eq, l_artikel.artnr)]})
+                h_artcost = db_session.query(H_artcost).filter(
+                         (H_artcost.artnr == l_artikel.artnr)).with_for_update().first()
 
                 if not h_artcost:
                     h_artcost = H_artcost()

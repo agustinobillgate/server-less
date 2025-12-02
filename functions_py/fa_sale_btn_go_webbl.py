@@ -1,6 +1,8 @@
 #using conversion tools version: 1.0.0.117
 # pyright: reportAttributeAccessIssue=false
-
+#----------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#----------------------------------------
 """_yusufwijasena_
 
     TICKET ID:
@@ -10,10 +12,16 @@
             - moved Counters(), Gl_jouhdr(), Gl_journal(), Mhis_line(), Fa_op() to global
 """
 
+# =============================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Gl_acct, Gl_jouhdr, Counters, Gl_journal, Fa_artikel, Mhis_line, Fa_op
+from functions.next_counter_for_update import next_counter_for_update
 
 g_list_data, G_list = create_model(
     "G_list", {
@@ -67,6 +75,8 @@ def fa_sale_btn_go_webbl(g_list_data:G_list, amt:Decimal, nr:int, datum:date, re
 
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal sold_out, output_list_data, new_hdr, journal_nr, gl_acct, gl_jouhdr, counters, gl_journal, fa_artikel, mhis_line, fa_op
@@ -88,20 +98,22 @@ def fa_sale_btn_go_webbl(g_list_data:G_list, amt:Decimal, nr:int, datum:date, re
         nonlocal gl_acc1, gl_acct1, gl_jouhdr1, g_list, output_list
         nonlocal output_list_data
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        last_count, error_lock = get_output(next_counter_for_update(25))
 
-        if not counters:
-            counters.counter_no = 25
-            counters.counter_bez = "G/L Transaction Journal"
-            counters.counter = 1
-            journal_nr = int(str(counters.counter))
+        # if not counters:
+        #     counters.counter_no = 25
+        #     counters.counter_bez = "G/L Transaction Journal"
+        #     counters.counter = 1
+        #     journal_nr = int(str(counters.counter))
 
-            db_session.add(counters)
+        #     db_session.add(counters)
             
-        elif counters:
-            counters.counter = counters.counter + 1
-            journal_nr = counters.counter
+        # elif counters:
+        #     counters.counter = counters.counter + 1
+        #     journal_nr = counters.counter
         
+        journal_nr = last_count
         gl_jouhdr.jnr = journal_nr
         gl_jouhdr.refno = refno
         gl_jouhdr.datum = datum
@@ -136,15 +148,18 @@ def fa_sale_btn_go_webbl(g_list_data:G_list, amt:Decimal, nr:int, datum:date, re
         if remains == 0.01 or remains == -0.01:
             remains = Decimal(0)
 
-        gl_jouhdr = get_cache (Gl_jouhdr, {
-            "jnr": [(eq, journal_nr)]})
+        # gl_jouhdr = get_cache (Gl_jouhdr, {
+        #     "jnr": [(eq, journal_nr)]})
+        gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+                 (Gl_jouhdr.jnr == journal_nr)).with_for_update().first()
 
         if gl_jouhdr:
             gl_jouhdr.credit =  to_decimal(credits)
             gl_jouhdr.debit =  to_decimal(debits)
             gl_jouhdr.remain =  to_decimal(remains)
             
-            pass
+            # pass
+            db_session.refresh(gl_jouhdr,with_for_update=True)
 
     def update_fix_asset():
 
@@ -158,9 +173,11 @@ def fa_sale_btn_go_webbl(g_list_data:G_list, amt:Decimal, nr:int, datum:date, re
 
         orig_bookval = to_decimal("0.0")
 
-        fa_artikel = get_cache (Fa_artikel, {
-            "nr": [(eq, nr)]})
-
+        # fa_artikel = get_cache (Fa_artikel, {
+        #     "nr": [(eq, nr)]})
+        fa_artikel = db_session.query(Fa_artikel).filter(
+                 (Fa_artikel.nr == nr)).with_for_update().first()
+        
         if fa_artikel:
             qty = fa_artikel.anzah1
             sold_out = qty
@@ -179,7 +196,9 @@ def fa_sale_btn_go_webbl(g_list_data:G_list, amt:Decimal, nr:int, datum:date, re
             
             fa_artikel.did = user_init
             
-            mhis_line.nr = nr
+            db_session.refresh(fa_artikel,with_for_update=True)
+
+            mhis_line.nr = nr   
             mhis_line.datum = datum
             mhis_line.remark = "Sold Out: qty = " + str(qty) + "; Amount = " + trim(to_string(amt, ">>>,>>>,>>>,>>9.99"))
             

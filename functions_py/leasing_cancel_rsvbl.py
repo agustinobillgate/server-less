@@ -8,6 +8,10 @@
                     - fix ("string").lower()
                     - use f"string"
 """
+#----------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -66,6 +70,8 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
     db_session = local_storage.db_session
 
+
+
     def generate_output():
         nonlocal log_artnr, ar_ledger, divered_rental, bill_date, tot_amount, tot_nettamount, tot_serv, tot_tax, datum, netto, service, tax, tax2, serv, vat, vat2, fact, loopi, serv_acctno, vat_acctno, vat_fibu, vat2_fibu, serv_fibu, div_fibu, del_mainres, msg_str, month_str1, month_str2, artikel, htparam, queasy, res_line, arrangement, reslin_queasy, counters, reservation, guest, bediener, bill, bill_line, debitor, billjournal, umsatz, gl_jouhdr, gl_journal
         nonlocal qrecid, user_init
@@ -84,7 +90,10 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         billnr: int = 0
 
-        counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+        # counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+        counters = db_session.query(Counters).filter(
+            Counters.counter_no == 3
+        ).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -96,6 +105,7 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         counters.counter = counters.counter + 1
         billnr = counters.counter
+
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
@@ -239,9 +249,10 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         db_session.add(billjournal)
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                 (Umsatz.artnr == ar_ledger) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
         if not umsatz:
             umsatz = Umsatz()
 
@@ -274,9 +285,10 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         db_session.add(billjournal)
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, divered_rental)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, divered_rental)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                 (Umsatz.artnr == divered_rental) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
         if not umsatz:
             umsatz = Umsatz()
 
@@ -297,7 +309,10 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         gname: string = ""
 
-        counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache(Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(
+            Counters.counter_no == 25
+        ).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -306,6 +321,7 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
             counters.counter_no = 25
             counters.counter_bez = "G/L Transaction Journal"
         counters.counter = counters.counter + 1
+
 
         res_line = get_cache(
             Res_line, {"resnr": [(eq, queasy.number1)], "reslinnr": [(eq, queasy.number2)]})
@@ -318,7 +334,7 @@ def leasing_cancel_rsvbl(qrecid: int, user_init: str):
 
         gl_jouhdr = Gl_jouhdr()
 
-        gl_jouhdr.jnr = counters.counter
+        gl_jouhdr.jnr = counters.counter        
         # gl_jouhdr.refno = "CANCEL-" + \
         #     to_string(queasy.number1) + "-" + to_string(bill_date)
         gl_jouhdr.refno = f"CANCEL-{queasy.number1}-{bill_date}"

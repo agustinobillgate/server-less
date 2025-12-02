@@ -8,6 +8,10 @@
                     - fix ("string").lower()
                     - use f"string"
 """
+#------------------------------------------
+# Rd, 24/11/2025, Update last counter 
+#------------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -52,6 +56,9 @@ def leasing_cancel_installmentbl(qrecid: int, user_init: str):
     Pqueasy = create_buffer("Pqueasy", Queasy)
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock: str = ""
+
 
     def generate_output():
         nonlocal error_flag, success_flag, ar_ledger, divered_rental, bill_date, tot_amount, inv_no, tot_periode, v_cicilanke, v_percount, v_start, v_end, installment, month_str1, month_str2, reslin_queasy, artikel, queasy, htparam, bediener, res_history, res_line, counters, reservation, guest, bill, bill_line, debitor, billjournal, umsatz
@@ -137,8 +144,8 @@ def leasing_cancel_installmentbl(qrecid: int, user_init: str):
 
         billnr: int = 0
 
-        counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
-
+        # counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
         if not counters:
             counters = Counters()
 
@@ -285,9 +292,11 @@ def leasing_cancel_installmentbl(qrecid: int, user_init: str):
 
         db_session.add(billjournal)
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == ar_ledger) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
+        
         if not umsatz:
             umsatz = Umsatz()
 
@@ -321,8 +330,10 @@ def leasing_cancel_installmentbl(qrecid: int, user_init: str):
 
         db_session.add(billjournal)
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, divered_rental)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, divered_rental)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == divered_rental) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -486,7 +497,7 @@ def leasing_cancel_installmentbl(qrecid: int, user_init: str):
                 tot_amount = to_decimal(tot_amount + breslin.deci1)
 
         for breslin in db_session.query(Breslin).filter(
-                (Breslin.key == "actual-invoice") & (Breslin.resnr == queasy.number1) & (Breslin.reslinnr == queasy.number2)).order_by(Breslin._recid).all():
+                (Breslin.key == "actual-invoice") & (Breslin.resnr == queasy.number1) & (Breslin.reslinnr == queasy.number2)).order_by(Breslin._recid).with_for_update().all():
             breslin.char1 = "1|" + user_init + "|" + \
                 to_string(bill_date) + "|" + \
                 to_string(get_current_time_in_seconds())

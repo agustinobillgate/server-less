@@ -3,6 +3,7 @@
 # ==========================================
 # Rulita, 09-10-2025
 # Tiket ID : 8CF423 | Recompile Program
+# Rd, 28/11/2025, with_for_update added
 # ==========================================
 
 from functions.additional_functions import *
@@ -64,8 +65,12 @@ def delete_paramtext_setup_wizardbl(input_param_data:[Input_param]):
 
     for input_param in query(input_param_data):
 
-        paramtext = get_cache (Paramtext, {"txtnr": [(eq, input_param.int1)],"number": [(eq, input_param.int2)],"sprachcode": [(eq, input_param.int3)]})
-
+        # paramtext = get_cache (Paramtext, {"txtnr": [(eq, input_param.int1)],"number": [(eq, input_param.int2)],"sprachcode": [(eq, input_param.int3)]})
+        paramtext = db_session.query(Paramtext).filter(
+                        (Paramtext.txtnr == input_param.int1),
+                        (Paramtext.number == input_param.int2),,
+                        (Paramtext.sprachcode == input_param.int3)
+                    ).with_for_update().first()
         if paramtext:
             db_session.delete(paramtext)
             pass

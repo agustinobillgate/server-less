@@ -2,12 +2,14 @@
 #------------------------------------------
 # Rd, 2/8/2025
 # GL by voucher kosong
+# Rd, 25/11/2025, with_for_update
 #------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.gl_jourefbl import gl_jourefbl
 from models import Queasy
+from sqlalchemy import func
 
 def gl_jouref_webbl(idflag:string, sorttype:int, from_date:date, to_date:date, from_refno:string):
 
@@ -83,7 +85,9 @@ def gl_jouref_webbl(idflag:string, sorttype:int, from_date:date, to_date:date, f
             db_session.commit()
 
 
-    bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "journalist by voucher")],"char2": [(eq, idflag)]})
+    # Rd, 25/11/2025, with_for_update
+    # bqueasy = get_cache (Queasy, {"key": [(eq, 285)],"char1": [(eq, "journalist by voucher")],"char2": [(eq, idflag)]})
+    bqueasy = db_session.query(Queasy).filter(Queasy.key == 285, func.lower(Queasy.char1) == "journalist by voucher", Queasy.char2 == idflag).with_for_update().first()
 
     if bqueasy:
         pass

@@ -7,6 +7,9 @@
                     - fix python indentation
                     - fix timedelta(days=1)
 """
+#------------------------------------------
+# Rd, 25/11/2025, with_for_update
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -733,7 +736,8 @@ def res_rmrate_view_repeat_chargebl(pvilanguage: int, user_init: string, reslin_
             return generate_output()
         output_list.foreign_nr = waehrung.waehrungsnr
 
-    htparam = get_cache(Htparam, {"paramnr": [(eq, 1108)]})
+    # htparam = get_cache(Htparam, {"paramnr": [(eq, 1108)]})
+    htparam = db_session.query(Htparam).filter(Htparam.paramnr == 1108).with_for_update().first()
 
     if htparam.feldtyp == 1:
         htparam.feldtyp = 2

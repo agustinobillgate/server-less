@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ==================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# ==================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -48,7 +53,9 @@ def fa_depn_btn_go2_webbl(g_list_data:[G_list], datum:date, refno:string, bezeic
         db_session.add(gl_jouhdr)
 
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(
+                 (Counters.counter_no == 25)).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -76,6 +83,7 @@ def fa_depn_btn_go2_webbl(g_list_data:[G_list], datum:date, refno:string, bezeic
 
         nonlocal gl_acc1, gl_acct1, gl_jouhdr1, g_list
 
+        # Rulita, 27-11-2025 | Iterating over in-memory g_list_data; cannot apply with_for_update here.
         for g_list in query(g_list_data):
             gl_journal = Gl_journal()
             db_session.add(gl_journal)
@@ -120,35 +128,33 @@ def fa_depn_btn_go2_webbl(g_list_data:[G_list], datum:date, refno:string, bezeic
 
             if g_list.credit != 0:
 
-                queasy = get_cache (Queasy, {"key": [(eq, 348)],"number1": [(eq, g_list.nr)],"date1": [(eq, datum)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 348) &
+                         (Queasy.number1 == g_list.nr) &
+                         (Queasy.date1 == datum)).with_for_update().first()
 
                 if not queasy:
 
-                    fa_artikel_buff = get_cache (Fa_artikel, {"nr": [(eq, g_list.nr)]})
+                    fa_artikel_buff = db_session.query(Fa_artikel).filter(
+                             (Fa_artikel.nr == g_list.nr)).with_for_update().first()
 
                     if fa_artikel_buff:
                         depn_wert_hist =  to_decimal(fa_artikel_buff.depn_wert) + to_decimal(g_list.credit)
                         anz_depn_hist = fa_artikel_buff.anz_depn + 1
                         book_wert_hist =  to_decimal(fa_artikel_buff.book_wert) - to_decimal(g_list.credit)
-                        anzahl = fa_artikel_buff.anzahl
-                    else:
-                        depn_wert_hist = None
-                        anz_depn_hist = None
-                        book_wert_hist = None
-                        anzahl = None
-                    
-                    queasy = Queasy()
-                    db_session.add(queasy)
+                        queasy = Queasy()
+                        db_session.add(queasy)
 
-                    queasy.key = 348
-                    queasy.number1 = g_list.nr
-                    queasy.number2 = anzahl
-                    queasy.date1 = datum
-                    queasy.deci1 =  to_decimal(depn_wert_hist)
-                    queasy.number3 = anz_depn_hist
-                    queasy.deci2 =  to_decimal(book_wert_hist)
-
-                fa_artikel = get_cache (Fa_artikel, {"nr": [(eq, g_list.nr)]})
+                        queasy.key = 348
+                        queasy.number1 = g_list.nr
+                        queasy.number2 = fa_artikel_buff.anzahl
+                        queasy.date1 = datum
+                        queasy.deci1 =  to_decimal(depn_wert_hist)
+                        queasy.number3 = anz_depn_hist
+                        queasy.deci2 =  to_decimal(book_wert_hist)
+            
+                fa_artikel = db_session.query(Fa_artikel).filter(
+                         (Fa_artikel.nr == g_list.nr)).with_for_update().first()
 
                 if fa_artikel:
                     pass
@@ -170,9 +176,12 @@ def fa_depn_btn_go2_webbl(g_list_data:[G_list], datum:date, refno:string, bezeic
     create_journals()
     update_fix_asset()
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 881)]})
+    # htparam = get_cache (Htparam, {"paramnr": [(eq, 881)]})
+    htparam = db_session.query(Htparam).filter(
+             (Htparam.paramnr == 881)).with_for_update().first()
     htparam.fdate = datum
-    pass
+    # pass
+    db_session.refresh(htparam,with_for_update=True)
     success_flag = True
 
     return generate_output()

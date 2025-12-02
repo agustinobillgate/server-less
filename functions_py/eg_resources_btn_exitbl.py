@@ -3,6 +3,12 @@
 # Rd, 1/8/2025
 # if available 
 #----------------------------------------
+
+# =========================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# =========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Eg_resources
@@ -39,12 +45,13 @@ def eg_resources_btn_exitbl(resources_data:[Resources], case_type:int, rec_id:in
 
     elif case_type == 2:
 
-        eg_resources = get_cache (Eg_resources, {"_recid": [(eq, rec_id)]})
+        # eg_resources = get_cache (Eg_resources, {"_recid": [(eq, rec_id)]})
+        eg_resources = db_session.query(Eg_resources).filter(
+             (Eg_resources._recid == rec_id)).with_for_update().first()
         pass
         buffer_copy(resources, eg_resources)
         eg_resources.char1 = fibukonto
 
-
-        pass
+        db_session.refresh(eg_resources,with_for_update=True)
 
     return generate_output()

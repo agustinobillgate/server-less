@@ -7,6 +7,10 @@
                     - fix closing bracket on timedelta(days=1)
                     - use f"string"
 """
+#----------------------------------------
+# Rd, 24/11/2025, Update last counter 
+#----------------------------------------
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -50,6 +54,8 @@ def leasing_pay_depositbl(qrecid: int, pinvoice_no: str, artikel_no: int, pay_am
     Tqueasy = create_buffer("Tqueasy", Queasy)
 
     db_session = local_storage.db_session
+    pinvoice_no = pinvoice_no.strip()
+
 
     def generate_output():
         nonlocal success_flag, bill_date, ar_ledger, div_fibu, extendflag, amount, installment, tot_periode, v_cicilanke, v_percount, v_start, v_end, month_str1, month_str2, artikel, queasy, htparam, reslin_queasy, billjournal, umsatz, debitor, bediener, res_line, guest, counters, gl_jouhdr, gl_journal
@@ -69,9 +75,12 @@ def leasing_pay_depositbl(qrecid: int, pinvoice_no: str, artikel_no: int, pay_am
         nonlocal periode_list, bart, bartikel, tqueasy
         nonlocal periode_list_data
 
-        tqueasy = get_cache(
-            Queasy, {"key": [(eq, 355)], "number1": [(eq, queasy.number1)], "number2": [(eq, queasy.number2)], "number3": [(eq, artikel_no)]})
-
+        # tqueasy = get_cache(
+        #     Queasy, {"key": [(eq, 355)], "number1": [(eq, queasy.number1)], "number2": [(eq, queasy.number2)], "number3": [(eq, artikel_no)]})
+        tqueasy = db_session.query(Queasy).filter(
+            (Queasy.key == 355) & (Queasy.number1 == queasy.number1) & 
+            (Queasy.number2 == queasy.number2) & (Queasy.number3 == artikel_no)).with_for_update().first()
+        
         if not tqueasy:
             tqueasy = Queasy()
 
@@ -268,9 +277,11 @@ def leasing_pay_depositbl(qrecid: int, pinvoice_no: str, artikel_no: int, pay_am
         if v_cicilanke != 0:
             billjournal.billin_nr = v_cicilanke
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
-
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, ar_ledger)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == ar_ledger) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
+            
         if not umsatz:
             umsatz = Umsatz()
 
@@ -309,8 +320,10 @@ def leasing_pay_depositbl(qrecid: int, pinvoice_no: str, artikel_no: int, pay_am
         if v_cicilanke != 0:
             billjournal.billin_nr = v_cicilanke
 
-        umsatz = get_cache(
-            Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        # umsatz = get_cache(
+        #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -403,8 +416,10 @@ def leasing_pay_depositbl(qrecid: int, pinvoice_no: str, artikel_no: int, pay_am
         nonlocal periode_list, bart, bartikel, tqueasy
         nonlocal periode_list_data
 
-        counters = get_cache(
-            Counters, {"counter_no": [(eq, 25)]})
+        # counters = get_cache(
+        #     Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(
+            (Counters.counter_no == 25)).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -415,10 +430,10 @@ def leasing_pay_depositbl(qrecid: int, pinvoice_no: str, artikel_no: int, pay_am
             db_session.add(counters)
             
         counters.counter = counters.counter + 1
-        pass
         gl_jouhdr = Gl_jouhdr()
 
         gl_jouhdr.jnr = counters.counter
+        
         gl_jouhdr.refno = "Payment Deposit - " + pinvoice_no
         gl_jouhdr.datum = bill_date
         gl_jouhdr.batch = True

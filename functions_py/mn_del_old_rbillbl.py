@@ -80,7 +80,9 @@ def mn_del_old_rbillbl():
     ci_date = htparam.fdate
     del_old_rbill()
 
-    counters = get_cache (Counters, {"counter_no": [(eq, 121)]})
+    # counters = get_cache (Counters, {"counter_no": [(eq, 121)]})
+    counters = db_session.query(Counters).filter(
+                 (Counters.counter_no == 121)).with_for_update().first()
 
     if counters:
         counters.counter = 0
@@ -88,7 +90,9 @@ def mn_del_old_rbillbl():
 
         pass
 
-    queasy = get_cache (Queasy, {"key": [(eq, 191)]})
+    # queasy = get_cache (Queasy, {"key": [(eq, 191)]})
+    queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 191)).with_for_update().first()
 
     if queasy:
         queasy.number1 = 0

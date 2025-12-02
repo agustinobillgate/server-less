@@ -7,6 +7,8 @@
 # Rd, 13/11/2025
 # CM Push rate
 #--------------------------------------------
+# # Rd, 27/11/2025, with_for_update added
+#--------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -113,6 +115,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
     db_session = local_storage.db_session
     inp_str = inp_str.strip()
     createrate = True # default in OE is True
+    log_message = []
 
     def generate_output():
         nonlocal done, push_rate_list_data, curr_rate, curr_recid, curr_scode, curr_bezeich, temp_zikat, starttime, curr_date, ankunft, ci_date, co_date, datum, tokcounter, iftask, mestoken, mesvalue, grpcode, global_occ, splited_occ, q_recid, vhp_limited, do_it, exist, cat_flag, pushall, re_calculaterate, createrate, cm_gastno, counter, counter170, i, occ_room, end_date, max_occ, rm_occ, rm_ooo, room, maxroom, def_rate, w_day, wd_array, tax_included, serv, vat, strl, strll, loopi, loopj, currtype, frmtype, n, m, k, j, ratecode, zimkateg, waehrung, arrangement, queasy, kontline, res_line, htparam, guest, guest_pr, artikel, zimmer, reservation, segment
@@ -123,7 +126,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
         nonlocal dynarate_list, r_list, s_list, rate_list, push_rate_list, change_room, temp_list, grp_type, bratecode, t_zimkateg, t_waehrung, t_arrangement, t_queasy, t_queasy170, bqueasy, t_qsy18, t_qsy145, t_qsy152, q_curr, t_qsy171, t_qsy170, grtype, qsy, currqsy, kline, bqsy170, qsy170, qsy159, bresline
         nonlocal dynarate_list_data, r_list_data, s_list_data, rate_list_data, push_rate_list_data, change_room_data, grp_type_data, bratecode_data, t_zimkateg_data, t_waehrung_data, t_arrangement_data, t_queasy_data, t_queasy170_data, bqueasy_data, t_qsy18_data, t_qsy145_data, t_qsy152_data, q_curr_data, t_qsy171_data, t_qsy170_data, grtype_data
 
-        return {"done": done, "push-rate-list": push_rate_list_data}
+        return {"log": log_message, "pushall": pushall, "done": done, "push-rate-list": push_rate_list_data}
 
     def create_queasy170(q_date:date, q_zikatnr:int, q_pax:int, q_child:int, q_rmrate:Decimal, q_rcode:string, q_scode:string, q_currency:string):
 
@@ -594,6 +597,20 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
         # queasy = db_session.query(Queasy).filter(
         #          (Queasy.key == 164) & (Queasy._recid > curr_recid)).first()
 
+    # queasy = get_cache (Queasy, {"key": [(eq, 170)],"date1": [(ge, fdate),(le, tdate)]})
+    # while None != queasy:
+    for queasy in db_session.query(Queasy).filter(
+             (Queasy.key == 170) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate)).order_by(Queasy._recid).all():
+        t_qsy170 = T_qsy170()
+        t_qsy170_data.append(t_qsy170)
+
+        buffer_copy(queasy, t_qsy170)
+        t_qsy170.rec_id = queasy._recid
+
+        # curr_recid = queasy._recid
+        # queasy = db_session.query(Queasy).filter(
+        #          (Queasy.key == 170) & (Queasy.date1 >= fdate) & (Queasy.date1 <= tdate) & (Queasy._recid > curr_recid)).first()
+    
     adult = 2
     done = False
     maxroom = 0
@@ -752,7 +769,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
             #          (Queasy.key == 170) & (Queasy.betriebsnr == 0) & (Queasy._recid > curr_recid)).first()
 
     if pushall:
-
+        log_message.append("Pushing all rates for Betrieb: " + str(becode))
         currqsy = get_cache (Queasy, {"key": [(eq, 170)],"betriebsnr": [(eq, becode)]})
         while None != currqsy:
             db_session.delete(currqsy)
@@ -846,7 +863,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
                 #          (Queasy.key == 145) & (Queasy.date1 == tdate) & (Queasy._recid > curr_recid)).first()
 
     for r_list in query(r_list_data):
-        bqueasy = query(bqueasy_data, (lambda bqueasy: bqueasy.char1 == r_list.rcode), first=True)
+        bqueasy = query(bqueasy_data, (lambda bqueasy: bqueasy.char1 == r_list.rcode.strip()), first=True)
         if not bqueasy:
             continue
 
@@ -966,6 +983,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
 
     if pushall or start_counter == 0 or re_calculaterate or createrate:
         print("Creating Rate Push Entries:", pushall, start_counter, re_calculaterate, createrate)
+        log_message.append("Creating Rate Push Entries for Betrieb: " + str(becode))
         loopi = 0
         loopj = 0
 
@@ -982,6 +1000,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
 
         if createrate:
             print("Creating Rate Push for full date range:", fdate, " to ", tdate)
+            log_message.append("Creating Rate Push for full date range: " + str(fdate) + " to " + str(tdate))
             # t_qsy171 = query(t_qsy171_data, filters=(lambda t_qsy171: t_qsy171.char1 == "" and t_qsy171.date1 == tdate), first=True)
             t_qsy171_list = [    t_qsy171
                             for t_qsy171 in t_qsy171_data
@@ -989,12 +1008,14 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
                         ]
         else:
             print("Creating Rate Push for all dates in existing queue.")
+            log_message.append("Creating Rate Push for all dates in existing queue.")
             # t_qsy171 = query(t_qsy171_data, filters=(lambda t_qsy171: t_qsy171.char1 == ""), first=True)
             t_qsy171_list = [    t_qsy171
                             for t_qsy171 in t_qsy171_data
                             if t_qsy171.char1 == "" 
                         ]
         print("List q171:", len(t_qsy171_list))
+        log_message.append("Total Dates to process for Rate Push: " + str(len(t_qsy171_list)))
         for t_qsy171 in t_qsy171_list:
         # while None != t_qsy171:
             w_day = wd_array[get_weekday(t_qsy171.date1) - 1]
@@ -1229,6 +1250,7 @@ def if_vhp_bookeng_push_ratebl(inp_str:string, start_counter:int, pushpax:bool, 
             if rate_list.startperiode < fdate or rate_list.endperiode > tdate:
                 continue
             print("Processing rate list for Rcode: ", rate_list.rcode, " Startperiode: ", rate_list.startperiode, " Pax: ", rate_list.pax, " Child: ", rate_list.child)
+            log_message.append("Processing rate list for Rcode: " + str(rate_list.rcode) + " Startperiode: " + str(rate_list.startperiode) + " Pax: " + str(rate_list.pax) + " Child: " + str(rate_list.child))
             t_qsy170 = query(t_qsy170_data, filters=(lambda t_qsy170: t_qsy170.char1 == rate_list.rcode and t_qsy170.number1 == rate_list.zikatnr and t_qsy170.date1 == rate_list.startperiode and t_qsy170.number2 == rate_list.pax and t_qsy170.number3 == rate_list.child and t_qsy170.betriebsnr == becode), first=True)
 
             if t_qsy170 and t_qsy170.deci1 == rate_list.rmrate:

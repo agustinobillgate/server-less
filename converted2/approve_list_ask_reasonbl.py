@@ -30,7 +30,9 @@ def approve_list_ask_reasonbl(pvilanguage:int, trecid:int, user_init:string, rea
         return {"msg_str": msg_str}
 
 
-    queasy = get_cache (Queasy, {"_recid": [(eq, trecid)]})
+    # queasy = get_cache (Queasy, {"_recid": [(eq, trecid)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy._recid == trecid)).with_for_update().first()
 
     if queasy:
         qbuff = Queasy()

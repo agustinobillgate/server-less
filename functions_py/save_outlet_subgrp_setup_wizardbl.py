@@ -3,6 +3,7 @@
 # ==========================================
 # Rulita, 10-10-2025
 # Tiket ID : 8CF423 | Recompile Program
+# Rd, 28/11/2025, with_for_update added
 # ==========================================
 
 from functions.additional_functions import *
@@ -151,10 +152,11 @@ def save_outlet_subgrp_setup_wizardbl(input_list_data:[Input_list], wgrpdep_list
 
                 return
 
-            wgrpdep = get_cache (Wgrpdep, {"_recid": [(eq, wgrpdep_list.rec_id)]})
+            # wgrpdep = get_cache (Wgrpdep, {"_recid": [(eq, wgrpdep_list.rec_id)]})
+            wgrpdep = db_session.query(Wgrpdep).filter(
+                     (Wgrpdep._recid == wgrpdep_list.rec_id)).with_for_update().first()
 
             if wgrpdep:
-                pass
                 wgrpdep.bezeich = wgrpdep_list.bezeich
                 wgrpdep.zknr = wgrpdep_list.zknr
 
@@ -206,7 +208,9 @@ def save_outlet_subgrp_setup_wizardbl(input_list_data:[Input_list], wgrpdep_list
 
             for wgrpdep_list in query(wgrpdep_list_data, filters=(lambda wgrpdep_list: wgrpdep_list.rec_id > 0 and wgrpdep_list.isSelected)):
 
-                wgrpdep = get_cache (Wgrpdep, {"_recid": [(eq, wgrpdep_list.rec_id)]})
+                # wgrpdep = get_cache (Wgrpdep, {"_recid": [(eq, wgrpdep_list.rec_id)]})
+                wgrpdep = db_session.query(Wgrpdep).filter(
+                         (Wgrpdep._recid == wgrpdep_list.rec_id)).with_for_update().first()
 
                 if not wgrpdep:
                     output_list.msg_str = "Subgroup does not exists, delete not possible."

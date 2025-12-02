@@ -1,5 +1,11 @@
 #using conversion tools version: 1.0.0.117
 
+# ============================================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# - Fixing issue return generate_output() not correct position
+# ============================================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -32,8 +38,9 @@ def fa_chgpo_save_detail_webbl(s_order_data:[S_order], order_nr:string, credit_t
 
         return {}
 
-    fa_ordheader = get_cache (Fa_ordheader, {"order_nr": [(eq, order_nr)]})
-    
+    # fa_ordheader = get_cache (Fa_ordheader, {"order_nr": [(eq, order_nr)]})
+    fa_ordheader = db_session.query(Fa_ordheader).filter(
+             (Fa_ordheader.order_nr == order_nr)).with_for_update().first()
 
     if fa_ordheader:
         fa_ordheader.order_nr = order_nr
@@ -51,7 +58,8 @@ def fa_chgpo_save_detail_webbl(s_order_data:[S_order], order_nr:string, credit_t
         fa_ordheader.modified_time = get_current_time_in_seconds()
         pr_nr = fa_ordheader.pr_nr
     else:
-        return generate_output()
+        # Rulita, 27-11-2025 | Fixing issue return generate_output() not correct position
+        # return generate_output()
 
         if fa_ordheader.approved_1 == False and appr_1 :
             fa_ordheader.approved_1 = appr_1

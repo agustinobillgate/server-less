@@ -9,11 +9,16 @@
 # - fix python indentation
 # - fix run inv-ar.p to call function from i_inv_ar
 # -----------------------------------------
+# ============================
+# Rd, 24/11/2025, update last_count for counter update
+# ============================
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.i_inv_ar import *
 from models import Res_line, Queasy, Bill, Artikel, Counters, Htparam, Bill_line, Umsatz, Billjournal, Master, Mast_art
+from functions.next_counter_for_update import next_counter_for_update
+
 
 s_list_data, S_list = create_model(
     "S_list",
@@ -43,7 +48,8 @@ def sanitize_bill_line(b):
     return b
 
 
-def quick_post_create_billbl(s_list_data: list[S_list], pvilanguage: int, billart: int, curr_dept: int, amount: Decimal, double_currency: bool, foreign_rate: bool, user_init: string, voucher_nr: string):
+def quick_post_create_billbl(s_list_data: list[S_list], pvilanguage: int, billart: int, curr_dept: int, amount: Decimal, 
+                             double_currency: bool, foreign_rate: bool, user_init: string, voucher_nr: string):
 
     prepare_cache([Res_line, Bill, Artikel, Counters, Htparam, Bill_line, Umsatz, Billjournal, Master])
 
@@ -55,6 +61,9 @@ def quick_post_create_billbl(s_list_data: list[S_list], pvilanguage: int, billar
     s_list = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock = ""
+
 
     def generate_output():
         nonlocal msg_str, msg_str2, lvcarea, res_line, queasy, bill, artikel, counters, htparam, bill_line, umsatz, billjournal, master, mast_art
@@ -82,8 +91,12 @@ def quick_post_create_billbl(s_list_data: list[S_list], pvilanguage: int, billar
                     Queasy, {"key": [(eq, 329)], "number1": [(eq, res_line.resnr)]})
 
                 if queasy:
-                    bill = get_cache(
-                        Bill, {"resnr": [(eq, res_line.resnr)], "reslinnr": [(eq, res_line.reslinnr)], "zinr": [(eq, res_line.zinr)], "billnr": [(eq, 2)]})
+
+                    bill = db_session.query(Bill).filter(
+                        (Bill.resnr == res_line.resnr) &
+                        (Bill.reslinnr == res_line.reslinnr) &
+                        (Bill.zinr == res_line.zinr) &
+                        (Bill.billnr == 2)).first()
 
                     if bill:
                         if bill.flag == 1:
@@ -112,15 +125,21 @@ def quick_post_create_billbl(s_list_data: list[S_list], pvilanguage: int, billar
                 # end ITA: Program terkait feature service apartement
             s_list_data.remove(s_list)
 
+
     def update_bill():
+
         nonlocal msg_str, msg_str2, lvcarea, res_line, queasy, bill, artikel, counters, htparam, bill_line, umsatz, billjournal, master, mast_art
         nonlocal pvilanguage, billart, curr_dept, amount, double_currency, foreign_rate, user_init, voucher_nr
+
+
         nonlocal s_list
 
-        bil_flag: int = 0
-        master_flag: bool = False
-        bill_date: date = None
-        na_running: bool = False
+        bil_flag:int = 0
+        master_flag:bool = False
+        bill_date:date = None
+        na_running:bool = False
+
+        db_session.refresh(bill, with_for_update=True)
 
         artikel = get_cache(
             Artikel, {"artnr": [(eq, billart)], "departement": [(eq, curr_dept)]})
@@ -152,9 +171,12 @@ def quick_post_create_billbl(s_list_data: list[S_list], pvilanguage: int, billar
             bill.mwst[98] = bill.mwst[98] + s_list.f_betrag
 
         if bill.rechnr == 0:
-            counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
-            counters.counter = counters.counter + 1
-            bill.rechnr = counters.counter
+            # counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+            # counters.counter = counters.counter + 1
+            # bill.rechnr = counters.counter
+            last_count, error_lock = get_output(next_counter_for_update(3))
+            bill.rechnr = last_count
+            
 
         htparam = get_cache(Htparam, {"paramnr": [(eq, 253)]})
 
@@ -202,11 +224,10 @@ def quick_post_create_billbl(s_list_data: list[S_list], pvilanguage: int, billar
             except ValueError:
                 dept = None
         # umsatz = get_cache (Umsatz, {"artnr": [(eq, s_list.artnr)],"departement": [(eq, s_list.dept)],"datum": [(eq, bill_date)]})
-        umsatz = get_cache(Umsatz, {
-            "artnr": [(eq, s_list.artnr)],
-            "departement": [(eq, dept)],
-            "datum": [(eq, bill_date)]
-        })
+        umsatz = db_session.query(Umsatz).filter(
+            (Umsatz.artnr == s_list.artnr) & 
+            (Umsatz.departement == s_list.dept) & 
+            (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()

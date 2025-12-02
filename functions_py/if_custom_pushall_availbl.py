@@ -4,6 +4,8 @@
 # Rd, 17-July-25, ()"*") -> "*"
 # 12/11/2025 -> .lower() dihapus
 #-----------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-----------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -48,6 +50,8 @@ def if_custom_pushall_availbl(currcode:string, from_date:date, to_date:date, bec
 
 
     db_session = local_storage.db_session
+    inp_str = inp_str.strip()
+    currcode = currcode.strip()
 
     def generate_output():
         nonlocal done, incl_tentative, allotment, end_date, ci_date, date_110, curr_date, cat_flag, all_room, do_it, bedsetup, catnr, cm_gastno, i, rm_occ, rm_ooo, rm_allot, occ_room, queasy, kontline, htparam, guest, guest_pr, zimkateg, res_line, zimmer, reservation, segment, outorder
@@ -85,7 +89,8 @@ def if_custom_pushall_availbl(currcode:string, from_date:date, to_date:date, bec
                 if queasy:
                     rm_occ, rm_ooo, rm_allot = count_availability(queasy.date1, queasy.number1)
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                     if qsy:
                         qsy.number3 = rm_ooo
@@ -202,7 +207,8 @@ def if_custom_pushall_availbl(currcode:string, from_date:date, to_date:date, bec
 
                     if queasy.number2 != occ_room:
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                         if qsy:
                             qsy.number2 = occ_room
@@ -244,7 +250,8 @@ def if_custom_pushall_availbl(currcode:string, from_date:date, to_date:date, bec
             if queasy:
                 rm_occ, rm_ooo, rm_allot = count_availability(queasy.date1, queasy.number1)
 
-                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                 if qsy:
                     qsy.number3 = rm_ooo
@@ -361,7 +368,8 @@ def if_custom_pushall_availbl(currcode:string, from_date:date, to_date:date, bec
 
                 if queasy.number2 != occ_room:
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                     if qsy:
                         qsy.number2 = occ_room

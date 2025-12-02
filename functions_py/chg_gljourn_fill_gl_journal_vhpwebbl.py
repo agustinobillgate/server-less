@@ -1,8 +1,8 @@
 #using conversion tools version: 1.0.0.117
 #-----------------------------------------
 # Rd, 18/7/25
-# 
-#-----------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -38,7 +38,6 @@ def chg_gljourn_fill_gl_journal_vhpwebbl(jnr:int, user_init:string, t_bezeich:st
         nonlocal jnr, user_init, t_bezeich, t_refno
         nonlocal buffglhdr
 
-
         nonlocal b1_list, g_list, buffglhdr
         nonlocal b1_list_data
 
@@ -52,7 +51,10 @@ def chg_gljourn_fill_gl_journal_vhpwebbl(jnr:int, user_init:string, t_bezeich:st
             for gl_jouhdr in db_session.query(Gl_jouhdr).filter(
                      (Gl_jouhdr.jnr == jnr)).order_by(Gl_jouhdr._recid).all():
 
-                buffglhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, gl_jouhdr._recid)]})
+                # Rd, 24/11/2025, get gl_jouhdr dengan for update
+                # buffglhdr = get_cache (Gl_jouhdr, {"_recid": [(eq, gl_jouhdr._recid)]})
+                buffglhdr = db_session.query(Gl_jouhdr).filter(
+                             (Gl_jouhdr._recid == gl_jouhdr._recid)).with_for_update().first()
 
                 if buffglhdr:
                     pass
@@ -102,12 +104,16 @@ def chg_gljourn_fill_gl_journal_vhpwebbl(jnr:int, user_init:string, t_bezeich:st
                 remains =  to_decimal(remains) + to_decimal(gl_jouhdr.remain)
 
         elif g_list.flag == 2:
-
-            gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
+            # Rd, 24/11/2025, get gl_jouhdr dengan for update
+            # gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
+            gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+                         (Gl_jouhdr.jnr == jnr)).with_for_update().first()
 
             if gl_jouhdr:
-
-                gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.jou_recid)]})
+                # Rd, 24/11/2025, get gl_journal dengan for update
+                # gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.jou_recid)]})
+                gl_journal = db_session.query(Gl_journal).filter(
+                             (Gl_journal._recid == g_list.jou_recid)).with_for_update().first()
 
                 if gl_journal:
                     pass
@@ -157,12 +163,16 @@ def chg_gljourn_fill_gl_journal_vhpwebbl(jnr:int, user_init:string, t_bezeich:st
                     b1_list.tax_code = entry(1, gl_acct.bemerk, ";")
 
         elif g_list.flag == 3:
-
-            gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.b1_recid)]})
+            # Rd, 24/11/2025, get gl_journal dengan for update
+            # gl_journal = get_cache (Gl_journal, {"_recid": [(eq, g_list.b1_recid)]})
+            gl_journal = db_session.query(Gl_journal).filter(
+                         (Gl_journal._recid == g_list.b1_recid)).with_for_update().first()
 
             if gl_journal:
-
-                gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
+                # Rd, 24/11/2025, get gl_jouhdr dengan for update
+                # gl_jouhdr = get_cache (Gl_jouhdr, {"jnr": [(eq, jnr)]})
+                gl_jouhdr = db_session.query(Gl_jouhdr).filter(
+                             (Gl_jouhdr.jnr == jnr)).with_for_update().first()
 
                 if gl_jouhdr:
                     pass

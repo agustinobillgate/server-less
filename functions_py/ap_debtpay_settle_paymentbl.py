@@ -2,6 +2,7 @@
 #----------------------------------------
 # Rd, 1/8/2025
 # if available l_kredit1
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 #----------------------------------------
 
 from functions.additional_functions import *
@@ -9,6 +10,10 @@ import decimal
 from datetime import date
 from sqlalchemy import func
 from models import L_lieferant, L_kredit, Htparam, Bediener, Counters, Umsatz, Ap_journal, L_order
+
+from functions.next_counter_for_update import next_counter_for_update
+
+
 
 pay_list_list, Pay_list = create_model("Pay_list", {"dummy":str, "artnr":int, "bezeich":str, "proz":decimal, "betrag":decimal})
 age_list_list, Age_list = create_model("Age_list", {"selected":bool, "ap_recid":int, "counter":int, "docu_nr":str, "rechnr":int, "lief_nr":int, "lscheinnr":str, "supplier":str, "rgdatum":date, "rabatt":decimal, "rabattbetrag":decimal, "ziel":date, "netto":decimal, "user_init":str, "debt":decimal, "credit":decimal, "bemerk":str, "tot_debt":decimal, "rec_id":int, "resname":str, "comments":str, "fibukonto":str, "t_bezeich":str, "debt2":decimal, "recv_date":date})
@@ -23,6 +28,8 @@ def ap_debtpay_settle_paymentbl(pay_list_list:[Pay_list], age_list_list:[Age_lis
 
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
 
     def generate_output():
         nonlocal t_l_lieferant_list, l_lieferant, l_kredit, htparam, bediener, counters, umsatz, ap_journal, l_order
@@ -95,17 +102,19 @@ def ap_debtpay_settle_paymentbl(pay_list_list:[Pay_list], age_list_list:[Age_lis
 
             if count == 0:
 
-                counters = db_session.query(Counters).filter(
-                         (Counters.counter_no == 24)).first()
+                # counters = db_session.query(Counters).filter(
+                #          (Counters.counter_no == 24)).first()
 
-                if not counters:
-                    counters = Counters()
-                    db_session.add(counters)
+                # if not counters:
+                #     counters = Counters()
+                #     db_session.add(counters)
 
-                    counters.counter_no = 24
-                    counters.counter_bez = "Accounts Payable"
-                counters.counter = counters.counter + 1
-                l_kredit1.counter = counters.counter
+                #     counters.counter_no = 24
+                #     counters.counter_bez = "Accounts Payable"
+                # counters.counter = counters.counter + 1
+                # l_kredit1.counter = counters.counter
+                last_count, error_lock = get_output(next_counter_for_update(24))
+                l_kredit1.counter = last_count
                 count = l_kredit1.counter
                 pass
 

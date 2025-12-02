@@ -1,11 +1,15 @@
 #using conversion tools version: 1.0.0.117
-
+# ============================
+# Rd, 24/11/2025, update last_count for counter update
+# ============================
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.argt_betrag import argt_betrag
 from functions.i_master_taxserv import *
 from models import Htparam, Res_line, Waehrung, Arrangement, Artikel, Bill, Counters, Bill_line, Umsatz, Billjournal, Argt_line
+from functions.next_counter_for_update import next_counter_for_update
+
 
 def post_dayuse(resnr:int, reslinnr:int):
 
@@ -37,6 +41,8 @@ def post_dayuse(resnr:int, reslinnr:int):
     htparam = res_line = waehrung = arrangement = artikel = bill = counters = bill_line = umsatz = billjournal = argt_line = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock = ""
 
     def generate_output():
         nonlocal user_init, master_flag, gastnrmember, amount, amount_foreign, description, bill_date, price_decimal, exchg_rate, ex_rate, double_currency, foreign_rate, billart, qty, curr_room, cancel_str, master_str, master_rechnr, curr_department, price, currzeit, i, n, htparam, res_line, waehrung, arrangement, artikel, bill, counters, bill_line, umsatz, billjournal, argt_line
@@ -396,9 +402,12 @@ def post_dayuse(resnr:int, reslinnr:int):
 
         if bill.rechnr == 0:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+            counters = db_session.query(Counters).filter(
+                     (Counters.counter_no == 3)).with_for_update().first()
             counters.counter = counters.counter + 1
             bill.rechnr = counters.counter
+            
             pass
         bill_line = Bill_line()
         db_session.add(bill_line)
@@ -424,7 +433,9 @@ def post_dayuse(resnr:int, reslinnr:int):
             bill_line.epreis =  to_decimal(amount)
         pass
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()

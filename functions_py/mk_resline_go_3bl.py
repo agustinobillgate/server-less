@@ -3,6 +3,8 @@
 # Rd, 31/10/2025
 # Ticket:13B1AB
 #------------------------------------------
+# Rd, 24/11/2025, update counter dengan next_counter_for_update
+#------------------------------------------
 
 from functions.additional_functions import *
 from decimal import Decimal
@@ -16,11 +18,27 @@ from functions.create_historybl import create_historybl
 from functions.ratecode_rate import ratecode_rate
 from functions.res_dyna_rmrate import res_dyna_rmrate
 from models import Res_line, Bill, Queasy, Htparam, Nation, Arrangement, Reservation, Bediener, Outorder, Zimmer, Mealcoup, Reslin_queasy, Resplan, Zimkateg, Messages, Waehrung, Guest_pr, Guest, Res_history, Master, Brief, Segment, Sourccod, Counters, Mc_guest, Interface, Guestseg
+from functions.next_counter_for_update import next_counter_for_update   
+from sqlalchemy.orm import flag_modified
+
 
 reslin_list_data, Reslin_list = create_model_like(Res_line)
 res_dynarate_data, Res_dynarate = create_model("Res_dynarate", {"date1":date, "date2":date, "rate":Decimal, "rmcat":string, "argt":string, "prcode":string, "rcode":string, "markno":int, "setup":int, "adult":int, "child":int})
 
-def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:int, accompany_tmpnr3:int, accompany_gastnr:int, accompany_gastnr2:int, accompany_gastnr3:int, comchild:int, rm_bcol:int, marknr:int, bill_instruct:int, restype:int, restype0:int, restype1:int, contact_nr:int, cutoff_days:int, segm__purcode:int, deposit:Decimal, limitdate:date, wechsel_str:string, origcontcode:string, groupname:string, guestname:string, main_voucher:string, resline_comment:string, mainres_comment:string, purpose_svalue:string, letter_svalue:string, segm_svalue:string, source_svalue:string, res_mode:string, prev_zinr:string, memo_zinr:string, voucherno:string, contcode:string, child_age:string, flight1:string, flight2:string, eta:string, etd:string, user_init:string, currency_changed:bool, fixed_rate:bool, grpflag:bool, memozinr_readonly:bool, group_enable:bool, init_fixrate:bool, oral_flag:bool, pickup_flag:bool, drop_flag:bool, ebdisc_flag:bool, kbdisc_flag:bool, restricted:bool, sharer:bool, coder_exist:bool, gname_chged:bool, earlyci:bool, gdpr_flag:bool, mark_flag:bool, news_flag:bool, temp_segment:string, repeat_charge:bool, every_month:int, repeat_amount:Decimal, start_date:date, end_date:date, reslin_list_data:[Reslin_list], res_dynarate_data:[Res_dynarate], tot_qty:int):
+def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:int, accompany_tmpnr3:int, 
+                      accompany_gastnr:int, accompany_gastnr2:int, accompany_gastnr3:int, comchild:int, rm_bcol:int, 
+                      marknr:int, bill_instruct:int, restype:int, restype0:int, restype1:int, contact_nr:int, 
+                      cutoff_days:int, segm__purcode:int, deposit:Decimal, limitdate:date, wechsel_str:string, 
+                      origcontcode:string, groupname:string, guestname:string, main_voucher:string, 
+                      resline_comment:string, mainres_comment:string, purpose_svalue:string, letter_svalue:string, 
+                      segm_svalue:string, source_svalue:string, res_mode:string, prev_zinr:string, memo_zinr:string, 
+                      voucherno:string, contcode:string, child_age:string, flight1:string, flight2:string, eta:string, 
+                      etd:string, user_init:string, currency_changed:bool, fixed_rate:bool, grpflag:bool, 
+                      memozinr_readonly:bool, group_enable:bool, init_fixrate:bool, oral_flag:bool, pickup_flag:bool, 
+                      drop_flag:bool, ebdisc_flag:bool, kbdisc_flag:bool, restricted:bool, sharer:bool, coder_exist:bool, 
+                      gname_chged:bool, earlyci:bool, gdpr_flag:bool, mark_flag:bool, news_flag:bool, temp_segment:string, 
+                      repeat_charge:bool, every_month:int, repeat_amount:Decimal, start_date:date, end_date:date, 
+                      reslin_list_data:[Reslin_list], res_dynarate_data:[Res_dynarate], tot_qty:int):
 
     prepare_cache ([Queasy, Htparam, Nation, Arrangement, Reservation, Bediener, Outorder, Zimmer, Mealcoup, Resplan, Zimkateg, Waehrung, Guest_pr, Guest, Res_history, Master, Brief, Segment, Sourccod, Counters, Interface, Guestseg])
 
@@ -82,6 +100,9 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
     memo_zinr = memo_zinr.strip()
     prev_zinr = prev_zinr.strip()
     wechsel_str = wechsel_str.strip()
+    last_count = 0
+    error_lock = ""
+
 
     def generate_output():
         nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
@@ -141,7 +162,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         # pqueasy = get_cache (Queasy, {"key": [(eq, 329)],"number1": [(eq, res_line.resnr)],"number2": [(eq, res_line.reslinnr)],"logi3": [(eq, False)]})
         pqueasy = db_session.query(Queasy).filter(
             (Queasy.key == 329) & (Queasy.number1 == res_line.resnr) & (Queasy.number2 == res_line.reslinnr) & (Queasy.logi3 == False)
-        ).first()
+        ).with_for_update().first()
 
         if not pqueasy:
 
@@ -270,7 +291,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         counter:int = 0
 
         for reslin_queasy in db_session.query(Reslin_queasy).filter(
-                 (Reslin_queasy.key == ("arrangement")) & (Reslin_queasy.resnr == reslin_list.resnr) & (Reslin_queasy.reslinnr == reslin_list.reslinnr) & (Reslin_queasy.date1 >= ci_date)).order_by(Reslin_queasy._recid).all():
+                 (Reslin_queasy.key == ("arrangement")) & (Reslin_queasy.resnr == reslin_list.resnr) & 
+                 (Reslin_queasy.reslinnr == reslin_list.reslinnr) & (Reslin_queasy.date1 >= ci_date)).order_by(Reslin_queasy._recid).with_for_update().all():
             db_session.delete(reslin_queasy)
         calc_periode()
 
@@ -428,7 +450,6 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, start_date, end_date, tot_qty
         nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
 
-
         nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
         nonlocal nation_list_data, periode_list_data, add_list_data
 
@@ -463,14 +484,15 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                 if resplan:
 
-                    rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
-
+                    # rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                    rpbuff = db_session.query(Rpbuff).filter(
+                             (Rpbuff._recid == resplan._recid)).with_for_update().first()
                     if rpbuff:
                         rpbuff.anzzim[i - 1] = rpbuff.anzzim[i - 1] - rline.zimmeranz
                         pass
                         pass
                 curr_date = curr_date + timedelta(days=1)
-
+            flag_modified(rpbuff, "anzzim")
 
     def rmchg_ressharer(act_zinr:string, new_zinr:string, main_nr:int):
 
@@ -491,7 +513,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         Rpbuff =  create_buffer("Rpbuff",Resplan)
 
         res_line2 = db_session.query(Res_line2).filter(
-                 (Res_line2.resnr == reslin_list.resnr) & (Res_line2.kontakt_nr == main_nr) & (Res_line2.resstatus == 11) & (((Res_line2.zinr != "") & (Res_line2.zinr == (act_zinr))) | (Res_line2.zinr == ""))).first()
+                 (Res_line2.resnr == reslin_list.resnr) & (Res_line2.kontakt_nr == main_nr) & 
+                 (Res_line2.resstatus == 11) & (((Res_line2.zinr != "") & (Res_line2.zinr == (act_zinr))) | (Res_line2.zinr == ""))).with_for_update().first()
         while None != res_line2:
 
             if res_line2.zinr != "" and reslin_list.zikatnr != res_line2.zikatnr:
@@ -501,7 +524,9 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                     if resplan:
 
-                        rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                        # rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                        rpbuff = db_session.query(Rpbuff).filter(
+                                 (Rpbuff._recid == resplan._recid)).with_for_update().first()
 
                         if rpbuff:
                             rpbuff.anzzim[10] = rpbuff.anzzim[10] - 1
@@ -524,10 +549,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                         rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
                         rpbuff.anzzim[10] = rpbuff.anzzim[10] + 1
 
-
-                        pass
-                        pass
-
+            flag_modified(rpbuff, "anzzim")
             zimmer = get_cache (Zimmer, {"zinr": [(eq, new_zinr)]})
 
             rline2 = db_session.query(Rline2).filter(
@@ -542,7 +564,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
             curr_recid = res_line2._recid
             res_line2 = db_session.query(Res_line2).filter(
-                     (Res_line2.resnr == reslin_list.resnr) & (Res_line2.kontakt_nr == main_nr) & (Res_line2.resstatus == 11) & (((Res_line2.zinr != "") & (Res_line2.zinr == (act_zinr))) | (Res_line2.zinr == "")) & (Res_line2._recid > curr_recid)).first()
+                     (Res_line2.resnr == reslin_list.resnr) & (Res_line2.kontakt_nr == main_nr) & (Res_line2.resstatus == 11) & 
+                     (((Res_line2.zinr != "") & (Res_line2.zinr == (act_zinr))) | (Res_line2.zinr == "")) & (Res_line2._recid > curr_recid)).with_for_update().first()
 
 
     def rmchg_sharer(act_zinr:string, new_zinr:string):
@@ -591,7 +614,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         while None != messages:
 
             mbuff = db_session.query(Mbuff).filter(
-                     (Mbuff._recid == messages._recid)).first()
+                     (Mbuff._recid == messages._recid)).with_for_update().first()
             mbuff.zinr = new_zinr
             pass
             pass
@@ -609,7 +632,9 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if res_line.resstatus == 6 and res_recid1 == 0:
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, act_zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, act_zinr)]})
+            zimmer = db_session.query(Zimmer).filter(
+                     (Zimmer.zinr == (act_zinr))).with_for_update().first()
 
             if zimmer:
                 pass
@@ -633,7 +658,9 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                         if resplan:
 
-                            rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                            # rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                            rpbuff = db_session.query(Rpbuff).filter(
+                                     (Rpbuff._recid == resplan._recid)).with_for_update().first()
                             rpbuff.anzzim[12] = rpbuff.anzzim[12] - 1
                             pass
                             pass
@@ -650,24 +677,26 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                         else:
 
-                            rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                            # rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                            rpbuff = db_session.query(Rpbuff).filter(
+                                     (Rpbuff._recid == resplan._recid)).with_for_update().first()
                         rpbuff.anzzim[12] = rpbuff.anzzim[12] + 1
 
-
-                        pass
-                        pass
+                    flag_modified(rpbuff, "anzzim")
+                    pass
+                    pass
 
                 for bill in db_session.query(Bill).filter(
                              (Bill.resnr == reslin_list.resnr) & (Bill.parent_nr == res_line2.reslinnr)).order_by(Bill._recid).all():
 
                     bbuff = db_session.query(Bbuff).filter(
-                                 (Bbuff._recid == bill._recid)).first()
+                                 (Bbuff._recid == bill._recid)).with_for_update().first()
                     bbuff.zinr = new_zinr
                     pass
                     pass
 
                 rline2 = db_session.query(Rline2).filter(
-                             (Rline2._recid == res_line2._recid)).first()
+                             (Rline2._recid == res_line2._recid)).with_for_update().first()
                 rline2.zinr = new_zinr
                 rline2.zikatnr = new_zkat.zikatnr
                 rline2.setup = zimmer.setup
@@ -685,7 +714,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
             while None != res_line2:
 
                 rline2 = db_session.query(Rline2).filter(
-                                 (Rline2._recid == res_line2._recid)).first()
+                                 (Rline2._recid == res_line2._recid)).with_for_update().first()
                 rline2.zinr = new_zinr
                 rline2.zikatnr = new_zkat.zikatnr
                 rline2.setup = zimmer.setup
@@ -745,7 +774,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                 bill.datum = ci_date
 
                 resline = db_session.query(Resline).filter(
-                         (Resline._recid == res_line._recid)).first()
+                         (Resline._recid == res_line._recid)).with_for_update().first()
 
                 if resline:
                     pass
@@ -763,13 +792,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                      (Bill.resnr == res_line.resnr) & (Bill.parent_nr == res_line.reslinnr) & (Bill.flag == 0)).order_by(Bill._recid).all():
 
                 bbuff = db_session.query(Bbuff).filter(
-                         (Bbuff._recid == bill._recid)).first()
+                         (Bbuff._recid == bill._recid)).with_for_update().first()
                 bbuff.zinr = new_zinr
                 pass
                 pass
 
                 resline = db_session.query(Resline).filter(
-                         (Resline.resnr == bill.resnr) & (Resline.reslinnr == bill.reslinnr)).first()
+                         (Resline.resnr == bill.resnr) & (Resline.reslinnr == bill.reslinnr)).with_for_update().first()
 
                 if resline.resstatus == 12:
                     pass
@@ -782,13 +811,13 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                          (Bill.resnr == res_line.resnr) & (Bill.parent_nr == res_line.reslinnr) & (Bill.flag == 1)).order_by(Bill._recid).all():
 
                     bbuff = db_session.query(Bbuff).filter(
-                             (Bbuff._recid == bill._recid)).first()
+                             (Bbuff._recid == bill._recid)).with_for_update().first()
                     bbuff.zinr = new_zinr
                     pass
                     pass
 
                     resline = db_session.query(Resline).filter(
-                             (Resline.resnr == bill.resnr) & (Resline.reslinnr == bill.reslinnr)).first()
+                             (Resline.resnr == bill.resnr) & (Resline.reslinnr == bill.reslinnr)).with_for_update().first()
 
                     if resline.resstatus == 12:
                         pass
@@ -1060,12 +1089,12 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                 else:
 
-                    rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                    # rpbuff = get_cache (Resplan, {"_recid": [(eq, resplan._recid)]})
+                    rpbuff = db_session.query(Rpbuff).filter(
+                             (Rpbuff._recid == resplan._recid)).with_for_update().first()
                     rpbuff.anzzim[i - 1] = rpbuff.anzzim[i - 1] + rline.zimmeranz
 
-
-                    pass
-                    pass
+            flag_modified(rpbuff, "anzzim")
 
 
     def update_mainres():
@@ -1098,7 +1127,9 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         rgast = get_cache (Guest, {"gastnr": [(eq, reslin_list.gastnr)]})
 
-        master = get_cache (Master, {"resnr": [(eq, reslin_list.resnr)]})
+        # master = get_cache (Master, {"resnr": [(eq, reslin_list.resnr)]})
+        master = db_session.query(Master).filter(
+                 (Master.resnr == reslin_list.resnr)).with_for_update().first()
 
         if master and master.active:
             reservation.verstat = 1
@@ -1180,7 +1211,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         if reservation.grpflag:
 
             rline = db_session.query(Rline).filter(
-                     (Rline.resnr == reservation.resnr)).first()
+                     (Rline.resnr == reservation.resnr)).with_for_update().first()
             while None != rline:
                 pass
                 rline.grpflag = True
@@ -1188,7 +1219,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                 curr_recid = rline._recid
                 rline = db_session.query(Rline).filter(
-                         (Rline.resnr == reservation.resnr) & (Rline._recid > curr_recid)).first()
+                         (Rline.resnr == reservation.resnr) & (Rline._recid > curr_recid)).with_for_update().first()
 
         if master:
             pass
@@ -1226,13 +1257,16 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                         bill.rechnr = master.rechnr
                     else:
 
-                        counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                        # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
+                        counters = db_session.query(Counters).filter(
+                                 (Counters.counter_no == 3)).with_for_update().first()
+
                         counters.counter = counters.counter + 1
+                       
                         bill.rechnr = counters.counter
-                        pass
-                        pass
                         master.rechnr = bill.rechnr
                         pass
+
                 bill.gastnr = reslin_list.gastnr
                 bill.name = rgast.name
                 bill.segmentcode = reservation.segmentcode
@@ -1241,7 +1275,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                 pass
 
                 buff_bill = db_session.query(Buff_bill).filter(
-                         (Buff_bill.rechnr == bill.rechnr) & (Buff_bill.resnr == 0) & (Buff_bill.reslinnr == 1) & (Buff_bill.billtyp != 2)).first()
+                         (Buff_bill.rechnr == bill.rechnr) & (Buff_bill.resnr == 0) & (Buff_bill.reslinnr == 1) & (Buff_bill.billtyp != 2)).with_for_update().first()
 
                 if buff_bill:
                     pass
@@ -1501,7 +1535,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         while None != rline:
 
             resline = db_session.query(Resline).filter(
-                     (Resline._recid == rline._recid)).first()
+                     (Resline._recid == rline._recid)).with_for_update().first()
             resline.gastnrpay = reslin_list.gastnrpay
             resline.ankunft = reslin_list.ankunft
             resline.abreise = reslin_list.abreise
@@ -1762,7 +1796,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                 if not matches(resline.zimmer_wunsch,r"*SEGM_PUR*"):
 
                     rline = db_session.query(Rline).filter(
-                             (Rline._recid == resline._recid)).first()
+                             (Rline._recid == resline._recid)).with_for_update().first()
 
                     if rline:
                         rline.zimmer_wunsch = rline.zimmer_wunsch +\
@@ -1896,7 +1930,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
             queasy = get_cache (Queasy, {"key": [(eq, 24)],"char1": [(eq, res_line.zinr)]})
             while None != queasy:
 
-                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
                 qsy.char1 = reslin_list.zinr
                 pass
 
@@ -1909,7 +1944,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
             if not resline:
 
-                zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+                zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == res_line.zinr).with_for_update().first()
                 zimmer.zistatus = 2
 
 
@@ -1949,7 +1985,9 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if res_line.gastnrpay != reslin_list.gastnrpay and res_line.active_flag == 1:
 
-            bill = get_cache (Bill, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"zinr": [(eq, res_line.zinr)]})
+            # bill = get_cache (Bill, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)],"zinr": [(eq, res_line.zinr)]})
+            bill = db_session.query(Bill).filter(
+                     (Bill.resnr == res_line.resnr) & (Bill.reslinnr == res_line.reslinnr) & (Bill.zinr == res_line.zinr)).with_for_update().first()
 
             if bill:
                 pass
@@ -2023,7 +2061,7 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
             while None != resline:
 
                 rline = db_session.query(Rline).filter(
-                         (Rline._recid == resline._recid)).first()
+                         (Rline._recid == resline._recid)).with_for_update().first()
 
                 if rline:
                     rline.code = res_line.code
@@ -2224,8 +2262,6 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                 if rmrate != None and rmrate != reslin_list.zipreis:
                     dyna_rmrate =  to_decimal(rmrate)
-
-
                     msg_str = msg_str + chr_unicode(2) + "&W" + translateExtended ("Room Rate has been updated.", lvcarea, "") + chr_unicode(2)
                     reslin_list.zipreis =  to_decimal(rmrate)
 
@@ -2268,8 +2304,6 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
         nonlocal update_kcard, msg_str, waehrungnr, reserve_dec, dyna_rmrate, add_list_data, accompany_tmpnr, ci_date, dynarate_created, vipnr1, vipnr2, vipnr3, vipnr4, vipnr5, vipnr6, vipnr7, vipnr8, vipnr9, max_resline, ind_gastnr, wig_gastnr, source_changed, priscilla_active, avail_gdpr, curr_nat, list_region, list_nat, loopi, avail_mark, avail_news, lvcarea, move_str, res_line, bill, queasy, htparam, nation, arrangement, reservation, bediener, outorder, zimmer, mealcoup, reslin_queasy, resplan, zimkateg, messages, waehrung, guest_pr, guest, res_history, master, brief, segment, sourccod, counters, mc_guest, interface, guestseg
         nonlocal pvilanguage, accompany_tmpnr1, accompany_tmpnr2, accompany_tmpnr3, accompany_gastnr, accompany_gastnr2, accompany_gastnr3, comchild, rm_bcol, marknr, bill_instruct, restype, restype0, restype1, contact_nr, cutoff_days, segm__purcode, deposit, limitdate, wechsel_str, origcontcode, groupname, guestname, main_voucher, resline_comment, mainres_comment, purpose_svalue, letter_svalue, segm_svalue, source_svalue, res_mode, prev_zinr, memo_zinr, voucherno, contcode, child_age, flight1, flight2, eta, etd, user_init, currency_changed, fixed_rate, grpflag, memozinr_readonly, group_enable, init_fixrate, oral_flag, pickup_flag, drop_flag, ebdisc_flag, kbdisc_flag, restricted, sharer, coder_exist, gname_chged, earlyci, gdpr_flag, mark_flag, news_flag, temp_segment, repeat_charge, every_month, repeat_amount, end_date, tot_qty
         nonlocal resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
-
-
         nonlocal res_dynarate, reslin_list, nation_list, periode_list, add_list, resline, bbuff, buff_bill, bqueasy, pqueasy, tqueasy, mqueasy
         nonlocal nation_list_data, periode_list_data, add_list_data
 
@@ -2340,7 +2374,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                     if qsy:
                         qsy.logi2 = True
@@ -2353,7 +2388,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                         if qsy:
                             qsy.logi2 = True
@@ -2370,7 +2406,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                 if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                    qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                    qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                     if qsy:
                         qsy.logi2 = True
@@ -2383,7 +2420,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                         if qsy:
                             qsy.logi2 = True
@@ -2422,7 +2460,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                         if qsy:
                             qsy.logi2 = True
@@ -2435,7 +2474,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                             if qsy:
                                 qsy.logi2 = True
@@ -2475,7 +2515,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                         if qsy:
                             qsy.logi2 = True
@@ -2488,7 +2529,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                             if qsy:
                                 qsy.logi2 = True
@@ -2522,7 +2564,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                             if qsy:
                                 qsy.logi2 = True
@@ -2535,7 +2578,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                             if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                                # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                                qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                                 if qsy:
                                     qsy.logi2 = True
@@ -2549,7 +2593,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                             if qsy:
                                 qsy.logi2 = True
@@ -2562,7 +2607,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                             if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                                # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                                qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                                 if qsy:
                                     qsy.logi2 = True
@@ -2596,7 +2642,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                             if qsy:
                                 qsy.logi2 = True
@@ -2609,7 +2656,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                             if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                                # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                                qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                                 if qsy:
                                     qsy.logi2 = True
@@ -2623,7 +2671,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                             if qsy:
                                 qsy.logi2 = True
@@ -2636,7 +2685,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                             if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                                qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                                # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                                qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                                 if qsy:
                                     qsy.logi2 = True
@@ -2673,7 +2723,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                         if qsy:
                             qsy.logi2 = True
@@ -2686,7 +2737,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                             if qsy:
                                 qsy.logi2 = True
@@ -2703,7 +2755,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                     if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                        qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                        qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                         if qsy:
                             qsy.logi2 = True
@@ -2716,7 +2769,8 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
                         if queasy and queasy.logi1 == False and queasy.logi2 == False:
 
-                            qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            # qsy = get_cache (Queasy, {"_recid": [(eq, queasy._recid)]})
+                            qsy = db_session.query(Queasy).filter(Queasy._recid == queasy._recid).with_for_update().first()
 
                             if qsy:
                                 qsy.logi2 = True
@@ -2906,7 +2960,9 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
     if rm_bcol != 15 and reslin_list.ankunft != res_line.ankunft and reslin_list.resstatus == 1:
 
-        outorder = get_cache (Outorder, {"zinr": [(eq, reslin_list.zinr)],"betriebsnr": [(eq, reslin_list.resnr)]})
+        # outorder = get_cache (Outorder, {"zinr": [(eq, reslin_list.zinr)],"betriebsnr": [(eq, reslin_list.resnr)]})
+        outorder = db_session.query(Outorder).filter(
+                 (Outorder.zinr == reslin_list.zinr) & (Outorder.betriebsnr == reslin_list.resnr)).with_for_update().first()
 
         if outorder:
             pass
@@ -2922,7 +2978,9 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if res_line.abreise == ci_date and reslin_list.abreise > res_line.abreise and res_line.zinr == reslin_list.zinr:
 
-            zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+            # zimmer = get_cache (Zimmer, {"zinr": [(eq, res_line.zinr)]})
+            zimmer = db_session.query(Zimmer).filter(
+                     (Zimmer.zinr == res_line.zinr)).with_for_update().first()
 
             if zimmer and zimmer.zistatus == 3:
                 pass
@@ -2986,7 +3044,9 @@ def mk_resline_go_3bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
 
         if not resline:
 
-            mealcoup = get_cache (Mealcoup, {"zinr": [(eq, prev_zinr)],"activeflag": [(eq, True)]})
+            # mealcoup = get_cache (Mealcoup, {"zinr": [(eq, prev_zinr)],"activeflag": [(eq, True)]})
+            mealcoup = db_session.query(Mealcoup).filter(
+                     (Mealcoup.zinr == (prev_zinr)) & (Mealcoup.activeflag == True)).with_for_update().first()
 
             if mealcoup:
                 mealcoup.zinr = res_line.zinr

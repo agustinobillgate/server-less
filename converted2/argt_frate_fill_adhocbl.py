@@ -42,7 +42,10 @@ def argt_frate_fill_adhocbl(pvilanguage:int, adhoc_code:string, argtnr:int, resn
         nonlocal adhoc, argt_list
         nonlocal argt_list_data
 
-        reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"resnr": [(eq, resnr)],"number2": [(eq, argtnr)],"reslinnr": [(eq, reslinnr)]})
+        # reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "fargt-line")],"char1": [(eq, "")],"resnr": [(eq, resnr)],"number2": [(eq, argtnr)],"reslinnr": [(eq, reslinnr)]})
+        reslin_queasy = db_session.query(Reslin_queasy).filter(
+                 (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & 
+                 (Reslin_queasy.resnr == resnr) & (Reslin_queasy.number2 == argtnr) & (Reslin_queasy.reslinnr == reslinnr)).with_for_update().first()
         while None != reslin_queasy:
             pass
             db_session.delete(reslin_queasy)
@@ -50,7 +53,9 @@ def argt_frate_fill_adhocbl(pvilanguage:int, adhoc_code:string, argtnr:int, resn
 
             curr_recid = reslin_queasy._recid
             reslin_queasy = db_session.query(Reslin_queasy).filter(
-                     (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & (Reslin_queasy.resnr == resnr) & (Reslin_queasy.number2 == argtnr) & (Reslin_queasy.reslinnr == reslinnr) & (Reslin_queasy._recid > curr_recid)).first()
+                     (Reslin_queasy.key == ("fargt-line").lower()) & (Reslin_queasy.char1 == "") & 
+                     (Reslin_queasy.resnr == resnr) & (Reslin_queasy.number2 == argtnr) & (Reslin_queasy.reslinnr == reslinnr) & 
+                     (Reslin_queasy._recid > curr_recid)).with_for_update().first()
 
         for adhoc in query(adhoc_data, filters=(lambda adhoc: adhoc.acode.lower()  == (adhoc_code).lower())):
             fill_adhoc_argt()

@@ -6,6 +6,9 @@
                     - fix var declaration
                     - fix spacing on long string
 """
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Artikel, Queasy, Res_history
@@ -115,11 +118,14 @@ def write_artikel_1_webbl(input_list_data:[Input_list], t_artikel_data:[T_artike
                 res_history.aenderung = res_history.aenderung + " Chart of Account " + to_string(artikel.fibukonto) + " to : " + to_string(t_artikel.fibukonto) + " , "
             buffer_copy(t_artikel, artikel)
 
-            queasy = get_cache (Queasy, {
-                "key": [(eq, 266)],
-                "number1": [(eq, t_artikel.departement)],
-                "number2": [(eq, t_artikel.artnr)]})
-
+            # queasy = get_cache (Queasy, {
+            #     "key": [(eq, 266)],
+            #     "number1": [(eq, t_artikel.departement)],
+            #     "number2": [(eq, t_artikel.artnr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 266) &
+                     (Queasy.number1 == t_artikel.departement) &
+                     (Queasy.number2 == t_artikel.artnr)).with_for_update().first()
             if not queasy:
                 queasy = Queasy()
 

@@ -1,5 +1,10 @@
 #using conversion tools version: 1.0.0.117
 
+# ==========================================
+# Rulita, 26-11-2025
+# - Added with_for_update all query 
+# ==========================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -587,7 +592,7 @@ def rmcat_segment_webbl(pvilanguage:int, cardtype:int, to_date:date, f_date:date
         sty_logis =  to_decimal(sty_logis) + to_decimal(s_list.y_logis)
         sty_avrgrate =  to_decimal(sty_avrgrate) + to_decimal(s_list.y_avrgrate)
 
-    for queasy in db_session.query(Queasy).filter((Queasy.key == 285) & (Queasy.number1 == 1)).order_by(Queasy._recid).all():
+    for queasy in db_session.query(Queasy).filter((Queasy.key == 285) & (Queasy.number1 == 1)).order_by(Queasy._recid).with_for_update().all():
 
         tqueasy = db_session.query(Tqueasy).filter(
                  (Tqueasy._recid == queasy._recid)).first()
@@ -595,12 +600,12 @@ def rmcat_segment_webbl(pvilanguage:int, cardtype:int, to_date:date, f_date:date
         pass
 
     bqueasy = db_session.query(Bqueasy).filter(
-             (Bqueasy.key == 285) & (Bqueasy.char1 == ("Guest Segment By room Type").lower())).first()
+             (Bqueasy.key == 285) & (Bqueasy.char1 == ("Guest Segment By room Type").lower())).with_for_update().first()
 
     if bqueasy:
         pass
         bqueasy.number1 = 1
-
+        db_session.refresh(bqueasy, with_for_update=True)
         pass
         pass
     elif not bqueasy:
@@ -653,12 +658,12 @@ def rmcat_segment_webbl(pvilanguage:int, cardtype:int, to_date:date, f_date:date
                     to_string(rmcat_segm_list.segm_code)
 
     bqueasy = db_session.query(Bqueasy).filter(
-             (Bqueasy.key == 285) & (Bqueasy.char1 == ("Guest Segment By room Type").lower())).first()
+             (Bqueasy.key == 285) & (Bqueasy.char1 == ("Guest Segment By room Type").lower())).with_for_update().first()
 
     if bqueasy:
         pass
         bqueasy.number1 = 0
-
+        db_session.refresh(bqueasy, with_for_update=True)
         pass
         pass
 

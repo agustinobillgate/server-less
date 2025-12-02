@@ -6,6 +6,9 @@
                     - fix closing braket on timedelta(days=1)
                     - using f"string"
 """
+#----------------------------------------
+# Rd, 26/11/2025, Update with_for_update
+#----------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -118,8 +121,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -171,8 +176,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -229,8 +236,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -342,8 +351,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -394,8 +405,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -452,8 +465,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -554,8 +569,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -625,8 +642,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -681,8 +700,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -741,8 +762,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                     db_session.add(billjournal)
 
-                    umsatz = get_cache(
-                        Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                    # umsatz = get_cache(
+                    #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                    umsatz = db_session.query(Umsatz).filter(
+                        (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                     if not umsatz:
                         umsatz = Umsatz()
@@ -840,8 +863,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                     db_session.add(billjournal)
 
-                    umsatz = get_cache(
-                        Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                    # umsatz = get_cache(
+                    #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                    umsatz = db_session.query(Umsatz).filter(
+                        (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                     if not umsatz:
                         umsatz = Umsatz()
@@ -942,8 +967,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -993,8 +1020,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                 db_session.add(billjournal)
 
-                umsatz = get_cache(
-                    Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                # umsatz = get_cache(
+                #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                umsatz = db_session.query(Umsatz).filter(
+                    (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                 if not umsatz:
                     umsatz = Umsatz()
@@ -1052,8 +1081,10 @@ def leasing_refund_guestbl(bill_no: int, resnr: int, reslinnr: int, additional_a
 
                     db_session.add(billjournal)
 
-                    umsatz = get_cache(
-                        Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                    # umsatz = get_cache(
+                    #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                    umsatz = db_session.query(Umsatz).filter(
+                        (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                     if not umsatz:
                         umsatz = Umsatz()

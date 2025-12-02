@@ -3,14 +3,18 @@
 # =======================
 # Rulita, 31-10-2025
 # Recompile prgram 
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
 # =======================
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Bediener, Counters, Queasy, Res_history
+from functions.next_counter_for_update import next_counter_for_update
 
-def hk_lostfound_addbl(zinr:string, from_date:date, zeit:string, dept:int, reason:string, reportby:string, claim_date:date, phoneno:string, refno:string, foundby:string, location:string, submitted:string, user_init:string):
+def hk_lostfound_addbl(zinr:string, from_date:date, zeit:string, dept:int, 
+                       reason:string, reportby:string, claim_date:date, phoneno:string, 
+                       refno:string, foundby:string, location:string, submitted:string, user_init:string):
 
     prepare_cache ([Bediener, Counters, Queasy, Res_history])
 
@@ -24,6 +28,18 @@ def hk_lostfound_addbl(zinr:string, from_date:date, zeit:string, dept:int, reaso
     s_list_data, S_list = create_model("S_list", {"nr":int, "betriebsnr":int, "s_recid":int, "date1":date, "zeit":string, "zinr":string, "userinit":string, "bezeich":string, "foundby":string, "submitted":string, "reportby":string, "claim_date":date, "location":string, "refno":string, "phoneno":string})
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock:string = ""
+    zinr = zinr.strip()
+    zeit = zeit.strip()
+    reason = reason.strip()
+    reportby = reportby.strip()
+    phoneno = phoneno.strip()
+    refno = refno.strip()
+    foundby = foundby.strip()
+    location = location.strip()
+    submitted = submitted.strip()
+
 
     def generate_output():
         nonlocal s_list_data, num, claim_date_str, bediener, counters, queasy, res_history
@@ -41,7 +57,9 @@ def hk_lostfound_addbl(zinr:string, from_date:date, zeit:string, dept:int, reaso
         num = to_int(substring(zeit, 0, 2)) * 3600 +\
                 to_int(substring(zeit, 2, 2)) * 60 + to_int(substring(zeit, 4, 2))
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 11)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 11)]})
+        counters = db_session.query(Counters).filter(
+            (Counters.counter_no == 11)).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -52,7 +70,6 @@ def hk_lostfound_addbl(zinr:string, from_date:date, zeit:string, dept:int, reaso
 
 
         counters.counter = counters.counter + 1
-        pass
 
         if claim_date == None:
             claim_date_str = ""
@@ -69,6 +86,7 @@ def hk_lostfound_addbl(zinr:string, from_date:date, zeit:string, dept:int, reaso
         queasy.char2 = reason
         queasy.betriebsnr = dept
         queasy.number3 = counters.counter
+        
         foundby = replace_str(foundby, "|", "")
         submitted = replace_str(submitted, "|", "")
         reportby = replace_str(reportby, "|", "")

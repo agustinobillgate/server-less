@@ -4,6 +4,11 @@
 # beda sorting
 #------------------------------------------
 
+# ==================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# ==================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -90,7 +95,7 @@ def fa_movelistbl(c_procedure:string, bl_all:bool, user_init:string, typ_of:stri
 
                         fa_artikel_obj_list = {}
                         for fa_artikel, mathis in db_session.query(Fa_artikel, Mathis).join(Mathis,(Mathis.nr == Fa_artikel.nr)).filter(
-                                 (Fa_artikel.gnr == main_query) & (Fa_artikel.subgrp == sub_query)).order_by(Fa_artikel.nr).all():
+                                 (Fa_artikel.gnr == main_query) & (Fa_artikel.subgrp == sub_query)).order_by(Fa_artikel.nr).with_for_update(of=Fa_artikel).all():
                             
                             if fa_artikel_obj_list.get(fa_artikel._recid):
                                 continue
@@ -106,7 +111,7 @@ def fa_movelistbl(c_procedure:string, bl_all:bool, user_init:string, typ_of:stri
 
                         fa_artikel_obj_list = {}
                         for fa_artikel, mathis in db_session.query(Fa_artikel, Mathis).join(Mathis,(Mathis.nr == Fa_artikel.nr)).filter(
-                                 (Fa_artikel.gnr == main_query)).order_by(Fa_artikel.nr).all():
+                                 (Fa_artikel.gnr == main_query)).order_by(Fa_artikel.nr).with_for_update(of=Fa_artikel).all():
                             if fa_artikel_obj_list.get(fa_artikel._recid):
                                 continue
                             else:
@@ -185,18 +190,21 @@ def fa_movelistbl(c_procedure:string, bl_all:bool, user_init:string, typ_of:stri
         htparam = get_cache (Htparam, {"paramnr": [(eq, 881)]})
         last_depn = htparam.fdate
 
-        fa_op = get_cache (Fa_op, {"opart": [(eq, 4)],"nr": [(eq, fa_artikel.nr)],"datum": [(eq, fa_artikel.deleted)]})
+        # fa_op = get_cache (Fa_op, {"opart": [(eq, 4)],"nr": [(eq, fa_artikel.nr)],"datum": [(eq, fa_artikel.deleted)]})
+        fa_op = db_session.query(Fa_op).filter(
+                 (Fa_op.opart == 4) & (Fa_op.nr == fa_artikel.nr) & (Fa_op.datum == fa_artikel.deleted)).with_for_update().first()
 
         if get_year(fa_op.datum) == get_year(last_depn) and get_month(fa_op.datum) == get_month(last_depn):
             retmessage = 1
 
             return
-        pass
+        # pass
         fa_op.loeschflag = 1
-
-
-        pass
-        pass
+        db_session.refresh(fa_op,with_for_update=True)
+        
+        db_session.refresh(fa_artikel,with_for_update=True)
+        # pass
+        # pass
         fa_artikel.loeschflag = 0
         fa_artikel.deleted = None
         fa_artikel.did = user_init

@@ -115,7 +115,9 @@ def check_totpbl(username:string, userotp:string, checking_flag:int):
 
     if bediener:
 
-        queasy = get_cache (Queasy, {"key": [(eq, 341)],"char1": [(eq, bediener.username)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 341)],"char1": [(eq, bediener.username)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 341) & (Queasy.char1 == bediener.username)).with_for_update().first()
 
         if not queasy:
             totpok = False

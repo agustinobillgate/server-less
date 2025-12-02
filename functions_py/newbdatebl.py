@@ -5,6 +5,11 @@
 # Issue : New compile program
 # ============================
 
+# =============================================
+# Rulita, 01-12-2025
+# - Added with_for_update all query 
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -37,21 +42,27 @@ def newbdatebl():
         return {}
 
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
+    # htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
+    htparam = db_session.query(Htparam).filter(
+             (Htparam.paramnr == 110)).with_for_update().first()
     bill_date = htparam.fdate
     nbill_date = bill_date + timedelta(days=1)
     htparam.fdate = nbill_date
-    pass
+    # pass
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 87)]})
 
     if htparam.fdate < nbill_date:
-        pass
+        # pass
         htparam.fdate = nbill_date
-        pass
+        # pass
+        db_session.refresh(htparam, with_for_update=True)
 
-    htparam = get_cache (Htparam, {"paramnr": [(eq, 105)]})
+    # htparam = get_cache (Htparam, {"paramnr": [(eq, 105)]})
+    htparam = db_session.query(Htparam).filter(
+             (Htparam.paramnr == 105)).with_for_update().first()
     htparam.fdate = nbill_date
-    pass
+    # pass
+    db_session.refresh(htparam, with_for_update=True)
 
     return generate_output()

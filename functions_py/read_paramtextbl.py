@@ -3,6 +3,7 @@
 #------------------------------------------
 # Rd, 22/9/2025
 # update parameter p_txtno -> p_txt_no 
+# Rd, 27/11/2025, with_for_update added
 #------------------------------------------
 
 from functions.additional_functions import *
@@ -66,7 +67,6 @@ def read_paramtextbl(case_type:int, p_txt_no:int):
 
         if from_number == 9201:
             to_number = 9299
-        print("F/T:", from_number, to_number)
         for paramtext in db_session.query(Paramtext).filter(
                  (Paramtext.txtnr >= from_number) & (Paramtext.txtnr <= to_number)).order_by(Paramtext.txtnr).all():
             do_it = True
@@ -165,7 +165,10 @@ def read_paramtextbl(case_type:int, p_txt_no:int):
                 db_session.delete(paramtext)
                 pass
 
-            paramtext = get_cache (Paramtext, {"txtnr": [(eq, 712)],"number": [(eq, 0)]})
+            # paramtext = get_cache (Paramtext, {"txtnr": [(eq, 712)],"number": [(eq, 0)]})
+            paramtext = db_session.query(Paramtext).filter(
+                     (Paramtext.txtnr == 712) &
+                     (Paramtext.number == 0)).with_for_update().first()
 
             if paramtext:
                 db_session.delete(paramtext)

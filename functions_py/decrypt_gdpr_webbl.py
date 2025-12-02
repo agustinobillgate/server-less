@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.119
-
+#------------------------------------------
+# Rd, 26/11/2025, with_for_update, skip, temp-table
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -217,7 +219,8 @@ def decrypt_gdpr_webbl(payload_list_data:[Payload_list]):
                             pass
 
                     for h_bill in db_session.query(H_bill).filter(
-                             (matches((H_bill.bilname,(start_key + "*"))) | (H_bill.bilname == None)) & (H_bill.reslinnr == res_line.reslinnr) & (H_bill.resnr == res_line.resnr)).order_by(H_bill._recid).all():
+                             (matches((H_bill.bilname,(start_key + "*"))) | (H_bill.bilname == None)) & 
+                             (H_bill.reslinnr == res_line.reslinnr) & (H_bill.resnr == res_line.resnr)).order_by(H_bill._recid).with_for_update().all():
                         decrypt_data = multi_level_decrypt_guest(guest.name)
 
                         if decrypt_data != None:
@@ -225,7 +228,8 @@ def decrypt_gdpr_webbl(payload_list_data:[Payload_list]):
                         pass
 
                     for history in db_session.query(History).filter(
-                             (matches((History.gastinfo,(start_key + "*"))) | (History.gastinfo == None)) & (History.gastnr == guest.gastnr) & (History.resnr == res_line.resnr)).order_by(History._recid).all():
+                             (matches((History.gastinfo,(start_key + "*"))) | (History.gastinfo == None)) & 
+                             (History.gastnr == guest.gastnr) & (History.resnr == res_line.resnr)).order_by(History._recid).with_for_update().all():
                         decrypt_data = multi_level_decrypt_guest(guest.name)
 
                         if decrypt_data != None:
@@ -233,7 +237,8 @@ def decrypt_gdpr_webbl(payload_list_data:[Payload_list]):
                         pass
 
                     for bill in db_session.query(Bill).filter(
-                             (matches((Bill.bilname,(start_key + "*"))) | (Bill.bilname == None)) & (Bill.resnr == res_line.resnr) & (Bill.reslinnr == res_line.reslinnr)).order_by(Bill._recid).all():
+                             (matches((Bill.bilname,(start_key + "*"))) | (Bill.bilname == None)) & 
+                             (Bill.resnr == res_line.resnr) & (Bill.reslinnr == res_line.reslinnr)).order_by(Bill._recid).with_for_update().all():
                         decrypt_data = multi_level_decrypt_guest(guest.name)
 
                         if decrypt_data != None:
@@ -241,7 +246,8 @@ def decrypt_gdpr_webbl(payload_list_data:[Payload_list]):
                         pass
 
                     for billhis in db_session.query(Billhis).filter(
-                             (matches((Billhis.name,(start_key + "*"))) | (Billhis.name == None)) & (Billhis.resnr == res_line.resnr) & (Billhis.reslinnr == res_line.reslinnr)).order_by(Billhis._recid).all():
+                             (matches((Billhis.name,(start_key + "*"))) | (Billhis.name == None)) & 
+                             (Billhis.resnr == res_line.resnr) & (Billhis.reslinnr == res_line.reslinnr)).order_by(Billhis._recid).with_for_update().all():
                         decrypt_data = multi_level_decrypt_guest(guest.name)
 
                         if decrypt_data != None:
@@ -274,7 +280,9 @@ def decrypt_gdpr_webbl(payload_list_data:[Payload_list]):
                     if guest.vornamekind[5] != None:
                         decrypt_data = multi_level_decrypt_guest(guest.vornamekind[5])
 
-                        pguest = get_cache (Guest, {"_recid": [(eq, guest._recid)]})
+                        # pguest = get_cache (Guest, {"_recid": [(eq, guest._recid)]})
+                        pguest = db_session.query(Guest).filter(
+                                 (Guest._recid == guest._recid)).with_for_update().first()
 
                         if decrypt_data != None:
 
@@ -356,7 +364,11 @@ def decrypt_gdpr_webbl(payload_list_data:[Payload_list]):
 
                                 pguest.vornamekind[5] = " "
 
-                                queasy = get_cache (Queasy, {"key": [(eq, 378)],"number1": [(eq, pguest.gastnr)],"number2": [(eq, res_line.resnr)],"number3": [(eq, res_line.reslinnr)]})
+                                # queasy = get_cache (Queasy, {"key": [(eq, 378)],"number1": [(eq, pguest.gastnr)],"number2": [(eq, res_line.resnr)],"number3": [(eq, res_line.reslinnr)]})
+                                queasy = db_session.query(Queasy).filter(
+                                         (Queasy.key == 378) & (Queasy.number1 == pguest.gastnr) & (Queasy.number2 == res_line.resnr) & 
+                                         (Queasy.number3 == res_line.reslinnr)).with_for_update().first()
+                                
 
                                 if not queasy:
                                     queasy = Queasy()
@@ -385,7 +397,10 @@ def decrypt_gdpr_webbl(payload_list_data:[Payload_list]):
                             if pguest:
                                 pguest.vornamekind[5] = " "
 
-                                queasy = get_cache (Queasy, {"key": [(eq, 378)],"number1": [(eq, pguest.gastnr)],"number2": [(eq, res_line.resnr)],"number3": [(eq, res_line.reslinnr)]})
+                                # queasy = get_cache (Queasy, {"key": [(eq, 378)],"number1": [(eq, pguest.gastnr)],"number2": [(eq, res_line.resnr)],"number3": [(eq, res_line.reslinnr)]})
+                                queasy = db_session.query(Queasy).filter(
+                                         (Queasy.key == 378) & (Queasy.number1 == pguest.gastnr) & (Queasy.number2 == res_line.resnr) & 
+                                         (Queasy.number3 == res_line.reslinnr)).with_for_update().first
 
                                 if not queasy:
                                     queasy = Queasy()
@@ -416,7 +431,10 @@ def decrypt_gdpr_webbl(payload_list_data:[Payload_list]):
                         if pguest:
                             pguest.vornamekind[5] = " "
 
-                            queasy = get_cache (Queasy, {"key": [(eq, 378)],"number1": [(eq, pguest.gastnr)],"number2": [(eq, res_line.resnr)],"number3": [(eq, res_line.reslinnr)]})
+                            # queasy = get_cache (Queasy, {"key": [(eq, 378)],"number1": [(eq, pguest.gastnr)],"number2": [(eq, res_line.resnr)],"number3": [(eq, res_line.reslinnr)]})
+                            queasy = db_session.query(Queasy).filter(
+                                     (Queasy.key == 378) & (Queasy.number1 == pguest.gastnr) & (Queasy.number2 == res_line.resnr) & 
+                                     (Queasy.number3 == res_line.reslinnr)).with_for_update().first
 
                             if not queasy:
                                 queasy = Queasy()
@@ -443,7 +461,9 @@ def decrypt_gdpr_webbl(payload_list_data:[Payload_list]):
 
                     if decrypt_data != None:
 
-                        pguest = get_cache (Guest, {"_recid": [(eq, guest._recid)]})
+                        # pguest = get_cache (Guest, {"_recid": [(eq, guest._recid)]})
+                        pguest = db_session.query(Guest).filter(
+                                 (Guest._recid == guest._recid)).with_for_update().first()
 
                         if pguest:
                             pguest.name = entry(1, decrypt_data, "=")

@@ -1,5 +1,11 @@
 #using conversion tools version: 1.0.0.117
 
+# =============================================
+# Rulita, 27-11-2025
+# - Added with_for_update all query 
+# - Fix progress not declare procedure print-it
+# =============================================
+
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -79,7 +85,9 @@ def fa_mkpo_btn_go_webbl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:strin
 
             if htparam.flogical:
 
-                fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 0)],"yy": [(eq, yy)],"mm": [(eq, mm)],"dd": [(eq, dd)],"docu_type": [(eq, 0)]})
+                # fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 0)],"yy": [(eq, yy)],"mm": [(eq, mm)],"dd": [(eq, dd)],"docu_type": [(eq, 0)]})
+                fa_counter = db_session.query(Fa_counter).filter(
+                         (Fa_counter.count_type == 0) & (Fa_counter.yy == yy) & (Fa_counter.mm == mm) & (Fa_counter.dd == dd) & (Fa_counter.docu_type == 0)).with_for_update().first()
 
                 if not fa_counter:
                     fa_counter = Fa_counter()
@@ -98,7 +106,9 @@ def fa_mkpo_btn_go_webbl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:strin
                 docu_nr = s + to_string(dd, "99") + to_string(i, "999")
             else:
 
-                fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 1)],"yy": [(eq, yy)],"mm": [(eq, mm)],"docu_type": [(eq, 0)]})
+                # fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 1)],"yy": [(eq, yy)],"mm": [(eq, mm)],"docu_type": [(eq, 0)]})
+                fa_counter = db_session.query(Fa_counter).filter(
+                         (Fa_counter.count_type == 1) & (Fa_counter.yy == yy) & (Fa_counter.mm == mm) & (Fa_counter.docu_type == 0)).with_for_update().first()
 
                 if not fa_counter:
                     fa_counter = Fa_counter()
@@ -145,7 +155,9 @@ def fa_mkpo_btn_go_webbl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:strin
 
             if htparam.flogical:
 
-                fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 0)],"yy": [(eq, yy)],"mm": [(eq, mm)],"dd": [(eq, dd)],"docu_type": [(eq, 0)]})
+                # fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 0)],"yy": [(eq, yy)],"mm": [(eq, mm)],"dd": [(eq, dd)],"docu_type": [(eq, 0)]})
+                fa_counter = db_session.query(Fa_counter).filter(
+                         (Fa_counter.count_type == 0) & (Fa_counter.yy == yy) & (Fa_counter.mm == mm) & (Fa_counter.dd == dd) & (Fa_counter.docu_type == 0)).with_for_update().first()
 
                 if not fa_counter:
                     fa_counter = Fa_counter()
@@ -160,14 +172,15 @@ def fa_mkpo_btn_go_webbl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:strin
 
 
                 else:
-                    pass
+                    # pass
                     fa_counter.counters = fa_counter.counters + 1
-
-
-                    pass
+                    db_session.refresh(fa_counter,with_for_update=True)
+                    # pass
             else:
 
-                fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 1)],"yy": [(eq, yy)],"mm": [(eq, mm)],"docu_type": [(eq, 0)]})
+                # fa_counter = get_cache (Fa_counter, {"count_type": [(eq, 1)],"yy": [(eq, yy)],"mm": [(eq, mm)],"docu_type": [(eq, 0)]})
+                fa_counter = db_session.query(Fa_counter).filter(
+                         (Fa_counter.count_type == 1) & (Fa_counter.yy == yy) & (Fa_counter.mm == mm) & (Fa_counter.docu_type == 0)).with_for_update().first()
 
                 if not fa_counter:
                     fa_counter = Fa_counter()
@@ -182,11 +195,10 @@ def fa_mkpo_btn_go_webbl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:strin
 
 
                 else:
-                    pass
+                    # pass
                     fa_counter.counters = fa_counter.counters + 1
-
-
-                    pass
+                    # pass
+                    db_session.refresh(fa_counter,with_for_update=True)
 
 
     tfa_order = query(tfa_order_data, first=True)
@@ -293,8 +305,8 @@ def fa_mkpo_btn_go_webbl(tfa_order_data:[Tfa_order], cmb_curr_screen_value:strin
             fa_ordheader.released_date = billdate
             fa_ordheader.released_time = get_current_time_in_seconds()
 
-
-    else:
-        print_it()
+    # Rulita, 27-11-2025 | Fix progress not declare procedure print-it
+    # else:
+    #     print_it()
 
     return generate_output()

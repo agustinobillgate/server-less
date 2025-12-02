@@ -1,8 +1,10 @@
 #using conversion tools version: 1.0.0.117
-#-----------------------------------------
+#---------------------------------------------------------------------
 # Rd, 28/7/2025
 # if available
-#-----------------------------------------
+#---------------------------------------------------------------------
+# Rd, 24/11/2025, Update last counter dengan next_counter_for_update
+#---------------------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -103,7 +105,11 @@ def gl_htp_checkbl(pvilanguage:int, htp_number:int, htgrp_number:int, intval:int
         nonlocal msg_str, do_it, wert, logv, flag, lvcarea, htparam, gl_jouhdr
         nonlocal pvilanguage, htp_number, htgrp_number, intval, decval, dateval, logval, charval, user_init, i, d, l, dd, s
 
-        htparam = get_cache (Htparam, {"paramnr": [(eq, htp_number)]})
+        # Rd, 24/11/2025, get htparam dengan for update
+        # htparam = get_cache (Htparam, {"paramnr": [(eq, htp_number)]})
+        htparam = db_session.query(Htparam).filter(
+                     (Htparam.paramnr == htp_number)).with_for_update().first()
+        
         # Rd 28/7/2025
         # if available
         if htparam is None:

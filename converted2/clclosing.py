@@ -215,7 +215,7 @@ def clclosing():
                          (Visit._recid == cl_histvisit._recid)).first()
 
                 if visit:
-                    visit.endtime = (Integer (substring(cl_class.end_time, 0, 2)) * 3600) + (to_int(substring(cl_class.end_time, 2, 2)) * 60)
+                    visit.endtime = (to_int (substring(cl_class.end_time, 0, 2)) * 3600) + (to_int(substring(cl_class.end_time, 2, 2)) * 60)
                     pass
             else:
 
@@ -376,14 +376,14 @@ def clclosing():
             cl_histstatus.zeit = get_current_time_in_seconds()
 
             for cl_enroll in db_session.query(Cl_enroll).filter(
-                         (Cl_enroll.codenum == cl_member.codenum)).order_by(Cl_enroll._recid).all():
+                         (Cl_enroll.codenum == cl_member.codenum)).order_by(Cl_enroll._recid).with_for_update().all():
                 db_session.delete(cl_enroll)
         pass
 
 
-    DEFINE FRAME Frame1 curr_bezeich AT ROW 1.5 COLUMN 3 LABEL "Activity" FGCOLOR 12 SKIP (0.5) curr_bezeich1 AT ROW 3 COLUMN 5.5 LABEL "Item" FGCOLOR 15 BGCOL 1 SKIP (0.5) skip (0.5) WITH SIDE_LABELS CENTERED OVERLAY WIDTH 55 THREE_D VIEW_AS DIALOG_BOX TITLE "Checking...."
-    VIEW FRAME frame1
-    translatewidgetwinctx(FRAME frame1:HANDLE, lvcarea)
+    # DEFINE FRAME Frame1 curr_bezeich AT ROW 1.5 COLUMN 3 LABEL "Activity" FGCOLOR 12 SKIP (0.5) curr_bezeich1 AT ROW 3 COLUMN 5.5 LABEL "Item" FGCOLOR 15 BGCOL 1 SKIP (0.5) skip (0.5) WITH SIDE_LABELS CENTERED OVERLAY WIDTH 55 THREE_D VIEW_AS DIALOG_BOX TITLE "Checking...."
+    # VIEW FRAME frame1
+    # translatewidgetwinctx(FRAME frame1:HANDLE, lvcarea)
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 110)]})
     billdate = htparam.fdate
@@ -393,7 +393,7 @@ def clclosing():
     check_visit()
     create_renewal()
     check_expired()
-    delete_history()
+    # delete_history()
     check_others()
 
     htparam = get_cache (Htparam, {"paramnr": [(eq, 1057)]})
@@ -403,7 +403,7 @@ def clclosing():
     curr_bezeich = translateExtended ("Deleting old history..", lvcarea, "")
 
     for cl_checkin in db_session.query(Cl_checkin).filter(
-             ((Cl_checkin.datum - get_current_date()) > store_dur)).order_by(Cl_checkin._recid).all():
+             ((Cl_checkin.datum - get_current_date()) > store_dur)).order_by(Cl_checkin._recid).with_for_update().all():
 
         checkin = db_session.query(Checkin).filter(
                  (Checkin._recid == cl_checkin._recid)).first()
@@ -411,7 +411,7 @@ def clclosing():
         pass
 
     for cl_histci in db_session.query(Cl_histci).filter(
-             ((Cl_histci.datum - get_current_date()) > store_dur)).order_by(Cl_histci._recid).all():
+             ((Cl_histci.datum - get_current_date()) > store_dur)).order_by(Cl_histci._recid).with_for_update().all():
 
         clhist = db_session.query(Clhist).filter(
                  (Clhist._recid == cl_histci._recid)).first()
@@ -419,7 +419,7 @@ def clclosing():
         pass
 
     for cl_histvisit in db_session.query(Cl_histvisit).filter(
-             ((Cl_histvisit.datum - get_current_date()) > store_dur)).order_by(Cl_histvisit._recid).all():
+             ((Cl_histvisit.datum - get_current_date()) > store_dur)).order_by(Cl_histvisit._recid).with_for_update().all():
 
         visit = db_session.query(Visit).filter(
                  (Visit._recid == cl_histvisit._recid)).first()

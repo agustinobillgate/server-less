@@ -5,12 +5,16 @@
         _remark_:   - fix python indentation
                     - import from function_py
 """
+# ============================
+# Rd, 24/11/2025, update last_count for counter update
+# ============================
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 # from functions.create_newbillbl import create_newbillbl
 from functions_py.create_newbillbl import create_newbillbl
 from models import Htparam, Queasy, Res_line, Waehrung, Exrate, Artikel, Bill, Counters, Bill_line, Umsatz, Billjournal
+from functions.next_counter_for_update import next_counter_for_update
 
 
 def nt_postdefferedrental():
@@ -44,6 +48,9 @@ def nt_postdefferedrental():
     htparam = queasy = res_line = waehrung = exrate = artikel = bill = counters = bill_line = umsatz = billjournal = None
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock = ""
+
 
     def generate_output():
         nonlocal art_deposit, user_init, new_contrate, billno, userinit, bill_date, exchg_rate, ex_rate, frate, price_decimal, bil_recid, billart, qty, double_currency, foreign_rate, master_str, master_exist, master_rechnr, curr_posting, department, description, amount_foreign, price, amount, htparam, queasy, res_line, waehrung, exrate, artikel, bill, counters, bill_line, umsatz, billjournal
@@ -154,11 +161,13 @@ def nt_postdefferedrental():
         bill.mwst[98] = bill.mwst[98] + amount_foreign
 
         if bill.rechnr == 0:
-            counters = get_cache(
-                Counters, {"counter_no": [(eq, 3)]})
-            counters.counter = counters.counter + 1
-            bill.rechnr = counters.counter
-
+            # counters = get_cache(
+            #     Counters, {"counter_no": [(eq, 3)]})
+            # counters.counter = counters.counter + 1
+            # bill.rechnr = counters.counter
+            last_count, error_lock = get_output(next_counter_for_update(3))
+            bill.rechnr = last_count
+            
         bill_line = Bill_line()
 
         bill_line.rechnr = bill.rechnr

@@ -1,5 +1,7 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 27/11/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Parameters, Gl_acct, Artikel
@@ -68,7 +70,7 @@ def load_macro_webbl(briefnr:int, excel_list_data:[Excel_list]):
             str = entry(0, substring(excel_list.curr_val, 1) , ".")
             str2 = entry(0, str, ":")
 
-            if curr_xlsrow > row_combo and flag_combo:
+            if excel_list.curr_xlsrow > row_combo and flag_combo:
                 t_parameters.varname = to_string(excel_list.curr_xlsrow, "9999") + "-" + to_string(excel_list.curr_xlscol, "99") + "-" + "combo"
 
             if num_entries(str, ":") > 1 and substring(excel_list.curr_val, 0, 1) == ("^").lower() :
@@ -466,7 +468,7 @@ def load_macro_webbl(briefnr:int, excel_list_data:[Excel_list]):
         while None != parameters:
 
             parambuff = db_session.query(Parambuff).filter(
-                         (Parambuff._recid == parameters._recid)).first()
+                         (Parambuff._recid == parameters._recid)).with_for_update().first()
             db_session.delete(parambuff)
             pass
 

@@ -3,16 +3,24 @@
 # ==========================================
 # Rulita, 09-10-2025
 # Tiket ID : 8CF423 | Recompile Program
+# Rd, 01/12/2025, with_for_update added
 # ==========================================
 
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import H_bill, H_bill_line, H_artikel, Htparam, Kellne1, H_umsatz, H_journal, Umsatz, Queasy, Guest, Artikel, Debitor, Waehrung, Bediener, Billjournal
+from sqlalchemy.orm import flag_modified
 
 input_list_data, Input_list = create_model("Input_list", {"mc_str":string})
 
-def ts_closeinv_update_bill_webbl(amount:Decimal, amount_foreign:Decimal, balance:Decimal, rec_bill_guest:int, foreign_rate:bool, curr_dept:int, rec_h_artikel:int, rec_h_bill:int, h_artart:int, h_artnrfront:int, unit_price:Decimal, double_currency:bool, exchg_rate:Decimal, price_decimal:int, qty:int, kreditlimit:Decimal, billart:int, description:string, change_str:string, nett_amount:Decimal, tischnr:int, price:Decimal, bill_date:date, b_list_departement:int, avail_b_list:bool, cc_comment:string, b_list_waehrungsnr:int, hoga_card:string, cancel_str:string, req_str:string, curr_waiter:int, pay_type:int, transfer_zinr:string, curr_room:string, user_init:string, deptname:string, input_list_data:[Input_list]):
+def ts_closeinv_update_bill_webbl(amount:Decimal, amount_foreign:Decimal, balance:Decimal, rec_bill_guest:int, 
+                                  foreign_rate:bool, curr_dept:int, rec_h_artikel:int, rec_h_bill:int, h_artart:int, h_artnrfront:int, 
+                                  unit_price:Decimal, double_currency:bool, exchg_rate:Decimal, price_decimal:int, qty:int, kreditlimit:Decimal, 
+                                  billart:int, description:string, change_str:string, nett_amount:Decimal, tischnr:int, price:Decimal, 
+                                  bill_date:date, b_list_departement:int, avail_b_list:bool, cc_comment:string, b_list_waehrungsnr:int, 
+                                  hoga_card:string, cancel_str:string, req_str:string, curr_waiter:int, pay_type:int, transfer_zinr:string, 
+                                  curr_room:string, user_init:string, deptname:string, input_list_data:[Input_list]):
 
     prepare_cache ([H_bill_line, H_artikel, Htparam, H_umsatz, H_journal, Umsatz, Queasy, Guest, Artikel, Waehrung, Bediener, Billjournal])
 
@@ -42,8 +50,16 @@ def ts_closeinv_update_bill_webbl(amount:Decimal, amount_foreign:Decimal, balanc
     Hartikel = create_buffer("Hartikel",H_artikel)
     Bill_guest = create_buffer("Bill_guest",Guest)
 
-
     db_session = local_storage.db_session
+    description = description.strip()
+    change_str = change_str.strip()
+    cc_comment = cc_comment.strip()
+    hoga_card = hoga_card.strip()
+    cancel_str = cancel_str.strip()
+    req_str = req_str.strip()
+    transfer_zinr = transfer_zinr.strip()
+    curr_room = curr_room.strip()
+    deptname = deptname.strip()
 
     def generate_output():
         nonlocal service_foreign, mwst_foreign, service, mwst, bcol, balance_foreign, closed, t_h_bill_data, h_service, h_service_foreign, h_mwst, h_mwst_foreign, sysdate, zeit, nett_compli, mc_str, h_bill, h_bill_line, h_artikel, htparam, kellne1, h_umsatz, h_journal, umsatz, queasy, guest, artikel, debitor, waehrung, bediener, billjournal
@@ -106,17 +122,18 @@ def ts_closeinv_update_bill_webbl(amount:Decimal, amount_foreign:Decimal, balanc
         billname = guest.name + ", " + guest.vorname1 + " " + guest.anrede1 + guest.anredefirma
 
         debt = db_session.query(Debt).filter(
-                 (Debt.artnr == curr_art) & (Debt.rechnr == rechnr) & (Debt.opart == 0) & (Debt.betriebsnr == curr_dept) & (Debt.rgdatum == bill_date) & (Debt.counter == 0) & (Debt.saldo == saldo)).first()
+                 (Debt.artnr == curr_art) & (Debt.rechnr == rechnr) & (Debt.opart == 0) & (Debt.betriebsnr == curr_dept) & 
+                 (Debt.rgdatum == bill_date) & (Debt.counter == 0) & (Debt.saldo == saldo)).with_for_update().first()
 
         if debt:
             pass
             db_session.delete(debt)
 
-            umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, curr_art)],"datum": [(eq, bill_date)]})
+            # umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, curr_art)],"datum": [(eq, bill_date)]})
+            umsatz = db_session.query(Umsatz).filter(
+                        (Umsatz.departement == 0) & (Umsatz.artnr == curr_art) & (Umsatz.datum == bill_date)).with_for_update().first()
             umsatz.anzahl = umsatz.anzahl - 1
             umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(saldo)
-            pass
-            pass
             billjournal = Billjournal()
             db_session.add(billjournal)
 
@@ -163,7 +180,9 @@ def ts_closeinv_update_bill_webbl(amount:Decimal, amount_foreign:Decimal, balanc
                 debitor.vesrdep =  - to_decimal(saldo_foreign)
             pass
 
-        umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, curr_art)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"departement": [(eq, 0)],"artnr": [(eq, curr_art)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                 (Umsatz.departement == 0) & (Umsatz.artnr == curr_art) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()
@@ -173,8 +192,7 @@ def ts_closeinv_update_bill_webbl(amount:Decimal, amount_foreign:Decimal, balanc
             umsatz.datum = bill_date
         umsatz.anzahl = umsatz.anzahl + 1
         umsatz.betrag =  to_decimal(umsatz.betrag) + to_decimal(saldo)
-        pass
-        pass
+
         billjournal = Billjournal()
         db_session.add(billjournal)
 
@@ -250,7 +268,9 @@ def ts_closeinv_update_bill_webbl(amount:Decimal, amount_foreign:Decimal, balanc
     amount =  to_decimal(amount) + to_decimal((h_service) + to_decimal(h_mwst)) * to_decimal(qty)
     amount_foreign =  to_decimal(amount_foreign) + to_decimal((h_service_foreign) + to_decimal(h_mwst_foreign)) * to_decimal(qty)
 
-    h_bill = get_cache (H_bill, {"_recid": [(eq, rec_h_bill)]})
+    # h_bill = get_cache (H_bill, {"_recid": [(eq, rec_h_bill)]})
+    h_bill = db_session.query(H_bill).filter(
+                 (H_bill._recid == rec_h_bill)).with_for_update().first()
 
     if h_bill:
         pass
@@ -267,7 +287,7 @@ def ts_closeinv_update_bill_webbl(amount:Decimal, amount_foreign:Decimal, balanc
         h_bill.mwst[98] = h_bill.mwst[98] + amount_foreign
         balance =  to_decimal(h_bill.saldo)
         balance_foreign =  to_decimal(h_bill.mwst[98])
-
+        flag_modified(h_bill, "mwst")
         if balance != 0:
             h_bill.rgdruck = 0
 
@@ -304,7 +324,9 @@ def ts_closeinv_update_bill_webbl(amount:Decimal, amount_foreign:Decimal, balanc
 
         if billart != 0:
 
-            h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, billart)],"departement": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+            # h_umsatz = get_cache (H_umsatz, {"artnr": [(eq, billart)],"departement": [(eq, curr_dept)],"datum": [(eq, bill_date)]})
+            h_umsatz = db_session.query(H_umsatz).filter(
+                     (H_umsatz.artnr == billart) & (H_umsatz.departement == curr_dept) & (H_umsatz.datum == bill_date)).with_for_update().first()
 
             if not h_umsatz:
                 h_umsatz = H_umsatz()
@@ -334,7 +356,9 @@ def ts_closeinv_update_bill_webbl(amount:Decimal, amount_foreign:Decimal, balanc
         if h_artart == 6 and h_artikel:
             h_journal.betrag =  to_decimal(amount)
 
-            umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+            # umsatz = get_cache (Umsatz, {"artnr": [(eq, h_artikel.artnrfront)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+            umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == h_artikel.artnrfront) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
             if umsatz:
                 pass
@@ -397,7 +421,9 @@ def ts_closeinv_update_bill_webbl(amount:Decimal, amount_foreign:Decimal, balanc
 
                     nett_compli =  to_decimal(nett_compli) + to_decimal((hbline.anzahl) * to_decimal(hbline.epreis))
 
-                queasy = get_cache (Queasy, {"key": [(eq, 197)],"char1": [(eq, mc_str)],"date1": [(eq, bill_date)],"number1": [(eq, billart)]})
+                # queasy = get_cache (Queasy, {"key": [(eq, 197)],"char1": [(eq, mc_str)],"date1": [(eq, bill_date)],"number1": [(eq, billart)]})
+                queasy = db_session.query(Queasy).filter(
+                         (Queasy.key == 197) & (Queasy.char1 == mc_str) & (Queasy.date1 == bill_date) & (Queasy.number1 == billart)).with_for_update().first()
 
                 if not queasy:
                     queasy = Queasy()

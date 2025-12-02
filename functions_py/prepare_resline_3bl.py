@@ -9,6 +9,8 @@
 # yusufwijasena, 12/11/2025
 # fixing output as string to f_resline.billname
 #------------------------------------------
+# Rdm 25/11/2025, with_for_update added where needed
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
@@ -873,7 +875,10 @@ def prepare_resline_3bl(pvilanguage:int, res_mode:string, session_date:string, u
                 f_resline.c_setup = substring(paramtext.notes, 0, 1)
 
 
-    q359 = get_cache (Queasy, {"key": [(eq, 359)],"number3": [(eq, 1)],"number1": [(eq, inp_resnr)],"number2": [(eq, inp_reslinnr)]})
+    # q359 = get_cache (Queasy, {"key": [(eq, 359)],"number3": [(eq, 1)],"number1": [(eq, inp_resnr)],"number2": [(eq, inp_reslinnr)]})
+    q359 = db_session.query(Queasy).filter(
+             (Queasy.key == 359) & (Queasy.number3 == 1) & 
+             (Queasy.number1 == inp_resnr) & (Queasy.number2 == inp_reslinnr)).with_for_update().first()
 
     if q359:
         db_session.delete(q359)

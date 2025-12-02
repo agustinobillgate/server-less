@@ -7,7 +7,9 @@
 # - last update from ITA: Program terkait feature service apartement
 # - fix python indentation
 # -----------------------------------------
-
+# ============================
+# Rd, 24/11/2025, update last_count for counter update
+# ============================
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date, timedelta
@@ -15,6 +17,7 @@ from functions.post_dayuse import post_dayuse
 from functions.intevent_1 import intevent_1
 from functions.mk_mcoupon import mk_mcoupon
 from models import Res_line, Guest, Bill, Queasy, Htparam, Outorder, Reservation, Resplan, Waehrung, Master, Counters, Bediener, Bill_line, Artikel, Billjournal, Umsatz, Res_history, Reslin_queasy, Exrate, Messages, Zimkateg, Zimmer, Zimplan, resplan, zimkateg
+from sqlalchemy.orm.attributes import flag_modified
 
 
 def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: string, silenzio: bool):
@@ -81,6 +84,9 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
     Art1 = create_buffer("Art1", Artikel)
 
     db_session = local_storage.db_session
+    last_count = 0
+    error_lock = ""
+
 
     def generate_output():
         nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, art_security, loopi, ar_ledger, lvcarea, res_line, guest, bill, queasy, htparam, outorder, reservation, waehrung, master, counters, bediener, bill_line, artikel, billjournal, umsatz, res_history, reslin_queasy, exrate, messages
@@ -139,8 +145,11 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
 
         Mbill = create_buffer("Mbill", Bill)
 
-        mbill = get_cache(
-            Bill, {"resnr": [(eq, res_line.resnr)], "reslinnr": [(eq, 0)]})
+        # mbill = get_cache(
+        #     Bill, {"resnr": [(eq, res_line.resnr)], "reslinnr": [(eq, 0)]})
+        mbill = db_session.query(Mbill).filter(
+            (Mbill.resnr == res_line.resnr) & (Mbill.reslinnr == 0)).with_for_update().first()
+        
         mbill.gesamtumsatz = to_decimal(
             mbill.gesamtumsatz) + to_decimal(deposit)
         mbill.rgdruck = 0
@@ -149,7 +158,8 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
         mbill.mwst[98] = mbill.mwst[98] + deposit_foreign
 
         if mbill.rechnr == 0:
-            counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+            # counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+            counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
 
             if not counters:
                 counters = Counters()
@@ -160,6 +170,7 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
 
             counters.counter = counters.counter + 1
             mbill.rechnr = counters.counter
+
             master.rechnr = mbill.rechnr
         inv_nr = mbill.rechnr
 
@@ -293,7 +304,7 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
             # for curr_datum in date_range(beg_datum,(abreise - 1)) :
             for curr_datum in date_range(beg_datum, (abreise - timedelta(days=1))):
                 zimplan1 = db_session.query(Zimplan1).filter(
-                    (Zimplan1.datum == curr_datum) & (Zimplan1.zinr == (zinr))).first()
+                    (Zimplan1.datum == curr_datum) & (Zimplan1.zinr == (zinr))).with_for_update().first()
 
                 if (not zimplan1) and (not room_blocked):
                     zimplan = Zimplan()
@@ -329,11 +340,12 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
 
                     if zimplan:
                         zbuff = db_session.query(Zbuff).filter(
-                            (Zbuff._recid == zimplan._recid)).first()
+                            (Zbuff._recid == zimplan._recid)).with_for_update().first()
                         db_session.delete(zbuff)
             else:
                 if resstatus == 6 or resstatus == 13:
-                    zimmer = get_cache(Zimmer, {"zinr": [(eq, zinr)]})
+                    # zimmer = get_cache(Zimmer, {"zinr": [(eq, zinr)]})
+                    zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == zinr).with_for_update().first()
 
                     if abreise > htparam.fdate and zimmer.zistatus == 0:
                         zimmer.zistatus = 5
@@ -348,9 +360,10 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                         if not res_line1:
                             zimmer.zistatus = 3
 
-                    queasy = get_cache(
-                        Queasy, {"key": [(eq, 162)], "char1": [(eq, zimmer.zinr)]})
-
+                    # queasy = get_cache(
+                    #     Queasy, {"key": [(eq, 162)], "char1": [(eq, zimmer.zinr)]})
+                    queasy = db_session.query(Queasy).filter(
+                        (Queasy.key == 162) & (Queasy.char1 == zimmer.zinr)).with_for_update().first()
                     if queasy:
                         db_session.delete(queasy)
 
@@ -387,9 +400,10 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
             res_recid1 = 0
 
             if res_mode == ("delete") or res_mode == ("cancel") and rline.resstatus == 1:
-                res_line1 = get_cache(
-                    Res_line, {"resnr": [(eq, resnr)], "zinr": [(eq, rline.zinr)], "resstatus": [(eq, 11)]})
-
+                # res_line1 = db_session.query(Res_line).filter(
+                #     (Res_line.resnr == resnr) & (Res_line.zinr == rline.zinr) & (Res_line.resstatus == 11)).with_for_update().first()
+                res_line1 = db_session.query(Res_line1).filter(
+                    (Res_line1.resnr == resnr) & (Res_line1.zinr == rline.zinr) & (Res_line1.resstatus == 11)).with_for_update().first()
                 if res_line1:
                     res_line1.resstatus = 1
                     res_recid1 = res_line1._recid
@@ -405,28 +419,35 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                     if res_line1:
                         for res_line2 in db_session.query(Res_line2).filter(
                                 (Res_line2.resnr == resnr) & (Res_line2.zinr == rline.zinr) & (Res_line2.resstatus == 13)).order_by(Res_line2._recid).all():
-                            bill = get_cache(
-                                Bill, {"resnr": [(eq, resnr)], "reslinnr": [(eq, res_line2.reslinnr)], "flag": [(eq, 0)], "zinr": [(eq, res_line2.zinr)]})
+                            # bill = get_cache(
+                            #     Bill, {"resnr": [(eq, resnr)], "reslinnr": [(eq, res_line2.reslinnr)], "flag": [(eq, 0)], "zinr": [(eq, res_line2.zinr)]})
+                            bill = db_session.query(Bill).filter(
+                                (Bill.resnr == resnr) & (Bill.reslinnr == res_line2.reslinnr) & (Bill.flag == 0) & (Bill.zinr == res_line2.zinr)).with_for_update().first()
                             bill.zinr = new_zinr
 
                             parent_nr = bill.parent_nr
 
                             for bill in db_session.query(Bill).filter(
                                     (Bill.resnr == resnr) & (Bill.parent_nr == parent_nr) & (Bill.flag == 0) & (Bill.zinr == res_line2.zinr)).order_by(Bill._recid).all():
-                                bbuff = get_cache(
-                                    Bill, {"_recid": [(eq, bill._recid)]})
+                                # bbuff = get_cache(
+                                #     Bill, {"_recid": [(eq, bill._recid)]})
+                                bbuff = db_session.query(Bill).filter(
+                                    (Bill._recid == bill._recid)).with_for_update().first()
                                 bbuff.zinr = new_zinr
 
-                            rline2 = get_cache(
-                                Res_line, {"_recid": [(eq, res_line2._recid)]})
+                            # rline2 = get_cache(
+                            #     Res_line, {"_recid": [(eq, res_line2._recid)]})
+                            rline2 = db_session.query(Res_line2).filter(
+                                (Res_line2._recid == res_line2._recid)).with_for_update().first()
                             rline2.zinr = new_zinr
 
-                        zimmer = get_cache(
-                            Zimmer, {"zinr": [(eq, rline.zinr)]})
+                        # zimmer = get_cache(
+                        #     Zimmer, {"zinr": [(eq, rline.zinr)]})
+                        zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == rline.zinr).with_for_update().first()
                         zimmer.zistatus = 2
 
             for zimplan in db_session.query(Zimplan).filter(
-                    (Zimplan.zinr == rline.zinr) & (Zimplan.datum >= beg_datum) & (Zimplan.datum < rline.abreise)).order_by(Zimplan._recid).all():
+                    (Zimplan.zinr == rline.zinr) & (Zimplan.datum >= beg_datum) & (Zimplan.datum < rline.abreise)).order_by(Zimplan._recid).with_for_update().all():
                 if res_recid1 != 0:
                     zimplan.res_recid = res_recid1
                 else:
@@ -481,12 +502,16 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
 
                 anz = resplan.anzzim[i - 1] + rline.zimmeranz
 
-                rbuff = get_cache(Resplan, {"_recid": [(eq, resplan._recid)]})
+                # rbuff = get_cache(Resplan, {"_recid": [(eq, resplan._recid)]})
+                rbuff = db_session.query(Rbuff).filter(
+                    (Rbuff._recid == resplan._recid)).with_for_update().first()
                 # Rd, 21/7/25
                 # add if rbuff
                 if rbuff:
                     rbuff.anzzim[i - 1] = anz
-
+            
+            flag_modified(rbuff, "anzzim")
+    
     def min_resplan():
         nonlocal new_resstatus, checked_in, ask_deposit, ask_keycard, ask_mcard, msg_str, dummy_b, answer, res_recid, res_mode, resno, resline, exchg_rate, price_decimal, double_currency, err_status, deposit, deposit_foreign, bill_date, sys_id, it_is, inv_nr, nat_bez, curr_i, curr_st, curr_ct, mc_flag, mc_pos1, mc_pos2, priscilla_active, casenum, rmno, outstand, passwd_ok, stra, strb, strc, bill_no, loopi, lvcarea, res_line, guest, bill, htparam, outorder, reservation, waehrung, master, counters, bediener, queasy, artikel, billjournal, bill_line, umsatz, res_history, reslin_queasy, exrate, messages, zimplan, zimmer, resplan, zimkateg
         nonlocal pvilanguage, resnr, reslinnr, user_init, silenzio
@@ -523,9 +548,12 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                     Resplan, {"zikatnr": [(eq, zimkateg.zikatnr)], "datum": [(eq, curr_date)]})
 
                 if resplan:
-                    rbuff = get_cache(
-                        Resplan, {"_recid": [(eq, resplan._recid)]})
+                    # rbuff = get_cache(
+                    #     Resplan, {"_recid": [(eq, resplan._recid)]})
+                    rbuff = db_session.query(Rbuff).filter(
+                        (Rbuff._recid == resplan._recid)).with_for_update().first()
                     rbuff.anzzim[i - 1] = rbuff.anzzim[i - 1] - rline.zimmeranz
+                    flag_modified(rbuff, "anzzim")
                 curr_date = curr_date + timedelta(days=1)
 
     def rmchg_sharer(act_zinr: string, new_zinr: string):
@@ -567,14 +595,15 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                 end_datum = res_line1.abreise
 
         if res_line.resstatus == 6 and res_recid1 == 0:
-            zimmer = get_cache(Zimmer, {"zinr": [(eq, act_zinr)]})
+            # zimmer = get_cache(Zimmer, {"zinr": [(eq, act_zinr)]})
+            zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == act_zinr).with_for_update().first()
             zimmer.zistatus = 2
 
         if res_line.resstatus == 6 and res_recid1 != 0:
             res_line1 = get_cache(Res_line, {"_recid": [(eq, res_recid1)]})
 
             for res_line2 in db_session.query(Res_line2).filter(
-                    (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr)) & (Res_line2.resstatus == 13) & (Res_line2.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line2._recid).all():
+                    (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr)) & (Res_line2.resstatus == 13) & (Res_line2.l_zuordnung[inc_value(2)] == 0)).order_by(Res_line2._recid).with_for_update().all():
                 zimmer = get_cache(Zimmer, {"zinr": [(eq, new_zinr)]})
 
                 new_zkat = get_cache(
@@ -587,9 +616,13 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                             Resplan, {"zikatnr": [(eq, res_line2.zikatnr)], "datum": [(eq, curr_datum)]})
 
                         if resplan:
-                            rbuff = get_cache(
-                                Resplan, {"_recid": [(eq, resplan._recid)]})
+                            # rbuff = get_cache(
+                            #     Resplan, {"_recid": [(eq, resplan._recid)]})
+                            rbuff = db_session.query(Rbuff).filter(
+                                (Rbuff._recid == resplan._recid)).with_for_update().first()
+                            
                             rbuff.anzzim[12] = rbuff.anzzim[12] - 1
+                            flag_modified(rbuff, "anzzim")
 
                         resplan = get_cache(
                             Resplan, {"zikatnr": [(eq, new_zkat.zikatnr)], "datum": [(eq, curr_datum)]})
@@ -602,24 +635,28 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                             resplan.zikatnr = new_zkat.zikatnr
                             resplan.anzzim[12] = resplan.anzzim[12] + 1
                         else:
-                            rbuff = get_cache(
-                                Resplan, {"_recid": [(eq, resplan._recid)]})
+                            # rbuff = get_cache(
+                            #     Resplan, {"_recid": [(eq, resplan._recid)]})
+                            rbuff = db_session.query(Rbuff).filter(
+                                (Rbuff._recid == resplan._recid)).with_for_update().first()
+                            
                             rbuff.anzzim[12] = rbuff.anzzim[12] + 1
+                            flag_modified(rbuff, "anzzim")
 
                 for bill in db_session.query(Bill).filter(
-                        (Bill.resnr == resnr) & (Bill.parent_nr == res_line2.reslinnr) & (Bill.flag == 0) & (Bill.zinr == res_line2.zinr)).order_by(Bill._recid).all():
+                        (Bill.resnr == resnr) & (Bill.parent_nr == res_line2.reslinnr) & (Bill.flag == 0) & (Bill.zinr == res_line2.zinr)).order_by(Bill._recid).with_for_update().all():
                     bill.zinr = new_zinr
                 res_line2.zinr = new_zinr
                 res_line2.zikatnr = new_zkat.zikatnr
                 res_line2.setup = zimmer.setup
 
             for res_line2 in db_session.query(Res_line2).filter(
-                    (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr)) & (Res_line2.resstatus == 12)).order_by(Res_line2._recid).all():
+                    (Res_line2.resnr == resnr) & (Res_line2.zinr == (act_zinr)) & (Res_line2.resstatus == 12)).order_by(Res_line2._recid).with_for_update().all():
                 res_line2.zinr = new_zinr
                 res_line2.zikatnr = new_zkat.zikatnr
                 res_line2.setup = zimmer.setup
 
-            zimmer = get_cache(Zimmer, {"zinr": [(eq, act_zinr)]})
+            zimmer = db_session.query(Zimmer).filter(Zimmer.zinr == act_zinr).with_for_update().first()
             zimmer.zistatus = 2
 
     htparam = get_cache(Htparam, {"paramnr": [(eq, 110)]})
@@ -664,13 +701,15 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
     else:
         if res_line.resstatus != 11:
             for res_sharer in db_session.query(Res_sharer).filter(
-                    (Res_sharer.resnr == resnr) & (Res_sharer.kontakt_nr == reslinnr) & (Res_sharer.l_zuordnung[inc_value(2)] == 1)).order_by(Res_sharer._recid).all():
+                    (Res_sharer.resnr == resnr) & (Res_sharer.kontakt_nr == reslinnr) & (Res_sharer.l_zuordnung[inc_value(2)] == 1)).order_by(Res_sharer._recid).with_for_update().all():
                 res_sharer.zinr = res_line.zinr
                 res_sharer.zikatnr = res_line.zikatnr
                 res_sharer.setup = res_line.setup
 
-        res_sharer = get_cache(
-            Res_line, {"resnr": [(eq, resnr)], "kontakt_nr": [(eq, reslinnr)], "l_zuordnung[2]": [(eq, 1)]})
+        # res_sharer = get_cache(
+        #     Res_line, {"resnr": [(eq, resnr)], "kontakt_nr": [(eq, reslinnr)], "l_zuordnung[2]": [(eq, 1)]})
+        res_sharer = db_session.query(Res_sharer).filter(
+            (Res_sharer.resnr == resnr) & (Res_sharer.kontakt_nr == reslinnr) & (Res_sharer.l_zuordnung[inc_value(2)] == 1)).with_for_update().first()
         while res_sharer is not None:
             res_sharer.active_flag = 1
             res_sharer.resstatus = 13
@@ -689,9 +728,10 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
             release_zinr(res_line.zinr)
         min_resplan()
 
-        outorder = get_cache(
-            Outorder, {"zinr": [(eq, res_line.zinr)], "betriebsnr": [(eq, res_line.resnr)]})
-
+        # outorder = get_cache(
+        #     Outorder, {"zinr": [(eq, res_line.zinr)], "betriebsnr": [(eq, res_line.resnr)]})
+        outorder = db_session.query(Outorder).filter(
+            (Outorder.zinr == res_line.zinr) & (Outorder.betriebsnr == res_line.resnr)).with_for_update().first()
         if outorder:
             db_session.delete(outorder)
 
@@ -699,9 +739,11 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                 msg_str = translateExtended(
                     "Off-Market record found and has been removed.", lvcarea, "") + chr_unicode(10)
 
-        res_line = get_cache(
-            Res_line, {"resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
-
+        # res_line = get_cache(
+        #     Res_line, {"resnr": [(eq, resnr)], "reslinnr": [(eq, reslinnr)]})
+        res_line = db_session.query(Res_line).filter(
+            (Res_line.resnr == resnr) & (Res_line.reslinnr == reslinnr)).with_for_update().first()
+        
         if res_line.resstatus == 11:
             new_resstatus = 13
         else:
@@ -729,8 +771,10 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
             to_string(get_day(res_line.abreise), "99") + ";"
 
         if res_line.reserve_dec == 0:
-            reservation = get_cache(
-                Reservation, {"resnr": [(eq, res_line.resnr)]})
+            # reservation = get_cache(
+            #     Reservation, {"resnr": [(eq, res_line.resnr)]})
+            reservation = db_session.query(Reservation).filter(
+                (Reservation.resnr == res_line.resnr)).with_for_update().first()
 
             if reservation.insurance:
                 if res_line.betriebsnr != 0:
@@ -758,13 +802,16 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                 Master, {"resnr": [(eq, res_line.resnr)], "flag": [(eq, 0)], "active": [(eq, True)]})
 
             if master and master.rechnr != 0:
-                bill = get_cache(
-                    Bill, {"rechnr": [(eq, master.rechnr)], "resnr": [(eq, master.resnr)], "reslinnr": [(eq, 0)]})
-
+                # bill = get_cache(
+                #     Bill, {"rechnr": [(eq, master.rechnr)], "resnr": [(eq, master.resnr)], "reslinnr": [(eq, 0)]})
+                bill = db_session.query(Bill).filter(
+                    (Bill.rechnr == master.rechnr) & (Bill.resnr == master.resnr) & (Bill.reslinnr == 0)).with_for_update().first()
                 if not bill:
                     casenum = 1
 
-                    bill = get_cache(Bill, {"rechnr": [(eq, master.rechnr)]})
+                    # bill = get_cache(Bill, {"rechnr": [(eq, master.rechnr)]})
+                    bill = db_session.query(Bill).filter(
+                        (Bill.rechnr == master.rechnr)).with_for_update().first()
 
                     if bill:
                         casenum = 2
@@ -791,6 +838,7 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                         counters = get_cache(
                             Counters, {"counter_no": [(eq, 3)]})
                         counters.counter = counters.counter + 1
+
                         bill = Bill()
                         db_session.add(bill)
 
@@ -799,6 +847,7 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                         bill.rgdruck = 1
                         bill.billtyp = 2
                         bill.rechnr = counters.counter
+
                         bill.gastnr = master.gastnrpay
                         bill.datum = bill_date
                         bill.name = b_receiver.name
@@ -829,7 +878,9 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                     counters.counter_bez = "Counter for Bill No"
 
                 counters.counter = counters.counter + 1
+                
                 bill.rechnr = counters.counter
+
                 master.rechnr = bill.rechnr
                 bill.gastnr = master.gastnrpay
 
@@ -839,9 +890,10 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                 bill_no = bill.rechnr
 
             if bill_no != 0:
-                buff_bill = get_cache(
-                    Bill, {"rechnr": [(eq, bill_no)], "resnr": [(eq, 0)], "reslinnr": [(eq, 1)], "billtyp": [(ne, 2)]})
-
+                # buff_bill = get_cache(
+                #     Bill, {"rechnr": [(eq, bill_no)], "resnr": [(eq, 0)], "reslinnr": [(eq, 1)], "billtyp": [(ne, 2)]})
+                buff_bill = db_session.query(Bill).filter(
+                    (Bill.rechnr == bill_no) & (Bill.resnr == 0) & (Bill.reslinnr == 1) & (Bill.billtyp != 2)).with_for_update().first()    
                 if buff_bill:
                     db_session.delete(buff_bill)
 
@@ -849,12 +901,16 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
 
         receiver = get_cache(Guest, {"gastnr": [(eq, res_line.gastnrpay)]})
 
-        reservation = get_cache(Reservation, {"resnr": [(
-            eq, res_line.resnr)], "gastnr": [(eq, res_line.gastnr)]})
+        # reservation = get_cache(Reservation, {"resnr": [(
+        #     eq, res_line.resnr)], "gastnr": [(eq, res_line.gastnr)]})
+        reservation = db_session.query(Reservation).filter(
+            (Reservation.resnr == res_line.resnr) & (Reservation.gastnr == res_line.gastnr)).with_for_update().first()
 
-        bill = get_cache(
-            Bill, {"resnr": [(eq, res_line.resnr)], "reslinnr": [(eq, res_line.reslinnr)], "flag": [(eq, 0)], "zinr": [(eq, res_line.zinr)]})
+        # bill = get_cache(
+        #     Bill, {"resnr": [(eq, res_line.resnr)], "reslinnr": [(eq, res_line.reslinnr)], "flag": [(eq, 0)], "zinr": [(eq, res_line.zinr)]})
 
+        bill = db_session.query(Bill).filter(
+            (Bill.resnr == res_line.resnr) & (Bill.reslinnr == res_line.reslinnr) & (Bill.flag == 0) & (Bill.zinr == res_line.zinr)).with_for_update().first()
         if (not bill) and (res_line.l_zuordnung[2] == 0):
             bill = Bill()
             db_session.add(bill)
@@ -884,7 +940,8 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                     bill.rechnr = to_int(queasy.char2)
 
                 else:
-                    counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+                    # counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+                    counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
 
                     if not counters:
                         counters = Counters()
@@ -895,8 +952,10 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
 
                     counters.counter = counters.counter + 1
                     bill.rechnr = counters.counter
+
             else:
-                counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+                # counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+                counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
 
                 if not counters:
                     counters = Counters()
@@ -907,6 +966,7 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
 
                 counters.counter = counters.counter + 1
                 bill.rechnr = counters.counter
+
             # end ITA: Program terkait feature service apartement
             queasy = get_cache(
                 Queasy, {"key": [(eq, 301)], "number1": [(eq, res_line.resnr)], "logi1": [(eq, True)]})
@@ -930,7 +990,8 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                     bbill.segmentcode = reservation.segmentcode
                     bbill.datum = bill_date
 
-                    counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+                    # counters = get_cache(Counters, {"counter_no": [(eq, 3)]})
+                    counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
 
                     if not counters:
                         counters = Counters()
@@ -997,8 +1058,10 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                             billjournal.userinit = user_init
                             billjournal.bill_datum = bill_date
 
-                            umsatz = get_cache(
-                                Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                            # umsatz = get_cache(
+                            #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                            umsatz = db_session.query(Umsatz).filter(
+                                (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
                             if not umsatz:
                                 umsatz = Umsatz()
@@ -1016,7 +1079,8 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
         htparam = get_cache(Htparam, {"paramnr": [(eq, 799)]})
 
         if htparam.flogical and htparam.feldtyp == 4:
-            counters = get_cache(Counters, {"counter_no": [(eq, 29)]})
+            # counters = get_cache(Counters, {"counter_no": [(eq, 29)]})
+            counters = db_session.query(Counters).filter(Counters.counter_no == 29).with_for_update().first()
 
             if not counters:
                 counters = Counters()
@@ -1067,9 +1131,9 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                     if it_is:
                         inv_nr = update_mastbill()
                     else:
-                        counters = get_cache(
-                            Counters, {"counter_no": [(eq, 3)]})
-
+                        # counters = get_cache(
+                        #     Counters, {"counter_no": [(eq, 3)]})
+                        counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
                         if not counters:
                             counters = Counters()
                             db_session.add(counters)
@@ -1079,12 +1143,14 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
 
                         counters.counter = counters.counter + 1
                         bill.rechnr = counters.counter
+                        
                         bill.saldo = to_decimal(
                             bill.saldo) + to_decimal(deposit)
                         bill.mwst[98] = bill.mwst[98] + deposit_foreign
                         bill.rgdruck = 0
 
                         inv_nr = bill.rechnr
+                        flag_modified(bill, "mwst")
 
                     art1 = get_cache(
                         Artikel, {"artnr": [(eq, reservation.zahlkonto)], "departement": [(eq, 0)]})
@@ -1139,9 +1205,10 @@ def res_checkin2bl(pvilanguage: int, resnr: int, reslinnr: int, user_init: strin
                         billjournal.bezeich = billjournal.bezeich + \
                             " [" + art1.bezeich + "]"
 
-                    umsatz = get_cache(
-                        Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
-
+                    # umsatz = get_cache(
+                    #     Umsatz, {"artnr": [(eq, artikel.artnr)], "departement": [(eq, 0)], "datum": [(eq, bill_date)]})
+                    umsatz = db_session.query(Umsatz).filter(
+                        (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
                     if not umsatz:
                         umsatz = Umsatz()
                         db_session.add(umsatz)

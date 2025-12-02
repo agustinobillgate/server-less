@@ -3,6 +3,7 @@
 # ===============================
 # Rulita, 14-11-2025 | 9FA58C
 # - Update Convertion tiket Hdesk 
+# Rd, 28/11/2025, with_for_update added
 # ===============================
 
 from functions.additional_functions import *
@@ -119,7 +120,7 @@ def prepare_ts_tbplan2_webbl(dept:int, location:int, curr_waiter:int):
                     if queasy.number3 == 0 and queasy.date1 == None:
 
                         qsy_31 = db_session.query(Qsy_31).filter(
-                                 (Qsy_31._recid == queasy._recid)).first()
+                                 (Qsy_31._recid == queasy._recid)).with_for_update().first()
 
                         if qsy_31:
                             qsy_31.number3 = bill_time
@@ -134,7 +135,7 @@ def prepare_ts_tbplan2_webbl(dept:int, location:int, curr_waiter:int):
                     if queasy.number3 != 0 and queasy.date1 != None:
 
                         qsy_31 = db_session.query(Qsy_31).filter(
-                                 (Qsy_31._recid == queasy._recid)).first()
+                                 (Qsy_31._recid == queasy._recid)).with_for_update().first()
 
                         if qsy_31:
                             qsy_31.number3 = 0
@@ -189,12 +190,14 @@ def prepare_ts_tbplan2_webbl(dept:int, location:int, curr_waiter:int):
             hh3 = substring(hh3, 0, 2) + substring(hh3, 3, 2)
 
             qsy = db_session.query(Qsy).filter(
-                     (Qsy.key == 33) & (Qsy.number1 == dept) & (Qsy.number2 == queasy.number2) & (Qsy.date1 == ci_date) & (Qsy.logi3) & (hh1 <= Qsy.char1) & (hh2 >= Qsy.char1)).first()
+                     (Qsy.key == 33) & (Qsy.number1 == dept) & (Qsy.number2 == queasy.number2) & 
+                     (Qsy.date1 == ci_date) & (Qsy.logi3) & (hh1 <= Qsy.char1) & (hh2 >= Qsy.char1)).with_for_update().first()
 
             if not qsy:
 
                 qsy = db_session.query(Qsy).filter(
-                         (Qsy.key == 33) & (Qsy.number1 == dept) & (Qsy.number2 == queasy.number2) & (Qsy.date1 == ci_date) & (Qsy.logi3) & (hh1 >= Qsy.char1) & (hh3 <= Qsy.char1)).first()
+                         (Qsy.key == 33) & (Qsy.number1 == dept) & (Qsy.number2 == queasy.number2) & 
+                         (Qsy.date1 == ci_date) & (Qsy.logi3) & (hh1 >= Qsy.char1) & (hh3 <= Qsy.char1)).with_for_update().first()
 
             if qsy:
                 t_queasy.bcol = 1

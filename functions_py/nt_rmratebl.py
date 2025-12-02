@@ -379,7 +379,9 @@ def nt_rmratebl():
             fixleist = get_cache (Fixleist, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)]})
             while None != fixleist:
 
-                reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, res_line.reserve_int)],"number2": [(eq, arrangement.argtnr)],"reslinnr": [(eq, res_line.zikatnr)],"number3": [(eq, fixleist.artnr)],"resnr": [(eq, fixleist.departement)],"date1": [(le, post_date)],"date2": [(ge, post_date)]})
+                # reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, contcode)],"number1": [(eq, res_line.reserve_int)],"number2": [(eq, arrangement.argtnr)],"reslinnr": [(eq, res_line.zikatnr)],"number3": [(eq, fixleist.artnr)],"resnr": [(eq, fixleist.departement)],"date1": [(le, post_date)],"date2": [(ge, post_date)]})
+                reslin_queasy = db_session.query(Reslin_queasy).filter(
+                         (Reslin_queasy.key == "argt-line") & (Reslin_queasy.char1 == contcode) & (Reslin_queasy.number1 == res_line.reserve_int) & (Reslin_queasy.number2 == arrangement.argtnr) & (Reslin_queasy.reslinnr == res_line.zikatnr) & (Reslin_queasy.number3 == fixleist.artnr) & (Reslin_queasy.resnr == fixleist.departement) & (Reslin_queasy.date1 <= post_date) & (Reslin_queasy.date2 >= post_date)).with_for_update().first()
 
                 if reslin_queasy:
                     pass
@@ -598,7 +600,9 @@ def nt_rmratebl():
                 fixleist = get_cache (Fixleist, {"resnr": [(eq, res_line.resnr)],"reslinnr": [(eq, res_line.reslinnr)]})
                 while None != fixleist:
 
-                    reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, pricecod.code)],"number1": [(eq, pricecod.marknr)],"number2": [(eq, pricecod.argtnr)],"reslinnr": [(eq, pricecod.zikatnr)],"number3": [(eq, fixleist.artnr)],"resnr": [(eq, fixleist.departement)],"date1": [(le, post_date)],"date2": [(ge, post_date)]})
+                    # reslin_queasy = get_cache (Reslin_queasy, {"key": [(eq, "argt-line")],"char1": [(eq, pricecod.code)],"number1": [(eq, pricecod.marknr)],"number2": [(eq, pricecod.argtnr)],"reslinnr": [(eq, pricecod.zikatnr)],"number3": [(eq, fixleist.artnr)],"resnr": [(eq, fixleist.departement)],"date1": [(le, post_date)],"date2": [(ge, post_date)]})
+                    reslin_queasy = db_session.query(Reslin_queasy).filter(
+                             (Reslin_queasy.key == "argt-line") & (Reslin_queasy.char1 == pricecod.code) & (Reslin_queasy.number1 == pricecod.marknr) & (Reslin_queasy.number2 == pricecod.argtnr) & (Reslin_queasy.reslinnr == pricecod.zikatnr) & (Reslin_queasy.number3 == fixleist.artnr) & (Reslin_queasy.resnr == fixleist.departement) & (Reslin_queasy.date1 <= post_date) & (Reslin_queasy.date2 >= post_date)).with_for_update().first()
 
                     if reslin_queasy:
                         pass
