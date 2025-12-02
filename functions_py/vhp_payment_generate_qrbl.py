@@ -2,6 +2,27 @@
 #-----------------------------------------
 # Rd, 02/12/2025, QRIS Payment Integration
 #-----------------------------------------
+# Testing Environment:
+# URL: https://python.staging.e1-vhp.com:10443/dev/Common/paymentGenerateQR
+# Payload Example:
+"""{
+        "request": {
+            "baseUrl": "https://python.staging.e1-vhp.com:10443/dev/",
+            "inputUsername": "it",
+            "inputUserkey": "95EE44CBF839764A7690C157AC66C9C902905E01",
+            "userInit": "41",
+            "deptNumber": 0,
+            "billNumber": 133874,
+            "rsvNumber": 96873,
+            "rsvLineNumber": 1,
+            "paymentChannel": "XENDIT",
+            "paymentAmount": 100000,
+            "splitbillNumber": 0,
+            "hotel_schema": "qcserverless3"
+        }
+    }"""
+#-----------------------------------------
+
 import requests
 import json
 from functions.additional_functions import *
