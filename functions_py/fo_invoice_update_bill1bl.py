@@ -48,7 +48,9 @@ def fo_invoice_update_bill1bl(bill_resnr:int, bill_reslinnr:int, billdatum:date)
     buf_artikel = get_cache (Artikel, {"artnr": [(eq, arrangement.argt_artikelnr)],"departement": [(eq, 0)]})
 
     buf_bill_line = db_session.query(Buf_bill_line).filter(
-             (Buf_bill_line.departement == 0) & (Buf_bill_line.artnr == buf_artikel.artnr) & (Buf_bill_line.bill_datum == billdatum) & (Buf_bill_line.zinr != "") & (Buf_bill_line.massnr == res_line.resnr) & (Buf_bill_line.billin_nr == res_line.reslinnr)).first()
+             (Buf_bill_line.departement == 0) & (Buf_bill_line.artnr == buf_artikel.artnr) & 
+             (Buf_bill_line.bill_datum == billdatum) & (Buf_bill_line.zinr != "") & 
+             (Buf_bill_line.massnr == res_line.resnr) & (Buf_bill_line.billin_nr == res_line.reslinnr)).first()
     skip_it = None != buf_bill_line
 
     if skip_it:

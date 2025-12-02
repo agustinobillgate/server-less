@@ -90,15 +90,14 @@ def gl_allot_autoupdate1(gastno:int, zikatno:int, rmcat:string, from_date:date, 
                 for curr_date in date_range((date1 + 1),date2) :
 
                     # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
-                    # counters.counter = counters.counter + 1
-                    last_count, error_lock = get_output(next_counter_for_update(10))
-                    
+                    counters = db_session.query(Counters).filter(Counters.counter_no == 10).with_for_update().first()
+                    counters.counter = counters.counter + 1
                     kbuff = Kontline()
                     db_session.add(kbuff)
 
                     buffer_copy(kontline, kbuff,except_fields=["ankunft","abreise","kontignr"])
-                    # kbuff.kontignr = counters.counter
-                    kbuff.kontignr = last_count
+                    kbuff.kontignr = counters.counter
+                   
 
                     kbuff.ankunft = curr_date
                     kbuff.abreise = curr_date
@@ -285,15 +284,14 @@ def gl_allot_autoupdate1(gastno:int, zikatno:int, rmcat:string, from_date:date, 
             if not kontline:
 
                 # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
-                # counters.counter = counters.counter + 1
+                counters = db_session.query(Counters).filter(Counters.counter_no == 10).with_for_update().first()
+                counters.counter = counters.counter + 1
                 # pass
-                last_count, error_lock = get_output(next_counter_for_update(10))
                 kontline = Kontline()
                 db_session.add(kontline)
 
                 buffer_copy(t_kontline, kontline,except_fields=["ankunft","abreise","kontignr"])
-                # kontline.kontignr = counters.counter
-                kontline.kontignr = last_count
+                kontline.kontignr = counters.counter
                 
                 kontline.ankunft = allot_list.datum
                 kontline.abreise = allot_list.datum

@@ -153,16 +153,13 @@ def fa_move_move_itbl(location_str:string, qty:int, user_init:string, artnr:int)
             else:
 
                 # counters = get_cache (Counters, {"counter_no": [(eq, 17)]})
-                # counters.counter = counters.counter + 1
-                last_count, error_lock = get_output(next_counter_for_update(17))
-
-                pass
+                counters = db_session.query(Counters).filter(Counters.counter_no == 17).with_for_update().first()
+                counters.counter = counters.counter + 1
                 mabuff = Mathis()
                 db_session.add(mabuff)
 
                 buffer_copy(mathis, mabuff,except_fields=["mathis.nr"])
-                # mabuff.nr = counters.counter
-                mabuff.nr = last_count
+                mabuff.nr = counters.counter
 
 
                 mabuff.location = location_str

@@ -28,19 +28,20 @@ def next_counterbl(counterno:int):
         return {"t-counters": t_counters_data}
     
     # counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
+    counters = db_session.query(Counters).filter(
+                 (Counters.counter_no == counterno)).with_for_update().first()
 
-    # if not counters:
-    #     counters = Counters()
-    #     db_session.add(counters)
+    if not counters:
+        counters = Counters()
+        db_session.add(counters)
 
-    #     counters.counter_no = counterno
-    #     counters.counter_bez = to_string(counterno)
-    #     counters.counter = 0
+        counters.counter_no = counterno
+        counters.counter_bez = to_string(counterno)
+        counters.counter = 0
 
 
-    # counters.counter = counters.counter + 1
-    last_count, error_lock = get_output(next_counter_for_update(counterno))
-    counters = get_cache (Counters, {"counter_no": [(eq, counterno)]})
+    counters.counter = counters.counter + 1
+
 
 
     pass

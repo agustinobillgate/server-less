@@ -989,8 +989,6 @@ def mk_resline_go_1bl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:in
                         
                         counters.counter = counters.counter + 1
                         bill.rechnr = counters.counter
-                        pass
-                        pass
                         master.rechnr = bill.rechnr
                         pass
                 bill.gastnr = reslin_list.gastnr

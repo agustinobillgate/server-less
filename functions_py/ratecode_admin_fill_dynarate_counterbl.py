@@ -5,6 +5,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import Counters, Ratecode, Queasy, Zimkateg
+from sqlalchemy.orm import flag_modified
 
 def ratecode_admin_fill_dynarate_counterbl(r_code:string, dynarate_list_rmtype:string, dynarate_list_rcode:string, dynarate_list_w_day:int):
 
@@ -48,7 +49,7 @@ def ratecode_admin_fill_dynarate_counterbl(r_code:string, dynarate_list_rmtype:s
         pass
         ratecode.char1[4] = "CN" + to_string(curr_counter) + ";" +\
                 ratecode.char1[4]
-
+        flag_modified(ratecode, "char1")
 
         pass
 
@@ -65,7 +66,8 @@ def ratecode_admin_fill_dynarate_counterbl(r_code:string, dynarate_list_rmtype:s
                             Zimkateg.kurzbez == dynarate_list_rmtype).first()
             if zimkateg : 
                 for queasy in db_session.query(Queasy).filter(
-                        (Queasy.key == 145) & (Queasy.char1 == ratecode.code) & (Queasy.char2 == dynarate_list_rcode) & (Queasy.number1 == zimkateg.zikatnr) & (Queasy.deci1 == dynarate_list_w_day)).order_by(Queasy._recid).all():
+                        (Queasy.key == 145) & (Queasy.char1 == ratecode.code) & (Queasy.char2 == dynarate_list_rcode) & 
+                        (Queasy.number1 == zimkateg.zikatnr) & (Queasy.deci1 == dynarate_list_w_day)).order_by(Queasy._recid).with_for_update().all():
                     queasy.deci2 =  to_decimal(curr_counter)
             else:
                 return

@@ -42,8 +42,10 @@ def deactivate_ooo2_1bl(user_nr:int, oos_flag:bool, ci_date:date, ooo_list2_data
 
     ooo_list2 = query(ooo_list2_data, first=True)
 
-    outorder = get_cache (Outorder, {"zinr": [(eq, ooo_list2.zinr)],"betriebsnr": [(eq, ooo_list2.betriebsnr)],"gespstart": [(eq, ooo_list2.gespstart)],"gespende": [(eq, ooo_list2.gespende)]})
-
+    # outorder = get_cache (Outorder, {"zinr": [(eq, ooo_list2.zinr)],"betriebsnr": [(eq, ooo_list2.betriebsnr)],"gespstart": [(eq, ooo_list2.gespstart)],"gespende": [(eq, ooo_list2.gespende)]})
+    outorder = db_session.query(Outorder).filter(
+                 (Outorder.zinr == ooo_list2.zinr) & (Outorder.betriebsnr == ooo_list2.betriebsnr) & 
+                 (Outorder.gespstart == ooo_list2.gespstart) & (Outorder.gespende == ooo_list2.gespende)).with_for_update().first()
     if outorder.betriebsnr <= 1:
         res_history = Res_history()
         db_session.add(res_history)

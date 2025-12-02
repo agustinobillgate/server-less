@@ -30,7 +30,9 @@ def mk_aktion_btn_gobl(t_akthdr_data:[T_akthdr]):
 
         return {"curr_counter": curr_counter}
 
-    counters = get_cache (Counters, {"counter_no": [(eq, 26)]})
+    # counters = get_cache (Counters, {"counter_no": [(eq, 26)]})
+    counters = db_session.query(Counters).filter(
+             (Counters.counter_no == 26)).with_for_update().first()
 
     if not counters:
         counters = Counters()
@@ -38,12 +40,9 @@ def mk_aktion_btn_gobl(t_akthdr_data:[T_akthdr]):
 
         counters.counter_no = 26
         counters.counter_bez = "Counter for sales activity"
-    # counters.counter = counters.counter + 1
+    counters.counter = counters.counter + 1
 
-    last_count, error_lock = get_output(next_counter_for_update(26))
-
-    # curr_counter = counters.counter
-    curr_counter = last_count
+    curr_counter = counters.counter
 
     pass
 
@@ -52,7 +51,6 @@ def mk_aktion_btn_gobl(t_akthdr_data:[T_akthdr]):
     db_session.add(akthdr)
 
     buffer_copy(t_akthdr, akthdr)
-    # akthdr.aktnr = counters.counter
-    akthdr.aktnr = curr_counter
+    akthdr.aktnr = counters.counter
 
     return generate_output()

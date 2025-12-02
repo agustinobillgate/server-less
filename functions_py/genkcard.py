@@ -90,7 +90,8 @@ def genkcard(ipccommand:int, iocroomno:string, room2:string, room3:string, iodfr
             st = st + ";R3" + room3
         ct = "XW" + ";PN" + "1" + ";RN" + lvcroom + st + ";NA" + gname + ";KC" + lvcport + ";TY" + lvccard + ";ct" + to_string(ioitimefrom) + ";OT" + to_string(ioitimeto) + ";CD" + to_string(get_month(iodfrom) , "99") + "/" + to_string(get_day(iodfrom) , "99") + "/" + to_string(get_year(iodfrom) , "9999") + ";OD" + to_string(get_month(iodto) , "99") + "/" + to_string(get_day(iodto) , "99") + "/" + to_string(get_year(iodto) , "9999") + ";ID" + user_init + ";T1" + t1_info + ";T2" + "-" + ";T3" + "-" + ";FL" + floor + ";BD" + building
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 30)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 30)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == 30).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -100,13 +101,9 @@ def genkcard(ipccommand:int, iocroomno:string, room2:string, room3:string, iodfr
             counters.counter_bez = "Counter for KeyCard Sequence"
 
 
-        # counters.counter = counters.counter + 1
-        # last_count, error_lock = get_output(next_counter_for_update(30))
-
-        # if counters.counter > 9999:
-        #     counters.counter = 1
-        counters = db_session.query(Counters).filter(Counters.counter_no == 30).with_for_update().first()
         counters.counter = counters.counter + 1
+
+
         if counters.counter > 9999:
             counters.counter = 1
         db_session.commit()
@@ -146,7 +143,8 @@ def genkcard(ipccommand:int, iocroomno:string, room2:string, room3:string, iodfr
         ct:string = ""
         ct = "XR" + ";KC" + lvcport
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 30)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 30)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == 30).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -156,15 +154,11 @@ def genkcard(ipccommand:int, iocroomno:string, room2:string, room3:string, iodfr
             counters.counter_bez = "Counter for KeyCard Sequence"
 
 
-        # counters.counter = counters.counter + 1
-
-        # if counters.counter > 99999999:
-        #     counters.counter = 1
-
-        counters = db_session.query(Counters).filter(Counters.counter_no == 30).with_for_update().first()
         counters.counter = counters.counter + 1
+
         if counters.counter > 99999999:
             counters.counter = 1
+
         db_session.commit()
 
         pass
@@ -201,7 +195,8 @@ def genkcard(ipccommand:int, iocroomno:string, room2:string, room3:string, iodfr
         ct:string = ""
         ct = "XE" + ";KC" + lvcport + ";RN" + lvcroom
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 30)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 30)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == 30).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -211,12 +206,8 @@ def genkcard(ipccommand:int, iocroomno:string, room2:string, room3:string, iodfr
             counters.counter_bez = "Counter for KeyCard Sequence"
 
 
-        # counters.counter = counters.counter + 1
-
-        # if counters.counter > 99999999:
-        #     counters.counter = 1
-        counters = db_session.query(Counters).filter(Counters.counter_no == 30).with_for_update().first()
         counters.counter = counters.counter + 1
+
         if counters.counter > 99999999:
             counters.counter = 1
         db_session.commit()
@@ -283,12 +274,12 @@ def genkcard(ipccommand:int, iocroomno:string, room2:string, room3:string, iodfr
             lvccard = to_string(-1 + to_int(entry(1, entry(lviidx - 1, iocparms) , "=")))
         elif entry(0, entry(lviidx - 1, iocparms) , "=") == "coder":
             lvcport = entry(1, entry(lviidx - 1, iocparms) , "=")
+    # Remark: The following block is commented out in the original code
+    # if lvcport == "":
+    #     for lviidx in range(1,num_entries(SESSION:PARAMETER, ";")  + 1) :
 
-    if lvcport == "":
-        for lviidx in range(1,num_entries(SESSION:PARAMETER, ";")  + 1) :
-
-            if trim(entry(lviidx - 1, SESSION:PARAMETER, ";")) BEGINS "coder":
-                lvcport = entry(1, entry(lviidx - 1, SESSION:PARAMETER, ";") , "=")
+    #         if trim(entry(lviidx - 1, SESSION:PARAMETER, ";")) BEGINS "coder":
+    #             lvcport = entry(1, entry(lviidx - 1, SESSION:PARAMETER, ";") , "=")
 
 
     lvcroom = iocroomno

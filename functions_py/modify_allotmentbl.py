@@ -303,7 +303,8 @@ def modify_allotmentbl(i_case:int, user_init:string, reslin_list_data:[Reslin_li
             if queasy:
 
                 for kline in db_session.query(Kline).filter(
-                         (Kline.gastnr == kontline.gastnr) & (Kline.kontstatus == 1) & (Kline.kontcode == kontline.kontcode) & (Kline._recid != kontline._recid)).order_by(Kline._recid).all():
+                         (Kline.gastnr == kontline.gastnr) & (Kline.kontstatus == 1) & (Kline.kontcode == kontline.kontcode) & 
+                         (Kline._recid != kontline._recid)).order_by(Kline._recid).with_for_update().all():
                     kline.pr_code = queasy.char3
 
     def check_slist1():
@@ -319,7 +320,9 @@ def modify_allotmentbl(i_case:int, user_init:string, reslin_list_data:[Reslin_li
 
         for s_list in query(s_list_data):
 
-            kline = get_cache (Kontline, {"kontcode": [(eq, kontline.kontcode)],"ankunft": [(eq, s_list.datum)]})
+            # kline = get_cache (Kontline, {"kontcode": [(eq, kontline.kontcode)],"ankunft": [(eq, s_list.datum)]})
+            kline = db_session.query(Kline).filter(
+                         (Kline.kontcode == kontline.kontcode) & (Kline.ankunft == s_list.datum)).with_for_update().first()
 
             if kline and kline.zimmeranz < s_list.qty:
                 pass

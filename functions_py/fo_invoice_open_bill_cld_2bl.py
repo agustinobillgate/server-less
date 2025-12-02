@@ -267,18 +267,13 @@ def fo_invoice_open_bill_cld_2bl(bil_flag:int, bil_recid:int, room:string, vipfl
         if not mbill:
 
             # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-            # counters.counter = counters.counter + 1
-            # pass
-            last_count, error_lock = get_output(next_counter_for_update(3))
+            counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+            counters.counter = counters.counter + 1
             mbill = Bill()
             db_session.add(mbill)
 
-            # mbill.rechnr = counters.counter
-            mbill.rechnr = last_count
-            pass
-            pass
+            mbill.rechnr = counters.counter
             master.rechnr = mbill.rechnr
-            pass
 
         if mbill:
             master_str = "Master Bill"

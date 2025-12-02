@@ -65,14 +65,14 @@ def close_inventory_step2bl(inv_type:int, m_endkum:int, closedate:date):
                 pass
 
             l_opbuff = db_session.query(L_opbuff).filter(
-                         (L_opbuff._recid == l_op._recid)).first()
+                         (L_opbuff._recid == l_op._recid)).with_for_update().first()
             db_session.delete(l_opbuff)
             pass
 
         elif not l_artikel:
 
             l_opbuff = db_session.query(L_opbuff).filter(
-                         (L_opbuff._recid == l_op._recid)).first()
+                         (L_opbuff._recid == l_op._recid)).with_for_update().first()
             db_session.delete(l_opbuff)
             pass
 
@@ -102,7 +102,7 @@ def close_inventory_step2bl(inv_type:int, m_endkum:int, closedate:date):
         buffer_copy(l_ophdr, l_ophhis)
 
         l_ophbuff = db_session.query(L_ophbuff).filter(
-                     (L_ophbuff._recid == l_ophdr._recid)).first()
+                     (L_ophbuff._recid == l_ophdr._recid)).with_for_update().first()
         db_session.delete(l_ophbuff)
         pass
 

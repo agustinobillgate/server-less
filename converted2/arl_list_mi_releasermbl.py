@@ -37,8 +37,9 @@ def arl_list_mi_releasermbl(rec_id:int, user_init:string):
 
         return generate_output()
 
-    outorder = get_cache (Outorder, {"zinr": [(eq, res_line.zinr)],"gespstart": [(ge, res_line.ankunft)],"gespende": [(le, res_line.ankunft)]})
-
+    # outorder = get_cache (Outorder, {"zinr": [(eq, res_line.zinr)],"gespstart": [(ge, res_line.ankunft)],"gespende": [(le, res_line.ankunft)]})
+    outorder = db_session.query(Outorder).filter(
+             (Outorder.zinr == res_line.zinr) & (Outorder.gespstart >= res_line.ankunft) & (Outorder.gespende <= res_line.ankunft)).with_for_update().first()
     if not outorder:
         fl_error = 1
 

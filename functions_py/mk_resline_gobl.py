@@ -899,8 +899,7 @@ def mk_resline_gobl(pvilanguage:int, accompany_tmpnr1:int, accompany_tmpnr2:int,
                                  (Counters.counter_no == 3)).with_for_update().first()
                         counters.counter = counters.counter + 1
                         bill.rechnr = counters.counter
-                        pass
-                        pass
+                        
                         master.rechnr = bill.rechnr
                         pass
                 bill.gastnr = reslin_list.gastnr

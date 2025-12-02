@@ -403,10 +403,10 @@ def post_dayuse(resnr:int, reslinnr:int):
         if bill.rechnr == 0:
 
             # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-            # counters.counter = counters.counter + 1
-            # bill.rechnr = counters.counter
-            last_count, error_lock = get_output(next_counter_for_update(3))
-            bill.rechnr = last_count
+            counters = db_session.query(Counters).filter(
+                     (Counters.counter_no == 3)).with_for_update().first()
+            counters.counter = counters.counter + 1
+            bill.rechnr = counters.counter
             
             pass
         bill_line = Bill_line()
@@ -433,7 +433,9 @@ def post_dayuse(resnr:int, reslinnr:int):
             bill_line.epreis =  to_decimal(amount)
         pass
 
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, artikel.artnr)],"departement": [(eq, artikel.departement)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == artikel.artnr) & (Umsatz.departement == artikel.departement) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()

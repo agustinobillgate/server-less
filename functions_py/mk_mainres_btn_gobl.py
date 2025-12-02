@@ -209,13 +209,10 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
                     else:
 
                         # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                        # counters.counter = counters.counter + 1
-                        # bill.rechnr = counters.counter
-                        # pass
-                        # pass
-                        # master.rechnr = bill.rechnr
-                        last_count, error_lock = get_output(next_counter_for_update(3))
-                        bill.rechnr = last_count
+                        counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+                        counters.counter = counters.counter + 1
+                        bill.rechnr = counters.counter
+                        master.rechnr = bill.rechnr
                         
                         pass
                 bill.gastnr = gastnrpay
@@ -226,7 +223,7 @@ def mk_mainres_btn_gobl(pvilanguage:int, inp_resnr:int, resart:int, last_segm:in
                 pass
 
                 buff_bill = db_session.query(Buff_bill).filter(
-                         (Buff_bill.rechnr == bill.rechnr) & (Buff_bill.resnr == 0) & (Buff_bill.reslinnr == 1) & (Buff_bill.billtyp != 2)).first()
+                         (Buff_bill.rechnr == bill.rechnr) & (Buff_bill.resnr == 0) & (Buff_bill.reslinnr == 1) & (Buff_bill.billtyp != 2)).with_for_update().first()
 
                 if buff_bill:
                     pass
