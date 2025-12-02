@@ -53,7 +53,8 @@ def eg_mkreq_btn_go_webbl(request1_data:[Request1], sguestflag:bool, sub_str:str
         Usr =  create_buffer("Usr",Bediener)
         Buff_property =  create_buffer("Buff_property",Eg_property)
 
-        counters = get_cache (Counters, {"counter_no": [(eq, 34)]})
+        # counters = get_cache (Counters, {"counter_no": [(eq, 34)]})
+        counters = db_session.query(Counters).filter(Counters.counter_no == 34).with_for_update().first()
 
         if not counters:
             counters = Counters()
@@ -67,12 +68,10 @@ def eg_mkreq_btn_go_webbl(request1_data:[Request1], sguestflag:bool, sub_str:str
             pass
         else:
             pass
-            # counters.counter = counters.counter + 1
-            last_count, error_lock = get_output(next_counter_for_update(34))
+            counters.counter = counters.counter + 1
 
             pass
-        # request1.reqnr = counters.counter
-        request1.reqnr = last_count
+        request1.reqnr = counters.counter
 
         request1.opened_time = get_current_time_in_seconds()
 

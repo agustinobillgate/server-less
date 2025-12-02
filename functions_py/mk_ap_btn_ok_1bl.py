@@ -174,7 +174,9 @@ def mk_ap_btn_ok_1bl(s_list_data:[S_list], pvilanguage:int, invoice:string, jour
 
         if journ_flag:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+            counters = db_session.query(Counters).filter(
+                     (Counters.counter_no == 25)).with_for_update().first()
 
             if not counters:
                 counters = Counters()
@@ -182,15 +184,11 @@ def mk_ap_btn_ok_1bl(s_list_data:[S_list], pvilanguage:int, invoice:string, jour
 
                 counters.counter_no = 25
                 counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
-            # counters.counter = counters.counter + 1
-            last_count, error_lock = get_output(next_counter_for_update(25))
-
-            pass
+            counters.counter = counters.counter + 1
             gl_jouhdr = Gl_jouhdr()
             db_session.add(gl_jouhdr)
 
-            # gl_jouhdr.jnr = counters.counter
-            gl_jouhdr.jnr = last_count
+            gl_jouhdr.jnr = counters.counter
 
             gl_jouhdr.refno = docu_nr
             gl_jouhdr.datum = rgdatum

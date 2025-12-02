@@ -88,7 +88,9 @@ def check_timebl(case_type:int, id_table:int, id_table1:int, name_table:string, 
             queasy = get_cache (Queasy, {"key": [(eq, 9999)],"char1": [(eq, name_table)],"number2": [(eq, id_table)],"number3": [(eq, id_table1)]})
         else:
 
-            queasy = get_cache (Queasy, {"key": [(eq, 9999)],"char1": [(eq, name_table)],"number2": [(eq, id_table)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 9999)],"char1": [(eq, name_table)],"number2": [(eq, id_table)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 9999) & (Queasy.char1 == name_table) & (Queasy.number2 == id_table)).with_for_update().first()
 
         if queasy:
 

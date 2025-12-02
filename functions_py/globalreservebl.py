@@ -75,7 +75,9 @@ def globalreservebl(case_type:int, k_list_data:[K_list], rmcat:string, gastnr:in
         last_code = k_list.kontcode
         for datum in date_range(k_list.ankunft,k_list.abreise) :
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, 10)]})
+            counters = db_session.query(Counters).filter(
+                (Counters.counter_no == 10)).with_for_update().first()
 
             if not counters:
                 counters = Counters()
@@ -83,13 +85,11 @@ def globalreservebl(case_type:int, k_list_data:[K_list], rmcat:string, gastnr:in
 
                 counters.counter_no = 10
                 counters.counter_bez = "Allotment counter"
-            # counters.counter = counters.counter + 1
-            last_count, error_lock = get_output(next_counter_for_update(10))
+            counters.counter = counters.counter + 1
             kontline = Kontline()
             db_session.add(kontline)
 
-            # kontline.kontignr = counters.counter
-            kontline.kontignr = last_count
+            kontline.kontignr = counters.counter
 
             pass
             kontline.gastnr = gastnr

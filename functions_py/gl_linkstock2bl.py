@@ -51,19 +51,17 @@ def gl_linkstock2bl(pvilanguage:int, link_in:bool, to_date:date, remains:Decimal
 
 
         # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+        counters = db_session.query(Counters).filter(
+                 (Counters.counter_no == 25)).with_for_update().first()
 
-        # if not counters:
-        #     counters = Counters()
-        #     db_session.add(counters)
+        if not counters:
+            counters = Counters()
+            db_session.add(counters)
 
-        #     counters.counter_no = 25
-        #     counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = get_output(next_counter_for_update(25))
-
-        pass
-        # gl_jouhdr.jnr = counters.counter
-        gl_jouhdr.jnr = last_count
+            counters.counter_no = 25
+            counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
+        counters.counter = counters.counter + 1
+        gl_jouhdr.jnr = counters.counter
 
 
         gl_jouhdr.refno = refno

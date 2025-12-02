@@ -282,7 +282,7 @@ def clclosingbl():
             cl_histstatus.zeit = get_current_time_in_seconds()
 
             for cl_enroll in db_session.query(Cl_enroll).filter(
-                         (Cl_enroll.codenum == cl_member.codenum)).order_by(Cl_enroll._recid).all():
+                         (Cl_enroll.codenum == cl_member.codenum)).order_by(Cl_enroll._recid).with_for_update().all():
                 db_session.delete(cl_enroll)
 
 
@@ -304,7 +304,7 @@ def clclosingbl():
             store_dur = htparam.finteger
 
         for cl_checkin in db_session.query(Cl_checkin).filter(
-                 ((Cl_checkin.datum - get_current_date()) > store_dur)).order_by(Cl_checkin._recid).all():
+                 ((Cl_checkin.datum - get_current_date()) > store_dur)).order_by(Cl_checkin._recid).with_for_update().all():
 
             checkin = db_session.query(Checkin).filter(
                      (Checkin._recid == cl_checkin._recid)).first()
@@ -312,7 +312,7 @@ def clclosingbl():
             pass
 
         for cl_histci in db_session.query(Cl_histci).filter(
-                 ((Cl_histci.datum - get_current_date()) > store_dur)).order_by(Cl_histci._recid).all():
+                 ((Cl_histci.datum - get_current_date()) > store_dur)).order_by(Cl_histci._recid).with_for_update().all():
 
             clhist = db_session.query(Clhist).filter(
                      (Clhist._recid == cl_histci._recid)).first()
@@ -320,7 +320,7 @@ def clclosingbl():
             pass
 
         for cl_histvisit in db_session.query(Cl_histvisit).filter(
-                 ((Cl_histvisit.datum - get_current_date()) > store_dur)).order_by(Cl_histvisit._recid).all():
+                 ((Cl_histvisit.datum - get_current_date()) > store_dur)).order_by(Cl_histvisit._recid).with_for_update().all():
 
             visit = db_session.query(Visit).filter(
                      (Visit._recid == cl_histvisit._recid)).first()

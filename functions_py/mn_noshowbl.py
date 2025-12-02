@@ -211,18 +211,16 @@ def mn_noshowbl(pvilanguage:int):
         deposit, deposit_foreign = calculate_deposit_amount(bill_date)
 
         # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-        # counters.counter = counters.counter + 1
-        # pass
-        last_count, error_lock = get_output(next_counter_for_update(3))
-
+        counters = db_session.query(Counters).filter(
+                 (Counters.counter_no == 3)).with_for_update().first()
+        counters.counter = counters.counter + 1
 
         gbuff = get_cache (Guest, {"gastnr": [(eq, reservation.gastnr)]})
         bill = Bill()
         db_session.add(bill)
 
         bill.gastnr = reservation.gastnr
-        # bill.rechnr = counters.counter
-        bill.rechnr = last_count
+        bill.rechnr = counters.counter
         
         bill.datum = bill_date
         bill.billtyp = 0
@@ -290,7 +288,9 @@ def mn_noshowbl(pvilanguage:int):
 
         # Rulita, 11-11-2025 
         # Fixing tabel name depoArt to depoart
-        umsatz = get_cache (Umsatz, {"artnr": [(eq, depoart.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+        # umsatz = get_cache (Umsatz, {"artnr": [(eq, depoart.artnr)],"departement": [(eq, 0)],"datum": [(eq, bill_date)]})
+        umsatz = db_session.query(Umsatz).filter(
+                     (Umsatz.artnr == depoart.artnr) & (Umsatz.departement == 0) & (Umsatz.datum == bill_date)).with_for_update().first()
 
         if not umsatz:
             umsatz = Umsatz()

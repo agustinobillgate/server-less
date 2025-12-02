@@ -48,7 +48,8 @@ def gl_transf_headoffice2bl(lic_nr:string, t_gl_jouhdr_data:[T_gl_jouhdr], t_gl_
                 db_session.delete(gl_journal)
         else:
 
-            counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+            # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+            counters = db_session.query(Counters).filter(Counters.counter_no == 25).with_for_update().first()
 
             if not counters:
                 counters = Counters()
@@ -57,18 +58,14 @@ def gl_transf_headoffice2bl(lic_nr:string, t_gl_jouhdr_data:[T_gl_jouhdr], t_gl_
                 counters.counter_no = 25
                 counters.counter_bez = "G/L Transaction Journal"
 
-
-            # counters.counter = counters.counter + 1
-            last_count, error_lock = get_output(next_counter_for_update(25))
-
-
+            counters.counter = counters.counter + 1
+ 
             pass
             gl_htljournal = Gl_htljournal()
             db_session.add(gl_htljournal)
 
             gl_htljournal.htl_jnr = t_gl_jouhdr.jnr
-            # gl_htljournal.jnr = counters.counter
-            gl_htljournal.jnr = last_count
+            gl_htljournal.jnr = counters.counter
 
             gl_htljournal.htl_license = lic_nr
             gl_htljournal.datum = t_gl_jouhdr.datum

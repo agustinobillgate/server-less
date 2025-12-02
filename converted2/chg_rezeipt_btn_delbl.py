@@ -16,7 +16,9 @@ def chg_rezeipt_btn_delbl(h_recid:int):
         return {}
 
 
-    h_rezlin = get_cache (H_rezlin, {"_recid": [(eq, h_recid)]})
+    # h_rezlin = get_cache (H_rezlin, {"_recid": [(eq, h_recid)]})
+    h_rezlin = db_session.query(H_rezlin).filter(
+             (H_rezlin._recid == h_recid)).with_for_update().first()
 
     if h_rezlin:
         pass

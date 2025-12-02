@@ -16,7 +16,9 @@ def basetup_email_btn_delartbl(recid_queasy:int):
         return {}
 
 
-    queasy = get_cache (Queasy, {"_recid": [(eq, recid_queasy)]})
+    # queasy = get_cache (Queasy, {"_recid": [(eq, recid_queasy)]})
+    queasy = db_session.query(Queasy).filter(
+             (Queasy._recid == recid_queasy)).with_for_update().first()
     db_session.delete(queasy)
     pass
 

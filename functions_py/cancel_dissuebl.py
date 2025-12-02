@@ -54,8 +54,10 @@ def cancel_dissuebl(lief_nr:int, docu_nr:string, user_init:string):
 
             return
 
-        l_kredit = get_cache (L_kredit, {"name": [(eq, docu_nr)],"saldo": [(eq, - t_amount)],"lief_nr": [(eq, lief_nr)],"rgdatum": [(eq, billdate)]})
-
+        # l_kredit = get_cache (L_kredit, {"name": [(eq, docu_nr)],"saldo": [(eq, - t_amount)],"lief_nr": [(eq, lief_nr)],"rgdatum": [(eq, billdate)]})
+        l_kredit = db_session.query(L_kredit).filter(
+                 (L_kredit.name == docu_nr) & (L_kredit.saldo == ( - t_amount)) & (L_kredit.lief_nr == lief_nr) &
+                 (L_kredit.rgdatum == billdate)).with_for_update().first()
         if l_kredit:
             pass
             db_session.delete(l_kredit)

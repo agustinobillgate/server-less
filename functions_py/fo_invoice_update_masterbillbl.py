@@ -1,11 +1,13 @@
 #using conversion tools version: 1.0.0.117
-
+#------------------------------------------
+# Rd, 3/12/2025, Locking Test
+#------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from functions.i_inv_ar import *
-from functions.i_update_masterbl import *
-from functions.i_master_taxserv import *
+from functions.i_update_masterbl import i_update_masterbl
+from functions.i_master_taxserv import i_master_taxserv
 from models import Bill, Artikel
 
 def fo_invoice_update_masterbillbl(pvilanguage:int, bil_recid:int, curr_department:int, currzeit:int, amount:Decimal, amount_foreign:Decimal, billart:int, description:string, qty:int, curr_room:string, user_init:string, artnr:int, price:Decimal, cancel_str:string, exchg_rate:Decimal, price_decimal:int, double_currency:bool, master_flag:bool):
@@ -33,7 +35,7 @@ def fo_invoice_update_masterbillbl(pvilanguage:int, bil_recid:int, curr_departme
     artikel = get_cache (Artikel, {"artnr": [(eq, artnr)],"departement": [(eq, curr_department)]})
 
     if artikel:
-        master_flag = update_masterbill(currzeit)
+        master_flag = i_update_masterbl(currzeit)
 
 
     return generate_output()

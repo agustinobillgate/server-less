@@ -86,20 +86,17 @@ def ap_debtpay_settle_payment_1bl(pay_list_data:[Pay_list], age_list_data:[Age_l
             if count == 0:
 
                 # counters = get_cache (Counters, {"counter_no": [(eq, 24)]})
+                counters = db_session.query(Counters).filter(Counters.counter_no == 24).with_for_update().first()
 
-                # if not counters:
-                #     counters = Counters()
-                #     db_session.add(counters)
+                if not counters:
+                    counters = Counters()
+                    db_session.add(counters)
 
-                #     counters.counter_no = 24
-                #     counters.counter_bez = "Accounts Payable"
-                # counters.counter = counters.counter + 1
-                # l_kredit1.counter = counters.counter
+                    counters.counter_no = 24
+                    counters.counter_bez = "Accounts Payable"
+                counters.counter = counters.counter + 1
+                l_kredit1.counter = counters.counter
 
-                #Rd, use next_counter_for_update to get the counter with locking
-                # 22/11/2025
-                last_count, error_lock = get_output(next_counter_for_update(24))
-                l_kredit1.counter = last_count
                 count = l_kredit1.counter
                 pass
 

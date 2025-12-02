@@ -8,7 +8,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
-from models import Bill, Res_line, Guest, Htparam, Reslin_queasy, Reservation, Zimmer, Waehrung, Master, Counters, Queasy, Guestseg
+from models import Bill, Res_line, Guest, Htparam, Reslin_queasy, Reservation, Zimmer, Waehrung, Master, Counters, Queasy, Guestseg, counters
 from functions.next_counter_for_update import next_counter_for_update
 
 def fo_invoice_open_bill_cld_1bl(bil_flag:int, bil_recid:int, room:string, vipflag:bool):
@@ -243,16 +243,12 @@ def fo_invoice_open_bill_cld_1bl(bil_flag:int, bil_recid:int, room:string, vipfl
             if not mbill:
 
                 # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                # counters.counter = counters.counter + 1
-                pass
-                last_count, error_lock = get_output(next_counter_for_update(3))
+                counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+                counters.counter = counters.counter + 1
                 mbill = Bill()
                 db_session.add(mbill)
 
-                # mbill.rechnr = counters.counter
-                mbill.rechnr = last_count
-                pass
-                pass
+                mbill.rechnr = counters.counter
                 master.rechnr = mbill.rechnr
                 pass
 

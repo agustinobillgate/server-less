@@ -164,16 +164,15 @@ def create_ar_membershipbl(guestno:int, init_fee:Decimal, mber_fee:Decimal, user
         nonlocal mbuff, gbuff, gbuff1, artikel1, fbuff, tbuff
 
         # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-        # counters.counter = counters.counter + 1
-        last_count, error_lock = get_output(next_counter_for_update(3))
+        counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+        counters.counter = counters.counter + 1
 
         pass
         bill = Bill()
         db_session.add(bill)
 
         bill.gastnr = guestno
-        # bill.rechnr = counters.counter
-        bill.rechnr = last_count
+        bill.rechnr = counters.counter
         
 
         bill.datum = billdate

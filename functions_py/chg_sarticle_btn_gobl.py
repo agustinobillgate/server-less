@@ -3,6 +3,7 @@
 from functions.additional_functions import *
 from decimal import Decimal
 from models import L_artikel, Gl_acct, L_untergrup, Queasy, Bediener, Res_history, L_op, L_ophis, L_order, L_bestand, L_lager, L_besthis, L_verbrauch, L_pprice, H_rezlin, Dml_art, Dml_artdep
+from sqlalchemy.orm import flag_modified
 
 tt_artnr_data, Tt_artnr = create_model("Tt_artnr", {"curr_i":int, "ss_artnr":int})
 tt_content_data, Tt_content = create_model("Tt_content", {"curr_i":int, "ss_content":int})
@@ -49,7 +50,9 @@ def chg_sarticle_btn_gobl(pvilanguage:int, tt_artnr_data:[Tt_artnr], tt_content_
 
         nonlocal l_art, tt_artnr, tt_content, l_art1, l_art2
 
-        l_artikel = get_cache (L_artikel, {"_recid": [(eq, t_recid)]})
+        # l_artikel = get_cache (L_artikel, {"_recid": [(eq, t_recid)]})
+        l_artikel = db_session.query(L_artikel).filter(
+                 (L_artikel._recid == t_recid)).with_for_update().first()
 
         if l_artikel:
             pass
@@ -79,11 +82,14 @@ def chg_sarticle_btn_gobl(pvilanguage:int, tt_artnr_data:[Tt_artnr], tt_content_
             l_artikel.ek_aktuell =  to_decimal(l_art.ek_aktuell)
             l_artikel.ek_letzter =  to_decimal(l_art.ek_letzter)
             l_artikel.vk_preis =  to_decimal(l_art.vk_preis)
-
+            flag_modified(l_artikel, "lief_artnr")
+            
 
             pass
 
-            queasy = get_cache (Queasy, {"key": [(eq, 20)],"number1": [(eq, artnr)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 20)],"number1": [(eq, artnr)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 20) & (Queasy.number1 == artnr)).with_for_update().first()
 
             if ss_artnr[0] != 0 or ss_artnr[1] != 0 or ss_artnr[2] != 0 or picture_file != "":
 

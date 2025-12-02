@@ -16,7 +16,9 @@ def batype_admin_btn_delartbl(rec_id:int):
         return {}
 
 
-    ba_typ = get_cache (Ba_typ, {"_recid": [(eq, rec_id)]})
+    # ba_typ = get_cache (Ba_typ, {"_recid": [(eq, rec_id)]})
+    ba_typ = db_session.query(Ba_typ).filter(
+             (Ba_typ._recid == rec_id)).with_for_update().first()
 
     if ba_typ:
         db_session.delete(ba_typ)

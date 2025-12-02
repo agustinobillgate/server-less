@@ -32,7 +32,7 @@ def create_gcf_webbl(gnat:string, gland:string, def_natcode:string, gastid:strin
         curr_gastnr = 0
 
         guest = db_session.query(Guest).filter(
-                 (Guest.gastnr < 0)).first()
+                 (Guest.gastnr < 0)).with_for_update().first()
 
         if guest:
             curr_gastnr = - guest.gastnr
@@ -45,8 +45,7 @@ def create_gcf_webbl(gnat:string, gland:string, def_natcode:string, gastid:strin
 
         if curr_gastnr == 0:
 
-            guest = db_session.query(Guest).order_by(Guest._recid.desc()).first()
-
+            guest = db_session.query(Guest).order_by(Guest._recid.desc()).with_for_update().first()
             if guest:
                 curr_gastnr = guest.gastnr + 1
             else:

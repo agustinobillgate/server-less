@@ -169,10 +169,9 @@ def inv_update_billbl(pvilanguage:int, bil_flag:int, invoice_type:string, transd
             if bill.rechnr == 0:
 
                 # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                # counters.counter = counters.counter + 1
-                # bill.rechnr = counters.counter
-                last_count, error_lock = get_output(next_counter_for_update(3))
-                bill.rechnr = last_count
+                counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+                counters.counter = counters.counter + 1
+                bill.rechnr = counters.counter
 
 
                 if transdate != None:
@@ -854,11 +853,9 @@ def inv_update_billbl(pvilanguage:int, bil_flag:int, invoice_type:string, transd
             if mbill.rechnr == 0:
 
                 # counters = get_cache (Counters, {"counter_no": [(eq, 3)]})
-                # counters.counter = counters.counter + 1
-                # mbill.rechnr = counters.counter
-
-                last_count, error_lock = get_output(next_counter_for_update(3))
-                mbill.rechnr = last_count
+                counters = db_session.query(Counters).filter(Counters.counter_no == 3).with_for_update().first()
+                counters.counter = counters.counter + 1
+                mbill.rechnr = counters.counter
 
                 if master:
                     master.rechnr = mbill.rechnr

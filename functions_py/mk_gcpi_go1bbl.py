@@ -46,7 +46,9 @@ def mk_gcpi_go1bbl(pvilanguage:int, docu_nr:string, billdate:date, journaltype:i
     gc_pi.debit_fibu = pi_acctno
     gc_pi.pi_status = 1
 
-    counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+    # counters = get_cache (Counters, {"counter_no": [(eq, 25)]})
+    counters = db_session.query(Counters).filter(
+             (Counters.counter_no == 25)).with_for_update().first()
 
     if not counters:
         counters = Counters()
@@ -54,16 +56,14 @@ def mk_gcpi_go1bbl(pvilanguage:int, docu_nr:string, billdate:date, journaltype:i
 
         counters.counter_no = 25
         counters.counter_bez = translateExtended ("G/L Transaction Journal", lvcarea, "")
-    # counters.counter = counters.counter + 1
+    counters.counter = counters.counter + 1
 
-    last_count, error_lock = get_output(next_counter_for_update(25))
 
     pass
     gl_jouhdr = Gl_jouhdr()
     db_session.add(gl_jouhdr)
 
-    # gl_jouhdr.jnr = counters.counter
-    gl_jouhdr.jnr = last_count
+    gl_jouhdr.jnr = counters.counter
 
     gl_jouhdr.jtype = journaltype
     gl_jouhdr.batch = True
@@ -93,8 +93,7 @@ def mk_gcpi_go1bbl(pvilanguage:int, docu_nr:string, billdate:date, journaltype:i
     gl_journal = Gl_journal()
     db_session.add(gl_journal)
 
-    # gl_journal.jnr = counters.counter
-    gl_journal.jnr = last_count
+    gl_journal.jnr = counters.counter
     
     gl_journal.credit =  to_decimal(gc_pi.betrag)
     gl_journal.userinit = user_init

@@ -48,7 +48,9 @@ def del_fix_asset_budget_webbl(nr_budget:int, user_init:string):
                 " as " + queasy.char1 + ", date: " + to_string(queasy.date1) +\
                 ", amount: " + to_string(queasy.logi1) + ", status: " + convert_status (queasy.logi1)
 
-        queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+        # queasy = get_cache (Queasy, {"_recid": [(eq, rec_id)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy._recid == rec_id)).with_for_update().first()
 
         if queasy:
             db_session.delete(queasy)
