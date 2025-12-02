@@ -1,11 +1,15 @@
 #using conversion tools version: 1.0.0.117
-
+#-------------------------------------------------------
+# Rd, 01/12/2025, with_for_update added
+#-------------------------------------------------------
 from functions.additional_functions import *
 from decimal import Decimal
 from datetime import date
 from models import Reslin_queasy, Dml_artdep, Dml_art, Queasy
+from sqlalchemy.orm import flag_modified
 
-def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, selected_date:date, user_init:string, cbuff_price:Decimal, cbuff_lief_nr:int, cbuff_approved:bool, cbuff_remark:string, curr_select:string, dml_no:string, counter:int):
+def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, selected_date:date, 
+                         user_init:string, cbuff_price:Decimal, cbuff_lief_nr:int, cbuff_approved:bool, cbuff_remark:string, curr_select:string, dml_no:string, counter:int):
 
     prepare_cache ([Dml_art, Queasy])
 
@@ -18,6 +22,10 @@ def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, sele
 
 
     db_session = local_storage.db_session
+    cbuff_remark = cbuff_remark.strip()
+    curr_select = curr_select.strip()
+    user_init = user_init.strip()
+    dml_no
 
     def generate_output():
         nonlocal reslin_queasy, dml_artdep, dml_art, queasy
@@ -33,7 +41,7 @@ def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, sele
     if curr_dept == 0:
 
         dml_art = db_session.query(Dml_art).filter(
-                 (Dml_art.artnr == cbuff_artnr) & (Dml_art.datum == selected_date) & (entry(1, Dml_art.chginit, ";") == (dml_no).lower())).first()
+                 (Dml_art.artnr == cbuff_artnr) & (Dml_art.datum == selected_date) & (entry(1, Dml_art.chginit, ";") == (dml_no).lower())).with_for_update().first()
 
         if not dml_art:
             dml_art = Dml_art()
@@ -52,7 +60,9 @@ def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, sele
         if num_entries(dml_art.chginit, ";") > 1:
             dml_art.chginit = entry(0, dml_art.chginit, ";", user_init)
 
-        queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, 0)],"number2": [(eq, cbuff_artnr)],"date1": [(eq, selected_date)]})
+        # queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, 0)],"number2": [(eq, cbuff_artnr)],"date1": [(eq, selected_date)]})
+        queasy = db_session.query(Queasy).filter(
+                 (Queasy.key == 202) & (Queasy.number1 == 0) & (Queasy.number2 == cbuff_artnr) & (Queasy.date1 == selected_date)).with_for_update().first()
 
         if not queasy:
             queasy = Queasy()
@@ -84,7 +94,9 @@ def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, sele
             else:
                 dml_art.chginit = dml_art.chginit + "!"
 
-            queasy = get_cache (Queasy, {"key": [(eq, 254)],"number1": [(eq, 0)],"date1": [(eq, dml_art.datum)],"logi1": [(eq, True)],"number3": [(eq, 0)]})
+            # queasy = get_cache (Queasy, {"key": [(eq, 254)],"number1": [(eq, 0)],"date1": [(eq, dml_art.datum)],"logi1": [(eq, True)],"number3": [(eq, 0)]})
+            queasy = db_session.query(Queasy).filter(
+                     (Queasy.key == 254) & (Queasy.number1 == 0) & (Queasy.date1 == dml_art.datum) & (Queasy.logi1 == True) & (Queasy.number3 == 0)).with_for_update().first()
 
             if not queasy:
                 queasy = Queasy()
@@ -131,8 +143,9 @@ def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, sele
                         else:
                             reslin_queasy.char3 = reslin_queasy.char3 + "!"
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 254)],"number1": [(eq, to_int(entry(1, reslin_queasy.char1, ";")))],"date1": [(eq, reslin_queasy.date1)],"logi1": [(eq, True)],"number3": [(eq, counter)]})
-
+                        # queasy = get_cache (Queasy, {"key": [(eq, 254)],"number1": [(eq, to_int(entry(1, reslin_queasy.char1, ";")))],"date1": [(eq, reslin_queasy.date1)],"logi1": [(eq, True)],"number3": [(eq, counter)]})
+                        queasy = db_session.query(Queasy).filter(
+                                 (Queasy.key == 254) & (Queasy.number1 == to_int(entry(1, reslin_queasy.char1, ";"))) & (Queasy.date1 == reslin_queasy.date1) & (Queasy.logi1 == True) & (Queasy.number3 == counter)).with_for_update().first()
                         if not queasy:
                             queasy = Queasy()
                             db_session.add(queasy)
@@ -161,7 +174,9 @@ def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, sele
                     dml_artdep.einzelpreis =  to_decimal(cbuff_price)
                     dml_artdep.chginit = user_init + ";" + dml_no
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, curr_dept)],"number2": [(eq, cbuff_artnr)],"date1": [(eq, selected_date)]})
+                    # queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, curr_dept)],"number2": [(eq, cbuff_artnr)],"date1": [(eq, selected_date)]})
+                    queasy = db_session.query(Queasy).filter(
+                             (Queasy.key == 202) & (Queasy.number1 == curr_dept) & (Queasy.number2 == cbuff_artnr) & (Queasy.date1 == selected_date)).with_for_update().first()
 
                     if not queasy:
                         queasy = Queasy()
@@ -216,7 +231,9 @@ def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, sele
             if breslin:
 
                 reslin_queasy = db_session.query(Reslin_queasy).filter(
-                         (Reslin_queasy.key == ("DML").lower()) & (to_int(entry(0, Reslin_queasy.char1, ";")) == cbuff_artnr) & (Reslin_queasy.date1 == selected_date) & (to_int(entry(1, Reslin_queasy.char1, ";")) == curr_dept) & (entry(1, Reslin_queasy.char3, ";") == (dml_no).lower())).first()
+                         (Reslin_queasy.key == ("DML").lower()) & (to_int(entry(0, Reslin_queasy.char1, ";")) == cbuff_artnr) & 
+                         (Reslin_queasy.date1 == selected_date) & (to_int(entry(1, Reslin_queasy.char1, ";")) == curr_dept) & 
+                         (entry(1, Reslin_queasy.char3, ";") == (dml_no).lower())).with_for_update().first()
 
                 if reslin_queasy:
 
@@ -226,8 +243,9 @@ def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, sele
                         reslin_queasy.char2 = entry(0, reslin_queasy.char2, ";")
                         reslin_queasy.char3 = entry(0, reslin_queasy.char3, ";", user_init)
 
-                        queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, curr_dept)],"number2": [(eq, cbuff_artnr)],"date1": [(eq, selected_date)]})
-
+                        # queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, curr_dept)],"number2": [(eq, cbuff_artnr)],"date1": [(eq, selected_date)]})
+                        queasy = db_session.query(Queasy).filter(
+                                 (Queasy.key == 202) & (Queasy.number1 == curr_dept) & (Queasy.number2 == cbuff_artnr) & (Queasy.date1 == selected_date)).with_for_update().first()
                         if not queasy:
                             queasy = Queasy()
                             db_session.add(queasy)
@@ -243,9 +261,6 @@ def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, sele
                             pass
                             queasy.char1 = cbuff_remark
 
-
-                            pass
-                            pass
 
                         if cbuff_lief_nr > 0:
                             reslin_queasy.char2 = reslin_queasy.char2 + ";" + to_string(cbuff_lief_nr)
@@ -387,8 +402,9 @@ def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, sele
                     dml_artdep.anzahl =  to_decimal(cbuff_qty)
                     dml_artdep.einzelpreis =  to_decimal(cbuff_price)
 
-                    queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, curr_dept)],"number2": [(eq, cbuff_artnr)],"date1": [(eq, selected_date)]})
-
+                    # queasy = get_cache (Queasy, {"key": [(eq, 202)],"number1": [(eq, curr_dept)],"number2": [(eq, cbuff_artnr)],"date1": [(eq, selected_date)]})
+                    queasy = db_session.query(Queasy).filter(
+                             (Queasy.key == 202) & (Queasy.number1 == curr_dept) & (Queasy.number2 == cbuff_artnr) & (Queasy.date1 == selected_date)).with_for_update().first()
                     if not queasy:
                         queasy = Queasy()
                         db_session.add(queasy)
@@ -404,9 +420,6 @@ def dml_list_save_it_2bl(curr_dept:int, cbuff_artnr:int, cbuff_qty:Decimal, sele
                         pass
                         queasy.char1 = cbuff_remark
 
-
-                        pass
-                        pass
 
                     if cbuff_lief_nr > 0:
                         dml_artdep.userinit = dml_artdep.userinit + ";" + to_string(cbuff_lief_nr)
